@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{etp.title}}</title>
+    <style>
+        @page {
+            margin: 2cm;
+            size: A4;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #000;
+        }
+
+        .header h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+
+        .header .subtitle {
+            font-size: 14pt;
+            margin: 5px 0;
+        }
+
+        .metadata {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #333;
+        }
+
+        .metadata p {
+            margin: 5px 0;
+        }
+
+        .metadata strong {
+            font-weight: bold;
+        }
+
+        .section {
+            margin: 30px 0;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #666;
+            text-transform: uppercase;
+        }
+
+        .section-content {
+            text-align: justify;
+            margin: 15px 0;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #666;
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .disclaimer {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            font-size: 11pt;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Estudo Técnico Preliminar</h1>
+        <div class="subtitle">{{etp.title}}</div>
+    </div>
+
+    <div class="metadata">
+        <p><strong>Número do Processo:</strong> {{etp.numeroProcesso}}</p>
+        <p><strong>Órgão:</strong> {{etp.metadata.orgao}}</p>
+        <p><strong>Unidade Requisitante:</strong> {{etp.metadata.unidadeRequisitante}}</p>
+        <p><strong>Responsável Técnico:</strong> {{etp.metadata.responsavelTecnico}}</p>
+        <p><strong>Data de Elaboração:</strong> {{formatDate etp.createdAt}}</p>
+        <p><strong>Status:</strong> {{etp.status}}</p>
+        {{#if etp.valorEstimado}}
+        <p><strong>Valor Estimado:</strong> R$ {{formatCurrency etp.valorEstimado}}</p>
+        {{/if}}
+    </div>
+
+    <div class="disclaimer">
+        <strong>⚠️ IMPORTANTE:</strong> Este documento foi gerado com auxílio de sistema assistivo baseado em Inteligência Artificial.
+        Todo o conteúdo deve ser revisado e validado por profissional qualificado antes de qualquer encaminhamento oficial.
+        O sistema pode conter imprecisões e não substitui a responsabilidade técnica e administrativa do servidor público.
+    </div>
+
+    {{#each sections}}
+    <div class="section">
+        <h2 class="section-title">{{order}}. {{title}}</h2>
+        <div class="section-content">
+            {{{content}}}
+        </div>
+
+        {{#if validationResults}}
+        <div style="margin-top: 15px; padding: 10px; background-color: #e7f3ff; border-left: 4px solid #2196F3; font-size: 10pt;">
+            <strong>Validações Automáticas:</strong>
+            {{#if validationResults.legal}}
+            <p>• Conformidade Legal: {{validationResults.legal.score}}%</p>
+            {{/if}}
+            {{#if validationResults.clareza}}
+            <p>• Índice de Clareza: {{validationResults.clareza.score}}%</p>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+    {{/each}}
+
+    <div class="page-break"></div>
+
+    <div class="section">
+        <h2 class="section-title">Anexos e Referências</h2>
+
+        {{#if etp.metadata.fundamentacaoLegal}}
+        <h3>Base Legal</h3>
+        <ul>
+            {{#each etp.metadata.fundamentacaoLegal}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
+
+        <h3>Documentos de Referência</h3>
+        <ul>
+            <li>Lei nº 14.133/2021 - Nova Lei de Licitações e Contratos Administrativos</li>
+            <li>Instrução Normativa SEGES/ME nº 40/2020 - Elaboração do ETP</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Documento gerado pelo sistema ETP Express em {{formatDate generatedAt}}</p>
+        <p>Sistema assistivo - Validação humana obrigatória</p>
+    </div>
+</body>
+</html>
