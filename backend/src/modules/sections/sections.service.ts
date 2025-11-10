@@ -84,7 +84,7 @@ export class SectionsService {
         ...generationResult.metadata,
         warnings: generationResult.warnings,
       };
-      savedSection.validationResults = generationResult.validationResults;
+      savedSection.validationResults = this.convertValidationResults(generationResult.validationResults);
 
       await this.sectionsRepository.save(savedSection);
 
@@ -168,7 +168,7 @@ export class SectionsService {
         warnings: generationResult.warnings,
         regeneratedAt: new Date().toISOString(),
       };
-      section.validationResults = generationResult.validationResults;
+      section.validationResults = this.convertValidationResults(generationResult.validationResults);
 
       await this.sectionsRepository.save(section);
 
@@ -197,7 +197,7 @@ export class SectionsService {
       section.type,
     );
 
-    section.validationResults = validationResults;
+    section.validationResults = this.convertValidationResults(validationResults);
     await this.sectionsRepository.save(section);
 
     this.logger.log(`Section validated: ${id}`);
@@ -244,5 +244,29 @@ export class SectionsService {
     ];
 
     return requiredSections.includes(type);
+  }
+
+  private convertValidationResults(validationResults: any) {
+    if (!validationResults) {
+      return {
+        legalCompliance: true,
+        clarityScore: 0,
+        hallucinationCheck: true,
+        warnings: [],
+        suggestions: [],
+      };
+    }
+
+    return {
+      legalCompliance: validationResults.legal?.isCompliant ?? true,
+      clarityScore: validationResults.clareza?.score ?? 0,
+      hallucinationCheck: validationResults.antiHallucination?.isPassing ?? true,
+      warnings: [
+        ...(validationResults.legal?.issues || []),
+        ...(validationResults.clareza?.issues || []),
+        ...(validationResults.simplificacao?.suggestions || []),
+      ],
+      suggestions: validationResults.antiHallucination?.recommendations || [],
+    };
   }
 }

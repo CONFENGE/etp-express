@@ -59,10 +59,10 @@ import { AppService } from './app.service';
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ([{
         ttl: configService.get('RATE_LIMIT_TTL', 60),
         limit: configService.get('RATE_LIMIT_MAX', 100),
-      }),
+      }]),
     }),
 
     // Feature modules

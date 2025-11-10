@@ -102,7 +102,7 @@ export class SearchService {
     return contracts;
   }
 
-  async getContractById(id: string): Promise<SimilarContract> {
+  async getContractById(id: string): Promise<SimilarContract | null> {
     return this.contractsRepository.findOne({ where: { id } });
   }
 

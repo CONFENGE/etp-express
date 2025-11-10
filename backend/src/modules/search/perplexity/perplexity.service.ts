@@ -24,7 +24,7 @@ export class PerplexityService {
   private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
   constructor(private configService: ConfigService) {
-    this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY');
+    this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || '';
     this.model = this.configService.get<string>('PERPLEXITY_MODEL', 'pplx-7b-online');
   }
 
