@@ -1,7 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { FundamentacaoAgent, FundamentacaoResult } from "./fundamentacao.agent";
+import { Test, TestingModule } from '@nestjs/testing';
+import { FundamentacaoAgent, FundamentacaoResult } from './fundamentacao.agent';
 
-describe("FundamentacaoAgent", () => {
+describe('FundamentacaoAgent', () => {
   let agent: FundamentacaoAgent;
 
   beforeEach(async () => {
@@ -12,12 +12,12 @@ describe("FundamentacaoAgent", () => {
     agent = module.get<FundamentacaoAgent>(FundamentacaoAgent);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(agent).toBeDefined();
   });
 
-  describe("analyze()", () => {
-    it("should detect all 4 mandatory elements when present", async () => {
+  describe('analyze()', () => {
+    it('should detect all 4 mandatory elements when present', async () => {
       // Arrange
       const contentWithAllElements = `
         A necessidade desta contratação surge da carência de sistemas modernos
@@ -55,7 +55,7 @@ describe("FundamentacaoAgent", () => {
       expect(result.suggestions).toHaveLength(0);
     });
 
-    it("should calculate score correctly based on present elements (2/4 = 50%)", async () => {
+    it('should calculate score correctly based on present elements (2/4 = 50%)', async () => {
       // Arrange
       const contentPartial = `
         A necessidade desta contratação é urgente e imediata.
@@ -74,7 +74,7 @@ describe("FundamentacaoAgent", () => {
       expect(result.suggestions.length).toBeGreaterThan(0);
     });
 
-    it("should detect quantitative data (numbers) in content", async () => {
+    it('should detect quantitative data (numbers) in content', async () => {
       // Arrange
       const contentWithNumbers = `
         A necessidade surge da demanda de 10.000 usuários.
@@ -92,11 +92,11 @@ describe("FundamentacaoAgent", () => {
       expect(result.score).toBe(100);
       // Verifica que NÃO há sugestão sobre adicionar dados quantitativos
       expect(result.suggestions).not.toContain(
-        "Considere adicionar dados quantitativos para fortalecer a fundamentação",
+        'Considere adicionar dados quantitativos para fortalecer a fundamentação',
       );
     });
 
-    it("should suggest adding quantitative data when numbers are missing", async () => {
+    it('should suggest adding quantitative data when numbers are missing', async () => {
       // Arrange
       const contentWithoutNumbers = `
         A necessidade desta contratação é evidente.
@@ -113,16 +113,16 @@ describe("FundamentacaoAgent", () => {
       // Assert
       expect(result).toBeDefined();
       expect(result.suggestions).toContain(
-        "Considere adicionar dados quantitativos para fortalecer a fundamentação",
+        'Considere adicionar dados quantitativos para fortalecer a fundamentação',
       );
     });
 
-    it("should validate minimum length (100 words)", async () => {
+    it('should validate minimum length (100 words)', async () => {
       // Arrange
-      const shortContent = "Necessidade urgente de contratação."; // < 100 palavras
+      const shortContent = 'Necessidade urgente de contratação.'; // < 100 palavras
       const longContent = `
         A necessidade desta contratação é fundamental para o órgão.
-        ${"O interesse público será atendido através desta ação. ".repeat(20)}
+        ${'O interesse público será atendido através desta ação. '.repeat(20)}
         Os benefícios esperados são significativos e mensuráveis.
         Os riscos de não realizar a contratação são elevados.
       `; // > 100 palavras
@@ -134,14 +134,14 @@ describe("FundamentacaoAgent", () => {
 
       // Assert
       expect(resultShort.suggestions).toContain(
-        "A fundamentação parece muito breve. Considere expandir com mais detalhes",
+        'A fundamentação parece muito breve. Considere expandir com mais detalhes',
       );
       expect(resultLong.suggestions).not.toContain(
-        "A fundamentação parece muito breve. Considere expandir com mais detalhes",
+        'A fundamentação parece muito breve. Considere expandir com mais detalhes',
       );
     });
 
-    it("should provide suggestions for missing elements", async () => {
+    it('should provide suggestions for missing elements', async () => {
       // Arrange
       const contentMissingElements = `
         Este é um texto genérico sem elementos específicos da fundamentação.
@@ -155,28 +155,28 @@ describe("FundamentacaoAgent", () => {
       // Assert
       expect(result.score).toBe(0);
       expect(result.suggestions).toContain(
-        "Detalhe melhor a necessidade que motivou a contratação",
+        'Detalhe melhor a necessidade que motivou a contratação',
       );
       expect(result.suggestions).toContain(
-        "Explicite como a contratação atende ao interesse público",
+        'Explicite como a contratação atende ao interesse público',
       );
       expect(result.suggestions).toContain(
-        "Liste os benefícios esperados com a contratação",
+        'Liste os benefícios esperados com a contratação',
       );
       expect(result.suggestions).toContain(
-        "Mencione os riscos de não realizar a contratação",
+        'Mencione os riscos de não realizar a contratação',
       );
       expect(result.suggestions).toContain(
-        "Considere adicionar dados quantitativos para fortalecer a fundamentação",
+        'Considere adicionar dados quantitativos para fortalecer a fundamentação',
       );
       expect(result.suggestions).toContain(
-        "A fundamentação parece muito breve. Considere expandir com mais detalhes",
+        'A fundamentação parece muito breve. Considere expandir com mais detalhes',
       );
     });
 
-    it("should handle empty text", async () => {
+    it('should handle empty text', async () => {
       // Arrange
-      const emptyContent = "";
+      const emptyContent = '';
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(emptyContent);
@@ -191,11 +191,11 @@ describe("FundamentacaoAgent", () => {
       expect(result.suggestions.length).toBeGreaterThanOrEqual(4);
     });
 
-    it("should handle very long text", async () => {
+    it('should handle very long text', async () => {
       // Arrange
       const veryLongContent = `
         A necessidade desta contratação é fundamental.
-        ${"O interesse público da sociedade e cidadãos será atendido. ".repeat(1000)}
+        ${'O interesse público da sociedade e cidadãos será atendido. '.repeat(1000)}
         Os benefícios e vantagens esperados são significativos.
         Os riscos e problemas de não contratar são elevados.
         Dados quantitativos: 10.000 usuários.
@@ -214,7 +214,7 @@ describe("FundamentacaoAgent", () => {
       expect(result.hasRiscos).toBe(true);
     });
 
-    it("should detect alternative keywords for each element", async () => {
+    it('should detect alternative keywords for each element', async () => {
       // Arrange
       const contentWithAlternatives = `
         A demanda surge da deficiência nos sistemas atuais.
@@ -236,7 +236,7 @@ describe("FundamentacaoAgent", () => {
       expect(result.score).toBe(100);
     });
 
-    it("should be case-insensitive when detecting keywords", async () => {
+    it('should be case-insensitive when detecting keywords', async () => {
       // Arrange
       const contentMixedCase = `
         A NECESSIDADE desta contratação é URGENTE.
@@ -257,32 +257,32 @@ describe("FundamentacaoAgent", () => {
     });
   });
 
-  describe("enrich()", () => {
-    it("should add checklist to user prompt", async () => {
+  describe('enrich()', () => {
+    it('should add checklist to user prompt', async () => {
       // Arrange
-      const originalPrompt = "Gere a fundamentação para o projeto X.";
+      const originalPrompt = 'Gere a fundamentação para o projeto X.';
 
       // Act
       const enrichedPrompt: string = await agent.enrich(originalPrompt);
 
       // Assert
       expect(enrichedPrompt).toContain(originalPrompt);
-      expect(enrichedPrompt).toContain("POR QUÊ");
-      expect(enrichedPrompt).toContain("PARA QUEM");
-      expect(enrichedPrompt).toContain("O QUE será ganho");
-      expect(enrichedPrompt).toContain("O QUE SE PERDE");
-      expect(enrichedPrompt).toContain("necessária");
-      expect(enrichedPrompt).toContain("interesse público");
-      expect(enrichedPrompt).toContain("benefícios esperados");
-      expect(enrichedPrompt).toContain("riscos");
-      expect(enrichedPrompt).toContain("dados concretos");
+      expect(enrichedPrompt).toContain('POR QUÊ');
+      expect(enrichedPrompt).toContain('PARA QUEM');
+      expect(enrichedPrompt).toContain('O QUE será ganho');
+      expect(enrichedPrompt).toContain('O QUE SE PERDE');
+      expect(enrichedPrompt).toContain('necessária');
+      expect(enrichedPrompt).toContain('interesse público');
+      expect(enrichedPrompt).toContain('benefícios esperados');
+      expect(enrichedPrompt).toContain('riscos');
+      expect(enrichedPrompt).toContain('dados concretos');
       expect(enrichedPrompt.length).toBeGreaterThan(originalPrompt.length);
     });
 
-    it("should preserve original prompt content", async () => {
+    it('should preserve original prompt content', async () => {
       // Arrange
       const originalPrompt =
-        "Elabore fundamentação detalhada para contratação de software de gestão.";
+        'Elabore fundamentação detalhada para contratação de software de gestão.';
 
       // Act
       const enrichedPrompt: string = await agent.enrich(originalPrompt);
@@ -293,23 +293,23 @@ describe("FundamentacaoAgent", () => {
     });
   });
 
-  describe("getSystemPrompt()", () => {
-    it("should return system prompt with fundamentação guidelines", () => {
+  describe('getSystemPrompt()', () => {
+    it('should return system prompt with fundamentação guidelines', () => {
       // Act
       const systemPrompt: string = agent.getSystemPrompt();
 
       // Assert
-      expect(systemPrompt).toContain("fundamentação");
-      expect(systemPrompt).toContain("COMPLETA");
-      expect(systemPrompt).toContain("CLARA");
-      expect(systemPrompt).toContain("CONVINCENTE");
-      expect(systemPrompt).toContain("NECESSIDADE");
-      expect(systemPrompt).toContain("INTERESSE PÚBLICO");
-      expect(systemPrompt).toContain("BENEFÍCIOS");
-      expect(systemPrompt).toContain("RISCOS");
-      expect(systemPrompt).toContain("dados quantitativos");
-      expect(systemPrompt).toContain("EVITE");
-      expect(systemPrompt).toContain("genéricas");
+      expect(systemPrompt).toContain('fundamentação');
+      expect(systemPrompt).toContain('COMPLETA');
+      expect(systemPrompt).toContain('CLARA');
+      expect(systemPrompt).toContain('CONVINCENTE');
+      expect(systemPrompt).toContain('NECESSIDADE');
+      expect(systemPrompt).toContain('INTERESSE PÚBLICO');
+      expect(systemPrompt).toContain('BENEFÍCIOS');
+      expect(systemPrompt).toContain('RISCOS');
+      expect(systemPrompt).toContain('dados quantitativos');
+      expect(systemPrompt).toContain('EVITE');
+      expect(systemPrompt).toContain('genéricas');
       expect(systemPrompt.length).toBeGreaterThan(100);
     });
   });

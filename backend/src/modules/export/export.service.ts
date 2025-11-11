@@ -1,17 +1,17 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import * as puppeteer from "puppeteer";
-import * as Handlebars from "handlebars";
-import * as fs from "fs";
-import * as path from "path";
-import { Etp } from "../../entities/etp.entity";
-import { EtpSection } from "../../entities/etp-section.entity";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as puppeteer from 'puppeteer';
+import * as Handlebars from 'handlebars';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Etp } from '../../entities/etp.entity';
+import { EtpSection } from '../../entities/etp-section.entity';
 
 export enum ExportFormat {
-  PDF = "pdf",
-  JSON = "json",
-  XML = "xml",
+  PDF = 'pdf',
+  JSON = 'json',
+  XML = 'xml',
 }
 
 @Injectable()
@@ -33,30 +33,30 @@ export class ExportService {
     try {
       const templatePath = path.join(
         __dirname,
-        "templates",
-        "etp-template.hbs",
+        'templates',
+        'etp-template.hbs',
       );
-      const templateContent = fs.readFileSync(templatePath, "utf-8");
+      const templateContent = fs.readFileSync(templatePath, 'utf-8');
       this.template = Handlebars.compile(templateContent);
-      this.logger.log("Template loaded successfully");
+      this.logger.log('Template loaded successfully');
     } catch (error) {
-      this.logger.error("Error loading template:", error);
+      this.logger.error('Error loading template:', error);
       // Fallback to basic template
       this.template = Handlebars.compile(
-        "<html><body><h1>{{etp.title}}</h1></body></html>",
+        '<html><body><h1>{{etp.title}}</h1></body></html>',
       );
     }
   }
 
   private registerHandlebarsHelpers() {
-    Handlebars.registerHelper("formatDate", (date: Date) => {
-      if (!date) return "N/A";
-      return new Date(date).toLocaleDateString("pt-BR");
+    Handlebars.registerHelper('formatDate', (date: Date) => {
+      if (!date) return 'N/A';
+      return new Date(date).toLocaleDateString('pt-BR');
     });
 
-    Handlebars.registerHelper("formatCurrency", (value: number) => {
-      if (!value) return "N/A";
-      return value.toLocaleString("pt-BR", {
+    Handlebars.registerHelper('formatCurrency', (value: number) => {
+      if (!value) return 'N/A';
+      return value.toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -71,25 +71,25 @@ export class ExportService {
 
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     try {
       const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: "networkidle0" });
+      await page.setContent(html, { waitUntil: 'networkidle0' });
 
       const pdfBuffer = await page.pdf({
-        format: "A4",
+        format: 'A4',
         margin: {
-          top: "2cm",
-          right: "2cm",
-          bottom: "2cm",
-          left: "2cm",
+          top: '2cm',
+          right: '2cm',
+          bottom: '2cm',
+          left: '2cm',
         },
         printBackground: true,
       });
 
-      this.logger.log("PDF generated successfully");
+      this.logger.log('PDF generated successfully');
       return Buffer.from(pdfBuffer);
     } finally {
       await browser.close();
@@ -131,7 +131,7 @@ export class ExportService {
       })),
       exportedAt: new Date().toISOString(),
       disclaimer:
-        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
+        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
     };
   }
 
@@ -141,12 +141,12 @@ export class ExportService {
     const etp = await this.getEtpWithSections(etpId);
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += "<etp>\n";
+    xml += '<etp>\n';
     xml += `  <id>${this.escapeXml(etp.id)}</id>\n`;
     xml += `  <title>${this.escapeXml(etp.title)}</title>\n`;
-    xml += `  <description>${this.escapeXml(etp.description || "")}</description>\n`;
+    xml += `  <description>${this.escapeXml(etp.description || '')}</description>\n`;
     xml += `  <objeto>${this.escapeXml(etp.objeto)}</objeto>\n`;
-    xml += `  <numeroProcesso>${this.escapeXml(etp.numeroProcesso || "")}</numeroProcesso>\n`;
+    xml += `  <numeroProcesso>${this.escapeXml(etp.numeroProcesso || '')}</numeroProcesso>\n`;
     xml += `  <valorEstimado>${etp.valorEstimado || 0}</valorEstimado>\n`;
     xml += `  <status>${this.escapeXml(etp.status)}</status>\n`;
     xml += `  <currentVersion>${etp.currentVersion}</currentVersion>\n`;
@@ -154,23 +154,23 @@ export class ExportService {
     xml += `  <createdAt>${etp.createdAt.toISOString()}</createdAt>\n`;
     xml += `  <updatedAt>${etp.updatedAt.toISOString()}</updatedAt>\n`;
 
-    xml += "  <sections>\n";
+    xml += '  <sections>\n';
     etp.sections.forEach((section) => {
-      xml += "    <section>\n";
+      xml += '    <section>\n';
       xml += `      <id>${this.escapeXml(section.id)}</id>\n`;
       xml += `      <type>${this.escapeXml(section.type)}</type>\n`;
       xml += `      <title>${this.escapeXml(section.title)}</title>\n`;
-      xml += `      <content><![CDATA[${section.content || ""}]]></content>\n`;
+      xml += `      <content><![CDATA[${section.content || ''}]]></content>\n`;
       xml += `      <status>${this.escapeXml(section.status)}</status>\n`;
       xml += `      <order>${section.order}</order>\n`;
       xml += `      <createdAt>${section.createdAt.toISOString()}</createdAt>\n`;
-      xml += "    </section>\n";
+      xml += '    </section>\n';
     });
-    xml += "  </sections>\n";
+    xml += '  </sections>\n';
 
     xml +=
-      "  <disclaimer>O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.</disclaimer>\n";
-    xml += "</etp>\n";
+      '  <disclaimer>O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.</disclaimer>\n';
+    xml += '</etp>\n';
 
     return xml;
   }
@@ -185,7 +185,7 @@ export class ExportService {
         .sort((a, b) => a.order - b.order)
         .map((section) => ({
           ...section,
-          content: this.formatContent(section.content || ""),
+          content: this.formatContent(section.content || ''),
         })),
       generatedAt: new Date(),
     };
@@ -195,11 +195,11 @@ export class ExportService {
 
   private formatContent(content: string): string {
     // Convert markdown-like formatting to HTML
-    let formatted = content
-      .replace(/\n\n/g, "</p><p>")
-      .replace(/\n/g, "<br>")
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>");
+    const formatted = content
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>');
 
     return `<p>${formatted}</p>`;
   }
@@ -207,7 +207,7 @@ export class ExportService {
   private async getEtpWithSections(etpId: string): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id: etpId },
-      relations: ["sections", "createdBy"],
+      relations: ['sections', 'createdBy'],
     });
 
     if (!etp) {
@@ -221,12 +221,12 @@ export class ExportService {
   }
 
   private escapeXml(unsafe: string): string {
-    if (!unsafe) return "";
+    if (!unsafe) return '';
     return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&apos;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
   }
 }

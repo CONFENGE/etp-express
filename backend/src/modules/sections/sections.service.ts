@@ -3,15 +3,15 @@ import {
   NotFoundException,
   Logger,
   BadRequestException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { EtpSection, SectionStatus } from "../../entities/etp-section.entity";
-import { Etp } from "../../entities/etp.entity";
-import { GenerateSectionDto } from "./dto/generate-section.dto";
-import { UpdateSectionDto } from "./dto/update-section.dto";
-import { OrchestratorService } from "../orchestrator/orchestrator.service";
-import { EtpsService } from "../etps/etps.service";
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
+import { Etp } from '../../entities/etp.entity';
+import { GenerateSectionDto } from './dto/generate-section.dto';
+import { UpdateSectionDto } from './dto/update-section.dto';
+import { OrchestratorService } from '../orchestrator/orchestrator.service';
+import { EtpsService } from '../etps/etps.service';
 
 @Injectable()
 export class SectionsService {
@@ -69,7 +69,7 @@ export class SectionsService {
       const generationResult = await this.orchestratorService.generateSection({
         sectionType: generateDto.type,
         title: generateDto.title,
-        userInput: generateDto.userInput || "",
+        userInput: generateDto.userInput || '',
         context: generateDto.context,
         etpData: {
           objeto: etp.objeto,
@@ -114,14 +114,14 @@ export class SectionsService {
   async findAll(etpId: string): Promise<EtpSection[]> {
     return this.sectionsRepository.find({
       where: { etpId },
-      order: { order: "ASC" },
+      order: { order: 'ASC' },
     });
   }
 
   async findOne(id: string): Promise<EtpSection> {
     const section = await this.sectionsRepository.findOne({
       where: { id },
-      relations: ["etp"],
+      relations: ['etp'],
     });
 
     if (!section) {
@@ -159,7 +159,7 @@ export class SectionsService {
       const generationResult = await this.orchestratorService.generateSection({
         sectionType: section.type,
         title: section.title,
-        userInput: section.userInput || "",
+        userInput: section.userInput || '',
         etpData: {
           objeto: section.etp.objeto,
           metadata: section.etp.metadata,
@@ -199,7 +199,7 @@ export class SectionsService {
     const section = await this.findOne(id);
 
     if (!section.content) {
-      throw new BadRequestException("Seção não possui conteúdo para validar");
+      throw new BadRequestException('Seção não possui conteúdo para validar');
     }
 
     const validationResults = await this.orchestratorService.validateContent(
@@ -217,7 +217,7 @@ export class SectionsService {
       section,
       validationResults,
       disclaimer:
-        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
+        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
     };
   }
 
@@ -237,9 +237,9 @@ export class SectionsService {
 
   private async getNextOrder(etpId: string): Promise<number> {
     const maxOrder = await this.sectionsRepository
-      .createQueryBuilder("section")
-      .select("MAX(section.order)", "maxOrder")
-      .where("section.etpId = :etpId", { etpId })
+      .createQueryBuilder('section')
+      .select('MAX(section.order)', 'maxOrder')
+      .where('section.etpId = :etpId', { etpId })
       .getRawOne();
 
     return (maxOrder?.maxOrder || 0) + 1;
@@ -247,11 +247,11 @@ export class SectionsService {
 
   private isRequiredSection(type: string): boolean {
     const requiredSections = [
-      "introducao",
-      "justificativa",
-      "descricao_solucao",
-      "requisitos",
-      "estimativa_valor",
+      'introducao',
+      'justificativa',
+      'descricao_solucao',
+      'requisitos',
+      'estimativa_valor',
     ];
 
     return requiredSections.includes(type);
