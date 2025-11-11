@@ -3,13 +3,13 @@ import {
   UnauthorizedException,
   ConflictException,
   Logger,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
-import { UsersService } from '../users/users.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import * as bcrypt from "bcrypt";
+import { UsersService } from "../users/users.service";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -35,7 +35,7 @@ export class AuthService {
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Usuário inativo');
+      throw new UnauthorizedException("Usuário inativo");
     }
 
     // Update last login
@@ -49,7 +49,7 @@ export class AuthService {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     if (!user) {
-      throw new UnauthorizedException('Email ou senha incorretos');
+      throw new UnauthorizedException("Email ou senha incorretos");
     }
 
     const payload = {
@@ -73,7 +73,8 @@ export class AuthService {
         orgao: user.orgao,
         cargo: user.cargo,
       },
-      disclaimer: 'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      disclaimer:
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
@@ -81,7 +82,7 @@ export class AuthService {
     const existingUser = await this.usersService.findByEmail(registerDto.email);
 
     if (existingUser) {
-      throw new ConflictException('Email já cadastrado');
+      throw new ConflictException("Email já cadastrado");
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -112,7 +113,8 @@ export class AuthService {
         orgao: user.orgao,
         cargo: user.cargo,
       },
-      disclaimer: 'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      disclaimer:
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
@@ -122,7 +124,7 @@ export class AuthService {
       const user = await this.usersService.findOne(payload.sub);
 
       if (!user || !user.isActive) {
-        throw new UnauthorizedException('Token inválido');
+        throw new UnauthorizedException("Token inválido");
       }
 
       return {
@@ -135,7 +137,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      throw new UnauthorizedException('Token inválido ou expirado');
+      throw new UnauthorizedException("Token inválido ou expirado");
     }
   }
 }

@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import axios from "axios";
 
 export interface PerplexitySearchResult {
   title: string;
@@ -21,11 +21,14 @@ export class PerplexityService {
   private readonly logger = new Logger(PerplexityService.name);
   private readonly apiKey: string;
   private readonly model: string;
-  private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
+  private readonly apiUrl = "https://api.perplexity.ai/chat/completions";
 
   constructor(private configService: ConfigService) {
-    this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || '';
-    this.model = this.configService.get<string>('PERPLEXITY_MODEL', 'pplx-7b-online');
+    this.apiKey = this.configService.get<string>("PERPLEXITY_API_KEY") || "";
+    this.model = this.configService.get<string>(
+      "PERPLEXITY_MODEL",
+      "pplx-7b-online",
+    );
   }
 
   async search(query: string): Promise<PerplexityResponse> {
@@ -38,12 +41,12 @@ export class PerplexityService {
           model: this.model,
           messages: [
             {
-              role: 'system',
+              role: "system",
               content:
-                'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
+                "Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.",
             },
             {
-              role: 'user',
+              role: "user",
               content: query,
             },
           ],
@@ -51,19 +54,21 @@ export class PerplexityService {
         {
           headers: {
             Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           timeout: 30000,
         },
       );
 
-      const content = response.data.choices[0]?.message?.content || '';
+      const content = response.data.choices[0]?.message?.content || "";
       const citations = response.data.citations || [];
 
       // Parse results from content
       const results = this.parseResults(content, citations);
 
-      this.logger.log(`Perplexity search completed. Found ${results.length} results`);
+      this.logger.log(
+        `Perplexity search completed. Found ${results.length} results`,
+      );
 
       return {
         results,
@@ -71,26 +76,29 @@ export class PerplexityService {
         sources: citations,
       };
     } catch (error) {
-      this.logger.error('Error searching with Perplexity:', error.message);
+      this.logger.error("Error searching with Perplexity:", error.message);
 
       // Fallback to mock data if API fails
       return this.getMockResults(query);
     }
   }
 
-  private parseResults(content: string, citations: string[]): PerplexitySearchResult[] {
+  private parseResults(
+    content: string,
+    citations: string[],
+  ): PerplexitySearchResult[] {
     const results: PerplexitySearchResult[] = [];
 
     // Try to extract structured information from content
-    const lines = content.split('\n').filter((line) => line.trim().length > 0);
+    const lines = content.split("\n").filter((line) => line.trim().length > 0);
 
     citations.forEach((citation, index) => {
       results.push({
         title: `Fonte ${index + 1}`,
         snippet: lines[index] || citation,
-        url: citation.startsWith('http') ? citation : undefined,
+        url: citation.startsWith("http") ? citation : undefined,
         relevance: 1 - index * 0.1,
-        source: 'Perplexity AI',
+        source: "Perplexity AI",
       });
     });
 
@@ -98,34 +106,40 @@ export class PerplexityService {
   }
 
   private getMockResults(query: string): PerplexityResponse {
-    this.logger.warn('Using mock results due to API failure');
+    this.logger.warn("Using mock results due to API failure");
 
     return {
       results: [
         {
-          title: 'Portal de Compras Governamentais',
+          title: "Portal de Compras Governamentais",
           snippet:
-            'Contratações similares podem ser consultadas no Portal Nacional de Contratações Públicas (PNCP)',
-          url: 'https://pncp.gov.br',
+            "Contratações similares podem ser consultadas no Portal Nacional de Contratações Públicas (PNCP)",
+          url: "https://pncp.gov.br",
           relevance: 0.95,
-          source: 'Mock Data',
+          source: "Mock Data",
         },
         {
-          title: 'Painel de Preços',
+          title: "Painel de Preços",
           snippet:
-            'O Painel de Preços disponibiliza histórico de preços praticados em compras públicas',
-          url: 'https://paineldeprecos.planejamento.gov.br',
+            "O Painel de Preços disponibiliza histórico de preços praticados em compras públicas",
+          url: "https://paineldeprecos.planejamento.gov.br",
           relevance: 0.85,
-          source: 'Mock Data',
+          source: "Mock Data",
         },
       ],
       summary:
-        'Para buscar contratações similares, recomenda-se consultar o Portal Nacional de Contratações Públicas (PNCP) e o Painel de Preços do Governo Federal.',
-      sources: ['https://pncp.gov.br', 'https://paineldeprecos.planejamento.gov.br'],
+        "Para buscar contratações similares, recomenda-se consultar o Portal Nacional de Contratações Públicas (PNCP) e o Painel de Preços do Governo Federal.",
+      sources: [
+        "https://pncp.gov.br",
+        "https://paineldeprecos.planejamento.gov.br",
+      ],
     };
   }
 
-  async searchSimilarContracts(objeto: string, filters?: any): Promise<PerplexityResponse> {
+  async searchSimilarContracts(
+    objeto: string,
+    filters?: any,
+  ): Promise<PerplexityResponse> {
     const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
     Inclua informações sobre:
     - Órgãos que realizaram contratações similares
