@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { SimilarContract } from '../../entities/similar-contract.entity';
-import { PerplexityService } from './perplexity/perplexity.service';
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { SimilarContract } from "../../entities/similar-contract.entity";
+import { PerplexityService } from "./perplexity/perplexity.service";
 
 @Injectable()
 export class SearchService {
@@ -24,39 +24,44 @@ export class SearchService {
       this.logger.log(`Found ${cachedResults.length} cached results`);
       return {
         data: cachedResults,
-        source: 'cache',
+        source: "cache",
         disclaimer:
-          'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+          "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
       };
     }
 
     // If no cache, search with Perplexity
-    const perplexityResults = await this.perplexityService.searchSimilarContracts(query, filters);
+    const perplexityResults =
+      await this.perplexityService.searchSimilarContracts(query, filters);
 
     // Save results to database
-    const savedContracts = await this.saveSearchResults(query, perplexityResults);
+    const savedContracts = await this.saveSearchResults(
+      query,
+      perplexityResults,
+    );
 
     return {
       data: savedContracts,
       summary: perplexityResults.summary,
       sources: perplexityResults.sources,
-      source: 'perplexity',
+      source: "perplexity",
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
   async searchLegalReferences(topic: string) {
     this.logger.log(`Searching legal references for: ${topic}`);
 
-    const perplexityResults = await this.perplexityService.searchLegalReferences(topic);
+    const perplexityResults =
+      await this.perplexityService.searchLegalReferences(topic);
 
     return {
       data: perplexityResults.results,
       summary: perplexityResults.summary,
       sources: perplexityResults.sources,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
@@ -66,10 +71,10 @@ export class SearchService {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     return this.contractsRepository
-      .createQueryBuilder('contract')
-      .where('LOWER(contract.searchQuery) = LOWER(:query)', { query })
-      .andWhere('contract.createdAt > :date', { date: thirtyDaysAgo })
-      .orderBy('contract.relevanceScore', 'DESC')
+      .createQueryBuilder("contract")
+      .where("LOWER(contract.searchQuery) = LOWER(:query)", { query })
+      .andWhere("contract.createdAt > :date", { date: thirtyDaysAgo })
+      .orderBy("contract.relevanceScore", "DESC")
       .limit(10)
       .getMany();
   }
@@ -102,13 +107,13 @@ export class SearchService {
     return contracts;
   }
 
-  async getContractById(id: string): Promise<SimilarContract> {
+  async getContractById(id: string): Promise<SimilarContract | null> {
     return this.contractsRepository.findOne({ where: { id } });
   }
 
   async getAllContracts(limit: number = 50) {
     return this.contractsRepository.find({
-      order: { createdAt: 'DESC', relevanceScore: 'DESC' },
+      order: { createdAt: "DESC", relevanceScore: "DESC" },
       take: limit,
     });
   }

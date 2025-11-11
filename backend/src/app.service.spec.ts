@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppService } from './app.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppService } from "./app.service";
 
-describe('AppService', () => {
+describe("AppService", () => {
   let service: AppService;
 
   beforeEach(async () => {
@@ -12,20 +12,23 @@ describe('AppService', () => {
     service = module.get<AppService>(AppService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('getHealth', () => {
-    it('should return health status with ok status', () => {
+  describe("getHealth", () => {
+    it("should return health status with ok status", () => {
       const result = service.getHealth();
-      expect(result).toHaveProperty('status', 'ok');
-      expect(result).toHaveProperty('timestamp');
-      expect(result).toHaveProperty('message', 'ETP Express Backend is running');
-      expect(result).toHaveProperty('warning');
+      expect(result).toHaveProperty("status", "ok");
+      expect(result).toHaveProperty("timestamp");
+      expect(result).toHaveProperty(
+        "message",
+        "ETP Express Backend is running",
+      );
+      expect(result).toHaveProperty("warning");
     });
 
-    it('should return ISO timestamp', () => {
+    it("should return ISO timestamp", () => {
       const result = service.getHealth();
       const timestamp = new Date(result.timestamp);
       expect(timestamp).toBeInstanceOf(Date);
@@ -33,23 +36,23 @@ describe('AppService', () => {
     });
   });
 
-  describe('getInfo', () => {
-    it('should return system information', () => {
+  describe("getInfo", () => {
+    it("should return system information", () => {
       const result = service.getInfo();
-      expect(result).toHaveProperty('name', 'ETP Express');
-      expect(result).toHaveProperty('version', '1.0.0');
-      expect(result).toHaveProperty('description');
-      expect(result).toHaveProperty('features');
-      expect(result).toHaveProperty('disclaimer');
+      expect(result).toHaveProperty("name", "ETP Express");
+      expect(result).toHaveProperty("version", "1.0.0");
+      expect(result).toHaveProperty("description");
+      expect(result).toHaveProperty("features");
+      expect(result).toHaveProperty("disclaimer");
     });
 
-    it('should return array of features', () => {
+    it("should return array of features", () => {
       const result = service.getInfo();
       expect(Array.isArray(result.features)).toBe(true);
       expect(result.features.length).toBeGreaterThan(0);
     });
 
-    it('should return array of disclaimers', () => {
+    it("should return array of disclaimers", () => {
       const result = service.getInfo();
       expect(Array.isArray(result.disclaimer)).toBe(true);
       expect(result.disclaimer.length).toBeGreaterThan(0);
