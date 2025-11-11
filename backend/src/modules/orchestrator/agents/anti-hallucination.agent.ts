@@ -62,7 +62,7 @@ export class AntiHallucinationAgent {
 
   async check(
     content: string,
-    context?: any,
+    _context?: any,
   ): Promise<HallucinationCheckResult> {
     this.logger.log("Checking for potential hallucinations");
 

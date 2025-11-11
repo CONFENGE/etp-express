@@ -21,7 +21,7 @@ export class VersionsService {
   async createVersion(
     etpId: string,
     changeLog?: string,
-    userId?: string,
+    _userId?: string,
   ): Promise<EtpVersion> {
     this.logger.log(`Creating version for ETP ${etpId}`);
 
@@ -134,7 +134,7 @@ export class VersionsService {
     };
   }
 
-  async restoreVersion(versionId: string, userId: string): Promise<Etp> {
+  async restoreVersion(versionId: string, _userId: string): Promise<Etp> {
     this.logger.log(`Restoring version ${versionId}`);
 
     const version = await this.getVersion(versionId);
@@ -152,7 +152,7 @@ export class VersionsService {
     await this.createVersion(
       etp.id,
       `Backup antes de restaurar versão ${version.versionNumber}`,
-      userId,
+      _userId,
     );
 
     // Restore ETP data

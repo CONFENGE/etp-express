@@ -105,7 +105,7 @@ export class PerplexityService {
     return results;
   }
 
-  private getMockResults(query: string): PerplexityResponse {
+  private getMockResults(_query: string): PerplexityResponse {
     this.logger.warn("Using mock results due to API failure");
 
     return {
@@ -138,7 +138,7 @@ export class PerplexityService {
 
   async searchSimilarContracts(
     objeto: string,
-    filters?: any,
+    _filters?: any,
   ): Promise<PerplexityResponse> {
     const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
     Inclua informações sobre:

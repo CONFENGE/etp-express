@@ -195,7 +195,7 @@ export class ExportService {
 
   private formatContent(content: string): string {
     // Convert markdown-like formatting to HTML
-    let formatted = content
+    const formatted = content
       .replace(/\n\n/g, "</p><p>")
       .replace(/\n/g, "<br>")
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
