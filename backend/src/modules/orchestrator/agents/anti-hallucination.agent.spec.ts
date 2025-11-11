@@ -18,14 +18,15 @@ describe("AntiHallucinationAgent", () => {
 
   describe("check() - Teste 1: Detecta referências a leis e decretos", () => {
     it("deve detectar referência a lei", async () => {
-      const content = "Conforme a Lei nº 8.666/93, as licitações devem seguir...";
+      const content =
+        "Conforme a Lei nº 8.666/93, as licitações devem seguir...";
       const result = await agent.check(content);
 
       expect(result.suspiciousElements.length).toBeGreaterThan(0);
       expect(result.warnings.length).toBeGreaterThan(0);
 
-      const legalReference = result.suspiciousElements.find(
-        (el) => el.reason.includes("Referência a norma legal"),
+      const legalReference = result.suspiciousElements.find((el) =>
+        el.reason.includes("Referência a norma legal"),
       );
       expect(legalReference).toBeDefined();
       expect(legalReference?.severity).toBe("high");
@@ -38,8 +39,8 @@ describe("AntiHallucinationAgent", () => {
 
       expect(result.suspiciousElements.length).toBeGreaterThan(0);
 
-      const decreeReference = result.suspiciousElements.find(
-        (el) => el.reason.includes("Referência a norma legal"),
+      const decreeReference = result.suspiciousElements.find((el) =>
+        el.reason.includes("Referência a norma legal"),
       );
       expect(decreeReference).toBeDefined();
       expect(decreeReference?.severity).toBe("high");
@@ -51,15 +52,16 @@ describe("AntiHallucinationAgent", () => {
 
       expect(result.suspiciousElements.length).toBeGreaterThan(0);
 
-      const articleReference = result.suspiciousElements.find(
-        (el) => el.reason.includes("Referência a artigo de lei"),
+      const articleReference = result.suspiciousElements.find((el) =>
+        el.reason.includes("Referência a artigo de lei"),
       );
       expect(articleReference).toBeDefined();
       expect(articleReference?.severity).toBe("high");
     });
 
     it("deve detectar múltiplas referências legais", async () => {
-      const content = "A Lei 14.133 e o Decreto 11.462 estabelecem que o Art. 5º...";
+      const content =
+        "A Lei 14.133 e o Decreto 11.462 estabelecem que o Art. 5º...";
       const result = await agent.check(content);
 
       expect(result.suspiciousElements.length).toBeGreaterThanOrEqual(3);
@@ -78,8 +80,8 @@ describe("AntiHallucinationAgent", () => {
 
       expect(result.suspiciousElements.length).toBeGreaterThan(0);
 
-      const prohibitedClaim = result.suspiciousElements.find(
-        (el) => el.reason.includes("Afirmação categórica"),
+      const prohibitedClaim = result.suspiciousElements.find((el) =>
+        el.reason.includes("Afirmação categórica"),
       );
       expect(prohibitedClaim).toBeDefined();
       expect(prohibitedClaim?.severity).toBe("medium");
@@ -94,11 +96,12 @@ describe("AntiHallucinationAgent", () => {
     });
 
     it("deve detectar 'é fato que'", async () => {
-      const content = "É fato que este processo reduz custos significativamente.";
+      const content =
+        "É fato que este processo reduz custos significativamente.";
       const result = await agent.check(content);
 
-      const factClaim = result.suspiciousElements.find(
-        (el) => el.element.toLowerCase().includes("é fato que"),
+      const factClaim = result.suspiciousElements.find((el) =>
+        el.element.toLowerCase().includes("é fato que"),
       );
       expect(factClaim).toBeDefined();
     });
@@ -107,8 +110,8 @@ describe("AntiHallucinationAgent", () => {
       const content = "Certamente, sem dúvida, é fato que todos sabem.";
       const result = await agent.check(content);
 
-      const categoricalClaims = result.suspiciousElements.filter(
-        (el) => el.reason.includes("Afirmação categórica"),
+      const categoricalClaims = result.suspiciousElements.filter((el) =>
+        el.reason.includes("Afirmação categórica"),
       );
       expect(categoricalClaims.length).toBeGreaterThanOrEqual(3);
     });
@@ -128,8 +131,8 @@ describe("AntiHallucinationAgent", () => {
 
       expect(result.suspiciousElements.length).toBeGreaterThan(0);
 
-      const monetaryValue = result.suspiciousElements.find(
-        (el) => el.reason.includes("Valor monetário específico"),
+      const monetaryValue = result.suspiciousElements.find((el) =>
+        el.reason.includes("Valor monetário específico"),
       );
       expect(monetaryValue).toBeDefined();
       expect(monetaryValue?.severity).toBe("medium");
@@ -139,18 +142,19 @@ describe("AntiHallucinationAgent", () => {
       const content = "Isso representa 85% do orçamento e 2 milhões de reais.";
       const result = await agent.check(content);
 
-      const numericWarning = result.suspiciousElements.find(
-        (el) => el.reason.includes("Números específicos sem fonte"),
+      const numericWarning = result.suspiciousElements.find((el) =>
+        el.reason.includes("Números específicos sem fonte"),
       );
       expect(numericWarning).toBeDefined();
     });
 
     it("NÃO deve alertar se houver fonte citada", async () => {
-      const content = "Segundo o relatório do TCU, o valor é de 85% do orçamento.";
+      const content =
+        "Segundo o relatório do TCU, o valor é de 85% do orçamento.";
       const result = await agent.check(content);
 
-      const numericWarning = result.suspiciousElements.find(
-        (el) => el.reason.includes("Números específicos sem fonte"),
+      const numericWarning = result.suspiciousElements.find((el) =>
+        el.reason.includes("Números específicos sem fonte"),
       );
       expect(numericWarning).toBeUndefined();
     });
@@ -159,8 +163,8 @@ describe("AntiHallucinationAgent", () => {
       const content = "Conforme dados oficiais, representa 75% do total.";
       const result = await agent.check(content);
 
-      const numericWarning = result.suspiciousElements.find(
-        (el) => el.reason.includes("Números específicos sem fonte"),
+      const numericWarning = result.suspiciousElements.find((el) =>
+        el.reason.includes("Números específicos sem fonte"),
       );
       expect(numericWarning).toBeUndefined();
     });
@@ -239,7 +243,9 @@ describe("AntiHallucinationAgent", () => {
       const problematicContent = "Lei 8.666, certamente, sem dúvida.";
       const problematicResult = await agent.check(problematicContent);
 
-      expect(cleanResult.confidence).toBeGreaterThan(problematicResult.confidence);
+      expect(cleanResult.confidence).toBeGreaterThan(
+        problematicResult.confidence,
+      );
     });
   });
 
@@ -312,8 +318,8 @@ describe("AntiHallucinationAgent", () => {
       const content = "Processo nº 12345/2023-45 está em andamento.";
       const result = await agent.check(content);
 
-      const processNumber = result.suspiciousElements.find(
-        (el) => el.reason.includes("Número de processo"),
+      const processNumber = result.suspiciousElements.find((el) =>
+        el.reason.includes("Número de processo"),
       );
       expect(processNumber).toBeDefined();
       expect(processNumber?.severity).toBe("high");
@@ -323,8 +329,8 @@ describe("AntiHallucinationAgent", () => {
       const content = "Conforme TCU, segundo CNJ, o processo deve...";
       const result = await agent.check(content);
 
-      const controlOrgan = result.suspiciousElements.find(
-        (el) => el.reason.includes("Citação de órgão de controle"),
+      const controlOrgan = result.suspiciousElements.find((el) =>
+        el.reason.includes("Citação de órgão de controle"),
       );
       expect(controlOrgan).toBeDefined();
       expect(controlOrgan?.severity).toBe("high");
@@ -332,7 +338,8 @@ describe("AntiHallucinationAgent", () => {
 
     it("deve alertar sobre texto muito assertivo", async () => {
       // Conteúdo com múltiplos elementos suspeitos e sem palavras de hedge
-      const content = "A Lei 8.666 estabelece que o artigo 23 define processo 123/2023 conforme TCU determina valores.";
+      const content =
+        "A Lei 8.666 estabelece que o artigo 23 define processo 123/2023 conforme TCU determina valores.";
       const result = await agent.check(content);
 
       // Verifica que há múltiplos elementos suspeitos (>3) necessários para o alerta
