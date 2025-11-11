@@ -98,9 +98,7 @@ describe("OrchestratorService", () => {
         .fn()
         .mockImplementation((prompt: string) => Promise.resolve(prompt)),
       analyze: jest.fn().mockResolvedValue(mockFundamentacaoResult),
-      getSystemPrompt: jest
-        .fn()
-        .mockReturnValue("Regras de fundamentação..."),
+      getSystemPrompt: jest.fn().mockReturnValue("Regras de fundamentação..."),
     };
 
     const mockClarezaAgentInstance = {
@@ -115,9 +113,7 @@ describe("OrchestratorService", () => {
         .mockImplementation((content: string) =>
           Promise.resolve(`${content} [simplificado]`),
         ),
-      getSystemPrompt: jest
-        .fn()
-        .mockReturnValue("Regras de simplificação..."),
+      getSystemPrompt: jest.fn().mockReturnValue("Regras de simplificação..."),
     };
 
     const mockAntiHallucinationAgentInstance = {
@@ -125,9 +121,7 @@ describe("OrchestratorService", () => {
       generateSafetyPrompt: jest
         .fn()
         .mockResolvedValue("⚠️ NÃO invente números de leis..."),
-      getSystemPrompt: jest
-        .fn()
-        .mockReturnValue("Regras anti-alucinação..."),
+      getSystemPrompt: jest.fn().mockReturnValue("Regras anti-alucinação..."),
     };
 
     const module: TestingModule = await Test.createTestingModule({
