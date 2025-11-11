@@ -84,9 +84,8 @@ describe("FundamentacaoAgent", () => {
       `;
 
       // Act
-      const result: FundamentacaoResult = await agent.analyze(
-        contentWithNumbers,
-      );
+      const result: FundamentacaoResult =
+        await agent.analyze(contentWithNumbers);
 
       // Assert
       expect(result).toBeDefined();
@@ -247,9 +246,7 @@ describe("FundamentacaoAgent", () => {
       `;
 
       // Act
-      const result: FundamentacaoResult = await agent.analyze(
-        contentMixedCase,
-      );
+      const result: FundamentacaoResult = await agent.analyze(contentMixedCase);
 
       // Assert
       expect(result.hasNecessidade).toBe(true);
