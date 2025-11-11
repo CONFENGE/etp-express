@@ -41,7 +41,7 @@ export class AuthService {
     // Update last login
     await this.usersService.updateLastLogin(user.id);
 
-    const { password: _, ...result } = user;
+    const { password: _password, ...result } = user;
     return result;
   }
 
