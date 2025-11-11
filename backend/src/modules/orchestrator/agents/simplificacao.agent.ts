@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 
 export interface SimplificacaoResult {
   originalLength: number;
@@ -16,33 +16,33 @@ export class SimplificacaoAgent {
     phrase: RegExp;
     suggestion: string;
   }> = [
-    { phrase: /tendo em vista que/gi, suggestion: "porque" },
-    { phrase: /no sentido de/gi, suggestion: "para" },
-    { phrase: /com vistas a/gi, suggestion: "para" },
-    { phrase: /a fim de/gi, suggestion: "para" },
-    { phrase: /faz-se necessário/gi, suggestion: "é necessário" },
-    { phrase: /proceder à/gi, suggestion: "fazer" },
-    { phrase: /efetuar o/gi, suggestion: "fazer o" },
-    { phrase: /realizar a/gi, suggestion: "fazer a" },
-    { phrase: /através de/gi, suggestion: "por meio de" },
-    { phrase: /de forma a/gi, suggestion: "para" },
-    { phrase: /no âmbito de/gi, suggestion: "em" },
-    { phrase: /em razão de/gi, suggestion: "por causa de" },
+    { phrase: /tendo em vista que/gi, suggestion: 'porque' },
+    { phrase: /no sentido de/gi, suggestion: 'para' },
+    { phrase: /com vistas a/gi, suggestion: 'para' },
+    { phrase: /a fim de/gi, suggestion: 'para' },
+    { phrase: /faz-se necessário/gi, suggestion: 'é necessário' },
+    { phrase: /proceder à/gi, suggestion: 'fazer' },
+    { phrase: /efetuar o/gi, suggestion: 'fazer o' },
+    { phrase: /realizar a/gi, suggestion: 'fazer a' },
+    { phrase: /através de/gi, suggestion: 'por meio de' },
+    { phrase: /de forma a/gi, suggestion: 'para' },
+    { phrase: /no âmbito de/gi, suggestion: 'em' },
+    { phrase: /em razão de/gi, suggestion: 'por causa de' },
   ];
 
   private readonly redundancies: Array<{ phrase: RegExp; suggestion: string }> =
     [
-      { phrase: /planejar antecipadamente/gi, suggestion: "planejar" },
-      { phrase: /elo de ligação/gi, suggestion: "ligação" },
-      { phrase: /fato real/gi, suggestion: "fato" },
-      { phrase: /certeza absoluta/gi, suggestion: "certeza" },
-      { phrase: /totalmente completo/gi, suggestion: "completo" },
-      { phrase: /repetir novamente/gi, suggestion: "repetir" },
-      { phrase: /conclusão final/gi, suggestion: "conclusão" },
+      { phrase: /planejar antecipadamente/gi, suggestion: 'planejar' },
+      { phrase: /elo de ligação/gi, suggestion: 'ligação' },
+      { phrase: /fato real/gi, suggestion: 'fato' },
+      { phrase: /certeza absoluta/gi, suggestion: 'certeza' },
+      { phrase: /totalmente completo/gi, suggestion: 'completo' },
+      { phrase: /repetir novamente/gi, suggestion: 'repetir' },
+      { phrase: /conclusão final/gi, suggestion: 'conclusão' },
     ];
 
   async analyze(content: string): Promise<SimplificacaoResult> {
-    this.logger.log("Analyzing text for simplification opportunities");
+    this.logger.log('Analyzing text for simplification opportunities');
 
     const simplifiedSuggestions: string[] = [];
     const redundancies: string[] = [];
@@ -88,11 +88,11 @@ export class SimplificacaoAgent {
 
     // Check for nominalization (verbs turned into nouns)
     const nominalizations = [
-      { noun: /realização/gi, verb: "realizar" },
-      { noun: /implementação/gi, verb: "implementar" },
-      { noun: /utilização/gi, verb: "utilizar" },
-      { noun: /elaboração/gi, verb: "elaborar" },
-      { noun: /execução/gi, verb: "executar" },
+      { noun: /realização/gi, verb: 'realizar' },
+      { noun: /implementação/gi, verb: 'implementar' },
+      { noun: /utilização/gi, verb: 'utilizar' },
+      { noun: /elaboração/gi, verb: 'elaborar' },
+      { noun: /execução/gi, verb: 'executar' },
     ];
 
     nominalizations.forEach(({ noun, verb }) => {

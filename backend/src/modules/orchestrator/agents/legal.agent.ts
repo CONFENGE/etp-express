@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 
 export interface LegalValidationResult {
   isCompliant: boolean;
@@ -13,43 +13,43 @@ export class LegalAgent {
   private readonly logger = new Logger(LegalAgent.name);
 
   private readonly legalReferences = [
-    "Lei 14.133/2021 - Nova Lei de Licitações",
-    "Lei 8.666/1993 - Lei de Licitações (revogada parcialmente)",
-    "IN SEGES/ME nº 40/2020 - ETP",
-    "IN SEGES/ME nº 65/2021 - Contratações TI",
-    "Decreto 10.024/2019 - Licitações eletrônicas",
+    'Lei 14.133/2021 - Nova Lei de Licitações',
+    'Lei 8.666/1993 - Lei de Licitações (revogada parcialmente)',
+    'IN SEGES/ME nº 40/2020 - ETP',
+    'IN SEGES/ME nº 65/2021 - Contratações TI',
+    'Decreto 10.024/2019 - Licitações eletrônicas',
   ];
 
   async validate(
     content: string,
     context?: any,
   ): Promise<LegalValidationResult> {
-    this.logger.log("Validating legal compliance");
+    this.logger.log('Validating legal compliance');
 
     const issues: string[] = [];
     const recommendations: string[] = [];
     const relevantReferences: string[] = [];
 
     // Check for Lei 14.133/2021 references
-    if (!content.includes("14.133") && !content.includes("Lei de Licitações")) {
-      issues.push("Falta referência explícita à Lei 14.133/2021");
-      recommendations.push("Inclua referência à Lei 14.133/2021 no documento");
+    if (!content.includes('14.133') && !content.includes('Lei de Licitações')) {
+      issues.push('Falta referência explícita à Lei 14.133/2021');
+      recommendations.push('Inclua referência à Lei 14.133/2021 no documento');
       relevantReferences.push(this.legalReferences[0]);
     }
 
     // Check for justification presence
-    if (!content.toLowerCase().includes("justificativa")) {
-      issues.push("Seção de justificativa pode estar ausente ou incompleta");
+    if (!content.toLowerCase().includes('justificativa')) {
+      issues.push('Seção de justificativa pode estar ausente ou incompleta');
       recommendations.push(
-        "Garanta que a justificativa esteja clara e completa conforme Art. 18 da Lei 14.133/2021",
+        'Garanta que a justificativa esteja clara e completa conforme Art. 18 da Lei 14.133/2021',
       );
     }
 
     // Check for minimum required elements
     const requiredElements = [
-      { keyword: "objeto", message: "Descrição do objeto da contratação" },
-      { keyword: "necessidade", message: "Necessidade da contratação" },
-      { keyword: "valor", message: "Estimativa de valor" },
+      { keyword: 'objeto', message: 'Descrição do objeto da contratação' },
+      { keyword: 'necessidade', message: 'Necessidade da contratação' },
+      { keyword: 'valor', message: 'Estimativa de valor' },
     ];
 
     requiredElements.forEach(({ keyword, message }) => {
@@ -60,12 +60,12 @@ export class LegalAgent {
 
     // Check for technical requirements (IN SEGES 40/2020)
     if (
-      context?.type === "requisitos" ||
-      content.toLowerCase().includes("requisito")
+      context?.type === 'requisitos' ||
+      content.toLowerCase().includes('requisito')
     ) {
-      if (!content.toLowerCase().includes("técnico")) {
+      if (!content.toLowerCase().includes('técnico')) {
         recommendations.push(
-          "Especifique requisitos técnicos conforme IN SEGES/ME nº 40/2020",
+          'Especifique requisitos técnicos conforme IN SEGES/ME nº 40/2020',
         );
         relevantReferences.push(this.legalReferences[2]);
       }
@@ -125,7 +125,7 @@ export class LegalAgent {
 - Incluir metodologia de cálculo`,
     };
 
-    return contexts[sectionType] || "Base legal: Lei 14.133/2021";
+    return contexts[sectionType] || 'Base legal: Lei 14.133/2021';
   }
 
   getSystemPrompt(): string {

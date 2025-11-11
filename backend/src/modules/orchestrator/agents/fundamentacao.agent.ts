@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 
 export interface FundamentacaoResult {
   score: number;
@@ -14,67 +14,67 @@ export class FundamentacaoAgent {
   private readonly logger = new Logger(FundamentacaoAgent.name);
 
   async analyze(content: string): Promise<FundamentacaoResult> {
-    this.logger.log("Analyzing fundamentação quality");
+    this.logger.log('Analyzing fundamentação quality');
 
     const hasNecessidade = this.checkForElement(content, [
-      "necessário",
-      "necessidade",
-      "demanda",
-      "carência",
-      "deficiência",
+      'necessário',
+      'necessidade',
+      'demanda',
+      'carência',
+      'deficiência',
     ]);
 
     const hasInteressePublico = this.checkForElement(content, [
-      "interesse público",
-      "benefício público",
-      "sociedade",
-      "cidadão",
-      "comunidade",
+      'interesse público',
+      'benefício público',
+      'sociedade',
+      'cidadão',
+      'comunidade',
     ]);
 
     const hasBeneficios = this.checkForElement(content, [
-      "benefício",
-      "vantagem",
-      "ganho",
-      "melhoria",
-      "aprimoramento",
+      'benefício',
+      'vantagem',
+      'ganho',
+      'melhoria',
+      'aprimoramento',
     ]);
 
     const hasRiscos = this.checkForElement(content, [
-      "risco",
-      "problema",
-      "consequência",
-      "impacto negativo",
-      "não contratar",
+      'risco',
+      'problema',
+      'consequência',
+      'impacto negativo',
+      'não contratar',
     ]);
 
     const suggestions: string[] = [];
 
     if (!hasNecessidade) {
       suggestions.push(
-        "Detalhe melhor a necessidade que motivou a contratação",
+        'Detalhe melhor a necessidade que motivou a contratação',
       );
     }
 
     if (!hasInteressePublico) {
       suggestions.push(
-        "Explicite como a contratação atende ao interesse público",
+        'Explicite como a contratação atende ao interesse público',
       );
     }
 
     if (!hasBeneficios) {
-      suggestions.push("Liste os benefícios esperados com a contratação");
+      suggestions.push('Liste os benefícios esperados com a contratação');
     }
 
     if (!hasRiscos) {
-      suggestions.push("Mencione os riscos de não realizar a contratação");
+      suggestions.push('Mencione os riscos de não realizar a contratação');
     }
 
     // Check for quantification
     const hasNumbers = /\d+/.test(content);
     if (!hasNumbers) {
       suggestions.push(
-        "Considere adicionar dados quantitativos para fortalecer a fundamentação",
+        'Considere adicionar dados quantitativos para fortalecer a fundamentação',
       );
     }
 
@@ -82,7 +82,7 @@ export class FundamentacaoAgent {
     const wordCount = content.split(/\s+/).length;
     if (wordCount < 100) {
       suggestions.push(
-        "A fundamentação parece muito breve. Considere expandir com mais detalhes",
+        'A fundamentação parece muito breve. Considere expandir com mais detalhes',
       );
     }
 
