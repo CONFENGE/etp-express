@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 
 export interface HallucinationCheckResult {
   score: number;
@@ -7,7 +7,7 @@ export interface HallucinationCheckResult {
   suspiciousElements: Array<{
     element: string;
     reason: string;
-    severity: "low" | "medium" | "high";
+    severity: 'low' | 'medium' | 'high';
   }>;
   verified: boolean;
 }
@@ -19,58 +19,58 @@ export class AntiHallucinationAgent {
   private readonly suspiciousPatterns = [
     {
       pattern: /(?:lei|decreto|portaria|instrução normativa)\s+n?[º°]?\s*\d+/gi,
-      description: "Referência a norma legal",
-      severity: "high" as const,
+      description: 'Referência a norma legal',
+      severity: 'high' as const,
     },
     {
       pattern: /artigo\s+\d+|art\.\s*\d+/gi,
-      description: "Referência a artigo de lei",
-      severity: "high" as const,
+      description: 'Referência a artigo de lei',
+      severity: 'high' as const,
     },
     {
       pattern: /\d{1,3}[.,]\d{3}[.,]\d{3}[.,]\d{2}/g,
-      description: "Valor monetário específico",
-      severity: "medium" as const,
+      description: 'Valor monetário específico',
+      severity: 'medium' as const,
     },
     {
       pattern: /(?:em|no ano de|ano)\s+\d{4}/gi,
-      description: "Referência a ano/data específica",
-      severity: "medium" as const,
+      description: 'Referência a ano/data específica',
+      severity: 'medium' as const,
     },
     {
       pattern: /processo\s+n?[º°]?\s*[\d\/\-\.]+/gi,
-      description: "Número de processo",
-      severity: "high" as const,
+      description: 'Número de processo',
+      severity: 'high' as const,
     },
     {
       pattern: /(?:conforme|segundo)\s+(?:TCU|CNJ|AGU|STF|STJ)/gi,
-      description: "Citação de órgão de controle",
-      severity: "high" as const,
+      description: 'Citação de órgão de controle',
+      severity: 'high' as const,
     },
   ];
 
   private readonly prohibitedClaims = [
-    "melhor do mercado",
-    "único capaz",
-    "comprovadamente superior",
-    "indiscutivelmente",
-    "certamente",
-    "sem dúvida",
-    "é fato que",
-    "todos sabem",
+    'melhor do mercado',
+    'único capaz',
+    'comprovadamente superior',
+    'indiscutivelmente',
+    'certamente',
+    'sem dúvida',
+    'é fato que',
+    'todos sabem',
   ];
 
   async check(
     content: string,
     _context?: any,
   ): Promise<HallucinationCheckResult> {
-    this.logger.log("Checking for potential hallucinations");
+    this.logger.log('Checking for potential hallucinations');
 
     const warnings: string[] = [];
     const suspiciousElements: Array<{
       element: string;
       reason: string;
-      severity: "low" | "medium" | "high";
+      severity: 'low' | 'medium' | 'high';
     }> = [];
 
     // Check for suspicious patterns
@@ -90,14 +90,14 @@ export class AntiHallucinationAgent {
 
     // Check for prohibited claims
     this.prohibitedClaims.forEach((claim) => {
-      const regex = new RegExp(claim, "gi");
+      const regex = new RegExp(claim, 'gi');
       const matches = content.match(regex);
       if (matches && matches.length > 0) {
         matches.forEach((match) => {
           suspiciousElements.push({
             element: match,
-            reason: "Afirmação categórica sem fundamentação",
-            severity: "medium",
+            reason: 'Afirmação categórica sem fundamentação',
+            severity: 'medium',
           });
           warnings.push(`Evite afirmações categóricas como: "${match}"`);
         });
@@ -111,26 +111,26 @@ export class AntiHallucinationAgent {
 
     if (hasSpecificNumbers && !hasSources) {
       warnings.push(
-        "Dados numéricos específicos detectados sem citação de fonte. Adicione referências.",
+        'Dados numéricos específicos detectados sem citação de fonte. Adicione referências.',
       );
       suspiciousElements.push({
-        element: "Dados numéricos",
-        reason: "Números específicos sem fonte citada",
-        severity: "medium",
+        element: 'Dados numéricos',
+        reason: 'Números específicos sem fonte citada',
+        severity: 'medium',
       });
     }
 
     // Check for vague or hedging language (good in this context)
     const hedgeWords = [
-      "aproximadamente",
-      "cerca de",
-      "estima-se",
-      "pode",
-      "possivelmente",
-      "geralmente",
+      'aproximadamente',
+      'cerca de',
+      'estima-se',
+      'pode',
+      'possivelmente',
+      'geralmente',
     ];
     const hedgeCount = hedgeWords.reduce((count, word) => {
-      const regex = new RegExp(`\\b${word}\\b`, "gi");
+      const regex = new RegExp(`\\b${word}\\b`, 'gi');
       return count + (content.match(regex) || []).length;
     }, 0);
 
@@ -140,16 +140,16 @@ export class AntiHallucinationAgent {
 
     if (hedgeRatio < 0.01 && suspiciousElements.length > 3) {
       warnings.push(
-        "Texto muito assertivo para conteúdo gerado por IA. Considere adicionar linguagem que indique estimativas quando apropriado.",
+        'Texto muito assertivo para conteúdo gerado por IA. Considere adicionar linguagem que indique estimativas quando apropriado.',
       );
     }
 
     // Calculate confidence score
     const highSeverityCount = suspiciousElements.filter(
-      (e) => e.severity === "high",
+      (e) => e.severity === 'high',
     ).length;
     const mediumSeverityCount = suspiciousElements.filter(
-      (e) => e.severity === "medium",
+      (e) => e.severity === 'medium',
     ).length;
 
     // Higher penalties for high severity items

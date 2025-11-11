@@ -1,9 +1,9 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { EtpVersion } from "../../entities/etp-version.entity";
-import { Etp } from "../../entities/etp.entity";
-import { EtpSection } from "../../entities/etp-section.entity";
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EtpVersion } from '../../entities/etp-version.entity';
+import { Etp } from '../../entities/etp.entity';
+import { EtpSection } from '../../entities/etp-section.entity';
 
 @Injectable()
 export class VersionsService {
@@ -28,7 +28,7 @@ export class VersionsService {
     // Get ETP with all sections
     const etp = await this.etpsRepository.findOne({
       where: { id: etpId },
-      relations: ["sections", "createdBy"],
+      relations: ['sections', 'createdBy'],
     });
 
     if (!etp) {
@@ -38,7 +38,7 @@ export class VersionsService {
     // Get current version number
     const latestVersion = await this.versionsRepository.findOne({
       where: { etpId },
-      order: { versionNumber: "DESC" },
+      order: { versionNumber: 'DESC' },
     });
 
     const newVersionNumber = latestVersion
@@ -69,8 +69,8 @@ export class VersionsService {
       etpId,
       versionNumber: newVersionNumber,
       snapshot,
-      changeLog: changeLog || "Snapshot automático",
-      createdByName: etp.createdBy?.name || "Sistema",
+      changeLog: changeLog || 'Snapshot automático',
+      createdByName: etp.createdBy?.name || 'Sistema',
     });
 
     const savedVersion = await this.versionsRepository.save(version);
@@ -87,7 +87,7 @@ export class VersionsService {
   async getVersions(etpId: string): Promise<EtpVersion[]> {
     return this.versionsRepository.find({
       where: { etpId },
-      order: { versionNumber: "DESC" },
+      order: { versionNumber: 'DESC' },
     });
   }
 
@@ -130,7 +130,7 @@ export class VersionsService {
       },
       differences,
       disclaimer:
-        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
+        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
     };
   }
 
@@ -141,7 +141,7 @@ export class VersionsService {
 
     const etp = await this.etpsRepository.findOne({
       where: { id: version.etpId },
-      relations: ["sections"],
+      relations: ['sections'],
     });
 
     if (!etp) {

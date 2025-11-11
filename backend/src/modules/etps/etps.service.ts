@@ -3,16 +3,16 @@ import {
   NotFoundException,
   Logger,
   ForbiddenException,
-} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Etp, EtpStatus } from "../../entities/etp.entity";
-import { CreateEtpDto } from "./dto/create-etp.dto";
-import { UpdateEtpDto } from "./dto/update-etp.dto";
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Etp, EtpStatus } from '../../entities/etp.entity';
+import { CreateEtpDto } from './dto/create-etp.dto';
+import { UpdateEtpDto } from './dto/update-etp.dto';
 import {
   PaginationDto,
   createPaginatedResult,
-} from "../../common/dto/pagination.dto";
+} from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class EtpsService {
@@ -43,15 +43,15 @@ export class EtpsService {
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.etpsRepository
-      .createQueryBuilder("etp")
-      .leftJoinAndSelect("etp.createdBy", "user");
+      .createQueryBuilder('etp')
+      .leftJoinAndSelect('etp.createdBy', 'user');
 
     if (userId) {
-      queryBuilder.where("etp.createdById = :userId", { userId });
+      queryBuilder.where('etp.createdById = :userId', { userId });
     }
 
     const [etps, total] = await queryBuilder
-      .orderBy("etp.updatedAt", "DESC")
+      .orderBy('etp.updatedAt', 'DESC')
       .skip(skip)
       .take(limit)
       .getManyAndCount();
@@ -62,10 +62,10 @@ export class EtpsService {
   async findOne(id: string, userId?: string): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
-      relations: ["createdBy", "sections", "versions"],
+      relations: ['createdBy', 'sections', 'versions'],
       order: {
-        sections: { order: "ASC" },
-        versions: { createdAt: "DESC" },
+        sections: { order: 'ASC' },
+        versions: { createdAt: 'DESC' },
       },
     });
 
@@ -95,7 +95,7 @@ export class EtpsService {
     // Check ownership
     if (etp.createdById !== userId) {
       throw new ForbiddenException(
-        "Você não tem permissão para editar este ETP",
+        'Você não tem permissão para editar este ETP',
       );
     }
 
@@ -116,7 +116,7 @@ export class EtpsService {
 
     if (etp.createdById !== userId) {
       throw new ForbiddenException(
-        "Você não tem permissão para alterar o status deste ETP",
+        'Você não tem permissão para alterar o status deste ETP',
       );
     }
 
@@ -131,7 +131,7 @@ export class EtpsService {
   async updateCompletionPercentage(id: string): Promise<void> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
-      relations: ["sections"],
+      relations: ['sections'],
     });
 
     if (!etp) {
@@ -144,9 +144,9 @@ export class EtpsService {
     } else {
       const completedSections = etp.sections.filter(
         (s) =>
-          s.status === "generated" ||
-          s.status === "reviewed" ||
-          s.status === "approved",
+          s.status === 'generated' ||
+          s.status === 'reviewed' ||
+          s.status === 'approved',
       ).length;
       etp.completionPercentage = (completedSections / totalSections) * 100;
     }
@@ -159,7 +159,7 @@ export class EtpsService {
 
     if (etp.createdById !== userId) {
       throw new ForbiddenException(
-        "Você não tem permissão para deletar este ETP",
+        'Você não tem permissão para deletar este ETP',
       );
     }
 
@@ -168,22 +168,22 @@ export class EtpsService {
   }
 
   async getStatistics(userId?: string) {
-    const queryBuilder = this.etpsRepository.createQueryBuilder("etp");
+    const queryBuilder = this.etpsRepository.createQueryBuilder('etp');
 
     if (userId) {
-      queryBuilder.where("etp.createdById = :userId", { userId });
+      queryBuilder.where('etp.createdById = :userId', { userId });
     }
 
     const total = await queryBuilder.getCount();
 
     const byStatus = await queryBuilder
-      .select("etp.status", "status")
-      .addSelect("COUNT(*)", "count")
-      .groupBy("etp.status")
+      .select('etp.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('etp.status')
       .getRawMany();
 
     const avgCompletion = await queryBuilder
-      .select("AVG(etp.completionPercentage)", "avgCompletion")
+      .select('AVG(etp.completionPercentage)', 'avgCompletion')
       .getRawOne();
 
     return {
@@ -193,7 +193,7 @@ export class EtpsService {
         return acc;
       }, {}),
       averageCompletion: parseFloat(
-        avgCompletion?.avgCompletion || "0",
+        avgCompletion?.avgCompletion || '0',
       ).toFixed(2),
     };
   }

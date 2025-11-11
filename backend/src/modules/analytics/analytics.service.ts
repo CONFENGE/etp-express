@@ -1,7 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Between } from "typeorm";
-import { AnalyticsEvent } from "../../entities/analytics-event.entity";
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Between } from 'typeorm';
+import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 
 @Injectable()
 export class AnalyticsService {
@@ -29,14 +29,14 @@ export class AnalyticsService {
         etpId,
         sessionId: request?.sessionID,
         ipAddress: request?.ip,
-        userAgent: request?.get?.("user-agent"),
-        referer: request?.get?.("referer"),
+        userAgent: request?.get?.('user-agent'),
+        referer: request?.get?.('referer'),
       });
 
       await this.analyticsRepository.save(event);
       this.logger.debug(`Event tracked: ${eventType}.${eventName}`);
     } catch (error) {
-      this.logger.error("Error tracking event:", error);
+      this.logger.error('Error tracking event:', error);
       // Don't throw - analytics should not break the application
     }
   }
@@ -44,7 +44,7 @@ export class AnalyticsService {
   async getEventsByUser(userId: string, limit: number = 100) {
     return this.analyticsRepository.find({
       where: { userId },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
       take: limit,
     });
   }
@@ -52,7 +52,7 @@ export class AnalyticsService {
   async getEventsByEtp(etpId: string) {
     return this.analyticsRepository.find({
       where: { etpId },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -65,7 +65,7 @@ export class AnalyticsService {
 
     return this.analyticsRepository.find({
       where: query,
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -74,11 +74,11 @@ export class AnalyticsService {
     startDate.setDate(startDate.getDate() - days);
 
     const queryBuilder = this.analyticsRepository
-      .createQueryBuilder("event")
-      .where("event.createdAt >= :startDate", { startDate });
+      .createQueryBuilder('event')
+      .where('event.createdAt >= :startDate', { startDate });
 
     if (userId) {
-      queryBuilder.andWhere("event.userId = :userId", { userId });
+      queryBuilder.andWhere('event.userId = :userId', { userId });
     }
 
     // Total events
@@ -86,47 +86,47 @@ export class AnalyticsService {
 
     // Events by type
     const eventsByType = await this.analyticsRepository
-      .createQueryBuilder("event")
-      .select("event.eventType", "type")
-      .addSelect("COUNT(*)", "count")
-      .where("event.createdAt >= :startDate", { startDate })
-      .groupBy("event.eventType")
+      .createQueryBuilder('event')
+      .select('event.eventType', 'type')
+      .addSelect('COUNT(*)', 'count')
+      .where('event.createdAt >= :startDate', { startDate })
+      .groupBy('event.eventType')
       .getRawMany();
 
     // Most active users (if admin)
     let mostActiveUsers = [];
     if (!userId) {
       mostActiveUsers = await this.analyticsRepository
-        .createQueryBuilder("event")
-        .select("event.userId", "userId")
-        .addSelect("COUNT(*)", "count")
-        .where("event.createdAt >= :startDate", { startDate })
-        .andWhere("event.userId IS NOT NULL")
-        .groupBy("event.userId")
-        .orderBy("count", "DESC")
+        .createQueryBuilder('event')
+        .select('event.userId', 'userId')
+        .addSelect('COUNT(*)', 'count')
+        .where('event.createdAt >= :startDate', { startDate })
+        .andWhere('event.userId IS NOT NULL')
+        .groupBy('event.userId')
+        .orderBy('count', 'DESC')
         .limit(10)
         .getRawMany();
     }
 
     // Events by day
     const eventsByDay = await this.analyticsRepository
-      .createQueryBuilder("event")
-      .select("DATE(event.createdAt)", "date")
-      .addSelect("COUNT(*)", "count")
-      .where("event.createdAt >= :startDate", { startDate })
-      .groupBy("DATE(event.createdAt)")
-      .orderBy("date", "ASC")
+      .createQueryBuilder('event')
+      .select('DATE(event.createdAt)', 'date')
+      .addSelect('COUNT(*)', 'count')
+      .where('event.createdAt >= :startDate', { startDate })
+      .groupBy('DATE(event.createdAt)')
+      .orderBy('date', 'ASC')
       .getRawMany();
 
     // Average generation time
     const avgGenerationTime = await this.analyticsRepository
-      .createQueryBuilder("event")
+      .createQueryBuilder('event')
       .select(
         "AVG(CAST(event.properties->>'duration' AS INTEGER))",
-        "avgDuration",
+        'avgDuration',
       )
-      .where("event.eventType = :type", { type: "generation" })
-      .andWhere("event.createdAt >= :startDate", { startDate })
+      .where('event.eventType = :type', { type: 'generation' })
+      .andWhere('event.createdAt >= :startDate', { startDate })
       .getRawOne();
 
     return {
@@ -160,18 +160,18 @@ export class AnalyticsService {
     });
 
     const eventsByType = await this.analyticsRepository
-      .createQueryBuilder("event")
-      .select("event.eventName", "name")
-      .addSelect("COUNT(*)", "count")
-      .where("event.userId = :userId", { userId })
-      .andWhere("event.createdAt >= :startDate", { startDate })
-      .groupBy("event.eventName")
-      .orderBy("count", "DESC")
+      .createQueryBuilder('event')
+      .select('event.eventName', 'name')
+      .addSelect('COUNT(*)', 'count')
+      .where('event.userId = :userId', { userId })
+      .andWhere('event.createdAt >= :startDate', { startDate })
+      .groupBy('event.eventName')
+      .orderBy('count', 'DESC')
       .getRawMany();
 
     const recentActivity = await this.analyticsRepository.find({
       where: { userId },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
       take: 20,
     });
 
@@ -197,7 +197,7 @@ export class AnalyticsService {
 
     const errorEvents = await this.analyticsRepository.count({
       where: {
-        eventType: "error",
+        eventType: 'error',
         createdAt: Between(oneDayAgo, new Date()),
       },
     });
@@ -206,23 +206,23 @@ export class AnalyticsService {
 
     // Recent errors
     const recentErrors = await this.analyticsRepository.find({
-      where: { eventType: "error" },
-      order: { createdAt: "DESC" },
+      where: { eventType: 'error' },
+      order: { createdAt: 'DESC' },
       take: 10,
     });
 
     // Success rate for generations
     const totalGenerations = await this.analyticsRepository.count({
       where: {
-        eventType: "generation",
+        eventType: 'generation',
         createdAt: Between(oneDayAgo, new Date()),
       },
     });
 
     const successfulGenerations = await this.analyticsRepository
-      .createQueryBuilder("event")
-      .where("event.eventType = :type", { type: "generation" })
-      .andWhere("event.createdAt >= :date", { date: oneDayAgo })
+      .createQueryBuilder('event')
+      .where('event.eventType = :type', { type: 'generation' })
+      .andWhere('event.createdAt >= :date', { date: oneDayAgo })
       .andWhere("event.properties->>'success' = 'true'")
       .getCount();
 
@@ -232,7 +232,7 @@ export class AnalyticsService {
         : 0;
 
     return {
-      period: "24h",
+      period: '24h',
       errorRate: errorRate.toFixed(2),
       totalEvents,
       errorEvents,

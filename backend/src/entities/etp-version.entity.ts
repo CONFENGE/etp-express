@@ -5,18 +5,18 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
-} from "typeorm";
-import { Etp } from "./etp.entity";
+} from 'typeorm';
+import { Etp } from './etp.entity';
 
-@Entity("etp_versions")
+@Entity('etp_versions')
 export class EtpVersion {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   versionNumber: number;
 
-  @Column({ type: "jsonb" })
+  @Column({ type: 'jsonb' })
   snapshot: {
     title: string;
     description: string;
@@ -26,17 +26,17 @@ export class EtpVersion {
     metadata: any;
   };
 
-  @Column({ type: "text", nullable: true })
+  @Column({ type: 'text', nullable: true })
   changeLog: string;
 
   @Column({ nullable: true })
   createdByName: string;
 
-  @ManyToOne(() => Etp, (etp) => etp.versions, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "etp_id" })
+  @ManyToOne(() => Etp, (etp) => etp.versions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'etp_id' })
   etp: Etp;
 
-  @Column({ name: "etp_id" })
+  @Column({ name: 'etp_id' })
   etpId: string;
 
   @CreateDateColumn()
