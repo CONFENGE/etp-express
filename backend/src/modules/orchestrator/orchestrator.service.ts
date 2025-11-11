@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { OpenAIService, LLMRequest } from './llm/openai.service';
-import { LegalAgent } from './agents/legal.agent';
-import { FundamentacaoAgent } from './agents/fundamentacao.agent';
-import { ClarezaAgent } from './agents/clareza.agent';
-import { SimplificacaoAgent } from './agents/simplificacao.agent';
-import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { Injectable, Logger } from "@nestjs/common";
+import { OpenAIService, LLMRequest } from "./llm/openai.service";
+import { LegalAgent } from "./agents/legal.agent";
+import { FundamentacaoAgent } from "./agents/fundamentacao.agent";
+import { ClarezaAgent } from "./agents/clareza.agent";
+import { SimplificacaoAgent } from "./agents/simplificacao.agent";
+import { AntiHallucinationAgent } from "./agents/anti-hallucination.agent";
 
 export interface GenerationRequest {
   sectionType: string;
@@ -56,7 +56,7 @@ export class OrchestratorService {
     try {
       // 1. Build system prompt with all agents
       const systemPrompt = await this.buildSystemPrompt(request.sectionType);
-      agentsUsed.push('base-prompt');
+      agentsUsed.push("base-prompt");
 
       // 2. Enrich user prompt with legal context
       let enrichedUserPrompt = request.userInput;
@@ -64,22 +64,24 @@ export class OrchestratorService {
         enrichedUserPrompt,
         request.sectionType,
       );
-      agentsUsed.push('legal-context');
+      agentsUsed.push("legal-context");
 
       // 3. Add fundamentação guidance if applicable
       if (this.needsFundamentacao(request.sectionType)) {
-        enrichedUserPrompt = await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
-        agentsUsed.push('fundamentacao-guidance');
+        enrichedUserPrompt =
+          await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
+        agentsUsed.push("fundamentacao-guidance");
       }
 
       // 4. Add anti-hallucination safety prompt
-      const safetyPrompt = await this.antiHallucinationAgent.generateSafetyPrompt();
+      const safetyPrompt =
+        await this.antiHallucinationAgent.generateSafetyPrompt();
       const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
-      agentsUsed.push('anti-hallucination');
+      agentsUsed.push("anti-hallucination");
 
       // 5. Add ETP context if available
       if (request.etpData) {
-        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
+        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || "Não especificado"}`;
       }
 
       // 6. Generate content with LLM
@@ -90,31 +92,46 @@ export class OrchestratorService {
         maxTokens: 4000,
       };
 
-      const llmResponse = await this.openaiService.generateCompletion(llmRequest);
+      const llmResponse =
+        await this.openaiService.generateCompletion(llmRequest);
       let generatedContent = llmResponse.content;
 
       // 7. Post-processing: Simplification
-      const simplificationResult = await this.simplificacaoAgent.analyze(generatedContent);
-      agentsUsed.push('simplification-analysis');
+      const simplificationResult =
+        await this.simplificacaoAgent.analyze(generatedContent);
+      agentsUsed.push("simplification-analysis");
 
       if (simplificationResult.score < 70) {
         // Try to auto-simplify
-        generatedContent = await this.simplificacaoAgent.simplify(generatedContent);
-        warnings.push('Texto foi simplificado automaticamente. Revise para garantir correção.');
+        generatedContent =
+          await this.simplificacaoAgent.simplify(generatedContent);
+        warnings.push(
+          "Texto foi simplificado automaticamente. Revise para garantir correção.",
+        );
       }
 
       // 8. Validation: Run all agents
-      const [legalValidation, fundamentacaoValidation, clarezaValidation, hallucinationCheck] =
-        await Promise.all([
-          this.legalAgent.validate(generatedContent, { type: request.sectionType }),
-          this.needsFundamentacao(request.sectionType)
-            ? this.fundamentacaoAgent.analyze(generatedContent)
-            : Promise.resolve(null),
-          this.clarezaAgent.analyze(generatedContent),
-          this.antiHallucinationAgent.check(generatedContent, request.context),
-        ]);
+      const [
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      ] = await Promise.all([
+        this.legalAgent.validate(generatedContent, {
+          type: request.sectionType,
+        }),
+        this.needsFundamentacao(request.sectionType)
+          ? this.fundamentacaoAgent.analyze(generatedContent)
+          : Promise.resolve(null),
+        this.clarezaAgent.analyze(generatedContent),
+        this.antiHallucinationAgent.check(generatedContent, request.context),
+      ]);
 
-      agentsUsed.push('validation-legal', 'validation-clareza', 'validation-hallucination');
+      agentsUsed.push(
+        "validation-legal",
+        "validation-clareza",
+        "validation-hallucination",
+      );
 
       // 9. Collect warnings from validations
       if (!legalValidation.isCompliant) {
@@ -134,7 +151,8 @@ export class OrchestratorService {
       }
 
       // 10. Add mandatory disclaimer
-      generatedContent += '\n\n⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
+      generatedContent +=
+        "\n\n⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.";
 
       const generationTime = Date.now() - startTime;
 
@@ -159,10 +177,10 @@ export class OrchestratorService {
         },
         warnings: [...new Set(warnings)],
         disclaimer:
-          'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+          "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
       };
     } catch (error) {
-      this.logger.error('Error generating section:', error);
+      this.logger.error("Error generating section:", error);
       throw error;
     }
   }
@@ -185,7 +203,7 @@ Diretrizes gerais:
     const simplificacaoPrompt = this.simplificacaoAgent.getSystemPrompt();
     const hallucinationPrompt = this.antiHallucinationAgent.getSystemPrompt();
 
-    let sectionSpecificPrompt = '';
+    let sectionSpecificPrompt = "";
 
     if (this.needsFundamentacao(sectionType)) {
       sectionSpecificPrompt = this.fundamentacaoAgent.getSystemPrompt();
@@ -205,23 +223,29 @@ ${simplificacaoPrompt}
 ---
 ${hallucinationPrompt}
 
-${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
+${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ""}`;
   }
 
   private needsFundamentacao(sectionType: string): boolean {
-    return ['justificativa', 'introducao', 'descricao_solucao'].includes(sectionType);
+    return ["justificativa", "introducao", "descricao_solucao"].includes(
+      sectionType,
+    );
   }
 
   async validateContent(content: string, sectionType: string) {
-    this.logger.log('Validating existing content');
+    this.logger.log("Validating existing content");
 
-    const [legalValidation, clarezaValidation, simplificationAnalysis, hallucinationCheck] =
-      await Promise.all([
-        this.legalAgent.validate(content, { type: sectionType }),
-        this.clarezaAgent.analyze(content),
-        this.simplificacaoAgent.analyze(content),
-        this.antiHallucinationAgent.check(content),
-      ]);
+    const [
+      legalValidation,
+      clarezaValidation,
+      simplificationAnalysis,
+      hallucinationCheck,
+    ] = await Promise.all([
+      this.legalAgent.validate(content, { type: sectionType }),
+      this.clarezaAgent.analyze(content),
+      this.simplificacaoAgent.analyze(content),
+      this.antiHallucinationAgent.check(content),
+    ]);
 
     return {
       legal: legalValidation,

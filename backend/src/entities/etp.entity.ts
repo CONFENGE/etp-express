@@ -7,29 +7,29 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-} from 'typeorm';
-import { User } from './user.entity';
-import { EtpSection } from './etp-section.entity';
-import { EtpVersion } from './etp-version.entity';
-import { AuditLog } from './audit-log.entity';
+} from "typeorm";
+import { User } from "./user.entity";
+import { EtpSection } from "./etp-section.entity";
+import { EtpVersion } from "./etp-version.entity";
+import { AuditLog } from "./audit-log.entity";
 
 export enum EtpStatus {
-  DRAFT = 'draft',
-  IN_PROGRESS = 'in_progress',
-  REVIEW = 'review',
-  COMPLETED = 'completed',
-  ARCHIVED = 'archived',
+  DRAFT = "draft",
+  IN_PROGRESS = "in_progress",
+  REVIEW = "review",
+  COMPLETED = "completed",
+  ARCHIVED = "archived",
 }
 
-@Entity('etps')
+@Entity("etps")
 export class Etp {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
   title: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
 
   @Column()
@@ -38,17 +38,17 @@ export class Etp {
   @Column({ nullable: true })
   numeroProcesso: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  @Column({ type: "decimal", precision: 15, scale: 2, nullable: true })
   valorEstimado: number;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: EtpStatus,
     default: EtpStatus.DRAFT,
   })
   status: EtpStatus;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   metadata: {
     orgao?: string;
     unidadeRequisitante?: string;
@@ -61,14 +61,14 @@ export class Etp {
   @Column({ default: 1 })
   currentVersion: number;
 
-  @Column({ type: 'float', default: 0 })
+  @Column({ type: "float", default: 0 })
   completionPercentage: number;
 
   @ManyToOne(() => User, (user) => user.etps, { eager: true })
-  @JoinColumn({ name: 'created_by' })
+  @JoinColumn({ name: "created_by" })
   createdBy: User;
 
-  @Column({ name: 'created_by' })
+  @Column({ name: "created_by" })
   createdById: string;
 
   @CreateDateColumn()

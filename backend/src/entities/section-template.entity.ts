@@ -4,11 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity('section_templates')
+@Entity("section_templates")
 export class SectionTemplate {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
@@ -17,19 +17,19 @@ export class SectionTemplate {
   @Column()
   sectionType: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: "text" })
   systemPrompt: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   userPromptTemplate: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   exampleOutput: string;
 
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   metadata: {
     model?: string;
     temperature?: number;

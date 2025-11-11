@@ -6,98 +6,105 @@ import {
   Param,
   UseGuards,
   Query,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
-} from '@nestjs/swagger';
-import { VersionsService } from './versions.service';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+} from "@nestjs/swagger";
+import { VersionsService } from "./versions.service";
+import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
+import { CurrentUser } from "../../common/decorators/current-user.decorator";
 
-@ApiTags('versions')
-@Controller('versions')
+@ApiTags("versions")
+@Controller("versions")
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class VersionsController {
   constructor(private readonly versionsService: VersionsService) {}
 
-  @Post('etp/:etpId')
+  @Post("etp/:etpId")
   @ApiOperation({
-    summary: 'Criar nova versão do ETP',
-    description: 'Cria um snapshot do estado atual do ETP',
+    summary: "Criar nova versão do ETP",
+    description: "Cria um snapshot do estado atual do ETP",
   })
-  @ApiResponse({ status: 201, description: 'Versão criada com sucesso' })
-  @ApiResponse({ status: 404, description: 'ETP não encontrado' })
+  @ApiResponse({ status: 201, description: "Versão criada com sucesso" })
+  @ApiResponse({ status: 404, description: "ETP não encontrado" })
   async createVersion(
-    @Param('etpId') etpId: string,
-    @Body('changeLog') changeLog?: string,
-    @CurrentUser('id') userId?: string,
+    @Param("etpId") etpId: string,
+    @Body("changeLog") changeLog?: string,
+    @CurrentUser("id") userId?: string,
   ) {
-    const version = await this.versionsService.createVersion(etpId, changeLog, userId);
+    const version = await this.versionsService.createVersion(
+      etpId,
+      changeLog,
+      userId,
+    );
     return {
       data: version,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
-  @Get('etp/:etpId')
+  @Get("etp/:etpId")
   @ApiOperation({
-    summary: 'Listar versões do ETP',
-    description: 'Lista todas as versões de um ETP em ordem decrescente',
+    summary: "Listar versões do ETP",
+    description: "Lista todas as versões de um ETP em ordem decrescente",
   })
-  @ApiResponse({ status: 200, description: 'Lista de versões' })
-  async getVersions(@Param('etpId') etpId: string) {
+  @ApiResponse({ status: 200, description: "Lista de versões" })
+  async getVersions(@Param("etpId") etpId: string) {
     const versions = await this.versionsService.getVersions(etpId);
     return {
       data: versions,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Obter versão específica' })
-  @ApiResponse({ status: 200, description: 'Dados da versão' })
-  @ApiResponse({ status: 404, description: 'Versão não encontrada' })
-  async getVersion(@Param('id') id: string) {
+  @Get(":id")
+  @ApiOperation({ summary: "Obter versão específica" })
+  @ApiResponse({ status: 200, description: "Dados da versão" })
+  @ApiResponse({ status: 404, description: "Versão não encontrada" })
+  async getVersion(@Param("id") id: string) {
     const version = await this.versionsService.getVersion(id);
     return {
       data: version,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 
-  @Get('compare/:id1/:id2')
+  @Get("compare/:id1/:id2")
   @ApiOperation({
-    summary: 'Comparar duas versões',
-    description: 'Compara duas versões e retorna as diferenças',
+    summary: "Comparar duas versões",
+    description: "Compara duas versões e retorna as diferenças",
   })
-  @ApiResponse({ status: 200, description: 'Comparação concluída' })
-  @ApiResponse({ status: 404, description: 'Versão não encontrada' })
-  async compareVersions(@Param('id1') id1: string, @Param('id2') id2: string) {
+  @ApiResponse({ status: 200, description: "Comparação concluída" })
+  @ApiResponse({ status: 404, description: "Versão não encontrada" })
+  async compareVersions(@Param("id1") id1: string, @Param("id2") id2: string) {
     return this.versionsService.compareVersions(id1, id2);
   }
 
-  @Post(':id/restore')
+  @Post(":id/restore")
   @ApiOperation({
-    summary: 'Restaurar versão',
-    description: 'Restaura o ETP para o estado de uma versão anterior',
+    summary: "Restaurar versão",
+    description: "Restaura o ETP para o estado de uma versão anterior",
   })
-  @ApiResponse({ status: 200, description: 'Versão restaurada com sucesso' })
-  @ApiResponse({ status: 404, description: 'Versão não encontrada' })
-  async restoreVersion(@Param('id') id: string, @CurrentUser('id') userId: string) {
+  @ApiResponse({ status: 200, description: "Versão restaurada com sucesso" })
+  @ApiResponse({ status: 404, description: "Versão não encontrada" })
+  async restoreVersion(
+    @Param("id") id: string,
+    @CurrentUser("id") userId: string,
+  ) {
     const etp = await this.versionsService.restoreVersion(id, userId);
     return {
       data: etp,
-      message: 'Versão restaurada com sucesso',
+      message: "Versão restaurada com sucesso",
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.",
     };
   }
 }
