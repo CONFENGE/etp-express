@@ -1,20 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { AppService } from './app.service';
+import { Controller, Get } from "@nestjs/common";
+import { ApiTags, ApiOperation } from "@nestjs/swagger";
+import { AppService } from "./app.service";
 
-@ApiTags('health')
+@ApiTags("health")
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Health check endpoint' })
+  @ApiOperation({ summary: "Health check endpoint" })
   getHealth() {
     return this.appService.getHealth();
   }
 
-  @Get('info')
-  @ApiOperation({ summary: 'System information' })
+  @Get("info")
+  @ApiOperation({ summary: "System information" })
   getInfo() {
     return this.appService.getInfo();
   }
