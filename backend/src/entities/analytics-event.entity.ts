@@ -4,11 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Index,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("analytics_events")
+@Entity('analytics_events')
 export class AnalyticsEvent {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -26,7 +26,7 @@ export class AnalyticsEvent {
   @Column({ nullable: true })
   etpId: string;
 
-  @Column({ type: "jsonb", nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   properties: {
     duration?: number;
     success?: boolean;

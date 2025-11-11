@@ -1,6 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import OpenAI from "openai";
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import OpenAI from 'openai';
 
 export interface LLMRequest {
   systemPrompt: string;
@@ -24,7 +24,7 @@ export class OpenAIService {
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({
-      apiKey: this.configService.get<string>("OPENAI_API_KEY"),
+      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
     });
   }
 
@@ -32,11 +32,11 @@ export class OpenAIService {
     const {
       systemPrompt,
       userPrompt,
-      temperature = this.configService.get<number>("OPENAI_TEMPERATURE", 0.7),
-      maxTokens = this.configService.get<number>("OPENAI_MAX_TOKENS", 4000),
+      temperature = this.configService.get<number>('OPENAI_TEMPERATURE', 0.7),
+      maxTokens = this.configService.get<number>('OPENAI_MAX_TOKENS', 4000),
       model = this.configService.get<string>(
-        "OPENAI_MODEL",
-        "gpt-4-turbo-preview",
+        'OPENAI_MODEL',
+        'gpt-4-turbo-preview',
       ),
     } = request;
 
@@ -48,8 +48,8 @@ export class OpenAIService {
       const completion = await this.openai.chat.completions.create({
         model,
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         temperature,
         max_tokens: maxTokens,
@@ -58,10 +58,10 @@ export class OpenAIService {
       const duration = Date.now() - startTime;
 
       const response: LLMResponse = {
-        content: completion.choices[0]?.message?.content || "",
+        content: completion.choices[0]?.message?.content || '',
         tokens: completion.usage?.total_tokens || 0,
         model: completion.model,
-        finishReason: completion.choices[0]?.finish_reason || "unknown",
+        finishReason: completion.choices[0]?.finish_reason || 'unknown',
       };
 
       this.logger.log(
@@ -70,7 +70,7 @@ export class OpenAIService {
 
       return response;
     } catch (error) {
-      this.logger.error("Error generating completion:", error);
+      this.logger.error('Error generating completion:', error);
       throw error;
     }
   }
@@ -82,11 +82,11 @@ export class OpenAIService {
     const {
       systemPrompt,
       userPrompt,
-      temperature = this.configService.get<number>("OPENAI_TEMPERATURE", 0.7),
-      maxTokens = this.configService.get<number>("OPENAI_MAX_TOKENS", 4000),
+      temperature = this.configService.get<number>('OPENAI_TEMPERATURE', 0.7),
+      maxTokens = this.configService.get<number>('OPENAI_MAX_TOKENS', 4000),
       model = this.configService.get<string>(
-        "OPENAI_MODEL",
-        "gpt-4-turbo-preview",
+        'OPENAI_MODEL',
+        'gpt-4-turbo-preview',
       ),
     } = request;
 
@@ -96,19 +96,19 @@ export class OpenAIService {
       const stream = await this.openai.chat.completions.create({
         model,
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         temperature,
         max_tokens: maxTokens,
         stream: true,
       });
 
-      let fullContent = "";
+      let fullContent = '';
       let tokenCount = 0;
 
       for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
+        const content = chunk.choices[0]?.delta?.content || '';
         if (content) {
           fullContent += content;
           onChunk(content);
@@ -122,10 +122,10 @@ export class OpenAIService {
         content: fullContent,
         tokens: tokenCount,
         model,
-        finishReason: "stop",
+        finishReason: 'stop',
       };
     } catch (error) {
-      this.logger.error("Error generating streaming completion:", error);
+      this.logger.error('Error generating streaming completion:', error);
       throw error;
     }
   }

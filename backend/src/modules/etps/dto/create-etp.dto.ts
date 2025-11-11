@@ -1,13 +1,13 @@
-import { IsString, IsOptional, IsNumber, IsObject } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsString, IsOptional, IsNumber, IsObject } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateEtpDto {
-  @ApiProperty({ example: "ETP - Contratação de Serviços de TI" })
+  @ApiProperty({ example: 'ETP - Contratação de Serviços de TI' })
   @IsString()
   title: string;
 
   @ApiPropertyOptional({
-    example: "Estudo técnico para contratação de desenvolvimento de software",
+    example: 'Estudo técnico para contratação de desenvolvimento de software',
   })
   @IsOptional()
   @IsString()
@@ -15,12 +15,12 @@ export class CreateEtpDto {
 
   @ApiProperty({
     example:
-      "Contratação de empresa especializada em desenvolvimento de sistemas web",
+      'Contratação de empresa especializada em desenvolvimento de sistemas web',
   })
   @IsString()
   objeto: string;
 
-  @ApiPropertyOptional({ example: "2023/001234" })
+  @ApiPropertyOptional({ example: '2023/001234' })
   @IsOptional()
   @IsString()
   numeroProcesso?: string;
@@ -32,10 +32,10 @@ export class CreateEtpDto {
 
   @ApiPropertyOptional({
     example: {
-      orgao: "Ministério da Economia",
-      unidadeRequisitante: "Secretaria de Tecnologia",
-      responsavelTecnico: "João Silva",
-      tags: ["TI", "Desenvolvimento"],
+      orgao: 'Ministério da Economia',
+      unidadeRequisitante: 'Secretaria de Tecnologia',
+      responsavelTecnico: 'João Silva',
+      tags: ['TI', 'Desenvolvimento'],
     },
   })
   @IsOptional()

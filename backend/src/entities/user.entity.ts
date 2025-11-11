@@ -5,20 +5,20 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-} from "typeorm";
-import { Exclude } from "class-transformer";
-import { Etp } from "./etp.entity";
-import { AuditLog } from "./audit-log.entity";
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Etp } from './etp.entity';
+import { AuditLog } from './audit-log.entity';
 
 export enum UserRole {
-  ADMIN = "admin",
-  USER = "user",
-  VIEWER = "viewer",
+  ADMIN = 'admin',
+  USER = 'user',
+  VIEWER = 'viewer',
 }
 
-@Entity("users")
+@Entity('users')
 export class User {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true })
@@ -38,7 +38,7 @@ export class User {
   cargo: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
@@ -47,7 +47,7 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   lastLoginAt: Date;
 
   @CreateDateColumn()
