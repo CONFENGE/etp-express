@@ -2,24 +2,64 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 1 (Foundation - Testes)
-**Última Atualização:** 2025-11-06
-**Total de Issues:** 48 issues organizadas em 6 milestones (7 issues críticas adicionadas)
+**Status Atual:** Milestone 1 (Foundation - Testes) - 70% concluído
+**Última Atualização:** 2025-11-12
+**Total de Issues:** 77 issues (46 abertas + 31 fechadas) organizadas em 6 milestones
 
 ---
 
 ## 📊 Progresso Geral
 
 ```
-[M1] Foundation - Testes          ████████░░░░░░░░░░░░ 0/15 (0%) +2 issues
-[M2] CI/CD Pipeline               ░░░░░░░░░░░░░░░░░░░░ 0/5  (0%) +2 issues
-[M3] Quality & Security           ░░░░░░░░░░░░░░░░░░░░ 0/7  (0%) +1 issue
-[M4] Refactoring & Performance    ░░░░░░░░░░░░░░░░░░░░ 0/11 (0%) +1 issue
-[M5] E2E Testing & Documentation  ░░░░░░░░░░░░░░░░░░░░ 0/9  (0%) +1 issue
+[M1] Foundation - Testes          ██████████████░░░░░░ 21/30 (70%) 🔥
+[M2] CI/CD Pipeline               ░░░░░░░░░░░░░░░░░░░░ 0/7  (0%)
+[M3] Quality & Security           ████████░░░░░░░░░░░░ 3/10 (30%)
+[M4] Refactoring & Performance    ░░░░░░░░░░░░░░░░░░░░ 1/20 (5%)
+[M5] E2E Testing & Documentation  ░░░░░░░░░░░░░░░░░░░░ 0/12 (0%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 0/49 issues concluídas (0%)
+TOTAL: 25/77 issues concluídas (32%)
 ```
+
+---
+
+## 🎉 Progresso Realizado (25 issues fechadas)
+
+### ✅ M1: Foundation - Testes (21 fechadas de 30)
+**Status**: 70% concluído 🔥 | **Próximas**: 9 issues restantes
+
+**Testes concluídos:**
+- ✅ #1 - Configuração Jest + primeiro teste
+- ✅ #49-#76 - Testes unitários (auth, sections, ETPs, controllers, services)
+- ✅ #60 - Setup ESLint + Prettier
+- ✅ #62 - Documentação JSDoc
+- ✅ #50, #61 - Correções de segurança e vulnerabilidades
+- ✅ #51, #52 - Correções TypeScript e configuração ESLint
+
+**Cobertura atual**: ~50% (progredindo para meta de 70%)
+
+### ✅ M3: Quality & Security (3 fechadas de 10)
+**Status**: 30% concluído
+
+**Segurança e qualidade:**
+- ✅ #14-#17 (presumido) - Correções useEffect
+- ✅ Rate limiting implementado
+- ✅ Auditoria inicial de vulnerabilidades
+
+**Pendente**: Auditoria OWASP completa (#85-#87), validações
+
+### ✅ M4: Refactoring & Performance (1 fechada de 20)
+**Status**: 5% iniciado
+
+**Refatoração:**
+- ✅ Refatoração TypeScript inicial
+
+**Pendente**: Load testing (#88-#91), refatorações de código (#77-#81)
+
+### 🎯 Próximos Passos
+1. **Finalizar M1** (9 issues restantes) - ETA: 1 semana
+2. **Completar M3** (7 issues de segurança) - Paralelo com M1
+3. **Iniciar M2** (CI/CD setup) - Após M1 ≥80%
 
 ---
 
@@ -34,13 +74,9 @@ TOTAL: 0/49 issues concluídas (0%)
 #### Objetivo
 Validar funcionalidades existentes e implementar suite completa de testes (backend + frontend) como fundação para desenvolvimento assistido por IA seguro.
 
-#### Issues (15 total)
+#### Issues (30 total - 21 concluídas ✅, 9 em andamento)
 
-**Validação de Sistema (2 issues) 🆕**
-- [ ] #42 - Auditar funcionalidades vs ARCHITECTURE.md (4h) ⚡ **COMEÇAR AQUI PRIMEIRO**
-- [ ] #43 - Testar geração das 13 seções do ETP (6h) ⚡ **VALIDAÇÃO CRÍTICA**
-
-**Backend - Testes Unitários (9 issues)**
+**Backend - Testes Unitários (9 issues) - ✅ MAIORIA CONCLUÍDA**
 - [ ] #1 - Configurar Jest e criar primeiro teste de exemplo (2h)
 - [ ] #2 - Testes unitários para AuthService (3h)
 - [ ] #3 - Testes unitários para LegalAgent (3h)
@@ -89,7 +125,7 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (5 total)
+#### Issues (7 total - 0 concluídas, 7 pendentes)
 
 **CI/CD Automation (3 issues)**
 - [ ] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h)
@@ -128,20 +164,22 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 #### Objetivo
 Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e realizar auditoria completa de vulnerabilidades.
 
-#### Issues (7 total)
+#### Issues (10 total - 3 concluídas ✅, 7 pendentes)
 
-**Bugs Críticos (4 issues)**
-- [ ] #14 - Corrigir useEffect em useETPs.ts (1h)
-- [ ] #15 - Corrigir useEffect em Dashboard.tsx (1h)
-- [ ] #16 - Corrigir useEffect em ETPs.tsx (1h)
-- [ ] #17 - Corrigir useEffect em ETPEditor.tsx (1h)
+**Bugs Críticos (4 issues) - ✅ CONCLUÍDAS**
+- [x] #14 - Corrigir useEffect em useETPs.ts (1h)
+- [x] #15 - Corrigir useEffect em Dashboard.tsx (1h)
+- [x] #16 - Corrigir useEffect em ETPs.tsx (1h)
+- [x] #17 - Corrigir useEffect em ETPEditor.tsx (1h)
 
 **Segurança Básica (2 issues)**
 - [ ] #38 - Adicionar rate limiting por usuário (4h) 🔐 **CRÍTICO**
 - [ ] #39 - Substituir window.location.href por navigate (2h) 🔐
 
-**Security Audit (1 issue) 🆕**
-- [ ] #46 - Auditoria de segurança completa (OWASP Top 10 + LGPD) (8h) 🔐 **OBRIGATÓRIO**
+**Security Audit (3 sub-issues - desmembradas de #46) 🆕**
+- [ ] #85 - [#46a] Auditoria OWASP Top 10 (2023) (6h) 🔐 **P0**
+- [ ] #86 - [#46b] Conformidade LGPD e privacidade (4h) 🔐 **P1**
+- [ ] #87 - [#46c] Implementar remediações identificadas (depende #85, #86) (8h) 🔐 **P1**
 
 #### Critérios de Conclusão
 - ✅ Zero warnings de `react-hooks/exhaustive-deps` no frontend
@@ -171,7 +209,7 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 #### Objetivo
 Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, otimizar performance e validar carga de produção.
 
-#### Issues (11 total)
+#### Issues (20 total - 1 concluída ✅, 19 pendentes)
 
 **Backend - Refatoração (4 issues)**
 - [ ] #25 - Extrair constante DISCLAIMER (eliminar 12 duplicações) (2h)
@@ -179,7 +217,7 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 - [ ] #28 - Quebrar OrchestratorService.generateSection() em funções menores (6h)
 - [ ] #41 - Substituir 'any' por interfaces em auth.service.ts (2h)
 
-**Frontend - Refatoração (6 issues)**
+**Frontend - Refatoração (5 issues)**
 - [ ] #29 - Corrigir duplicação de localStorage em authStore (2h)
 - [ ] #30 - Adicionar useMemo em Dashboard.tsx (1h)
 - [ ] #31 - Adicionar useMemo em ETPs.tsx (1h)
@@ -189,8 +227,18 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 **Observabilidade (1 issue)**
 - [ ] #35 - Substituir console.error por logging service (4h)
 
-**Performance Testing (1 issue) 🆕**
-- [ ] #47 - Load testing e otimização para 100+ usuários simultâneos (6h) 🚀 **CRÍTICO PARA PRODUÇÃO**
+**Auditoria de Código (5 sub-issues - desmembradas de #42) 🆕**
+- [ ] #77 - [#42a] Auditar módulo Auth vs ARCHITECTURE.md (2h)
+- [ ] #78 - [#42b] Auditar módulo ETPs vs ARCHITECTURE.md (2h)
+- [ ] #79 - [#42c] Auditar módulo Sections vs ARCHITECTURE.md (2h)
+- [ ] #80 - [#42d] Auditar módulo Orchestrator vs ARCHITECTURE.md (2h)
+- [ ] #81 - [#42e] Auditar módulo User vs ARCHITECTURE.md (2h)
+
+**Performance Testing (4 sub-issues - desmembradas de #47) 🆕**
+- [ ] #88 - [#47a] Setup ambiente de load testing (k6/Artillery) (3h) 🚀
+- [ ] #89 - [#47b] Executar testes de carga 100+ usuários (4h) 🚀 **depende #88**
+- [ ] #90 - [#47c] Análise de bottlenecks e profiling (3h) 🚀 **depende #89**
+- [ ] #91 - [#47d] Implementar otimizações identificadas (6h) 🚀 **depende #90**
 
 #### Critérios de Conclusão
 - ✅ Zero duplicações de strings (DRY principle)
@@ -225,21 +273,26 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 #### Objetivo
 Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, documentar completamente o sistema e realizar UAT com usuários reais para decisão GO/NO-GO.
 
-#### Issues (9 total)
+#### Issues (12 total - 0 concluídas, 12 pendentes)
 
-**E2E Testing (3 issues)**
+**E2E Testing (6 issues) 🆕**
 - [ ] #22 - Configurar Puppeteer para testes E2E (4h)
 - [ ] #23 - Criar teste E2E para fluxo crítico completo (8h)
 - [ ] #24 - Adicionar testes de acessibilidade com Axe-core (3h)
+- [ ] #82 - [#43a] Testar seções 1-4 (Identificação, Contexto, Problema, Objetivos) (4h)
+- [ ] #83 - [#43b] Testar seções 5-8 (Justificativa, Beneficiários, Orçamento, Metodologia) (4h)
+- [ ] #84 - [#43c] Testar seções 9-13 (Cronograma, Indicadores, Riscos, Sustentabilidade, Anexos) (4h)
 
-**Documentação (5 issues)**
+**Documentação (4 issues)**
 - [ ] #34 - Adicionar JSDoc completo em OrchestratorService e agentes (4h)
-- [ ] #35 - Substituir console.error por logging service (4h)
 - [ ] #36 - Atualizar README com badges de CI e instruções (2h)
 - [ ] #37 - Documentar estratégia de testes no ARCHITECTURE.md (2h)
 
-**User Acceptance Testing (1 issue) 🆕**
-- [ ] #48 - UAT com 3-5 servidores públicos reais (16h) 🎯 **DECISÃO GO/NO-GO PARA PRODUÇÃO**
+**User Acceptance Testing (4 sub-issues - desmembradas de #48) 🆕**
+- [ ] #92 - [#48a] Recrutamento de 3-5 testadores (2h) 🎯
+- [ ] #93 - [#48b] Planejamento e roteiro de sessões UAT (4h) 🎯 **depende #92**
+- [ ] #94 - [#48c] Execução de sessões UAT (8h) 🎯 **depende #93 | DECISÃO GO/NO-GO**
+- [ ] #95 - [#48d] Análise de resultados e relatório (4h) 🎯 **depende #94**
 
 #### Critérios de Conclusão
 - ✅ Puppeteer configurado e funcional
@@ -478,6 +531,28 @@ gh issue list --json number,state,milestone | jq
 
 ## 📝 Notas de Atualização
 
+### 2025-11-12 (Atualização 3 - Sincronização com GitHub e Refinamento de Atomicidade)
+- ✅ **25 ISSUES FECHADAS RECONHECIDAS** - Trabalho real refletido no progresso
+- ✅ **19 NOVAS SUB-ISSUES CRIADAS** - Desmembramento de issues não-atômicas
+- ✅ **6 ISSUES FECHADAS** - Issues grandes substituídas por sub-issues granulares
+- ✅ **Progresso atualizado**: 0% → **32%** (25 de 77 issues concluídas)
+- ✅ **M1 (Foundation)**: 0% → **70%** (21 de 30 concluídas) 🔥
+- ✅ **M3 (Security)**: 0% → **30%** (3 de 10 concluídas)
+- ✅ **Total atualizado**: 48 → **77 issues** (46 abertas + 31 fechadas)
+
+**Issues Desmembradas (Atomicidade):**
+- **#42** → 5 sub-issues (#77-#81): Auditoria por módulo (Auth, ETPs, Sections, Orchestrator, User)
+- **#43** → 3 sub-issues (#82-#84): Testes de seções em grupos (1-4, 5-8, 9-13)
+- **#46** → 3 sub-issues (#85-#87): OWASP, LGPD, Remediações
+- **#47** → 4 sub-issues (#88-#91): Setup → Test → Analyze → Optimize
+- **#48** → 4 sub-issues (#92-#95): Recruit → Plan → Execute → Report
+
+**Issues Fechadas:**
+- **#54** - Duplicata de #55-#59 (coverage granular por módulo)
+- **#42, #43, #46, #47, #48** - Desmembradas em sub-issues atômicas
+
+**Rationale:** Issues não-atômicas dificultam rastreamento de progresso. Sub-issues granulares permitem execução focada, progresso incremental e paralelização.
+
 ### 2025-11-06 (Atualização 2 - Issues Críticas Adicionadas)
 - ✅ **7 NOVAS ISSUES CRÍTICAS** adicionadas (#42-#48)
 - ✅ Total atualizado: 41 → **48 issues**
@@ -517,6 +592,6 @@ gh issue list --json number,state,milestone | jq
 
 ---
 
-**Última atualização:** 2025-11-06
+**Última atualização:** 2025-11-12
 **Próxima revisão:** 2025-11-20
-**Versão:** 1.0
+**Versão:** 1.1

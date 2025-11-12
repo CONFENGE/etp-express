@@ -24,6 +24,21 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { EtpStatus } from '../../entities/etp.entity';
 
+/**
+ * Controller handling ETP (Estudos Técnicos Preliminares) HTTP endpoints.
+ *
+ * @remarks
+ * All endpoints require JWT authentication via JwtAuthGuard.
+ * Users can only access and modify their own ETPs (enforced at service layer).
+ *
+ * Standard HTTP status codes:
+ * - 200: Success
+ * - 201: Created
+ * - 400: Validation error
+ * - 401: Unauthorized (missing or invalid JWT)
+ * - 403: Forbidden (user doesn't own the ETP)
+ * - 404: ETP not found
+ */
 @ApiTags('etps')
 @Controller('etps')
 @UseGuards(JwtAuthGuard)
@@ -31,6 +46,15 @@ import { EtpStatus } from '../../entities/etp.entity';
 export class EtpsController {
   constructor(private readonly etpsService: EtpsService) {}
 
+  /**
+   * Creates a new ETP for the authenticated user.
+   *
+   * @param createEtpDto - ETP creation data (title, description, etc.)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Created ETP entity with disclaimer message
+   * @throws {BadRequestException} 400 - If validation fails
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Post()
   @ApiOperation({ summary: 'Criar novo ETP' })
   @ApiResponse({ status: 201, description: 'ETP criado com sucesso' })
@@ -47,6 +71,14 @@ export class EtpsController {
     };
   }
 
+  /**
+   * Retrieves paginated list of ETPs for the authenticated user.
+   *
+   * @param paginationDto - Pagination parameters (page, limit)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Paginated ETP list with metadata
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get()
   @ApiOperation({ summary: 'Listar ETPs com paginação' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -59,6 +91,13 @@ export class EtpsController {
     return this.etpsService.findAll(paginationDto, userId);
   }
 
+  /**
+   * Retrieves ETP statistics for the authenticated user.
+   *
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns ETP statistics (total, by status, etc.) with disclaimer message
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get('statistics')
   @ApiOperation({ summary: 'Obter estatísticas dos ETPs' })
   @ApiResponse({ status: 200, description: 'Estatísticas' })
@@ -71,6 +110,16 @@ export class EtpsController {
     };
   }
 
+  /**
+   * Retrieves a single ETP by ID with all sections.
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns ETP entity with all related sections and disclaimer message
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {ForbiddenException} 403 - If user doesn't own this ETP
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get(':id')
   @ApiOperation({ summary: 'Obter ETP por ID' })
   @ApiResponse({ status: 200, description: 'Dados do ETP' })
@@ -84,6 +133,18 @@ export class EtpsController {
     };
   }
 
+  /**
+   * Updates an existing ETP.
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param updateEtpDto - Partial ETP update data
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Updated ETP entity with disclaimer message
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {ForbiddenException} 403 - If user doesn't own this ETP
+   * @throws {BadRequestException} 400 - If validation fails
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar ETP' })
   @ApiResponse({ status: 200, description: 'ETP atualizado com sucesso' })
@@ -102,6 +163,18 @@ export class EtpsController {
     };
   }
 
+  /**
+   * Updates ETP status field.
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param status - New ETP status value
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Updated ETP entity with disclaimer message
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {ForbiddenException} 403 - If user doesn't own this ETP
+   * @throws {BadRequestException} 400 - If status value is invalid
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Patch(':id/status')
   @ApiOperation({ summary: 'Atualizar status do ETP' })
   @ApiResponse({ status: 200, description: 'Status atualizado com sucesso' })
@@ -118,6 +191,16 @@ export class EtpsController {
     };
   }
 
+  /**
+   * Deletes an ETP and all its sections.
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Success message with disclaimer
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {ForbiddenException} 403 - If user doesn't own this ETP
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Delete(':id')
   @ApiOperation({ summary: 'Deletar ETP' })
   @ApiResponse({ status: 200, description: 'ETP deletado com sucesso' })

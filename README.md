@@ -531,5 +531,6 @@ A responsabilidade final é sempre do servidor/agente público responsável.
 
 ---
 
-**Última atualização**: 2025-11-05
-**Versão**: 1.0.0
+**Última atualização**: 2025-11-12
+**Versão**: 0.1.0 (Core MVP)
+**Progresso**: 32% (25/77 issues concluídas)

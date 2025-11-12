@@ -7,11 +7,41 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [1.0.0] - 2025-11-05
+## [Unreleased]
 
-### 🎉 Lançamento Inicial
+### 🔄 Em Desenvolvimento (v1.0.0 - Planejada para Q1 2026)
 
-Primeira versão completa do **ETP Express** - Sistema assistivo para elaboração de Estudos Técnicos Preliminares (Lei 14.133/2021).
+Trabalho em progresso para alcançar qualidade de produção:
+
+#### ⚙️ Infraestrutura Técnica (2025-11-06 a 2025-11-12)
+- ✅ Configuração Jest para testes backend
+- ✅ ESLint + Prettier configurados
+- ✅ Testes unitários: auth, sections, ETPs, controllers, services
+- ✅ Documentação JSDoc implementada
+- ✅ Vulnerabilidades de segurança resolvidas (npm audit)
+- ✅ Correções TypeScript aplicadas
+- 🔄 Cobertura de testes em aumento (0.46% → ~50%, meta: 70%)
+
+#### 📊 Progresso Geral
+- **25 de 77 issues concluídas** (32%)
+- **M1 (Foundation)**: 70% concluído (21/30)
+- **M3 (Security)**: 30% concluído (3/10)
+- **M4 (Refactoring)**: 5% iniciado (1/20)
+
+#### 🎯 Próximas Entregas
+- [ ] Finalizar M1 - Testes (9 issues restantes)
+- [ ] Completar M3 - Auditoria OWASP + LGPD
+- [ ] M2 - CI/CD Pipeline
+- [ ] M4 - Load testing e performance
+- [ ] M5 - UAT com usuários reais
+
+---
+
+## [0.1.0] - 2025-11-05
+
+### 🎉 Core MVP Lançado
+
+Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboração de Estudos Técnicos Preliminares (Lei 14.133/2021). Core operacional, mas ainda em fase de testes e refinamento de qualidade.
 
 ### ✨ Adicionado
 
@@ -138,30 +168,7 @@ Primeira versão completa do **ETP Express** - Sistema assistivo para elaboraç�
 
 ---
 
-## [Unreleased]
-
-### 🔄 Planejado para v1.1
-
-#### A Adicionar
-- [ ] Templates por órgão/setor
-- [ ] Modo colaborativo (múltiplos usuários editando)
-- [ ] Integração com PNCP (Painel Nacional de Contratações Públicas)
-- [ ] Upload de documentos anexos
-- [ ] Dark mode
-- [ ] PWA (Progressive Web App)
-- [ ] Internacionalização (i18n)
-- [ ] Testes E2E completos (Playwright)
-- [ ] Storybook para componentes
-- [ ] CI/CD com GitHub Actions
-
-#### A Melhorar
-- [ ] Cache de respostas LLM para reduzir custos
-- [ ] Otimização de prompts de IA
-- [ ] Melhorias de UX baseadas em analytics
-- [ ] Documentação de uso para servidores
-- [ ] Vídeos tutoriais
-
-### 🔮 Planejado para v2.0
+### 🔮 Planejado para v1.1+
 
 #### A Adicionar
 - [ ] Suporte a modelos on-premise (Llama, Mistral)
@@ -216,4 +223,6 @@ Utilizamos [SemVer](https://semver.org/lang/pt-BR/) para versionamento:
 ---
 
 **Mantido por**: Equipe ETP Express
-**Última atualização**: 2025-11-05
+**Última atualização**: 2025-11-12
+**Versão Atual**: 0.1.0 (Core MVP)
+**Próxima Versão**: 1.0.0 (Q1 2026)
