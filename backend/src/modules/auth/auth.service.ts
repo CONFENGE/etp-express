@@ -11,6 +11,22 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+/**
+ * Service responsible for user authentication and authorization.
+ *
+ * @remarks
+ * This service uses JWT tokens for stateless authentication and bcrypt for
+ * password hashing. It coordinates with UsersService for user data operations
+ * and implements standard login/register flows with security best practices.
+ *
+ * Security features:
+ * - Password hashing with bcrypt (cost factor 10)
+ * - JWT-based stateless authentication
+ * - Active account validation
+ * - Last login tracking
+ *
+ * @see UsersService
+ */
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -21,6 +37,18 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
+  /**
+   * Validates user credentials and returns user data without password.
+   *
+   * @remarks
+   * Used by Passport local strategy for authentication. Updates user's
+   * lastLogin timestamp on successful validation.
+   *
+   * @param email - User email address
+   * @param password - Plain text password to validate
+   * @returns User object without password field, or null if validation fails
+   * @throws {UnauthorizedException} If user account is inactive
+   */
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
 
@@ -45,6 +73,28 @@ export class AuthService {
     return result;
   }
 
+  /**
+   * Authenticates user and returns JWT access token.
+   *
+   * @remarks
+   * Validates credentials, generates JWT token with user claims,
+   * and returns authentication response. Logs successful login events.
+   *
+   * JWT payload includes: sub (user ID), email, name, role.
+   *
+   * @param loginDto - User login credentials (email and password)
+   * @returns Authentication response with JWT token, user data, and disclaimer
+   * @throws {UnauthorizedException} If credentials are invalid or user is inactive
+   *
+   * @example
+   * ```ts
+   * const response = await authService.login({
+   *   email: 'user@example.com',
+   *   password: 'securePassword123'
+   * });
+   * console.log(response.accessToken); // JWT token
+   * ```
+   */
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
@@ -78,6 +128,30 @@ export class AuthService {
     };
   }
 
+  /**
+   * Registers a new user account with hashed password.
+   *
+   * @remarks
+   * Creates new user with bcrypt-hashed password (cost factor 10),
+   * automatically generates JWT token, and returns authentication response.
+   * Validates email uniqueness before creation.
+   *
+   * @param registerDto - New user registration data (email, password, name, etc.)
+   * @returns Authentication response with JWT token for immediate login
+   * @throws {ConflictException} If email is already registered
+   *
+   * @example
+   * ```ts
+   * const response = await authService.register({
+   *   email: 'newuser@example.com',
+   *   password: 'securePassword123',
+   *   name: 'João Silva',
+   *   orgao: 'CONFENGE',
+   *   cargo: 'Analista'
+   * });
+   * // User is created and authenticated in one step
+   * ```
+   */
   async register(registerDto: RegisterDto) {
     const existingUser = await this.usersService.findByEmail(registerDto.email);
 
@@ -118,6 +192,17 @@ export class AuthService {
     };
   }
 
+  /**
+   * Validates JWT token and returns user data if valid.
+   *
+   * @remarks
+   * Verifies token signature, expiration, and validates that user exists
+   * and is active. Used by JwtAuthGuard for protected routes.
+   *
+   * @param token - JWT access token to validate
+   * @returns Validation result with user data
+   * @throws {UnauthorizedException} If token is invalid, expired, or user is inactive
+   */
   async validateToken(token: string) {
     try {
       const payload = this.jwtService.verify(token);
