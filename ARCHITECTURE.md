@@ -642,5 +642,5 @@ this.logger.log({
 
 **Documento vivo**: Este arquivo será atualizado conforme o desenvolvimento avança.
 
-**Última atualização**: 2025-11-05
-**Versão**: 1.0.0-alpha
+**Última atualização**: 2025-11-12
+**Versão**: 0.1.0 (Core MVP)

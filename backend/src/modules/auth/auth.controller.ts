@@ -12,11 +12,36 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
+/**
+ * Controller handling authentication HTTP endpoints.
+ *
+ * @remarks
+ * Provides public endpoints for user registration and login, and protected
+ * endpoints for token validation and user profile retrieval.
+ *
+ * Authentication:
+ * - /register and /login are public (no JWT required)
+ * - /me and /validate require JWT authentication via JwtAuthGuard
+ *
+ * Standard HTTP status codes:
+ * - 200: Success
+ * - 201: Created (registration)
+ * - 401: Unauthorized (invalid credentials or token)
+ * - 409: Conflict (email already registered)
+ */
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Registers a new user account.
+   *
+   * @param registerDto - User registration data (name, email, password)
+   * @returns Authentication response with JWT token and user data
+   * @throws {ConflictException} 409 - If email is already registered
+   * @throws {BadRequestException} 400 - If validation fails
+   */
   @Public()
   @Post('register')
   @ApiOperation({ summary: 'Registrar novo usuário' })
@@ -26,6 +51,13 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  /**
+   * Authenticates user credentials and issues JWT token.
+   *
+   * @param loginDto - User credentials (email and password)
+   * @returns Authentication response with JWT token and user data
+   * @throws {UnauthorizedException} 401 - If credentials are invalid
+   */
   @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login de usuário' })
@@ -35,6 +67,13 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  /**
+   * Retrieves authenticated user profile data.
+   *
+   * @param user - Current authenticated user (extracted from JWT token)
+   * @returns User profile data with disclaimer message
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -49,6 +88,17 @@ export class AuthController {
     };
   }
 
+  /**
+   * Validates JWT token and returns user data.
+   *
+   * @remarks
+   * This endpoint can be used by frontend to verify if a stored JWT token
+   * is still valid before making authenticated requests.
+   *
+   * @param user - Current authenticated user (extracted from JWT token)
+   * @returns Validation result with user data
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or expired
+   */
   @Post('validate')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
