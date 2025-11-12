@@ -20,6 +20,26 @@ import { UpdateSectionDto } from './dto/update-section.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
+/**
+ * Controller handling ETP section management HTTP endpoints.
+ *
+ * @remarks
+ * All endpoints require JWT authentication via JwtAuthGuard.
+ * Sections belong to ETPs and inherit ownership validation.
+ *
+ * Key features:
+ * - AI-powered section generation using orchestrator service
+ * - Manual section updates
+ * - Section regeneration
+ * - Section validation
+ *
+ * Standard HTTP status codes:
+ * - 200: Success
+ * - 201: Created (section generated)
+ * - 400: Validation error
+ * - 401: Unauthorized (missing or invalid JWT)
+ * - 404: Section or ETP not found
+ */
 @ApiTags('sections')
 @Controller('sections')
 @UseGuards(JwtAuthGuard)
@@ -27,6 +47,21 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class SectionsController {
   constructor(private readonly sectionsService: SectionsService) {}
 
+  /**
+   * Generates a new ETP section using AI orchestration.
+   *
+   * @remarks
+   * This endpoint invokes the AI orchestrator to generate section content
+   * using multiple specialized agents. Generation typically takes 30-60 seconds.
+   *
+   * @param etpId - ETP unique identifier (UUID)
+   * @param generateDto - Section generation parameters (sectionKey, etc.)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Generated section entity with AI content and disclaimer message
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {BadRequestException} 400 - If section already exists or data invalid
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Post('etp/:etpId/generate')
   @ApiOperation({
     summary: 'Gerar nova seção com IA',
@@ -56,6 +91,13 @@ export class SectionsController {
     };
   }
 
+  /**
+   * Retrieves all sections for a specific ETP.
+   *
+   * @param etpId - ETP unique identifier (UUID)
+   * @returns Array of section entities with disclaimer message
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get('etp/:etpId')
   @ApiOperation({ summary: 'Listar todas as seções de um ETP' })
   @ApiResponse({ status: 200, description: 'Lista de seções' })
@@ -68,6 +110,14 @@ export class SectionsController {
     };
   }
 
+  /**
+   * Retrieves a single section by ID.
+   *
+   * @param id - Section unique identifier (UUID)
+   * @returns Section entity with content and metadata, plus disclaimer message
+   * @throws {NotFoundException} 404 - If section not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Get(':id')
   @ApiOperation({ summary: 'Obter seção por ID' })
   @ApiResponse({ status: 200, description: 'Dados da seção' })
@@ -81,6 +131,16 @@ export class SectionsController {
     };
   }
 
+  /**
+   * Updates a section manually (user edits).
+   *
+   * @param id - Section unique identifier (UUID)
+   * @param updateDto - Partial section update data (content, status, etc.)
+   * @returns Updated section entity with disclaimer message
+   * @throws {NotFoundException} 404 - If section not found
+   * @throws {BadRequestException} 400 - If validation fails
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar seção manualmente' })
   @ApiResponse({ status: 200, description: 'Seção atualizada com sucesso' })
@@ -94,6 +154,19 @@ export class SectionsController {
     };
   }
 
+  /**
+   * Regenerates section content using AI orchestration.
+   *
+   * @remarks
+   * Replaces existing section content with fresh AI-generated content.
+   * Generation typically takes 30-60 seconds.
+   *
+   * @param id - Section unique identifier (UUID)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Regenerated section entity with new content and disclaimer message
+   * @throws {NotFoundException} 404 - If section not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Post(':id/regenerate')
   @ApiOperation({
     summary: 'Regenerar seção com IA',
@@ -110,6 +183,18 @@ export class SectionsController {
     };
   }
 
+  /**
+   * Validates section content using AI validation agents.
+   *
+   * @remarks
+   * Executes all configured validation agents to check section quality,
+   * compliance, and accuracy.
+   *
+   * @param id - Section unique identifier (UUID)
+   * @returns Validation results from all agents
+   * @throws {NotFoundException} 404 - If section not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Post(':id/validate')
   @ApiOperation({
     summary: 'Validar seção',
@@ -121,6 +206,15 @@ export class SectionsController {
     return this.sectionsService.validateSection(id);
   }
 
+  /**
+   * Deletes a section.
+   *
+   * @param id - Section unique identifier (UUID)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Success message with disclaimer
+   * @throws {NotFoundException} 404 - If section not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
   @Delete(':id')
   @ApiOperation({ summary: 'Deletar seção' })
   @ApiResponse({ status: 200, description: 'Seção deletada com sucesso' })
