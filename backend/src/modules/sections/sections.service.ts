@@ -257,8 +257,8 @@ export class SectionsService {
     return requiredSections.includes(type);
   }
 
-  private convertValidationResults(validationResults: any) {
-    if (!validationResults) {
+  private convertValidationResults(validationResults: unknown) {
+    if (!validationResults || typeof validationResults !== 'object') {
       return {
         legalCompliance: true,
         clarityScore: 0,
@@ -268,17 +268,20 @@ export class SectionsService {
       };
     }
 
+    // Type assertion after runtime validation
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results = validationResults as any;
+
     return {
-      legalCompliance: validationResults.legal?.isCompliant ?? true,
-      clarityScore: validationResults.clareza?.score ?? 0,
-      hallucinationCheck:
-        validationResults.antiHallucination?.isPassing ?? true,
+      legalCompliance: results.legal?.isCompliant ?? true,
+      clarityScore: results.clareza?.score ?? 0,
+      hallucinationCheck: results.antiHallucination?.isPassing ?? true,
       warnings: [
-        ...(validationResults.legal?.issues || []),
-        ...(validationResults.clareza?.issues || []),
-        ...(validationResults.simplificacao?.suggestions || []),
+        ...(results.legal?.issues || []),
+        ...(results.clareza?.issues || []),
+        ...(results.simplificacao?.suggestions || []),
       ],
-      suggestions: validationResults.antiHallucination?.recommendations || [],
+      suggestions: results.antiHallucination?.recommendations || [],
     };
   }
 }
