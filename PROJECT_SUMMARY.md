@@ -416,17 +416,29 @@ O sistema utiliza LLMs que podem:
 
 ## 📈 ROADMAP
 
-### ✅ Versão 1.0 (Atual - COMPLETO)
+### 🔄 Versão 0.1.0 (Atual - Core MVP Funcional)
 
-- [x] Core: Formulário + LLM + PDF
-- [x] 5 subagentes especializados
-- [x] Busca de contratações similares
-- [x] Versionamento completo
-- [x] Autenticação JWT
-- [x] Deploy Railway
-- [x] Documentação completa
+- [x] Core: Formulário + LLM + PDF ✅
+- [x] 5 subagentes especializados ✅
+- [x] Busca de contratações similares ✅
+- [x] Versionamento completo ✅
+- [x] Autenticação JWT ✅
+- [x] Deploy Railway ✅
+- [ ] Testes completos (70% M1 concluído) 🔄
+- [ ] Documentação técnica completa 🔄
+- [ ] Auditoria de segurança 🔄
 
-### 🔄 Versão 1.1 (Próxima)
+### 🎯 Versão 1.0.0 (Planejada - Q1 2026)
+
+- [ ] 100% M1-M6 concluídos
+- [ ] Coverage ≥70% em todos os módulos
+- [ ] Auditoria OWASP + LGPD completa
+- [ ] Load testing validado (100+ usuários)
+- [ ] UAT com servidores públicos realizado
+- [ ] Documentação completa (técnica + usuário)
+- [ ] Zero vulnerabilidades críticas
+
+### 🔄 Versão 1.1+ (Futuro)
 
 - [ ] Templates por órgão/setor
 - [ ] Modo colaborativo
@@ -546,6 +558,21 @@ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações 
 
 ---
 
-**Data de Conclusão**: 2025-11-05
-**Versão**: 1.0.0
-**Status**: ✅ **COMPLETO E OPERACIONAL**
+**Data de Início**: 2025-10-20
+**Versão Atual**: 0.1.0 (Core MVP Funcional)
+**Status**: 🔄 **EM DESENVOLVIMENTO - 32% concluído**
+
+### Progresso por Milestone
+- **M1 (Foundation - Testes)**: 70% ✅ (21/30 concluídas)
+- **M2 (CI/CD)**: 0% 🔄 (0/7 concluídas)
+- **M3 (Quality & Security)**: 30% 🔄 (3/10 concluídas)
+- **M4 (Refactoring)**: 5% 🔄 (1/20 concluídas)
+- **M5 (E2E & Docs)**: 0% 🔄 (0/12 concluídas)
+- **M6 (Maintenance)**: 0% 🔄 (0/2 concluídas)
+
+**Core Funcional**: ✅ Operacional (sistema gera ETPs com sucesso)
+**Qualidade de Código**: 🔄 Em refinamento (testes, docs, segurança)
+
+**Última Atualização**: 2025-11-12
+**Próxima Revisão**: 2025-11-20
+**Versão 1.0.0 Planejada**: Q1 2026
