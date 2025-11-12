@@ -28,7 +28,5 @@ export class GenerateSectionDto {
   })
   @IsOptional()
   @IsObject()
-  context?: {
-    [key: string]: any;
-  };
+  context?: Record<string, unknown>;
 }
