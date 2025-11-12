@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  NotFoundException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SectionsService } from './sections.service';
-import { EtpSection, SectionStatus, SectionType } from '../../entities/etp-section.entity';
+import {
+  EtpSection,
+  SectionStatus,
+  SectionType,
+} from '../../entities/etp-section.entity';
 import { Etp } from '../../entities/etp.entity';
 import { User } from '../../entities/user.entity';
 import { OrchestratorService } from '../orchestrator/orchestrator.service';
@@ -765,9 +765,9 @@ describe('SectionsService', () => {
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(
-        service.remove('invalid-id', mockUserId),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.remove('invalid-id', mockUserId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -788,9 +788,9 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue(
-          { maxOrder: null },
-        );
+        mockSectionsRepository
+          .createQueryBuilder()
+          .getRawOne.mockResolvedValue({ maxOrder: null });
 
         // Act
         const generateDto = {
@@ -865,9 +865,9 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue(
-          { maxOrder: 0 },
-        );
+        mockSectionsRepository
+          .createQueryBuilder()
+          .getRawOne.mockResolvedValue({ maxOrder: 0 });
 
         await service.generateSection(
           mockEtpId,
