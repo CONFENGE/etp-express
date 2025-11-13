@@ -152,7 +152,11 @@ describe('AnalyticsService', () => {
       expect(mockAnalyticsRepository.create).toHaveBeenCalledWith({
         eventType: 'generation',
         eventName: 'section_generated',
-        properties: { duration: 2500, success: true, sectionType: 'JUSTIFICATIVA' },
+        properties: {
+          duration: 2500,
+          success: true,
+          sectionType: 'JUSTIFICATIVA',
+        },
         userId: mockUserId,
         etpId: mockEtpId,
         sessionId: 'session-abc',
@@ -215,7 +219,9 @@ describe('AnalyticsService', () => {
     it('should handle save errors gracefully without throwing', async () => {
       // Arrange
       mockAnalyticsRepository.create.mockReturnValue(mockEvent);
-      mockAnalyticsRepository.save.mockRejectedValue(new Error('Database connection failed'));
+      mockAnalyticsRepository.save.mockRejectedValue(
+        new Error('Database connection failed'),
+      );
 
       // Act
       await service.trackEvent('error', 'save_failed');
@@ -226,20 +232,29 @@ describe('AnalyticsService', () => {
 
     it('should log error when event tracking fails', async () => {
       // Arrange
-      const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      const errorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
       mockAnalyticsRepository.create.mockReturnValue(mockEvent);
-      mockAnalyticsRepository.save.mockRejectedValue(new Error('Database error'));
+      mockAnalyticsRepository.save.mockRejectedValue(
+        new Error('Database error'),
+      );
 
       // Act
       await service.trackEvent('test', 'test_event');
 
       // Assert
-      expect(errorSpy).toHaveBeenCalledWith('Error tracking event:', expect.any(Error));
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error tracking event:',
+        expect.any(Error),
+      );
     });
 
     it('should log debug message on successful tracking', async () => {
       // Arrange
-      const debugSpy = jest.spyOn(Logger.prototype, 'debug').mockImplementation();
+      const debugSpy = jest
+        .spyOn(Logger.prototype, 'debug')
+        .mockImplementation();
       mockAnalyticsRepository.create.mockReturnValue(mockEvent);
       mockAnalyticsRepository.save.mockResolvedValue(mockEvent);
 
@@ -247,7 +262,9 @@ describe('AnalyticsService', () => {
       await service.trackEvent('generation', 'section_generated');
 
       // Assert
-      expect(debugSpy).toHaveBeenCalledWith('Event tracked: generation.section_generated');
+      expect(debugSpy).toHaveBeenCalledWith(
+        'Event tracked: generation.section_generated',
+      );
     });
   });
 
@@ -366,7 +383,11 @@ describe('AnalyticsService', () => {
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByType('generation', startDate, endDate);
+      const result = await service.getEventsByType(
+        'generation',
+        startDate,
+        endDate,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
@@ -527,7 +548,9 @@ describe('AnalyticsService', () => {
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getCount: jest.fn(),
-        getRawMany: jest.fn().mockResolvedValue([{ type: 'generation', count: '40' }]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ type: 'generation', count: '40' }]),
         getRawOne: jest.fn(),
       };
 
@@ -540,7 +563,9 @@ describe('AnalyticsService', () => {
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getCount: jest.fn(),
-        getRawMany: jest.fn().mockResolvedValue([{ date: '2025-11-12', count: '10' }]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ date: '2025-11-12', count: '10' }]),
         getRawOne: jest.fn(),
       };
 
@@ -739,7 +764,11 @@ describe('AnalyticsService', () => {
       const expectedStartDate = new Date();
       expectedStartDate.setDate(expectedStartDate.getDate() - 90);
       // Check date is approximately correct (within 1 second)
-      expect(Math.abs(result.period.startDate.getTime() - expectedStartDate.getTime())).toBeLessThan(1000);
+      expect(
+        Math.abs(
+          result.period.startDate.getTime() - expectedStartDate.getTime(),
+        ),
+      ).toBeLessThan(1000);
     });
 
     it('should parse avgDuration as float and format to 2 decimals', async () => {
@@ -847,8 +876,13 @@ describe('AnalyticsService', () => {
         ]),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
-      mockAnalyticsRepository.find.mockResolvedValue([mockEvent, mockErrorEvent]);
+      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
+      mockAnalyticsRepository.find.mockResolvedValue([
+        mockEvent,
+        mockErrorEvent,
+      ]);
 
       // Act
       const result = await service.getUserActivity(mockUserId);
@@ -896,7 +930,9 @@ describe('AnalyticsService', () => {
         getRawMany: jest.fn().mockResolvedValue([]),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
       mockAnalyticsRepository.find.mockResolvedValue([]);
 
       // Act
@@ -951,7 +987,9 @@ describe('AnalyticsService', () => {
         getRawMany: jest.fn(),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
 
       // Act
       const result = await service.getSystemHealth();
@@ -1052,7 +1090,9 @@ describe('AnalyticsService', () => {
         getRawMany: jest.fn(),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
 
       // Act
       const result = await service.getSystemHealth();
