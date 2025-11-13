@@ -5,7 +5,11 @@ import { Repository } from 'typeorm';
 import { VersionsService } from './versions.service';
 import { EtpVersion } from '../../entities/etp-version.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
-import { EtpSection, SectionType, SectionStatus } from '../../entities/etp-section.entity';
+import {
+  EtpSection,
+  SectionType,
+  SectionStatus,
+} from '../../entities/etp-section.entity';
 
 describe('VersionsService', () => {
   let service: VersionsService;
@@ -556,7 +560,9 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation((data) => data as EtpSection);
+      sectionsRepository.create.mockImplementation(
+        (data) => data as EtpSection,
+      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue({
         ...mockEtp,
@@ -590,7 +596,9 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation((data) => data as EtpSection);
+      sectionsRepository.create.mockImplementation(
+        (data) => data as EtpSection,
+      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue(mockEtp as Etp);
 
@@ -619,7 +627,9 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation((data) => data as EtpSection);
+      sectionsRepository.create.mockImplementation(
+        (data) => data as EtpSection,
+      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue(mockEtp as Etp);
 
@@ -645,7 +655,9 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation((data) => data as EtpSection);
+      sectionsRepository.create.mockImplementation(
+        (data) => data as EtpSection,
+      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue(mockEtp as Etp);
 
@@ -718,7 +730,9 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation((data) => data as EtpSection);
+      sectionsRepository.create.mockImplementation(
+        (data) => data as EtpSection,
+      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue({
         ...mockEtp,
