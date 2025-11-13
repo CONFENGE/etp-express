@@ -59,9 +59,7 @@ describe('PerplexityService', () => {
     it('should search successfully and return formatted results', async () => {
       mockedAxios.post.mockResolvedValue(mockApiResponse);
 
-      const result = await service.search(
-        'Buscar informações sobre notebooks',
-      );
+      const result = await service.search('Buscar informações sobre notebooks');
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         'https://api.perplexity.ai/chat/completions',
