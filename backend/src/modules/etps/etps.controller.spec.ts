@@ -252,12 +252,12 @@ describe('EtpsController', () => {
       );
 
       // Act & Assert
-      await expect(controller.findOne('invalid-id', mockUserId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(controller.findOne('invalid-id', mockUserId)).rejects.toThrow(
-        'ETP não encontrado',
-      );
+      await expect(
+        controller.findOne('invalid-id', mockUserId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        controller.findOne('invalid-id', mockUserId),
+      ).rejects.toThrow('ETP não encontrado');
     });
 
     it('should throw ForbiddenException when user does not own the ETP', async () => {
@@ -330,7 +330,9 @@ describe('EtpsController', () => {
     it('should throw ForbiddenException when user does not own the ETP', async () => {
       // Arrange
       mockEtpsService.update.mockRejectedValue(
-        new ForbiddenException('Você não tem permissão para atualizar este ETP'),
+        new ForbiddenException(
+          'Você não tem permissão para atualizar este ETP',
+        ),
       );
 
       // Act & Assert
@@ -382,7 +384,9 @@ describe('EtpsController', () => {
     it('should throw ForbiddenException when user does not own the ETP', async () => {
       // Arrange
       mockEtpsService.updateStatus.mockRejectedValue(
-        new ForbiddenException('Você não tem permissão para atualizar este ETP'),
+        new ForbiddenException(
+          'Você não tem permissão para atualizar este ETP',
+        ),
       );
 
       // Act & Assert
@@ -443,9 +447,9 @@ describe('EtpsController', () => {
       );
 
       // Act & Assert
-      await expect(
-        controller.remove(mockEtpId, 'other-user'),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(controller.remove(mockEtpId, 'other-user')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should include disclaimer in delete response', async () => {

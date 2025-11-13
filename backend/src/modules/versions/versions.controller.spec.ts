@@ -121,7 +121,11 @@ describe('VersionsController', () => {
       mockVersionsService.createVersion.mockResolvedValue(versionWithoutLog);
 
       // Act
-      const result = await controller.createVersion(mockEtpId, undefined, mockUserId);
+      const result = await controller.createVersion(
+        mockEtpId,
+        undefined,
+        mockUserId,
+      );
 
       // Assert
       expect(service.createVersion).toHaveBeenCalledWith(
