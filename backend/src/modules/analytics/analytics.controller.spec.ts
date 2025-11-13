@@ -23,9 +23,7 @@ describe('AnalyticsController', () => {
     totalUsers: 10,
     totalETPs: 25,
     eventsLastWeek: 45,
-    mostActiveUsers: [
-      { userId: mockUserId, eventCount: 30 },
-    ],
+    mostActiveUsers: [{ userId: mockUserId, eventCount: 30 }],
     eventsByType: {
       user_action: 80,
       system_event: 40,
@@ -320,7 +318,11 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getEventsByType.mockResolvedValue(mockEventsList);
 
       // Act
-      const result = await controller.getEventsByType(eventType, undefined, undefined);
+      const result = await controller.getEventsByType(
+        eventType,
+        undefined,
+        undefined,
+      );
 
       // Assert
       expect(service.getEventsByType).toHaveBeenCalledWith(
@@ -336,7 +338,11 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getEventsByType.mockResolvedValue(mockEventsList);
 
       // Act
-      const result = await controller.getEventsByType(eventType, startDate, endDate);
+      const result = await controller.getEventsByType(
+        eventType,
+        startDate,
+        endDate,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();

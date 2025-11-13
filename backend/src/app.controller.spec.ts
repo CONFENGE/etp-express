@@ -116,7 +116,9 @@ describe('AppController', () => {
       expect(result.features).toBeDefined();
       expect(Array.isArray(result.features)).toBe(true);
       expect(result.features.length).toBe(6);
-      expect(result.features).toContain('Geração assistida por LLM (OpenAI GPT-4)');
+      expect(result.features).toContain(
+        'Geração assistida por LLM (OpenAI GPT-4)',
+      );
     });
 
     it('should include disclaimer list in system info', async () => {
