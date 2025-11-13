@@ -207,9 +207,9 @@ describe('UsersService', () => {
       const updateUserDto: UpdateUserDto = { name: 'New Name' };
       mockRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.update('invalid-id', updateUserDto),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update('invalid-id', updateUserDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should log user update', async () => {
@@ -383,9 +383,9 @@ describe('UsersService', () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
       mockRepository.save.mockRejectedValue(dbError);
 
-      await expect(
-        service.update(mockUser.id, updateUserDto),
-      ).rejects.toThrow('Database update error');
+      await expect(service.update(mockUser.id, updateUserDto)).rejects.toThrow(
+        'Database update error',
+      );
     });
 
     it('should propagate repository errors on remove', async () => {
