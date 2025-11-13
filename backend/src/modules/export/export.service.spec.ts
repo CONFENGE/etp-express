@@ -4,7 +4,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExportService } from './export.service';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
-import { EtpSection, SectionType, SectionStatus } from '../../entities/etp-section.entity';
+import {
+  EtpSection,
+  SectionType,
+  SectionStatus,
+} from '../../entities/etp-section.entity';
 import * as puppeteer from 'puppeteer';
 
 // Mock puppeteer
@@ -270,7 +274,11 @@ describe('ExportService', () => {
   describe('getEtpWithSections (private method tested via public methods)', () => {
     it('should retrieve ETP with sections sorted by order', async () => {
       const section1 = { ...mockSection, order: 2 } as EtpSection;
-      const section2 = { ...mockSection, id: 'section-2', order: 1 } as EtpSection;
+      const section2 = {
+        ...mockSection,
+        id: 'section-2',
+        order: 1,
+      } as EtpSection;
       const etpWithSections = {
         ...mockEtp,
         sections: [section1, section2],
