@@ -47,7 +47,7 @@ TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 22% ⚡
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
-- ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR em andamento**
+- ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR #130 MERGED** ✅
 
 **Pendente**: GitHub Actions testes (#20), deploy Railway (#44-#45), produção (#104-#107, #112)
 
@@ -186,7 +186,7 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 
 **CI/CD Automation (3 issues) - ⚡ 2 DE 3 CONCLUÍDAS**
 - [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
-- [x] #19 - Criar workflow GitHub Actions para Lint (2h) ✅ **PR em andamento**
+- [x] #19 - Criar workflow GitHub Actions para Lint (2h) ✅ **PR #130 MERGED** ✅
 - [ ] #20 - Criar workflow GitHub Actions para Testes com coverage threshold (3h) 🎯 **PRÓXIMA**
 
 **Production Infrastructure (2 issues) 🆕**
@@ -611,12 +611,14 @@ gh issue list --json number,state,milestone | jq
 
 ## 📝 Notas de Atualização
 
-### 2025-11-14 (Atualização 11 - CI Lint Workflow Implementado!) ⚡
+### 2025-11-14 (Atualização 11 - CI Lint Workflow MERGED!) ⚡ ✅
 - ✅ **PROGRESSO GERAL**: 47% → **48%** (47 de 98 issues concluídas)
 - ✅ **M2 CI/CD PIPELINE**: 11% → **22%** (+1 issue: #19) 🚀🚀🚀
-  - **Issue #19**: Workflow GitHub Actions para Lint criado
-  - Arquivo `.github/workflows/ci-lint.yml` implementado
-  - Backend + Frontend lint validation em paralelo
+  - **Issue #19**: Workflow GitHub Actions para Lint - **PR #130 MERGED** ✅
+  - Arquivo `.github/workflows/ci-lint.yml` implementado e ativo em master
+  - Backend lint: ✅ PASSING (0 erros, 17 warnings)
+  - Frontend lint: ❌ 5 erros esperados (serão corrigidos em #14-#17)
+  - Package-lock.json adicionado ao repositório (removido de .gitignore)
   - PRs agora bloqueados automaticamente com erros de lint
   - Foundation para #20 (Tests workflow) estabelecida
 - 🎯 **M2 ACELERANDO**: 2 de 3 workflows CI/CD automation concluídos!
@@ -628,6 +630,7 @@ gh issue list --json number,state,milestone | jq
 - 🔒 Lint errors agora bloqueiam PRs automaticamente
 - 🏗️ Infraestrutura de CI estabelecida - pronto para testes (#20)
 - ⚠️ 5 erros de lint detectados no frontend (#14-#17) - serão corrigidos em PRs separados
+- 📦 Lock files agora versionados para instalações determinísticas
 - 🎯 M2 22% → próximo milestone é deploy Railway (#44-#45)
 
 ### 2025-11-14 (Atualização 10 - M2 CI/CD Pipeline Iniciado!) 🚀
