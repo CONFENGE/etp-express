@@ -2,10 +2,10 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 2 (CI/CD Pipeline) - INICIADO! 🚀
-**Última Atualização:** 2025-11-14 (PR #129 merged - Issue #18)
-**Total de Issues:** 98 issues (52 abertas + 46 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** 95%+ (M1 completo, M2 11% completo)
+**Status Atual:** Milestone 2 (CI/CD Pipeline) - EM PROGRESSO! 🚀
+**Última Atualização:** 2025-11-14 (Issue #19 - CI Lint Workflow)
+**Total de Issues:** 98 issues (51 abertas + 47 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** 95%+ (M1 completo, M2 22% completo)
 
 ---
 
@@ -13,18 +13,18 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ██░░░░░░░░░░░░░░░░░░ 1/9  (11%)  🚀 EM ANDAMENTO
+[M2] CI/CD Pipeline               ████░░░░░░░░░░░░░░░░ 2/9  (22%)  🚀 EM ANDAMENTO
 [M3] Quality & Security           █████████░░░░░░░░░░░ 5/13 (38%)
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
 [M5] E2E Testing & Documentation  ██░░░░░░░░░░░░░░░░░░ 2/18 (11%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 46/98 issues concluídas (47%)  |  M1 100% ✅ | M2 11% ⚡
+TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 22% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (46 issues fechadas)
+## 🎉 Progresso Realizado (47 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -42,13 +42,14 @@ TOTAL: 46/98 issues concluídas (47%)  |  M1 100% ✅ | M2 11% ⚡
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
 
-### ✅ M2: CI/CD Pipeline (1 fechada de 9)
-**Status**: 11% concluído | **M2 INICIADO EM 14/11/2025**
+### ✅ M2: CI/CD Pipeline (2 fechadas de 9)
+**Status**: 22% concluído | **M2 INICIADO EM 14/11/2025**
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
+- ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR em andamento**
 
-**Pendente**: GitHub Actions workflows (#19-#20), deploy Railway (#44-#45), produção (#104-#107, #112)
+**Pendente**: GitHub Actions testes (#20), deploy Railway (#44-#45), produção (#104-#107, #112)
 
 ### ✅ M3: Quality & Security (5 fechadas de 13)
 **Status**: 38% concluído
@@ -181,12 +182,12 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (9 total - 1 concluída ✅, 8 pendentes)
+#### Issues (9 total - 2 concluídas ✅, 7 pendentes)
 
-**CI/CD Automation (3 issues) - ⚡ 1 DE 3 CONCLUÍDA**
+**CI/CD Automation (3 issues) - ⚡ 2 DE 3 CONCLUÍDAS**
 - [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
-- [ ] #19 - Criar workflow GitHub Actions para Lint (2h) 🎯 **PRÓXIMA**
-- [ ] #20 - Criar workflow GitHub Actions para Testes com coverage threshold (3h)
+- [x] #19 - Criar workflow GitHub Actions para Lint (2h) ✅ **PR em andamento**
+- [ ] #20 - Criar workflow GitHub Actions para Testes com coverage threshold (3h) 🎯 **PRÓXIMA**
 
 **Production Infrastructure (2 issues) 🆕**
 - [ ] #44 - Configurar deploy em Railway (backend + frontend + PostgreSQL) (3h) ⚡ **CRÍTICO**
@@ -610,6 +611,25 @@ gh issue list --json number,state,milestone | jq
 
 ## 📝 Notas de Atualização
 
+### 2025-11-14 (Atualização 11 - CI Lint Workflow Implementado!) ⚡
+- ✅ **PROGRESSO GERAL**: 47% → **48%** (47 de 98 issues concluídas)
+- ✅ **M2 CI/CD PIPELINE**: 11% → **22%** (+1 issue: #19) 🚀🚀🚀
+  - **Issue #19**: Workflow GitHub Actions para Lint criado
+  - Arquivo `.github/workflows/ci-lint.yml` implementado
+  - Backend + Frontend lint validation em paralelo
+  - PRs agora bloqueados automaticamente com erros de lint
+  - Foundation para #20 (Tests workflow) estabelecida
+- 🎯 **M2 ACELERANDO**: 2 de 3 workflows CI/CD automation concluídos!
+- 📊 **Issues fechadas**: +1 (total: 46 → 47)
+- 🚀 **Próximo passo**: #20 (GitHub Actions Tests Workflow)
+
+**Destaques:**
+- ⚡ CI/CD automation 67% completo (2 de 3 issues)
+- 🔒 Lint errors agora bloqueiam PRs automaticamente
+- 🏗️ Infraestrutura de CI estabelecida - pronto para testes (#20)
+- ⚠️ 5 erros de lint detectados no frontend (#14-#17) - serão corrigidos em PRs separados
+- 🎯 M2 22% → próximo milestone é deploy Railway (#44-#45)
+
 ### 2025-11-14 (Atualização 10 - M2 CI/CD Pipeline Iniciado!) 🚀
 - ✅ **PROGRESSO GERAL**: 46% → **47%** (46 de 98 issues concluídas)
 - ✅ **M2 CI/CD PIPELINE**: 0% → **11%** (+1 issue: #18) 🚀🚀🚀
@@ -812,6 +832,6 @@ gh issue list --json number,state,milestone | jq
 
 ---
 
-**Última atualização:** 2025-11-14 (Atualização 10 - M2 CI/CD Pipeline Iniciado)
-**Próxima revisão:** 2025-11-20 (após conclusão M2 - 8 issues restantes)
-**Versão:** 1.5
+**Última atualização:** 2025-11-14 (Atualização 11 - CI Lint Workflow Implementado)
+**Próxima revisão:** 2025-11-20 (após conclusão M2 - 7 issues restantes)
+**Versão:** 1.6
