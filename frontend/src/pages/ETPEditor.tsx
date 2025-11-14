@@ -25,7 +25,7 @@ export function ETPEditor() {
     if (id) {
       fetchETP(id);
     }
-  }, [id]);
+  }, [id, fetchETP]);
 
   useEffect(() => {
     if (currentETP) {
