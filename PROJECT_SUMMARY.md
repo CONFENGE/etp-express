@@ -560,15 +560,16 @@ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações 
 
 **Data de Início**: 2025-10-20
 **Versão Atual**: 0.1.0 (Core MVP Funcional)
-**Status**: 🔄 **EM DESENVOLVIMENTO - 32% concluído**
+**Status**: 🔄 **EM DESENVOLVIMENTO - 47% concluído**
 
 ### Progresso por Milestone
-- **M1 (Foundation - Testes)**: 70% ✅ (21/30 concluídas)
-- **M2 (CI/CD)**: 0% 🔄 (0/7 concluídas)
-- **M3 (Quality & Security)**: 30% 🔄 (3/10 concluídas)
-- **M4 (Refactoring)**: 5% 🔄 (1/20 concluídas)
-- **M5 (E2E & Docs)**: 0% 🔄 (0/12 concluídas)
+- **M1 (Foundation - Testes)**: 100% ✅ (34/34 concluídas) 🎉 **COMPLETO!**
+- **M2 (CI/CD)**: 20% ⚡ (2/10 concluídas)
+- **M3 (Quality & Security)**: 38% 🔒 (5/13 concluídas)
+- **M4 (Refactoring)**: 10% 🔄 (2/20 concluídas)
+- **M5 (E2E & Docs)**: 6% 📚 (1/17 concluídas - #48 parent fechada, sub-issues #92-#95 abertas)
 - **M6 (Maintenance)**: 0% 🔄 (0/2 concluídas)
+- **Issues órfãs**: 2 fechadas (#27, #97 - sem milestone)
 
 **Core Funcional**: ✅ Operacional (sistema gera ETPs com sucesso)
 **Qualidade de Código**: 🔄 Em refinamento (testes, docs, segurança)

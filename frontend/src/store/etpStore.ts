@@ -58,7 +58,7 @@ const initialState = {
   validationResult: null,
 };
 
-export const useETPStore = create<ETFState>((set, get) => ({
+export const useETPStore = create<ETFState>((set, _get) => ({
   ...initialState,
 
   fetchETPs: async () => {
