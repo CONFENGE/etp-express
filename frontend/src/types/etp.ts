@@ -101,6 +101,8 @@ export interface ExportOptions {
   includeReferences: boolean;
 }
 
+export const REQUIRED_SECTIONS = [1, 4, 6, 8, 13];
+
 export const SECTION_TEMPLATES: SectionTemplate[] = [
   {
     number: 1,
