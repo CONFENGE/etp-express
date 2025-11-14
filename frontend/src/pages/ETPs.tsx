@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useETPs } from '@/hooks/useETPs';
-import { LoadingState, SkeletonList } from '@/components/common/LoadingState';
+import { SkeletonList } from '@/components/common/LoadingState';
 import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ export function ETPs() {
 
   useEffect(() => {
     fetchETPs();
-  }, []);
+  }, [fetchETPs]);
 
   const filteredETPs = etps.filter((etp) =>
     etp.title.toLowerCase().includes(search.toLowerCase()) ||

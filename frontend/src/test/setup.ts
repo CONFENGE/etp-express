@@ -15,7 +15,7 @@ const localStorageMock = {
   clear: vi.fn(),
 }
 
-global.localStorage = localStorageMock as any
+global.localStorage = localStorageMock as Storage
 
 // Mock de fetch para APIs (alternativa ao MSW para casos simples)
 global.fetch = vi.fn()
