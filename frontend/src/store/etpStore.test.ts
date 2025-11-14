@@ -3,7 +3,6 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { useETPStore } from "./etpStore";
 import { apiHelpers } from "@/lib/api";
 import type {
-  ETP,
   AIGenerationRequest,
   AIGenerationResponse,
   Reference,
@@ -21,31 +20,6 @@ vi.mock("@/lib/api", () => ({
 
 describe("etpStore", () => {
   // Mock data fixtures
-  const mockETP: ETP = {
-    id: "etp-1",
-    title: "ETP Teste",
-    description: "Descrição teste",
-    status: "draft",
-    progress: 0,
-    userId: "user-1",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    sections: [
-      {
-        id: "section-1",
-        etpId: "etp-1",
-        sectionNumber: 1,
-        title: "Seção 1",
-        content: "Conteúdo seção 1",
-        isRequired: true,
-        isCompleted: false,
-        aiGenerated: false,
-        createdAt: "2024-01-01T00:00:00Z",
-        updatedAt: "2024-01-01T00:00:00Z",
-      },
-    ],
-  };
-
   const mockAIGenerationRequest: AIGenerationRequest = {
     etpId: "etp-1",
     sectionNumber: 1,
