@@ -19,7 +19,7 @@ export function useETPs() {
     if (etps.length === 0 && !isLoading) {
       fetchETPs();
     }
-  }, []);
+  }, [etps.length, fetchETPs, isLoading]);
 
   return {
     etps,

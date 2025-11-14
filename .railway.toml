@@ -1,0 +1,62 @@
+# Railway Configuration for ETP Express
+# https://docs.railway.app/deploy/config-as-code
+
+[build]
+# Builder to use (nixpacks is default and recommended)
+builder = "nixpacks"
+
+# Services configuration
+[[services]]
+name = "backend"
+root_directory = "backend"
+build_command = "npm install && npm run build"
+start_command = "npm run start:prod"
+
+# Environment variables for backend
+[[services.env]]
+DATABASE_URL = { reference = "postgres.DATABASE_URL" }
+PORT = { reference = "PORT" }
+NODE_ENV = "production"
+# Add these via Railway UI:
+# - JWT_SECRET (generate with: openssl rand -base64 32)
+# - OPENAI_API_KEY
+# - PERPLEXITY_API_KEY (if needed)
+
+# Health check endpoint
+[[services.healthcheck]]
+path = "/api/health"
+interval = 60
+timeout = 10
+
+[[services]]
+name = "frontend"
+root_directory = "frontend"
+build_command = "npm install && npm run build"
+start_command = "npx serve -s dist -l $PORT"
+
+# Environment variables for frontend
+[[services.env]]
+VITE_API_URL = { reference = "backend.PUBLIC_URL" }
+NODE_ENV = "production"
+
+# Health check (serve root always returns 200)
+[[services.healthcheck]]
+path = "/"
+interval = 60
+timeout = 10
+
+# PostgreSQL database
+[[services]]
+name = "postgres"
+image = "postgres:15-alpine"
+
+# Database environment
+[[services.env]]
+POSTGRES_DB = "etp_express"
+POSTGRES_USER = "etp_user"
+POSTGRES_PASSWORD = { generate = true }
+
+# Volume for persistence
+[[services.volumes]]
+mount_path = "/var/lib/postgresql/data"
+size = 1 # GB

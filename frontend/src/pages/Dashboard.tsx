@@ -16,7 +16,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchETPs();
-  }, []);
+  }, [fetchETPs]);
 
   const stats = {
     total: etps.length,
