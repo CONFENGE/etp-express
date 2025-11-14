@@ -78,6 +78,11 @@ temp/
 *.db
 *.db-journal
 
+# Backups (NUNCA COMMITAR!)
+backups/
+*.sql
+*.sql.gz
+
 # Uploads (se houver)
 uploads/
 public/uploads/
