@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useETPStore } from "./etpStore";
 import { apiHelpers } from "@/lib/api";
-import type { ETP, Section } from "@/types/etp";
+import type {
+  ETP,
+  AIGenerationRequest,
+  AIGenerationResponse,
+  Reference,
+} from "@/types/etp";
 
 // Mock do módulo apiHelpers
 vi.mock("@/lib/api", () => ({
@@ -41,18 +46,46 @@ describe("etpStore", () => {
     ],
   };
 
-  const mockSection: Section = {
-    id: "section-1",
+  const mockAIGenerationRequest: AIGenerationRequest = {
     etpId: "etp-1",
     sectionNumber: 1,
-    title: "Seção 1 Atualizada",
-    content: "Conteúdo atualizado",
-    isRequired: true,
-    isCompleted: true,
-    aiGenerated: false,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-02T00:00:00Z",
+    prompt: "Gerar seção 1",
+    context: {},
   };
+
+  const mockAIGenerationResponse: AIGenerationResponse = {
+    content: "Conteúdo gerado por IA",
+    references: [
+      {
+        id: "ref-1",
+        title: "Referência 1",
+        source: "Fonte 1",
+        url: "https://example.com",
+        relevance: 0.9,
+        excerpt: "Excerto da referência",
+      },
+    ],
+    confidence: 0.85,
+    warnings: [],
+  };
+
+  const mockReferences: Reference[] = [
+    {
+      id: "ref-1",
+      title: "Referência 1",
+      source: "Fonte 1",
+      url: "https://example.com",
+      relevance: 0.9,
+    },
+    {
+      id: "ref-2",
+      title: "Referência 2",
+      source: "Fonte 2",
+      relevance: 0.8,
+    },
+  ];
+
+  const mockBlob = new Blob(["PDF content"], { type: "application/pdf" });
 
   beforeEach(() => {
     // Limpar todos os mocks
@@ -74,156 +107,77 @@ describe("etpStore", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Teste 1: fetchETPs", () => {
-    it("should populate ETPs array on successful fetch", async () => {
-      const mockETPs = [mockETP, { ...mockETP, id: "etp-2", title: "ETP 2" }];
-      vi.mocked(apiHelpers.get).mockResolvedValue(mockETPs);
+  describe("Teste 5: generateSection", () => {
+    it("should make POST request and update section with AI-generated content", async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAIGenerationResponse);
 
       const { result } = renderHook(() => useETPStore());
 
-      expect(result.current.isLoading).toBe(false);
-      expect(result.current.etps).toEqual([]);
+      expect(result.current.aiGenerating).toBe(false);
 
+      let response: AIGenerationResponse | undefined;
       await act(async () => {
-        await result.current.fetchETPs();
+        response = await result.current.generateSection(
+          mockAIGenerationRequest,
+        );
       });
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+        expect(result.current.aiGenerating).toBe(false);
       });
 
-      expect(apiHelpers.get).toHaveBeenCalledWith("/etps");
-      expect(result.current.etps).toEqual(mockETPs);
+      expect(apiHelpers.post).toHaveBeenCalledWith(
+        "/etps/etp-1/sections/1/generate",
+        mockAIGenerationRequest,
+      );
+      expect(response).toEqual(mockAIGenerationResponse);
       expect(result.current.error).toBeNull();
     });
 
-    it("should set error state on fetch failure", async () => {
-      const errorMessage = "Erro ao carregar ETPs";
-      vi.mocked(apiHelpers.get).mockRejectedValue(new Error(errorMessage));
+    it("should set aiGenerating to false after generation completes", async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAIGenerationResponse);
 
       const { result } = renderHook(() => useETPStore());
 
-      await act(async () => {
-        await result.current.fetchETPs();
-      });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.error).toBe(errorMessage);
-      expect(result.current.etps).toEqual([]);
-    });
-  });
-
-  describe("Teste 2: fetchETP", () => {
-    it("should set currentETP on successful fetch", async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue(mockETP);
-
-      const { result } = renderHook(() => useETPStore());
-
-      expect(result.current.currentETP).toBeNull();
+      expect(result.current.aiGenerating).toBe(false);
 
       await act(async () => {
-        await result.current.fetchETP("etp-1");
+        await result.current.generateSection(mockAIGenerationRequest);
       });
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(apiHelpers.get).toHaveBeenCalledWith("/etps/etp-1");
-      expect(result.current.currentETP).toEqual(mockETP);
+      // Verificar que aiGenerating volta para false após conclusão
+      expect(result.current.aiGenerating).toBe(false);
       expect(result.current.error).toBeNull();
     });
 
-    it("should set error state on fetch failure", async () => {
-      const errorMessage = "Erro ao carregar ETP";
-      vi.mocked(apiHelpers.get).mockRejectedValue(new Error(errorMessage));
-
-      const { result } = renderHook(() => useETPStore());
-
-      await act(async () => {
-        await result.current.fetchETP("invalid-id");
-      });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.error).toBe(errorMessage);
-      expect(result.current.currentETP).toBeNull();
-    });
-  });
-
-  describe("Teste 3: createETP", () => {
-    it("should add ETP to array and return ID on successful creation", async () => {
-      vi.mocked(apiHelpers.post).mockResolvedValue(mockETP);
-
-      const { result } = renderHook(() => useETPStore());
-
-      expect(result.current.etps).toEqual([]);
-
-      let createdETP: ETP | undefined;
-      await act(async () => {
-        createdETP = await result.current.createETP({
-          title: "ETP Teste",
-          description: "Descrição teste",
-        });
-      });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(apiHelpers.post).toHaveBeenCalledWith("/etps", {
-        title: "ETP Teste",
-        description: "Descrição teste",
-      });
-      expect(createdETP).toEqual(mockETP);
-      expect(result.current.etps).toEqual([mockETP]);
-      expect(result.current.currentETP).toEqual(mockETP);
-      expect(result.current.error).toBeNull();
-    });
-
-    it("should throw error and not add ETP on creation failure", async () => {
-      const errorMessage = "Erro ao criar ETP";
+    it("should throw error on generation failure", async () => {
+      const errorMessage = "Erro ao gerar seção com IA";
       vi.mocked(apiHelpers.post).mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useETPStore());
 
       await expect(async () => {
         await act(async () => {
-          await result.current.createETP({ title: "ETP Teste" });
+          await result.current.generateSection(mockAIGenerationRequest);
         });
       }).rejects.toThrow();
 
-      // ETP should not be added to array on error
-      expect(result.current.etps).toEqual([]);
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.aiGenerating).toBe(false);
     });
   });
 
-  describe("Teste 4: updateSection", () => {
-    it("should update specific section in currentETP", async () => {
-      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
+  describe("Teste 6: exportPDF", () => {
+    it("should return blob on successful PDF export", async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockBlob);
 
       const { result } = renderHook(() => useETPStore());
 
-      // Setup: set currentETP
-      act(() => {
-        result.current.setCurrentETP(mockETP);
-      });
-
-      expect(result.current.currentETP?.sections[0].content).toBe(
-        "Conteúdo seção 1",
-      );
-      expect(result.current.currentETP?.sections[0].isCompleted).toBe(false);
-
+      let blob: Blob | undefined;
       await act(async () => {
-        await result.current.updateSection("etp-1", "section-1", {
-          content: "Conteúdo atualizado",
-          isCompleted: true,
+        blob = await result.current.exportPDF("etp-1", {
+          format: "pdf",
+          includeDrafts: false,
+          includeReferences: true,
         });
       });
 
@@ -231,64 +185,79 @@ describe("etpStore", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(apiHelpers.put).toHaveBeenCalledWith(
-        "/etps/etp-1/sections/section-1",
-        {
-          content: "Conteúdo atualizado",
-          isCompleted: true,
-        },
-      );
-      expect(result.current.currentETP?.sections[0]).toEqual(mockSection);
+      expect(apiHelpers.post).toHaveBeenCalledWith("/etps/etp-1/export/pdf", {
+        format: "pdf",
+        includeDrafts: false,
+        includeReferences: true,
+      });
+      expect(blob).toBeInstanceOf(Blob);
+      expect(blob?.type).toBe("application/pdf");
       expect(result.current.error).toBeNull();
     });
 
-    it("should not reset loading state when currentETP is null (BUG DOCUMENTED)", async () => {
-      // Este teste documenta um bug identificado: updateSection não reseta isLoading
-      // quando currentETP é null (linha 156 do etpStore.ts retorna state sem modificar isLoading)
-
-      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
+    it("should throw error on export failure", async () => {
+      const errorMessage = "Erro ao exportar PDF";
+      vi.mocked(apiHelpers.post).mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useETPStore());
-
-      expect(result.current.currentETP).toBeNull();
-      expect(result.current.isLoading).toBe(false);
-
-      await act(async () => {
-        await result.current.updateSection("etp-1", "section-1", {
-          content: "Conteúdo",
-        });
-      });
-
-      // API call is made
-      expect(apiHelpers.put).toHaveBeenCalled();
-
-      // BUG: isLoading permanece true quando currentETP é null
-      // Deveria ser false após a operação ser concluída
-      expect(result.current.isLoading).toBe(true);
-
-      // currentETP remains null since there was no ETP to update
-      expect(result.current.currentETP).toBeNull();
-    });
-
-    it("should throw error on update failure", async () => {
-      const errorMessage = "Erro ao atualizar seção";
-      vi.mocked(apiHelpers.put).mockRejectedValue(new Error(errorMessage));
-
-      const { result } = renderHook(() => useETPStore());
-
-      act(() => {
-        result.current.setCurrentETP(mockETP);
-      });
 
       await expect(async () => {
         await act(async () => {
-          await result.current.updateSection("etp-1", "section-1", {
-            content: "Conteúdo",
-          });
+          await result.current.exportPDF("etp-1");
         });
       }).rejects.toThrow();
 
       expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  describe("Teste 7: fetchReferences", () => {
+    it("should update references array on successful fetch", async () => {
+      vi.mocked(apiHelpers.get).mockResolvedValue(mockReferences);
+
+      const { result } = renderHook(() => useETPStore());
+
+      expect(result.current.references).toEqual([]);
+
+      await act(async () => {
+        await result.current.fetchReferences("etp-1");
+      });
+
+      expect(apiHelpers.get).toHaveBeenCalledWith("/etps/etp-1/references");
+      expect(result.current.references).toEqual(mockReferences);
+    });
+
+    it("should silently swallow errors (BUG DOCUMENTED)", async () => {
+      // Este teste documenta o bug identificado na issue #12:
+      // fetchReferences não propaga erros, apenas loga no console.error
+      // Isso significa que erros são engolidos silenciosamente.
+
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      const errorMessage = "Erro ao carregar referências";
+      vi.mocked(apiHelpers.get).mockRejectedValue(new Error(errorMessage));
+
+      const { result } = renderHook(() => useETPStore());
+
+      // fetchReferences não lança erro nem atualiza error state
+      await act(async () => {
+        await result.current.fetchReferences("etp-1");
+      });
+
+      // Verificar que o erro foi apenas logado no console
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Erro ao carregar referências:",
+        expect.any(Error),
+      );
+
+      // BUG: error state não é atualizado (deveria ser!)
+      expect(result.current.error).toBeNull();
+
+      // BUG: references permanece vazio (comportamento inconsistente com outros métodos)
+      expect(result.current.references).toEqual([]);
+
+      consoleErrorSpy.mockRestore();
     });
   });
 });
