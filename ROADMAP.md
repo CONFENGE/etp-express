@@ -3,8 +3,8 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 (CI/CD Pipeline) - EM PROGRESSO! 🚀
-**Última Atualização:** 2025-11-14 (Issue #20 implementada - CI Tests Workflow)
-**Total de Issues:** 98 issues (50 abertas + 48 fechadas) organizadas em 6 milestones
+**Última Atualização:** 2025-11-14 (Issue #44 implementada - Railway Deploy Configuration)
+**Total de Issues:** 98 issues (49 abertas + 49 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 70% atual | 95%+ com 11 gaps identificados (ver PRODUCTION_READINESS_REPORT.md)
 
 ---
@@ -13,18 +13,18 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ██████░░░░░░░░░░░░░░ 3/10 (30%)  🚀 EM ANDAMENTO
+[M2] CI/CD Pipeline               ████████░░░░░░░░░░░░ 4/10 (40%)  🚀 EM ANDAMENTO
 [M3] Quality & Security           █████████░░░░░░░░░░░ 5/13 (38%)
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 30% ⚡
+TOTAL: 48/98 issues concluídas (49%)  |  M1 100% ✅ | M2 40% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (47 issues fechadas)
+## 🎉 Progresso Realizado (48 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -42,15 +42,16 @@ TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 30% ⚡
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
 
-### ✅ M2: CI/CD Pipeline (3 fechadas de 10)
-**Status**: 30% concluído | **M2 INICIADO EM 14/11/2025**
+### ✅ M2: CI/CD Pipeline (4 fechadas de 10)
+**Status**: 40% concluído | **M2 INICIADO EM 14/11/2025**
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
 - ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR #130 MERGED** ✅
-- ✅ #20 - Workflow GitHub Actions para Testes ⚡ **PR #131** (aguardando merge)
+- ✅ #20 - Workflow GitHub Actions para Testes ⚡ **PR #131 MERGED** ✅
+- ✅ #44 - Configuração deploy Railway (backend + frontend + PostgreSQL) ⚡ **PR #132** (aguardando merge)
 
-**Pendente**: Deploy Railway (#44-#45), produção (#104-#107, #112)
+**Pendente**: Backup PostgreSQL (#45), produção (#104-#107, #112)
 
 ### ✅ M3: Quality & Security (5 fechadas de 13)
 **Status**: 38% concluído
@@ -82,6 +83,17 @@ TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 30% ⚡
 ---
 
 ## 📋 Auditoria e Governança
+
+### 2025-11-14 (Atualização 14 - Issue #44 Implementada) 🚀
+- ✅ **PROGRESSO**: 47 → **48 issues fechadas** (48% → 49%)
+- ✅ **M2 CI/CD**: 30% → **40%** (+10 p.p.) - Issue #44 concluída
+- ✅ **Deploy Configuration**: `.railway.toml` + `DEPLOY.md` (430+ linhas) criados
+- ✅ **Infraestrutura Railway**: Backend, Frontend, PostgreSQL configurados
+- ✅ **Documentação completa**: Guia de deploy com troubleshooting, E2E validation, security
+- ✅ **PR #132**: Criada e aguardando merge
+- 🎯 **Próximo passo**: Backup PostgreSQL (#45) ou merge deploy (#44) e executar deploy real
+
+**Impacto:** Deploy em produção 100% configurado! Railway auto-detecta `.railway.toml` e provisiona services.
 
 ### 2025-11-14 (Atualização 13 - Issue #20 Implementada) 🚀
 - ✅ **PROGRESSO**: 46 → **47 issues fechadas** (47% → 48%)
