@@ -2,10 +2,10 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 1 (Foundation - Testes) - 100% CONCLUÍDO! 🎉
-**Última Atualização:** 2025-11-13 (PR #128 merged)
-**Total de Issues:** 98 issues (53 abertas + 45 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** 95%+ (M1 completo, M2 CI/CD próximo)
+**Status Atual:** Milestone 2 (CI/CD Pipeline) - INICIADO! 🚀
+**Última Atualização:** 2025-11-14 (PR #129 merged - Issue #18)
+**Total de Issues:** 98 issues (52 abertas + 46 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** 95%+ (M1 completo, M2 11% completo)
 
 ---
 
@@ -13,18 +13,18 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ░░░░░░░░░░░░░░░░░░░░ 0/9  (0%)   🎯 PRÓXIMO
+[M2] CI/CD Pipeline               ██░░░░░░░░░░░░░░░░░░ 1/9  (11%)  🚀 EM ANDAMENTO
 [M3] Quality & Security           █████████░░░░░░░░░░░ 5/13 (38%)
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
 [M5] E2E Testing & Documentation  ██░░░░░░░░░░░░░░░░░░ 2/18 (11%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 45/98 issues concluídas (46%)  |  M1 100% ✅ | M2 iniciando 🚀
+TOTAL: 46/98 issues concluídas (47%)  |  M1 100% ✅ | M2 11% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (45 issues fechadas)
+## 🎉 Progresso Realizado (46 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -41,6 +41,14 @@ TOTAL: 45/98 issues concluídas (46%)  |  M1 100% ✅ | M2 iniciando 🚀
 - Backend: 70%+ ✅ (meta 70%)
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
+
+### ✅ M2: CI/CD Pipeline (1 fechada de 9)
+**Status**: 11% concluído | **M2 INICIADO EM 14/11/2025**
+
+**CI/CD Automation concluído:**
+- ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
+
+**Pendente**: GitHub Actions workflows (#19-#20), deploy Railway (#44-#45), produção (#104-#107, #112)
 
 ### ✅ M3: Quality & Security (5 fechadas de 13)
 **Status**: 38% concluído
@@ -72,13 +80,14 @@ TOTAL: 45/98 issues concluídas (46%)  |  M1 100% ✅ | M2 iniciando 🚀
 
 ### 🎯 Próximos Passos
 1. ✅ **M1 CONCLUÍDO!** (34/34 issues, 100%) 🎉
-2. **Iniciar M2 - CI/CD Pipeline** (9 issues, 0% → 100%) 🚀
-   - #18-#20: GitHub Actions, build automation
-   - #44-#45: Coverage reports, deploy pipeline
-   - #104-#107: Produção (Docker, health checks, monitoring, deploy)
-3. **Paralelizar M3 - Security** (8 issues pendentes)
+2. ✅ **M2 INICIADO!** #18 concluída - ESLint rule configurada ⚡
+3. **Continuar M2 - CI/CD Pipeline** (8 issues restantes, 11% → 100%) 🚀
+   - #19-#20: GitHub Actions workflows (lint + tests)
+   - #44-#45: Deploy Railway + backup PostgreSQL
+   - #104-#107, #112: Produção (monitoring, DR, incident response, deployment)
+4. **Paralelizar M3 - Security** (8 issues pendentes)
    - #17: Último useEffect
-   - #38-#39: Rate limiting, CORS
+   - #38-#39: Rate limiting, navegação segura
    - #86-#87: LGPD, remediações OWASP
 
 ---
@@ -172,11 +181,11 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (9 total - 0 concluídas, 9 pendentes)
+#### Issues (9 total - 1 concluída ✅, 8 pendentes)
 
-**CI/CD Automation (3 issues)**
-- [ ] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h)
-- [ ] #19 - Criar workflow GitHub Actions para Lint (2h)
+**CI/CD Automation (3 issues) - ⚡ 1 DE 3 CONCLUÍDA**
+- [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
+- [ ] #19 - Criar workflow GitHub Actions para Lint (2h) 🎯 **PRÓXIMA**
 - [ ] #20 - Criar workflow GitHub Actions para Testes com coverage threshold (3h)
 
 **Production Infrastructure (2 issues) 🆕**
@@ -601,6 +610,22 @@ gh issue list --json number,state,milestone | jq
 
 ## 📝 Notas de Atualização
 
+### 2025-11-14 (Atualização 10 - M2 CI/CD Pipeline Iniciado!) 🚀
+- ✅ **PROGRESSO GERAL**: 46% → **47%** (46 de 98 issues concluídas)
+- ✅ **M2 CI/CD PIPELINE**: 0% → **11%** (+1 issue: #18) 🚀🚀🚀
+  - **PR #129**: ESLint rule `react-hooks/exhaustive-deps` configurada como erro
+  - Lint agora bloqueia commits com dependências incorretas de hooks
+  - Foundation estabelecida para workflows GitHub Actions (#19-#20)
+- 🎯 **M2 OFICIALMENTE INICIADO**: Primeiro milestone pós-M1!
+- 📊 **Issues fechadas**: +1 (total: 45 → 46)
+- 🚀 **Próximo passo**: #19 (GitHub Actions Lint Workflow)
+
+**Destaques:**
+- 🎊 M1 100% completo + M2 11% = Transição suave para CI/CD
+- ⚡ ESLint detecta 5 erros (4 useEffect + 1 any) - validação funcional
+- 🔒 CI/CD foundation: Regras de qualidade configuradas antes de automation
+- 🎯 Issue #19 desbloqueada e pronta para execução
+
 ### 2025-11-14 (Atualização 9 - M1 Quase Completo!) 🎊
 - ✅ **PROGRESSO GERAL**: 42% → **45%** (44 de 98 issues concluídas)
 - ✅ **M1 FOUNDATION**: 88% → **97%** (+3 issues: #12, #58, #59) 🔥🔥🔥
@@ -787,6 +812,6 @@ gh issue list --json number,state,milestone | jq
 
 ---
 
-**Última atualização:** 2025-11-14 (Atualização 9 - M1 97% Completo)
-**Próxima revisão:** 2025-11-15 (após finalização M1)
-**Versão:** 1.4
+**Última atualização:** 2025-11-14 (Atualização 10 - M2 CI/CD Pipeline Iniciado)
+**Próxima revisão:** 2025-11-20 (após conclusão M2 - 8 issues restantes)
+**Versão:** 1.5
