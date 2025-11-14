@@ -23,10 +23,10 @@
 |-----------|------------|-----------|
 | **Backend** | 64 arquivos | NestJS + TypeORM + PostgreSQL |
 | **Frontend** | 62 arquivos | React + TypeScript + Vite |
-| **Configuração** | 12 arquivos | ENV, Railway, TS configs |
-| **Documentação** | 6 arquivos | README, Architecture, Deploy, etc |
+| **Configuração** | 13 arquivos | ENV, Railway, TS configs |
+| **Documentação** | 7 arquivos | README, Architecture, Deploy, Roadmap, etc |
 | **Schema** | 1 arquivo | PostgreSQL completo |
-| **TOTAL** | **145 arquivos** | Sistema completo end-to-end |
+| **TOTAL** | **147 arquivos** | Sistema completo end-to-end |
 
 ### Linhas de Código (Estimativa)
 
