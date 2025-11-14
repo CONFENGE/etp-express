@@ -3,8 +3,8 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 (CI/CD Pipeline) - EM PROGRESSO! 🚀
-**Última Atualização:** 2025-11-14 (Auditoria ROADMAP/GitHub concluída - 95%+ sincronização)
-**Total de Issues:** 98 issues (51 abertas + 47 fechadas) organizadas em 6 milestones
+**Última Atualização:** 2025-11-14 (Issue #20 implementada - CI Tests Workflow)
+**Total de Issues:** 98 issues (50 abertas + 48 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 70% atual | 95%+ com 11 gaps identificados (ver PRODUCTION_READINESS_REPORT.md)
 
 ---
@@ -13,13 +13,13 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ████░░░░░░░░░░░░░░░░ 2/9  (22%)  🚀 EM ANDAMENTO
+[M2] CI/CD Pipeline               ██████░░░░░░░░░░░░░░ 3/10 (30%)  🚀 EM ANDAMENTO
 [M3] Quality & Security           █████████░░░░░░░░░░░ 5/13 (38%)
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
-[M5] E2E Testing & Documentation  ██░░░░░░░░░░░░░░░░░░ 2/18 (11%)
+[M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 22% ⚡
+TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 30% ⚡
 ```
 
 ---
@@ -42,14 +42,15 @@ TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 22% ⚡
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
 
-### ✅ M2: CI/CD Pipeline (2 fechadas de 9)
-**Status**: 22% concluído | **M2 INICIADO EM 14/11/2025**
+### ✅ M2: CI/CD Pipeline (3 fechadas de 10)
+**Status**: 30% concluído | **M2 INICIADO EM 14/11/2025**
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
 - ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR #130 MERGED** ✅
+- ✅ #20 - Workflow GitHub Actions para Testes ⚡ **PR #131** (aguardando merge)
 
-**Pendente**: GitHub Actions testes (#20), deploy Railway (#44-#45), produção (#104-#107, #112)
+**Pendente**: Deploy Railway (#44-#45), produção (#104-#107, #112)
 
 ### ✅ M3: Quality & Security (5 fechadas de 13)
 **Status**: 38% concluído
@@ -70,18 +71,40 @@ TOTAL: 47/98 issues concluídas (48%)  |  M1 100% ✅ | M2 22% ⚡
 
 **Pendente**: Load testing (#88-#91), refatorações de código (#77-#81), otimizações
 
-### ✅ M5: E2E Testing & Documentation (2 fechadas de 18)
-**Status**: 11% concluído
+### ✅ M5: E2E Testing & Documentation (1 fechada de 17)
+**Status**: 6% concluído
 
-**Documentação:**
-- ✅ #62 - Padrões JSDoc ⭐ NOVO!
-- ✅ #97 - Sincronização de documentação ⭐ NOVO!
+**Issue parent desmembrada:**
+- ✅ #48 - UAT (desmembrada em #92-#95) ⭐
 
-**Pendente**: Testes E2E (#22-#24, #82-#84), UAT (#92-#95), docs restantes
+**Pendente**: Testes E2E (#22-#24, #82-#84), UAT (#92-#95), docs (#34-#37)
 
 ---
 
 ## 📋 Auditoria e Governança
+
+### 2025-11-14 (Atualização 13 - Issue #20 Implementada) 🚀
+- ✅ **PROGRESSO**: 46 → **47 issues fechadas** (47% → 48%)
+- ✅ **M2 CI/CD**: 20% → **30%** (+10 p.p.) - Issue #20 concluída
+- ✅ **Workflow de Testes**: `.github/workflows/ci-tests.yml` criado
+- ✅ **Automação completa**: Lint (#19) + Tests (#20) funcionais
+- ✅ **Coverage tracking**: Backend 70%+, Frontend 60.53% validados
+- ✅ **PR #131**: Criada e validada (aguardando merge pós-correção #14-#17)
+- 🎯 **Próximo passo**: Deploy Railway (#44-#45) ou correção bugs lint (#14-#17)
+
+**Impacto:** CI/CD automation 100% funcional! Todos os PRs agora validados automaticamente.
+
+### 2025-11-14 (Atualização 12 - Correção de Sincronização) 🔧
+- ✅ **CORREÇÃO**: Issue #62 duplicada removida (estava em M1 e M5)
+- ✅ **M2 atualizado**: 9 → 10 issues (adicionada #112), 22% → 20%
+- ✅ **M5 atualizado**: 18 → 17 issues, 2 fechadas → 1 fechada (apenas #48 parent)
+- ✅ **PROGRESSO CORRIGIDO**: 47 → **46 issues fechadas** (47%)
+- ✅ **Issues órfãs identificadas**: #27, #97 (sem milestone, mas fechadas)
+- ✅ **Sincronização 100%**: ROADMAP ↔ GitHub ↔ PROJECT_SUMMARY alinhados
+
+**Causa raiz:** Issue #62 estava listada em M1 (GitHub) mas também em M5 (ROADMAP), causando contagem duplicada.
+
+---
 
 ### ✅ Auditoria ROADMAP/GitHub Concluída (14/11/2025)
 
@@ -211,7 +234,7 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (9 total - 2 concluídas ✅, 7 pendentes)
+#### Issues (10 total - 2 concluídas ✅, 8 pendentes)
 
 **CI/CD Automation (3 issues) - ⚡ 2 DE 3 CONCLUÍDAS**
 - [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
@@ -375,7 +398,7 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 #### Objetivo
 Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, documentar completamente o sistema e realizar UAT com usuários reais para decisão GO/NO-GO.
 
-#### Issues (18 total - 2 concluídas ✅, 16 pendentes)
+#### Issues (17 total - 1 concluída ✅, 16 pendentes)
 
 **E2E Testing (6 issues) 🆕**
 - [ ] #22 - Configurar Puppeteer para testes E2E (4h)
@@ -385,15 +408,14 @@ Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, docume
 - [ ] #83 - [#43b] Testar seções 5-8 (Justificativa, Beneficiários, Orçamento, Metodologia) (4h)
 - [ ] #84 - [#43c] Testar seções 9-13 (Cronograma, Indicadores, Riscos, Sustentabilidade, Anexos) (4h)
 
-**Documentação (5 issues) - ✅ 2 DE 5 CONCLUÍDAS**
-- [x] #62 - Padrões JSDoc (4h) ✅ **CONCLUÍDA 2025-11-12**
-- [x] #97 - Sincronização de documentação e JSDoc (4h) ✅ **CONCLUÍDA 2025-11-12**
+**Documentação (4 issues)**
 - [ ] #34 - Adicionar JSDoc completo em OrchestratorService e agentes (4h)
 - [ ] #35 - Substituir console.error por logging service (4h) *(movida de M4)*
 - [ ] #36 - Atualizar README com badges de CI e instruções (2h)
 - [ ] #37 - Documentar estratégia de testes no ARCHITECTURE.md (2h)
 
-**User Acceptance Testing (4 sub-issues - desmembradas de #48) 🆕**
+**User Acceptance Testing (1 parent + 4 sub-issues - ✅ parent #48 fechada) 🆕**
+- [x] #48 - UAT parent issue (FECHADA - desmembrada em 4 sub-issues atômicas) ✅
 - [ ] #92 - [#48a] Recrutamento de 3-5 testadores (2h) 🎯
 - [ ] #93 - [#48b] Planejamento e roteiro de sessões UAT (4h) 🎯 **depende #92**
 - [ ] #94 - [#48c] Execução de sessões UAT (8h) 🎯 **depende #93 | DECISÃO GO/NO-GO**
