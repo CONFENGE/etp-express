@@ -119,3 +119,24 @@ docs/.vitepress/cache
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+
+# Operations Scripts - Ignore outputs but keep scripts
+ops/issue-audit/*.json
+ops/issue-audit/*.csv
+ops/issue-audit/*_REPORT.md
+ops/issue-audit/*_SUMMARY.md
+ops/issue-audit/*_PLAN.md
+ops/issue-audit/*_MATRIX.md
+ops/issue-audit/*_LOG.json
+ops/issue-audit/DASHBOARD.md
+ops/issue-audit/EXECUTIVE_SUMMARY.md
+ops/issue-audit/COMPLIANCE_REPORT.md
+ops/issue-audit/RAILWAY_ROADMAP.md
+ops/issue-audit/SPRINT_PLAN.md
+ops/issue-audit/UNBLOCKING_PLAN.md
+ops/issue-audit/DEPENDENCY_MATRIX.md
+ops/issue-audit/DUPLICATES_AND_MERGES.md
+ops/issue-audit/BACKLOG_ORDER.md
+ops/issue-audit/ISSUE_FIXUPS.md
+ops/issue-audit/issue_improvements.md
+ops/issue-audit/RECOMMENDATIONS.md
