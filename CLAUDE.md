@@ -1,0 +1,1 @@
+- sempre que uma tarefa impactar na evolução do projeto, ROADMAP.md deve ser atualizado.
