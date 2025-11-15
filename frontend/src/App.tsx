@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
+import { setNavigate } from '@/lib/navigation';
 
 // Pages
 import { Login } from '@/pages/Login';
@@ -33,66 +35,84 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * AppRoutes Component
+ * Initializes global navigation and renders application routes.
+ * Must be inside BrowserRouter to use useNavigate hook.
+ */
+function AppRoutes() {
+  const navigate = useNavigate();
+
+  // Initialize global navigation singleton on mount
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
+
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/etps"
+        element={
+          <ProtectedRoute>
+            <ETPs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/etps/:id"
+        element={
+          <ProtectedRoute>
+            <ETPEditor />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/etps"
-            element={
-              <ProtectedRoute>
-                <ETPs />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/etps/:id"
-            element={
-              <ProtectedRoute>
-                <ETPEditor />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
         <Toaster />
       </BrowserRouter>
     </ErrorBoundary>
