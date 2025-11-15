@@ -138,6 +138,215 @@ npm run dev
 
 ---
 
+## 🐳 DESENVOLVIMENTO LOCAL COM DOCKER (RECOMENDADO)
+
+### Pré-requisitos
+
+- **Docker Engine** 20.10+
+- **Docker Compose** V2
+- **OpenAI API Key** (obrigatório)
+
+### Setup Automático (One Command)
+
+```bash
+# Clone o repositório
+git clone <seu-repo>
+cd "ETP Express"
+
+# Setup completo (recomendado para novos desenvolvedores)
+bash scripts/setup-local.sh
+
+# Siga as instruções interativas:
+# - Será solicitada sua OpenAI API Key
+# - Secrets serão gerados automaticamente (JWT, database password)
+# - Docker images serão buildadas (~5-10 min na primeira vez)
+# - Services serão iniciados automaticamente
+```
+
+**Resultado:**
+- ✅ PostgreSQL rodando com volumes persistentes
+- ✅ Backend NestJS com hot-reload
+- ✅ Frontend React + Vite com hot-reload
+- ✅ Environment variables configuradas automaticamente
+
+### Setup Manual
+
+```bash
+# 1. Criar .env a partir do template
+cp .env.template .env
+
+# 2. Editar .env e adicionar sua OpenAI API Key
+# OPENAI_API_KEY=sk-...your_api_key_here...
+
+# 3. Validar environment variables (opcional mas recomendado)
+bash scripts/validate-env.sh
+
+# 4. Iniciar stack completa
+docker-compose up
+
+# Ou em background:
+docker-compose up -d
+```
+
+### URLs de Acesso
+
+| Serviço          | URL                          | Descrição                |
+|------------------|------------------------------|--------------------------|
+| **Frontend**     | http://localhost:5173        | Interface do usuário     |
+| **Backend API**  | http://localhost:3001        | API REST                 |
+| **API Docs**     | http://localhost:3001/api/docs | Swagger Documentation |
+| **PostgreSQL**   | localhost:5432               | Database (interno)       |
+
+### Comandos Docker Úteis
+
+```bash
+# Ver logs em tempo real
+docker-compose logs -f
+
+# Ver logs de um serviço específico
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Parar todos os serviços
+docker-compose down
+
+# Parar e remover volumes (CUIDADO: limpa database)
+docker-compose down -v
+
+# Rebuild images (após mudanças no Dockerfile)
+docker-compose build
+
+# Rebuild e restart
+docker-compose up --build
+
+# Executar comandos dentro de um container
+docker-compose exec backend npm run migration:run
+docker-compose exec postgres psql -U etp_user -d etp_express
+
+# Entrar no shell de um container
+docker-compose exec backend sh
+docker-compose exec frontend sh
+
+# Ver status dos containers
+docker-compose ps
+
+# Ver uso de recursos
+docker stats
+```
+
+### Hot-Reload Habilitado
+
+**Backend:**
+- Source code montado como volume em `/app/src`
+- NestJS watch mode ativado
+- Mudanças refletem automaticamente (2-3s)
+
+**Frontend:**
+- Source code montado como volume em `/app/src`
+- Vite dev server com HMR (Hot Module Replacement)
+- Mudanças refletem instantaneamente (<1s)
+
+### Environment Variables
+
+As variáveis de ambiente são gerenciadas via arquivo `.env` na raiz do projeto.
+
+**Arquivo:** `.env.template` (copiar para `.env`)
+
+**Variáveis OBRIGATÓRIAS:**
+
+| Variável              | Descrição                              | Exemplo                          |
+|-----------------------|----------------------------------------|----------------------------------|
+| `OPENAI_API_KEY`      | OpenAI API Key (obrigatória)           | `sk-proj-...`                    |
+| `POSTGRES_PASSWORD`   | Senha do PostgreSQL                    | `<auto-gerado por setup-local>`  |
+| `JWT_SECRET`          | Secret para assinatura de tokens JWT  | `<auto-gerado por setup-local>`  |
+
+**Variáveis OPCIONAIS:**
+
+| Variável              | Descrição                              | Default                          |
+|-----------------------|----------------------------------------|----------------------------------|
+| `PERPLEXITY_API_KEY`  | Perplexity API (busca avançada)        | ` ` (disabled)                   |
+| `SENTRY_DSN`          | Sentry error tracking                  | ` ` (disabled)                   |
+| `NODE_ENV`            | Node environment                       | `development`                    |
+| `BACKEND_PORT`        | Backend port                           | `3001`                           |
+| `FRONTEND_PORT`       | Frontend port                          | `5173`                           |
+
+**Validação:**
+
+```bash
+# Validar .env antes de iniciar
+bash scripts/validate-env.sh
+
+# Output:
+# ✓ All validations passed!
+# Your .env file is ready. You can now run: docker-compose up
+```
+
+### Troubleshooting
+
+#### "Cannot connect to database"
+
+```bash
+# Check PostgreSQL status
+docker-compose ps postgres
+
+# Restart PostgreSQL
+docker-compose restart postgres
+
+# View PostgreSQL logs
+docker-compose logs postgres
+```
+
+#### "Port already in use"
+
+```bash
+# Identificar processo usando a porta
+# Windows:
+netstat -ano | findstr :5173
+taskkill /PID <PID> /F
+
+# Linux/Mac:
+lsof -ti:5173 | xargs kill -9
+
+# Ou alterar porta no .env:
+FRONTEND_PORT=5174
+BACKEND_PORT=3002
+```
+
+#### "Hot-reload not working"
+
+```bash
+# Rebuild from scratch
+docker-compose down
+docker-compose build --no-cache
+docker-compose up
+```
+
+#### "Out of disk space"
+
+```bash
+# Limpar images e containers não usados
+docker system prune -a
+
+# Ver uso de disco
+docker system df
+```
+
+### Arquitetura Docker
+
+**Arquivos principais:**
+- `docker-compose.yml` - Orquestração dos 3 services
+- `backend/Dockerfile` - Multi-stage build (development + production)
+- `frontend/Dockerfile` - Multi-stage build (development + production)
+- `frontend/nginx.conf` - Nginx config para production stage
+
+**Multi-stage builds:**
+- **Development stage:** Hot-reload, debug, dev dependencies
+- **Production stage:** Optimized, minimal, security-hardened
+
+**Documentação completa:** [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)
+
+---
+
 ## 📦 DEPLOY EM PRODUÇÃO (RAILWAY)
 
 Consulte o guia completo: **[DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)**
@@ -298,10 +507,12 @@ npm run lint
 | Documento                                                      | Descrição                                            |
 | -------------------------------------------------------------- | ---------------------------------------------------- |
 | [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                      |
+| [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)             | 🏗️ **Infrastructure as Code - Docker, Railway, DR**  |
 | [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)                 |
 | [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | 🚨 **Playbook de resposta a incidentes em produção** |
 | [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime                    |
 | [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md)                 | Backup e disaster recovery procedures                |
+| [docs/MONITORING.md](./docs/MONITORING.md)                     | Monitoramento e alertas com Sentry                   |
 | [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql)                   | Schema completo do banco                             |
 | [backend/README.md](./backend/README.md)                       | Documentação do backend                              |
 | [frontend/README.md](./frontend/README.md)                     | Documentação do frontend                             |
