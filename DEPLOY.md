@@ -472,6 +472,60 @@ Após deploy completo, anote suas URLs:
 
 ---
 
-**Última atualização**: 2025-11-14
-**Versão**: 1.0
+## 6. Incident Response
+
+Se problemas ocorrerem em produção, siga o **[Incident Response Playbook](docs/INCIDENT_RESPONSE.md)**.
+
+### Quick Links
+
+- 📖 **[Top 10 Failure Scenarios](docs/INCIDENT_RESPONSE.md#top-10-failure-scenarios)** - Diagnóstico e resolução step-by-step
+- 🚨 **[Escalation Matrix](docs/INCIDENT_RESPONSE.md#escalation-matrix)** - SLAs e contacts de emergência
+- 💬 **[Communication Templates](docs/templates/)** - Templates para notificar usuários
+
+### Emergency Commands
+
+```bash
+# ROLLBACK (recuperação rápida de deploy problemático)
+./scripts/rollback.sh
+
+# BACKUP IMEDIATO (antes de ações destrutivas)
+./scripts/backup-db.sh
+
+# HEALTH CHECK (validar sistema está operacional)
+curl https://backend.railway.app/api/health
+
+# LOGS RECENTES (investigar erros)
+railway logs --service backend | tail -50
+
+# STATUS SERVICES (verificar se services estão running)
+railway ps
+
+# RESTART SERVICE (quando restart resolve problema)
+railway restart
+```
+
+### Common Issues - Quick Reference
+
+| Sintoma | Causa Provável | Action | Runbook |
+|---------|----------------|--------|---------|
+| Backend retorna 500 em todos endpoints | Database down | `railway restart` (PostgreSQL) | [Scenario 1](docs/INCIDENT_RESPONSE.md#scenario-1-database-down) |
+| Requests muito lentos (>5s) | High latency / query sem índice | `railway restart` (backend) | [Scenario 2](docs/INCIDENT_RESPONSE.md#scenario-2-api-timeout-high-latency) |
+| "Erro ao gerar seção" | OpenAI API failure ou rate limit | Aguardar 60s ou verificar API key | [Scenario 3](docs/INCIDENT_RESPONSE.md#scenario-3-openai-api-failure) |
+| Backend crashes repetidamente | Memory leak (OOM) | `./scripts/rollback.sh` | [Scenario 4](docs/INCIDENT_RESPONSE.md#scenario-4-memory-leak-oom---out-of-memory) |
+| Frontend tela branca | Build error ou env var missing | `railway rollback` (frontend) | [Scenario 5](docs/INCIDENT_RESPONSE.md#scenario-5-frontend-down-white-screen) |
+
+### When to Use Incident Response
+
+✅ **USE quando:**
+- Sistema apresenta comportamento anormal em produção
+- Usuários relatam erros ou indisponibilidade
+- Alertas de monitoramento disparam
+- Deploy falha ou causa regressão
+
+📖 **Ver documentação completa:** [docs/INCIDENT_RESPONSE.md](docs/INCIDENT_RESPONSE.md)
+
+---
+
+**Última atualização**: 2025-11-15
+**Versão**: 1.1
 **Responsável**: ETP Express Team
