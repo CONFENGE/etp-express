@@ -1,0 +1,41 @@
+name: Backup Validation
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Toda segunda-feira 9h UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  validate-backup:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Run backup
+        run: |
+          chmod +x scripts/backup-db.sh
+          ./scripts/backup-db.sh
+
+      - name: Validate backup integrity
+        run: |
+          chmod +x scripts/validate-backup.sh
+          ./scripts/validate-backup.sh
+
+      - name: Upload backup artifact (for audit)
+        uses: actions/upload-artifact@v3
+        with:
+          name: backup-validation-${{ github.run_number }}
+          path: backups/*.sql.gz
+          retention-days: 7
+
+      - name: Notify failure (Slack/Email)
+        if: failure()
+        run: echo "⚠️ BACKUP VALIDATION FAILED - INVESTIGATE IMMEDIATELY"
