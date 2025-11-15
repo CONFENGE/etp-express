@@ -37,7 +37,9 @@ describe('HealthService', () => {
   describe('check', () => {
     it('should return healthy status when database is connected', async () => {
       // Arrange
-      jest.spyOn(userRepository, 'query').mockResolvedValue([{ '?column?': 1 }]);
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
 
       // Act
       const result = await service.check();
@@ -74,7 +76,9 @@ describe('HealthService', () => {
 
     it('should return valid ISO 8601 timestamp', async () => {
       // Arrange
-      jest.spyOn(userRepository, 'query').mockResolvedValue([{ '?column?': 1 }]);
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
 
       // Act
       const result = await service.check();
@@ -101,7 +105,9 @@ describe('HealthService', () => {
   describe('checkDatabase (private method)', () => {
     it('should return true when database query succeeds', async () => {
       // Arrange
-      jest.spyOn(userRepository, 'query').mockResolvedValue([{ '?column?': 1 }]);
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
 
       // Act
       const result = await (service as any).checkDatabase();
@@ -183,7 +189,9 @@ describe('HealthService', () => {
   describe('integration scenarios', () => {
     it('should handle rapid consecutive health checks', async () => {
       // Arrange
-      jest.spyOn(userRepository, 'query').mockResolvedValue([{ '?column?': 1 }]);
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
 
       // Act
       const results = await Promise.all([
