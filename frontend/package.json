@@ -29,7 +29,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.0.6",
-    "jspdf": "^2.5.1",
+    "jspdf": "^3.0.3",
     "lucide-react": "^0.303.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -39,6 +39,9 @@
     "tailwind-merge": "^2.2.0",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"
+  },
+  "overrides": {
+    "dompurify": "^3.3.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
