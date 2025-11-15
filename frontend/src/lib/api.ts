@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { API_URL } from './constants';
+import { getNavigate } from './navigation';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -31,7 +32,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      const navigate = getNavigate();
+      navigate('/login', { replace: true });
     }
 
     // Handle network errors
