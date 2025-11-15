@@ -49,7 +49,7 @@ export const initSentry = () => {
     ],
 
     // Before send hook: Sanitizar dados sensíveis
-    beforeSend(event, hint) {
+    beforeSend(event, _hint) {
       // Remover dados sensíveis de headers
       if (event.request?.headers) {
         delete event.request.headers.authorization;

@@ -39,7 +39,8 @@ export class MetricsController {
   @Header('Content-Type', 'text/plain; version=0.0.4')
   @ApiOperation({
     summary: 'Get application metrics (Prometheus format)',
-    description: 'Retorna métricas customizadas em formato Prometheus para scraping',
+    description:
+      'Retorna métricas customizadas em formato Prometheus para scraping',
   })
   @ApiResponse({
     status: 200,
@@ -76,7 +77,8 @@ memory_usage_bytes 45678901`,
   @Get('json')
   @ApiOperation({
     summary: 'Get application metrics (JSON format)',
-    description: 'Retorna métricas customizadas em formato JSON para dashboards',
+    description:
+      'Retorna métricas customizadas em formato JSON para dashboards',
   })
   @ApiResponse({
     status: 200,
