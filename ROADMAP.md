@@ -3,8 +3,8 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 (CI/CD Pipeline) - EM PROGRESSO! 🚀
-**Última Atualização:** 2025-11-15 (Issue #39 implementada - React Router Navigation Security Fix)
-**Total de Issues:** 98 issues (44 abertas + 54 fechadas) organizadas em 6 milestones
+**Última Atualização:** 2025-11-15 (Issue #17 fechada - useEffect bug já corrigido)
+**Total de Issues:** 98 issues (43 abertas + 55 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 90% atual | 95%+ com 2 gaps críticos restantes (#105, #112)
 
 ---
@@ -14,17 +14,17 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████░░░░ 8/10 (80%)  🚀 EM ANDAMENTO
-[M3] Quality & Security           ██████████░░░░░░░░░░ 6/13 (46%)  🔒 PROGREDINDO
+[M3] Quality & Security           ███████████░░░░░░░░░ 7/13 (54%)  🔒 PROGREDINDO
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 53/98 issues concluídas (54%)  |  M1 100% ✅ | M2 80% ⚡ | M3 46% 🔒
+TOTAL: 54/98 issues concluídas (55%)  |  M1 100% ✅ | M2 80% ⚡ | M3 54% 🔒
 ```
 
 ---
 
-## 🎉 Progresso Realizado (53 issues fechadas)
+## 🎉 Progresso Realizado (54 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -57,16 +57,16 @@ TOTAL: 53/98 issues concluídas (54%)  |  M1 100% ✅ | M2 80% ⚡ | M3 46% 🔒
 
 **Pendente**: Produção readiness (#105-#112 - Monitoring & IaC)
 
-### ✅ M3: Quality & Security (6 fechadas de 13)
-**Status**: 46% concluído
+### ✅ M3: Quality & Security (7 fechadas de 13)
+**Status**: 54% concluído
 
 **Segurança e qualidade:**
-- ✅ #14-#16 - Correções useEffect (3 de 4 completas)
-- ✅ #39 - React Router Navigation (window.location → navigate()) ⭐ **NOVO!**
+- ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
+- ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
 - ✅ UX e segurança frontend aprimoradas
 
-**Pendente**: #17 (último useEffect), LGPD (#86), remediações (#87), rate limiting (#38)
+**Pendente**: LGPD (#86), remediações (#87), rate limiting (#38)
 
 ### ✅ M4: Refactoring & Performance (2 fechadas de 20)
 **Status**: 10% concluído
@@ -191,6 +191,37 @@ TOTAL: 53/98 issues concluídas (54%)  |  M1 100% ✅ | M2 80% ⚡ | M3 46% 🔒
 - Linting: 0 warnings ✅
 
 **Impacto:** UX frontend significativamente melhorada - usuários não perdem mais dados de formulários ao receber 401. Navegação instantânea sem reload preserva contexto da aplicação.
+
+### 2025-11-15 (Atualização 19 - Issue #17 Fechada) 🔍 **NOVO!**
+- ✅ **PROGRESSO**: 54 → **55 issues fechadas** (54% → 55%)
+- ✅ **M3 Quality & Security**: 46% → **54%** (+8 p.p.) - Issue #17 fechada
+- ✅ **useEffect Bugs**: 4 de 4 completas (100%) ✅
+
+**O que foi descoberto (#17):**
+- ✅ **Issue já resolvida**: Bug corrigido em commit `40afb8e` (14/11/2025)
+- ✅ **PR relacionada**: #132 - "fix(frontend): resolve ESLint and TypeScript linting errors"
+- ✅ **Validação atual**: ESLint 0 erros/warnings, testes 29/29 passando
+- ✅ **Código correto**: `[id, fetchETP]` presente em ETPEditor.tsx:28
+
+**Descoberta durante `/pick-next-issue`:**
+- ✅ **Análise de código**: Código atual já possui correção aplicada
+- ✅ **Git history audit**: Commit 40afb8e documentou fix completo
+- ✅ **Issue oversight**: Issue permaneceu aberta por descuido
+- ✅ **Execution Note**: Documentação completa adicionada antes de fechar
+
+**Commit 40afb8e (14/11/2025):**
+```diff
+-  }, [id]);
++  }, [id, fetchETP]);
+```
+
+**Impacto técnico:**
+- ✅ Memory leak potencial eliminado (já estava corrigido)
+- ✅ ESLint `react-hooks/exhaustive-deps` satisfeito
+- ✅ M3 Quality & Security agora 54% completo (+8 p.p.)
+- ✅ Zustand functions estáveis (não causam re-render infinito)
+
+**Impacto:** Todos os 4 bugs de useEffect (#14-#17) agora resolvidos! M3 Quality & Security avançou de 46% para 54%. Frontend React hooks conformes com best practices.
 
 ### 2025-11-14 (Atualização 14 - Issue #44 Implementada) 🚀
 - ✅ **PROGRESSO**: 47 → **48 issues fechadas** (48% → 49%)
