@@ -5,9 +5,14 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { initSentry } from './config/sentry.config';
 
 async function bootstrap() {
+  // Initialize Sentry FIRST (before creating NestJS app)
+  initSentry();
+
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
@@ -50,7 +55,8 @@ async function bootstrap() {
   );
 
   // Global filters and interceptors
-  app.useGlobalFilters(new HttpExceptionFilter());
+  // IMPORTANTE: Sentry filter DEVE ser primeiro para capturar todas as exceptions
+  app.useGlobalFilters(new SentryExceptionFilter(), new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   // Swagger documentation
