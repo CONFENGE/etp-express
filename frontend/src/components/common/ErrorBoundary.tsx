@@ -29,6 +29,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null });
+    // Note: Using window.location.href here is intentional.
+    // ErrorBoundary is a class component and cannot use navigate() hook.
+    // Full page reload is acceptable for critical error recovery.
     window.location.href = '/';
   };
 
