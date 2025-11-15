@@ -64,9 +64,13 @@ export class MetricsService {
     lines.push('');
 
     // Database metrics
-    lines.push('# HELP database_connections_active Active database connections');
+    lines.push(
+      '# HELP database_connections_active Active database connections',
+    );
     lines.push('# TYPE database_connections_active gauge');
-    lines.push(`database_connections_active ${metrics.database_connections_active}`);
+    lines.push(
+      `database_connections_active ${metrics.database_connections_active}`,
+    );
     lines.push('');
 
     lines.push('# HELP database_connections_max Maximum database connections');
