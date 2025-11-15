@@ -297,7 +297,10 @@ npm run lint
 | Documento | Descrição |
 |-----------|-----------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Arquitetura completa do sistema |
-| [DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md) | Guia de deploy na Railway |
+| [DEPLOY.md](./DEPLOY.md) | Guia de deploy em produção (Railway) |
+| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md) | 🚨 **Playbook de resposta a incidentes em produção** |
+| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime |
+| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) | Backup e disaster recovery procedures |
 | [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql) | Schema completo do banco |
 | [backend/README.md](./backend/README.md) | Documentação do backend |
 | [frontend/README.md](./frontend/README.md) | Documentação do frontend |
