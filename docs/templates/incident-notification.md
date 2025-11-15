@@ -3,11 +3,13 @@
 **Uso:** Comunicar usuários quando um incidente em produção está em andamento e afeta funcionalidades do sistema.
 
 **Quando usar:**
+
 - ✅ Incidente P0 ou P1 confirmado
 - ✅ Impacto afeta usuários finais
 - ✅ Estimativa de resolução > 15 minutos
 
 **Quando NÃO usar:**
+
 - ❌ Incidentes P2/P3 (baixo impacto)
 - ❌ Manutenção planejada (usar outro template)
 - ❌ Problema já resolvido (usar incident-resolved.md)
@@ -29,6 +31,7 @@ Identificamos um problema técnico que está afetando o funcionamento do sistema
 **Problema:** [Descrição clara e objetiva do problema]
 
 **Impacto:** [O que os usuários NÃO conseguem fazer]
+
 - Exemplo: "Não é possível gerar novas seções de ETPs"
 - Exemplo: "Sistema completamente indisponível"
 - Exemplo: "Login está apresentando lentidão (>30s)"
@@ -36,6 +39,7 @@ Identificamos um problema técnico que está afetando o funcionamento do sistema
 **Status:** Nossa equipe está trabalhando ativamente na resolução
 
 **Previsão de normalização:** [Estimativa realista ou "Investigando"]
+
 - Se < 1h: Informar estimativa (ex: "até 30 minutos")
 - Se desconhecido: "Investigando. Atualizações a cada 30 minutos"
 
@@ -89,6 +93,7 @@ Identificamos um problema técnico que está afetando o funcionamento do sistema
 **Problema:** Falha na conexão com banco de dados
 
 **Impacto:** Sistema completamente indisponível
+
 - Não é possível acessar ETPs existentes
 - Não é possível criar novos ETPs
 - Login não está funcionando
@@ -130,14 +135,17 @@ Atenciosamente,
 ## Canais de Distribuição
 
 **Primário:**
+
 - Email para base de usuários cadastrados
 
 **Secundário:**
+
 - Slack/Teams (se houver)
 - Status page (se implementado)
 - Banner no frontend (se sistema parcialmente funcional)
 
 **Emergência:**
+
 - SMS (apenas P0 com impacto total)
 
 ---

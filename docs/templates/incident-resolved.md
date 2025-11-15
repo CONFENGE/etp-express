@@ -3,11 +3,13 @@
 **Uso:** Comunicar usuários quando um incidente em produção foi completamente resolvido.
 
 **Quando usar:**
+
 - ✅ Incidente resolvido e sistema normalizado
 - ✅ Verificação completa realizada (health checks, smoke tests)
 - ✅ Root cause identificada
 
 **Quando NÃO usar:**
+
 - ❌ Incidente ainda em investigação
 - ❌ Resolução parcial (workaround temporário)
 - ❌ Sistema ainda instável
@@ -29,6 +31,7 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 **Problema Identificado:** [Descrição técnica simplificada da root cause]
 
 **Ações Tomadas:** [O que foi feito para resolver]
+
 - Exemplo: "Restauramos a conexão com o banco de dados"
 - Exemplo: "Revertemos o deploy que causou o problema"
 - Exemplo: "Aumentamos os recursos de infraestrutura"
@@ -46,6 +49,7 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 
 **Opção 2 (com perda - se aplicável):**
 ⚠️ **Impacto em dados:** [Descrever claramente o que foi perdido]
+
 - Exemplo: "ETPs criados entre 14h30 e 15h00 podem ter sido perdidos"
 - Exemplo: "Edições feitas nas últimas 2 horas podem não ter sido salvas"
 
@@ -106,6 +110,7 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 **Problema Identificado:** Falha temporária na infraestrutura do banco de dados causada por atualização de segurança do provedor de cloud (Railway)
 
 **Ações Tomadas:**
+
 - Reiniciamos o serviço de banco de dados
 - Validamos integridade de todos os dados armazenados
 - Executamos testes completos de funcionalidade
@@ -114,6 +119,7 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 **Status Atual:** Sistema normalizado e funcionando corretamente
 
 **Verificação:** Todos os testes confirmam funcionamento normal
+
 - ✅ Login funcional
 - ✅ Criação de ETPs funcional
 - ✅ Geração de seções funcional
@@ -164,11 +170,13 @@ Atenciosamente,
 ## Timing
 
 **Enviar imediatamente após:**
+
 - Sistema 100% normalizado
 - Smoke tests finais passando
 - Incident Commander aprovar comunicação
 
 **⚠️ NÃO enviar se:**
+
 - Sistema ainda instável
 - Root cause não identificada
 - Possibilidade de recorrência imediata
@@ -178,12 +186,14 @@ Atenciosamente,
 ## Tone Guidelines
 
 ✅ **DO:**
+
 - Ser transparente sobre root cause
 - Agradecer pela paciência
 - Focar em medidas preventivas
 - Usar linguagem clara e objetiva
 
 ❌ **DON'T:**
+
 - Fazer promessas impossíveis ("nunca mais vai acontecer")
 - Usar jargão técnico excessivo
 - Culpar terceiros (providers, etc)
