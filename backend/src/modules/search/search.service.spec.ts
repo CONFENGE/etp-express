@@ -569,9 +569,9 @@ describe('SearchService', () => {
       );
 
       // Act & Assert - Should propagate error to caller
-      await expect(
-        service.searchSimilarContracts(mockQuery),
-      ).rejects.toThrow('Perplexity API timeout');
+      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow(
+        'Perplexity API timeout',
+      );
     });
 
     it('should handle database save errors', async () => {
@@ -588,9 +588,9 @@ describe('SearchService', () => {
       );
 
       // Act & Assert
-      await expect(
-        service.searchSimilarContracts(mockQuery),
-      ).rejects.toThrow('Database connection lost');
+      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow(
+        'Database connection lost',
+      );
     });
 
     it('should handle malformed Perplexity responses', async () => {
@@ -608,9 +608,7 @@ describe('SearchService', () => {
       );
 
       // Act & Assert
-      await expect(
-        service.searchSimilarContracts(mockQuery),
-      ).rejects.toThrow();
+      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow();
     });
   });
 
