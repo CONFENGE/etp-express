@@ -322,25 +322,104 @@ openssl rand -base64 32
 
 ### Backups Database
 
-Consulte Issue #45 para configurar backup automático PostgreSQL.
+Consulte [`DISASTER_RECOVERY.md`](./docs/DISASTER_RECOVERY.md) para configurar backup automático PostgreSQL.
+
+## 🚀 Zero-Downtime Deployment
+
+**Implementado em Issue #107** - Deploy sem interrupção de serviço para usuários.
+
+### Health Check Endpoint
+
+O backend expõe endpoint de health check para validação de prontidão:
+
+```bash
+curl https://seu-backend.railway.app/api/health
+
+# Resposta quando saudável:
+{
+  "status": "healthy",
+  "timestamp": "2025-11-14T12:00:00.000Z",
+  "database": "connected"
+}
+```
+
+### Deploy Automatizado com Validação
+
+```bash
+# Deploy com health check automático e rollback em caso de falha
+./scripts/deploy.sh
+
+# Deploy de serviço específico
+./scripts/deploy.sh etp-express-backend
+```
+
+**O script executa:**
+1. ✅ Trigger deployment no Railway
+2. ✅ Aguarda health check passar (max 5min)
+3. ✅ Executa smoke tests (JSON, database, response time)
+4. ✅ Rollback automático se algum teste falhar
+
+**Deploy típico:** ~4 minutos (sem downtime visível)
+
+### Pré-requisitos
+
+```bash
+# 1. Instalar Railway CLI
+npm install -g @railway/cli
+
+# 2. Configurar variáveis de ambiente
+export RAILWAY_TOKEN="seu-token"
+export RAILWAY_BACKEND_URL="https://seu-backend.railway.app"
+
+# 3. Validar testes locais
+cd backend && npm test
+```
+
+### Documentação Completa
+
+Para detalhes sobre estratégia zero-downtime, health checks, database migrations backward-compatible e troubleshooting:
+
+📖 **Ver [`docs/ZERO_DOWNTIME_DEPLOY.md`](./docs/ZERO_DOWNTIME_DEPLOY.md)**
 
 ## 📦 Rollback em Caso de Problema
 
-### Via Railway UI
+### Rollback Automatizado (Recomendado)
+
+```bash
+# Rollback automático com validação
+./scripts/rollback.sh
+
+# Rollback de serviço específico
+./scripts/rollback.sh etp-express-backend
+```
+
+**O script executa:**
+1. ✅ Identifica deployment anterior
+2. ✅ Executa rollback no Railway
+3. ✅ Valida health check
+4. ✅ Confirma serviço está operacional
+
+**Rollback típico:** ~30 segundos
+
+### Rollback Manual (Via Railway CLI)
+
+```bash
+# Listar deployments
+railway deployment list --service etp-express-backend
+
+# Rollback para deployment específico
+railway deployment rollback <deployment-id> --service etp-express-backend
+
+# Validar
+curl https://seu-backend.railway.app/api/health
+```
+
+### Rollback Manual (Via Railway UI)
 
 1. Acesse **Deployments**
 2. Encontre último deploy funcional
 3. Clique **"Rollback to this deployment"**
-
-### Via Railway CLI
-
-```bash
-# Listar deploys
-railway deployments
-
-# Rollback para deploy específico
-railway rollback <deployment-id>
-```
+4. Aguarde health check passar
 
 ## 🌐 URLs Finais
 
@@ -361,19 +440,35 @@ Após deploy completo, anote suas URLs:
 
 ## ✅ Checklist de Deploy
 
+### Infraestrutura Base
 - [ ] Projeto Railway criado: "etp-express-production"
 - [ ] PostgreSQL database provisionado
 - [ ] Backend service deployado com variáveis configuradas
 - [ ] Frontend service deployado com `VITE_API_URL` correto
 - [ ] Migrations database executadas (`npm run migration:run`)
-- [ ] Health checks backend/frontend OK
+
+### Zero-Downtime Deployment (Issue #107)
+- [ ] Health check endpoint respondendo: `GET /api/health`
+- [ ] Railway health check configurado em `.railway.toml`
+- [ ] Scripts de deploy/rollback testados localmente
+- [ ] Variáveis `RAILWAY_TOKEN` e `RAILWAY_BACKEND_URL` configuradas
+- [ ] Deploy script executado com sucesso (`./scripts/deploy.sh`)
+- [ ] Smoke tests passando (JSON, database, response time <2s)
+
+### Validação
 - [ ] CORS configurado com URLs corretas
 - [ ] Teste E2E completo executado (Criar conta → Criar ETP → Gerar IA → Exportar PDF)
 - [ ] Logs sem erros críticos
+- [ ] Error rate <1% (monitorar 15min pós-deploy)
+- [ ] Response time (p95) <500ms
+
+### Produção
 - [ ] Domínios customizados configurados (opcional)
 - [ ] SSL certificates provisionados (automático)
 - [ ] URLs finais documentadas
-- [ ] Backup database configurado (Issue #45)
+- [ ] Backup database configurado e testado (`DISASTER_RECOVERY.md`)
+- [ ] Rollback procedure testado em staging
+- [ ] Database migrations são backward-compatible
 
 ---
 
