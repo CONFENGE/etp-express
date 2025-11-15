@@ -25,8 +25,13 @@ NODE_ENV = "production"
 # Health check endpoint
 [[services.healthcheck]]
 path = "/api/health"
-interval = 60
-timeout = 10
+interval = 30  # Check every 30s for faster failure detection
+timeout = 5    # 5s timeout (health check should be fast)
+
+# Restart policy for zero-downtime
+[[services.restart]]
+policy = "ON_FAILURE"
+max_retries = 10
 
 [[services]]
 name = "frontend"
