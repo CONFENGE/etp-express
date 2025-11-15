@@ -28,7 +28,7 @@ export class SentryExceptionFilter extends BaseExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
-    const response = ctx.getResponse();
+    const _response = ctx.getResponse();
 
     // Capturar exception no Sentry
     Sentry.withScope((scope) => {
