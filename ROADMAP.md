@@ -3,9 +3,9 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 (CI/CD Pipeline) - EM PROGRESSO! 🚀
-**Última Atualização:** 2025-11-14 (Issue #45 implementada - PostgreSQL Backup & Disaster Recovery)
-**Total de Issues:** 98 issues (48 abertas + 50 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** 75% atual | 95%+ com 10 gaps identificados (backup configurado)
+**Última Atualização:** 2025-11-15 (Issue #107 implementada - Zero-Downtime Deployment Strategy)
+**Total de Issues:** 98 issues (47 abertas + 51 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** 80% atual | 95%+ com 9 gaps identificados (zero-downtime deployment configurado)
 
 ---
 
@@ -13,18 +13,18 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ██████████░░░░░░░░░░ 5/10 (50%)  🚀 EM ANDAMENTO
+[M2] CI/CD Pipeline               ████████████░░░░░░░░ 6/10 (60%)  🚀 EM ANDAMENTO
 [M3] Quality & Security           █████████░░░░░░░░░░░ 5/13 (38%)
 [M4] Refactoring & Performance    ██░░░░░░░░░░░░░░░░░░ 2/20 (10%)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 49/98 issues concluídas (50%)  |  M1 100% ✅ | M2 50% ⚡
+TOTAL: 50/98 issues concluídas (51%)  |  M1 100% ✅ | M2 60% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (48 issues fechadas)
+## 🎉 Progresso Realizado (50 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -42,17 +42,18 @@ TOTAL: 49/98 issues concluídas (50%)  |  M1 100% ✅ | M2 50% ⚡
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
 
-### ✅ M2: CI/CD Pipeline (5 fechadas de 10)
-**Status**: 50% concluído | **M2 INICIADO EM 14/11/2025**
+### ✅ M2: CI/CD Pipeline (6 fechadas de 10)
+**Status**: 60% concluído | **M2 INICIADO EM 14/11/2025**
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
 - ✅ #19 - Workflow GitHub Actions para Lint ⚡ **PR #130 MERGED** ✅
 - ✅ #20 - Workflow GitHub Actions para Testes ⚡ **PR #131 MERGED** ✅
 - ✅ #44 - Configuração deploy Railway (backend + frontend + PostgreSQL) ⚡ **PR #132 MERGED** ✅
-- ✅ #45 - Backup automático PostgreSQL e disaster recovery ⚡ **PR #135 MERGED** ✅ **NOVO!**
+- ✅ #45 - Backup automático PostgreSQL e disaster recovery ⚡ **PR #135 MERGED** ✅
+- ✅ #107 - Zero-Downtime Deployment Strategy ⚡ **PR #137, #138, #139 MERGED** ✅ **NOVO!**
 
-**Pendente**: Produção readiness (#104-#107, #112)
+**Pendente**: Produção readiness (#104-#106, #112)
 
 ### ✅ M3: Quality & Security (5 fechadas de 13)
 **Status**: 38% concluído
@@ -96,6 +97,43 @@ TOTAL: 49/98 issues concluídas (50%)  |  M1 100% ✅ | M2 50% ⚡
 - 🎯 **Próximo passo**: Production readiness (#104-#107) ou executar deploy real
 
 **Impacto:** Backup validado = proteção contra perda de dados. 3 cenários de disaster recovery documentados.
+
+### 2025-11-15 (Atualização 16 - Issue #107 Implementada) 🚀 **NOVO!**
+- ✅ **PROGRESSO**: 50 → **51 issues fechadas** (50% → 51%)
+- ✅ **M2 CI/CD**: 50% → **60%** (+10 p.p.) - Issue #107 concluída
+- ✅ **Zero-Downtime Deployment**: 3 PRs merged (#137, #138, #139)
+
+**O que foi implementado (#107):**
+- ✅ **Health Check Module**: Endpoint `/api/health` com validação PostgreSQL
+- ✅ **Railway Health Check**: Configuração em `.railway.toml` (30s interval, 5s timeout)
+- ✅ **Automated Deploy Script**: `scripts/deploy.sh` (229 linhas) - deploy + health check + smoke tests
+- ✅ **Automated Rollback Script**: `scripts/rollback.sh` (199 linhas) - rollback automático (~30s)
+- ✅ **Comprehensive Documentation**: `docs/ZERO_DOWNTIME_DEPLOY.md` (748 linhas)
+- ✅ **DEPLOY.md Updates**: Zero-downtime section (119 linhas adicionadas)
+- ✅ **Comprehensive Tests**: 16 testes para health module (ratio: 2.87)
+- ✅ **PR #137**: Health Module Infrastructure (456 linhas) - score: 100/100 ✅
+- ✅ **PR #138**: Deployment Scripts (428 linhas) - score: 100/100 ✅
+- ✅ **PR #139**: Documentation (855 linhas) - score: 100/100 ✅
+
+**Deployment Flow:**
+1. Railway builds new container (old still serves traffic)
+2. Health check validates new container (30s interval)
+3. If healthy → Traffic switches to new container
+4. If unhealthy → Railway auto-rollbacks
+5. Deploy completo (~4min, zero user-visible downtime)
+
+**Rollback Flow:**
+1. Identify previous deployment
+2. Execute Railway rollback
+3. Validate health check post-rollback
+4. Service operational (~30s)
+
+**Database Migration Safety:**
+- ✅ Backward-compatible migration guidelines documented
+- ✅ Multi-phase strategies (2-phase remove, 3-phase rename)
+- ✅ TypeORM migration examples
+
+**Impacto:** Deploy sem downtime = zero 502 errors durante atualizações. Rollback automático em ~30s reduz MTTR.
 
 ### 2025-11-14 (Atualização 14 - Issue #44 Implementada) 🚀
 - ✅ **PROGRESSO**: 47 → **48 issues fechadas** (48% → 49%)
@@ -274,7 +312,7 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 - [ ] #104 - Database Disaster Recovery Testing & Validation (8-10h) 🔴 **CRÍTICO**
 - [ ] #105 - Production Monitoring & Alerting Infrastructure (12-16h) 🔴 **CRÍTICO**
 - [ ] #106 - Production Incident Response Playbook (6-8h) 🔴 **CRÍTICO**
-- [ ] #107 - Zero-Downtime Deployment Strategy (10-12h) 🔴 **CRÍTICO**
+- [x] #107 - Zero-Downtime Deployment Strategy (10-12h) ✅ **COMPLETO** (PR #137, #138, #139)
 - [ ] #112 - Infrastructure as Code & Reproducibility (12-16h) 🟡 **ALTO**
 
 **Nota:** Issues #21 e #40 foram movidas para M6 (Maintenance)
