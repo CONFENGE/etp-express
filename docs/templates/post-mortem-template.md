@@ -15,6 +15,7 @@
 [Resumo executivo de 2-3 parágrafos para stakeholders não-técnicos]
 
 **Exemplo:**
+
 > No dia DD/MM/YYYY às HH:MM, o sistema ETP Express ficou completamente indisponível por 45 minutos devido a uma falha no banco de dados de produção. O problema afetou 100% dos usuários ativos, impedindo acesso a ETPs e geração de novas seções. A equipe identificou a root cause em 15 minutos e restaurou o serviço em 45 minutos utilizando procedimento de rollback. Não houve perda de dados. Implementamos monitoramento proativo e procedimentos de rollback automático para prevenir recorrência.
 
 ---
@@ -23,19 +24,19 @@
 
 **Todos os horários em UTC-3 (Brasília)**
 
-| Horário | Evento | Responsável | Ação |
-|---------|--------|-------------|------|
-| 15:20 | 🚨 **Incident Start** - Database connection errors começam | Sistema | N/A |
-| 15:22 | Alert disparado no Slack #alerts-production | Monitoring | N/A |
-| 15:23 | First Responder acknowledges alert | [Nome] | Triage inicial |
-| 15:25 | Root cause identified: PostgreSQL service crashed | [Nome] | Diagnóstico |
-| 15:27 | Decision: Restart PostgreSQL service | [Nome] | Mitigação |
-| 15:30 | PostgreSQL restart completo | Railway | N/A |
-| 15:32 | Health checks passing | [Nome] | Verificação |
-| 15:35 | Smoke tests passing (endpoints críticos OK) | [Nome] | Validação |
-| 15:40 | Full system validation | [Nome] | Testes completos |
-| 15:45 | All-clear declared | [Nome] | N/A |
-| 16:05 | 🎉 **Incident End** - Users notified of resolution | [Nome] | Comunicação |
+| Horário | Evento                                                     | Responsável | Ação             |
+| ------- | ---------------------------------------------------------- | ----------- | ---------------- |
+| 15:20   | 🚨 **Incident Start** - Database connection errors começam | Sistema     | N/A              |
+| 15:22   | Alert disparado no Slack #alerts-production                | Monitoring  | N/A              |
+| 15:23   | First Responder acknowledges alert                         | [Nome]      | Triage inicial   |
+| 15:25   | Root cause identified: PostgreSQL service crashed          | [Nome]      | Diagnóstico      |
+| 15:27   | Decision: Restart PostgreSQL service                       | [Nome]      | Mitigação        |
+| 15:30   | PostgreSQL restart completo                                | Railway     | N/A              |
+| 15:32   | Health checks passing                                      | [Nome]      | Verificação      |
+| 15:35   | Smoke tests passing (endpoints críticos OK)                | [Nome]      | Validação        |
+| 15:40   | Full system validation                                     | [Nome]      | Testes completos |
+| 15:45   | All-clear declared                                         | [Nome]      | N/A              |
+| 16:05   | 🎉 **Incident End** - Users notified of resolution         | [Nome]      | Comunicação      |
 
 **Total duration:** 45 minutos (detection to resolution)
 **MTTR (Mean Time To Resolution):** 45 minutos
@@ -46,11 +47,13 @@
 ## Impact
 
 ### Users Affected
+
 - **Total users impacted:** [Número ou %]
   - Exemplo: "120 usuários ativos no momento do incidente (100%)"
   - Exemplo: "~30% da base de usuários (estimativa baseada em horário)"
 
 ### Functionality Impact
+
 - ❌ **Completamente indisponível:**
   - Login
   - Acesso a ETPs existentes
@@ -65,15 +68,18 @@
   - N/A (sistema completamente fora do ar)
 
 ### Data Impact
+
 - **Data loss:** ❌ Não / ⚠️ Sim (detalhar abaixo)
 - **Data corruption:** ❌ Não / ⚠️ Sim (detalhar abaixo)
 
 **Detalhes:**
+
 - ✅ Todos os ETPs salvos antes do incidente foram preservados
 - ✅ Banco de dados restaurado sem perda de informações
 - ❌ Não houve data loss
 
 ### Business Impact
+
 - **Downtime:** 45 minutos de indisponibilidade total
 - **Revenue impact:** [Se aplicável - geralmente N/A para MVP]
 - **SLA breach:** [Se houver SLA definido]
@@ -108,17 +114,20 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 ## Detection
 
 ### Como foi detectado
+
 - [x] Alerting automático (Monitoring)
 - [ ] Usuário reportou problema
 - [ ] Equipe descobriu durante operação rotineira
 - [ ] Outro: [Descrever]
 
 ### Tempo de detecção
+
 - **Incident start:** 15:20 (primeira evidência nos logs)
 - **Alert fired:** 15:22 (2 minutos após início)
 - **MTTD:** 2 minutos ✅ (objetivo: < 5 minutos)
 
 ### Qualidade da detecção
+
 - ✅ **Boa:** Alert preciso e acionável
 - Texto do alert: "Database connection failed - Backend health check failing"
 - First Responder conseguiu iniciar triage imediatamente
@@ -170,15 +179,18 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 ### Long-term Fixes
 
 **Implemented immediately (hotfix):**
+
 - [ ] Re-adicionar índice em `sections.etp_id` (Migration #XYZ-fix)
 - [ ] Deploy hotfix com índice restaurado
 
 **Scheduled (within 7 days):**
+
 - [ ] Implementar alert de memory usage > 80%
 - [ ] Adicionar slow query logging (queries > 1s)
 - [ ] Create load testing scenario com 20+ usuários simultâneos
 
 **Planned (within 30 days):**
+
 - [ ] Migration review checklist (obrigatório incluir índices review)
 - [ ] Upgrade PostgreSQL plan (512MB → 1GB RAM)
 - [ ] Implement query performance monitoring (APM)
@@ -187,16 +199,16 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 
 ## Action Items
 
-| # | Action Item | Owner | Priority | Due Date | Status |
-|---|-------------|-------|----------|----------|--------|
-| 1 | Re-adicionar índice `sections.etp_id` | [Nome] | P0 | DD/MM/YYYY | ✅ Done |
-| 2 | Deploy hotfix com índice | [Nome] | P0 | DD/MM/YYYY | ✅ Done |
-| 3 | Implementar alert memory > 80% | [Nome] | P1 | DD/MM/YYYY | 🔄 In Progress |
-| 4 | Adicionar slow query logging | [Nome] | P1 | DD/MM/YYYY | 📋 To Do |
-| 5 | Load testing com 20+ users | [Nome] | P1 | DD/MM/YYYY | 📋 To Do |
-| 6 | Migration review checklist | [Nome] | P2 | DD/MM/YYYY | 📋 To Do |
-| 7 | Upgrade PostgreSQL plan | [Nome] | P2 | DD/MM/YYYY | 📋 To Do |
-| 8 | Implement APM (query monitoring) | [Nome] | P2 | DD/MM/YYYY | 📋 To Do |
+| #   | Action Item                           | Owner  | Priority | Due Date   | Status         |
+| --- | ------------------------------------- | ------ | -------- | ---------- | -------------- |
+| 1   | Re-adicionar índice `sections.etp_id` | [Nome] | P0       | DD/MM/YYYY | ✅ Done        |
+| 2   | Deploy hotfix com índice              | [Nome] | P0       | DD/MM/YYYY | ✅ Done        |
+| 3   | Implementar alert memory > 80%        | [Nome] | P1       | DD/MM/YYYY | 🔄 In Progress |
+| 4   | Adicionar slow query logging          | [Nome] | P1       | DD/MM/YYYY | 📋 To Do       |
+| 5   | Load testing com 20+ users            | [Nome] | P1       | DD/MM/YYYY | 📋 To Do       |
+| 6   | Migration review checklist            | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
+| 7   | Upgrade PostgreSQL plan               | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
+| 8   | Implement APM (query monitoring)      | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
 
 ---
 
@@ -225,10 +237,10 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 
 ### SLA Performance
 
-| Metric | Target | Actual | Met? |
-|--------|--------|--------|------|
-| MTTD (Mean Time To Detection) | < 5 min | 2 min | ✅ Yes |
-| MTTR (Mean Time To Resolution) | < 1 hour | 45 min | ✅ Yes |
+| Metric                             | Target   | Actual | Met?   |
+| ---------------------------------- | -------- | ------ | ------ |
+| MTTD (Mean Time To Detection)      | < 5 min  | 2 min  | ✅ Yes |
+| MTTR (Mean Time To Resolution)     | < 1 hour | 45 min | ✅ Yes |
 | Communication (first notification) | < 30 min | 20 min | ✅ Yes |
 
 ### Incident Severity Justification
@@ -236,6 +248,7 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 **Classified as:** P0 (Critical)
 
 **Justification:**
+
 - Sistema 100% indisponível
 - Todas as funcionalidades principais afetadas
 - 100% dos usuários ativos impactados
@@ -276,6 +289,7 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 **Approved by (Incident Commander):** [Nome] - [Data]
 
 **Review Meeting:**
+
 - **Date:** DD/MM/YYYY
 - **Attendees:** [Lista de participantes]
 - **Action Items Owner Assignment:** ✅ Complete
@@ -333,16 +347,19 @@ Total: 45 minutes (MTTR)
 ## Usage Notes
 
 **Mandatory sections:**
+
 - Timeline
 - Impact
 - Root Cause
 - Action Items
 
 **Optional sections:**
+
 - Supporting Information (helpful but not required)
 - Appendix (use for deep technical details)
 
 **Review timeline:**
+
 - Draft: +24h após resolução
 - Review meeting: +48h
 - Final sign-off: +7 dias

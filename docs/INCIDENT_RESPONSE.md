@@ -34,12 +34,14 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 ### Quando usar este playbook
 
 ✅ **USE quando:**
+
 - Sistema apresenta comportamento anormal em produção
 - Usuários relatam erros ou indisponibilidade
 - Alertas de monitoramento disparam
 - Deploy falha ou causa regressão
 
 ❌ **NÃO USE quando:**
+
 - Desenvolvimento local (use debugging normal)
 - Ambientes de staging (exceto validação de procedures)
 - Problemas conhecidos com workaround documentado
@@ -50,20 +52,20 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 
 ### Roles e Responsabilidades
 
-| Role | Responsabilidade | Quando Atua |
-|------|------------------|-------------|
-| **First Responder** | Acknowledge alert, triage inicial, mitigação imediata | Sempre (24/7 on-call) |
-| **Escalation Engineer** | Diagnóstico complexo, decisões arquiteturais, código hotfix | Quando First Responder não resolver em 2x SLA |
-| **Incident Commander** | Coordenação geral, comunicação externa, decisões de rollback | Incidentes P0 ou quando não resolvido em 4x SLA |
+| Role                    | Responsabilidade                                             | Quando Atua                                     |
+| ----------------------- | ------------------------------------------------------------ | ----------------------------------------------- |
+| **First Responder**     | Acknowledge alert, triage inicial, mitigação imediata        | Sempre (24/7 on-call)                           |
+| **Escalation Engineer** | Diagnóstico complexo, decisões arquiteturais, código hotfix  | Quando First Responder não resolver em 2x SLA   |
+| **Incident Commander**  | Coordenação geral, comunicação externa, decisões de rollback | Incidentes P0 ou quando não resolvido em 4x SLA |
 
 ### SLA Response Times
 
-| Severity | Definição | Response Time | Escalation Time |
-|----------|-----------|---------------|-----------------|
-| **P0 (Critical)** | Sistema completamente fora do ar | **15 minutos** | 30 min → Escalation Engineer |
-| **P1 (High)** | Funcionalidade crítica degradada (ex: geração de seções) | **1 hora** | 2h → Escalation Engineer |
-| **P2 (Medium)** | Funcionalidade não-crítica afetada | **4 horas** | 8h → Escalation Engineer |
-| **P3 (Low)** | Issue cosmético ou minor bug | **24 horas** | 48h → Backlog |
+| Severity          | Definição                                                | Response Time  | Escalation Time              |
+| ----------------- | -------------------------------------------------------- | -------------- | ---------------------------- |
+| **P0 (Critical)** | Sistema completamente fora do ar                         | **15 minutos** | 30 min → Escalation Engineer |
+| **P1 (High)**     | Funcionalidade crítica degradada (ex: geração de seções) | **1 hora**     | 2h → Escalation Engineer     |
+| **P2 (Medium)**   | Funcionalidade não-crítica afetada                       | **4 horas**    | 8h → Escalation Engineer     |
+| **P3 (Low)**      | Issue cosmético ou minor bug                             | **24 horas**   | 48h → Backlog                |
 
 ### Escalation Path
 
@@ -101,14 +103,15 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 
 **⚠️ TEMPLATE - A ser preenchido pela equipe:**
 
-| Role | Name | Phone | Slack | Email | Timezone |
-|------|------|-------|-------|-------|----------|
-| **First Responder** | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3 |
-| **Escalation Engineer** | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3 |
-| **Incident Commander** | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3 |
-| **Product Owner** | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3 |
+| Role                    | Name   | Phone    | Slack   | Email          | Timezone |
+| ----------------------- | ------ | -------- | ------- | -------------- | -------- |
+| **First Responder**     | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3    |
+| **Escalation Engineer** | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3    |
+| **Incident Commander**  | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3    |
+| **Product Owner**       | [Nome] | [+55...] | @handle | pessoa@dominio | UTC-3    |
 
 **Notification Channels:**
+
 - **Primary:** Slack `#alerts-production`
 - **Secondary:** Email + SMS (PagerDuty/similar)
 - **Emergency:** Phone call cascade
@@ -122,6 +125,7 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 **Severity:** P0 (Critical)
 
 **Symptoms:**
+
 - ❌ Backend retorna `500 Internal Server Error` em todos os endpoints
 - ❌ Frontend exibe "Erro ao carregar dados" em todas as páginas
 - ❌ Health check endpoint `/api/health` retorna erro
@@ -130,6 +134,7 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 **Diagnosis:**
 
 1. **Verificar health check:**
+
    ```bash
    curl https://backend.railway.app/api/health
    # Esperado: {"status":"ok","database":"healthy"}
@@ -137,6 +142,7 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
    ```
 
 2. **Verificar logs backend:**
+
    ```bash
    railway logs --service backend | grep -i "database\|postgres\|connection"
    # Look for: "Connection refused", "timeout", "max connections"
@@ -156,6 +162,7 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
    - Se "max connections" → Ver Scenario 2 (High Latency)
 
 2. **Se restart falhou:**
+
    ```bash
    # Rollback para deploy anterior
    ./scripts/rollback.sh
@@ -167,6 +174,7 @@ Este runbook fornece **procedimentos step-by-step** para diagnosticar e resolver
 **Root Cause Fix:**
 
 - **Se crash foi por migration malformada:**
+
   ```bash
   # Reverter migration problemática
   railway run npm run migration:revert
@@ -194,10 +202,12 @@ curl -I https://frontend.railway.app/
 ```
 
 **Rollback Plan:**
+
 - Se resolution falhar → Executar `./scripts/rollback.sh` (restaura deploy anterior ~30s)
 - Se rollback falhar → Restore backup via `DISASTER_RECOVERY.md` (~1h)
 
 **Escalation:**
+
 - If unresolved after **30 min** → Escalate to Escalation Engineer
 - If unresolved after **1h** → Incident Commander + considerar restore de backup
 
@@ -208,6 +218,7 @@ curl -I https://frontend.railway.app/
 **Severity:** P1 (High)
 
 **Symptoms:**
+
 - ⚠️ Requests lentos (>5s response time)
 - ⚠️ Frontend exibe "Carregando..." por muito tempo
 - ⚠️ Alguns requests timeout (504 Gateway Timeout)
@@ -216,6 +227,7 @@ curl -I https://frontend.railway.app/
 **Diagnosis:**
 
 1. **Verificar latency de endpoints:**
+
    ```bash
    # Testar endpoint lento
    time curl https://backend.railway.app/api/etps
@@ -223,6 +235,7 @@ curl -I https://frontend.railway.app/
    ```
 
 2. **Verificar logs de performance:**
+
    ```bash
    railway logs --service backend | grep "Slow query\|Timeout\|exceeded"
    # Look for: "Query took 5000ms", "Connection timeout"
@@ -239,6 +252,7 @@ curl -I https://frontend.railway.app/
 **Immediate Action:**
 
 1. **Liberar connections idle:**
+
    ```bash
    railway run psql $DATABASE_URL -c "
    SELECT pg_terminate_backend(pid)
@@ -280,9 +294,11 @@ time curl https://backend.railway.app/api/etps
 ```
 
 **Rollback Plan:**
+
 - Se restart causou instabilidade → `./scripts/rollback.sh`
 
 **Escalation:**
+
 - If unresolved after **2h** → Escalate to Escalation Engineer (diagnóstico de queries)
 
 ---
@@ -292,6 +308,7 @@ time curl https://backend.railway.app/api/etps
 **Severity:** P1 (High)
 
 **Symptoms:**
+
 - ❌ Geração de seções falha com "Erro ao gerar conteúdo"
 - ❌ Usuários não conseguem usar funcionalidade principal
 - 📊 **Monitoring:** Endpoint `/api/sections/:etpId/generate` com 100% error rate
@@ -299,12 +316,14 @@ time curl https://backend.railway.app/api/etps
 **Diagnosis:**
 
 1. **Verificar logs de erro OpenAI:**
+
    ```bash
    railway logs --service backend | grep -i "openai\|gpt-4"
    # Look for: "Rate limit", "Invalid API key", "Service unavailable"
    ```
 
 2. **Testar OpenAI API diretamente:**
+
    ```bash
    # Copiar OPENAI_API_KEY do Railway
    curl https://api.openai.com/v1/models \
@@ -321,12 +340,14 @@ time curl https://backend.railway.app/api/etps
 **Immediate Action:**
 
 **Caso 1: Rate Limit (429 Too Many Requests)**
+
 ```bash
 # Nada a fazer - aguardar rate limit reset (~60s)
 # Comunicar usuários via template incident-notification.md
 ```
 
 **Caso 2: API Key Inválida**
+
 ```bash
 # Regenerar API key no OpenAI Dashboard
 # Atualizar no Railway:
@@ -335,6 +356,7 @@ railway restart
 ```
 
 **Caso 3: OpenAI Downtime (503 Service Unavailable)**
+
 - **Sem ação imediata possível**
 - Comunicar usuários: "Serviço de IA temporariamente indisponível"
 - Monitorar https://status.openai.com/ para resolução
@@ -361,9 +383,11 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 ```
 
 **Rollback Plan:**
+
 - Não aplicável (problema externo)
 
 **Escalation:**
+
 - If OpenAI downtime > **2h** → Incident Commander (comunicação oficial aos usuários)
 
 ---
@@ -373,6 +397,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Severity:** P0 (Critical)
 
 **Symptoms:**
+
 - ❌ Backend crashes com "JavaScript heap out of memory"
 - ❌ Railway restart automático constante (crash loop)
 - 📊 **Monitoring:** Memory usage 100%, container restarts
@@ -380,12 +405,14 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Diagnosis:**
 
 1. **Verificar crashes recentes:**
+
    ```bash
    railway logs --service backend | grep -i "heap\|memory\|oom"
    # Look for: "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed"
    ```
 
 2. **Verificar memory usage:**
+
    ```bash
    railway ps
    # Look for: Memory column > 90% (ex: 450MB/512MB)
@@ -400,6 +427,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Immediate Action:**
 
 1. **Rollback para deploy anterior estável:**
+
    ```bash
    ./scripts/rollback.sh
    # Restaura versão sem memory leak
@@ -412,6 +440,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Root Cause Fix:**
 
 - **Identificar leak:**
+
   ```bash
   # Enable Node.js heap snapshots (localmente)
   node --inspect backend/dist/main.js
@@ -438,9 +467,11 @@ railway ps
 ```
 
 **Rollback Plan:**
+
 - Já executado na immediate action
 
 **Escalation:**
+
 - If leak não identificado em **1h** → Escalation Engineer (heap profiling)
 
 ---
@@ -450,6 +481,7 @@ railway ps
 **Severity:** P0 (Critical)
 
 **Symptoms:**
+
 - ❌ Frontend exibe tela branca ou "Cannot GET /"
 - ❌ Console browser exibe erros JavaScript
 - ❌ Railway frontend service status "Crashed"
@@ -457,6 +489,7 @@ railway ps
 **Diagnosis:**
 
 1. **Verificar Railway frontend status:**
+
    ```bash
    railway service frontend
    railway ps
@@ -464,6 +497,7 @@ railway ps
    ```
 
 2. **Verificar logs frontend:**
+
    ```bash
    railway logs --service frontend | tail -50
    # Look for: Build errors, runtime errors
@@ -480,6 +514,7 @@ railway ps
 **Immediate Action:**
 
 1. **Rollback frontend deploy:**
+
    ```bash
    # Via Railway CLI
    railway service frontend
@@ -495,6 +530,7 @@ railway ps
 **Root Cause Fix:**
 
 **Caso 1: Build error (TypeScript/Vite)**
+
 ```bash
 # Verificar erro de build nos logs
 # Corrigir TypeScript errors localmente
@@ -503,6 +539,7 @@ npm run build
 ```
 
 **Caso 2: Environment variable missing**
+
 ```bash
 # Verificar VITE_API_URL está configurada no Railway
 railway variables --service frontend
@@ -512,6 +549,7 @@ railway restart
 ```
 
 **Caso 3: Vite config error**
+
 - Reverter mudanças em `vite.config.ts`
 - Testar build localmente antes de push
 
@@ -528,9 +566,11 @@ curl -I https://frontend.railway.app/
 ```
 
 **Rollback Plan:**
+
 - Já executado na immediate action
 
 **Escalation:**
+
 - If unresolved after **30 min** → Escalation Engineer
 
 ---
@@ -540,6 +580,7 @@ curl -I https://frontend.railway.app/
 **Severity:** P1 (High)
 
 **Symptoms:**
+
 - ❌ Usuários não conseguem fazer login
 - ❌ Sessões expiram imediatamente
 - ❌ Erro "Invalid token" ou "Unauthorized"
@@ -547,6 +588,7 @@ curl -I https://frontend.railway.app/
 **Diagnosis:**
 
 1. **Testar login:**
+
    ```bash
    curl -X POST https://backend.railway.app/api/auth/login \
      -H "Content-Type: application/json" \
@@ -555,6 +597,7 @@ curl -I https://frontend.railway.app/
    ```
 
 2. **Verificar logs de auth:**
+
    ```bash
    railway logs --service backend | grep -i "auth\|jwt\|token\|unauthorized"
    # Look for: "JWT malformed", "Invalid signature", "Token expired"
@@ -571,6 +614,7 @@ curl -I https://frontend.railway.app/
 **Immediate Action:**
 
 **Caso 1: JWT_SECRET mudou acidentalmente**
+
 ```bash
 # Reverter JWT_SECRET para valor anterior
 railway variables set JWT_SECRET=<valor-antigo>
@@ -581,6 +625,7 @@ railway restart
 ```
 
 **Caso 2: Database auth table corrompida**
+
 ```bash
 # Verificar tabela users
 railway run psql $DATABASE_URL -c "SELECT count(*) FROM users;"
@@ -588,6 +633,7 @@ railway run psql $DATABASE_URL -c "SELECT count(*) FROM users;"
 ```
 
 **Caso 3: Passport strategy bug**
+
 ```bash
 # Rollback para versão estável
 ./scripts/rollback.sh
@@ -620,9 +666,11 @@ curl https://backend.railway.app/api/etps \
 ```
 
 **Rollback Plan:**
+
 - `./scripts/rollback.sh` (restore auth service anterior)
 
 **Escalation:**
+
 - If unresolved after **2h** → Escalation Engineer
 
 ---
@@ -632,6 +680,7 @@ curl https://backend.railway.app/api/etps \
 **Severity:** P1 (High)
 
 **Symptoms:**
+
 - ❌ ETPs exibem conteúdo embaralhado ou inválido
 - ❌ Seções com texto corrompido (caracteres estranhos)
 - ❌ Foreign key violations nos logs
@@ -639,6 +688,7 @@ curl https://backend.railway.app/api/etps \
 **Diagnosis:**
 
 1. **Verificar dados corrompidos:**
+
    ```bash
    railway run psql $DATABASE_URL -c "
    SELECT id, title, created_at FROM etps ORDER BY created_at DESC LIMIT 10;
@@ -647,6 +697,7 @@ curl https://backend.railway.app/api/etps \
    ```
 
 2. **Verificar logs de migration:**
+
    ```bash
    railway logs --service backend | grep -i "migration\|foreign key\|constraint"
    # Look for: Migration errors, constraint violations
@@ -661,6 +712,7 @@ curl https://backend.railway.app/api/etps \
 **Immediate Action:**
 
 1. **Stop the bleeding:**
+
    ```bash
    # Rollback deploy que causou corrupção
    ./scripts/rollback.sh
@@ -675,6 +727,7 @@ curl https://backend.railway.app/api/etps \
 **Root Cause Fix:**
 
 **Caso 1: Migration malformada corrompeu dados**
+
 ```bash
 # Restore backup anterior à migration
 # Ver DISASTER_RECOVERY.md > Restore de Backup Railway
@@ -689,6 +742,7 @@ railway run npm run migration:revert
 ```
 
 **Caso 2: Bug em endpoint corrompeu registros específicos**
+
 ```bash
 # Identificar registros corrompidos
 railway run psql $DATABASE_URL -c "
@@ -715,9 +769,11 @@ curl https://backend.railway.app/api/etps/<id> | jq '.title'
 ```
 
 **Rollback Plan:**
+
 - Restore backup via `DISASTER_RECOVERY.md`
 
 **Escalation:**
+
 - If data loss significativo > **1h** → Incident Commander (decisão de comunicar usuários)
 
 ---
@@ -727,6 +783,7 @@ curl https://backend.railway.app/api/etps/<id> | jq '.title'
 **Severity:** P2 (Medium)
 
 **Symptoms:**
+
 - ⚠️ Geração de seções falha intermitentemente
 - ⚠️ Erro "Rate limit exceeded" nos logs
 - 📊 **Monitoring:** Endpoint `/api/sections/generate` com 50% error rate
@@ -734,6 +791,7 @@ curl https://backend.railway.app/api/etps/<id> | jq '.title'
 **Diagnosis:**
 
 1. **Verificar logs de rate limit:**
+
    ```bash
    railway logs --service backend | grep -i "rate limit\|429\|too many requests"
    # Look for: "Rate limit exceeded for organization"
@@ -758,16 +816,19 @@ curl https://backend.railway.app/api/etps/<id> | jq '.title'
 **Root Cause Fix:**
 
 **Opção 1: Implementar queueing**
+
 ```typescript
 // Adicionar BullMQ para queue de geração
 // Controlar throughput para ficar abaixo do rate limit
 ```
 
 **Opção 2: Upgrade OpenAI plan**
+
 - Tier 1: 500 RPM, 40K TPM
 - Tier 2: 5000 RPM, 200K TPM
 
 **Opção 3: Implementar rate limiting no backend (#38)**
+
 ```typescript
 // Limitar usuários para max 5 gerações/min
 // Prevenir abuse e evitar rate limit
@@ -783,9 +844,11 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 ```
 
 **Rollback Plan:**
+
 - Não aplicável (problema de quota)
 
 **Escalation:**
+
 - If rate limit constante (>3x/dia) → Escalation Engineer (implementar queue)
 
 ---
@@ -795,6 +858,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Severity:** P1 (High)
 
 **Symptoms:**
+
 - ❌ Deploy falha com build error
 - ❌ Railway deploy status "Failed"
 - ❌ Sistema em estado inconsistente (backend novo + frontend antigo)
@@ -802,6 +866,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Diagnosis:**
 
 1. **Verificar Railway deploy logs:**
+
    ```bash
    railway logs --service backend | head -100
    # Look for: Build errors, npm install errors, TypeScript errors
@@ -818,6 +883,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Immediate Action:**
 
 1. **Executar rollback automatizado:**
+
    ```bash
    ./scripts/rollback.sh
 
@@ -833,6 +899,7 @@ curl -X POST https://backend.railway.app/api/sections/1/generate \
 **Root Cause Fix:**
 
 **Caso 1: Build error (TypeScript)**
+
 ```bash
 # Corrigir erros localmente
 npm run build
@@ -843,6 +910,7 @@ git push origin master
 ```
 
 **Caso 2: Dependency install error**
+
 ```bash
 # Verificar package.json
 # Fix dependency conflicts
@@ -853,6 +921,7 @@ git push origin master
 ```
 
 **Caso 3: Migration failure**
+
 ```bash
 # Ver Scenario 7 (Data Corruption)
 # Reverter migration problemática
@@ -870,9 +939,11 @@ railway ps
 ```
 
 **Rollback Plan:**
+
 - Script `./scripts/rollback.sh` já é o rollback
 
 **Escalation:**
+
 - If rollback falhou → **IMMEDIATE** Escalation Engineer
 
 ---
@@ -882,6 +953,7 @@ railway ps
 **Severity:** P0 (Critical)
 
 **Symptoms:**
+
 - 🚨 Acesso não autorizado detectado
 - 🚨 Data exfiltration suspeita
 - 🚨 Logs mostram atividade anômala
@@ -890,12 +962,14 @@ railway ps
 **Diagnosis:**
 
 1. **Verificar logs de auth:**
+
    ```bash
    railway logs --service backend | grep -i "login\|auth\|unauthorized"
    # Look for: Multiple failed logins, unusual IPs, brute force
    ```
 
 2. **Verificar database access logs:**
+
    ```bash
    railway run psql $DATABASE_URL -c "
    SELECT * FROM pg_stat_activity WHERE state = 'active';
@@ -912,6 +986,7 @@ railway ps
 **IMMEDIATE ACTION (PRIORITÁRIO):**
 
 1. **Rotate all secrets IMMEDIATELY:**
+
    ```bash
    # 1. Gerar novos secrets
    NEW_JWT_SECRET=$(openssl rand -base64 32)
@@ -926,6 +1001,7 @@ railway ps
    ```
 
 2. **Backup database AGORA:**
+
    ```bash
    ./scripts/backup-db.sh
    # Safety net antes de qualquer ação
@@ -981,10 +1057,12 @@ curl https://backend.railway.app/api/health
 ```
 
 **Rollback Plan:**
+
 - **NÃO FAZER ROLLBACK** sem investigação completa
 - Rollback pode destruir evidências
 
 **Escalation:**
+
 - **IMMEDIATE** → Incident Commander + Security specialist
 - **Se breach confirmado** → Notificar legal team + ANPD (LGPD compliance)
 
@@ -1005,11 +1083,11 @@ docs/templates/
 
 ### Quando usar cada template
 
-| Template | Quando Usar | Destinatário |
-|----------|-------------|--------------|
+| Template                     | Quando Usar                            | Destinatário                  |
+| ---------------------------- | -------------------------------------- | ----------------------------- |
 | **incident-notification.md** | Incidente confirmado afetando usuários | Usuários finais, stakeholders |
-| **incident-resolved.md** | Incidente resolvido completamente | Mesmos que foram notificados |
-| **post-mortem-template.md** | Após resolução (obrigatório P0/P1) | Equipe interna, management |
+| **incident-resolved.md**     | Incidente resolvido completamente      | Mesmos que foram notificados  |
+| **post-mortem-template.md**  | Após resolução (obrigatório P0/P1)     | Equipe interna, management    |
 
 ### Exemplo: Notificação de Incidente
 
@@ -1064,31 +1142,38 @@ Equipe ETP Express
 **Incident Commander:** [Nome]
 
 ## Timeline
+
 - [HH:MM] Incident detected
 - [HH:MM] First responder acknowledged
 - [HH:MM] Root cause identified
 - [HH:MM] Incident resolved
 
 ## Impact
+
 - Users affected: [X users ou %]
 - Downtime: [X minutes]
 - Data loss: [Yes/No - detalhes]
 
 ## Root Cause
+
 [Explicação técnica detalhada]
 
 ## Resolution
+
 [O que foi feito para resolver]
 
 ## What Went Well
+
 - [Ponto positivo 1]
 - [Ponto positivo 2]
 
 ## What Went Wrong
+
 - [Ponto negativo 1]
 - [Ponto negativo 2]
 
 ## Action Items
+
 - [ ] [Medida preventiva 1] - Owner: [Nome] - Due: [Data] - Priority: P0/P1/P2
 - [ ] [Medida preventiva 2] - Owner: [Nome] - Due: [Data] - Priority: P0/P1/P2
 ```

@@ -33,6 +33,7 @@ Railway detectará automaticamente o arquivo `.railway.toml` e criará os servi�
 4. Copie o valor de `DATABASE_URL` (necessário para migrations)
 
 **Testar conexão:**
+
 ```bash
 # Via Railway CLI
 railway run psql $DATABASE_URL
@@ -49,14 +50,14 @@ Railway criará automaticamente o service `backend` via `.railway.toml`.
 
 No Railway UI, acesse **Backend Service → Variables** e adicione:
 
-| Variável | Valor | Fonte |
-|----------|-------|-------|
-| `DATABASE_URL` | `${{postgres.DATABASE_URL}}` | Referência automática |
-| `PORT` | `${{PORT}}` | Railway fornece automaticamente |
-| `NODE_ENV` | `production` | Manual |
-| `JWT_SECRET` | Gerar com `openssl rand -base64 32` | Manual |
-| `OPENAI_API_KEY` | Sua chave da OpenAI | Manual |
-| `PERPLEXITY_API_KEY` | Sua chave da Perplexity (se houver) | Manual |
+| Variável             | Valor                               | Fonte                           |
+| -------------------- | ----------------------------------- | ------------------------------- |
+| `DATABASE_URL`       | `${{postgres.DATABASE_URL}}`        | Referência automática           |
+| `PORT`               | `${{PORT}}`                         | Railway fornece automaticamente |
+| `NODE_ENV`           | `production`                        | Manual                          |
+| `JWT_SECRET`         | Gerar com `openssl rand -base64 32` | Manual                          |
+| `OPENAI_API_KEY`     | Sua chave da OpenAI                 | Manual                          |
+| `PERPLEXITY_API_KEY` | Sua chave da Perplexity (se houver) | Manual                          |
 
 #### 3.2. Comandos de Build/Start (já configurados via `.railway.toml`)
 
@@ -101,10 +102,10 @@ Railway criará automaticamente o service `frontend` via `.railway.toml`.
 
 No Railway UI, acesse **Frontend Service → Variables** e adicione:
 
-| Variável | Valor | Exemplo |
-|----------|-------|---------|
+| Variável       | Valor                  | Exemplo                                          |
+| -------------- | ---------------------- | ------------------------------------------------ |
 | `VITE_API_URL` | URL do backend Railway | `https://backend-production-xxxx.up.railway.app` |
-| `NODE_ENV` | `production` | - |
+| `NODE_ENV`     | `production`           | -                                                |
 
 **IMPORTANTE**: `VITE_API_URL` deve ser a URL pública do backend (sem `/api` no final).
 
@@ -186,6 +187,7 @@ Execute estes testes para garantir que tudo funciona:
 **Erro**: `VITE_API_URL is not defined`
 
 **Solução**:
+
 ```bash
 # No Railway UI → Frontend Service → Variables
 # Adicionar:
@@ -195,6 +197,7 @@ VITE_API_URL=https://backend-production-xxxx.up.railway.app
 **Erro**: `npm run build` falha localmente
 
 **Solução**:
+
 ```bash
 cd frontend
 rm -rf node_modules package-lock.json
@@ -207,6 +210,7 @@ npm run build
 **Erro**: `Connection refused` ou `ECONNREFUSED`
 
 **Solução**:
+
 1. Verificar `DATABASE_URL` está definido:
    ```bash
    railway variables
@@ -226,9 +230,9 @@ npm run build
 ```typescript
 app.enableCors({
   origin: [
-    'http://localhost:3000', // Dev
-    'https://frontend-production-xxxx.up.railway.app', // Railway URL
-    'https://app.seudominio.com', // Domínio customizado (se houver)
+    "http://localhost:3000", // Dev
+    "https://frontend-production-xxxx.up.railway.app", // Railway URL
+    "https://app.seudominio.com", // Domínio customizado (se houver)
   ],
   credentials: true,
 });
@@ -239,6 +243,7 @@ app.enableCors({
 **Erro**: `No migrations to run`
 
 **Solução**:
+
 ```bash
 # Verificar se migrations existem
 ls backend/src/migrations
@@ -255,6 +260,7 @@ railway run npm run migration:run
 **Erro**: `401 Unauthorized` ou `Invalid API key`
 
 **Solução**:
+
 1. Verificar `OPENAI_API_KEY` está definido:
    ```bash
    railway variables | grep OPENAI
@@ -265,6 +271,7 @@ railway run npm run migration:run
 ### Logs com Erros
 
 **Ver logs em tempo real**:
+
 ```bash
 # Backend
 railway logs --service backend --follow
@@ -306,12 +313,14 @@ railway run <comando>
 ### Secrets Importantes
 
 **NUNCA commitar no Git**:
+
 - `JWT_SECRET`
 - `OPENAI_API_KEY`
 - `PERPLEXITY_API_KEY`
 - `DATABASE_URL` (Railway gera automaticamente)
 
 **Rotação de Secrets**:
+
 ```bash
 # Gerar novo JWT_SECRET
 openssl rand -base64 32
@@ -354,6 +363,7 @@ curl https://seu-backend.railway.app/api/health
 ```
 
 **O script executa:**
+
 1. ✅ Trigger deployment no Railway
 2. ✅ Aguarda health check passar (max 5min)
 3. ✅ Executa smoke tests (JSON, database, response time)
@@ -394,6 +404,7 @@ Para detalhes sobre estratégia zero-downtime, health checks, database migration
 ```
 
 **O script executa:**
+
 1. ✅ Identifica deployment anterior
 2. ✅ Executa rollback no Railway
 3. ✅ Valida health check
@@ -425,11 +436,11 @@ curl https://seu-backend.railway.app/api/health
 
 Após deploy completo, anote suas URLs:
 
-| Service | Railway URL | Domínio Customizado |
-|---------|-------------|---------------------|
+| Service      | Railway URL                                       | Domínio Customizado          |
+| ------------ | ------------------------------------------------- | ---------------------------- |
 | **Frontend** | `https://frontend-production-xxxx.up.railway.app` | `https://app.seudominio.com` |
-| **Backend** | `https://backend-production-xxxx.up.railway.app` | `https://api.seudominio.com` |
-| **Database** | Interno (não exposto publicamente) | - |
+| **Backend**  | `https://backend-production-xxxx.up.railway.app`  | `https://api.seudominio.com` |
+| **Database** | Interno (não exposto publicamente)                | -                            |
 
 ## 📚 Recursos Adicionais
 
@@ -441,6 +452,7 @@ Após deploy completo, anote suas URLs:
 ## ✅ Checklist de Deploy
 
 ### Infraestrutura Base
+
 - [ ] Projeto Railway criado: "etp-express-production"
 - [ ] PostgreSQL database provisionado
 - [ ] Backend service deployado com variáveis configuradas
@@ -448,6 +460,7 @@ Após deploy completo, anote suas URLs:
 - [ ] Migrations database executadas (`npm run migration:run`)
 
 ### Zero-Downtime Deployment (Issue #107)
+
 - [ ] Health check endpoint respondendo: `GET /api/health`
 - [ ] Railway health check configurado em `.railway.toml`
 - [ ] Scripts de deploy/rollback testados localmente
@@ -456,6 +469,7 @@ Após deploy completo, anote suas URLs:
 - [ ] Smoke tests passando (JSON, database, response time <2s)
 
 ### Validação
+
 - [ ] CORS configurado com URLs corretas
 - [ ] Teste E2E completo executado (Criar conta → Criar ETP → Gerar IA → Exportar PDF)
 - [ ] Logs sem erros críticos
@@ -463,6 +477,7 @@ Após deploy completo, anote suas URLs:
 - [ ] Response time (p95) <500ms
 
 ### Produção
+
 - [ ] Domínios customizados configurados (opcional)
 - [ ] SSL certificates provisionados (automático)
 - [ ] URLs finais documentadas
@@ -506,17 +521,18 @@ railway restart
 
 ### Common Issues - Quick Reference
 
-| Sintoma | Causa Provável | Action | Runbook |
-|---------|----------------|--------|---------|
-| Backend retorna 500 em todos endpoints | Database down | `railway restart` (PostgreSQL) | [Scenario 1](docs/INCIDENT_RESPONSE.md#scenario-1-database-down) |
-| Requests muito lentos (>5s) | High latency / query sem índice | `railway restart` (backend) | [Scenario 2](docs/INCIDENT_RESPONSE.md#scenario-2-api-timeout-high-latency) |
-| "Erro ao gerar seção" | OpenAI API failure ou rate limit | Aguardar 60s ou verificar API key | [Scenario 3](docs/INCIDENT_RESPONSE.md#scenario-3-openai-api-failure) |
-| Backend crashes repetidamente | Memory leak (OOM) | `./scripts/rollback.sh` | [Scenario 4](docs/INCIDENT_RESPONSE.md#scenario-4-memory-leak-oom---out-of-memory) |
-| Frontend tela branca | Build error ou env var missing | `railway rollback` (frontend) | [Scenario 5](docs/INCIDENT_RESPONSE.md#scenario-5-frontend-down-white-screen) |
+| Sintoma                                | Causa Provável                   | Action                            | Runbook                                                                            |
+| -------------------------------------- | -------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------- |
+| Backend retorna 500 em todos endpoints | Database down                    | `railway restart` (PostgreSQL)    | [Scenario 1](docs/INCIDENT_RESPONSE.md#scenario-1-database-down)                   |
+| Requests muito lentos (>5s)            | High latency / query sem índice  | `railway restart` (backend)       | [Scenario 2](docs/INCIDENT_RESPONSE.md#scenario-2-api-timeout-high-latency)        |
+| "Erro ao gerar seção"                  | OpenAI API failure ou rate limit | Aguardar 60s ou verificar API key | [Scenario 3](docs/INCIDENT_RESPONSE.md#scenario-3-openai-api-failure)              |
+| Backend crashes repetidamente          | Memory leak (OOM)                | `./scripts/rollback.sh`           | [Scenario 4](docs/INCIDENT_RESPONSE.md#scenario-4-memory-leak-oom---out-of-memory) |
+| Frontend tela branca                   | Build error ou env var missing   | `railway rollback` (frontend)     | [Scenario 5](docs/INCIDENT_RESPONSE.md#scenario-5-frontend-down-white-screen)      |
 
 ### When to Use Incident Response
 
 ✅ **USE quando:**
+
 - Sistema apresenta comportamento anormal em produção
 - Usuários relatam erros ou indisponibilidade
 - Alertas de monitoramento disparam

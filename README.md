@@ -162,6 +162,7 @@ railway init
 ```
 
 **URLs de exemplo**:
+
 - Backend: `https://etp-express-backend.up.railway.app`
 - Frontend: `https://etp-express-frontend.up.railway.app`
 - Swagger: `https://etp-express-backend.up.railway.app/api/docs`
@@ -294,16 +295,16 @@ npm run lint
 
 ## 📖 DOCUMENTAÇÃO
 
-| Documento | Descrição |
-|-----------|-----------|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Arquitetura completa do sistema |
-| [DEPLOY.md](./DEPLOY.md) | Guia de deploy em produção (Railway) |
-| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md) | 🚨 **Playbook de resposta a incidentes em produção** |
-| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime |
-| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) | Backup e disaster recovery procedures |
-| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql) | Schema completo do banco |
-| [backend/README.md](./backend/README.md) | Documentação do backend |
-| [frontend/README.md](./frontend/README.md) | Documentação do frontend |
+| Documento                                                      | Descrição                                            |
+| -------------------------------------------------------------- | ---------------------------------------------------- |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                      |
+| [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)                 |
+| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | 🚨 **Playbook de resposta a incidentes em produção** |
+| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime                    |
+| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md)                 | Backup e disaster recovery procedures                |
+| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql)                   | Schema completo do banco                             |
+| [backend/README.md](./backend/README.md)                       | Documentação do backend                              |
+| [frontend/README.md](./frontend/README.md)                     | Documentação do frontend                             |
 
 ---
 
@@ -361,6 +362,7 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 - ❌ Ter vieses nos dados de treinamento
 
 **Por isso**:
+
 - ✅ Sempre revise criticamente
 - ✅ Valide referências legais
 - ✅ Confirme valores com mercado atual
@@ -383,11 +385,13 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 ### Dados Enviados para APIs Externas
 
 **OpenAI GPT-4**:
+
 - Conteúdo das seções para geração
 - Contexto do ETP (título, objeto)
 - **NÃO** enviamos dados sensíveis (CPFs, CNPJs, valores exatos)
 
 **Perplexity AI**:
+
 - Queries de busca de contratações similares
 - Termos de pesquisa (objeto da contratação)
 
