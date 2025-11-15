@@ -15,6 +15,9 @@ import { SearchModule } from './modules/search/search.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { OrchestratorModule } from './modules/orchestrator/orchestrator.module';
 
+// Health Check
+import { HealthModule } from './health/health.module';
+
 // Common
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -80,6 +83,7 @@ import { AppService } from './app.service';
     SearchModule,
     AnalyticsModule,
     OrchestratorModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
