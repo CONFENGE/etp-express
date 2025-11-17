@@ -251,8 +251,7 @@ export class OrchestratorService {
           antiHallucination: hallucinationCheck,
         },
         warnings: [...new Set(warnings)],
-        disclaimer:
-          DISCLAIMER,
+        disclaimer: DISCLAIMER,
       };
     } catch (error) {
       this.logger.error('Error generating section:', error);

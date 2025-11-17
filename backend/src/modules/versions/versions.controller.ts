@@ -36,8 +36,7 @@ export class VersionsController {
     );
     return {
       data: version,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -51,8 +50,7 @@ export class VersionsController {
     const versions = await this.versionsService.getVersions(etpId);
     return {
       data: versions,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -64,8 +62,7 @@ export class VersionsController {
     const version = await this.versionsService.getVersion(id);
     return {
       data: version,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -95,8 +92,7 @@ export class VersionsController {
     return {
       data: etp,
       message: 'Versão restaurada com sucesso',
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }

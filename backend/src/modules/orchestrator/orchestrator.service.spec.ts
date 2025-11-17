@@ -398,9 +398,7 @@ describe('OrchestratorService', () => {
 
       const result = await service.generateSection(request);
 
-      expect(result.disclaimer).toBe(
-        DISCLAIMER,
-      );
+      expect(result.disclaimer).toBe(DISCLAIMER);
     });
 
     it('disclaimer deve estar presente mesmo quando há warnings', async () => {

@@ -534,9 +534,7 @@ describe('VersionsService', () => {
       );
 
       // Assert
-      expect(result.disclaimer).toBe(
-        DISCLAIMER,
-      );
+      expect(result.disclaimer).toBe(DISCLAIMER);
     });
   });
 

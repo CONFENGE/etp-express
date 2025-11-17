@@ -89,8 +89,7 @@ describe('SectionsController (Integration)', () => {
       antiHallucination: { score: 95, verified: true, warnings: [] },
       overallScore: '87.50',
     },
-    disclaimer:
-      DISCLAIMER,
+    disclaimer: DISCLAIMER,
   };
 
   /**
