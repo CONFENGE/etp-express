@@ -14,10 +14,12 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { SectionsService } from './sections.service';
 import { GenerateSectionDto } from './dto/generate-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 /**
@@ -54,6 +56,11 @@ export class SectionsController {
    * This endpoint invokes the AI orchestrator to generate section content
    * using multiple specialized agents. Generation typically takes 30-60 seconds.
    *
+   * **Rate Limiting (Issue #38):**
+   * - Limit: 5 requests per 60 seconds (1 minute) per authenticated user
+   * - Tracker: User ID (not IP address)
+   * - Prevents abuse of OpenAI API costs
+   *
    * @param etpId - ETP unique identifier (UUID)
    * @param generateDto - Section generation parameters (sectionKey, etc.)
    * @param userId - Current user ID (extracted from JWT token)
@@ -61,12 +68,15 @@ export class SectionsController {
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {BadRequestException} 400 - If section already exists or data invalid
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ThrottlerException} 429 - If rate limit exceeded (5 req/min)
    */
   @Post('etp/:etpId/generate')
+  @UseGuards(UserThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per 60 seconds per user
   @ApiOperation({
     summary: 'Gerar nova seção com IA',
     description:
-      'Gera uma nova seção do ETP usando o sistema de orquestração de agentes IA',
+      'Gera uma nova seção do ETP usando o sistema de orquestração de agentes IA. Limite: 5 gerações por minuto por usuário.',
   })
   @ApiResponse({ status: 201, description: 'Seção gerada com sucesso' })
   @ApiResponse({
@@ -74,6 +84,11 @@ export class SectionsController {
     description: 'Seção já existe ou dados inválidos',
   })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
+  @ApiResponse({
+    status: 429,
+    description:
+      'Limite de requisições excedido (5 gerações por minuto por usuário)',
+  })
   async generateSection(
     @Param('etpId') etpId: string,
     @Body() generateDto: GenerateSectionDto,
@@ -161,19 +176,33 @@ export class SectionsController {
    * Replaces existing section content with fresh AI-generated content.
    * Generation typically takes 30-60 seconds.
    *
+   * **Rate Limiting (Issue #38):**
+   * - Limit: 5 requests per 60 seconds (1 minute) per authenticated user
+   * - Tracker: User ID (not IP address)
+   * - Prevents abuse of OpenAI API costs
+   *
    * @param id - Section unique identifier (UUID)
    * @param userId - Current user ID (extracted from JWT token)
    * @returns Regenerated section entity with new content and disclaimer message
    * @throws {NotFoundException} 404 - If section not found
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ThrottlerException} 429 - If rate limit exceeded (5 req/min)
    */
   @Post(':id/regenerate')
+  @UseGuards(UserThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per 60 seconds per user
   @ApiOperation({
     summary: 'Regenerar seção com IA',
-    description: 'Regenera o conteúdo da seção usando IA',
+    description:
+      'Regenera o conteúdo da seção usando IA. Limite: 5 regenerações por minuto por usuário.',
   })
   @ApiResponse({ status: 200, description: 'Seção regenerada com sucesso' })
   @ApiResponse({ status: 404, description: 'Seção não encontrada' })
+  @ApiResponse({
+    status: 429,
+    description:
+      'Limite de requisições excedido (5 regenerações por minuto por usuário)',
+  })
   async regenerate(@Param('id') id: string, @CurrentUser('id') userId: string) {
     const section = await this.sectionsService.regenerateSection(id, userId);
     return {
