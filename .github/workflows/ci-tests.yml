@@ -69,9 +69,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies (workspace root)
-        run: |
-          rm -rf node_modules
-          npm install --force
+        run: npm ci
 
       - name: Run tests with coverage
         working-directory: frontend
