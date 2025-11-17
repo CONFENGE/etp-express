@@ -1,0 +1,52 @@
+# Gitleaks Configuration for ETP Express
+# https://github.com/gitleaks/gitleaks
+
+title = "ETP Express Secret Scanning Configuration"
+
+# Global allowlist
+[allowlist]
+description = "Global allowlist for known false positives"
+paths = [
+  '''\.md$''',
+  '''\.txt$''',
+  '''package-lock\.json$''',
+  '''pnpm-lock\.yaml$''',
+  '''^docs/''',
+]
+
+# Custom rules for ETP Express specific patterns
+[[rules]]
+id = "openai-api-key"
+description = "OpenAI API Key"
+regex = '''sk-[a-zA-Z0-9]{48}'''
+tags = ["key", "openai"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT Secret in code"
+regex = '''(jwt[_-]?secret|JWT[_-]?SECRET)\s*[:=]\s*['"]([^'"]{20,})['"]'''
+tags = ["secret", "jwt"]
+
+[[rules]]
+id = "database-url"
+description = "Database connection string"
+regex = '''postgres(ql)?://[a-zA-Z0-9_-]+:[^@\s]+@[^\s]+'''
+tags = ["secret", "database"]
+
+[[rules]]
+id = "env-file-committed"
+description = "Environment file should never be committed"
+path = '''\.env'''
+tags = ["env"]
+
+[[rules]]
+id = "private-key"
+description = "Private key file"
+regex = '''-----BEGIN (RSA |OPENSSH |)PRIVATE KEY-----'''
+tags = ["key", "private-key"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key pattern"
+regex = '''(?i)(api[_-]?key|apikey|api[_-]?token)\s*[:=]\s*['"]([a-zA-Z0-9_\-]{32,})['"]'''
+tags = ["key", "api"]

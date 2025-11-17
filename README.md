@@ -136,6 +136,40 @@ npm run dev
 4. Faça login
 5. Crie seu primeiro ETP!
 
+### 🔒 Configuração de Segurança (Gitleaks)
+
+Para proteger contra vazamento de secrets (API keys, senhas, tokens), instale o **Gitleaks**:
+
+**Windows (Chocolatey):**
+```bash
+choco install gitleaks
+```
+
+**Windows (Scoop):**
+```bash
+scoop install gitleaks
+```
+
+**macOS (Homebrew):**
+```bash
+brew install gitleaks
+```
+
+**Linux:**
+```bash
+# Baixe a versão mais recente do GitHub
+wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+sudo mv gitleaks /usr/local/bin/
+```
+
+**Verificar instalação:**
+```bash
+gitleaks version
+```
+
+O pre-commit hook detectará automaticamente o Gitleaks e escaneará seus commits antes de permitir o commit. Para mais detalhes, consulte `docs/SECURITY.md`.
+
 ---
 
 ## 🐳 DESENVOLVIMENTO LOCAL COM DOCKER (RECOMENDADO)
