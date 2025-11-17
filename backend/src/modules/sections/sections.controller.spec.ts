@@ -10,6 +10,7 @@ import request from 'supertest';
 import { SectionsController } from './sections.controller';
 import { SectionsService } from './sections.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { SectionStatus, SectionType } from '../../entities/etp-section.entity';
 
 /**
@@ -118,6 +119,14 @@ describe('SectionsController (Integration)', () => {
     }),
   };
 
+  /**
+   * Mock UserThrottlerGuard to bypass rate limiting in tests
+   * Rate limiting is tested separately in sections-rate-limit.spec.ts
+   */
+  const mockUserThrottlerGuard = {
+    canActivate: jest.fn(() => true),
+  };
+
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [SectionsController],
@@ -127,6 +136,8 @@ describe('SectionsController (Integration)', () => {
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(mockJwtAuthGuard)
+      .overrideGuard(UserThrottlerGuard)
+      .useValue(mockUserThrottlerGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
