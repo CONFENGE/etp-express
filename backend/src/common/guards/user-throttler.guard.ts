@@ -1,107 +1,115 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerException } from '@nestjs/throttler';
+import { Request } from 'express';
 
 /**
- * Custom throttler guard that limits requests by authenticated user ID instead of IP address.
+ * Custom throttler guard que usa user ID ao invés de IP para rate limiting
  *
  * @remarks
- * Standard ThrottlerGuard uses IP address as tracker, which allows abuse scenarios:
- * - Multiple users behind same IP (corporate NAT) share the same limit
- * - Single user with multiple IPs can bypass limits
+ * Este guard protege endpoints de geração de IA contra abuse de custo (OpenAI API).
+ * Utiliza `user.id` como chave de throttling ao invés de IP, permitindo rate limiting
+ * preciso por usuário autenticado.
  *
- * This guard extracts user.id from JWT token (injected by JwtAuthGuard) and uses it
- * as the rate limiting tracker.
+ * **Comportamento:**
+ * - Se usuário autenticado → usa `user.id` como chave
+ * - Se não autenticado → fallback para IP (comportamento padrão)
+ * - Se IP não disponível → usa "unknown" (extremo edge case)
  *
- * **IMPORTANT**: This guard MUST be used together with JwtAuthGuard, as it relies on
- * request.user being populated by the authentication layer.
+ * **Configuração:**
+ * - TTL e limit são configurados via `@Throttle()` decorator no controller
+ * - Configuração global definida em `app.module.ts` (ThrottlerModule)
  *
- * @example
+ * **Uso:**
  * ```typescript
- * @Controller('sections')
- * @UseGuards(JwtAuthGuard)  // REQUIRED: Must come BEFORE UserThrottlerGuard
- * export class SectionsController {
- *   @Post('etp/:etpId/generate')
- *   @UseGuards(UserThrottlerGuard)  // Apply user-based rate limiting
- *   @Throttle(5, 60)  // 5 requests per 60 seconds per user
- *   async generateSection() { ... }
+ * @UseGuards(UserThrottlerGuard)
+ * @Throttle({ default: { limit: 5, ttl: 60000 } })  // 5 req/min
+ * @Post('generate')
+ * async generate(@CurrentUser() user: User) {
+ *   // Endpoint protegido contra abuse
  * }
  * ```
  *
- * @see {@link https://docs.nestjs.com/security/rate-limiting | NestJS Rate Limiting}
+ * **Segurança:**
+ * - Previne abuse de API OpenAI (proteção financeira)
+ * - Reduz risco de DDoS em endpoints de IA
+ * - Protege backend de sobrecarga (múltiplas chamadas LLM simultâneas)
+ *
+ * @see https://docs.nestjs.com/security/rate-limiting
+ * @see ARCHITECTURE.md - Security Best Practices
+ *
+ * @author ETP Express Team
+ * @since 1.0.0
+ * @category Guards
+ * @module Common
  */
 @Injectable()
 export class UserThrottlerGuard extends ThrottlerGuard {
   /**
-   * Extracts the user ID from the authenticated request to use as rate limiting tracker.
+   * Gera chave de throttling baseada em user ID ou IP
    *
-   * @param context - Execution context containing HTTP request
-   * @returns User ID string from JWT token (request.user.id)
-   *
-   * @throws {ThrottlerException} If request.user or request.user.id is undefined
+   * @param req - Express request object (contém user injetado por JwtAuthGuard)
+   * @returns Chave única para rate limiting ("user-{id}" ou IP ou "unknown")
    *
    * @remarks
-   * This method is called by ThrottlerGuard to determine the unique identifier
-   * for rate limiting. It replaces the default IP-based tracking with user ID tracking.
-   *
-   * If user is not authenticated (missing request.user), throws ThrottlerException
-   * to prevent unauthenticated requests from bypassing rate limits.
-   */
-  protected async getTracker(req: Record<string, any>): Promise<string> {
-    // Extract user from request (populated by JwtAuthGuard)
-    const user = req.user;
-
-    if (!user || !user.id) {
-      // If no user in request, throw error - rate limiting requires authentication
-      // This should never happen if JwtAuthGuard is properly configured BEFORE this guard
-      throw new ThrottlerException(
-        'Rate limiting requer autenticação. Usuário não identificado.',
-      );
-    }
-
-    // Return user ID as tracker instead of IP address
-    return user.id;
-  }
-
-  /**
-   * Generates the cache key for storing rate limit data.
-   *
-   * @param context - Execution context
-   * @param suffix - Tracker suffix (user ID from getTracker)
-   * @param name - Throttler name
-   * @returns Cache key string in format: "user-{userId}-{throttlerName}"
-   *
-   * @remarks
-   * This method customizes the cache key to include "user-" prefix for clarity.
-   * Default format would be just "{userId}-{throttlerName}".
-   *
-   * Cache keys are used by ThrottlerStorage to track request counts per time window.
+   * - `req.user` é injetado pelo `JwtAuthGuard` (@CurrentUser decorator)
+   * - Se `user.id` disponível → usa "user-{id}" (isolamento por usuário)
+   * - Se não → fallback para IP (útil para endpoints públicos futuros)
+   * - Se IP não disponível → usa "unknown" (edge case raro)
    *
    * @example
-   * generateKey(context, "123e4567-e89b-12d3-a456-426614174000", "default") returns:
-   * "user-123e4567-e89b-12d3-a456-426614174000-default"
+   * ```typescript
+   * // Usuário autenticado
+   * req.user = { id: 'abc-123', email: 'user@example.com' }
+   * // Retorna: "user-abc-123"
+   *
+   * // Usuário não autenticado
+   * req.user = undefined
+   * req.ip = '192.168.1.1'
+   * // Retorna: "192.168.1.1"
+   * ```
+   *
+   * @protected
+   * @override
    */
-  protected generateKey(
-    context: ExecutionContext,
-    suffix: string,
-    name: string,
-  ): string {
-    // Format: "user-{userId}-{throttlerName}"
-    return `user-${suffix}-${name}`;
+  protected async getTracker(req: Request): Promise<string> {
+    // Casting para acessar propriedade 'user' injetada pelo JwtAuthGuard
+    const user = (req as any).user;
+
+    // Prioridade 1: User ID (rate limiting por usuário autenticado)
+    if (user && user.id) {
+      return `user-${user.id}`; // Ex: "user-abc-123"
+    }
+
+    // Prioridade 2: IP Address (fallback para endpoints públicos)
+    if (req.ip) {
+      return req.ip; // Ex: "192.168.1.1"
+    }
+
+    // Prioridade 3: Unknown (edge case extremo - servidor sem IP forwarding)
+    return 'unknown';
   }
 
   /**
-   * Customizes the error message when rate limit is exceeded.
+   * Hook executado quando rate limit é excedido
    *
-   * @param context - Execution context
-   * @returns Custom error message in Portuguese
+   * @param context - Execution context do NestJS
+   * @throws ThrottlerException com mensagem customizada
    *
    * @remarks
-   * This method overrides the default English error message with a Portuguese message
-   * that provides clear guidance to the user about rate limits and retry timing.
+   * Sobrescreve método padrão para adicionar mensagem mais clara para usuário.
+   * Response HTTP 429 inclui:
+   * - `message`: "Too Many Requests. Limite: 5 gerações/minuto. Aguarde {X} segundos."
+   * - `statusCode`: 429
+   * - `error`: "Too Many Requests"
    *
-   * The default message would be: "ThrottlerException: Too Many Requests"
+   * @protected
+   * @override
    */
-  protected async getErrorMessage(_context: ExecutionContext): Promise<string> {
-    return 'Limite de requisições excedido. Você pode fazer até 5 gerações de seção por minuto. Aguarde alguns segundos e tente novamente.';
+  protected async throwThrottlingException(
+    context: ExecutionContext,
+  ): Promise<void> {
+    throw new ThrottlerException(
+      'Limite de gerações excedido. Aguarde 60 segundos antes de tentar novamente. (Máximo: 5 gerações por minuto)',
+    );
   }
 }
