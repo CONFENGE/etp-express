@@ -101,7 +101,7 @@ export class UserThrottlerGuard extends ThrottlerGuard {
    *
    * The default message would be: "ThrottlerException: Too Many Requests"
    */
-  protected async getErrorMessage(context: ExecutionContext): Promise<string> {
+  protected async getErrorMessage(_context: ExecutionContext): Promise<string> {
     return 'Limite de requisições excedido. Você pode fazer até 5 gerações de seção por minuto. Aguarde alguns segundos e tente novamente.';
   }
 }
