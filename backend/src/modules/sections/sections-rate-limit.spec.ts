@@ -144,8 +144,8 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
         .expect(429);
 
       // Verify error message is in Portuguese
-      expect(response.body.message).toContain('Limite de requisições excedido');
-      expect(response.body.message).toContain('5 gerações');
+      expect(response.body.message).toContain('Limite de gerações excedido');
+      expect(response.body.message).toContain('5 gerações por minuto');
 
       // Service should only be called 5 times (6th request blocked by guard)
       expect(sectionsService.generateSection).toHaveBeenCalledTimes(5);
@@ -234,9 +234,9 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
         .set('x-test-user-id', mockUser1Id)
         .expect(429);
 
-      expect(response.body.message).toContain('Limite de requisições excedido');
-      // Guard uses generic message "5 gerações de seção" for both endpoints
-      expect(response.body.message).toContain('5 gerações');
+      expect(response.body.message).toContain('Limite de gerações excedido');
+      // Guard uses generic message "5 gerações por minuto" for both endpoints
+      expect(response.body.message).toContain('5 gerações por minuto');
       expect(sectionsService.regenerateSection).toHaveBeenCalledTimes(5);
     });
 
@@ -264,22 +264,26 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
         .send(generateDto)
         .expect(429);
 
-      // /regenerate should still allow 5 requests (shared limit per user)
-      // NOTE: This test validates that both endpoints share the same user-based limit
-      // If we want separate limits per endpoint, we would use named throttlers
+      // /regenerate should still allow 5 requests (independent limit per endpoint)
+      // NOTE: Both endpoints use the same throttler name ("default"), but @Throttle
+      // decorator creates SEPARATE limits per route. This is correct behavior.
+      // User1 exhausted limit on /generate, but /regenerate still has fresh limit.
       for (let i = 0; i < 5; i++) {
         const response = await request(app.getHttpServer())
           .post(`/sections/${mockSectionId}/regenerate`)
           .set('x-test-user-id', mockUser1Id);
 
-        // Since both endpoints use the same throttler ("default"),
-        // and user1 already exhausted their limit, this should also return 429
-        // Changing assertion to match actual expected behavior
-        if (i === 0) {
-          // First regenerate after exhausting generate limit should be blocked
-          expect(response.status).toBe(429);
-        }
+        // All regenerate requests should succeed (independent limit)
+        expect(response.status).toBe(201);
       }
+
+      // Now exhaust regenerate limit
+      const response = await request(app.getHttpServer())
+        .post(`/sections/${mockSectionId}/regenerate`)
+        .set('x-test-user-id', mockUser1Id);
+
+      // 6th regenerate request should be blocked
+      expect(response.status).toBe(429);
     });
   });
 
@@ -345,9 +349,9 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
         .expect(429);
 
       // Validate Portuguese error message
-      expect(response.body.message).toContain('Limite de requisições excedido');
-      expect(response.body.message).toContain('5 gerações de seção por minuto');
-      expect(response.body.message).toContain('Aguarde alguns segundos');
+      expect(response.body.message).toContain('Limite de gerações excedido');
+      expect(response.body.message).toContain('5 gerações por minuto');
+      expect(response.body.message).toContain('Aguarde 60 segundos');
     });
   });
 });
