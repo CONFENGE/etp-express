@@ -37,8 +37,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         typeof message === 'string'
           ? message
           : (message as any).message || message,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
 
     // Log do erro

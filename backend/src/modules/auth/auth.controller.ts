@@ -84,8 +84,7 @@ export class AuthController {
   async getMe(@CurrentUser() user: any) {
     return {
       user,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

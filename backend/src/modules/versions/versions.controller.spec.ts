@@ -52,8 +52,7 @@ describe('VersionsController', () => {
         modified: [],
       },
     },
-    disclaimer:
-      DISCLAIMER,
+    disclaimer: DISCLAIMER,
   };
 
   const mockVersionsService = {

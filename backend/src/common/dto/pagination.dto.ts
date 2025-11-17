@@ -54,7 +54,6 @@ export function createPaginatedResult<T>(
       limit,
       totalPages: Math.ceil(total / limit),
     },
-    disclaimer:
-      DISCLAIMER,
+    disclaimer: DISCLAIMER,
   };
 }

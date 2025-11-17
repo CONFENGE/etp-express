@@ -81,8 +81,7 @@ export class AnalyticsController {
     const stats = await this.analyticsService.getDashboardStats(userId, days);
     return {
       data: stats,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -105,8 +104,7 @@ export class AnalyticsController {
     const activity = await this.analyticsService.getUserActivity(userId, days);
     return {
       data: activity,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -128,8 +126,7 @@ export class AnalyticsController {
 
     return {
       data: events,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -143,8 +140,7 @@ export class AnalyticsController {
     const health = await this.analyticsService.getSystemHealth();
     return {
       data: health,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }
