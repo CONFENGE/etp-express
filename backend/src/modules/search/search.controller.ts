@@ -60,8 +60,7 @@ export class SearchController {
     const contracts = await this.searchService.getAllContracts(limit);
     return {
       data: contracts,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -73,8 +72,7 @@ export class SearchController {
     const contract = await this.searchService.getContractById(id);
     return {
       data: contract,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }

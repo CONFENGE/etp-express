@@ -352,8 +352,7 @@ export class SectionsService {
     return {
       section,
       validationResults,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

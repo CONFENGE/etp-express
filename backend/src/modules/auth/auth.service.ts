@@ -124,8 +124,7 @@ export class AuthService {
         orgao: user.orgao,
         cargo: user.cargo,
       },
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -188,8 +187,7 @@ export class AuthService {
         orgao: user.orgao,
         cargo: user.cargo,
       },
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

@@ -102,8 +102,7 @@ export class SectionsController {
     );
     return {
       data: section,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -121,8 +120,7 @@ export class SectionsController {
     const sections = await this.sectionsService.findAll(etpId);
     return {
       data: sections,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -142,8 +140,7 @@ export class SectionsController {
     const section = await this.sectionsService.findOne(id);
     return {
       data: section,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -165,8 +162,7 @@ export class SectionsController {
     const section = await this.sectionsService.update(id, updateDto);
     return {
       data: section,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -208,8 +204,7 @@ export class SectionsController {
     const section = await this.sectionsService.regenerateSection(id, userId);
     return {
       data: section,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -253,8 +248,7 @@ export class SectionsController {
     await this.sectionsService.remove(id, userId);
     return {
       message: 'Seção deletada com sucesso',
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }
