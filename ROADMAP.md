@@ -792,7 +792,7 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 #### Objetivo
 Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e realizar auditoria completa de vulnerabilidades.
 
-#### Issues (13 total - 6 concluídas ✅, 7 pendentes)
+#### Issues (13 total - 7 concluídas ✅, 6 pendentes)
 
 **Bugs Críticos (4 issues) - ⚠️ 3 DE 4 CONCLUÍDAS**
 - [x] #14 - Corrigir useEffect em useETPs.ts (1h) ✅
@@ -800,8 +800,8 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 - [x] #16 - Corrigir useEffect em ETPs.tsx (1h) ✅
 - [ ] #17 - Corrigir useEffect em ETPEditor.tsx (1h) 🟡 **PENDENTE**
 
-**Segurança Básica (2 issues) - ⚡ 1 DE 2 CONCLUÍDAS**
-- [ ] #38 - Adicionar rate limiting por usuário (4h) 🔐 **CRÍTICO**
+**Segurança Básica (2 issues) - ⚡ 2 DE 2 CONCLUÍDAS** ✅
+- [x] #38 - Adicionar rate limiting por usuário (4h) ✅ **PR #150 MERGED** ✅
 - [x] #39 - Substituir window.location.href por navigate (3h) ✅ **PR #142 MERGED** ✅
 
 **Security Audit (3 sub-issues - desmembradas de #46) - ⚡ AUDITORIA COMPLETA!**
