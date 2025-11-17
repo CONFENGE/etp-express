@@ -18,7 +18,9 @@ Trabalho em progresso para alcançar qualidade de produção:
 - ✅ ESLint + Prettier configurados
 - ✅ Testes unitários: auth, sections, ETPs, controllers, services
 - ✅ Documentação JSDoc implementada
-- ✅ Vulnerabilidades de segurança resolvidas (npm audit)
+- ✅ Vulnerabilidades de segurança resolvidas:
+  - HIGH: jspdf 2.5.1 → 3.0.3 (CVE-2024: ReDoS, DoS)
+  - MODERATE: dompurify 2.5.8 → 3.3.0 (XSS bypass)
 - ✅ Correções TypeScript aplicadas
 - 🔄 Cobertura de testes em aumento (0.46% → ~50%, meta: 70%)
 
