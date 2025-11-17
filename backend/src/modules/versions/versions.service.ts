@@ -130,8 +130,7 @@ export class VersionsService {
         createdAt: version2.createdAt,
       },
       differences,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

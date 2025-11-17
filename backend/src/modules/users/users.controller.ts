@@ -70,8 +70,7 @@ export class UsersController {
     const user = await this.usersService.create(createUserDto);
     return {
       data: user,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -88,8 +87,7 @@ export class UsersController {
     const users = await this.usersService.findAll();
     return {
       data: users,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -108,8 +106,7 @@ export class UsersController {
     const user = await this.usersService.findOne(userId);
     return {
       data: user,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -129,8 +126,7 @@ export class UsersController {
     const user = await this.usersService.findOne(id);
     return {
       data: user,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -152,8 +148,7 @@ export class UsersController {
     const user = await this.usersService.update(id, updateUserDto);
     return {
       data: user,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -177,8 +172,7 @@ export class UsersController {
     await this.usersService.remove(id);
     return {
       message: 'Usuário deletado com sucesso',
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }

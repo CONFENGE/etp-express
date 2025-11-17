@@ -131,8 +131,7 @@ export class ExportService {
         updatedAt: section.updatedAt,
       })),
       exportedAt: new Date().toISOString(),
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

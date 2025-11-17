@@ -106,7 +106,7 @@ export class UserThrottlerGuard extends ThrottlerGuard {
    * @override
    */
   protected async throwThrottlingException(
-    context: ExecutionContext,
+    _context: ExecutionContext,
   ): Promise<void> {
     throw new ThrottlerException(
       'Limite de gerações excedido. Aguarde 60 segundos antes de tentar novamente. (Máximo: 5 gerações por minuto)',

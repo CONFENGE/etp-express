@@ -27,8 +27,7 @@ describe('AuthController', () => {
   const mockAuthResponse = {
     accessToken: 'mock-jwt-token',
     user: mockUser,
-    disclaimer:
-      DISCLAIMER,
+    disclaimer: DISCLAIMER,
   };
 
   beforeEach(async () => {

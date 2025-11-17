@@ -26,8 +26,7 @@ export class SearchService {
       return {
         data: cachedResults,
         source: 'cache',
-        disclaimer:
-          DISCLAIMER,
+        disclaimer: DISCLAIMER,
       };
     }
 
@@ -46,8 +45,7 @@ export class SearchService {
       summary: perplexityResults.summary,
       sources: perplexityResults.sources,
       source: 'perplexity',
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -61,8 +59,7 @@ export class SearchService {
       data: perplexityResults.results,
       summary: perplexityResults.summary,
       sources: perplexityResults.sources,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 

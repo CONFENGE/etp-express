@@ -67,8 +67,7 @@ export class EtpsController {
     const etp = await this.etpsService.create(createEtpDto, userId);
     return {
       data: etp,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -106,8 +105,7 @@ export class EtpsController {
     const stats = await this.etpsService.getStatistics(userId);
     return {
       data: stats,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -129,8 +127,7 @@ export class EtpsController {
     const etp = await this.etpsService.findOne(id, userId);
     return {
       data: etp,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -159,8 +156,7 @@ export class EtpsController {
     const etp = await this.etpsService.update(id, updateEtpDto, userId);
     return {
       data: etp,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -187,8 +183,7 @@ export class EtpsController {
     const etp = await this.etpsService.updateStatus(id, status, userId);
     return {
       data: etp,
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 
@@ -211,8 +206,7 @@ export class EtpsController {
     await this.etpsService.remove(id, userId);
     return {
       message: 'ETP deletado com sucesso',
-      disclaimer:
-        DISCLAIMER,
+      disclaimer: DISCLAIMER,
     };
   }
 }
