@@ -23,6 +23,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { EtpStatus } from '../../entities/etp.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Controller handling ETP (Estudos Técnicos Preliminares) HTTP endpoints.
@@ -67,7 +68,7 @@ export class EtpsController {
     return {
       data: etp,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -106,7 +107,7 @@ export class EtpsController {
     return {
       data: stats,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -129,7 +130,7 @@ export class EtpsController {
     return {
       data: etp,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -159,7 +160,7 @@ export class EtpsController {
     return {
       data: etp,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -187,7 +188,7 @@ export class EtpsController {
     return {
       data: etp,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -211,7 +212,7 @@ export class EtpsController {
     return {
       message: 'ETP deletado com sucesso',
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DISCLAIMER } from './common/constants/messages';
 
 /**
  * Service responsible for application health monitoring and system information.
@@ -34,8 +35,7 @@ export class AppService {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      warning:
-        '⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      warning: DISCLAIMER,
       message: 'ETP Express Backend is running',
     };
   }
@@ -68,8 +68,7 @@ export class AppService {
       version: '1.0.0',
       description:
         'Sistema assistivo para elaboração de Estudos Técnicos Preliminares (Lei 14.133/2021)',
-      warning:
-        '⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      warning: DISCLAIMER,
       features: [
         'Geração assistida por LLM (OpenAI GPT-4)',
         'Busca de contratações similares (Perplexity API)',

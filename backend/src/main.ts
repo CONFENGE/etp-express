@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { initSentry } from './config/sentry.config';
+import { DISCLAIMER } from './common/constants/messages';
 
 async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
@@ -64,7 +65,7 @@ async function bootstrap() {
     .setTitle('ETP Express API')
     .setDescription(
       `
-      🚨 **O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
+      🚨 **${DISCLAIMER}**
 
       API para o sistema ETP Express - Wrapper de LLM para elaboração assistida de Estudos Técnicos Preliminares (Lei 14.133/2021).
 

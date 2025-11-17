@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -37,7 +38,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           ? message
           : (message as any).message || message,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
 
     // Log do erro

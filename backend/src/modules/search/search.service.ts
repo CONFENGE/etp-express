@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SimilarContract } from '../../entities/similar-contract.entity';
 import { PerplexityService } from './perplexity/perplexity.service';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @Injectable()
 export class SearchService {
@@ -26,7 +27,7 @@ export class SearchService {
         data: cachedResults,
         source: 'cache',
         disclaimer:
-          'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+          DISCLAIMER,
       };
     }
 
@@ -46,7 +47,7 @@ export class SearchService {
       sources: perplexityResults.sources,
       source: 'perplexity',
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -61,7 +62,7 @@ export class SearchService {
       summary: perplexityResults.summary,
       sources: perplexityResults.sources,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
