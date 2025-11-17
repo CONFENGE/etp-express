@@ -12,6 +12,7 @@ import { SectionsService } from './sections.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { SectionStatus, SectionType } from '../../entities/etp-section.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Integration tests for SectionsController
@@ -89,7 +90,7 @@ describe('SectionsController (Integration)', () => {
       overallScore: '87.50',
     },
     disclaimer:
-      'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      DISCLAIMER,
   };
 
   /**

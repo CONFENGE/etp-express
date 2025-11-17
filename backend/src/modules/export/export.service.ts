@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 export enum ExportFormat {
   PDF = 'pdf',
@@ -131,7 +132,7 @@ export class ExportService {
       })),
       exportedAt: new Date().toISOString(),
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -168,8 +169,7 @@ export class ExportService {
     });
     xml += '  </sections>\n';
 
-    xml +=
-      '  <disclaimer>O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.</disclaimer>\n';
+    xml += `  <disclaimer>${this.escapeXml(DISCLAIMER)}</disclaimer>\n`;
     xml += '</etp>\n';
 
     return xml;

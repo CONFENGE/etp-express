@@ -21,6 +21,7 @@ import { UpdateSectionDto } from './dto/update-section.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Controller handling ETP section management HTTP endpoints.
@@ -102,7 +103,7 @@ export class SectionsController {
     return {
       data: section,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -121,7 +122,7 @@ export class SectionsController {
     return {
       data: sections,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -142,7 +143,7 @@ export class SectionsController {
     return {
       data: section,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -165,7 +166,7 @@ export class SectionsController {
     return {
       data: section,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -208,7 +209,7 @@ export class SectionsController {
     return {
       data: section,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -253,7 +254,7 @@ export class SectionsController {
     return {
       message: 'Seção deletada com sucesso',
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 }

@@ -10,6 +10,7 @@ import {
   SectionType,
   SectionStatus,
 } from '../../entities/etp-section.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 describe('VersionsService', () => {
   let service: VersionsService;
@@ -534,7 +535,7 @@ describe('VersionsService', () => {
 
       // Assert
       expect(result.disclaimer).toBe(
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
       );
     });
   });

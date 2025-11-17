@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DISCLAIMER } from './common/constants/messages';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -14,8 +15,7 @@ describe('AppController', () => {
   const mockHealthResponse = {
     status: 'ok',
     timestamp: '2025-01-13T12:00:00.000Z',
-    warning:
-      '⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+    warning: DISCLAIMER,
     message: 'ETP Express Backend is running',
   };
 
@@ -24,8 +24,7 @@ describe('AppController', () => {
     version: '1.0.0',
     description:
       'Sistema assistivo para elaboração de Estudos Técnicos Preliminares (Lei 14.133/2021)',
-    warning:
-      '⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+    warning: DISCLAIMER,
     features: [
       'Geração assistida por LLM (OpenAI GPT-4)',
       'Busca de contratações similares (Perplexity API)',

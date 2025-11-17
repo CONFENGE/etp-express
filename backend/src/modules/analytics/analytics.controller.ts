@@ -19,6 +19,7 @@ import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Request } from 'express';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @ApiTags('analytics')
 @Controller('analytics')
@@ -81,7 +82,7 @@ export class AnalyticsController {
     return {
       data: stats,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -105,7 +106,7 @@ export class AnalyticsController {
     return {
       data: activity,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -128,7 +129,7 @@ export class AnalyticsController {
     return {
       data: events,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -143,7 +144,7 @@ export class AnalyticsController {
     return {
       data: health,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 }

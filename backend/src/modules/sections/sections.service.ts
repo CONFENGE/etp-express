@@ -12,6 +12,7 @@ import { GenerateSectionDto } from './dto/generate-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { OrchestratorService } from '../orchestrator/orchestrator.service';
 import { EtpsService } from '../etps/etps.service';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Service responsible for managing ETP sections and coordinating AI-powered content generation.
@@ -352,7 +353,7 @@ export class SectionsService {
       section,
       validationResults,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 

@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Controller handling authentication HTTP endpoints.
@@ -84,7 +85,7 @@ export class AuthController {
     return {
       user,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 

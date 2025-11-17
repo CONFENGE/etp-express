@@ -5,6 +5,7 @@ import { FundamentacaoAgent } from './agents/fundamentacao.agent';
 import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Request structure for ETP section content generation.
@@ -251,7 +252,7 @@ export class OrchestratorService {
         },
         warnings: [...new Set(warnings)],
         disclaimer:
-          'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+          DISCLAIMER,
       };
     } catch (error) {
       this.logger.error('Error generating section:', error);
