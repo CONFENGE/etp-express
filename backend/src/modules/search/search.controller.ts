@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { SearchService } from './search.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @ApiTags('search')
 @Controller('search')
@@ -60,7 +61,7 @@ export class SearchController {
     return {
       data: contracts,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -73,7 +74,7 @@ export class SearchController {
     return {
       data: contract,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 }

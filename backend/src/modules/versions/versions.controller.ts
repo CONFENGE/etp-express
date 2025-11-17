@@ -8,6 +8,7 @@ import {
 import { VersionsService } from './versions.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @ApiTags('versions')
 @Controller('versions')
@@ -36,7 +37,7 @@ export class VersionsController {
     return {
       data: version,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -51,7 +52,7 @@ export class VersionsController {
     return {
       data: versions,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -64,7 +65,7 @@ export class VersionsController {
     return {
       data: version,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -95,7 +96,7 @@ export class VersionsController {
       data: etp,
       message: 'Versão restaurada com sucesso',
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 }

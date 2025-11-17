@@ -1,6 +1,7 @@
 import { IsOptional, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 export class PaginationDto {
   @ApiPropertyOptional({
@@ -54,6 +55,6 @@ export function createPaginatedResult<T>(
       totalPages: Math.ceil(total / limit),
     },
     disclaimer:
-      'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      DISCLAIMER,
   };
 }
