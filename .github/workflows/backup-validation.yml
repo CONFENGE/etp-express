@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install PostgreSQL client
         run: sudo apt-get install -y postgresql-client
@@ -30,7 +30,7 @@ jobs:
           ./scripts/validate-backup.sh
 
       - name: Upload backup artifact (for audit)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: backup-validation-${{ github.run_number }}
           path: backups/*.sql.gz
