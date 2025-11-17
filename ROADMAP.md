@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 4 (Refactoring & Performance) - 15% concluído ⚡
-**Última Atualização:** 2025-11-17 (PR #147 merged - Database Performance Optimization + M4 15%)
-**Total de Issues:** 99 issues (41 abertas + 58 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 64% concluído 🔒
+**Última Atualização:** 2025-11-16 (PR #148 merged - User-based Rate Limiting + M3 64%)
+**Total de Issues:** 99 issues (40 abertas + 59 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,17 +14,17 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████░░░░░░░░░ 8/14 (57%)  🔒 PROGREDINDO
+[M3] Quality & Security           █████████████░░░░░░░ 9/14 (64%)  🔒 PROGREDINDO
 [M4] Refactoring & Performance    ███░░░░░░░░░░░░░░░░░ 3/20 (15%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 58/99 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 57% 🔒 | M4 15% ⚡
+TOTAL: 59/99 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% 🔒 | M4 15% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (57 issues fechadas)
+## 🎉 Progresso Realizado (59 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -59,19 +59,21 @@ TOTAL: 58/99 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 57% �
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (8 fechadas de 14)
-**Status**: 57% concluído
+### ✅ M3: Quality & Security (9 fechadas de 14)
+**Status**: 64% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
+- ✅ #38 - Rate limiting por usuário (5 req/min, protege OpenAI API) 🔒 **NOVO!** ⭐
 - ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
-- ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 **NOVO!** ⭐
+- ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
+- ✅ API cost abuse prevention implementado ✅
 
 **Pendente**:
-- LGPD (#86), remediações (#87), rate limiting (#38)
+- LGPD (#86), remediações (#87)
 - Secrets management (#109), pentesting (#114), data export (#113)
 
 ### ✅ M4: Refactoring & Performance (3 fechadas de 20)

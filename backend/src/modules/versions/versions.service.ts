@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { EtpVersion } from '../../entities/etp-version.entity';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 @Injectable()
 export class VersionsService {
@@ -130,7 +131,7 @@ export class VersionsService {
       },
       differences,
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 

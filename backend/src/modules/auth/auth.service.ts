@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Service responsible for user authentication and authorization.
@@ -124,7 +125,7 @@ export class AuthService {
         cargo: user.cargo,
       },
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 
@@ -188,7 +189,7 @@ export class AuthService {
         cargo: user.cargo,
       },
       disclaimer:
-        'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+        DISCLAIMER,
     };
   }
 

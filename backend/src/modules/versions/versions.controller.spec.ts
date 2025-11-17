@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { VersionsController } from './versions.controller';
 import { VersionsService } from './versions.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 describe('VersionsController', () => {
   let controller: VersionsController;
@@ -52,7 +53,7 @@ describe('VersionsController', () => {
       },
     },
     disclaimer:
-      'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      DISCLAIMER,
   };
 
   const mockVersionsService = {

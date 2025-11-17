@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -27,7 +28,7 @@ describe('AuthController', () => {
     accessToken: 'mock-jwt-token',
     user: mockUser,
     disclaimer:
-      'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.',
+      DISCLAIMER,
   };
 
   beforeEach(async () => {
