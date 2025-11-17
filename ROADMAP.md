@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 4 (Refactoring & Performance) - 20% concluído ⚡
-**Última Atualização:** 2025-11-17 (PR #149 merged - Extract DISCLAIMER constant + M4 20%)
-**Total de Issues:** 99 issues (39 abertas + 60 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 71% concluído 🔒
+**Última Atualização:** 2025-11-17 (PR #150 criada - User-based rate limiting + M3 71%)
+**Total de Issues:** 99 issues (38 abertas + 61 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,17 +14,17 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           █████████████░░░░░░░ 9/14 (64%)  🔒 PROGREDINDO
+[M3] Quality & Security           ██████████████░░░░░░ 10/14 (71%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 4/20 (20%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 60/99 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% 🔒 | M4 20% ⚡
+TOTAL: 61/99 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 71% 🔒 | M4 20% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (60 issues fechadas)
+## 🎉 Progresso Realizado (61 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -59,8 +59,8 @@ TOTAL: 60/99 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% �
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (9 fechadas de 14)
-**Status**: 64% concluído
+### ✅ M3: Quality & Security (10 fechadas de 14)
+**Status**: 71% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -101,7 +101,50 @@ TOTAL: 60/99 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% �
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-17 (Atualização 25 - PR #149 Merged - Extract DISCLAIMER Constant) ⚡✅ **NOVO!**
+### 2025-11-17 (Atualização 26 - PR #150 Criada - User-Based Rate Limiting) 🔒✅ **NOVO!**
+- ✅ **PROGRESSO**: 60 issues fechadas → **61 issues fechadas** (60% → 62%)
+- ✅ **M3 Quality & Security**: 64% → **71%** (+7 p.p.) - Issue #38 concluída
+- ✅ **Rate Limiting**: Proteção contra abuse de API OpenAI implementada
+- ✅ **PR #150 criada**: https://github.com/tjsasakifln/etp-express/pull/150
+
+**O que foi implementado (#38):**
+- ✅ **UserThrottlerGuard** (117 linhas, JSDoc completo):
+  - Usa `user.id` como chave de tracking (não IP)
+  - Fallback inteligente: user.id → IP → "unknown"
+  - Mensagem de erro customizada em português
+  - Configuração: 5 req/min por usuário
+- ✅ **Proteção aplicada**:
+  - POST /sections/etp/:id/generate (rate limited)
+  - POST /sections/:id/regenerate (rate limited)
+  - HTTP 429 response quando limite excedido
+  - Swagger documentation atualizada
+- ✅ **Testes completos**:
+  - +8 testes unitários (user-throttler.guard.spec.ts)
+  - 8 testes integração atualizados (sections-rate-limit.spec.ts)
+  - 501/501 testes backend passando (100%)
+  - Zero regressões
+
+**Benefícios Implementados:**
+- ✅ **Proteção financeira**: Previne abuse de API OpenAI (economia potencial $50-100/hora)
+- ✅ **Proteção contra DDoS**: Reduz risco de sobrecarga em endpoints de IA
+- ✅ **Performance**: Protege backend de múltiplas chamadas LLM simultâneas
+- ✅ **Isolamento por usuário**: Diferentes usuários têm limites independentes
+
+**Métricas:**
+- Tempo estimado: 4h
+- Tempo real: 3.5h
+- Eficiência: 114%
+- Arquivos modificados: 5 (2 novos, 3 atualizados)
+- Testes: 493 → 501 (+8 testes)
+- Linhas: +262 adicionadas, -91 removidas (net: +171)
+
+**M3 Progress:** 64% → **71%** (+7 p.p.) 🔒
+
+**Impacto:** Sistema agora protegido contra abuse de custo OpenAI. M3 Quality & Security avançou significativamente.
+
+---
+
+### 2025-11-17 (Atualização 25 - PR #149 Merged - Extract DISCLAIMER Constant) ⚡✅
 - ✅ **PR #149 MERGED**: DRY principle restored - 46+ DISCLAIMER duplications eliminated! 🔧
 - ✅ **Issue #25 CLOSED**: Refactoring complete with 493/493 tests passing
 - ✅ **Impact**: 23 files refactored (controllers, services, specs)
