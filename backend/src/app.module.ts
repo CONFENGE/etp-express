@@ -41,6 +41,17 @@ import { AppService } from './app.service';
         PERPLEXITY_API_KEY: Joi.string().required(),
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
         CORS_ORIGINS: Joi.string().default('http://localhost:5173'),
+
+        // Database connection pooling (#108)
+        DB_POOL_MAX: Joi.number().default(50),
+        DB_POOL_MIN: Joi.number().default(10),
+        DB_IDLE_TIMEOUT: Joi.number().default(30000),
+        DB_CONNECTION_TIMEOUT: Joi.number().default(5000),
+        DB_RETRY_ATTEMPTS: Joi.number().default(3),
+        DB_RETRY_DELAY: Joi.number().default(1000),
+        DB_SYNCHRONIZE: Joi.boolean().default(false),
+        DB_LOGGING: Joi.boolean().default(false),
+        DB_MIGRATIONS_RUN: Joi.boolean().default(true),
       }),
     }),
 
@@ -52,12 +63,44 @@ import { AppService } from './app.service';
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        migrationsRun: configService.get('DB_MIGRATIONS_RUN', true), // Auto-run migrations on startup
         synchronize: configService.get('DB_SYNCHRONIZE', false),
         logging: configService.get('DB_LOGGING', false),
         ssl:
           configService.get('NODE_ENV') === 'production'
             ? { rejectUnauthorized: false }
             : false,
+
+        // Connection pooling optimization (#108)
+        // Configuração otimizada para Railway PostgreSQL (default: max_connections=100)
+        extra: {
+          // Pool size: Railway default 10 → 50 (production) ou 10 (development)
+          // Deixa 50 connections livres para outros serviços/workers
+          max:
+            configService.get('NODE_ENV') === 'production'
+              ? parseInt(configService.get('DB_POOL_MAX', '50'))
+              : parseInt(configService.get('DB_POOL_MAX', '10')),
+
+          // Minimum pool size (sempre mantém 10 connections ativas)
+          min: parseInt(configService.get('DB_POOL_MIN', '10')),
+
+          // Timeout para conexões idle serem fechadas (30 segundos)
+          idleTimeoutMillis: parseInt(
+            configService.get('DB_IDLE_TIMEOUT', '30000'),
+          ),
+
+          // Timeout para adquirir conexão do pool (5 segundos)
+          // Se todas as 50 conexões estiverem ocupadas, falha após 5s
+          connectionTimeoutMillis: parseInt(
+            configService.get('DB_CONNECTION_TIMEOUT', '5000'),
+          ),
+        },
+
+        // Retry logic para reconnections
+        retryAttempts: parseInt(configService.get('DB_RETRY_ATTEMPTS', '3')),
+        retryDelay: parseInt(configService.get('DB_RETRY_DELAY', '1000')), // 1 segundo
+        autoLoadEntities: true,
       }),
     }),
 
