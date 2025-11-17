@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 64% concluído 🔒
-**Última Atualização:** 2025-11-16 (PR #148 merged - User-based Rate Limiting + M3 64%)
-**Total de Issues:** 99 issues (40 abertas + 59 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 4 (Refactoring & Performance) - 20% concluído ⚡
+**Última Atualização:** 2025-11-17 (PR #149 merged - Extract DISCLAIMER constant + M4 20%)
+**Total de Issues:** 99 issues (39 abertas + 60 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -15,16 +15,16 @@
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           █████████████░░░░░░░ 9/14 (64%)  🔒 PROGREDINDO
-[M4] Refactoring & Performance    ███░░░░░░░░░░░░░░░░░ 3/20 (15%)  ⚡ PROGREDINDO
+[M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 4/20 (20%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 59/99 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% 🔒 | M4 15% ⚡
+TOTAL: 60/99 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% 🔒 | M4 20% ⚡
 ```
 
 ---
 
-## 🎉 Progresso Realizado (59 issues fechadas)
+## 🎉 Progresso Realizado (60 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -76,17 +76,18 @@ TOTAL: 59/99 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% �
 - LGPD (#86), remediações (#87)
 - Secrets management (#109), pentesting (#114), data export (#113)
 
-### ✅ M4: Refactoring & Performance (3 fechadas de 20)
-**Status**: 15% concluído
+### ✅ M4: Refactoring & Performance (4 fechadas de 20)
+**Status**: 20% concluído
 
 **Refatoração:**
+- ✅ #25 - Extrair constante DISCLAIMER (46+ duplicações eliminadas) ⚡ **PR #149 MERGED** ✅ **NOVO!**
 - ✅ #26 - Substituição de 'any' por interfaces em orchestrator
 - ✅ #27 - Refatoração TypeScript inicial
 
 **Performance:**
-- ✅ #108 - Database Performance Optimization & Production Tuning ⚡ **PR #147 MERGED** ✅ **NOVO!**
+- ✅ #108 - Database Performance Optimization & Production Tuning ⚡ **PR #147 MERGED** ✅
 
-**Pendente**: Load testing (#88-#91), refatorações de código (#77-#81), otimizações
+**Pendente**: Load testing (#88-#91), refatorações de código (#77-#81), otimizações (#28-#33, #41)
 
 ### ✅ M5: E2E Testing & Documentation (1 fechada de 17)
 **Status**: 6% concluído
@@ -100,7 +101,39 @@ TOTAL: 59/99 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 64% �
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-17 (Atualização 24 - PR #147 Merged - Database Performance Optimization) ⚡✅ **NOVO!**
+### 2025-11-17 (Atualização 25 - PR #149 Merged - Extract DISCLAIMER Constant) ⚡✅ **NOVO!**
+- ✅ **PR #149 MERGED**: DRY principle restored - 46+ DISCLAIMER duplications eliminated! 🔧
+- ✅ **Issue #25 CLOSED**: Refactoring complete with 493/493 tests passing
+- ✅ **Impact**: 23 files refactored (controllers, services, specs)
+- ✅ **Merge Commit**: 7e50982 (master)
+
+**O que foi mergeado:**
+- ✅ **Central DISCLAIMER Constant**:
+  - Created `backend/src/common/constants/messages.ts`
+  - Complete JSDoc documentation with usage examples
+  - Type-safe import vs hardcoded strings
+- ✅ **Mass Refactoring**:
+  - 46+ occurrences replaced across 23 files
+  - Controllers: auth, etps, sections, users, versions, analytics, search
+  - Services: auth, export, orchestrator, search, sections, versions
+  - Specs: 8 test files updated
+  - Main: Swagger documentation updated
+- ✅ **Quality Assurance**:
+  - All 493 backend tests passing ✅
+  - Zero behavioral changes (pure refactoring)
+  - Verified only messages.ts contains hardcoded text
+
+**Benefícios Técnicos:**
+- ✅ **DRY Compliance**: Single source of truth for disclaimer message
+- ✅ **Maintainability**: Future changes require only 1 file edit
+- ✅ **Type Safety**: Import-based vs string literals
+- ✅ **Documentation**: Complete JSDoc with examples
+
+**M4 Progress:** 15% → 20% (+5 p.p.) ⚡
+
+---
+
+### 2025-11-17 (Atualização 24 - PR #147 Merged - Database Performance Optimization) ⚡✅
 - ✅ **PR #147 MERGED**: Database performance optimized for 100+ concurrent users! 🚀
 - ✅ **Validation Score**: 100/100 (PERFECT) - All 8 categories passed
 - ✅ **Post-Merge Validation**: Layer 1 PASSED (Health Checks: Build + Tests)
