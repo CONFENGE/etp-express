@@ -19,9 +19,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Uso de CONCURRENTLY: Cria índices sem bloquear writes (zero downtime)
  * Nota: CONCURRENTLY não funciona dentro de transaction block
  */
-export class AddPerformanceIndexes1763341020330
-  implements MigrationInterface
-{
+export class AddPerformanceIndexes1763341020330 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // IMPORTANTE: DROP TRANSACTION para permitir CREATE INDEX CONCURRENTLY
     // Railway PostgreSQL permite CREATE INDEX CONCURRENTLY apenas fora de transactions
