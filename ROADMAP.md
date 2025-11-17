@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 71% concluído 🔒
-**Última Atualização:** 2025-11-17 (PR #150 criada - User-based rate limiting + M3 71%)
-**Total de Issues:** 99 issues (38 abertas + 61 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 57% concluído 🔒
+**Última Atualização:** 2025-11-17 (PR #150 merged - User-based rate limiting + M3 audit complete)
+**Total de Issues:** 97 issues (39 abertas + 58 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,12 +14,12 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ██████████████░░░░░░ 10/14 (71%) 🔒 PROGREDINDO
+[M3] Quality & Security           ███████████░░░░░░░░░ 8/14 (57%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 4/20 (20%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
 
-TOTAL: 61/99 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 71% 🔒 | M4 20% ⚡
+TOTAL: 57/97 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 57% 🔒 | M4 20% ⚡
 ```
 
 ---
@@ -59,8 +59,8 @@ TOTAL: 61/99 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 71% �
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (10 fechadas de 14)
-**Status**: 71% concluído
+### ✅ M3: Quality & Security (8 fechadas de 14)
+**Status**: 57% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -792,22 +792,25 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 #### Objetivo
 Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e realizar auditoria completa de vulnerabilidades.
 
-#### Issues (13 total - 7 concluídas ✅, 6 pendentes)
+#### Issues (14 total - 8 concluídas ✅, 6 pendentes)
 
-**Bugs Críticos (4 issues) - ⚠️ 3 DE 4 CONCLUÍDAS**
+**Bugs Críticos (4 issues) - ✅ 4 DE 4 CONCLUÍDAS**
 - [x] #14 - Corrigir useEffect em useETPs.ts (1h) ✅
 - [x] #15 - Corrigir useEffect em Dashboard.tsx (1h) ✅
 - [x] #16 - Corrigir useEffect em ETPs.tsx (1h) ✅
-- [ ] #17 - Corrigir useEffect em ETPEditor.tsx (1h) 🟡 **PENDENTE**
+- [x] #17 - Corrigir useEffect em ETPEditor.tsx (1h) ✅ **FECHADA 2025-11-15**
 
 **Segurança Básica (2 issues) - ⚡ 2 DE 2 CONCLUÍDAS** ✅
 - [x] #38 - Adicionar rate limiting por usuário (4h) ✅ **PR #150 MERGED** ✅
 - [x] #39 - Substituir window.location.href por navigate (3h) ✅ **PR #142 MERGED** ✅
 
-**Security Audit (3 sub-issues - desmembradas de #46) - ⚡ AUDITORIA COMPLETA!**
+**Security Audit (3 sub-issues - desmembradas de #46) - ⚡ 1 DE 3 CONCLUÍDAS**
 - [x] #85 - [#46a] Auditoria OWASP Top 10 (2023) (6h) ✅ **CONCLUÍDA 2025-11-12**
 - [ ] #86 - [#46b] Conformidade LGPD e privacidade (4h) 🔐 **P1**
 - [ ] #87 - [#46c] Implementar remediações identificadas (depende #85, #86) (8h) 🔐 **P1**
+
+**Vulnerabilidades Críticas (1 issue) - ✅ 1 DE 1 CONCLUÍDA**
+- [x] #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) (2h) ✅ **PR #146 MERGED** ✅
 
 **Production Readiness - TIER 2 (3 issues) 🆕🟡 ESSENCIAIS**
 - [ ] #109 - Secrets Management & API Key Rotation (8-10h) 🟡 **ALTO**
