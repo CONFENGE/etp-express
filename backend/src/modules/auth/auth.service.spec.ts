@@ -89,10 +89,12 @@ describe('AuthService', () => {
       expect(mockUsersService.updateLastLogin).toHaveBeenCalledWith(
         mockUser.id,
       );
+      expect(result).not.toBeNull();
       expect(result).toBeDefined();
-      expect(result.password).toBeUndefined();
-      expect(result.email).toBe(mockUser.email);
-      expect(result.id).toBe(mockUser.id);
+      // UserWithoutPassword type ensures password is excluded
+      expect('password' in (result as any)).toBe(false);
+      expect(result?.email).toBe(mockUser.email);
+      expect(result?.id).toBe(mockUser.id);
     });
 
     it('should return null when user is not found', async () => {

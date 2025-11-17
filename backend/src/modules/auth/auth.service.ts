@@ -11,6 +11,7 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { UserWithoutPassword } from './types/user.types';
 
 /**
  * Service responsible for user authentication and authorization.
@@ -50,7 +51,10 @@ export class AuthService {
    * @returns User object without password field, or null if validation fails
    * @throws {UnauthorizedException} If user account is inactive
    */
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserWithoutPassword | null> {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
