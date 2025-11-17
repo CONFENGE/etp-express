@@ -987,7 +987,7 @@ Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, docume
 Manter dependências atualizadas e sistema seguro com Dependabot e auditorias regulares.
 
 #### Issues (2 total)
-- [ ] #21 - Configurar Dependabot para atualizações automáticas (1h) ⚡ **FAZER UMA VEZ**
+- [x] #21 - Configurar Dependabot para atualizações automáticas (1h) ⚡ **COMPLETO** (PR #151)
 - [ ] #40 - Atualizar dependências desatualizadas (6-10h) 🔄 **MENSAL**
 
 #### Critérios de Conclusão
