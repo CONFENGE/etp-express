@@ -593,6 +593,66 @@ VITE_APP_NAME="ETP Express"
 
 ---
 
+### 11.3 Secrets Management Strategy (M3 Milestone)
+
+**Status**: Using Railway native secrets management
+**Approach**: Manual rotation with documented procedures
+**Rationale**: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
+
+#### Secrets Management Architecture
+
+Railway platform provides integrated environment variable management with sealed variables that are not visible in the UI once set. This is sufficient for ETP Express MVP.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│         RAILWAY NATIVE SECRETS MANAGEMENT                │
+├──────────────────────────────────────────────────────────┤
+│                                                            │
+│  Developer                                               │
+│       ↓                                                  │
+│  Railway Dashboard / CLI                                │
+│       ↓                                                  │
+│  Sealed Environment Variables                           │
+│       ↓                                                  │
+│  Application @ Runtime                                  │
+│       ↓                                                  │
+│  GitHub Issues (Audit Trail)                            │
+│                                                            │
+└──────────────────────────────────────────────────────────┘
+```
+
+#### Managed Secrets
+
+| Secret | Frequency | Method |
+|--------|-----------|--------|
+| JWT_SECRET | Monthly | Manual rotation + documentation |
+| SESSION_SECRET | Monthly | Manual rotation + documentation |
+| OPENAI_API_KEY | Quarterly | Manual rotation (provider) |
+| PERPLEXITY_API_KEY | Quarterly | Manual rotation (provider) |
+| DATABASE_URL | On-demand | Manual rotation (DB password) |
+
+#### Rotation Procedure
+
+Simple 4-step process for manual rotation:
+1. Generate new secret value (openssl rand -base64 32)
+2. Update in Railway dashboard
+3. Trigger auto-redeploy
+4. Create GitHub issue to track rotation
+
+No external platforms. No AWS accounts. No bootstrap credentials.
+
+#### Audit Trail (GitHub-based)
+
+Track all rotations via:
+- **GitHub Issues**: One per rotation cycle (label: `security`)
+- **Railway logs**: Auto-captured deployment logs
+- **Git commits**: Signed commits for any automation scripts
+
+Meets LGPD audit trail requirement at MVP scale.
+
+For full strategy: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
+
+
 ## 12. TESTES
 
 ```typescript
