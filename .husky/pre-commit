@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Check if gitleaks is installed
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "🔍 Running gitleaks secret scan..."
+  gitleaks protect --staged --verbose --config .gitleaks.toml
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Secret detected! Commit blocked."
+    echo "   Remove the secret and try again."
+    echo "   If this is a false positive, update .gitleaks.toml"
+    exit 1
+  fi
+
+  echo "✅ No secrets detected"
+else
+  echo "⚠️  gitleaks not found - skipping secret scan"
+  echo "   Install: https://github.com/gitleaks/gitleaks#installing"
+  echo "   Windows: choco install gitleaks"
+  echo "   macOS: brew install gitleaks"
+  echo "   Linux: Download from GitHub releases"
+fi

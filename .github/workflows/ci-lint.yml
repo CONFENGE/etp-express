@@ -20,8 +20,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        working-directory: backend
+      - name: Install dependencies (workspace root)
         run: npm ci
 
       - name: Run ESLint
@@ -41,8 +40,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        working-directory: frontend
+      - name: Install dependencies (workspace root)
         run: npm ci
 
       - name: Run ESLint
