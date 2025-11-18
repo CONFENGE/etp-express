@@ -165,10 +165,10 @@ Sub-issues atômicas (desmembradas):
 
 **Próximos passos (#109 - Secrets Management):**
 1. ⏭️ #153: Avaliar soluções de secrets management (2h)
-2. ⏭️ #155: Migrar secrets para solução escolhida (4h)
-3. ⏭️ #156: Documentar procedimento de rotação (2h)
-4. ⏭️ #157: Implementar dual-key strategy (4h)
-5. ⏭️ #158: Implementar audit trail (3h)
+2. ⏭️ #156: Documentar procedimentos de rotação de secrets (2h)
+3. ⏭️ #157: Criar scripts e scheduling para rotação (2h)
+4. ⏭️ #158: Setup monitoramento de erros de rotação (2h)
+5. ⏭️ #154: Estabelecer planos de rollback (1h)
 
 **Impacto:** Sistema agora protegido contra vazamento de secrets. M3 Quality & Security avançou +7 p.p.
 

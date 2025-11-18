@@ -297,7 +297,7 @@ For detailed secret rotation procedures, see:
 
 - ✅ Use environment variables for ALL secrets
 - ✅ Never hardcode secrets in source code
-- ✅ Use Railway Secrets or AWS Secrets Manager
+- ✅ Use Railway Secrets (env vars - sealed variables not visible in UI)
 - ✅ Rotate secrets regularly (monthly for critical secrets)
 - ✅ Use strong, randomly generated secrets
 - ✅ Limit secret access to minimum required
