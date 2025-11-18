@@ -595,42 +595,62 @@ VITE_APP_NAME="ETP Express"
 
 ### 11.3 Secrets Management Strategy (M3 Milestone)
 
-**Status**: Evaluation phase (Issue #153)
-**Target Solution**: AWS Secrets Manager
+**Status**: Using Railway native secrets management
+**Approach**: Manual rotation with documented procedures
 **Rationale**: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
 
 #### Secrets Management Architecture
 
-AWS Secrets Manager is used as the primary secrets management solution with CloudTrail integration for audit logging and LGPD compliance.
+Railway platform provides integrated environment variable management with sealed variables that are not visible in the UI once set. This is sufficient for ETP Express MVP.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│         RAILWAY NATIVE SECRETS MANAGEMENT                │
+├──────────────────────────────────────────────────────────┤
+│                                                            │
+│  Developer                                               │
+│       ↓                                                  │
+│  Railway Dashboard / CLI                                │
+│       ↓                                                  │
+│  Sealed Environment Variables                           │
+│       ↓                                                  │
+│  Application @ Runtime                                  │
+│       ↓                                                  │
+│  GitHub Issues (Audit Trail)                            │
+│                                                            │
+└──────────────────────────────────────────────────────────┘
+```
 
 #### Managed Secrets
 
-| Secret | Frequency | Rotation Method |
-|--------|-----------|-----------------|
-| JWT_SECRET | Monthly | Dual-key strategy (30-day overlap) |
-| SESSION_SECRET | Monthly | Dual-key strategy (30-day overlap) |
-| OPENAI_API_KEY | Quarterly | Manual (provider-managed) |
-| PERPLEXITY_API_KEY | Quarterly | Manual (provider-managed) |
-| DATABASE_URL | On-demand | Manual (PostgreSQL password change) |
+| Secret | Frequency | Method |
+|--------|-----------|--------|
+| JWT_SECRET | Monthly | Manual rotation + documentation |
+| SESSION_SECRET | Monthly | Manual rotation + documentation |
+| OPENAI_API_KEY | Quarterly | Manual rotation (provider) |
+| PERPLEXITY_API_KEY | Quarterly | Manual rotation (provider) |
+| DATABASE_URL | On-demand | Manual rotation (DB password) |
 
-#### Rotation Zero-Downtime Strategy
+#### Rotation Procedure
 
-The system implements **dual-key strategy** for zero-downtime secret rotation:
-- Phase 0: Generate new secret
-- Phase 1: Deploy app to accept both old and new secrets
-- Phase 2: Transition period (24-48 hours) - old tokens still work
-- Phase 3: Remove old secret after transition
+Simple 4-step process for manual rotation:
+1. Generate new secret value (openssl rand -base64 32)
+2. Update in Railway dashboard
+3. Trigger auto-redeploy
+4. Create GitHub issue to track rotation
 
-Implementation details in issues #157 (dual-key), #158 (audit trail), #156 (procedures)
+No external platforms. No AWS accounts. No bootstrap credentials.
 
-#### Audit Trail & Compliance
+#### Audit Trail (GitHub-based)
 
-- CloudTrail integration logs all secret access
-- LGPD Article 5 compliance (sensitive data access logging)
-- OWASP A09:2021 protection (logging and monitoring)
-- Anomalous access detection (>100 accesses/minute alert)
+Track all rotations via:
+- **GitHub Issues**: One per rotation cycle (label: `security`)
+- **Railway logs**: Auto-captured deployment logs
+- **Git commits**: Signed commits for any automation scripts
 
-For complete evaluation: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
+Meets LGPD audit trail requirement at MVP scale.
+
+For full strategy: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
 
 
 ## 12. TESTES
