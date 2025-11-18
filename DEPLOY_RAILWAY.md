@@ -340,7 +340,7 @@ Railway Dashboard mostra:
 
 Para ambientes de produção maiores, considere:
 - Railway Pro ($20/mês + usage)
-- Ou migração para AWS/Azure/GCP
+- [FUTURE] Multi-cloud migration (AWS/Azure/GCP) only if scaling beyond Railway capacity
 
 ---
 

@@ -582,7 +582,7 @@ bash scripts/test-disaster-recovery.sh
 
 1. **Database (PostgreSQL):**
    - Read replicas (Railway não suporta nativamente)
-   - Migrar para AWS RDS ou Supabase
+   - [FUTURE] Consider AWS RDS or Supabase for larger data volumes
    - Connection pooling (PgBouncer)
 
 2. **Backend (NestJS):**
@@ -591,7 +591,7 @@ bash scripts/test-disaster-recovery.sh
    - Stateless design (JWT auth já é stateless)
 
 3. **Frontend (React):**
-   - CDN (Cloudflare ou AWS CloudFront)
+   - [FUTURE] CDN for static assets (Cloudflare preferred for simplicity)
    - Edge caching
    - Static assets em S3
 
@@ -613,7 +613,7 @@ bash scripts/test-disaster-recovery.sh
 
 **Arquitetura:**
 - Multi-region deployment (US-East, EU, Asia)
-- Global load balancer (AWS Route53 ou Cloudflare)
+- [FUTURE] Global load balancer (Cloudflare for MVP, AWS Route53 if multi-region)
 - Database replication (multi-master ou read replicas)
 - CDN edge nodes
 
