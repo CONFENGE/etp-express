@@ -10,7 +10,10 @@
     "security:scan:staged": "gitleaks protect --verbose --staged --config .gitleaks.toml"
   },
   "devDependencies": {
-    "husky": "^9.1.7"
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1",
+    "husky": "^9.1.7",
+    "playwright": "^1.56.1"
   },
   "workspaces": [
     "backend",
