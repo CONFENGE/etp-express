@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { ServiceUnavailableException } from '@nestjs/common';
 import { PerplexityService } from './perplexity.service';
 import axios from 'axios';
 
@@ -97,15 +98,15 @@ describe('PerplexityService', () => {
       expect(result.results[0].url).toBe('https://pncp.gov.br/contratos/123');
     });
 
-    it('should return mock results when API fails', async () => {
+    it('should throw ServiceUnavailableException when API fails', async () => {
       mockedAxios.post.mockRejectedValue(new Error('API Error'));
 
-      const result = await service.search('test query');
-
-      expect(result.results).toHaveLength(2);
-      expect(result.results[0].source).toBe('Mock Data');
-      expect(result.results[0].url).toBe('https://pncp.gov.br');
-      expect(result.summary).toContain('Portal Nacional');
+      await expect(service.search('test query')).rejects.toThrow(
+        ServiceUnavailableException
+      );
+      await expect(service.search('test query')).rejects.toThrow(
+        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.'
+      );
     });
 
     it('should handle empty content from API', async () => {
@@ -284,30 +285,4 @@ describe('PerplexityService', () => {
     });
   });
 
-  describe('getMockResults (private method tested via error handling)', () => {
-    it('should log warning when using mock results', async () => {
-      const loggerSpy = jest.spyOn(service['logger'], 'warn');
-      mockedAxios.post.mockRejectedValue(new Error('API Error'));
-
-      await service.search('test');
-
-      expect(loggerSpy).toHaveBeenCalledWith(
-        'Using mock results due to API failure',
-      );
-    });
-
-    it('should return valid mock data structure', async () => {
-      mockedAxios.post.mockRejectedValue(new Error('API Error'));
-
-      const result = await service.search('anything');
-
-      expect(result.results).toHaveLength(2);
-      expect(result.results[0]).toMatchObject({
-        title: 'Portal de Compras Governamentais',
-        url: 'https://pncp.gov.br',
-        source: 'Mock Data',
-      });
-      expect(result.sources).toHaveLength(2);
-    });
-  });
 });
