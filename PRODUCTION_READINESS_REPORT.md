@@ -86,7 +86,7 @@ Completar todas as 87 issues do ROADMAP resultará em:
 - **Gap:** Chaves API nunca rotacionam
 - **Risco:** Chave vazada = comprometimento total
 - **Impacto:** OpenAI key + Perplexity key + JWT secret expostos
-- **Sugestão:** Issue #109 - HashiCorp Vault ou AWS Secrets Manager
+- **Sugestão:** Issue #153 - Railway Secrets + Manual Rotation (pragmático, Railway-only MVP)
 
 #### 7. ❌ Staged Rollout & Feature Flags (10-12h)
 - **Issues #92-#95 existentes:** UAT com 5 usuários
