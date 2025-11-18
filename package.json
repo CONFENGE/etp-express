@@ -1,0 +1,23 @@
+{
+  "name": "etp-express-monorepo",
+  "version": "1.0.0",
+  "description": "ETP Express - Monorepo with security tooling",
+  "private": true,
+  "scripts": {
+    "prepare": "husky || exit 0",
+    "security:scan": "gitleaks detect --source . --verbose --no-git --config .gitleaks.toml",
+    "security:scan:history": "gitleaks detect --source . --verbose --config .gitleaks.toml",
+    "security:scan:staged": "gitleaks protect --verbose --staged --config .gitleaks.toml"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
