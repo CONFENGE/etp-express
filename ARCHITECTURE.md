@@ -61,6 +61,9 @@ O **ETP Express** é um sistema wrapper de LLM projetado para auxiliar servidore
 
 - **OpenAI API** (GPT-4-turbo): Geração de conteúdo, refinamento
 - **Perplexity API**: Busca web + síntese de contratações similares
+  - **Error Handling**: Lança `ServiceUnavailableException` quando API falha
+  - **Transparência**: Sem fallback silencioso - usuário sempre sabe quando busca falha
+  - **Mensagem**: "Busca externa temporariamente indisponível. Tente novamente em alguns minutos."
 - **PDF Generation**: Puppeteer (headless Chrome)
 - **Analytics**: Mixpanel ou PostHog (self-hosted Railway)
 
