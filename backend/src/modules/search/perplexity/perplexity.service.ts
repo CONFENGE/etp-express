@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
@@ -76,10 +76,10 @@ export class PerplexityService {
         sources: citations,
       };
     } catch (error) {
-      this.logger.error('Error searching with Perplexity:', error.message);
-
-      // Fallback to mock data if API fails
-      return this.getMockResults(query);
+      this.logger.error('Perplexity API failed', { query, error: error.message });
+      throw new ServiceUnavailableException(
+        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.'
+      );
     }
   }
 
@@ -103,37 +103,6 @@ export class PerplexityService {
     });
 
     return results;
-  }
-
-  private getMockResults(_query: string): PerplexityResponse {
-    this.logger.warn('Using mock results due to API failure');
-
-    return {
-      results: [
-        {
-          title: 'Portal de Compras Governamentais',
-          snippet:
-            'Contratações similares podem ser consultadas no Portal Nacional de Contratações Públicas (PNCP)',
-          url: 'https://pncp.gov.br',
-          relevance: 0.95,
-          source: 'Mock Data',
-        },
-        {
-          title: 'Painel de Preços',
-          snippet:
-            'O Painel de Preços disponibiliza histórico de preços praticados em compras públicas',
-          url: 'https://paineldeprecos.planejamento.gov.br',
-          relevance: 0.85,
-          source: 'Mock Data',
-        },
-      ],
-      summary:
-        'Para buscar contratações similares, recomenda-se consultar o Portal Nacional de Contratações Públicas (PNCP) e o Painel de Preços do Governo Federal.',
-      sources: [
-        'https://pncp.gov.br',
-        'https://paineldeprecos.planejamento.gov.br',
-      ],
-    };
   }
 
   async searchSimilarContracts(
