@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 53% concluído 🔒
-**Última Atualização:** 2025-11-18 (Audit reconciliation + Issue #172 closed - Dependency update)
-**Total de Issues:** 106 issues (41 abertas + 65 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 58% concluído 🔒
+**Última Atualização:** 2025-11-18 (PR #182 merged - Remove Perplexity mock fallback + Issue #183 created)
+**Total de Issues:** 107 issues (41 abertas + 66 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,12 +14,12 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ██████████░░░░░░░░░░░ 10/19 (53%) 🔒 PROGREDINDO
-[M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 4/20 (20%)  ⚡ PROGREDINDO
+[M3] Quality & Security           ███████████░░░░░░░░░░ 11/19 (58%) 🔒 PROGREDINDO
+[M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
-[M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/2  (0%)
+[M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 65/106 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 53% 🔒 | M4 25% ⚡
+TOTAL: 66/107 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 58% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management)
@@ -27,7 +27,7 @@ Sub-issues atômicas (desmembradas):
 
 ---
 
-## 🎉 Progresso Realizado (65 issues fechadas)
+## 🎉 Progresso Realizado (66 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -62,17 +62,18 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (10 fechadas de 19)
-**Status**: 53% concluído
+### ✅ M3: Quality & Security (11 fechadas de 19)
+**Status**: 58% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
-- ✅ #38 - Rate limiting por usuário (5 req/min, protege OpenAI API) 🔒 **NOVO!** ⭐
+- ✅ #38 - Rate limiting por usuário (5 req/min, protege OpenAI API) 🔒 ⭐
 - ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
 - ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐
-- ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 **NOVO!** ⭐
+- ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
 - ✅ #153 - [SEC-109a] Avaliar soluções de Secrets Management 🔒 ⭐
+- ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 **NOVO!** ⭐
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
@@ -121,7 +122,28 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-18 (Atualização 29 - ROADMAP Audit Reconciliation) 🔧✅ **NOVO!**
+### 2025-11-18 (Atualização 30 - PR #182 Merged + Issue #183 Created) 🔒✅ **NOVO!**
+- ✅ **PR #182 MERGED**: Remove silent Perplexity mock data fallback (commit: ccccd95)
+- ✅ **Issue #178 CLOSED**: [P0][Data Integrity] - Integridade de dados restaurada
+- ✅ **Issue #183 CREATED**: [CI] Fix vitest package resolution in Test Frontend
+- ✅ **PROGRESSO**: 65 → **66 issues fechadas** (61% → 62%)
+- ✅ **M3 Quality & Security**: 53% → **58%** (+5 p.p.)
+
+**Detalhes do PR #182:**
+- Score: 95.5/100 (5/6 CI checks pass)
+- Linhas: -46 (69 removidas, 23 adicionadas) - simplificação
+- Testes: 499/499 passando
+- Auto-fixes aplicados: Prettier formatting
+
+**Impacto:**
+- Fallback silencioso de mock data eliminado
+- ServiceUnavailableException quando Perplexity API falha
+- Transparência: usuário sempre sabe quando busca falha
+- Integridade: sem dados fictícios salvos no banco
+
+---
+
+### 2025-11-18 (Atualização 29 - ROADMAP Audit Reconciliation) 🔧✅
 - ✅ **AUDITORIA COMPLETA**: Sincronização ROADMAP.md com GitHub repository
 - ✅ **PROGRESSO REAL**: 65 issues fechadas (não 62!) - Você está **AHEAD** 🚀
 - ✅ **Total de Issues**: Atualizado de 105 → 106 issues (41 abertas + 65 fechadas)
