@@ -1,4 +1,8 @@
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
@@ -76,9 +80,12 @@ export class PerplexityService {
         sources: citations,
       };
     } catch (error) {
-      this.logger.error('Perplexity API failed', { query, error: error.message });
+      this.logger.error('Perplexity API failed', {
+        query,
+        error: error.message,
+      });
       throw new ServiceUnavailableException(
-        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.'
+        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.',
       );
     }
   }
