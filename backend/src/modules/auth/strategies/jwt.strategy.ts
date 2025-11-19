@@ -1,20 +1,77 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
+import * as jwt from 'jsonwebtoken';
 
+/**
+ * JWT authentication strategy with dual-key support for zero-downtime secret rotation.
+ *
+ * @remarks
+ * During secret rotation, this strategy accepts tokens signed with both:
+ * - JWT_SECRET (primary/new secret)
+ * - JWT_SECRET_OLD (secondary/old secret, temporary during rotation)
+ *
+ * This allows seamless rotation without invalidating active user sessions.
+ *
+ * @see docs/SECRET_ROTATION_PROCEDURES.md for rotation procedures
+ */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
+  private readonly secrets: string[];
+
   constructor(
     private configService: ConfigService,
     private usersService: UsersService,
   ) {
+    // Get all available secrets (primary + fallback)
+    const primarySecret = configService.get<string>('JWT_SECRET');
+    const oldSecret = configService.get<string>('JWT_SECRET_OLD');
+
+    // Build secrets array (primary first, then old if exists)
+    const secrets: string[] = [];
+    if (primarySecret) {
+      secrets.push(primarySecret);
+    }
+    if (oldSecret) {
+      secrets.push(oldSecret);
+    }
+
+    // Use secretOrKeyProvider for dynamic secret validation
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET'),
+      secretOrKeyProvider: (
+        request: any,
+        rawJwtToken: string,
+        done: (err: any, secret?: string) => void,
+      ) => {
+        // Try each secret until one validates
+        for (const secret of secrets) {
+          try {
+            jwt.verify(rawJwtToken, secret);
+            return done(null, secret);
+          } catch {
+            // Token invalid with this secret, try next
+            continue;
+          }
+        }
+
+        // No secret validated the token
+        return done(new UnauthorizedException('Token inválido'));
+      },
     });
+
+    this.secrets = secrets;
+
+    // Log dual-key status on startup
+    if (oldSecret) {
+      this.logger.warn(
+        'Dual-key rotation mode active: accepting both JWT_SECRET and JWT_SECRET_OLD',
+      );
+    }
   }
 
   async validate(payload: any) {
