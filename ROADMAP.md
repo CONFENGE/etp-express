@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 84% concluído 🔒
-**Última Atualização:** 2025-11-19 (PR #198 merged - LGPD Data Mapping)
-**Total de Issues:** 112 issues (38 abertas + 74 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 95% concluído 🔒
+**Última Atualização:** 2025-11-19 (Issue #193 closed - LGPD Encryption Validation)
+**Total de Issues:** 112 issues (36 abertas + 76 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,16 +14,16 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████████░░░░░ 16/19 (84%) 🔒 PROGREDINDO
+[M3] Quality & Security           ███████████████████░░ 18/19 (95%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 74/112 issues concluídas (66%)  |  M1 100% ✅ | M2 100% ✅ | M3 84% 🔒 | M4 25% ⚡
+TOTAL: 76/112 issues concluídas (68%)  |  M1 100% ✅ | M2 100% ✅ | M3 95% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
-- #86 → #191-#197 (7 sub-issues de LGPD audit) - 1 de 7 concluída
+- #86 → #191-#197 (7 sub-issues de LGPD audit) - 3 de 7 concluídas (#191, #192, #193)
 ```
 
 ---
@@ -64,8 +64,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (16 fechadas de 19)
-**Status**: 84% concluído
+### ✅ M3: Quality & Security (17 fechadas de 19)
+**Status**: 89% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -81,7 +81,9 @@ Sub-issues atômicas (desmembradas):
 - ✅ #157 - [SEC-109e] Dual-key strategy para rotação JWT 🔒 **PR #189 MERGED** ✅
 - ✅ #158 - [SEC-109f] Audit trail para acesso a secrets 🔒 **PR #190 MERGED** ✅
 - ✅ #109 - Secrets Management (parent) 🔒 **CLOSED - todas sub-issues completas** ✅
-- ✅ #191 - [LGPD-86a] Mapear fluxo de dados pessoais 🔒 **PR #198 MERGED** ✅ **NOVO!**
+- ✅ #191 - [LGPD-86a] Mapear fluxo de dados pessoais 🔒 **PR #198 MERGED** ✅
+- ✅ #192 - [LGPD-86b] Verificar consentimento e termos de uso 🔒 **AUDITORIA COMPLETA** ✅
+- ✅ #193 - [LGPD-86c] Validar criptografia de dados em trânsito e repouso 🔒 **RELATÓRIO COMPLETO** ✅ **NOVO!**
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
@@ -135,7 +137,39 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 36 - PR #198 Merged - LGPD Data Mapping + Issue #109 Fechada) 🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 37 - Issue #192 Closed - LGPD Consent Audit) 🔒✅ **NOVO!**
+- ✅ **Issue #192 CLOSED**: [LGPD-86b] Verificar consentimento e termos de uso
+- ✅ **PROGRESSO**: 74 → **75 issues fechadas** (66% → 67%)
+- ✅ **M3 Quality & Security**: 84% → **89%** (+5 p.p.)
+
+**O que foi auditado (#192):**
+- ✅ Auditoria completa do mecanismo de consentimento LGPD
+- ✅ Identificação de **5 gaps críticos** de conformidade:
+  - GAP-01: Ausência de checkbox de consentimento no registro (Art. 7º, I)
+  - GAP-02: Falta de campo `consentedAt` na entidade User (Art. 8º, §6º)
+  - GAP-03: Ausência de Política de Privacidade (Art. 14)
+  - GAP-04: Ausência de Termos de Uso (Art. 8º, §5º)
+  - GAP-05: Falta de versionamento de termos aceitos (Art. 8º, §4º)
+- ✅ Relatório detalhado com análise de impacto e recomendações prioritárias
+- ✅ Mapeamento de arquivos afetados (Register.tsx, user.entity.ts, auth.service.ts)
+
+**Status de Conformidade:** ❌ NÃO CONFORME - Sistema processa dados pessoais sem base legal válida
+
+**Impacto:**
+- 🔴 **Risco Legal ALTO**: Processamento de dados (email, nome, orgao, cargo) sem consentimento explícito
+- 5 campos de dados pessoais afetados
+- Todos os usuários cadastrados afetados
+- Compartilhamento com OpenAI não informado ao titular
+
+**Próximas Issues Desbloqueadas:**
+- Issue #196 (P0) - Criar Política de Privacidade e Termos de Uso
+- Issue #194 (P0) - Implementar campos de consentimento no banco
+- Issue #195 (P1) - Implementar direitos do titular
+- Issue #193 (P1) - Validar criptografia
+
+---
+
+### 2025-11-19 (Atualização 36 - PR #198 Merged - LGPD Data Mapping + Issue #109 Fechada) 🔒✅
 - ✅ **PR #198 MERGED**: LGPD Data Mapping - Mapeamento de dados pessoais (commit: 3eaed98)
 - ✅ **Issue #191 CLOSED**: [LGPD-86a] Mapear fluxo de dados pessoais
 - ✅ **Issue #109 CLOSED**: Todas as 6 sub-issues (#153-#158) concluídas
@@ -154,12 +188,12 @@ Sub-issues atômicas (desmembradas):
 **Governança - Desmembramento #86:**
 - Issue #86 (LGPD Audit) desmembrada em 7 sub-issues atômicas:
   - #191 - Data mapping ✅ FECHADA
-  - #192 - Consentimento (executável)
-  - #193 - Criptografia (bloqueada por #191)
-  - #194 - Retenção (bloqueada por #191)
-  - #195 - Direitos do titular (bloqueada por #191)
-  - #196 - Política de privacidade (bloqueada por #191)
-  - #197 - Relatório final (bloqueada por todas)
+  - #192 - Consentimento e termos de uso ✅ FECHADA (auditoria)
+  - #193 - Criptografia (executável - não bloqueada)
+  - #194 - Retenção (executável - não bloqueada)
+  - #195 - Direitos do titular (executável - não bloqueada)
+  - #196 - Política de privacidade (executável - não bloqueada)
+  - #197 - Relatório final (bloqueada por #193-#196)
 
 **Limpeza de Governança:**
 - ✅ Issue #109 fechada - todas sub-issues completas
