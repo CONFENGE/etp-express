@@ -264,30 +264,45 @@ regexes = [
 
 ## Secret Rotation Procedures
 
-For detailed secret rotation procedures, see:
-- `docs/SECRET_ROTATION_PROCEDURES.md` (when available)
+Procedures for rotating system secrets are fully documented in:
 
-### Quick Rotation Checklist
+- **Complete Runbook:** [`docs/SECRET_ROTATION_PROCEDURES.md`](./SECRET_ROTATION_PROCEDURES.md)
+- **Helper Script:** `scripts/rotate-secret.sh`
+- **Issue Template:** `.github/ISSUE_TEMPLATE/rotate-secret.md`
 
-**JWT_SECRET:**
-- [ ] Generate new secret: `openssl rand -base64 64`
-- [ ] Add as `JWT_SECRET_NEW` in Railway
-- [ ] Deploy with dual-key support
-- [ ] Wait 24h (token expiry period)
-- [ ] Remove old `JWT_SECRET`
-- [ ] Rename `JWT_SECRET_NEW` to `JWT_SECRET`
+### Rotation Schedule
 
-**OPENAI_API_KEY:**
-- [ ] Generate new key in OpenAI dashboard
-- [ ] Update `OPENAI_API_KEY` in Railway
-- [ ] Deploy application
-- [ ] Revoke old key in OpenAI dashboard
+| Secret | Frequency | Calendar Reminder |
+|--------|-----------|-------------------|
+| JWT_SECRET | Monthly | Day 25 of each month |
+| SESSION_SECRET | Monthly | Day 25 of each month |
+| OPENAI_API_KEY | Quarterly | Feb, May, Aug, Nov |
+| PERPLEXITY_API_KEY | Quarterly | Feb, May, Aug, Nov |
+| DATABASE_URL | On-demand | As needed |
 
-**DATABASE_URL:**
-- [ ] Create new database user with same permissions
-- [ ] Update `DATABASE_URL` in Railway
-- [ ] Deploy and verify connection
-- [ ] Revoke old database user
+### Quick Start
+
+1. **Run the helper script:**
+   ```bash
+   ./scripts/rotate-secret.sh JWT_SECRET
+   ```
+
+2. **Follow the generated instructions**
+
+3. **Update Railway Dashboard**
+
+4. **Validate and update documentation**
+
+For emergency rotations (compromised secrets), follow the Emergency Rotation Procedure in the runbook.
+
+### Creating Rotation Issues
+
+Use the GitHub issue template to create and track rotation tasks:
+
+1. Go to **Issues > New Issue**
+2. Select **"Secret Rotation"** template
+3. Fill in the secret being rotated
+4. Follow the checklist during rotation
 
 ---
 
@@ -401,5 +416,5 @@ We will respond within 48 hours and coordinate disclosure.
 
 ---
 
-**Last Updated:** 2025-11-17
+**Last Updated:** 2025-11-19
 **Maintained By:** ETP Express Security Team
