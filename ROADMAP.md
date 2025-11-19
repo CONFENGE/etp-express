@@ -776,14 +776,17 @@ Sub-issues atômicas (desmembradas):
 ### 🎯 Próximos Passos
 1. ✅ **M1 CONCLUÍDO!** (34/34 issues, 100%) 🎉
 2. ✅ **M2 INICIADO!** #18 concluída - ESLint rule configurada ⚡
-3. **Continuar M2 - CI/CD Pipeline** (8 issues restantes, 11% → 100%) 🚀
+3. ✅ **CI FIX!** #183 concluída - Vitest package resolution (PR #184) 🔧
+4. **PRÓXIMO: #179 (P0)** - Implement dynamic LLM temperature by section type
+5. **Continuar M2 - CI/CD Pipeline** (8 issues restantes, 11% → 100%) 🚀
    - #19-#20: GitHub Actions workflows (lint + tests)
    - #44-#45: Deploy Railway + backup PostgreSQL
    - #104-#107, #112: Produção (monitoring, DR, incident response, deployment)
-4. **Paralelizar M3 - Security** (8 issues pendentes)
+6. **Paralelizar M3 - Security** (8 issues pendentes)
    - #17: Último useEffect
    - #38-#39: Rate limiting, navegação segura
    - #86-#87: LGPD, remediações OWASP
+   - #179: Dynamic LLM temperature (P0)
 
 ---
 
