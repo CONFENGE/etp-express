@@ -160,12 +160,17 @@ export class OrchestratorService {
       }
 
       // 6. Generate content with LLM
+      const temperature = this.getSectionTemperature(request.sectionType);
       const llmRequest: LLMRequest = {
         systemPrompt: finalSystemPrompt,
         userPrompt: enrichedUserPrompt,
-        temperature: 0.7,
+        temperature,
         maxTokens: 4000,
       };
+
+      this.logger.log(
+        `Generating section with temperature ${temperature} for sectionType: ${request.sectionType}`,
+      );
 
       const llmResponse =
         await this.openaiService.generateCompletion(llmRequest);
@@ -332,6 +337,53 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     return ['justificativa', 'introducao', 'descricao_solucao'].includes(
       sectionType,
     );
+  }
+
+  /**
+   * Returns appropriate temperature for the section type.
+   *
+   * @remarks
+   * Different section types require different levels of precision vs creativity:
+   * - Factual/legal sections: Low temperature (0.2) for precision
+   * - Creative/descriptive sections: Medium temperature (0.6) for controlled creativity
+   * - Unknown sections: Default balanced temperature (0.5)
+   *
+   * This prevents AI hallucinations in critical legal/budget sections while
+   * allowing appropriate creativity in descriptive content.
+   *
+   * @param sectionType - Type of section being generated
+   * @returns Temperature value between 0.2 and 0.6
+   */
+  private getSectionTemperature(sectionType: string): number {
+    // Sections that require factual and legal precision
+    const FACTUAL_SECTIONS = [
+      'justificativa',
+      'base_legal',
+      'orcamento',
+      'identificacao',
+      'metodologia',
+      'cronograma',
+      'riscos',
+      'especificacao_tecnica',
+    ];
+
+    // Sections that allow controlled creativity
+    const CREATIVE_SECTIONS = [
+      'introducao',
+      'contextualizacao',
+      'descricao_solucao',
+      'beneficiarios',
+      'sustentabilidade',
+      'justificativa_economica',
+    ];
+
+    if (FACTUAL_SECTIONS.includes(sectionType.toLowerCase())) {
+      return 0.2; // Factual precision
+    } else if (CREATIVE_SECTIONS.includes(sectionType.toLowerCase())) {
+      return 0.6; // Controlled creativity
+    } else {
+      return 0.5; // Default balanced
+    }
   }
 
   /**
