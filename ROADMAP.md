@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 63% concluído 🔒
-**Última Atualização:** 2025-11-19 (PR #187 merged - Railway timeout configuration)
-**Total de Issues:** 108 issues (40 abertas + 68 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 68% concluído 🔒
+**Última Atualização:** 2025-11-19 (PR #188 merged - Secret rotation procedures)
+**Total de Issues:** 105 issues (34 abertas + 71 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,12 +14,12 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████░░░░░░░░░ 12/19 (63%) 🔒 PROGREDINDO
+[M3] Quality & Security           █████████████░░░░░░░░ 13/19 (68%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 68/108 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 63% 🔒 | M4 25% ⚡
+TOTAL: 71/105 issues concluídas (68%)  |  M1 100% ✅ | M2 100% ✅ | M3 68% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management)
@@ -27,7 +27,7 @@ Sub-issues atômicas (desmembradas):
 
 ---
 
-## 🎉 Progresso Realizado (66 issues fechadas)
+## 🎉 Progresso Realizado (71 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
@@ -63,8 +63,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (12 fechadas de 19)
-**Status**: 63% concluído
+### ✅ M3: Quality & Security (13 fechadas de 19)
+**Status**: 68% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -75,23 +75,29 @@ Sub-issues atômicas (desmembradas):
 - ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
 - ✅ #153 - [SEC-109a] Avaliar soluções de Secrets Management 🔒 ⭐
 - ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 ⭐
-- ✅ #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type 🔒 **NOVO!** ⭐
+- ✅ #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type 🔒 ⭐
+- ✅ #156 - [SEC-109d] Documentar procedimento de rotação 🔒 **PR #188 MERGED** ✅ **NOVO!**
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
 - ✅ Secret scanning em 3 camadas implementado ✅
+- ✅ Procedimentos de rotação de secrets documentados ✅
 
 **Sub-issues de #109 (Secrets Management Strategy):**
 - ✅ #153 - [SEC-109a] Avaliar e selecionar solução (CLOSED 2025-11-18)
 - ✅ #154 - [SEC-109b] Implementar secret scanning (CLOSED 2025-11-17)
-- ⏳ #155 - [SEC-109c] Migrar secrets para solução escolhida (OPEN)
-- ⏳ #156 - [SEC-109d] Documentar procedimento de rotação (OPEN)
-- ⏳ #157 - [SEC-109e] Implementar dual-key strategy (OPEN)
-- ⏳ #158 - [SEC-109f] Implementar audit trail para acesso (OPEN)
+- ✅ #155 - [SEC-109c] Migrar secrets (CLOSED 2025-11-19 - obsoleta, Railway Secrets escolhido)
+- ✅ #156 - [SEC-109d] Documentar procedimento de rotação (CLOSED 2025-11-19) **NOVO!**
+- ⏳ #157 - [SEC-109e] Implementar scripts de rotação + schedule (OPEN)
+- ⏳ #158 - [SEC-109f] Implementar monitoramento pós-rotação (OPEN)
+
+**Duplicatas fechadas:**
+- ✅ #176 - Duplicata de #153 (CLOSED 2025-11-19)
+- ✅ #177 - Duplicata de #154 (CLOSED 2025-11-19)
 
 **Pendente**:
 - LGPD (#86), remediações (#87)
-- Secrets management sub-issues (#155-#158), pentesting (#114), data export (#113)
+- Secrets management sub-issues (#157-#158), pentesting (#114), data export (#113)
 
 ### ✅ M4: Refactoring & Performance (5 fechadas de 20)
 **Status**: 25% concluído
@@ -124,7 +130,44 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 32 - PR #187 Merged - Railway Timeout Config) ⚡✅ **NOVO!**
+### 2025-11-19 (Atualização 33 - PR #188 Merged - Secret Rotation Procedures) 🔒✅ **NOVO!**
+- ✅ **PR #188 MERGED**: Document secret rotation procedures using Railway Secrets (commit: 37b09f7)
+- ✅ **Issue #156 CLOSED**: [SEC-109d] Documentar procedimento de rotação de secrets
+- ✅ **Issue #155 CLOSED**: Obsoleta (decisão de usar Railway Secrets)
+- ✅ **Issue #176 CLOSED**: Duplicata de #153
+- ✅ **Issue #177 CLOSED**: Duplicata de #154
+- ✅ **PROGRESSO**: 68 → **71 issues fechadas** (63% → 68%)
+
+**O que foi implementado (#156):**
+- ✅ Criado `docs/SECRET_ROTATION_PROCEDURES.md` - Runbook completo (323 linhas)
+  - Procedimentos para todos os 5 secrets do sistema
+  - Rotation schedule table com datas
+  - Rollback procedures
+  - Emergency rotation procedures
+  - Audit trail guidance
+- ✅ Criado `scripts/rotate-secret.sh` - Script helper interativo (199 linhas)
+  - Gera novos valores de secrets
+  - Instruções step-by-step para Railway Dashboard
+  - Menu-driven interface
+- ✅ Criado `.github/ISSUE_TEMPLATE/rotate-secret.md` - Template de issue (122 linhas)
+  - Checklist estruturado para rotações
+  - Validação pre/post-rotação
+- ✅ Atualizado `docs/SECURITY.md` com links e cronograma
+
+**Limpeza de Governança:**
+- ✅ Issue #155 fechada como OBSOLETA (Railway Secrets elimina necessidade de migração)
+- ✅ Issues #176 e #177 fechadas como DUPLICATAS
+- ✅ Total de issues reduzido de 108 → 105 (3 issues removidas por limpeza)
+
+**Impacto:**
+- Procedimentos operacionais completos para gestão de secrets
+- Script helper reduz erro humano em rotações
+- Template de issue garante auditoria e tracking
+- M3 avança +5 p.p. (63% → 68%)
+
+---
+
+### 2025-11-19 (Atualização 32 - PR #187 Merged - Railway Timeout Config) ⚡✅
 - ✅ **PR #187 MERGED**: Configure Railway timeout for long-running requests (commit: b7c3ec5)
 - ✅ **Issue #180 CLOSED**: [P1][Infrastructure] - Timeout de 120s configurado
 - ✅ **Issue #186 CREATED**: [P3][Backend] - Follow-up para async queue com BullMQ (M6)
