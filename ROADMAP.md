@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 79% concluído 🔒
-**Última Atualização:** 2025-11-19 (PR #190 merged - Audit trail for secrets)
-**Total de Issues:** 105 issues (32 abertas + 73 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 84% concluído 🔒
+**Última Atualização:** 2025-11-19 (PR #198 merged - LGPD Data Mapping)
+**Total de Issues:** 112 issues (38 abertas + 74 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,15 +14,16 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████████░░░░░░ 15/19 (79%) 🔒 PROGREDINDO
+[M3] Quality & Security           ████████████████░░░░░ 16/19 (84%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 73/105 issues concluídas (70%)  |  M1 100% ✅ | M2 100% ✅ | M3 79% 🔒 | M4 25% ⚡
+TOTAL: 74/112 issues concluídas (66%)  |  M1 100% ✅ | M2 100% ✅ | M3 84% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
-- #109 → #153-#158 (6 sub-issues de secrets management)
+- #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
+- #86 → #191-#197 (7 sub-issues de LGPD audit) - 1 de 7 concluída
 ```
 
 ---
@@ -63,8 +64,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (15 fechadas de 19)
-**Status**: 79% concluído
+### ✅ M3: Quality & Security (16 fechadas de 19)
+**Status**: 84% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -78,7 +79,9 @@ Sub-issues atômicas (desmembradas):
 - ✅ #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type 🔒 ⭐
 - ✅ #156 - [SEC-109d] Documentar procedimento de rotação 🔒 **PR #188 MERGED** ✅
 - ✅ #157 - [SEC-109e] Dual-key strategy para rotação JWT 🔒 **PR #189 MERGED** ✅
-- ✅ #158 - [SEC-109f] Audit trail para acesso a secrets 🔒 **PR #190 MERGED** ✅ **NOVO!**
+- ✅ #158 - [SEC-109f] Audit trail para acesso a secrets 🔒 **PR #190 MERGED** ✅
+- ✅ #109 - Secrets Management (parent) 🔒 **CLOSED - todas sub-issues completas** ✅
+- ✅ #191 - [LGPD-86a] Mapear fluxo de dados pessoais 🔒 **PR #198 MERGED** ✅ **NOVO!**
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
@@ -90,16 +93,16 @@ Sub-issues atômicas (desmembradas):
 - ✅ #154 - [SEC-109b] Implementar secret scanning (CLOSED 2025-11-17)
 - ✅ #155 - [SEC-109c] Migrar secrets (CLOSED 2025-11-19 - obsoleta, Railway Secrets escolhido)
 - ✅ #156 - [SEC-109d] Documentar procedimento de rotação (CLOSED 2025-11-19)
-- ✅ #157 - [SEC-109e] Dual-key strategy para rotação zero-downtime (CLOSED 2025-11-19) **NOVO!**
-- ⏳ #158 - [SEC-109f] Implementar monitoramento pós-rotação (OPEN)
+- ✅ #157 - [SEC-109e] Dual-key strategy para rotação zero-downtime (CLOSED 2025-11-19)
+- ✅ #158 - [SEC-109f] Audit trail para acesso a secrets (CLOSED 2025-11-19)
 
 **Duplicatas fechadas:**
 - ✅ #176 - Duplicata de #153 (CLOSED 2025-11-19)
 - ✅ #177 - Duplicata de #154 (CLOSED 2025-11-19)
 
 **Pendente**:
-- LGPD (#86), remediações (#87)
-- Secrets management (#158 - monitoramento pós-rotação), pentesting (#114), data export (#113)
+- LGPD audit (#86 → #192-#197), remediações (#87)
+- Pentesting (#114), data export/deletion (#113)
 
 ### ✅ M4: Refactoring & Performance (5 fechadas de 20)
 **Status**: 25% concluído
@@ -132,7 +135,39 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 35 - PR #190 Merged - Audit Trail for Secrets) 🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 36 - PR #198 Merged - LGPD Data Mapping + Issue #109 Fechada) 🔒✅ **NOVO!**
+- ✅ **PR #198 MERGED**: LGPD Data Mapping - Mapeamento de dados pessoais (commit: 3eaed98)
+- ✅ **Issue #191 CLOSED**: [LGPD-86a] Mapear fluxo de dados pessoais
+- ✅ **Issue #109 CLOSED**: Todas as 6 sub-issues (#153-#158) concluídas
+- ✅ **Issues #191-#197 CREATED**: Desmembramento atômico da issue #86 (LGPD audit)
+- ✅ **PROGRESSO**: 73 → **74 issues fechadas** (70% → 66%)
+- ✅ **M3 Quality & Security**: 79% → **84%** (+5 p.p.)
+
+**O que foi implementado (#191):**
+- ✅ Criado `docs/LGPD_DATA_MAPPING.md` - Mapeamento completo de dados (304 linhas)
+  - Inventário de 15+ campos de dados pessoais
+  - Fluxos de coleta, processamento e exclusão
+  - Terceiros identificados (OpenAI, Perplexity, Railway)
+  - Transferência internacional para USA documentada
+  - 5 gaps críticos identificados e linkados a issues
+
+**Governança - Desmembramento #86:**
+- Issue #86 (LGPD Audit) desmembrada em 7 sub-issues atômicas:
+  - #191 - Data mapping ✅ FECHADA
+  - #192 - Consentimento (executável)
+  - #193 - Criptografia (bloqueada por #191)
+  - #194 - Retenção (bloqueada por #191)
+  - #195 - Direitos do titular (bloqueada por #191)
+  - #196 - Política de privacidade (bloqueada por #191)
+  - #197 - Relatório final (bloqueada por todas)
+
+**Limpeza de Governança:**
+- ✅ Issue #109 fechada - todas sub-issues completas
+- ✅ 7 novas issues criadas (#191-#197) para atomicidade
+
+---
+
+### 2025-11-19 (Atualização 35 - PR #190 Merged - Audit Trail for Secrets) 🔒✅
 - ✅ **PR #190 MERGED**: Implement audit trail for secret access (commit: e1ad50d)
 - ✅ **Issue #158 CLOSED**: [SEC-109f] Audit trail para acesso a secrets
 - ✅ **PROGRESSO**: 72 → **73 issues fechadas** (69% → 70%)
