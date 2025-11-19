@@ -267,6 +267,34 @@ Clique no serviço → Aba "Logs"
 - Swagger: `https://etp-express-backend.up.railway.app/api/docs`
 - Frontend: `https://etp-express-frontend.up.railway.app`
 
+### 5.4 Timeout Configuration
+
+**Request Timeout:** 120s (configurado em `railway.toml`)
+**Razao:** Geracao de secoes via LLM pode levar 30-90s dependendo da complexidade.
+
+**Healthcheck Timeout:** 300s (5min)
+**Razao:** Cold start do NestJS + TypeORM pode levar ate 60s em primeira inicializacao.
+
+**Configuracao via `railway.toml`:**
+```toml
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[build]
+builder = "NIXPACKS"
+
+[service]
+# Aumentar timeout para suportar geracoes longas (60-90s tipico)
+requestTimeout = 120
+```
+
+**Monitoramento:**
+- Railway Logs: Verificar ocorrencias de "TIMEOUT" ou "504 Gateway Timeout"
+- Se timeouts persistirem, considerar implementacao de fila assincrona (Issue #186 - ASYNC-02)
+
 ---
 
 ## 🔒 PASSO 6: SEGURANÇA E OTIMIZAÇÕES
