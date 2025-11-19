@@ -202,13 +202,29 @@ export class AuthService {
    * Verifies token signature, expiration, and validates that user exists
    * and is active. Used by JwtAuthGuard for protected routes.
    *
+   * Supports dual-key validation during secret rotation: tries JWT_SECRET first,
+   * then falls back to JWT_SECRET_OLD if configured.
+   *
    * @param token - JWT access token to validate
    * @returns Validation result with user data
    * @throws {UnauthorizedException} If token is invalid, expired, or user is inactive
    */
   async validateToken(token: string) {
     try {
-      const payload = this.jwtService.verify(token);
+      // Try primary secret first
+      let payload: any;
+      try {
+        payload = this.jwtService.verify(token);
+      } catch {
+        // If primary fails, try old secret (dual-key rotation)
+        const oldSecret = this.configService.get<string>('JWT_SECRET_OLD');
+        if (oldSecret) {
+          payload = this.jwtService.verify(token, { secret: oldSecret });
+        } else {
+          throw new UnauthorizedException('Token inválido ou expirado');
+        }
+      }
+
       const user = await this.usersService.findOne(payload.sub);
 
       if (!user || !user.isActive) {
@@ -225,6 +241,9 @@ export class AuthService {
         },
       };
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Token inválido ou expirado');
     }
   }
