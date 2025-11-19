@@ -315,6 +315,7 @@ describe('AuthService', () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Invalid token');
       });
+      mockConfigService.get.mockReturnValue(null); // No JWT_SECRET_OLD
 
       // Act & Assert
       await expect(service.validateToken(mockToken)).rejects.toThrow(
@@ -352,6 +353,78 @@ describe('AuthService', () => {
       await expect(service.validateToken(mockToken)).rejects.toThrow(
         'Token inválido',
       );
+    });
+
+    describe('dual-key support', () => {
+      it('should try old secret when primary fails and JWT_SECRET_OLD is configured', async () => {
+        // Arrange
+        let callCount = 0;
+        mockJwtService.verify.mockImplementation((token: string, options?: any) => {
+          callCount++;
+          if (callCount === 1) {
+            // First call (primary secret) fails
+            throw new Error('Invalid signature');
+          }
+          // Second call (with old secret) succeeds
+          return mockPayload;
+        });
+        mockConfigService.get.mockImplementation((key: string) => {
+          if (key === 'JWT_SECRET_OLD') return 'old-secret-key';
+          return null;
+        });
+        mockUsersService.findOne.mockResolvedValue(mockUser);
+
+        // Act
+        const result = await service.validateToken(mockToken);
+
+        // Assert
+        expect(mockJwtService.verify).toHaveBeenCalledTimes(2);
+        expect(mockConfigService.get).toHaveBeenCalledWith('JWT_SECRET_OLD');
+        expect(result).toEqual({
+          valid: true,
+          user: {
+            id: mockUser.id,
+            email: mockUser.email,
+            name: mockUser.name,
+            role: mockUser.role,
+          },
+        });
+      });
+
+      it('should throw UnauthorizedException when both primary and old secrets fail', async () => {
+        // Arrange
+        mockJwtService.verify.mockImplementation(() => {
+          throw new Error('Invalid token');
+        });
+        mockConfigService.get.mockImplementation((key: string) => {
+          if (key === 'JWT_SECRET_OLD') return 'old-secret-key';
+          return null;
+        });
+
+        // Act & Assert
+        await expect(service.validateToken(mockToken)).rejects.toThrow(
+          UnauthorizedException,
+        );
+        await expect(service.validateToken(mockToken)).rejects.toThrow(
+          'Token inválido ou expirado',
+        );
+      });
+
+      it('should not try old secret when JWT_SECRET_OLD is not configured', async () => {
+        // Arrange
+        mockJwtService.verify.mockImplementation(() => {
+          throw new Error('Invalid token');
+        });
+        mockConfigService.get.mockReturnValue(null); // No JWT_SECRET_OLD
+
+        // Act & Assert
+        await expect(service.validateToken(mockToken)).rejects.toThrow(
+          UnauthorizedException,
+        );
+        // Token validation called once, then config.get called once for JWT_SECRET_OLD
+        expect(mockJwtService.verify).toHaveBeenCalledTimes(1);
+        expect(mockConfigService.get).toHaveBeenCalledWith('JWT_SECRET_OLD');
+      });
     });
   });
 });

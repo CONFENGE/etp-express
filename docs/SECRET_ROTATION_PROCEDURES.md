@@ -22,15 +22,78 @@ Runbook completo para rotação de secrets do sistema ETP Express.
 
 ---
 
+## Dual-Key Rotation (Zero-Downtime)
+
+### Overview
+The system supports **dual-key rotation** for JWT_SECRET and SESSION_SECRET. During rotation, the system accepts tokens signed with both the old and new secrets, allowing for zero-downtime rotation.
+
+### How Dual-Key Works
+
+1. **Normal Operation**: Application uses only `JWT_SECRET` (primary)
+2. **During Rotation**: Application accepts both `JWT_SECRET` (new) AND `JWT_SECRET_OLD` (old)
+3. **After Rotation**: Remove `JWT_SECRET_OLD`, back to single-key mode
+
+**Technical Implementation:**
+- `JwtStrategy` validates tokens against both secrets when `JWT_SECRET_OLD` is configured
+- New tokens are always generated with the primary `JWT_SECRET`
+- Old tokens (signed with `JWT_SECRET_OLD`) remain valid during transition period
+
+### Dual-Key Rotation Process
+
+#### Day 0: Prepare New Secret
+```bash
+# Generate new secret
+./scripts/rotate-secret.sh JWT_SECRET
+
+# Note: Don't apply yet!
+```
+
+#### Day 0: Enable Dual-Key Mode
+1. Go to Railway Dashboard → Variables
+2. **Copy** current `JWT_SECRET` value
+3. **Create** new variable `JWT_SECRET_OLD` with the old value
+4. **Update** `JWT_SECRET` with the new secret
+5. Save changes (triggers redeploy)
+
+**Result:** System now accepts both old and new tokens
+
+#### Day 1-2: Dual-Key Period
+- Monitor for authentication errors
+- Verify new logins work correctly
+- Old tokens (signed with `JWT_SECRET_OLD`) still work
+- All new tokens are signed with new `JWT_SECRET`
+
+#### Day 3+: Remove Old Secret
+1. Go to Railway Dashboard → Variables
+2. **Delete** `JWT_SECRET_OLD`
+3. Save changes
+
+**Result:** Only new secret is valid, rotation complete
+
+### Validation Commands
+
+```bash
+# Check if dual-key is active (look for warning in logs)
+# "Dual-key rotation mode active: accepting both JWT_SECRET and JWT_SECRET_OLD"
+
+# Test with old token (should work during dual-key period)
+curl -H "Authorization: Bearer <old-token>" https://api.etp-express.com/auth/me
+
+# Test with new token (should always work)
+curl -H "Authorization: Bearer <new-token>" https://api.etp-express.com/auth/me
+```
+
+---
+
 ## JWT_SECRET Rotation
 
 ### Overview
-JWT_SECRET is used to sign authentication tokens. Rotation requires careful timing to avoid invalidating active user sessions.
+JWT_SECRET is used to sign authentication tokens. With dual-key support, rotation no longer invalidates active user sessions.
 
 ### Pre-requisites
 - [ ] Access to Railway Dashboard
 - [ ] Backup of current secret value (store securely)
-- [ ] Low-traffic period preferred (e.g., weekends or early morning)
+- [ ] Low-traffic period preferred (for monitoring, not required)
 
 ### Rotation Steps
 
@@ -74,9 +137,9 @@ If rotation causes issues:
 4. Investigate root cause before retrying
 
 ### Impact
-- **Users affected:** All users will need to re-login after token expiration
-- **Downtime:** Zero (Railway hot-swaps variables)
-- **Risk:** Low (JWT tokens have short expiry)
+- **Users affected:** None (dual-key rotation allows seamless transition)
+- **Downtime:** Zero (Railway hot-swaps variables + dual-key support)
+- **Risk:** Low (tokens signed with both secrets are valid during transition)
 
 ---
 
