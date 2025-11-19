@@ -720,4 +720,115 @@ describe('OrchestratorService', () => {
       );
     });
   });
+
+  /**
+   * Tests for dynamic temperature selection based on section type
+   * Validates that factual/legal sections use low temperature (0.2) for precision
+   * and creative sections use medium temperature (0.6) for controlled creativity
+   */
+  describe('Teste 6: getSectionTemperature retorna temperatura apropriada', () => {
+    it('deve retornar 0.2 para seções legais/factuais', async () => {
+      const factualSections = [
+        'justificativa',
+        'base_legal',
+        'orcamento',
+        'identificacao',
+        'metodologia',
+        'cronograma',
+        'riscos',
+        'especificacao_tecnica',
+      ];
+
+      for (const sectionType of factualSections) {
+        const request = {
+          sectionType,
+          title: 'Teste',
+          userInput: 'Teste',
+        };
+
+        await service.generateSection(request);
+
+        expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+          expect.objectContaining({
+            temperature: 0.2,
+          }),
+        );
+
+        jest.clearAllMocks();
+      }
+    });
+
+    it('deve retornar 0.6 para seções criativas', async () => {
+      const creativeSections = [
+        'introducao',
+        'contextualizacao',
+        'descricao_solucao',
+        'beneficiarios',
+        'sustentabilidade',
+        'justificativa_economica',
+      ];
+
+      for (const sectionType of creativeSections) {
+        const request = {
+          sectionType,
+          title: 'Teste',
+          userInput: 'Teste',
+        };
+
+        await service.generateSection(request);
+
+        expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+          expect.objectContaining({
+            temperature: 0.6,
+          }),
+        );
+
+        jest.clearAllMocks();
+      }
+    });
+
+    it('deve retornar 0.5 para seções desconhecidas', async () => {
+      const unknownSections = ['glossario', 'anexos', 'referencias', 'outro'];
+
+      for (const sectionType of unknownSections) {
+        const request = {
+          sectionType,
+          title: 'Teste',
+          userInput: 'Teste',
+        };
+
+        await service.generateSection(request);
+
+        expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+          expect.objectContaining({
+            temperature: 0.5,
+          }),
+        );
+
+        jest.clearAllMocks();
+      }
+    });
+
+    it('deve ser case-insensitive para nomes de seção', async () => {
+      const variations = ['JUSTIFICATIVA', 'Justificativa', 'JuStIfIcAtIvA'];
+
+      for (const sectionType of variations) {
+        const request = {
+          sectionType,
+          title: 'Teste',
+          userInput: 'Teste',
+        };
+
+        await service.generateSection(request);
+
+        expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+          expect.objectContaining({
+            temperature: 0.2,
+          }),
+        );
+
+        jest.clearAllMocks();
+      }
+    });
+  });
 });
