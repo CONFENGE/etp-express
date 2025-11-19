@@ -3,8 +3,8 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 3 (Quality & Security) - 63% concluído 🔒
-**Última Atualização:** 2025-11-19 (PR #185 merged - Dynamic LLM temperature by section type)
-**Total de Issues:** 107 issues (40 abertas + 67 fechadas) organizadas em 6 milestones
+**Última Atualização:** 2025-11-19 (PR #187 merged - Railway timeout configuration)
+**Total de Issues:** 108 issues (40 abertas + 68 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -13,13 +13,13 @@
 
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
+[M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████░░░░░░░░░ 12/19 (63%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 67/107 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 63% 🔒 | M4 25% ⚡
+TOTAL: 68/108 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 63% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management)
@@ -58,7 +58,8 @@ Sub-issues atômicas (desmembradas):
 - ✅ #106 - Production Incident Response Playbook ⚡ **PR #140 MERGED** ✅
 - ✅ #104 - Database Disaster Recovery Testing & Validation ⚡ **PR #141 MERGED** ✅
 - ✅ #105 - Production Monitoring & Alerting Infrastructure ⚡ **PR #143 MERGED** ✅
-- ✅ #112 - Infrastructure as Code & Environment Reproducibility ⚡ **COMPLETO!** ✅ **NOVO!**
+- ✅ #112 - Infrastructure as Code & Environment Reproducibility ⚡ **COMPLETO!** ✅
+- ✅ #180 - [P1][Infrastructure] Configure Railway timeout for long-running requests ⚡ **PR #187 MERGED** ✅ **NOVO!**
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
@@ -123,7 +124,28 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 31 - PR #185 Merged - Dynamic LLM Temperature) 🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 32 - PR #187 Merged - Railway Timeout Config) ⚡✅ **NOVO!**
+- ✅ **PR #187 MERGED**: Configure Railway timeout for long-running requests (commit: b7c3ec5)
+- ✅ **Issue #180 CLOSED**: [P1][Infrastructure] - Timeout de 120s configurado
+- ✅ **Issue #186 CREATED**: [P3][Backend] - Follow-up para async queue com BullMQ (M6)
+- ✅ **PROGRESSO**: 67 → **68 issues fechadas** (63% mantido)
+
+**O que foi implementado (#180):**
+- ✅ Criado `railway.toml` com configuracoes de timeout
+  - `requestTimeout = 120` (2 minutos para requests longos)
+  - `healthcheckTimeout = 300` (5 minutos para cold starts)
+  - `restartPolicyType = "ON_FAILURE"` com max 3 retries
+- ✅ Documentado em `DEPLOY_RAILWAY.md` secao "Timeout Configuration"
+- ✅ Criada issue #186 para solucao definitiva com BullMQ async queue
+
+**Impacto de Infraestrutura:**
+- Resolve timeout em ~50% das geracoes de secoes complexas
+- Suporta cold starts de ate 5 minutos
+- Restart automatico em caso de falha
+
+---
+
+### 2025-11-19 (Atualização 31 - PR #185 Merged - Dynamic LLM Temperature) 🔒✅
 - ✅ **PR #185 MERGED**: Implement dynamic LLM temperature by section type (commit: 0d51da7)
 - ✅ **Issue #179 CLOSED**: [P0][Legal Safety] - Temperatura dinâmica implementada
 - ✅ **PROGRESSO**: 66 → **67 issues fechadas** (62% → 63%)
