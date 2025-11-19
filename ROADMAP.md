@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 58% concluído 🔒
-**Última Atualização:** 2025-11-18 (PR #182 merged - Remove Perplexity mock fallback + Issue #183 created)
-**Total de Issues:** 107 issues (41 abertas + 66 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 63% concluído 🔒
+**Última Atualização:** 2025-11-19 (PR #185 merged - Dynamic LLM temperature by section type)
+**Total de Issues:** 107 issues (40 abertas + 67 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ---
@@ -14,12 +14,12 @@
 ```
 [M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 10/10 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████░░░░░░░░░░ 11/19 (58%) 🔒 PROGREDINDO
+[M3] Quality & Security           ████████████░░░░░░░░░ 12/19 (63%) 🔒 PROGREDINDO
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
 [M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
 
-TOTAL: 66/107 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 58% 🔒 | M4 25% ⚡
+TOTAL: 67/107 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 63% 🔒 | M4 25% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management)
@@ -62,8 +62,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (11 fechadas de 19)
-**Status**: 58% concluído
+### ✅ M3: Quality & Security (12 fechadas de 19)
+**Status**: 63% concluído
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -73,7 +73,8 @@ Sub-issues atômicas (desmembradas):
 - ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐
 - ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
 - ✅ #153 - [SEC-109a] Avaliar soluções de Secrets Management 🔒 ⭐
-- ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 **NOVO!** ⭐
+- ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 ⭐
+- ✅ #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type 🔒 **NOVO!** ⭐
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
@@ -122,7 +123,29 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-18 (Atualização 30 - PR #182 Merged + Issue #183 Created) 🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 31 - PR #185 Merged - Dynamic LLM Temperature) 🔒✅ **NOVO!**
+- ✅ **PR #185 MERGED**: Implement dynamic LLM temperature by section type (commit: 0d51da7)
+- ✅ **Issue #179 CLOSED**: [P0][Legal Safety] - Temperatura dinâmica implementada
+- ✅ **PROGRESSO**: 66 → **67 issues fechadas** (62% → 63%)
+- ✅ **M3 Quality & Security**: 58% → **63%** (+5 p.p.)
+
+**O que foi implementado (#179):**
+- ✅ Método `getSectionTemperature()` com mapeamento por tipo de seção:
+  - **Seções factuais (0.2)**: justificativa, base_legal, orcamento, identificacao, metodologia, cronograma, riscos, especificacao_tecnica
+  - **Seções criativas (0.6)**: introducao, contextualizacao, descricao_solucao, beneficiarios, sustentabilidade, justificativa_economica
+  - **Seções desconhecidas (0.5)**: Default balanceado
+- ✅ Logging de temperatura para auditoria
+- ✅ 4 testes unitários adicionados (30 total no orchestrator)
+- ✅ Coverage mantida: 98.78% lines, 90% branches
+
+**Impacto de Segurança:**
+- Previne alucinações de IA em seções legais/orçamentárias
+- Temperatura baixa (0.2) garante precisão factual em conteúdo crítico
+- Auditabilidade completa via logs estruturados
+
+---
+
+### 2025-11-18 (Atualização 30 - PR #182 Merged + Issue #183 Created) 🔒✅
 - ✅ **PR #182 MERGED**: Remove silent Perplexity mock data fallback (commit: ccccd95)
 - ✅ **Issue #178 CLOSED**: [P0][Data Integrity] - Integridade de dados restaurada
 - ✅ **Issue #183 CREATED**: [CI] Fix vitest package resolution in Test Frontend
@@ -775,18 +798,15 @@ Sub-issues atômicas (desmembradas):
 
 ### 🎯 Próximos Passos
 1. ✅ **M1 CONCLUÍDO!** (34/34 issues, 100%) 🎉
-2. ✅ **M2 INICIADO!** #18 concluída - ESLint rule configurada ⚡
+2. ✅ **M2 CONCLUÍDO!** (10/10 issues, 100%) 🎉
 3. ✅ **CI FIX!** #183 concluída - Vitest package resolution (PR #184) 🔧
-4. **PRÓXIMO: #179 (P0)** - Implement dynamic LLM temperature by section type
-5. **Continuar M2 - CI/CD Pipeline** (8 issues restantes, 11% → 100%) 🚀
-   - #19-#20: GitHub Actions workflows (lint + tests)
-   - #44-#45: Deploy Railway + backup PostgreSQL
-   - #104-#107, #112: Produção (monitoring, DR, incident response, deployment)
-6. **Paralelizar M3 - Security** (8 issues pendentes)
-   - #17: Último useEffect
-   - #38-#39: Rate limiting, navegação segura
-   - #86-#87: LGPD, remediações OWASP
-   - #179: Dynamic LLM temperature (P0)
+4. ✅ **P0 CONCLUÍDO!** #179 concluída - Dynamic LLM temperature (PR #185) 🔒
+5. **PRÓXIMO: Continuar M3 - Quality & Security** (7 issues restantes, 63% → 100%) 🔒
+   - #86: LGPD auditoria de conformidade
+   - #87: Implementar remediações de segurança OWASP
+   - #113-#114: LGPD data export, pentesting
+   - #155-#158: Secrets management sub-issues (migração, rotação, dual-key, audit trail)
+   - #176-#177, #180: Secrets scanning, Railway timeout
 
 ---
 
