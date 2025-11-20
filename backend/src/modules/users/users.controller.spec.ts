@@ -29,6 +29,7 @@ describe('UsersController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    exportUserData: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -337,6 +338,149 @@ describe('UsersController', () => {
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+  });
+
+  describe('exportUserData', () => {
+    const mockExportData = {
+      user: mockUser,
+      etps: [
+        { id: 'etp-1', title: 'ETP Test 1', sections: [], versions: [] },
+        { id: 'etp-2', title: 'ETP Test 2', sections: [], versions: [] },
+      ],
+      analytics: [
+        { id: 'analytics-1', eventType: 'page_view', eventName: 'dashboard' },
+      ],
+      auditLogs: [{ id: 'audit-1', action: 'create', entityType: 'etp' }],
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        dataRetentionPolicy: 'Os dados serão mantidos por 90 dias',
+        lgpdRights: 'Seus direitos LGPD incluem acesso, correção',
+        recordCounts: {
+          etps: 2,
+          analytics: 1,
+          auditLogs: 1,
+        },
+      },
+    };
+
+    it('should export all user data successfully', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockResolvedValue(mockExportData);
+
+      // Act
+      const result = await controller.exportUserData(mockUserId);
+
+      // Assert
+      expect(service.exportUserData).toHaveBeenCalledWith(mockUserId);
+      expect(service.exportUserData).toHaveBeenCalledTimes(1);
+      expect(result.data).toEqual(mockExportData);
+      expect(result.data.user).toEqual(mockUser);
+      expect(result.data.etps).toHaveLength(2);
+      expect(result.data.analytics).toHaveLength(1);
+      expect(result.data.auditLogs).toHaveLength(1);
+      expect(result.disclaimer).toBeDefined();
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockRejectedValue(
+        new NotFoundException('Usuário não encontrado'),
+      );
+
+      // Act & Assert
+      await expect(controller.exportUserData('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(controller.exportUserData('invalid-id')).rejects.toThrow(
+        'Usuário não encontrado',
+      );
+    });
+
+    it('should include exportMetadata in response', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockResolvedValue(mockExportData);
+
+      // Act
+      const result = await controller.exportUserData(mockUserId);
+
+      // Assert
+      expect(result.data.exportMetadata).toBeDefined();
+      expect(result.data.exportMetadata.exportedAt).toBeDefined();
+      expect(result.data.exportMetadata.dataRetentionPolicy).toBeDefined();
+      expect(result.data.exportMetadata.lgpdRights).toBeDefined();
+      expect(result.data.exportMetadata.recordCounts).toEqual({
+        etps: 2,
+        analytics: 1,
+        auditLogs: 1,
+      });
+    });
+
+    it('should include disclaimer in export response', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockResolvedValue(mockExportData);
+
+      // Act
+      const result = await controller.exportUserData(mockUserId);
+
+      // Assert
+      expect(result.disclaimer).toBeDefined();
+      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    it('should handle empty export data', async () => {
+      // Arrange
+      const emptyExportData = {
+        ...mockExportData,
+        etps: [],
+        analytics: [],
+        auditLogs: [],
+        exportMetadata: {
+          ...mockExportData.exportMetadata,
+          recordCounts: { etps: 0, analytics: 0, auditLogs: 0 },
+        },
+      };
+      mockUsersService.exportUserData.mockResolvedValue(emptyExportData);
+
+      // Act
+      const result = await controller.exportUserData(mockUserId);
+
+      // Assert
+      expect(result.data.etps).toHaveLength(0);
+      expect(result.data.analytics).toHaveLength(0);
+      expect(result.data.auditLogs).toHaveLength(0);
+      expect(result.data.exportMetadata.recordCounts).toEqual({
+        etps: 0,
+        analytics: 0,
+        auditLogs: 0,
+      });
+    });
+
+    it('should return complete user data structure', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockResolvedValue(mockExportData);
+
+      // Act
+      const result = await controller.exportUserData(mockUserId);
+
+      // Assert
+      expect(result.data).toHaveProperty('user');
+      expect(result.data).toHaveProperty('etps');
+      expect(result.data).toHaveProperty('analytics');
+      expect(result.data).toHaveProperty('auditLogs');
+      expect(result.data).toHaveProperty('exportMetadata');
+    });
+
+    it('should use CurrentUser decorator to extract userId from JWT', async () => {
+      // Arrange
+      mockUsersService.exportUserData.mockResolvedValue(mockExportData);
+
+      // Act
+      await controller.exportUserData(mockUserId);
+
+      // Assert
+      // Verify that the service was called with the userId extracted from JWT
+      expect(service.exportUserData).toHaveBeenCalledWith(mockUserId);
     });
   });
 });

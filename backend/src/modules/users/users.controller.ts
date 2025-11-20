@@ -111,6 +111,51 @@ export class UsersController {
   }
 
   /**
+   * Exports all user data for LGPD compliance (Art. 18, II and V).
+   *
+   * @remarks
+   * Exports complete user data including profile, ETPs, sections, versions,
+   * analytics events, and audit logs. Password is excluded via @Exclude decorator.
+   * This endpoint fulfills LGPD data portability requirements.
+   *
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns Complete user data export with metadata
+   * @throws {NotFoundException} 404 - If user not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
+  @Get('me/export')
+  @ApiOperation({
+    summary: 'Exportar todos os dados do usuário (LGPD Art. 18, II e V)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados exportados com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            user: { type: 'object' },
+            etps: { type: 'array' },
+            analytics: { type: 'array' },
+            auditLogs: { type: 'array' },
+            exportMetadata: { type: 'object' },
+          },
+        },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async exportUserData(@CurrentUser('id') userId: string) {
+    const data = await this.usersService.exportUserData(userId);
+    return {
+      data,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
    * Retrieves a user by ID.
    *
    * @param id - User unique identifier (UUID)
