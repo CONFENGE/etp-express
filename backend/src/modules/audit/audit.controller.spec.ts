@@ -155,9 +155,9 @@ describe('AuditController', () => {
     });
 
     it('should throw ForbiddenException for non-admin user', async () => {
-      await expect(
-        controller.getAllAccessLogs(regularUser),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(controller.getAllAccessLogs(regularUser)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -191,14 +191,16 @@ describe('AuditController', () => {
 
       const result = await controller.getAccessStats(adminUser, 'JWT_SECRET');
 
-      expect(mockAuditService.getAccessStats).toHaveBeenCalledWith('JWT_SECRET');
+      expect(mockAuditService.getAccessStats).toHaveBeenCalledWith(
+        'JWT_SECRET',
+      );
       expect(result).toEqual(stats);
     });
 
     it('should throw ForbiddenException for non-admin user', async () => {
-      await expect(
-        controller.getAccessStats(regularUser),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(controller.getAccessStats(regularUser)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });

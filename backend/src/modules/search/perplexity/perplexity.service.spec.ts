@@ -102,10 +102,10 @@ describe('PerplexityService', () => {
       mockedAxios.post.mockRejectedValue(new Error('API Error'));
 
       await expect(service.search('test query')).rejects.toThrow(
-        ServiceUnavailableException
+        ServiceUnavailableException,
       );
       await expect(service.search('test query')).rejects.toThrow(
-        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.'
+        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.',
       );
     });
 
@@ -284,5 +284,4 @@ describe('PerplexityService', () => {
       expect(result.results[2].relevance).toBe(0.8);
     });
   });
-
 });

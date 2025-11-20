@@ -21,9 +21,7 @@ describe('PIIRedactionService', () => {
       const input = 'Contato: joao.silva@gov.br e maria.santos@exemplo.com.br';
       const { redacted, findings } = service.redact(input);
 
-      expect(redacted).toBe(
-        'Contato: [EMAIL_REDACTED] e [EMAIL_REDACTED]',
-      );
+      expect(redacted).toBe('Contato: [EMAIL_REDACTED] e [EMAIL_REDACTED]');
       expect(findings).toHaveLength(1);
       expect(findings[0]).toEqual({ type: 'email', count: 2 });
     });
@@ -49,8 +47,7 @@ describe('PIIRedactionService', () => {
     });
 
     it('should redact phone numbers (formatted and unformatted)', () => {
-      const input =
-        'Telefones: (11) 98765-4321, (21)987654321, 11 9876-5432';
+      const input = 'Telefones: (11) 98765-4321, (21)987654321, 11 9876-5432';
       const { redacted, findings } = service.redact(input);
 
       expect(redacted).toBe(
@@ -62,8 +59,7 @@ describe('PIIRedactionService', () => {
     });
 
     it('should redact process numbers', () => {
-      const input =
-        'Processo nº 1234/2024 e processo 1234.56.2024.1.00.0000';
+      const input = 'Processo nº 1234/2024 e processo 1234.56.2024.1.00.0000';
       const { redacted, findings } = service.redact(input);
 
       expect(redacted).toContain('[PROCESSNUMBER_REDACTED]');
@@ -83,9 +79,7 @@ describe('PIIRedactionService', () => {
       const input = 'Matrícula 123456 e matrícula 789012';
       const { redacted, findings } = service.redact(input);
 
-      expect(redacted).toBe(
-        '[MATRICULA_REDACTED] e [MATRICULA_REDACTED]',
-      );
+      expect(redacted).toBe('[MATRICULA_REDACTED] e [MATRICULA_REDACTED]');
       expect(findings).toHaveLength(1);
       expect(findings[0].type).toBe('matricula');
       expect(findings[0].count).toBe(2);
@@ -143,8 +137,7 @@ describe('PIIRedactionService', () => {
     });
 
     it('should count unique occurrences correctly', () => {
-      const input =
-        'Email: teste@gov.br, teste@gov.br, outro@gov.br';
+      const input = 'Email: teste@gov.br, teste@gov.br, outro@gov.br';
       const { findings } = service.redact(input);
 
       expect(findings).toHaveLength(1);
@@ -198,7 +191,9 @@ describe('PIIRedactionService', () => {
 
     it('should handle very long texts efficiently', () => {
       const longText =
-        'Texto longo '.repeat(1000) + ' joao@gov.br ' + 'mais texto '.repeat(1000);
+        'Texto longo '.repeat(1000) +
+        ' joao@gov.br ' +
+        'mais texto '.repeat(1000);
       const { redacted, findings } = service.redact(longText);
 
       expect(findings).toHaveLength(1);

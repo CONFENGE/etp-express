@@ -187,16 +187,18 @@ describe('OrchestratorService', () => {
               findings: [],
             })),
             containsPII: jest.fn().mockReturnValue(false),
-            getSupportedTypes: jest.fn().mockReturnValue([
-              'email',
-              'cpf',
-              'cnpj',
-              'phone',
-              'processNumber',
-              'rg',
-              'matricula',
-              'cep',
-            ]),
+            getSupportedTypes: jest
+              .fn()
+              .mockReturnValue([
+                'email',
+                'cpf',
+                'cnpj',
+                'phone',
+                'processNumber',
+                'rg',
+                'matricula',
+                'cep',
+              ]),
           },
         },
       ],

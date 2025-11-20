@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
+import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 
 describe('HealthController', () => {
   let controller: HealthController;
   let service: HealthService;
+  let openaiService: OpenAIService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,11 +18,18 @@ describe('HealthController', () => {
             check: jest.fn(),
           },
         },
+        {
+          provide: OpenAIService,
+          useValue: {
+            getCircuitState: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<HealthController>(HealthController);
     service = module.get<HealthService>(HealthService);
+    openaiService = module.get<OpenAIService>(OpenAIService);
   });
 
   afterEach(() => {
@@ -102,6 +111,115 @@ describe('HealthController', () => {
       // Assert
       expect(result).toBe(serviceResponse);
       expect(service.check).toHaveBeenCalled();
+    });
+  });
+
+  describe('getOpenAIHealth', () => {
+    it('should return circuit state when circuit is closed', () => {
+      // Arrange
+      const circuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {
+          fires: 10,
+          successes: 10,
+          failures: 0,
+          timeouts: 0,
+        },
+      } as any;
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getOpenAIHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(openaiService.getCircuitState).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return circuit state when circuit is open', () => {
+      // Arrange
+      const circuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {
+          fires: 20,
+          successes: 5,
+          failures: 15,
+          timeouts: 2,
+        },
+      } as any;
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getOpenAIHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(openaiService.getCircuitState).toHaveBeenCalledTimes(1);
+      expect(result.opened).toBe(true);
+    });
+
+    it('should return circuit state when circuit is half-open', () => {
+      // Arrange
+      const circuitState = {
+        opened: false,
+        halfOpen: true,
+        closed: false,
+        stats: {
+          fires: 15,
+          successes: 8,
+          failures: 7,
+          timeouts: 1,
+        },
+      } as any;
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getOpenAIHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(result.halfOpen).toBe(true);
+      expect(openaiService.getCircuitState).toHaveBeenCalledTimes(1);
+    });
+
+    it('should include statistics in the response', () => {
+      // Arrange
+      const circuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {
+          fires: 100,
+          successes: 95,
+          failures: 5,
+          timeouts: 0,
+          rejects: 0,
+          cacheHits: 0,
+          cacheMisses: 0,
+        },
+      } as any;
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getOpenAIHealth();
+
+      // Assert
+      expect(result.stats).toBeDefined();
+      expect(result.stats.fires).toBe(100);
+      expect(result.stats.successes).toBe(95);
+      expect(result.stats.failures).toBe(5);
     });
   });
 });
