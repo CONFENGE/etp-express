@@ -128,7 +128,9 @@ describe('HealthController', () => {
           timeouts: 0,
         },
       } as any;
-      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue(circuitState);
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
 
       // Act
       const result = controller.getOpenAIHealth();
@@ -151,7 +153,9 @@ describe('HealthController', () => {
           timeouts: 2,
         },
       } as any;
-      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue(circuitState);
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
 
       // Act
       const result = controller.getOpenAIHealth();
@@ -175,7 +179,9 @@ describe('HealthController', () => {
           timeouts: 1,
         },
       } as any;
-      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue(circuitState);
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
 
       // Act
       const result = controller.getOpenAIHealth();
@@ -202,7 +208,9 @@ describe('HealthController', () => {
           cacheMisses: 0,
         },
       } as any;
-      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue(circuitState);
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(circuitState);
 
       // Act
       const result = controller.getOpenAIHealth();
