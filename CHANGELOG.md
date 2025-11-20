@@ -32,6 +32,13 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Nova página `/terms` no frontend (TermsOfService.tsx)
   - Links separados no formulário de registro
   - Conformidade com LGPD, Marco Civil, CDC, Lei 14.133
+- ✅ #234 - Implementar DELETE /users/me endpoint (PR #242)
+  - Endpoint de auto-deleção de conta para LGPD Art. 18, VI
+  - Soft delete com período de carência de 30 dias
+  - Confirmação explícita obrigatória: "DELETE MY ACCOUNT"
+  - Audit trail para requisições de deleção
+  - 9 novos testes (36 total em users.controller.spec.ts)
+  - 624 testes backend passando (100%)
 
 #### ⚙️ Infraestrutura Técnica (2025-11-06 a 2025-11-12)
 - ✅ Configuração Jest para testes backend
