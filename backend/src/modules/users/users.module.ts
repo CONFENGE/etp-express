@@ -8,9 +8,7 @@ import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 import { AuditLog } from '../../entities/audit-log.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Etp, AnalyticsEvent, AuditLog]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Etp, AnalyticsEvent, AuditLog])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
