@@ -2,6 +2,9 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
+import { Etp } from '../../entities/etp.entity';
+import { AnalyticsEvent } from '../../entities/analytics-event.entity';
+import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -12,6 +15,12 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Etp)
+    private etpsRepository: Repository<Etp>,
+    @InjectRepository(AnalyticsEvent)
+    private analyticsRepository: Repository<AnalyticsEvent>,
+    @InjectRepository(AuditLog)
+    private auditLogsRepository: Repository<AuditLog>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -62,5 +71,111 @@ export class UsersService {
     await this.usersRepository.update(id, {
       lastLoginAt: new Date(),
     });
+  }
+
+  /**
+   * Exports all user data for LGPD compliance (Art. 18, II and V).
+   *
+   * @remarks
+   * Exports complete user data including:
+   * - User profile (password excluded via @Exclude decorator)
+   * - All ETPs with sections and versions
+   * - Analytics events
+   * - Audit logs (last 1000 entries)
+   *
+   * This method fulfills LGPD data portability requirements and logs
+   * the export action to audit trail.
+   *
+   * @param userId - User unique identifier (UUID)
+   * @returns Object containing all user data and export metadata
+   * @throws {NotFoundException} If user not found
+   */
+  async exportUserData(userId: string) {
+    // 1. Verify user exists
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      select: [
+        'id',
+        'name',
+        'email',
+        'orgao',
+        'cargo',
+        'role',
+        'isActive',
+        'createdAt',
+        'updatedAt',
+        'lastLoginAt',
+        'lgpdConsentAt',
+        'lgpdConsentVersion',
+        'internationalTransferConsentAt',
+      ],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${userId} não encontrado`);
+    }
+
+    // 2. Export all ETPs with related data
+    const etps = await this.etpsRepository.find({
+      where: { createdById: userId },
+      relations: ['sections', 'versions'],
+      order: { createdAt: 'DESC' },
+    });
+
+    // 3. Export analytics events
+    const analytics = await this.analyticsRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+
+    // 4. Export audit logs (last 1000 entries)
+    const auditLogs = await this.auditLogsRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      take: 1000,
+    });
+
+    // 5. Create audit log for this export
+    const exportLog = this.auditLogsRepository.create({
+      action: 'export' as any,
+      entityType: 'user',
+      entityId: userId,
+      userId,
+      description: 'User data exported for LGPD compliance',
+      changes: {
+        metadata: {
+          etpsCount: etps.length,
+          analyticsCount: analytics.length,
+          auditLogsCount: auditLogs.length,
+        },
+      },
+    });
+    await this.auditLogsRepository.save(exportLog);
+
+    this.logger.log(
+      `User data exported: ${user.email} (${etps.length} ETPs, ${analytics.length} analytics, ${auditLogs.length} audit logs)`,
+    );
+
+    // 6. Return complete export
+    return {
+      user,
+      etps,
+      analytics,
+      auditLogs,
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        dataRetentionPolicy:
+          'Os dados serão mantidos por 90 dias após deleção da conta. ' +
+          'Consulte docs/DATA_RETENTION_POLICY.md para mais informações.',
+        lgpdRights:
+          'Seus direitos LGPD incluem acesso, correção, anonimização, portabilidade e exclusão. ' +
+          'Consulte docs/PRIVACY_POLICY.md para exercer seus direitos.',
+        recordCounts: {
+          etps: etps.length,
+          analytics: analytics.length,
+          auditLogs: auditLogs.length,
+        },
+      },
+    };
   }
 }

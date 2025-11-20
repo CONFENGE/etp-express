@@ -4,12 +4,18 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from './users.service';
 import { User, UserRole } from '../../entities/user.entity';
+import { Etp } from '../../entities/etp.entity';
+import { AnalyticsEvent } from '../../entities/analytics-event.entity';
+import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
   let repository: Repository<User>;
+  let etpsRepository: Repository<Etp>;
+  let analyticsRepository: Repository<AnalyticsEvent>;
+  let auditLogsRepository: Repository<AuditLog>;
 
   const mockUser: User = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -39,6 +45,20 @@ describe('UsersService', () => {
     remove: jest.fn(),
   };
 
+  const mockEtpsRepository = {
+    find: jest.fn(),
+  };
+
+  const mockAnalyticsRepository = {
+    find: jest.fn(),
+  };
+
+  const mockAuditLogsRepository = {
+    find: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -47,11 +67,30 @@ describe('UsersService', () => {
           provide: getRepositoryToken(User),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(Etp),
+          useValue: mockEtpsRepository,
+        },
+        {
+          provide: getRepositoryToken(AnalyticsEvent),
+          useValue: mockAnalyticsRepository,
+        },
+        {
+          provide: getRepositoryToken(AuditLog),
+          useValue: mockAuditLogsRepository,
+        },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
     repository = module.get<Repository<User>>(getRepositoryToken(User));
+    etpsRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
+    analyticsRepository = module.get<Repository<AnalyticsEvent>>(
+      getRepositoryToken(AnalyticsEvent),
+    );
+    auditLogsRepository = module.get<Repository<AuditLog>>(
+      getRepositoryToken(AuditLog),
+    );
 
     // Reset all mocks before each test
     jest.clearAllMocks();
@@ -400,6 +439,263 @@ describe('UsersService', () => {
       await expect(service.remove(mockUser.id)).rejects.toThrow(
         'Database delete error',
       );
+    });
+  });
+
+  describe('exportUserData', () => {
+    const mockEtps = [
+      {
+        id: 'etp-1',
+        title: 'ETP Test',
+        createdById: mockUser.id,
+        sections: [],
+        versions: [],
+      },
+      {
+        id: 'etp-2',
+        title: 'ETP Test 2',
+        createdById: mockUser.id,
+        sections: [{ id: 'section-1' }],
+        versions: [{ id: 'version-1' }],
+      },
+    ];
+
+    const mockAnalytics = [
+      {
+        id: 'analytics-1',
+        eventType: 'page_view',
+        eventName: 'dashboard',
+        userId: mockUser.id,
+      },
+      {
+        id: 'analytics-2',
+        eventType: 'action',
+        eventName: 'generate_section',
+        userId: mockUser.id,
+      },
+    ];
+
+    const mockAuditLogs = [
+      {
+        id: 'audit-1',
+        action: 'create',
+        entityType: 'etp',
+        userId: mockUser.id,
+      },
+    ];
+
+    const mockExportLog = {
+      id: 'export-log-1',
+      action: 'export',
+      entityType: 'user',
+      userId: mockUser.id,
+    };
+
+    it('should successfully export all user data', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
+      mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      const result = await service.exportUserData(mockUser.id);
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+        select: [
+          'id',
+          'name',
+          'email',
+          'orgao',
+          'cargo',
+          'role',
+          'isActive',
+          'createdAt',
+          'updatedAt',
+          'lastLoginAt',
+          'lgpdConsentAt',
+          'lgpdConsentVersion',
+          'internationalTransferConsentAt',
+        ],
+      });
+      expect(result.user).toEqual(mockUser);
+      expect(result.etps).toEqual(mockEtps);
+      expect(result.analytics).toEqual(mockAnalytics);
+      expect(result.auditLogs).toEqual(mockAuditLogs);
+      expect(result.exportMetadata).toBeDefined();
+      expect(result.exportMetadata.exportedAt).toBeDefined();
+      expect(result.exportMetadata.recordCounts).toEqual({
+        etps: 2,
+        analytics: 2,
+        auditLogs: 1,
+      });
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      const invalidId = 'invalid-id';
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.exportUserData(invalidId)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.exportUserData(invalidId)).rejects.toThrow(
+        `Usuário com ID ${invalidId} não encontrado`,
+      );
+    });
+
+    it('should query ETPs with correct relations and order', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      await service.exportUserData(mockUser.id);
+
+      expect(mockEtpsRepository.find).toHaveBeenCalledWith({
+        where: { createdById: mockUser.id },
+        relations: ['sections', 'versions'],
+        order: { createdAt: 'DESC' },
+      });
+    });
+
+    it('should query analytics with correct filters', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
+      mockAuditLogsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      await service.exportUserData(mockUser.id);
+
+      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
+        where: { userId: mockUser.id },
+        order: { createdAt: 'DESC' },
+      });
+    });
+
+    it('should limit audit logs to 1000 entries', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      await service.exportUserData(mockUser.id);
+
+      expect(mockAuditLogsRepository.find).toHaveBeenCalledWith({
+        where: { userId: mockUser.id },
+        order: { createdAt: 'DESC' },
+        take: 1000,
+      });
+    });
+
+    it('should create audit log for export action', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
+      mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      await service.exportUserData(mockUser.id);
+
+      expect(mockAuditLogsRepository.create).toHaveBeenCalledWith({
+        action: 'export',
+        entityType: 'user',
+        entityId: mockUser.id,
+        userId: mockUser.id,
+        description: 'User data exported for LGPD compliance',
+        changes: {
+          metadata: {
+            etpsCount: 2,
+            analyticsCount: 2,
+            auditLogsCount: 1,
+          },
+        },
+      });
+      expect(mockAuditLogsRepository.save).toHaveBeenCalledWith(mockExportLog);
+    });
+
+    it('should log export action', async () => {
+      const loggerSpy = jest.spyOn(service['logger'], 'log');
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
+      mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      await service.exportUserData(mockUser.id);
+
+      expect(loggerSpy).toHaveBeenCalledWith(
+        `User data exported: ${mockUser.email} (2 ETPs, 2 analytics, 1 audit logs)`,
+      );
+    });
+
+    it('should include exportMetadata with correct structure', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
+      mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      const result = await service.exportUserData(mockUser.id);
+
+      expect(result.exportMetadata).toHaveProperty('exportedAt');
+      expect(result.exportMetadata).toHaveProperty('dataRetentionPolicy');
+      expect(result.exportMetadata).toHaveProperty('lgpdRights');
+      expect(result.exportMetadata).toHaveProperty('recordCounts');
+      expect(result.exportMetadata.recordCounts).toEqual({
+        etps: 2,
+        analytics: 2,
+        auditLogs: 1,
+      });
+    });
+
+    it('should handle empty data export', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      const result = await service.exportUserData(mockUser.id);
+
+      expect(result.etps).toEqual([]);
+      expect(result.analytics).toEqual([]);
+      expect(result.auditLogs).toEqual([]);
+      expect(result.exportMetadata.recordCounts).toEqual({
+        etps: 0,
+        analytics: 0,
+        auditLogs: 0,
+      });
+    });
+
+    it('should exclude password from user export', async () => {
+      const userWithoutPassword = { ...mockUser };
+      mockRepository.findOne.mockResolvedValue(userWithoutPassword);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.find.mockResolvedValue([]);
+      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
+      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
+
+      const result = await service.exportUserData(mockUser.id);
+
+      // Verify password field is not in select query
+      expect(mockRepository.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          select: expect.not.arrayContaining(['password']),
+        }),
+      );
+      expect(result.user).toBeDefined();
     });
   });
 });
