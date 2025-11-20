@@ -5,6 +5,7 @@ import { FundamentacaoAgent } from './agents/fundamentacao.agent';
 import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -81,6 +82,7 @@ export class OrchestratorService {
     private clarezaAgent: ClarezaAgent,
     private simplificacaoAgent: SimplificacaoAgent,
     private antiHallucinationAgent: AntiHallucinationAgent,
+    private piiRedactionService: PIIRedactionService,
   ) {}
 
   /**
@@ -159,11 +161,25 @@ export class OrchestratorService {
         enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
       }
 
+      // 5.5. Sanitize PII before sending to external LLM (LGPD compliance)
+      const { redacted: sanitizedPrompt, findings: piiFindings } =
+        this.piiRedactionService.redact(enrichedUserPrompt);
+
+      if (piiFindings.length > 0) {
+        this.logger.warn('PII detected and redacted before LLM call', {
+          section: request.sectionType,
+          findings: piiFindings,
+        });
+        warnings.push(
+          'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
+        );
+      }
+
       // 6. Generate content with LLM
       const temperature = this.getSectionTemperature(request.sectionType);
       const llmRequest: LLMRequest = {
         systemPrompt: finalSystemPrompt,
-        userPrompt: enrichedUserPrompt,
+        userPrompt: sanitizedPrompt, // Use sanitized version
         temperature,
         maxTokens: 4000,
       };
