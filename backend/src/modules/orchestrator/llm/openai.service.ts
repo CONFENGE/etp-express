@@ -122,6 +122,10 @@ export class OpenAIService {
     return response;
   }
 
+  /**
+   * Get the current state of the circuit breaker for monitoring
+   * @returns Circuit breaker state including stats and status flags
+   */
   getCircuitState() {
     return {
       stats: this.circuitBreaker.stats,
