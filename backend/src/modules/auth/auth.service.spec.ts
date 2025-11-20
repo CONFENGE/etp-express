@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -206,7 +210,22 @@ describe('AuthService', () => {
       name: 'New User',
       orgao: 'CONFENGE',
       cargo: 'Analista',
+      lgpdConsent: true,
     };
+
+    it('should throw BadRequestException when LGPD consent is not provided', async () => {
+      // Arrange
+      const dtoWithoutConsent = { ...registerDto, lgpdConsent: false };
+
+      // Act & Assert
+      await expect(service.register(dtoWithoutConsent)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.register(dtoWithoutConsent)).rejects.toThrow(
+        'É obrigatório aceitar os termos de uso e política de privacidade (LGPD)',
+      );
+      expect(mockUsersService.create).not.toHaveBeenCalled();
+    });
 
     it('should throw ConflictException when email already exists', async () => {
       // Arrange
@@ -222,7 +241,7 @@ describe('AuthService', () => {
       expect(mockUsersService.create).not.toHaveBeenCalled();
     });
 
-    it('should create user with hashed password and return access token', async () => {
+    it('should create user with hashed password and LGPD consent timestamp', async () => {
       // Arrange
       const hashedPassword = '$2b$10$newHashedPassword';
       mockUsersService.findByEmail.mockResolvedValue(null);
@@ -232,6 +251,8 @@ describe('AuthService', () => {
         email: registerDto.email,
         name: registerDto.name,
         password: hashedPassword,
+        lgpdConsentAt: new Date(),
+        lgpdConsentVersion: '1.0.0',
       });
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
@@ -240,10 +261,22 @@ describe('AuthService', () => {
 
       // Assert
       expect(bcrypt.hash).toHaveBeenCalledWith(registerDto.password, 10);
-      expect(mockUsersService.create).toHaveBeenCalledWith({
-        ...registerDto,
-        password: hashedPassword,
-      });
+      expect(mockUsersService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: registerDto.email,
+          password: hashedPassword,
+          name: registerDto.name,
+          orgao: registerDto.orgao,
+          cargo: registerDto.cargo,
+          lgpdConsentVersion: '1.0.0',
+        }),
+      );
+      // Verify lgpdConsentAt is a Date
+      expect(mockUsersService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lgpdConsentAt: expect.any(Date),
+        }),
+      );
       expect(mockJwtService.sign).toHaveBeenCalled();
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result).toHaveProperty('user');
@@ -274,6 +307,30 @@ describe('AuthService', () => {
       expect(mockUsersService.create).not.toHaveBeenCalledWith(
         expect.objectContaining({
           password: registerDto.password,
+        }),
+      );
+    });
+
+    it('should save LGPD consent version 1.0.0', async () => {
+      // Arrange
+      const hashedPassword = '$2b$10$newHashedPassword';
+      mockUsersService.findByEmail.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+      mockUsersService.create.mockResolvedValue({
+        ...mockUser,
+        password: hashedPassword,
+        lgpdConsentAt: new Date(),
+        lgpdConsentVersion: '1.0.0',
+      });
+      mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+      // Act
+      await service.register(registerDto);
+
+      // Assert
+      expect(mockUsersService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lgpdConsentVersion: '1.0.0',
         }),
       );
     });
