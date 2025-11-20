@@ -12,6 +12,7 @@ import { Dashboard } from '@/pages/Dashboard';
 import { ETPs } from '@/pages/ETPs';
 import { ETPEditor } from '@/pages/ETPEditor';
 import { NotFound } from '@/pages/NotFound';
+import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -67,6 +68,7 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
 
       {/* Protected Routes */}
       <Route

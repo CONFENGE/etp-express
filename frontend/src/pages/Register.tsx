@@ -173,7 +173,10 @@ export function Register() {
                   htmlFor="lgpdConsent"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Aceito os termos de uso e política de privacidade
+                  Aceito os termos de uso e{' '}
+                  <Link to="/privacy" className="text-primary hover:underline">
+                    política de privacidade
+                  </Link>
                 </Label>
                 <p className="text-xs text-muted-foreground">
                   Ao marcar esta opção, você concorda com o tratamento de seus dados
