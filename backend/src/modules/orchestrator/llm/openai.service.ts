@@ -1,4 +1,8 @@
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import CircuitBreaker from 'opossum';
@@ -46,7 +50,9 @@ export class OpenAIService {
     });
 
     this.circuitBreaker.on('halfOpen', () => {
-      this.logger.log('OpenAI circuit breaker half-open, testing connection...');
+      this.logger.log(
+        'OpenAI circuit breaker half-open, testing connection...',
+      );
     });
 
     this.circuitBreaker.on('close', () => {
