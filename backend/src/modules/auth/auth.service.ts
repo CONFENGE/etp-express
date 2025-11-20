@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -157,6 +158,13 @@ export class AuthService {
    * ```
    */
   async register(registerDto: RegisterDto) {
+    // Validate LGPD consent is explicitly true
+    if (registerDto.lgpdConsent !== true) {
+      throw new BadRequestException(
+        'É obrigatório aceitar os termos de uso e política de privacidade (LGPD)',
+      );
+    }
+
     const existingUser = await this.usersService.findByEmail(registerDto.email);
 
     if (existingUser) {
@@ -165,10 +173,22 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
+    // Current LGPD terms version
+    const LGPD_TERMS_VERSION = '1.0.0';
+
     const user = await this.usersService.create({
-      ...registerDto,
+      email: registerDto.email,
       password: hashedPassword,
+      name: registerDto.name,
+      orgao: registerDto.orgao,
+      cargo: registerDto.cargo,
+      lgpdConsentAt: new Date(),
+      lgpdConsentVersion: LGPD_TERMS_VERSION,
     });
+
+    this.logger.log(
+      `User registered with LGPD consent v${LGPD_TERMS_VERSION}: ${user.email}`,
+    );
 
     const payload = {
       sub: user.id,
@@ -178,8 +198,6 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload);
-
-    this.logger.log(`New user registered: ${user.email}`);
 
     return {
       accessToken,

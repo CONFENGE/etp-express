@@ -35,13 +35,19 @@ export class CreateSecretAccessLogs1763400000000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop indexes
-    await queryRunner.query(`DROP INDEX "public"."idx_secret_access_logs_status"`);
-    await queryRunner.query(`DROP INDEX "public"."idx_secret_access_logs_name_accessed"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."idx_secret_access_logs_status"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."idx_secret_access_logs_name_accessed"`,
+    );
 
     // Drop table
     await queryRunner.query(`DROP TABLE "secret_access_logs"`);
 
     // Drop enum
-    await queryRunner.query(`DROP TYPE "public"."secret_access_logs_status_enum"`);
+    await queryRunner.query(
+      `DROP TYPE "public"."secret_access_logs_status_enum"`,
+    );
   }
 }

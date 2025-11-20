@@ -50,6 +50,20 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   lastLoginAt: Date;
 
+  /**
+   * Timestamp when user consented to LGPD terms.
+   * Required for LGPD Art. 7º, I compliance.
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  lgpdConsentAt: Date;
+
+  /**
+   * Version of LGPD terms accepted by user.
+   * Enables audit trail per LGPD Art. 8º, §4º.
+   */
+  @Column({ nullable: true })
+  lgpdConsentVersion: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
