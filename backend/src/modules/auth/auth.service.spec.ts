@@ -441,15 +441,17 @@ describe('AuthService', () => {
       it('should try old secret when primary fails and JWT_SECRET_OLD is configured', async () => {
         // Arrange
         let callCount = 0;
-        mockJwtService.verify.mockImplementation((token: string, options?: any) => {
-          callCount++;
-          if (callCount === 1) {
-            // First call (primary secret) fails
-            throw new Error('Invalid signature');
-          }
-          // Second call (with old secret) succeeds
-          return mockPayload;
-        });
+        mockJwtService.verify.mockImplementation(
+          (token: string, options?: any) => {
+            callCount++;
+            if (callCount === 1) {
+              // First call (primary secret) fails
+              throw new Error('Invalid signature');
+            }
+            // Second call (with old secret) succeeds
+            return mockPayload;
+          },
+        );
         mockConfigService.get.mockImplementation((key: string) => {
           if (key === 'JWT_SECRET_OLD') return 'old-secret-key';
           return null;

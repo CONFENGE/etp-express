@@ -375,4 +375,111 @@ describe('OpenAIService', () => {
       expect(result.tokens).toBe(25); // 100 / 4 = 25
     });
   });
+
+  describe('Circuit Breaker', () => {
+    const mockRequest: LLMRequest = {
+      systemPrompt: 'You are a helpful assistant',
+      userPrompt: 'Test prompt',
+    };
+
+    it('should return circuit state when circuit is closed', () => {
+      const state = service.getCircuitState();
+
+      expect(state).toHaveProperty('stats');
+      expect(state).toHaveProperty('opened');
+      expect(state).toHaveProperty('halfOpen');
+      expect(state).toHaveProperty('closed');
+      expect(state.closed).toBe(true);
+    });
+
+    it('should throw ServiceUnavailableException when circuit breaker is open', async () => {
+      // Force circuit breaker to open by simulating multiple failures
+      const apiError = new Error('API error');
+      mockOpenAIInstance.chat.completions.create.mockRejectedValue(apiError);
+
+      // Generate enough failures to open the circuit (5 minimum threshold + 50% error rate)
+      const promises: Promise<void>[] = [];
+      for (let i = 0; i < 10; i++) {
+        promises.push(
+          service.generateCompletion(mockRequest).catch(() => {
+            // ignore errors
+          }) as Promise<void>,
+        );
+      }
+      await Promise.all(promises);
+
+      // Wait a bit for circuit to fully open
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Now the circuit should be open, and next call should throw ServiceUnavailableException
+      await expect(service.generateCompletion(mockRequest)).rejects.toThrow(
+        'Serviço de IA temporariamente indisponível',
+      );
+    });
+
+    it('should track circuit breaker statistics', async () => {
+      const mockCompletion = {
+        model: 'gpt-4-turbo-preview',
+        choices: [
+          {
+            message: {
+              content: 'Test response',
+            },
+            finish_reason: 'stop',
+          },
+        ],
+        usage: {
+          total_tokens: 50,
+        },
+      };
+
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // Make successful call
+      await service.generateCompletion(mockRequest);
+
+      const state = service.getCircuitState();
+
+      expect(state.stats).toHaveProperty('fires');
+      expect(state.stats).toHaveProperty('successes');
+      expect(state.stats).toHaveProperty('failures');
+      expect(state.stats.fires).toBeGreaterThan(0);
+      expect(state.stats.successes).toBeGreaterThan(0);
+    });
+
+    it('should log when circuit breaker opens', async () => {
+      const loggerWarnSpy = jest.spyOn(service['logger'], 'warn');
+      const apiError = new Error('API error');
+      mockOpenAIInstance.chat.completions.create.mockRejectedValue(apiError);
+
+      // Generate enough failures to open the circuit
+      for (let i = 0; i < 10; i++) {
+        await service.generateCompletion(mockRequest).catch(() => {
+          /* ignore */
+        });
+      }
+
+      // Wait for circuit to open
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Check if warning was logged
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('OpenAI circuit breaker OPENED'),
+      );
+    });
+
+    it('should handle timeout correctly', async () => {
+      // Mock a slow API call that will timeout (circuit breaker timeout is 60s in production, but we can't wait that long in tests)
+      mockOpenAIInstance.chat.completions.create.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve({}), 70000); // 70s - exceeds 60s timeout
+          }),
+      );
+
+      await expect(service.generateCompletion(mockRequest)).rejects.toThrow();
+    }, 65000); // Jest timeout slightly longer than circuit timeout
+  });
 });

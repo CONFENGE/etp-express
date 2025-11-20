@@ -195,7 +195,10 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
     it('should reject expired token even with valid secret', () => {
       // Create expired token
-      const expiredPayload = { ...mockPayload, exp: Math.floor(Date.now() / 1000) - 3600 };
+      const expiredPayload = {
+        ...mockPayload,
+        exp: Math.floor(Date.now() / 1000) - 3600,
+      };
       const token = jwt.sign(expiredPayload, PRIMARY_SECRET);
 
       // Should throw token expired error
@@ -204,7 +207,10 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
     it('should reject expired token from old secret during rotation', () => {
       // Create expired token with old secret
-      const expiredPayload = { ...mockPayload, exp: Math.floor(Date.now() / 1000) - 3600 };
+      const expiredPayload = {
+        ...mockPayload,
+        exp: Math.floor(Date.now() / 1000) - 3600,
+      };
       const token = jwt.sign(expiredPayload, OLD_SECRET);
 
       // Should throw token expired error

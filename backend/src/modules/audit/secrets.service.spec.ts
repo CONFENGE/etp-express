@@ -97,7 +97,7 @@ describe('SecretsService', () => {
       await service.get('OPENAI_API_KEY', 'OpenAIService', '192.168.1.1');
 
       // Wait for setImmediate callback
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(mockAuditService.logSecretAccess).toHaveBeenCalledWith(
         'OPENAI_API_KEY',
@@ -116,9 +116,11 @@ describe('SecretsService', () => {
       await service.get('JWT_SECRET', 'AuthService');
 
       // Wait for setImmediate callback
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(mockAuditService.detectAnomalies).toHaveBeenCalledWith('JWT_SECRET');
+      expect(mockAuditService.detectAnomalies).toHaveBeenCalledWith(
+        'JWT_SECRET',
+      );
     });
   });
 
@@ -193,7 +195,7 @@ describe('SecretsService', () => {
       await service.get('CUSTOM_KEY', 'TestService');
 
       // Wait for setImmediate callback
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(mockAuditService.logSecretAccess).toHaveBeenCalled();
     });
