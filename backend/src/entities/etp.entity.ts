@@ -64,7 +64,10 @@ export class Etp {
   @Column({ type: 'float', default: 0 })
   completionPercentage: number;
 
-  @ManyToOne(() => User, (user) => user.etps, { eager: true })
+  @ManyToOne(() => User, (user) => user.etps, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'created_by' })
   createdBy: User;
 
