@@ -6,6 +6,7 @@ import { FundamentacaoAgent } from './agents/fundamentacao.agent';
 import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -177,6 +178,26 @@ describe('OrchestratorService', () => {
         {
           provide: AntiHallucinationAgent,
           useValue: createMockAntiHallucinationAgent(),
+        },
+        {
+          provide: PIIRedactionService,
+          useValue: {
+            redact: jest.fn().mockImplementation((content: string) => ({
+              redacted: content, // Return original content (no PII in test cases)
+              findings: [],
+            })),
+            containsPII: jest.fn().mockReturnValue(false),
+            getSupportedTypes: jest.fn().mockReturnValue([
+              'email',
+              'cpf',
+              'cnpj',
+              'phone',
+              'processNumber',
+              'rg',
+              'matricula',
+              'cep',
+            ]),
+          },
         },
       ],
     }).compile();
