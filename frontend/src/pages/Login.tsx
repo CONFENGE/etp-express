@@ -111,6 +111,11 @@ export function Login() {
                 Cadastre-se
               </Link>
             </p>
+            <p className="text-xs text-center text-muted-foreground">
+              <Link to="/privacy" className="hover:underline">
+                Política de Privacidade
+              </Link>
+            </p>
           </CardFooter>
         </form>
       </Card>
