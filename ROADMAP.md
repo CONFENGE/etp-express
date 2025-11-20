@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 82% (28/34) ⚡ EM PROGRESSO
-**Última Atualização:** 2025-11-19 (Issue #204 closed - International Transfer Consent - M3 82%)
-**Total de Issues:** 144 issues (61 abertas + 83 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 85% (29/34) ⚡ EM PROGRESSO
+**Última Atualização:** 2025-11-19 (Issue #205 closed - Privacy Policy LGPD - M3 85%)
+**Total de Issues:** 144 issues (60 abertas + 84 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
@@ -27,12 +27,12 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           █████████████████░░░ 28/34 (82%)  ⚡ +1 issue (#204)
+[M3] Quality & Security           █████████████████░░░ 29/34 (85%)  ⚡ +1 issue (#205)
 [M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 6/30 (20%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 84/144 issues concluídas (58%)  |  M1 100% ✅ | M2 100% ✅ | M3 82% ⚡ | M4 20% ⚡
+TOTAL: 85/144 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 85% ⚡ | M4 20% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -122,23 +122,22 @@ Sub-issues atômicas (desmembradas):
 - ✅ #193 - [LGPD-86c] Validar criptografia (CLOSED 2025-11-19)
 - ✅ #194 - [LGPD-86d] Política de retenção de dados (CLOSED 2025-11-19)
 - ✅ #195 - [LGPD-86e] Direitos do titular (CLOSED 2025-11-19)
-- ⏳ #196 - [LGPD-86f] Política de privacidade (executável)
-- ⏳ #197 - [LGPD-86g] Relatório final (bloqueada por #196)
+- ⏳ #196 - [LGPD-86f] Política de privacidade (duplicata de #205)
+- ⏳ #197 - [LGPD-86g] Relatório final (desbloqueada por #205)
 
 **Novas issues LGPD P0 (Quesitos Críticos):**
 - ✅ #202 - [P0][Backend] Implementar consentimento LGPD no registro (CLOSED 2025-11-20) 🔒 ⭐
 - ✅ #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs (CLOSED 2025-11-20) 🔒 ⭐ **PR #226 MERGED** ✅
-- ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅ **NOVO!**
-- ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
+- ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅
+- ✅ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD (CLOSED 2025-11-19) 🔒 ⭐ **PR #228** ✅ **NOVO!**
 
-**Pendente M3** (6 issues abertas):
+**Pendente M3** (5 issues abertas):
 - ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent issue)
 - ⏳ #87 - [#46c] Implementar remediações de segurança
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation
 - ⏳ #114 - [SEC] Third-Party Penetration Testing
-- ⏳ #196 - [LGPD-86f] Política de privacidade
-- ⏳ #197 - [LGPD-86g] Relatório final LGPD
-- ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
+- ⏳ #196 - [LGPD-86f] Política de privacidade (duplicata de #205, pode ser fechada)
+- ⏳ #197 - [LGPD-86g] Relatório final LGPD (desbloqueada por #205)
 
 ### ⚡ M4: Refactoring & Performance (6 fechadas de 21)
 **Status**: 29% concluído
@@ -171,7 +170,60 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 40 - Issue #204 Closed - International Transfer Consent) 🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 41 - Issue #205 Closed - Privacy Policy LGPD) 🔒✅ **NOVO!**
+- ✅ **Issue #205 CLOSED**: [P0][Docs] Política de Privacidade completa conforme LGPD
+- ✅ **PROGRESSO**: 84 → **85 issues fechadas** (58% → 59%)
+- ✅ **M3 Quality & Security**: 82% → **85%** (+3 p.p.)
+
+**O que foi implementado (#205):**
+- ✅ Documento `docs/PRIVACY_POLICY.md` completo com 16 seções obrigatórias LGPD
+- ✅ Página `PrivacyPolicy.tsx` no frontend com renderização completa
+- ✅ Rota `/privacy` acessível publicamente (sem autenticação)
+- ✅ Link no footer da página de Login
+- ✅ Link clicável no checkbox de consentimento da página de Register
+
+**Seções da Política (LGPD Art. 9º):**
+1. Identificação do Controlador
+2. Introdução
+3. Dados Pessoais Coletados
+4. Finalidades do Tratamento
+5. Base Legal para Tratamento
+6. Compartilhamento de Dados
+7. Transferência Internacional
+8. Retenção de Dados
+9. Direitos do Titular
+10. Segurança dos Dados
+11. Cookies e Tecnologias
+12. Menores de Idade
+13. Alterações
+14. Contato
+15. Definições
+16. Legislação Aplicável
+
+**Provedores Documentados:**
+- Railway (EUA) - Hospedagem e banco de dados
+- OpenAI (EUA) - Geração de texto
+- Perplexity (EUA) - Pesquisa de fundamentação
+
+**Conformidade Legal:**
+- ✅ LGPD Art. 9º - Direito de acesso às informações
+- ✅ LGPD Art. 18 - Direitos do titular documentados
+- ✅ LGPD Art. 33 - Transferência internacional
+- ✅ LGPD Art. 7º - Bases legais especificadas
+
+**Artefatos:**
+- PR #228: https://github.com/tjsasakifln/etp-express/pull/228
+- Branch: `feat/205-privacy-policy`
+- 581 testes backend passando
+
+**Issue Desbloqueada:**
+- #197 (Relatório final LGPD) - AGORA EXECUTÁVEL
+
+**Impacto:** Política de Privacidade completa publicada. Usuários podem consultar tratamento de dados. M3 avançou +3 p.p. Issue #196 identificada como duplicata de #205.
+
+---
+
+### 2025-11-19 (Atualização 40 - Issue #204 Closed - International Transfer Consent) 🔒✅
 - ✅ **Issue #204 CLOSED**: [P0][Frontend] Aviso de transferência internacional de dados
 - ✅ **PROGRESSO**: 83 → **84 issues fechadas** (58% → 58%)
 - ✅ **M3 Quality & Security**: 79% → **82%** (+3 p.p.)
