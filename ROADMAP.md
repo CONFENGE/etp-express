@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 89% (32/36) ⚡ EM PROGRESSO
-**Última Atualização:** 2025-11-20 (#197 - Relatório Final LGPD Compliance)
-**Total de Issues:** 146 issues (56 abertas + 90 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 75% (32/43) ⚡ EM PROGRESSO
+**Última Atualização:** 2025-11-20 (#113 desmembrada → #233-#239)
+**Total de Issues:** 153 issues (63 abertas + 90 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~85% - M3 próximo da conclusão! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
@@ -27,16 +27,17 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ██████████████████░░ 32/36 (89%)  ⚡ EM PROGRESSO
+[M3] Quality & Security           ███████████████░░░░░ 32/43 (75%)  ⚡ EM PROGRESSO (+7 sub-issues)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 90/146 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 89% ⚡ | M4 26% ⚡
+TOTAL: 90/153 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 75% ⚡ | M4 26% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
 - #86 → #191-#197 (7 sub-issues de LGPD audit) ✅ COMPLETO! (todas 7 concluídas)
+- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (0 de 7 concluídas)
 ```
 
 ---
@@ -78,8 +79,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (32 fechadas de 36)
-**Status**: 89% concluído | **4 issues restantes**
+### ⚡ M3: Quality & Security (32 fechadas de 43)
+**Status**: 75% concluído | **11 issues restantes** (4 originais + 7 sub-issues novas)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -132,11 +133,21 @@ Sub-issues atômicas (desmembradas):
 - ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅
 - ✅ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD (CLOSED 2025-11-19) 🔒 ⭐ **PR #228** ✅ **NOVO!**
 
-**Pendente M3** (4 issues abertas):
+**Sub-issues de #113 (LGPD Data Export & Deletion Automation):**
+- ⏳ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0)
+- ⏳ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0)
+- ⏳ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0)
+- ⏳ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1)
+- ⏳ #237 - [LGPD-113e] Email de confirmação para deleção (2h, P1)
+- ⏳ #238 - [LGPD-113f] Audit trail para exports/deletions (2h, P1)
+- ⏳ #239 - [LGPD-113g] Testes E2E de export e delete (3h, P1)
+
+**Pendente M3** (11 issues abertas):
 - ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent issue - desbloqueada por #197)
 - ⏳ #87 - [#46c] Implementar remediações de segurança (desbloqueada por #197)
-- ⏳ #113 - [LGPD] Data Export & Deletion Automation (desbloqueada por #197)
+- ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - desmembrada em #233-#239)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing
+- ⏳ #233-#239 - Sub-issues de #113 (7 issues atômicas, total 17-20h)
 
 ### ⚡ M4: Refactoring & Performance (8 fechadas de 31)
 **Status**: 26% concluído
