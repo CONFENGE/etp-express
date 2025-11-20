@@ -16,6 +16,7 @@ export interface RegisterData {
   email: string;
   password: string;
   name: string;
+  lgpdConsent: boolean;
 }
 
 export interface AuthResponse {

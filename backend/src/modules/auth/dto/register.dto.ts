@@ -1,4 +1,11 @@
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsBoolean,
+  IsNotEmpty,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterDto {
@@ -24,4 +31,12 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   cargo?: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Consentimento LGPD obrigatório para uso do sistema',
+  })
+  @IsBoolean({ message: 'Consentimento LGPD deve ser booleano' })
+  @IsNotEmpty({ message: 'Consentimento LGPD é obrigatório' })
+  lgpdConsent: boolean;
 }
