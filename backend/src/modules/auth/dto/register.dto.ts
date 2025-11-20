@@ -39,4 +39,17 @@ export class RegisterDto {
   @IsBoolean({ message: 'Consentimento LGPD deve ser booleano' })
   @IsNotEmpty({ message: 'Consentimento LGPD é obrigatório' })
   lgpdConsent: boolean;
+
+  @ApiProperty({
+    example: true,
+    description:
+      'Consentimento para transferência internacional de dados (LGPD Art. 33)',
+  })
+  @IsBoolean({
+    message: 'Consentimento de transferência internacional deve ser booleano',
+  })
+  @IsNotEmpty({
+    message: 'Consentimento de transferência internacional é obrigatório',
+  })
+  internationalTransferConsent: boolean;
 }

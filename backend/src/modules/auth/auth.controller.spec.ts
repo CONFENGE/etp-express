@@ -55,6 +55,7 @@ describe('AuthController', () => {
       orgao: 'CONFENGE',
       cargo: 'Analista',
       lgpdConsent: true,
+      internationalTransferConsent: true,
     };
 
     it('should register a new user successfully', async () => {

@@ -211,6 +211,7 @@ describe('AuthService', () => {
       orgao: 'CONFENGE',
       cargo: 'Analista',
       lgpdConsent: true,
+      internationalTransferConsent: true,
     };
 
     it('should throw BadRequestException when LGPD consent is not provided', async () => {
@@ -223,6 +224,23 @@ describe('AuthService', () => {
       );
       await expect(service.register(dtoWithoutConsent)).rejects.toThrow(
         'É obrigatório aceitar os termos de uso e política de privacidade (LGPD)',
+      );
+      expect(mockUsersService.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when international transfer consent is not provided', async () => {
+      // Arrange
+      const dtoWithoutTransferConsent = {
+        ...registerDto,
+        internationalTransferConsent: false,
+      };
+
+      // Act & Assert
+      await expect(service.register(dtoWithoutTransferConsent)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.register(dtoWithoutTransferConsent)).rejects.toThrow(
+        'É obrigatório aceitar a transferência internacional de dados (LGPD Art. 33)',
       );
       expect(mockUsersService.create).not.toHaveBeenCalled();
     });
@@ -253,6 +271,7 @@ describe('AuthService', () => {
         password: hashedPassword,
         lgpdConsentAt: new Date(),
         lgpdConsentVersion: '1.0.0',
+        internationalTransferConsentAt: new Date(),
       });
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
@@ -275,6 +294,12 @@ describe('AuthService', () => {
       expect(mockUsersService.create).toHaveBeenCalledWith(
         expect.objectContaining({
           lgpdConsentAt: expect.any(Date),
+        }),
+      );
+      // Verify internationalTransferConsentAt is a Date
+      expect(mockUsersService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          internationalTransferConsentAt: expect.any(Date),
         }),
       );
       expect(mockJwtService.sign).toHaveBeenCalled();
