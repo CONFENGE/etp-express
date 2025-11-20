@@ -136,7 +136,7 @@ Sub-issues atômicas (desmembradas):
 **Sub-issues de #113 (LGPD Data Export & Deletion Automation):**
 - ⏳ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0)
 - ⏳ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0)
-- ⏳ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0)
+- ✅ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0) - **MERGED** via PR #240
 - ⏳ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1)
 - ⏳ #237 - [LGPD-113e] Email de confirmação para deleção (2h, P1)
 - ⏳ #238 - [LGPD-113f] Audit trail para exports/deletions (2h, P1)
