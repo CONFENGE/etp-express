@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
-import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
+import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -74,55 +74,6 @@ export class UsersService {
   }
 
   /**
-   * Soft deletes a user account for LGPD compliance (Art. 18, VI).
-   *
-   * @remarks
-   * Implements soft delete by setting deletedAt timestamp and deactivating account.
-   * Accounts remain in soft-deleted state for 30 days before permanent deletion.
-   * This allows users to cancel the deletion request within the grace period.
-   *
-   * This method fulfills LGPD right to deletion requirements and logs
-   * the deletion request to audit trail.
-   *
-   * @param userId - User unique identifier (UUID)
-   * @throws {NotFoundException} If user not found
-   */
-  async softDeleteAccount(userId: string): Promise<void> {
-    // 1. Verify user exists
-    const user = await this.findOne(userId);
-
-    // 2. Perform soft delete
-    user.deletedAt = new Date();
-    user.isActive = false;
-
-    await this.usersRepository.save(user);
-
-    // 3. Create audit log for deletion request
-    const deletionDate = new Date();
-    deletionDate.setDate(deletionDate.getDate() + 30);
-
-    const auditLog = this.auditLogsRepository.create({
-      action: AuditAction.DELETE,
-      entityType: 'user',
-      entityId: userId,
-      userId,
-      description: 'User account deletion requested (soft delete)',
-      changes: {
-        before: { isActive: true, deletedAt: null },
-        after: { isActive: false, deletedAt: user.deletedAt },
-        metadata: {
-          scheduledHardDeleteAt: deletionDate.toISOString(),
-        },
-      },
-    });
-    await this.auditLogsRepository.save(auditLog);
-
-    this.logger.log(
-      `User account soft deleted: ${user.email} (hard delete scheduled for ${deletionDate.toISOString()})`,
-    );
-  }
-
-  /**
    * Exports all user data for LGPD compliance (Art. 18, II and V).
    *
    * @remarks
@@ -186,7 +137,7 @@ export class UsersService {
 
     // 5. Create audit log for this export
     const exportLog = this.auditLogsRepository.create({
-      action: AuditAction.EXPORT,
+      action: 'export' as any,
       entityType: 'user',
       entityId: userId,
       userId,

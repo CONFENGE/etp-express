@@ -2,11 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
-import {
-  EtpSection,
-  SectionType,
-  SectionStatus,
-} from '../../entities/etp-section.entity';
+import { EtpSection, SectionType, SectionStatus } from '../../entities/etp-section.entity';
 import { EtpVersion } from '../../entities/etp-version.entity';
 import { User, UserRole } from '../../entities/user.entity';
 
@@ -114,12 +110,8 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
 
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     etpRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
-    sectionRepository = module.get<Repository<EtpSection>>(
-      getRepositoryToken(EtpSection),
-    );
-    versionRepository = module.get<Repository<EtpVersion>>(
-      getRepositoryToken(EtpVersion),
-    );
+    sectionRepository = module.get<Repository<EtpSection>>(getRepositoryToken(EtpSection));
+    versionRepository = module.get<Repository<EtpVersion>>(getRepositoryToken(EtpVersion));
   });
 
   afterEach(() => {
@@ -130,9 +122,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
     it('should delete all ETPs when user is deleted', async () => {
       // Arrange
       jest.spyOn(etpRepository, 'count').mockResolvedValue(3); // 3 ETPs antes
-      jest
-        .spyOn(userRepository, 'delete')
-        .mockResolvedValue({ affected: 1, raw: {} });
+      jest.spyOn(userRepository, 'delete').mockResolvedValue({ affected: 1, raw: {} });
 
       // Act
       await userRepository.delete(mockUserId);
@@ -141,9 +131,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(etpRepository, 'count').mockResolvedValue(0); // 0 ETPs depois
 
       // Assert
-      const remainingEtps = await etpRepository.count({
-        where: { createdById: mockUserId } as any,
-      });
+      const remainingEtps = await etpRepository.count({ where: { createdById: mockUserId } as any });
       expect(remainingEtps).toBe(0);
     });
 
@@ -153,12 +141,8 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(etpRepository, 'count').mockResolvedValue(0); // No orphan ETPs
 
       // Act
-      const userExists = await userRepository.findOne({
-        where: { id: mockUserId },
-      } as any);
-      const orphanEtps = await etpRepository.count({
-        where: { createdById: mockUserId },
-      } as any);
+      const userExists = await userRepository.findOne({ where: { id: mockUserId } } as any);
+      const orphanEtps = await etpRepository.count({ where: { createdById: mockUserId } } as any);
 
       // Assert
       expect(userExists).toBeNull();
@@ -170,9 +154,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
     it('should delete all sections when ETP is deleted', async () => {
       // Arrange
       jest.spyOn(sectionRepository, 'count').mockResolvedValue(5); // 5 sections antes
-      jest
-        .spyOn(etpRepository, 'delete')
-        .mockResolvedValue({ affected: 1, raw: {} });
+      jest.spyOn(etpRepository, 'delete').mockResolvedValue({ affected: 1, raw: {} });
 
       // Act
       await etpRepository.delete(mockEtpId);
@@ -181,9 +163,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(sectionRepository, 'count').mockResolvedValue(0); // 0 sections depois
 
       // Assert
-      const remainingSections = await sectionRepository.count({
-        where: { etpId: mockEtpId },
-      } as any);
+      const remainingSections = await sectionRepository.count({ where: { etpId: mockEtpId } } as any);
       expect(remainingSections).toBe(0);
     });
   });
@@ -192,9 +172,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
     it('should delete all versions when ETP is deleted', async () => {
       // Arrange
       jest.spyOn(versionRepository, 'count').mockResolvedValue(3); // 3 versions antes
-      jest
-        .spyOn(etpRepository, 'delete')
-        .mockResolvedValue({ affected: 1, raw: {} });
+      jest.spyOn(etpRepository, 'delete').mockResolvedValue({ affected: 1, raw: {} });
 
       // Act
       await etpRepository.delete(mockEtpId);
@@ -203,9 +181,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(versionRepository, 'count').mockResolvedValue(0); // 0 versions depois
 
       // Assert
-      const remainingVersions = await versionRepository.count({
-        where: { etpId: mockEtpId },
-      } as any);
+      const remainingVersions = await versionRepository.count({ where: { etpId: mockEtpId } } as any);
       expect(remainingVersions).toBe(0);
     });
   });
@@ -218,9 +194,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(versionRepository, 'count').mockResolvedValue(4); // 4 versions total
 
       // Act - Delete User
-      jest
-        .spyOn(userRepository, 'delete')
-        .mockResolvedValue({ affected: 1, raw: {} });
+      jest.spyOn(userRepository, 'delete').mockResolvedValue({ affected: 1, raw: {} });
       await userRepository.delete(mockUserId);
 
       // Simulate CASCADE chain
@@ -229,17 +203,9 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
       jest.spyOn(versionRepository, 'count').mockResolvedValue(0);
 
       // Assert - Verificar que TUDO foi deletado
-      expect(
-        await etpRepository.count({
-          where: { createdById: mockUserId },
-        } as any),
-      ).toBe(0);
-      expect(
-        await sectionRepository.count({ where: { etpId: mockEtpId } } as any),
-      ).toBe(0);
-      expect(
-        await versionRepository.count({ where: { etpId: mockEtpId } } as any),
-      ).toBe(0);
+      expect(await etpRepository.count({ where: { createdById: mockUserId } } as any)).toBe(0);
+      expect(await sectionRepository.count({ where: { etpId: mockEtpId } } as any)).toBe(0);
+      expect(await versionRepository.count({ where: { etpId: mockEtpId } } as any)).toBe(0);
     });
   });
 
