@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 85% (29/34) ⚡ EM PROGRESSO
-**Última Atualização:** 2025-11-19 (Issue #205 closed - Privacy Policy LGPD - M3 85%)
-**Total de Issues:** 144 issues (60 abertas + 84 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 86% (31/36) ⚡ EM PROGRESSO
+**Última Atualização:** 2025-11-20 (#196 - TERMS_OF_SERVICE.md completo)
+**Total de Issues:** 146 issues (58 abertas + 88 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
@@ -26,17 +26,17 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           █████████████████░░░ 29/34 (85%)  ⚡ +1 issue (#205)
-[M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 6/30 (20%)   ⚡ +9 issues críticas
+[M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
+[M3] Quality & Security           █████████████████░░░ 31/36 (86%)  ⚡ EM PROGRESSO
+[M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 7/31 (23%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 85/144 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 85% ⚡ | M4 20% ⚡
+TOTAL: 88/146 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 86% ⚡ | M4 23% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
-- #86 → #191-#197 (7 sub-issues de LGPD audit) - 5 de 7 concluídas (#191, #192, #193, #194, #195)
+- #86 → #191-#197 (7 sub-issues de LGPD audit) - 6 de 7 concluídas (#191-#196)
 ```
 
 ---
@@ -59,7 +59,7 @@ Sub-issues atômicas (desmembradas):
 - Frontend: 60.38% ✅ (meta 60%)
 - ETPEditor.tsx: 96.42% ⭐ (componente mais complexo)
 
-### ✅ M2: CI/CD Pipeline (10 fechadas de 10) 🎉
+### ✅ M2: CI/CD Pipeline (12 fechadas de 12) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M2 FINALIZADO EM 15/11/2025**
 
 **CI/CD Automation concluído:**
@@ -73,19 +73,20 @@ Sub-issues atômicas (desmembradas):
 - ✅ #104 - Database Disaster Recovery Testing & Validation ⚡ **PR #141 MERGED** ✅
 - ✅ #105 - Production Monitoring & Alerting Infrastructure ⚡ **PR #143 MERGED** ✅
 - ✅ #112 - Infrastructure as Code & Environment Reproducibility ⚡ **COMPLETO!** ✅
-- ✅ #180 - [P1][Infrastructure] Configure Railway timeout for long-running requests ⚡ **PR #187 MERGED** ✅ **NOVO!**
+- ✅ #180 - [P1][Infrastructure] Configure Railway timeout for long-running requests ⚡ **PR #187 MERGED** ✅
+- ✅ #183 - [CI] Fix vitest package resolution in Test Frontend workflow ⚡ **PR #184 MERGED** ✅
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (28 fechadas de 34)
-**Status**: 82% concluído | **6 issues restantes**
+### ⚡ M3: Quality & Security (31 fechadas de 36)
+**Status**: 86% concluído | **5 issues restantes**
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
 - ✅ #38 - Rate limiting por usuário (5 req/min, protege OpenAI API) 🔒 ⭐
 - ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
-- ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐
+- ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐ **PR #146 MERGED** ✅
 - ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
 - ✅ #153 - [SEC-109a] Avaliar soluções de Secrets Management 🔒 ⭐
 - ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 ⭐
@@ -122,8 +123,8 @@ Sub-issues atômicas (desmembradas):
 - ✅ #193 - [LGPD-86c] Validar criptografia (CLOSED 2025-11-19)
 - ✅ #194 - [LGPD-86d] Política de retenção de dados (CLOSED 2025-11-19)
 - ✅ #195 - [LGPD-86e] Direitos do titular (CLOSED 2025-11-19)
-- ⏳ #196 - [LGPD-86f] Política de privacidade (duplicata de #205)
-- ⏳ #197 - [LGPD-86g] Relatório final (desbloqueada por #205)
+- ✅ #196 - [LGPD-86f] Criar TERMS_OF_SERVICE.md (CLOSED 2025-11-20) 🔒 ⭐ **PR #229** ✅
+- ⏳ #197 - [LGPD-86g] Relatório final (desbloqueada por #196)
 
 **Novas issues LGPD P0 (Quesitos Críticos):**
 - ✅ #202 - [P0][Backend] Implementar consentimento LGPD no registro (CLOSED 2025-11-20) 🔒 ⭐
@@ -136,16 +137,15 @@ Sub-issues atômicas (desmembradas):
 - ⏳ #87 - [#46c] Implementar remediações de segurança
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation
 - ⏳ #114 - [SEC] Third-Party Penetration Testing
-- ⏳ #196 - [LGPD-86f] Política de privacidade (duplicata de #205, pode ser fechada)
-- ⏳ #197 - [LGPD-86g] Relatório final LGPD (desbloqueada por #205)
+- ⏳ #197 - [LGPD-86g] Relatório final LGPD (desbloqueada por #196)
 
-### ⚡ M4: Refactoring & Performance (6 fechadas de 21)
-**Status**: 29% concluído
+### ⚡ M4: Refactoring & Performance (7 fechadas de 31)
+**Status**: 23% concluído
 
 **Refatoração:**
-- ✅ #25 - Extrair constante DISCLAIMER (46+ duplicações eliminadas) ⚡ **PR #149 MERGED** ✅ **NOVO!**
-- ✅ #26 - Substituição de 'any' por interfaces em orchestrator
-- ✅ #27 - Refatoração TypeScript inicial
+- ✅ #25 - Extrair constante DISCLAIMER (46+ duplicações eliminadas) ⚡ **PR #149 MERGED** ✅
+- ✅ #26 - Substituição de 'any' por interfaces em orchestrator ✅
+- ✅ #27 - Substituir 'any' por interfaces em auth.service.ts ✅
 
 **Performance:**
 - ✅ #108 - Database Performance Optimization & Production Tuning ⚡ **PR #147 MERGED** ✅
@@ -1265,7 +1265,7 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (10 total - 10 concluídas ✅, 0 pendentes) 🎉
+#### Issues (12 total - 12 concluídas ✅, 0 pendentes) 🎉
 
 **CI/CD Automation (3 issues) - ✅ 3 DE 3 CONCLUÍDAS!**
 - [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
@@ -1282,6 +1282,10 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 - [x] #106 - Production Incident Response Playbook (6-8h) ✅ **COMPLETO** (PR #140)
 - [x] #107 - Zero-Downtime Deployment Strategy (10-12h) ✅ **COMPLETO** (PR #137, #138, #139)
 - [x] #112 - Infrastructure as Code & Reproducibility (12-16h) ✅ **COMPLETO**
+
+**Extras (2 issues) - ✅ 2 DE 2 CONCLUÍDAS!**
+- [x] #180 - Configure Railway timeout for long-running requests ✅ **PR #187 MERGED**
+- [x] #183 - Fix vitest package resolution in Test Frontend ✅ **PR #184 MERGED**
 
 **Nota:** Issues #21 e #40 foram movidas para M6 (Maintenance)
 
@@ -1313,37 +1317,62 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 #### Objetivo
 Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e realizar auditoria completa de vulnerabilidades.
 
-#### Issues (13 total - 9 concluídas ✅, 4 pendentes)
+#### Issues (36 total - 30 concluídas ✅, 6 pendentes)
 
 **Bugs Críticos (4 issues) - ✅ 4 DE 4 CONCLUÍDAS**
 - [x] #14 - Corrigir useEffect em useETPs.ts (1h) ✅
 - [x] #15 - Corrigir useEffect em Dashboard.tsx (1h) ✅
 - [x] #16 - Corrigir useEffect em ETPs.tsx (1h) ✅
-- [x] #17 - Corrigir useEffect em ETPEditor.tsx (1h) ✅ **FECHADA 2025-11-15**
+- [x] #17 - Corrigir useEffect em ETPEditor.tsx (1h) ✅
 
-**Segurança Básica (2 issues) - ⚡ 2 DE 2 CONCLUÍDAS** ✅
-- [x] #38 - Adicionar rate limiting por usuário (4h) ✅ **PR #150 MERGED** ✅
-- [x] #39 - Substituir window.location.href por navigate (3h) ✅ **PR #142 MERGED** ✅
+**Segurança Básica (2 issues) - ✅ 2 DE 2 CONCLUÍDAS**
+- [x] #38 - Adicionar rate limiting por usuário (4h) ✅ **PR #150 MERGED**
+- [x] #39 - Substituir window.location.href por navigate (3h) ✅ **PR #142 MERGED**
 
-**Security Audit (3 sub-issues - desmembradas de #46) - ⚡ 2 DE 3 CONCLUÍDAS**
-- [x] #85 - [#46a] Auditoria OWASP Top 10 (2023) (6h) ✅ **CONCLUÍDA 2025-11-12**
-- [x] #86 - [#46b] Conformidade LGPD e privacidade (4h) ✅ **Auditoria completa em #195 (PR #201)**
-  - Sub-issues: #191✅, #192✅, #193✅, #194✅, #195✅, #196🔴, #197🔴
-- [ ] #87 - [#46c] Implementar remediações identificadas (depende #85, #86) (8h) 🔐 **P1**
+**Security Audit (4 issues) - ✅ 3 DE 4 CONCLUÍDAS**
+- [x] #46 - Auditoria de segurança completa (parent, desmembrada) ✅
+- [x] #85 - [#46a] Auditoria OWASP Top 10 (2023) (6h) ✅
+- [ ] #86 - [#46b] Conformidade LGPD e privacidade (parent issue) ⏳
+- [ ] #87 - [#46c] Implementar remediações identificadas (8h) ⏳
 
 **Vulnerabilidades Críticas (1 issue) - ✅ 1 DE 1 CONCLUÍDA**
-- [x] #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) (2h) ✅ **PR #146 MERGED** ✅
+- [x] #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) (2h) ✅ **PR #146 MERGED**
 
-**Production Readiness - TIER 2 (3 issues) 🆕🟡 ESSENCIAIS**
-- [ ] #109 - Secrets Management & API Key Rotation (8-10h) 🟡 **ALTO**
-- [ ] #113 - LGPD Data Export & Deletion Automation (10-12h) 🟡 **ALTO**
-- [ ] #114 - Third-Party Penetration Testing (20-24h) 🟡 **ALTO**
+**Secrets Management (7 issues) - ✅ 7 DE 7 CONCLUÍDAS**
+- [x] #109 - Secrets Management & API Key Rotation Strategy ✅
+- [x] #153 - [SEC-109a] Avaliar e selecionar solução ✅
+- [x] #154 - [SEC-109b] Implementar secret scanning ✅
+- [x] #155 - [SEC-109c] Migrar secrets ✅
+- [x] #156 - [SEC-109d] Documentar procedimento de rotação ✅
+- [x] #157 - [SEC-109e] Dual-key strategy zero-downtime ✅
+- [x] #158 - [SEC-109f] Audit trail para acesso a secrets ✅
 
-**Conformidade LGPD - Quesitos Críticos (4 issues) 🆕🔴 CRÍTICOS**
-- [ ] #202 - [P0][Backend] Implementar consentimento LGPD no registro 🔴 **CRÍTICO**
-- [ ] #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs 🔴 **CRÍTICO**
-- [ ] #204 - [P0][Frontend] Aviso de transferência internacional de dados 🔴 **CRÍTICO**
-- [ ] #205 - [P0][Docs] Política de Privacidade completa conforme LGPD 🔴 **CRÍTICO**
+**Duplicatas fechadas (2 issues) - ✅ 2 DE 2 CONCLUÍDAS**
+- [x] #176 - Duplicata de #153 ✅
+- [x] #177 - Duplicata de #154 ✅
+
+**Data Integrity (2 issues) - ✅ 2 DE 2 CONCLUÍDAS**
+- [x] #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback ✅
+- [x] #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type ✅
+
+**LGPD Sub-issues de #86 (7 issues) - ✅ 5 DE 7 CONCLUÍDAS**
+- [x] #191 - [LGPD-86a] Mapear fluxo de dados pessoais ✅
+- [x] #192 - [LGPD-86b] Verificar consentimento e termos de uso ✅
+- [x] #193 - [LGPD-86c] Validar criptografia ✅
+- [x] #194 - [LGPD-86d] Política de retenção de dados ✅
+- [x] #195 - [LGPD-86e] Direitos do titular ✅
+- [ ] #196 - [LGPD-86f] Política de privacidade (duplicata de #205) ⏳
+- [ ] #197 - [LGPD-86g] Relatório final LGPD ⏳
+
+**Conformidade LGPD P0 (4 issues) - ✅ 4 DE 4 CONCLUÍDAS**
+- [x] #202 - [P0][Backend] Implementar consentimento LGPD no registro ✅
+- [x] #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs ✅
+- [x] #204 - [P0][Frontend] Aviso de transferência internacional de dados ✅
+- [x] #205 - [P0][Docs] Política de Privacidade completa conforme LGPD ✅
+
+**Production Readiness - TIER 2 (2 issues) - ⏳ 0 DE 2 CONCLUÍDAS**
+- [ ] #113 - LGPD Data Export & Deletion Automation (10-12h) ⏳
+- [ ] #114 - Third-Party Penetration Testing (20-24h) ⏳
 
 #### Critérios de Conclusão
 - ✅ Zero warnings de `react-hooks/exhaustive-deps` no frontend
@@ -1373,13 +1402,14 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 #### Objetivo
 Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, otimizar performance e validar carga de produção.
 
-#### Issues (20 total - 4 concluídas ✅, 16 pendentes)
+#### Issues (31 total - 7 concluídas ✅, 24 pendentes)
 
-**Backend - Refatoração (4 issues)**
+**Backend - Refatoração (4 issues) - ✅ 3 DE 4 CONCLUÍDAS**
 - [x] #25 - Extrair constante DISCLAIMER (eliminar 12 duplicações) (2h) ✅ **PR #149 MERGED**
-- [x] #26 - Substituir 'any' por interfaces em orchestrator.service.ts (3h)
+- [x] #26 - Substituir 'any' por interfaces em orchestrator.service.ts (3h) ✅
+- [x] #27 - Substituir 'any' por interfaces em auth.service.ts (2h) ✅
 - [ ] #28 - Quebrar OrchestratorService.generateSection() em funções menores (6h)
-- [ ] #41 - Substituir 'any' por interfaces em auth.service.ts (2h)
+- [ ] #41 - Substituir 'any' por interfaces (remaining) (2h)
 
 **Frontend - Refatoração (5 issues)**
 - [ ] #29 - Corrigir duplicação de localStorage em authStore (2h)
