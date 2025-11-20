@@ -110,9 +110,7 @@ export class SecretsService {
     const value = this.configService.get<T>(name);
 
     if (value === undefined) {
-      this.logger.debug(
-        `Secret '${name}' not found, using default value`,
-      );
+      this.logger.debug(`Secret '${name}' not found, using default value`);
       return defaultValue;
     }
 
@@ -170,9 +168,7 @@ export class SecretsService {
         }
       } catch (error) {
         // Don't fail the main operation if logging fails
-        this.logger.error(
-          `Failed to log secret access: ${error.message}`,
-        );
+        this.logger.error(`Failed to log secret access: ${error.message}`);
       }
     });
   }

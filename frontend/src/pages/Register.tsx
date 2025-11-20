@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
 
@@ -17,6 +18,9 @@ const registerSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
   confirmPassword: z.string(),
+  lgpdConsent: z.literal(true, {
+    errorMap: () => ({ message: 'Você deve aceitar os termos de uso e política de privacidade' }),
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'As senhas não coincidem',
   path: ['confirmPassword'],
@@ -45,6 +49,7 @@ export function Register() {
         name: data.name,
         email: data.email,
         password: data.password,
+        lgpdConsent: data.lgpdConsent,
       });
       success('Cadastro realizado com sucesso!');
       navigate('/dashboard');
@@ -124,6 +129,37 @@ export function Register() {
               {errors.confirmPassword && (
                 <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
               )}
+            </div>
+
+            <div className="flex items-start space-x-2 pt-2">
+              <Checkbox
+                id="lgpdConsent"
+                onCheckedChange={(checked) => {
+                  const event = {
+                    target: {
+                      name: 'lgpdConsent',
+                      value: checked === true,
+                    },
+                  };
+                  register('lgpdConsent').onChange(event);
+                }}
+                aria-invalid={errors.lgpdConsent ? 'true' : 'false'}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label
+                  htmlFor="lgpdConsent"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Aceito os termos de uso e política de privacidade
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Ao marcar esta opção, você concorda com o tratamento de seus dados
+                  pessoais conforme a Lei Geral de Proteção de Dados (LGPD).
+                </p>
+                {errors.lgpdConsent && (
+                  <p className="text-sm text-destructive">{errors.lgpdConsent.message}</p>
+                )}
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
