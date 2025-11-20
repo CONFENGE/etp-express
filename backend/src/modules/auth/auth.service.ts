@@ -165,6 +165,13 @@ export class AuthService {
       );
     }
 
+    // Validate international transfer consent is explicitly true (LGPD Art. 33)
+    if (registerDto.internationalTransferConsent !== true) {
+      throw new BadRequestException(
+        'É obrigatório aceitar a transferência internacional de dados (LGPD Art. 33)',
+      );
+    }
+
     const existingUser = await this.usersService.findByEmail(registerDto.email);
 
     if (existingUser) {
@@ -184,10 +191,11 @@ export class AuthService {
       cargo: registerDto.cargo,
       lgpdConsentAt: new Date(),
       lgpdConsentVersion: LGPD_TERMS_VERSION,
+      internationalTransferConsentAt: new Date(),
     });
 
     this.logger.log(
-      `User registered with LGPD consent v${LGPD_TERMS_VERSION}: ${user.email}`,
+      `User registered with LGPD consent v${LGPD_TERMS_VERSION} and international transfer consent: ${user.email}`,
     );
 
     const payload = {

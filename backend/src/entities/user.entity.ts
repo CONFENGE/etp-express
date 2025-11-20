@@ -64,6 +64,13 @@ export class User {
   @Column({ nullable: true })
   lgpdConsentVersion: string;
 
+  /**
+   * Timestamp when user consented to international data transfer.
+   * Required for LGPD Art. 33 compliance (USA servers: Railway, OpenAI, Perplexity).
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  internationalTransferConsentAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

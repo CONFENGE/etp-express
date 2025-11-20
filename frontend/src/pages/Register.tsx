@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
+import { InternationalTransferModal } from '@/components/legal/InternationalTransferModal';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
@@ -20,6 +21,9 @@ const registerSchema = z.object({
   confirmPassword: z.string(),
   lgpdConsent: z.literal(true, {
     errorMap: () => ({ message: 'Você deve aceitar os termos de uso e política de privacidade' }),
+  }),
+  internationalTransferConsent: z.literal(true, {
+    errorMap: () => ({ message: 'Você deve aceitar a transferência internacional de dados' }),
   }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'As senhas não coincidem',
@@ -33,14 +37,32 @@ export function Register() {
   const { register: registerUser } = useAuth();
   const { error: showError, success } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      internationalTransferConsent: false as unknown as true,
+    },
   });
+
+  const internationalTransferConsent = watch('internationalTransferConsent');
+
+  const handleTransferAccept = () => {
+    setValue('internationalTransferConsent', true, { shouldValidate: true });
+    setShowTransferModal(false);
+  };
+
+  const handleTransferDecline = () => {
+    setValue('internationalTransferConsent', false as unknown as true, { shouldValidate: true });
+    setShowTransferModal(false);
+  };
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
@@ -50,6 +72,7 @@ export function Register() {
         email: data.email,
         password: data.password,
         lgpdConsent: data.lgpdConsent,
+        internationalTransferConsent: data.internationalTransferConsent,
       });
       success('Cadastro realizado com sucesso!');
       navigate('/dashboard');
@@ -134,7 +157,7 @@ export function Register() {
             <div className="flex items-start space-x-2 pt-2">
               <Checkbox
                 id="lgpdConsent"
-                onCheckedChange={(checked) => {
+                onCheckedChange={(checked: boolean | 'indeterminate') => {
                   const event = {
                     target: {
                       name: 'lgpdConsent',
@@ -161,6 +184,43 @@ export function Register() {
                 )}
               </div>
             </div>
+
+            <div className="flex items-start space-x-2 pt-2">
+              <Checkbox
+                id="internationalTransferConsent"
+                checked={internationalTransferConsent === true}
+                onCheckedChange={(checked: boolean | 'indeterminate') => {
+                  if (checked) {
+                    setShowTransferModal(true);
+                  } else {
+                    setValue('internationalTransferConsent', false as unknown as true, { shouldValidate: true });
+                  }
+                }}
+                aria-invalid={errors.internationalTransferConsent ? 'true' : 'false'}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label
+                  htmlFor="internationalTransferConsent"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Aceito a transferência internacional de dados
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Seus dados serão processados em servidores nos EUA (Railway, OpenAI, Perplexity)
+                  conforme LGPD Art. 33.{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTransferModal(true)}
+                    className="text-primary hover:underline"
+                  >
+                    Saiba mais
+                  </button>
+                </p>
+                {errors.internationalTransferConsent && (
+                  <p className="text-sm text-destructive">{errors.internationalTransferConsent.message}</p>
+                )}
+              </div>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
@@ -182,6 +242,12 @@ export function Register() {
           </CardFooter>
         </form>
       </Card>
+
+      <InternationalTransferModal
+        open={showTransferModal}
+        onAccept={handleTransferAccept}
+        onDecline={handleTransferDecline}
+      />
     </div>
   );
 }
