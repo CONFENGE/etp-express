@@ -505,7 +505,10 @@ describe('UsersController', () => {
       mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(service.softDeleteAccount).toHaveBeenCalledWith(mockUserId);
@@ -565,7 +568,10 @@ describe('UsersController', () => {
       beforeDate.setDate(beforeDate.getDate() + 30);
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       const deletionDate = new Date(result.deletionScheduledFor);
@@ -581,7 +587,10 @@ describe('UsersController', () => {
       mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
@@ -593,7 +602,10 @@ describe('UsersController', () => {
       mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(result.cancellationInfo).toBeDefined();
