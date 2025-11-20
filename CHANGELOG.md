@@ -13,6 +13,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🛡️ Resiliência e Confiabilidade (2025-11-20)
+- ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)
+  - Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
+  - Thresholds: 50% erro rate, 5 requests mínimas, 60s timeout, 30s reset
+  - Endpoint de monitoramento: `GET /health/providers/openai`
+  - Graceful degradation com mensagem amigável ao usuário
+  - 17 testes para OpenAIService + 9 testes para HealthController
+  - 590 testes passando (0 regressões)
+
 #### 🔒 Conformidade LGPD (2025-11-19 a 2025-11-20)
 - ✅ #202 - Implementar consentimento LGPD no registro (PR #215)
 - ✅ #203 - Implementar sanitização PII antes de envio para LLMs (PR #219)
