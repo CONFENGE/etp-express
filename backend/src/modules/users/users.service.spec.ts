@@ -32,6 +32,7 @@ describe('UsersService', () => {
     internationalTransferConsentAt: new Date('2024-01-01'),
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
+    deletedAt: null,
     etps: [],
     auditLogs: [],
   };
