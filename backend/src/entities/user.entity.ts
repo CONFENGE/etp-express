@@ -77,14 +77,6 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  /**
-   * Timestamp when user requested account deletion (soft delete).
-   * Used for LGPD Art. 18, VI compliance (right to deletion).
-   * Accounts are hard-deleted 30 days after this timestamp.
-   */
-  @Column({ type: 'timestamp', nullable: true })
-  deletedAt: Date | null;
-
   @OneToMany(() => Etp, (etp) => etp.createdBy)
   etps: Etp[];
 

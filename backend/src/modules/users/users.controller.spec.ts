@@ -1,15 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteAccountDto } from './dto/delete-account.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -35,7 +30,6 @@ describe('UsersController', () => {
     update: jest.fn(),
     remove: jest.fn(),
     exportUserData: jest.fn(),
-    softDeleteAccount: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -487,155 +481,6 @@ describe('UsersController', () => {
       // Assert
       // Verify that the service was called with the userId extracted from JWT
       expect(service.exportUserData).toHaveBeenCalledWith(mockUserId);
-    });
-  });
-
-  describe('deleteMyAccount', () => {
-    const validDeleteDto: DeleteAccountDto = {
-      confirmation: 'DELETE MY ACCOUNT',
-      reason: 'Não utilizo mais o sistema',
-    };
-
-    const invalidDeleteDto: DeleteAccountDto = {
-      confirmation: 'delete my account',
-    };
-
-    it('should successfully delete account with valid confirmation', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
-
-      // Act
-      const result = await controller.deleteMyAccount(
-        mockUserId,
-        validDeleteDto,
-      );
-
-      // Assert
-      expect(service.softDeleteAccount).toHaveBeenCalledWith(mockUserId);
-      expect(service.softDeleteAccount).toHaveBeenCalledTimes(1);
-      expect(result.message).toBeDefined();
-      expect(result.message).toContain('marcada para deleção');
-      expect(result.deletionScheduledFor).toBeDefined();
-      expect(result.cancellationInfo).toBeDefined();
-      expect(result.disclaimer).toBeDefined();
-    });
-
-    it('should throw BadRequestException with invalid confirmation', async () => {
-      // Act & Assert
-      await expect(
-        controller.deleteMyAccount(mockUserId, invalidDeleteDto),
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        controller.deleteMyAccount(mockUserId, invalidDeleteDto),
-      ).rejects.toThrow('Confirmação inválida');
-
-      // Service should not be called if confirmation is invalid
-      expect(service.softDeleteAccount).not.toHaveBeenCalled();
-    });
-
-    it('should throw BadRequestException with empty confirmation', async () => {
-      // Arrange
-      const emptyDeleteDto: DeleteAccountDto = {
-        confirmation: '',
-      };
-
-      // Act & Assert
-      await expect(
-        controller.deleteMyAccount(mockUserId, emptyDeleteDto),
-      ).rejects.toThrow(BadRequestException);
-      expect(service.softDeleteAccount).not.toHaveBeenCalled();
-    });
-
-    it('should throw NotFoundException when user not found', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockRejectedValue(
-        new NotFoundException('Usuário não encontrado'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.deleteMyAccount(mockUserId, validDeleteDto),
-      ).rejects.toThrow(NotFoundException);
-      await expect(
-        controller.deleteMyAccount(mockUserId, validDeleteDto),
-      ).rejects.toThrow('Usuário não encontrado');
-    });
-
-    it('should calculate deletion date 30 days in future', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
-      const beforeDate = new Date();
-      beforeDate.setDate(beforeDate.getDate() + 30);
-
-      // Act
-      const result = await controller.deleteMyAccount(
-        mockUserId,
-        validDeleteDto,
-      );
-
-      // Assert
-      const deletionDate = new Date(result.deletionScheduledFor);
-      const diffDays = Math.ceil(
-        (deletionDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
-      );
-      expect(diffDays).toBeGreaterThanOrEqual(29);
-      expect(diffDays).toBeLessThanOrEqual(30);
-    });
-
-    it('should include disclaimer in deletion response', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
-
-      // Act
-      const result = await controller.deleteMyAccount(
-        mockUserId,
-        validDeleteDto,
-      );
-
-      // Assert
-      expect(result.disclaimer).toBeDefined();
-      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
-    });
-
-    it('should include cancellation information', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
-
-      // Act
-      const result = await controller.deleteMyAccount(
-        mockUserId,
-        validDeleteDto,
-      );
-
-      // Assert
-      expect(result.cancellationInfo).toBeDefined();
-      expect(result.cancellationInfo).toContain('30 dias');
-      expect(result.cancellationInfo).toContain('suporte');
-    });
-
-    it('should use CurrentUser decorator to extract userId from JWT', async () => {
-      // Arrange
-      mockUsersService.softDeleteAccount.mockResolvedValue(undefined);
-
-      // Act
-      await controller.deleteMyAccount(mockUserId, validDeleteDto);
-
-      // Assert
-      // Verify that the service was called with the userId extracted from JWT
-      expect(service.softDeleteAccount).toHaveBeenCalledWith(mockUserId);
-    });
-
-    it('should be case-sensitive for confirmation string', async () => {
-      // Arrange
-      const wrongCaseDto: DeleteAccountDto = {
-        confirmation: 'Delete My Account',
-      };
-
-      // Act & Assert
-      await expect(
-        controller.deleteMyAccount(mockUserId, wrongCaseDto),
-      ).rejects.toThrow(BadRequestException);
-      expect(service.softDeleteAccount).not.toHaveBeenCalled();
     });
   });
 });
