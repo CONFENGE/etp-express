@@ -27,17 +27,17 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████████░░░░ 33/43 (77%)  ⚡ EM PROGRESSO (+7 sub-issues)
+[M3] Quality & Security           ████████████████░░░░ 34/43 (79%)  ⚡ EM PROGRESSO (+6 sub-issues)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 91/153 issues concluídas (59%)  |  M1 100% ✅ | M2 100% ✅ | M3 77% ⚡ | M4 26% ⚡
+TOTAL: 92/153 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 79% ⚡ | M4 26% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
 - #86 → #191-#197 (7 sub-issues de LGPD audit) ✅ COMPLETO! (todas 7 concluídas)
-- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (1 de 7 concluídas: #235 ✅)
+- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (2 de 7 concluídas: #233 ✅, #235 ✅)
 ```
 
 ---
@@ -79,8 +79,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (33 fechadas de 43)
-**Status**: 77% concluído | **10 issues restantes** (4 originais + 6 sub-issues novas)
+### ⚡ M3: Quality & Security (34 fechadas de 43)
+**Status**: 79% concluído | **9 issues restantes** (4 originais + 5 sub-issues novas)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -132,10 +132,11 @@ Sub-issues atômicas (desmembradas):
 - ✅ #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs (CLOSED 2025-11-20) 🔒 ⭐ **PR #226 MERGED** ✅
 - ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅
 - ✅ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD (CLOSED 2025-11-19) 🔒 ⭐ **PR #228** ✅
-- ✅ #235 - [P0][LGPD-113c] Configurar cascade delete para ETPs (CLOSED 2025-11-20) 🔒 ⭐ **PR #240 MERGED** ✅ **NOVO!**
+- ✅ #233 - [P0][LGPD-113a] Implementar endpoint GET /users/me/export (CLOSED 2025-11-20) 🔒 ⭐ **PR #241 MERGED** ✅ **NOVO!**
+- ✅ #235 - [P0][LGPD-113c] Configurar cascade delete para ETPs (CLOSED 2025-11-20) 🔒 ⭐ **PR #240 MERGED** ✅
 
 **Sub-issues de #113 (LGPD Data Export & Deletion Automation):**
-- ⏳ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0)
+- ✅ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0) - **MERGED** via PR #241 ✅
 - ⏳ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0)
 - ✅ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0) - **MERGED** via PR #240
 - ⏳ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1)
