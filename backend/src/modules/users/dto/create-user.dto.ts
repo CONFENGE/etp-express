@@ -58,7 +58,8 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({
     example: '2024-01-15T10:30:00Z',
-    description: 'Timestamp do consentimento de transferência internacional (LGPD Art. 33)',
+    description:
+      'Timestamp do consentimento de transferência internacional (LGPD Art. 33)',
   })
   @IsOptional()
   @IsDate()
