@@ -92,10 +92,7 @@ export class AuditService {
       queryBuilder.andWhere('log.status = :status', { status });
     }
 
-    queryBuilder
-      .orderBy('log.accessedAt', 'DESC')
-      .skip(offset)
-      .take(limit);
+    queryBuilder.orderBy('log.accessedAt', 'DESC').skip(offset).take(limit);
 
     const [logs, total] = await queryBuilder.getManyAndCount();
 
