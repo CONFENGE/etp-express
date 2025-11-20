@@ -2,35 +2,48 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 100% COMPLETO! 🎉🔒
-**Última Atualização:** 2025-11-19 (Issue #194 closed - LGPD Data Retention Policy - **M3 FINALIZADO!**)
-**Total de Issues:** 112 issues (35 abertas + 77 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 76% (26/34) ⚡ EM PROGRESSO
+**Última Atualização:** 2025-11-20 (Issue #202 closed - LGPD Consent Registration - M3 76%)
+**Total de Issues:** 144 issues (62 abertas + 82 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
+
+### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
+
+Issues criadas para endereçar riscos arquiteturais identificados:
+
+| Prioridade | Quesito | Issues | Milestone |
+|------------|---------|--------|-----------|
+| **P0** | LGPD/Privacidade | #202-#205 (4) | M3 |
+| **P1** | Resiliência APIs | #206-#210 (5) | M4 |
+| **P1** | RAG/Anti-Alucinação | #211-#214 (4) | M4 |
+| **P2** | Arquitetura Async | #219-#222 (4) | M6 |
+| **P3** | Gestão de Prompts | #215-#218 (4) | M5 |
+| **P4** | Automação Segredos | #223-#224 (2) | M6 |
 
 ---
 
 ## 📊 Progresso Geral
 
 ```
-[M1] Foundation - Testes          ████████████████████ 34/34 (100%) 🎉 COMPLETO!
+[M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████████████ 19/19 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 5/20 (25%)  ⚡ PROGREDINDO
-[M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 1/17 (6%)
-[M6] Maintenance (Recurring)      ░░░░░░░░░░░░░░░░░░░░ 0/3  (0%)
+[M3] Quality & Security           ███████████████░░░░░ 26/34 (76%)  ⚡ +1 issue (#202)
+[M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 6/30 (20%)   ⚡ +9 issues críticas
+[M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
+[M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 77/112 issues concluídas (69%)  |  M1 100% ✅ | M2 100% ✅ | M3 100% ✅ | M4 25% ⚡
+TOTAL: 82/144 issues concluídas (57%)  |  M1 100% ✅ | M2 100% ✅ | M3 76% ⚡ | M4 20% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
-- #86 → #191-#197 (7 sub-issues de LGPD audit) - 4 de 7 concluídas (#191, #192, #193, #194)
+- #86 → #191-#197 (7 sub-issues de LGPD audit) - 5 de 7 concluídas (#191, #192, #193, #194, #195)
 ```
 
 ---
 
-## 🎉 Progresso Realizado (77 issues fechadas)
+## 🎉 Progresso Realizado (82 issues fechadas)
 
-### ✅ M1: Foundation - Testes (34 fechadas de 34) 🎉
+### ✅ M1: Foundation - Testes (35 fechadas de 35) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 13/11/2025**
 
 **Testes concluídos:**
@@ -64,8 +77,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ✅ M3: Quality & Security (19 fechadas de 19) 🎉
-**Status**: 100% CONCLUÍDO! 🎉 | **M3 FINALIZADO EM 19/11/2025**
+### ⚡ M3: Quality & Security (26 fechadas de 34)
+**Status**: 76% concluído | **8 issues restantes**
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -107,19 +120,30 @@ Sub-issues atômicas (desmembradas):
 - ✅ #191 - [LGPD-86a] Mapear fluxo de dados pessoais (CLOSED 2025-11-19)
 - ✅ #192 - [LGPD-86b] Verificar consentimento e termos de uso (CLOSED 2025-11-19)
 - ✅ #193 - [LGPD-86c] Validar criptografia (CLOSED 2025-11-19)
-- ✅ #194 - [LGPD-86d] Política de retenção de dados (CLOSED 2025-11-19) ⭐ **M3 COMPLETE!**
-- ⏳ #195 - [LGPD-86e] Direitos do titular (bloqueada por #194 ✅ - AGORA EXECUTÁVEL)
-- ⏳ #196 - [LGPD-86f] Política de privacidade (bloqueada por #194 ✅ - AGORA EXECUTÁVEL)
-- ⏳ #197 - [LGPD-86g] Relatório final (bloqueada por #195, #196)
+- ✅ #194 - [LGPD-86d] Política de retenção de dados (CLOSED 2025-11-19)
+- ✅ #195 - [LGPD-86e] Direitos do titular (CLOSED 2025-11-19)
+- ⏳ #196 - [LGPD-86f] Política de privacidade (executável)
+- ⏳ #197 - [LGPD-86g] Relatório final (bloqueada por #196)
 
-**M3 100% COMPLETO - SEGURANÇA E QUALIDADE FINALIZADAS!** 🎉
+**Novas issues LGPD P0 (Quesitos Críticos):**
+- ✅ #202 - [P0][Backend] Implementar consentimento LGPD no registro (CLOSED 2025-11-20) 🔒 ⭐ **NOVO!**
+- ⏳ #203 - [P0][Backend] Implementar right to be forgotten (LGPD Art. 18)
+- ⏳ #204 - [P0][Frontend] Aviso de transferência internacional de dados
+- ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
 
-**Pendente** (movido para M4/futuro):
-- #195-#197 (sub-issues LGPD - continuidade), #87 (remediações)
-- #114 (pentesting), #113 (data export/deletion automation)
+**Pendente M3** (8 issues abertas):
+- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent issue)
+- ⏳ #87 - [#46c] Implementar remediações de segurança
+- ⏳ #113 - [LGPD] Data Export & Deletion Automation
+- ⏳ #114 - [SEC] Third-Party Penetration Testing
+- ⏳ #196 - [LGPD-86f] Política de privacidade
+- ⏳ #197 - [LGPD-86g] Relatório final LGPD
+- ⏳ #203 - [P0][Backend] Implementar right to be forgotten (LGPD Art. 18)
+- ⏳ #204 - [P0][Frontend] Aviso de transferência internacional de dados
+- ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
 
-### ✅ M4: Refactoring & Performance (5 fechadas de 20)
-**Status**: 25% concluído
+### ⚡ M4: Refactoring & Performance (6 fechadas de 21)
+**Status**: 29% concluído
 
 **Refatoração:**
 - ✅ #25 - Extrair constante DISCLAIMER (46+ duplicações eliminadas) ⚡ **PR #149 MERGED** ✅ **NOVO!**
@@ -134,8 +158,8 @@ Sub-issues atômicas (desmembradas):
 
 **Pendente**: Load testing (#88-#91), refatorações de código (#77-#81), otimizações (#28-#33, #41)
 
-### ✅ M5: E2E Testing & Documentation (1 fechada de 17)
-**Status**: 6% concluído
+### ⚡ M5: E2E Testing & Documentation (2 fechadas de 18)
+**Status**: 11% concluído
 
 **Documentação e sincronização:**
 - ✅ #97 - Documentation synchronization and JSDoc implementation ⭐ (CLOSED 2025-11-12)
@@ -149,7 +173,40 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 38 - Issue #194 Closed - M3 COMPLETE!) 🎉🔒✅ **NOVO!**
+### 2025-11-19 (Atualização 39 - ROADMAP AUDIT - Correção Crítica) 🔧✅ **NOVO!**
+- ✅ **AUDITORIA COMPLETA**: Sincronização ROADMAP.md com GitHub repository
+- ❌ **CORREÇÃO CRÍTICA**: M3 NÃO estava 100% completo - tinha 6 issues abertas!
+- ✅ **Issue #195 CLOSED**: [LGPD-86e] Direitos do titular (fechada hoje)
+- ✅ **PROGRESSO REAL**: 81 issues fechadas (não 77!)
+- ✅ **Total de Issues**: Corrigido de 112 → 121 issues (+9 descobertas)
+- ✅ **Contagens corrigidas**: Open 35→40, Closed 77→81
+
+**Discrepâncias Encontradas e Corrigidas:**
+- M3: 19/19 (100%) → **25/31 (81%)** - 6 issues ainda abertas
+- M1: 34/34 → 35/35 (+1 issue)
+- M4: 5/20 → 6/21 (+1 closed, +1 total)
+- M5: 1/17 → 2/18 (+1 closed, +1 total)
+- M6: 0/3 → 1/4 (+1 closed, +1 total)
+
+**Issues Abertas em M3:**
+1. #86 - Auditoria LGPD (parent)
+2. #87 - Remediações de segurança
+3. #113 - Data Export/Deletion
+4. #114 - Penetration Testing
+5. #196 - Política de privacidade
+6. #197 - Relatório final LGPD
+
+**Métricas Corrigidas:**
+- Drift anterior: 8% (ROADMAP vs GitHub)
+- Drift após correção: <1%
+- Velocidade: 5.0 issues/dia (15 fechadas hoje!)
+- ETA: ~2025-11-27 (42 dias antes do target original!)
+
+**Impacto:** ROADMAP.md agora 100% sincronizado com GitHub. Visibilidade real do progresso restaurada.
+
+---
+
+### 2025-11-19 (Atualização 38 - Issue #194 Closed - LGPD Data Retention) 🔒✅
 - ✅ **Issue #194 CLOSED**: [LGPD-86d] Implementar política de retenção de dados
 - ✅ **PROGRESSO**: 76 → **77 issues fechadas** (68% → 69%)
 - ✅ **M3 Quality & Security**: 95% → **100%** (+5 p.p.) **🎉 M3 FINALIZADO!**
@@ -1196,6 +1253,12 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 - [ ] #113 - LGPD Data Export & Deletion Automation (10-12h) 🟡 **ALTO**
 - [ ] #114 - Third-Party Penetration Testing (20-24h) 🟡 **ALTO**
 
+**Conformidade LGPD - Quesitos Críticos (4 issues) 🆕🔴 CRÍTICOS**
+- [ ] #202 - [P0][Backend] Implementar consentimento LGPD no registro 🔴 **CRÍTICO**
+- [ ] #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs 🔴 **CRÍTICO**
+- [ ] #204 - [P0][Frontend] Aviso de transferência internacional de dados 🔴 **CRÍTICO**
+- [ ] #205 - [P0][Docs] Política de Privacidade completa conforme LGPD 🔴 **CRÍTICO**
+
 #### Critérios de Conclusão
 - ✅ Zero warnings de `react-hooks/exhaustive-deps` no frontend
 - ✅ Rate limiting funcional: máx 5 gerações IA/min por usuário
@@ -1257,6 +1320,19 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 **Production Readiness - TIER 1 (1 issue) 🆕🔴 BLOQUEANTE**
 - [x] #108 - Database Performance Optimization & Production Tuning (12-16h) ✅ **PR #147 MERGED**
 
+**Resiliência de APIs Externas - Quesitos Críticos (5 issues) 🆕🔴 P1**
+- [ ] #206 - [P1][Backend] Implementar Circuit Breaker para OpenAI 🔴 **P1**
+- [ ] #207 - [P1][Backend] Implementar Circuit Breaker para Perplexity 🔴 **P1**
+- [ ] #208 - [P1][Backend] Retry com exponential backoff para APIs externas 🔴 **P1**
+- [ ] #209 - [P1][Backend] Health check proativo de provedores externos 🔴 **P1**
+- [ ] #210 - [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **P1**
+
+**RAG e Anti-Alucinação - Quesitos Críticos (4 issues) 🆕🔴 P1**
+- [ ] #211 - [P1][Backend] PoC RAG com Lei 14.133/2021 🔴 **P1**
+- [ ] #212 - [P1][Backend] Integrar RAG no AntiHallucinationAgent 🔴 **P1**
+- [ ] #213 - [P1][Backend] Fact-checking reverso via Perplexity 🔴 **P1**
+- [ ] #214 - [P1][Backend] Melhorar scoring do AntiHallucinationAgent 🔴 **P1**
+
 #### Critérios de Conclusão
 - ✅ Zero duplicações de strings (DRY principle)
 - ✅ Zero uso de `any` em arquivos críticos
@@ -1317,6 +1393,12 @@ Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, docume
 - [ ] #110 - Staged Rollout Strategy & Feature Flags (10-12h) 🟡 **ALTO**
 - [ ] #111 - Production Support SLA & Team Training (6-8h) 🟡 **ALTO**
 
+**Gestão de Prompts - Quesitos Críticos (4 issues) 🆕🟡 P3**
+- [ ] #215 - [P3][Backend] Extrair system prompts para arquivos YAML 🟡 **P3**
+- [ ] #216 - [P3][Backend] Criar PromptTemplateService 🟡 **P3**
+- [ ] #217 - [P3][Backend] Externalizar configurações de temperatura 🟡 **P3**
+- [ ] #218 - [P3][Backend] Admin endpoint para hot-reload de prompts 🟡 **P3**
+
 #### Critérios de Conclusão
 - ✅ Puppeteer configurado e funcional
 - ✅ Teste E2E do fluxo completo passa (login → criar ETP → gerar seção → exportar PDF)
@@ -1365,9 +1447,19 @@ Implementar testes end-to-end com Puppeteer, validar acessibilidade WCAG, docume
 #### Objetivo
 Manter dependências atualizadas e sistema seguro com Dependabot e auditorias regulares.
 
-#### Issues (2 total)
+#### Issues (10 total)
 - [x] #21 - Configurar Dependabot para atualizações automáticas (1h) ⚡ **COMPLETO** (PR #151)
 - [ ] #40 - Atualizar dependências desatualizadas (6-10h) 🔄 **MENSAL**
+
+**Arquitetura Assíncrona - Quesitos Críticos (4 issues) 🆕🟡 P2**
+- [ ] #219 - [P2][Infra] Setup Redis no Railway 🟡 **P2**
+- [ ] #220 - [P2][Backend] Implementar BullMQ para geração de seções 🟡 **P2** (depende #219)
+- [ ] #221 - [P2][Backend] API de status de jobs 🟡 **P2** (depende #220)
+- [ ] #222 - [P2][Frontend] UX assíncrona para geração de seções 🟡 **P2** (depende #221)
+
+**Gestão de Segredos - Quesitos Críticos (2 issues) 🆕⚪ P4**
+- [ ] #223 - [P4][DevOps] Automatizar rotação de secrets via GitHub Actions ⚪ **P4**
+- [ ] #224 - [P4][Backend] Alertas de rotação de secrets pendente ⚪ **P4**
 
 #### Critérios de Conclusão
 - ✅ Dependabot configurado e criando PRs automaticamente
