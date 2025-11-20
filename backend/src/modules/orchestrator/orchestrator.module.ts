@@ -6,8 +6,10 @@ import { FundamentacaoAgent } from './agents/fundamentacao.agent';
 import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { PrivacyModule } from '../privacy/privacy.module';
 
 @Module({
+  imports: [PrivacyModule],
   providers: [
     OrchestratorService,
     OpenAIService,
