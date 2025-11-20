@@ -13,6 +13,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🔒 Conformidade LGPD (2025-11-19 a 2025-11-20)
+- ✅ #202 - Implementar consentimento LGPD no registro (PR #215)
+- ✅ #203 - Implementar sanitização PII antes de envio para LLMs (PR #219)
+- ✅ #204 - Aviso de transferência internacional de dados (PR #221)
+- ✅ #205 - Política de Privacidade completa conforme LGPD (PR #223)
+- ✅ #196 - Termos de Uso completos + integração frontend (PR #229)
+  - Criado `docs/TERMS_OF_SERVICE.md` (14 seções, 353 lines)
+  - Nova página `/terms` no frontend (TermsOfService.tsx)
+  - Links separados no formulário de registro
+  - Conformidade com LGPD, Marco Civil, CDC, Lei 14.133
+
 #### ⚙️ Infraestrutura Técnica (2025-11-06 a 2025-11-12)
 - ✅ Configuração Jest para testes backend
 - ✅ ESLint + Prettier configurados
@@ -225,6 +236,6 @@ Utilizamos [SemVer](https://semver.org/lang/pt-BR/) para versionamento:
 ---
 
 **Mantido por**: Equipe ETP Express
-**Última atualização**: 2025-11-12
+**Última atualização**: 2025-11-20
 **Versão Atual**: 0.1.0 (Core MVP)
 **Próxima Versão**: 1.0.0 (Q1 2026)
