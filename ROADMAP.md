@@ -2,8 +2,8 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 79% (27/34) ⚡ EM PROGRESSO
-**Última Atualização:** 2025-11-20 (Issue #203 closed - PII Sanitization - M3 79%)
+**Status Atual:** Milestone 3 (Quality & Security) - 82% (28/34) ⚡ EM PROGRESSO
+**Última Atualização:** 2025-11-19 (Issue #204 closed - International Transfer Consent - M3 82%)
 **Total de Issues:** 144 issues (61 abertas + 83 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** 100% - M2 finalizado! 🚀
 
@@ -27,12 +27,12 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 11/11 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████████░░░░ 27/34 (79%)  ⚡ +1 issue (#203)
+[M3] Quality & Security           █████████████████░░░ 28/34 (82%)  ⚡ +1 issue (#204)
 [M4] Refactoring & Performance    ████░░░░░░░░░░░░░░░░ 6/30 (20%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 83/144 issues concluídas (58%)  |  M1 100% ✅ | M2 100% ✅ | M3 79% ⚡ | M4 20% ⚡
+TOTAL: 84/144 issues concluídas (58%)  |  M1 100% ✅ | M2 100% ✅ | M3 82% ⚡ | M4 20% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -77,8 +77,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (27 fechadas de 34)
-**Status**: 79% concluído | **7 issues restantes**
+### ⚡ M3: Quality & Security (28 fechadas de 34)
+**Status**: 82% concluído | **6 issues restantes**
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -127,18 +127,17 @@ Sub-issues atômicas (desmembradas):
 
 **Novas issues LGPD P0 (Quesitos Críticos):**
 - ✅ #202 - [P0][Backend] Implementar consentimento LGPD no registro (CLOSED 2025-11-20) 🔒 ⭐
-- ✅ #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs (CLOSED 2025-11-20) 🔒 ⭐ **PR #226 MERGED** ✅ **NOVO!**
-- ⏳ #204 - [P0][Frontend] Aviso de transferência internacional de dados
+- ✅ #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs (CLOSED 2025-11-20) 🔒 ⭐ **PR #226 MERGED** ✅
+- ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅ **NOVO!**
 - ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
 
-**Pendente M3** (7 issues abertas):
+**Pendente M3** (6 issues abertas):
 - ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent issue)
 - ⏳ #87 - [#46c] Implementar remediações de segurança
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation
 - ⏳ #114 - [SEC] Third-Party Penetration Testing
 - ⏳ #196 - [LGPD-86f] Política de privacidade
 - ⏳ #197 - [LGPD-86g] Relatório final LGPD
-- ⏳ #204 - [P0][Frontend] Aviso de transferência internacional de dados
 - ⏳ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD
 
 ### ⚡ M4: Refactoring & Performance (6 fechadas de 21)
@@ -172,7 +171,43 @@ Sub-issues atômicas (desmembradas):
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-19 (Atualização 39 - ROADMAP AUDIT - Correção Crítica) 🔧✅ **NOVO!**
+### 2025-11-19 (Atualização 40 - Issue #204 Closed - International Transfer Consent) 🔒✅ **NOVO!**
+- ✅ **Issue #204 CLOSED**: [P0][Frontend] Aviso de transferência internacional de dados
+- ✅ **PROGRESSO**: 83 → **84 issues fechadas** (58% → 58%)
+- ✅ **M3 Quality & Security**: 79% → **82%** (+3 p.p.)
+
+**O que foi implementado (#204):**
+- ✅ Componente `InternationalTransferModal.tsx` com lista de provedores
+- ✅ Checkbox específico para consentimento de transferência internacional
+- ✅ Campo `internationalTransferConsentAt` na entity User
+- ✅ Migration para novo campo no PostgreSQL
+- ✅ Validação de consentimento no AuthService
+- ✅ Teste unitário para validação de consentimento
+
+**Provedores Divulgados (LGPD Art. 33):**
+- Railway (EUA) - Hospedagem
+- OpenAI (EUA) - Geração de texto
+- Perplexity (EUA) - Pesquisa de fundamentação
+
+**Conformidade Legal:**
+- ✅ LGPD Art. 33 - Transferência internacional
+- ✅ LGPD Art. 33, VIII - Consentimento específico
+- ✅ Consentimento separado do LGPD geral
+- ✅ Timestamp individual para audit trail
+
+**Artefatos:**
+- PR #227: https://github.com/tjsasakifln/etp-express/pull/227
+- Branch: `feat/204-international-transfer-consent`
+- 20 testes passando (auth.service.spec.ts)
+
+**Issue Desbloqueada:**
+- #205 (Política de Privacidade) - AGORA EXECUTÁVEL
+
+**Impacto:** Conformidade LGPD Art. 33 implementada. Usuários informados sobre transferência internacional para servidores USA. M3 avançou +3 p.p.
+
+---
+
+### 2025-11-19 (Atualização 39 - ROADMAP AUDIT - Correção Crítica) 🔧✅
 - ✅ **AUDITORIA COMPLETA**: Sincronização ROADMAP.md com GitHub repository
 - ❌ **CORREÇÃO CRÍTICA**: M3 NÃO estava 100% completo - tinha 6 issues abertas!
 - ✅ **Issue #195 CLOSED**: [LGPD-86e] Direitos do titular (fechada hoje)
