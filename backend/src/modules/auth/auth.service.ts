@@ -14,6 +14,13 @@ import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword } from './types/user.types';
 
+interface JwtPayload {
+  sub: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 /**
  * Service responsible for user authentication and authorization.
  *
@@ -108,7 +115,7 @@ export class AuthService {
       throw new UnauthorizedException('Email ou senha incorretos');
     }
 
-    const payload = {
+    const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
@@ -198,7 +205,7 @@ export class AuthService {
       `User registered with LGPD consent v${LGPD_TERMS_VERSION} and international transfer consent: ${user.email}`,
     );
 
-    const payload = {
+    const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
@@ -238,7 +245,7 @@ export class AuthService {
   async validateToken(token: string) {
     try {
       // Try primary secret first
-      let payload: any;
+      let payload: JwtPayload;
       try {
         payload = this.jwtService.verify(token);
       } catch {

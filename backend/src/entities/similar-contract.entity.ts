@@ -46,7 +46,7 @@ export class SimilarContract {
     vigencia?: string;
     fornecedor?: string;
     objeto?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
   @CreateDateColumn()
