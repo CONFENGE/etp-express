@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
@@ -7,6 +12,7 @@ import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +27,7 @@ export class UsersService {
     private analyticsRepository: Repository<AnalyticsEvent>,
     @InjectRepository(AuditLog)
     private auditLogsRepository: Repository<AuditLog>,
+    private emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -229,10 +236,71 @@ export class UsersService {
     });
     await this.auditLogsRepository.save(auditLog);
 
+    // Send deletion confirmation email with cancellation link
+    try {
+      await this.emailService.sendDeletionConfirmation(user);
+      this.logger.log(`Deletion confirmation email sent to ${user.email}`);
+    } catch (error) {
+      // Log error but don't fail the deletion request
+      // User can still contact support to cancel deletion
+      this.logger.error(
+        `Failed to send deletion confirmation email to ${user.email}`,
+        error.stack,
+      );
+    }
+
     this.logger.log(
       `User soft deleted: ${user.email} (scheduled hard deletion: ${scheduledDeletionDate.toISOString()})`,
     );
 
     return { scheduledDeletionDate };
+  }
+
+  /**
+   * Cancels account deletion and reactivates user account.
+   *
+   * @remarks
+   * Reverses soft delete by:
+   * - Clearing deletedAt timestamp
+   * - Reactivating account (isActive = true)
+   * - Creating audit log entry
+   *
+   * This allows users to cancel deletion within 30-day grace period.
+   *
+   * @param userId - User unique identifier (UUID)
+   * @throws {NotFoundException} If user not found
+   * @throws {BadRequestException} If account is not marked for deletion
+   */
+  async cancelDeletion(userId: string): Promise<void> {
+    const user = await this.findOne(userId);
+
+    if (!user.deletedAt) {
+      throw new BadRequestException('Conta não está marcada para deleção');
+    }
+
+    // Reactivate account
+    user.deletedAt = null;
+    user.isActive = true;
+    await this.usersRepository.save(user);
+
+    // Create audit log
+    const auditLog = this.auditLogsRepository.create({
+      action: AuditAction.UPDATE,
+      entityType: 'user',
+      entityId: userId,
+      userId,
+      description: 'User account deletion cancelled',
+      changes: {
+        metadata: {
+          cancelledAt: new Date().toISOString(),
+          previousDeletionDate: user.deletedAt,
+        },
+      },
+    });
+    await this.auditLogsRepository.save(auditLog);
+
+    this.logger.log(
+      `User deletion cancelled: ${user.email} (account reactivated)`,
+    );
   }
 }
