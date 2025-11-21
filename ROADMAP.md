@@ -2,10 +2,10 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 86% (36/42) ⚡ EM PROGRESSO!
-**Última Atualização:** 2025-11-21 (Issue #238 concluída - Audit trail LGPD | 155 issues, 60 abertas + 95 fechadas)
-**Total de Issues:** 155 issues (60 abertas + 95 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~85% - M3 próximo da conclusão! 🚀
+**Status Atual:** Milestone 3 (Quality & Security) - 88% (37/42) ⚡ EM PROGRESSO!
+**Última Atualização:** 2025-11-21 (Issue #236 concluída - Hard delete retention policy | 155 issues, 59 abertas + 96 fechadas)
+**Total de Issues:** 155 issues (59 abertas + 96 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~86% - M3 próximo da conclusão! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
 
@@ -27,22 +27,22 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           █████████████████░░░ 36/42 (86%)  ⚡ EM PROGRESSO (+6 sub-issues)
+[M3] Quality & Security           ██████████████████░░ 37/42 (88%)  ⚡ EM PROGRESSO (+5 sub-issues)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 95/155 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 86% ⚡ | M4 26% ⚡
+TOTAL: 96/155 issues concluídas (62%)  |  M1 100% ✅ | M2 100% ✅ | M3 88% ⚡ | M4 26% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
 - #86 → #191-#197 (7 sub-issues de LGPD audit) ✅ COMPLETO! (todas 7 concluídas)
-- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (5 de 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #237 ✅, #238 ✅)
+- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (6 de 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #236 ✅, #237 ✅, #238 ✅)
 ```
 
 ---
 
-## 🎉 Progresso Realizado (95 issues fechadas)
+## 🎉 Progresso Realizado (96 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (35 fechadas de 35) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 20/11/2025**
@@ -83,8 +83,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (36 fechadas de 42)
-**Status**: 86% concluído | **6 issues restantes** (3 originais + 3 sub-issues novas)
+### ⚡ M3: Quality & Security (37 fechadas de 42)
+**Status**: 88% concluído | **5 issues restantes** (3 originais + 2 sub-issues novas)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -140,14 +140,15 @@ Sub-issues atômicas (desmembradas):
 - ✅ #233 - [P0][LGPD-113a] Implementar endpoint GET /users/me/export (CLOSED 2025-11-20) 🔒 ⭐ **PR #241 MERGED** ✅
 - ✅ #234 - [P0][LGPD-113b] Implementar endpoint DELETE /users/me (CLOSED 2025-11-20) 🔒 ⭐ **PR #245 MERGED** ✅ **NOVO!**
 - ✅ #235 - [P0][LGPD-113c] Configurar cascade delete para ETPs (CLOSED 2025-11-20) 🔒 ⭐ **PR #240 MERGED** ✅
+- ✅ #236 - [P1][LGPD-113d] Hard delete após 30 dias (retention policy) (CLOSED 2025-11-21) 🔒 ⭐ **PR #250 MERGED** ✅ **NOVO!**
 - ✅ #237 - [P1][LGPD-113e] Email de confirmação para deleção (CLOSED 2025-11-21) 🔒 ⭐ **PR #246 MERGED** ✅
-- ✅ #238 - [P1][LGPD-113f] Audit trail para exports/deletions (CLOSED 2025-11-21) 🔒 ⭐ **PR #249 MERGED** ✅ **NOVO!**
+- ✅ #238 - [P1][LGPD-113f] Audit trail para exports/deletions (CLOSED 2025-11-21) 🔒 ⭐ **PR #249 MERGED** ✅
 
 **Sub-issues de #113 (LGPD Data Export & Deletion Automation):**
 - ✅ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0) - **MERGED** via PR #241 ✅
 - ✅ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0) - **MERGED** via PR #245 ✅
 - ✅ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0) - **MERGED** via PR #240 ✅
-- ⏳ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1)
+- ✅ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1) - **MERGED** via PR #250 ✅
 - ✅ #237 - [LGPD-113e] Email de confirmação para deleção (2h, P1) - **MERGED** via PR #246 ✅
 - ✅ #238 - [LGPD-113f] Audit trail para exports/deletions (2h, P1) - **MERGED** via PR #249 ✅ **NOVO!**
 - ⏳ #239 - [LGPD-113g] Testes E2E de export e delete (3h, P1)
