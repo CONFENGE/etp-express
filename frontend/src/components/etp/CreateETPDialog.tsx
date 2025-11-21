@@ -85,7 +85,9 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
                 aria-invalid={errors.title ? 'true' : 'false'}
               />
               {errors.title && (
-                <p className="text-sm text-destructive">{errors.title.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.title.message}
+                </p>
               )}
             </div>
 

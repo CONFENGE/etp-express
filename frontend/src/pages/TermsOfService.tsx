@@ -60,19 +60,29 @@ export function TermsOfService() {
                   <tbody className="divide-y">
                     <tr>
                       <td className="px-4 py-2 font-semibold">ETP Express</td>
-                      <td className="px-4 py-2">Plataforma digital de geração automatizada de ETPs</td>
+                      <td className="px-4 py-2">
+                        Plataforma digital de geração automatizada de ETPs
+                      </td>
                     </tr>
                     <tr>
                       <td className="px-4 py-2 font-semibold">Usuário</td>
-                      <td className="px-4 py-2">Pessoa natural cadastrada no Sistema</td>
+                      <td className="px-4 py-2">
+                        Pessoa natural cadastrada no Sistema
+                      </td>
                     </tr>
                     <tr>
                       <td className="px-4 py-2 font-semibold">ETP</td>
-                      <td className="px-4 py-2">Estudo Técnico Preliminar (Lei 14.133/2021)</td>
+                      <td className="px-4 py-2">
+                        Estudo Técnico Preliminar (Lei 14.133/2021)
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-4 py-2 font-semibold">Conteúdo Gerado</td>
-                      <td className="px-4 py-2">Textos produzidos pela inteligência artificial</td>
+                      <td className="px-4 py-2 font-semibold">
+                        Conteúdo Gerado
+                      </td>
+                      <td className="px-4 py-2">
+                        Textos produzidos pela inteligência artificial
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -91,15 +101,20 @@ export function TermsOfService() {
               </p>
               <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                 <li>Leu, compreendeu e concorda com estes Termos de Uso</li>
-                <li>Leu e compreendeu a <Link to="/privacy" className="text-primary hover:underline">Política de Privacidade</Link></li>
+                <li>
+                  Leu e compreendeu a{' '}
+                  <Link to="/privacy" className="text-primary hover:underline">
+                    Política de Privacidade
+                  </Link>
+                </li>
                 <li>É maior de 18 anos e possui capacidade jurídica plena</li>
                 <li>Forneceu informações verdadeiras e precisas no cadastro</li>
                 <li>Utilizará o Sistema de forma legal e ética</li>
               </ul>
               <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  <strong>Importante:</strong> Caso não concorde com qualquer parte destes Termos,
-                  você não deve utilizar o ETP Express.
+                  <strong>Importante:</strong> Caso não concorde com qualquer
+                  parte destes Termos, você não deve utilizar o ETP Express.
                 </p>
               </div>
             </CardContent>
@@ -108,11 +123,15 @@ export function TermsOfService() {
           {/* 3. Descrição dos Serviços */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">3. Descrição dos Serviços</CardTitle>
+              <CardTitle className="text-xl">
+                3. Descrição dos Serviços
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold mb-3">Funcionalidades Principais</h4>
+                <h4 className="font-semibold mb-3">
+                  Funcionalidades Principais
+                </h4>
                 <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                   <li>Criação de ETPs com formulário guiado</li>
                   <li>Geração automatizada de seções com IA</li>
@@ -126,12 +145,25 @@ export function TermsOfService() {
               <Separator />
 
               <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
-                <h4 className="font-semibold mb-2 text-red-800 dark:text-red-200">Limitações do Serviço</h4>
+                <h4 className="font-semibold mb-2 text-red-800 dark:text-red-200">
+                  Limitações do Serviço
+                </h4>
                 <ul className="list-disc pl-5 text-sm space-y-1 text-red-700 dark:text-red-300">
-                  <li>O Sistema é uma ferramenta de <strong>auxílio</strong>, não substitui análise técnica humana</li>
-                  <li>O Usuário é <strong>responsável</strong> pela validação do conteúdo final</li>
-                  <li>O Sistema <strong>não presta consultoria</strong> jurídica ou técnica</li>
-                  <li>A precisão depende da qualidade das informações fornecidas</li>
+                  <li>
+                    O Sistema é uma ferramenta de <strong>auxílio</strong>, não
+                    substitui análise técnica humana
+                  </li>
+                  <li>
+                    O Usuário é <strong>responsável</strong> pela validação do
+                    conteúdo final
+                  </li>
+                  <li>
+                    O Sistema <strong>não presta consultoria</strong> jurídica
+                    ou técnica
+                  </li>
+                  <li>
+                    A precisão depende da qualidade das informações fornecidas
+                  </li>
                 </ul>
               </div>
             </CardContent>
@@ -140,11 +172,15 @@ export function TermsOfService() {
           {/* 4. Cadastro e Conta */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">4. Cadastro e Conta de Usuário</CardTitle>
+              <CardTitle className="text-xl">
+                4. Cadastro e Conta de Usuário
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold mb-2">Responsabilidade pela Conta</h4>
+                <h4 className="font-semibold mb-2">
+                  Responsabilidade pela Conta
+                </h4>
                 <p className="text-sm text-muted-foreground mb-2">
                   Você é responsável por:
                 </p>
@@ -180,7 +216,9 @@ export function TermsOfService() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                <h4 className="font-semibold mb-2 text-green-800 dark:text-green-200">Condutas Permitidas ✅</h4>
+                <h4 className="font-semibold mb-2 text-green-800 dark:text-green-200">
+                  Condutas Permitidas ✅
+                </h4>
                 <ul className="list-disc pl-5 text-sm space-y-1 text-green-700 dark:text-green-300">
                   <li>Criar quantos ETPs necessitar para fins legítimos</li>
                   <li>Editar, revisar e validar o conteúdo gerado</li>
@@ -191,7 +229,9 @@ export function TermsOfService() {
               </div>
 
               <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
-                <h4 className="font-semibold mb-2 text-red-800 dark:text-red-200">Condutas Proibidas ❌</h4>
+                <h4 className="font-semibold mb-2 text-red-800 dark:text-red-200">
+                  Condutas Proibidas ❌
+                </h4>
                 <ul className="list-disc pl-5 text-sm space-y-1 text-red-700 dark:text-red-300">
                   <li>Utilizar o Sistema para fins ilegais ou fraudulentos</li>
                   <li>Tentar burlar mecanismos de segurança</li>
@@ -209,31 +249,47 @@ export function TermsOfService() {
           {/* 6. Propriedade Intelectual */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">6. Propriedade Intelectual</CardTitle>
+              <CardTitle className="text-xl">
+                6. Propriedade Intelectual
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Propriedade do Conteúdo Gerado</h4>
+                <h4 className="font-semibold mb-2">
+                  Propriedade do Conteúdo Gerado
+                </h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-muted">
                       <tr>
-                        <th className="px-4 py-2 text-left">Tipo de Conteúdo</th>
+                        <th className="px-4 py-2 text-left">
+                          Tipo de Conteúdo
+                        </th>
                         <th className="px-4 py-2 text-left">Propriedade</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       <tr>
-                        <td className="px-4 py-2 font-semibold">Conteúdo do Usuário (inputs)</td>
+                        <td className="px-4 py-2 font-semibold">
+                          Conteúdo do Usuário (inputs)
+                        </td>
                         <td className="px-4 py-2">Você mantém a propriedade</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-2 font-semibold">Conteúdo Gerado (IA)</td>
-                        <td className="px-4 py-2">Você recebe direitos de uso ilimitado</td>
+                        <td className="px-4 py-2 font-semibold">
+                          Conteúdo Gerado (IA)
+                        </td>
+                        <td className="px-4 py-2">
+                          Você recebe direitos de uso ilimitado
+                        </td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-2 font-semibold">Templates e estruturas</td>
-                        <td className="px-4 py-2">ETP Express (licenciados para uso)</td>
+                        <td className="px-4 py-2 font-semibold">
+                          Templates e estruturas
+                        </td>
+                        <td className="px-4 py-2">
+                          ETP Express (licenciados para uso)
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -241,11 +297,16 @@ export function TermsOfService() {
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">Concessão de Licença</h4>
+                <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">
+                  Concessão de Licença
+                </h4>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  Ao gerar conteúdo no ETP Express, você recebe uma <strong>licença perpétua, mundial,
-                  irrevogável e livre de royalties</strong> para usar, modificar, distribuir e comercializar
-                  o conteúdo gerado.
+                  Ao gerar conteúdo no ETP Express, você recebe uma{' '}
+                  <strong>
+                    licença perpétua, mundial, irrevogável e livre de royalties
+                  </strong>{' '}
+                  para usar, modificar, distribuir e comercializar o conteúdo
+                  gerado.
                 </p>
               </div>
             </CardContent>
@@ -254,13 +315,18 @@ export function TermsOfService() {
           {/* 7. Garantias e Limitações */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">7. Garantias e Limitações</CardTitle>
+              <CardTitle className="text-xl">
+                7. Garantias e Limitações
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <h4 className="font-semibold mb-2 text-yellow-800 dark:text-yellow-200">Isenção de Garantias</h4>
+                <h4 className="font-semibold mb-2 text-yellow-800 dark:text-yellow-200">
+                  Isenção de Garantias
+                </h4>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
-                  O ETP Express é fornecido <strong>"NO ESTADO EM QUE SE ENCONTRA"</strong> e
+                  O ETP Express é fornecido{' '}
+                  <strong>"NO ESTADO EM QUE SE ENCONTRA"</strong> e
                   <strong> "CONFORME DISPONIBILIDADE"</strong>.
                 </p>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300 font-semibold">
@@ -275,7 +341,9 @@ export function TermsOfService() {
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Responsabilidade do Usuário</h4>
+                <h4 className="font-semibold mb-2">
+                  Responsabilidade do Usuário
+                </h4>
                 <p className="text-sm text-muted-foreground mb-2">
                   O Usuário é <strong>integralmente responsável</strong> por:
                 </p>
@@ -283,17 +351,24 @@ export function TermsOfService() {
                   <li>Validar a precisão técnica do conteúdo gerado</li>
                   <li>Revisar conformidade com legislação aplicável</li>
                   <li>Verificar adequação aos requisitos do órgão</li>
-                  <li>Assegurar que o ETP está completo e correto antes de submeter</li>
+                  <li>
+                    Assegurar que o ETP está completo e correto antes de
+                    submeter
+                  </li>
                 </ul>
               </div>
 
               <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm font-semibold mb-2">Limitação de Responsabilidade</p>
+                <p className="text-sm font-semibold mb-2">
+                  Limitação de Responsabilidade
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Na máxima extensão permitida pela lei, não nos responsabilizamos por danos diretos,
-                  indiretos, incidentais ou consequentes, incluindo perda de dados, lucros ou oportunidades.
-                  Nossa responsabilidade máxima é limitada ao valor pago nos últimos 12 meses
-                  (atualmente R$ 0, pois o serviço é gratuito).
+                  Na máxima extensão permitida pela lei, não nos
+                  responsabilizamos por danos diretos, indiretos, incidentais ou
+                  consequentes, incluindo perda de dados, lucros ou
+                  oportunidades. Nossa responsabilidade máxima é limitada ao
+                  valor pago nos últimos 12 meses (atualmente R$ 0, pois o
+                  serviço é gratuito).
                 </p>
               </div>
             </CardContent>
@@ -302,34 +377,45 @@ export function TermsOfService() {
           {/* 8. Privacidade */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">8. Privacidade e Proteção de Dados</CardTitle>
+              <CardTitle className="text-xl">
+                8. Privacidade e Proteção de Dados
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
                 O tratamento de seus dados pessoais é regido por nossa{' '}
-                <Link to="/privacy" className="text-primary hover:underline font-semibold">
+                <Link
+                  to="/privacy"
+                  className="text-primary hover:underline font-semibold"
+                >
                   Política de Privacidade
                 </Link>
                 , em conformidade com a LGPD (Lei 13.709/2018).
               </p>
 
               <div className="bg-muted p-4 rounded-lg">
-                <h4 className="font-semibold mb-2 text-sm">Transferência Internacional</h4>
+                <h4 className="font-semibold mb-2 text-sm">
+                  Transferência Internacional
+                </h4>
                 <p className="text-xs text-muted-foreground">
-                  Ao aceitar estes Termos, você consente expressamente com a transferência internacional
-                  de dados para os Estados Unidos (Railway, OpenAI, Perplexity).
+                  Ao aceitar estes Termos, você consente expressamente com a
+                  transferência internacional de dados para os Estados Unidos
+                  (Railway, OpenAI, Perplexity).
                 </p>
               </div>
 
               <div>
                 <h4 className="font-semibold mb-2 text-sm">Seus Direitos</h4>
                 <p className="text-xs text-muted-foreground">
-                  Você possui direitos garantidos pela LGPD, incluindo acesso, correção, exclusão,
-                  portabilidade e revogação de consentimento.
+                  Você possui direitos garantidos pela LGPD, incluindo acesso,
+                  correção, exclusão, portabilidade e revogação de
+                  consentimento.
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   Para exercê-los, entre em contato:{' '}
-                  <span className="font-semibold">privacidade@etpexpress.com.br</span>
+                  <span className="font-semibold">
+                    privacidade@etpexpress.com.br
+                  </span>
                 </p>
               </div>
             </CardContent>
@@ -344,21 +430,26 @@ export function TermsOfService() {
               <div>
                 <h4 className="font-semibold mb-2">Rescisão pelo Usuário</h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Você pode encerrar sua conta a qualquer momento através das configurações da conta.
+                  Você pode encerrar sua conta a qualquer momento através das
+                  configurações da conta.
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  <strong>Efeitos:</strong> Seus dados serão excluídos conforme Política de Privacidade.
-                  ETPs serão mantidos por 30 dias (backup) e depois eliminados permanentemente.
+                  <strong>Efeitos:</strong> Seus dados serão excluídos conforme
+                  Política de Privacidade. ETPs serão mantidos por 30 dias
+                  (backup) e depois eliminados permanentemente.
                 </p>
               </div>
 
               <Separator />
 
               <div>
-                <h4 className="font-semibold mb-2">Rescisão pelo ETP Express</h4>
+                <h4 className="font-semibold mb-2">
+                  Rescisão pelo ETP Express
+                </h4>
                 <p className="text-sm text-muted-foreground">
-                  Podemos encerrar sua conta se você violar estes Termos, detectarmos fraude/abuso,
-                  ou após inatividade superior a 2 anos (com aviso prévio de 30 dias).
+                  Podemos encerrar sua conta se você violar estes Termos,
+                  detectarmos fraude/abuso, ou após inatividade superior a 2
+                  anos (com aviso prévio de 30 dias).
                 </p>
               </div>
             </CardContent>
@@ -375,7 +466,8 @@ export function TermsOfService() {
                 <div>
                   <h4 className="font-semibold mb-1">Lei Aplicável</h4>
                   <p className="text-sm text-muted-foreground">
-                    Estes Termos são regidos pelas leis da República Federativa do Brasil.
+                    Estes Termos são regidos pelas leis da República Federativa
+                    do Brasil.
                   </p>
                 </div>
               </div>
@@ -383,7 +475,9 @@ export function TermsOfService() {
               <Separator />
 
               <div>
-                <h4 className="font-semibold mb-2 text-sm">Legislação de Referência</h4>
+                <h4 className="font-semibold mb-2 text-sm">
+                  Legislação de Referência
+                </h4>
                 <ul className="list-disc pl-5 text-xs text-muted-foreground">
                   <li>Código Civil Brasileiro (Lei 10.406/2002)</li>
                   <li>Marco Civil da Internet (Lei 12.965/2014)</li>
@@ -402,12 +496,15 @@ export function TermsOfService() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">
-                Para dúvidas, sugestões ou reclamações sobre estes Termos de Uso:
+                Para dúvidas, sugestões ou reclamações sobre estes Termos de
+                Uso:
               </p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="font-semibold">suporte@etpexpress.com.br</span>
+                  <span className="font-semibold">
+                    suporte@etpexpress.com.br
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground pl-6">
                   Prazo de resposta: Até 15 dias úteis
@@ -431,14 +528,16 @@ export function TermsOfService() {
                 Reconhecimento e Consentimento
               </p>
               <p className="text-sm text-muted-foreground mb-4">
-                Ao criar uma conta no {APP_NAME}, você declara que leu integralmente estes Termos de Uso,
-                compreendeu todas as disposições, concorda em cumprir todas as obrigações e aceita as
+                Ao criar uma conta no {APP_NAME}, você declara que leu
+                integralmente estes Termos de Uso, compreendeu todas as
+                disposições, concorda em cumprir todas as obrigações e aceita as
                 limitações descritas.
               </p>
               <Separator className="my-4" />
               <p className="text-xs text-muted-foreground">
-                Esta política é regida pela legislação brasileira, especialmente a LGPD (Lei 13.709/2018),
-                Marco Civil da Internet (Lei 12.965/2014) e Lei de Licitações (Lei 14.133/2021).
+                Esta política é regida pela legislação brasileira, especialmente
+                a LGPD (Lei 13.709/2018), Marco Civil da Internet (Lei
+                12.965/2014) e Lei de Licitações (Lei 14.133/2021).
               </p>
             </CardContent>
           </Card>

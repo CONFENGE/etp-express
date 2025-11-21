@@ -34,7 +34,7 @@ export function Sidebar() {
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                 )
               }
             >
@@ -48,7 +48,8 @@ export function Sidebar() {
           <div className="rounded-lg bg-muted p-4">
             <h3 className="text-sm font-semibold mb-2">Dica</h3>
             <p className="text-xs text-muted-foreground">
-              Use o botão "Gerar com IA" para acelerar a criação das seções do ETP.
+              Use o botão "Gerar com IA" para acelerar a criação das seções do
+              ETP.
             </p>
           </div>
         </div>

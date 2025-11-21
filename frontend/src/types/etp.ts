@@ -116,7 +116,8 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
         type: 'textarea',
         required: true,
         placeholder: 'Descreva a necessidade que justifica a contratação...',
-        helpText: 'Explique o problema ou demanda que será atendida pela contratação',
+        helpText:
+          'Explique o problema ou demanda que será atendida pela contratação',
       },
       {
         name: 'justification',
@@ -127,7 +128,8 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
         helpText: 'Apresente argumentos que fundamentem a necessidade',
       },
     ],
-    helpText: 'Esta seção deve demonstrar claramente a necessidade da contratação, com base em dados e análises concretas.',
+    helpText:
+      'Esta seção deve demonstrar claramente a necessidade da contratação, com base em dados e análises concretas.',
   },
   {
     number: 4,
@@ -189,7 +191,8 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
         placeholder: 'Apresente a pesquisa de mercado realizada...',
       },
     ],
-    helpText: 'A estimativa deve ser baseada em pesquisa de mercado consistente.',
+    helpText:
+      'A estimativa deve ser baseada em pesquisa de mercado consistente.',
   },
   {
     number: 8,
@@ -235,7 +238,8 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
         placeholder: 'Analise as interdependências...',
       },
     ],
-    helpText: 'Identifique e analise contratações que possam ter relação com esta.',
+    helpText:
+      'Identifique e analise contratações que possam ter relação com esta.',
   },
   {
     number: 2,

@@ -22,7 +22,7 @@ export class LegalAgent {
 
   async validate(
     content: string,
-    context?: any,
+    context?: unknown,
   ): Promise<LegalValidationResult> {
     this.logger.log('Validating legal compliance');
 
@@ -59,8 +59,9 @@ export class LegalAgent {
     });
 
     // Check for technical requirements (IN SEGES 40/2020)
+    const contextObj = context as { type?: string } | undefined;
     if (
-      context?.type === 'requisitos' ||
+      contextObj?.type === 'requisitos' ||
       content.toLowerCase().includes('requisito')
     ) {
       if (!content.toLowerCase().includes('técnico')) {

@@ -19,10 +19,20 @@ export function useToast() {
       showToast({ title, description, variant, duration });
     },
     success: (description: string, title = 'Sucesso') => {
-      showToast({ title, description, variant: 'success', duration: TOAST_DURATION });
+      showToast({
+        title,
+        description,
+        variant: 'success',
+        duration: TOAST_DURATION,
+      });
     },
     error: (description: string, title = 'Erro') => {
-      showToast({ title, description, variant: 'destructive', duration: TOAST_DURATION });
+      showToast({
+        title,
+        description,
+        variant: 'destructive',
+        duration: TOAST_DURATION,
+      });
     },
   };
 }

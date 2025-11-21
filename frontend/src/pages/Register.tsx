@@ -10,25 +10,38 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
 import { InternationalTransferModal } from '@/components/legal/InternationalTransferModal';
 
-const registerSchema = z.object({
-  name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
-  confirmPassword: z.string(),
-  lgpdConsent: z.literal(true, {
-    errorMap: () => ({ message: 'Você deve aceitar os termos de uso e política de privacidade' }),
-  }),
-  internationalTransferConsent: z.literal(true, {
-    errorMap: () => ({ message: 'Você deve aceitar a transferência internacional de dados' }),
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'As senhas não coincidem',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
+    email: z.string().email('Email inválido'),
+    password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
+    confirmPassword: z.string(),
+    lgpdConsent: z.literal(true, {
+      errorMap: () => ({
+        message: 'Você deve aceitar os termos de uso e política de privacidade',
+      }),
+    }),
+    internationalTransferConsent: z.literal(true, {
+      errorMap: () => ({
+        message: 'Você deve aceitar a transferência internacional de dados',
+      }),
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -60,7 +73,9 @@ export function Register() {
   };
 
   const handleTransferDecline = () => {
-    setValue('internationalTransferConsent', false as unknown as true, { shouldValidate: true });
+    setValue('internationalTransferConsent', false as unknown as true, {
+      shouldValidate: true,
+    });
     setShowTransferModal(false);
   };
 
@@ -78,7 +93,9 @@ export function Register() {
       navigate('/dashboard');
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : 'Erro ao cadastrar. Tente novamente.'
+        error instanceof Error
+          ? error.message
+          : 'Erro ao cadastrar. Tente novamente.',
       );
     } finally {
       setIsLoading(false);
@@ -108,7 +125,9 @@ export function Register() {
                 aria-invalid={errors.name ? 'true' : 'false'}
               />
               {errors.name && (
-                <p className="text-sm text-destructive">{errors.name.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
@@ -122,7 +141,9 @@ export function Register() {
                 aria-invalid={errors.email ? 'true' : 'false'}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -136,7 +157,9 @@ export function Register() {
                 aria-invalid={errors.password ? 'true' : 'false'}
               />
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -150,7 +173,9 @@ export function Register() {
                 aria-invalid={errors.confirmPassword ? 'true' : 'false'}
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -176,18 +201,21 @@ export function Register() {
                   Aceito os{' '}
                   <Link to="/terms" className="text-primary hover:underline">
                     termos de uso
-                  </Link>
-                  {' '}e{' '}
+                  </Link>{' '}
+                  e{' '}
                   <Link to="/privacy" className="text-primary hover:underline">
                     política de privacidade
                   </Link>
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Ao marcar esta opção, você concorda com o tratamento de seus dados
-                  pessoais conforme a Lei Geral de Proteção de Dados (LGPD).
+                  Ao marcar esta opção, você concorda com o tratamento de seus
+                  dados pessoais conforme a Lei Geral de Proteção de Dados
+                  (LGPD).
                 </p>
                 {errors.lgpdConsent && (
-                  <p className="text-sm text-destructive">{errors.lgpdConsent.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.lgpdConsent.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -200,10 +228,16 @@ export function Register() {
                   if (checked) {
                     setShowTransferModal(true);
                   } else {
-                    setValue('internationalTransferConsent', false as unknown as true, { shouldValidate: true });
+                    setValue(
+                      'internationalTransferConsent',
+                      false as unknown as true,
+                      { shouldValidate: true },
+                    );
                   }
                 }}
-                aria-invalid={errors.internationalTransferConsent ? 'true' : 'false'}
+                aria-invalid={
+                  errors.internationalTransferConsent ? 'true' : 'false'
+                }
               />
               <div className="grid gap-1.5 leading-none">
                 <Label
@@ -213,8 +247,8 @@ export function Register() {
                   Aceito a transferência internacional de dados
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Seus dados serão processados em servidores nos EUA (Railway, OpenAI, Perplexity)
-                  conforme LGPD Art. 33.{' '}
+                  Seus dados serão processados em servidores nos EUA (Railway,
+                  OpenAI, Perplexity) conforme LGPD Art. 33.{' '}
                   <button
                     type="button"
                     onClick={() => setShowTransferModal(true)}
@@ -224,7 +258,9 @@ export function Register() {
                   </button>
                 </p>
                 {errors.internationalTransferConsent && (
-                  <p className="text-sm text-destructive">{errors.internationalTransferConsent.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.internationalTransferConsent.message}
+                  </p>
                 )}
               </div>
             </div>

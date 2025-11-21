@@ -22,7 +22,7 @@ export function LoadingState({
     <div
       className={cn(
         'flex flex-col items-center justify-center gap-3 py-8',
-        className
+        className,
       )}
     >
       <Loader2

@@ -2,6 +2,10 @@ import { Injectable, ExecutionContext } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerException } from '@nestjs/throttler';
 import { Request } from 'express';
 
+interface RequestWithUser extends Request {
+  user?: { id: string };
+}
+
 /**
  * Custom throttler guard que usa user ID ao invés de IP para rate limiting
  *
@@ -73,7 +77,8 @@ export class UserThrottlerGuard extends ThrottlerGuard {
    */
   protected async getTracker(req: Request): Promise<string> {
     // Casting para acessar propriedade 'user' injetada pelo JwtAuthGuard
-    const user = (req as any).user;
+    const reqWithUser = req as RequestWithUser;
+    const user = reqWithUser.user;
 
     // Prioridade 1: User ID (rate limiting por usuário autenticado)
     if (user && user.id) {

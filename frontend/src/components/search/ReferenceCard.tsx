@@ -12,7 +12,9 @@ export function ReferenceCard({ reference }: ReferenceCardProps) {
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <h4 className="text-sm font-medium line-clamp-2 flex-1">{reference.title}</h4>
+          <h4 className="text-sm font-medium line-clamp-2 flex-1">
+            {reference.title}
+          </h4>
           <Badge variant="secondary" className="ml-2 flex-shrink-0">
             <Star className="h-3 w-3 mr-1 fill-current" />
             {Math.round(reference.relevance * 100)}%

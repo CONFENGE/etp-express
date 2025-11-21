@@ -11,13 +11,17 @@ interface SectionCardProps {
 }
 
 export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
-  const Icon = section.isCompleted ? CheckCircle : section.isRequired ? AlertCircle : Circle;
+  const Icon = section.isCompleted
+    ? CheckCircle
+    : section.isRequired
+      ? AlertCircle
+      : Circle;
 
   return (
     <Card
       className={cn(
         'cursor-pointer transition-colors hover:bg-accent',
-        isActive && 'border-primary bg-accent'
+        isActive && 'border-primary bg-accent',
       )}
       onClick={onClick}
     >
@@ -27,7 +31,11 @@ export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
             <Icon
               className={cn(
                 'h-5 w-5',
-                section.isCompleted ? 'text-green-500' : section.isRequired ? 'text-yellow-500' : 'text-muted-foreground'
+                section.isCompleted
+                  ? 'text-green-500'
+                  : section.isRequired
+                    ? 'text-yellow-500'
+                    : 'text-muted-foreground',
               )}
             />
             <CardTitle className="text-sm">{section.title}</CardTitle>
