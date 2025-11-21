@@ -3,8 +3,8 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 3 (Quality & Security) - 90% (38/42) ⚡ EM PROGRESSO!
-**Última Atualização:** 2025-11-21 (Issue #239 concluída - LGPD E2E Tests | 155 issues, 58 abertas + 97 fechadas)
-**Total de Issues:** 155 issues (58 abertas + 97 fechadas) organizadas em 6 milestones
+**Última Atualização:** 2025-11-21 (6 novas issues de CI Fixes criadas #252-#257 | 161 issues, 64 abertas + 97 fechadas)
+**Total de Issues:** 161 issues (64 abertas + 97 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~87% - M3 próximo da conclusão! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
@@ -26,13 +26,13 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
+[M2] CI/CD Pipeline               █████████████░░░░░░░ 12/18 (67%)  🚨 HOTFIX NECESSÁRIO (+6 issues críticas)
 [M3] Quality & Security           ███████████████████░ 38/42 (90%)  ⚡ EM PROGRESSO (+4 issues restantes)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 97/155 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 90% ⚡ | M4 26% ⚡
+TOTAL: 97/161 issues concluídas (60%)  |  M1 100% ✅ | M2 67% 🚨 | M3 90% ⚡ | M4 26% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -64,8 +64,8 @@ Sub-issues atômicas (desmembradas):
 **Correções críticas:**
 - TypeScript build: 96 erros → 0 ✅ (module augmentation para Radix UI)
 
-### ✅ M2: CI/CD Pipeline (12 fechadas de 12) 🎉
-**Status**: 100% CONCLUÍDO! 🎉 | **M2 FINALIZADO EM 15/11/2025**
+### 🚨 M2: CI/CD Pipeline (12 fechadas de 18)
+**Status**: 67% concluído | **6 issues CRÍTICAS de hotfix** (CI workflows falhando) 🚨
 
 **CI/CD Automation concluído:**
 - ✅ #18 - ESLint rule `react-hooks/exhaustive-deps` como erro ⭐ **PR #129**
@@ -81,7 +81,16 @@ Sub-issues atômicas (desmembradas):
 - ✅ #180 - [P1][Infrastructure] Configure Railway timeout for long-running requests ⚡ **PR #187 MERGED** ✅
 - ✅ #183 - [CI] Fix vitest package resolution in Test Frontend workflow ⚡ **PR #184 MERGED** ✅
 
-**M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
+**🚨 CI Fixes - HOTFIX NECESSÁRIO (6 pendentes) 🆕**
+- [ ] #252 - [P0] Fix package-lock.json inconsistency breaking CI test workflows 🔴
+- [ ] #253 - [P1] Configure Prettier endOfLine to fix CRLF lint errors 🟡
+- [ ] #254 - [P1] Add .gitattributes to enforce LF line endings 🟡
+- [ ] #255 - [P1] Normalize existing CRLF files to LF in backend 🟡
+- [ ] #256 - [P2] Add pre-commit hook to validate line endings 🟢
+- [ ] #257 - [P2] Add CI workflow validation for package-lock.json 🟢
+
+**⚠️ ATENÇÃO: 5 workflows de CI estão FALHANDO** (Backend Lint, Frontend Lint, Backend Tests, Frontend Tests, Playwright Tests)
+**Issues #252-#257 resolvem todos os problemas detectados (~40min trabalho total)**
 
 ### ⚡ M3: Quality & Security (38 fechadas de 42)
 **Status**: 90% concluído | **4 issues restantes** (3 originais + 1 sub-issue nova)
@@ -1291,7 +1300,7 @@ Nenhum - Issues #42 e #43 são o ponto de partida absoluto
 #### Objetivo
 Automatizar validação de código (lint + testes) em GitHub Actions, configurar deploy em produção e garantir backup/recovery.
 
-#### Issues (12 total - 12 concluídas ✅, 0 pendentes) 🎉
+#### Issues (18 total - 12 concluídas ✅, 6 pendentes) 🚨 HOTFIX NECESSÁRIO
 
 **CI/CD Automation (3 issues) - ✅ 3 DE 3 CONCLUÍDAS!**
 - [x] #18 - Habilitar ESLint rule `react-hooks/exhaustive-deps` como erro (1h) ✅ **PR #129**
@@ -1313,7 +1322,16 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 - [x] #180 - Configure Railway timeout for long-running requests ✅ **PR #187 MERGED**
 - [x] #183 - Fix vitest package resolution in Test Frontend ✅ **PR #184 MERGED**
 
+**🚨 CI Fixes - Hotfix (6 issues) 🆕 - 0 DE 6 CONCLUÍDAS**
+- [ ] #252 - [P0-CRITICAL] Fix package-lock.json inconsistency breaking CI test workflows (5min) 🔴 **CRÍTICO**
+- [ ] #253 - [P1-HIGH] Configure Prettier endOfLine to fix CRLF lint errors in CI (2min) 🟡 **ALTO**
+- [ ] #254 - [P1-HIGH] Add .gitattributes to enforce LF line endings across codebase (3min) 🟡 **ALTO**
+- [ ] #255 - [P1-HIGH] Normalize existing CRLF files to LF in backend (5min) 🟡 **ALTO** (depende #253, #254)
+- [ ] #256 - [P2-MEDIUM] Add pre-commit hook to validate line endings (10min) 🟢 **MÉDIO**
+- [ ] #257 - [P2-MEDIUM] Add CI workflow validation for package-lock.json consistency (15min) 🟢 **MÉDIO**
+
 **Nota:** Issues #21 e #40 foram movidas para M6 (Maintenance)
+**⚠️ ATENÇÃO:** 5 workflows de CI estão falhando (#252-#257 resolve todos os problemas)
 
 #### Critérios de Conclusão
 - ✅ Workflow de lint executa em todo push/PR
@@ -2007,10 +2025,35 @@ gh issue list --json number,state,milestone | jq
 
 **Impacto:** M2 a 2 issues da conclusão (80%). Backup validado reduz risco de perda de dados a quase zero.
 
+### 2025-11-21 (Atualização 24 - CI Workflows Falhando - 6 Hotfixes Criadas) 🚨
+- 🚨 **CRÍTICO**: 5 workflows de CI FALHANDO (Lint Backend/Frontend, Tests Backend/Frontend, Playwright)
+- 🆕 **6 NOVAS ISSUES CRIADAS** (#252-#257) - Hotfixes para restaurar CI
+- ⚠️ **M2 STATUS**: 100% → **67%** (12/18) - Regressão detectada
+- 📊 **TOTAL ATUALIZADO**: 155 → **161 issues** (64 abertas + 97 fechadas)
+- 🔍 **CAUSAS IDENTIFICADAS**:
+  - package-lock.json desatualizado (afeta 3 workflows de testes)
+  - Line endings CRLF vs LF (afeta 2 workflows de lint)
+
+**Novas Issues por Prioridade:**
+- **P0 (1 issue)**: #252 - Fix package-lock.json inconsistency (5min) 🔴 **CRÍTICO**
+- **P1 (3 issues)**: #253-#255 - Prettier endOfLine + .gitattributes + normalize CRLF (10min) 🟡 **ALTO**
+- **P2 (2 issues)**: #256-#257 - Pre-commit hook + CI validation (25min) 🟢 **MÉDIO**
+
+**Impacto:**
+- CI bloqueado para todos os desenvolvedores
+- Todos os testes passam LOCALMENTE mas falham no CI (problema de infraestrutura)
+- Hotfixes resolvem 100% dos problemas em ~40min de trabalho
+- Após resolução: M2 volta para 100% ✅
+
+**Próximos Passos:**
+1. Executar #252 (P0) → desbloqueia 3 workflows de teste
+2. Executar #253-#255 (P1) → desbloqueia 2 workflows de lint
+3. Executar #256-#257 (P2) → previne futuros problemas
+
 ### Próxima Revisão
-**Data:** 2025-11-20 (após conclusão de M2)
-**Objetivo:** Ajustar prazos de M3-M5 baseado em velocity real
-**Atenção:** Issues #105 e #112 bloqueantes para 100% de M2
+**Data:** 2025-11-22 (após resolução de hotfixes #252-#257)
+**Objetivo:** Restaurar CI para 100% funcional e retomar M3
+**Atenção:** Issues #252-#257 BLOQUEANTES para desenvolvimento
 
 ---
 
@@ -2024,6 +2067,6 @@ gh issue list --json number,state,milestone | jq
 
 ---
 
-**Última atualização:** 2025-11-16 (Atualização 23 - PR #146 Merged - Production Security Fix)
-**Próxima revisão:** 2025-11-20 (após conclusão M3 - 6 issues restantes)
-**Versão:** 1.9
+**Última atualização:** 2025-11-21 (Atualização 24 - 6 CI Hotfix Issues Criadas - 5 Workflows Falhando)
+**Próxima revisão:** 2025-11-22 (após resolução #252-#257 - restaurar CI)
+**Versão:** 2.0
