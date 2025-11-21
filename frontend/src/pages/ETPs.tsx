@@ -4,7 +4,13 @@ import { FileText, PlusCircle, Search } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useETPs } from '@/hooks/useETPs';
@@ -21,9 +27,10 @@ export function ETPs() {
     fetchETPs();
   }, [fetchETPs]);
 
-  const filteredETPs = etps.filter((etp) =>
-    etp.title.toLowerCase().includes(search.toLowerCase()) ||
-    etp.description?.toLowerCase().includes(search.toLowerCase())
+  const filteredETPs = etps.filter(
+    (etp) =>
+      etp.title.toLowerCase().includes(search.toLowerCase()) ||
+      etp.description?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -62,9 +69,13 @@ export function ETPs() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhum ETP encontrado</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Nenhum ETP encontrado
+              </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                {search ? 'Tente ajustar sua busca' : 'Comece criando seu primeiro ETP'}
+                {search
+                  ? 'Tente ajustar sua busca'
+                  : 'Comece criando seu primeiro ETP'}
               </p>
               {!search && (
                 <Button asChild>
@@ -97,8 +108,12 @@ export function ETPs() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-muted-foreground">Progresso</span>
-                        <span className="text-sm font-medium">{etp.progress}%</span>
+                        <span className="text-sm text-muted-foreground">
+                          Progresso
+                        </span>
+                        <span className="text-sm font-medium">
+                          {etp.progress}%
+                        </span>
                       </div>
                       <Progress value={etp.progress} />
                     </div>

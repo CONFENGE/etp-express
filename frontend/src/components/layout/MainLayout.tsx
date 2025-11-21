@@ -21,7 +21,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <main
           className={cn(
             'flex-1 transition-all duration-300',
-            sidebarOpen ? 'ml-64' : 'ml-0'
+            sidebarOpen ? 'ml-64' : 'ml-0',
           )}
         >
           <div className="container mx-auto px-4 py-8">{children}</div>

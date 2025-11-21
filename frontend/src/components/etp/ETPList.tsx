@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -48,7 +54,9 @@ export function ETPList({ etps }: ETPListProps) {
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Progresso</span>
+                  <span className="text-sm text-muted-foreground">
+                    Progresso
+                  </span>
                   <span className="text-sm font-medium">{etp.progress}%</span>
                 </div>
                 <Progress value={etp.progress} />
