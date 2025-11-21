@@ -1,10 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -30,6 +35,7 @@ describe('UsersController', () => {
     update: jest.fn(),
     remove: jest.fn(),
     exportUserData: jest.fn(),
+    softDeleteAccount: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -481,6 +487,196 @@ describe('UsersController', () => {
       // Assert
       // Verify that the service was called with the userId extracted from JWT
       expect(service.exportUserData).toHaveBeenCalledWith(mockUserId);
+    });
+  });
+
+  describe('deleteMyAccount', () => {
+    const validDeleteDto: DeleteAccountDto = {
+      confirmation: 'DELETE MY ACCOUNT',
+      reason: 'Não preciso mais da plataforma',
+    };
+
+    const scheduledDeletionDate = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ); // 30 days from now
+
+    it('should soft delete account successfully with valid confirmation', async () => {
+      // Arrange
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+
+      // Assert
+      expect(service.softDeleteAccount).toHaveBeenCalledWith(
+        mockUserId,
+        validDeleteDto.reason,
+      );
+      expect(service.softDeleteAccount).toHaveBeenCalledTimes(1);
+      expect(result.message).toContain('marcada para deleção');
+      expect(result.deletionScheduledFor).toBe(
+        scheduledDeletionDate.toISOString(),
+      );
+      expect(result.disclaimer).toBeDefined();
+      expect(result.disclaimer).toContain('30 dias');
+    });
+
+    it('should throw BadRequestException with invalid confirmation', async () => {
+      // Arrange
+      const invalidDeleteDto: DeleteAccountDto = {
+        confirmation: 'delete my account', // lowercase - invalid
+      };
+
+      // Act & Assert
+      await expect(
+        controller.deleteMyAccount(mockUserId, invalidDeleteDto),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.deleteMyAccount(mockUserId, invalidDeleteDto),
+      ).rejects.toThrow('Confirmação inválida');
+
+      // Verify service was NOT called due to validation failure
+      expect(service.softDeleteAccount).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException with empty confirmation', async () => {
+      // Arrange
+      const emptyDeleteDto: DeleteAccountDto = {
+        confirmation: '',
+      };
+
+      // Act & Assert
+      await expect(
+        controller.deleteMyAccount(mockUserId, emptyDeleteDto),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(service.softDeleteAccount).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException with wrong confirmation phrase', async () => {
+      // Arrange
+      const wrongDeleteDto: DeleteAccountDto = {
+        confirmation: 'DELETE ACCOUNT', // Missing "MY"
+      };
+
+      // Act & Assert
+      await expect(
+        controller.deleteMyAccount(mockUserId, wrongDeleteDto),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(service.softDeleteAccount).not.toHaveBeenCalled();
+    });
+
+    it('should accept deletion without reason (optional field)', async () => {
+      // Arrange
+      const deleteWithoutReason: DeleteAccountDto = {
+        confirmation: 'DELETE MY ACCOUNT',
+      };
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        deleteWithoutReason,
+      );
+
+      // Assert
+      expect(service.softDeleteAccount).toHaveBeenCalledWith(
+        mockUserId,
+        undefined,
+      );
+      expect(result.message).toContain('marcada para deleção');
+      expect(result.deletionScheduledFor).toBeDefined();
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      // Arrange
+      mockUsersService.softDeleteAccount.mockRejectedValue(
+        new NotFoundException('Usuário não encontrado'),
+      );
+
+      // Act & Assert
+      await expect(
+        controller.deleteMyAccount('invalid-id', validDeleteDto),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        controller.deleteMyAccount('invalid-id', validDeleteDto),
+      ).rejects.toThrow('Usuário não encontrado');
+    });
+
+    it('should include deletion scheduled date in ISO format', async () => {
+      // Arrange
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+
+      // Assert
+      expect(result.deletionScheduledFor).toBe(
+        scheduledDeletionDate.toISOString(),
+      );
+      // Verify ISO format
+      expect(result.deletionScheduledFor).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+      );
+    });
+
+    it('should include comprehensive disclaimer in response', async () => {
+      // Arrange
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+
+      // Assert
+      expect(result.disclaimer).toContain('30 dias');
+      expect(result.disclaimer).toContain('permanentemente removidos');
+      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    it('should pass optional reason to service when provided', async () => {
+      // Arrange
+      const deleteWithReason: DeleteAccountDto = {
+        confirmation: 'DELETE MY ACCOUNT',
+        reason: 'Mudança de plataforma',
+      };
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      await controller.deleteMyAccount(mockUserId, deleteWithReason);
+
+      // Assert
+      expect(service.softDeleteAccount).toHaveBeenCalledWith(
+        mockUserId,
+        'Mudança de plataforma',
+      );
+    });
+
+    it('should use CurrentUser decorator to extract userId from JWT', async () => {
+      // Arrange
+      mockUsersService.softDeleteAccount.mockResolvedValue({
+        scheduledDeletionDate,
+      });
+
+      // Act
+      await controller.deleteMyAccount(mockUserId, validDeleteDto);
+
+      // Assert
+      // Verify that the service was called with the userId extracted from JWT
+      expect(service.softDeleteAccount).toHaveBeenCalledWith(
+        mockUserId,
+        validDeleteDto.reason,
+      );
     });
   });
 });
