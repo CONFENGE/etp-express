@@ -5,7 +5,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, LessThan } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '../../entities/user.entity';
 import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
@@ -14,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailService } from '../email/email.service';
 import { AuditService } from '../audit/audit.service';
+import { subDays } from 'date-fns';
 
 @Injectable()
 export class UsersService {
@@ -308,5 +310,103 @@ export class UsersService {
     this.logger.log(
       `User deletion cancelled: ${user.email} (account reactivated)`,
     );
+  }
+
+  /**
+   * Purges (hard deletes) user accounts that have been soft-deleted for more than 30 days.
+   * Runs daily at 2 AM via cron job.
+   *
+   * @remarks
+   * This method fulfills LGPD data retention policy by:
+   * - Permanently deleting user data after 30-day grace period
+   * - Cascading deletion to related ETPs, sections, analytics, and audit logs
+   * - Creating audit trail for each purge
+   * - Logging purge operations for compliance reporting
+   *
+   * Scheduled to run: Every day at 2:00 AM
+   *
+   * @returns Object with purge statistics (count and timestamp)
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  async purgeDeletedAccounts(): Promise<{
+    purgedCount: number;
+    purgedAt: Date;
+    purgedUserIds: string[];
+  }> {
+    // Calculate cutoff date (30 days ago)
+    const cutoffDate = subDays(new Date(), 30);
+
+    // Find all users soft-deleted more than 30 days ago
+    const deletedUsers = await this.usersRepository.find({
+      where: {
+        deletedAt: LessThan(cutoffDate),
+        isActive: false,
+      },
+    });
+
+    const purgedUserIds: string[] = [];
+
+    for (const user of deletedUsers) {
+      try {
+        // Count related data for audit log
+        const etpsCount = await this.etpsRepository.count({
+          where: { createdById: user.id },
+        });
+
+        const etps = await this.etpsRepository.find({
+          where: { createdById: user.id },
+          relations: ['sections', 'versions'],
+        });
+
+        const sectionsCount = etps.reduce(
+          (sum, etp) => sum + (etp.sections?.length || 0),
+          0,
+        );
+        const versionsCount = etps.reduce(
+          (sum, etp) => sum + (etp.versions?.length || 0),
+          0,
+        );
+
+        // Create audit log BEFORE deletion (using AuditService)
+        await this.auditService.logAccountDeletion(user.id, 'HARD', {
+          reason: `Hard delete after 30-day retention period (originally deleted: ${user.deletedAt?.toISOString() || 'N/A'})`,
+          etpsCount,
+          sectionsCount,
+          versionsCount,
+        });
+
+        // Hard delete user (cascade will remove ETPs, sections, versions due to onDelete: 'CASCADE')
+        await this.usersRepository.remove(user);
+
+        purgedUserIds.push(user.id);
+
+        this.logger.log(
+          `Hard deleted user ${user.id} (${user.email}) after 30-day retention period. ` +
+            `Related data: ${etpsCount} ETPs, ${sectionsCount} sections, ${versionsCount} versions`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to purge user ${user.id} (${user.email}): ${error.message}`,
+          error.stack,
+        );
+        // Continue purging other users even if one fails
+      }
+    }
+
+    const result = {
+      purgedCount: purgedUserIds.length,
+      purgedAt: new Date(),
+      purgedUserIds,
+    };
+
+    if (purgedUserIds.length > 0) {
+      this.logger.log(
+        `Purge job completed: ${purgedUserIds.length} user(s) permanently deleted`,
+      );
+    } else {
+      this.logger.log('Purge job completed: No users to purge');
+    }
+
+    return result;
   }
 }
