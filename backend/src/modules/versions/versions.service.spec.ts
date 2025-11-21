@@ -654,9 +654,6 @@ describe('VersionsService', () => {
         versionNumber: 2,
       } as EtpVersion);
       sectionsRepository.delete.mockResolvedValue({ affected: 2 } as any);
-      sectionsRepository.create.mockImplementation(
-        (data) => data as EtpSection,
-      );
       sectionsRepository.save.mockResolvedValue([] as any);
       etpsRepository.save.mockResolvedValue(mockEtp as Etp);
 
@@ -664,7 +661,7 @@ describe('VersionsService', () => {
       await service.restoreVersion(mockVersionId, mockUserId);
 
       // Assert
-      expect(sectionsRepository.create).toHaveBeenCalledTimes(2);
+      // Note: Implementation uses `new EtpSection()` directly, not repository.create()
       expect(sectionsRepository.save).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
