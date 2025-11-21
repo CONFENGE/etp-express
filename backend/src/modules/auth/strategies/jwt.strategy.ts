@@ -4,6 +4,14 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import * as jwt from 'jsonwebtoken';
+import { Request } from 'express';
+
+interface JwtPayload {
+  sub: string;
+  email: string;
+  name: string;
+  role: string;
+}
 
 /**
  * JWT authentication strategy with dual-key support for zero-downtime secret rotation.
@@ -44,9 +52,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKeyProvider: (
-        request: any,
+        request: Request,
         rawJwtToken: string,
-        done: (err: any, secret?: string) => void,
+        done: (err: Error | null, secret?: string) => void,
       ) => {
         // Try each secret until one validates
         for (const secret of secrets) {
@@ -74,7 +82,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
   }
 
-  async validate(payload: any) {
+  async validate(payload: JwtPayload) {
     const user = await this.usersService.findOne(payload.sub);
 
     if (!user || !user.isActive) {

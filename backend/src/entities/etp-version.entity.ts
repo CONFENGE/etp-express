@@ -22,8 +22,8 @@ export class EtpVersion {
     description: string;
     objeto: string;
     status: string;
-    sections: any[];
-    metadata: any;
+    sections: unknown[];
+    metadata: unknown;
   };
 
   @Column({ type: 'text', nullable: true })

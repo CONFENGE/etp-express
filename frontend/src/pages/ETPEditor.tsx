@@ -29,7 +29,9 @@ export function ETPEditor() {
 
   useEffect(() => {
     if (currentETP) {
-      const section = currentETP.sections.find(s => s.sectionNumber === activeSection);
+      const section = currentETP.sections.find(
+        (s) => s.sectionNumber === activeSection,
+      );
       setContent(section?.content || '');
     }
   }, [currentETP, activeSection]);
@@ -39,9 +41,9 @@ export function ETPEditor() {
 
     try {
       await updateETP(id, {
-        sections: currentETP.sections.map(s =>
-          s.sectionNumber === activeSection ? { ...s, content } : s
-        )
+        sections: currentETP.sections.map((s) =>
+          s.sectionNumber === activeSection ? { ...s, content } : s,
+        ),
       });
       success('Seção salva com sucesso!');
     } catch (err) {
@@ -85,7 +87,9 @@ export function ETPEditor() {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Progresso Geral</span>
-              <span className="text-sm text-muted-foreground">{currentETP.progress}%</span>
+              <span className="text-sm text-muted-foreground">
+                {currentETP.progress}%
+              </span>
             </div>
             <Progress value={currentETP.progress} />
           </div>
@@ -97,7 +101,10 @@ export function ETPEditor() {
               <CardTitle>Seções do ETP</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs value={String(activeSection)} onValueChange={(v) => setActiveSection(Number(v))}>
+              <Tabs
+                value={String(activeSection)}
+                onValueChange={(v) => setActiveSection(Number(v))}
+              >
                 <TabsList className="grid grid-cols-7 lg:grid-cols-13 h-auto">
                   {SECTION_TEMPLATES.map((template) => (
                     <TabsTrigger
@@ -114,11 +121,17 @@ export function ETPEditor() {
                 </TabsList>
 
                 {SECTION_TEMPLATES.map((template) => (
-                  <TabsContent key={template.number} value={String(template.number)} className="space-y-4 mt-6">
+                  <TabsContent
+                    key={template.number}
+                    value={String(template.number)}
+                    className="space-y-4 mt-6"
+                  >
                     <div>
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h3 className="text-lg font-semibold">{template.title}</h3>
+                          <h3 className="text-lg font-semibold">
+                            {template.title}
+                          </h3>
                           <p className="text-sm text-muted-foreground mt-1">
                             {template.description}
                           </p>
@@ -159,7 +172,8 @@ export function ETPEditor() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Clique em "Gerar com IA" para obter sugestões automatizadas baseadas em contratações similares.
+                  Clique em "Gerar com IA" para obter sugestões automatizadas
+                  baseadas em contratações similares.
                 </p>
                 <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                   <p className="text-xs text-yellow-800">
@@ -171,7 +185,9 @@ export function ETPEditor() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">Contratações Similares</CardTitle>
+                <CardTitle className="text-sm">
+                  Contratações Similares
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">

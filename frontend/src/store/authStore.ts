@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, LoginCredentials, RegisterData, AuthResponse } from '@/types/user';
+import {
+  User,
+  LoginCredentials,
+  RegisterData,
+  AuthResponse,
+} from '@/types/user';
 import { apiHelpers } from '@/lib/api';
 
 interface AuthState {
@@ -29,7 +34,10 @@ export const useAuthStore = create<AuthState>()(
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await apiHelpers.post<AuthResponse>('/auth/login', credentials);
+          const response = await apiHelpers.post<AuthResponse>(
+            '/auth/login',
+            credentials,
+          );
 
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.user));
@@ -42,7 +50,8 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao fazer login';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro ao fazer login';
           set({
             error: errorMessage,
             isLoading: false,
@@ -55,7 +64,10 @@ export const useAuthStore = create<AuthState>()(
       register: async (data: RegisterData) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await apiHelpers.post<AuthResponse>('/auth/register', data);
+          const response = await apiHelpers.post<AuthResponse>(
+            '/auth/register',
+            data,
+          );
 
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.user));
@@ -68,7 +80,8 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao registrar';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro ao registrar';
           set({
             error: errorMessage,
             isLoading: false,
@@ -100,6 +113,6 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

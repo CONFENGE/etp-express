@@ -34,7 +34,7 @@ export class AnalyticsEvent {
     sectionType?: string;
     exportFormat?: string;
     searchQuery?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
   @Column({ nullable: true })

@@ -59,7 +59,12 @@ export function AIGenerationPanel({
                   Aceitar
                 </Button>
               )}
-              <Button onClick={onRegenerate} size="sm" variant="outline" className="flex-1">
+              <Button
+                onClick={onRegenerate}
+                size="sm"
+                variant="outline"
+                className="flex-1"
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Regenerar
               </Button>

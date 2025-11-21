@@ -2,7 +2,13 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, PlusCircle, TrendingUp } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,7 +47,9 @@ export function Dashboard() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de ETPs</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total de ETPs
+              </CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -54,7 +62,9 @@ export function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Em Progresso</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Em Progresso
+              </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -72,9 +82,7 @@ export function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.completed}</div>
-              <p className="text-xs text-muted-foreground">
-                Prontos para uso
-              </p>
+              <p className="text-xs text-muted-foreground">Prontos para uso</p>
             </CardContent>
           </Card>
         </div>
@@ -84,9 +92,7 @@ export function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>ETPs Recentes</CardTitle>
-                <CardDescription>
-                  Seus estudos mais recentes
-                </CardDescription>
+                <CardDescription>Seus estudos mais recentes</CardDescription>
               </div>
               <Button asChild>
                 <Link to="/etps/new">
@@ -102,7 +108,9 @@ export function Dashboard() {
             ) : recentETPs.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">Nenhum ETP encontrado</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  Nenhum ETP encontrado
+                </h3>
                 <p className="text-sm text-muted-foreground mt-2">
                   Comece criando seu primeiro Estudo Técnico Preliminar
                 </p>

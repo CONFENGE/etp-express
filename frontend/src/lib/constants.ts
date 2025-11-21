@@ -1,5 +1,6 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'ETP Express';
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+export const API_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const ROUTES = {
   HOME: '/',
@@ -40,7 +41,8 @@ export const WARNING_MESSAGE =
 export const AI_WARNING_MESSAGE =
   'Esta sugestão foi gerada por IA. Revise criticamente antes de aceitar.';
 
-export const REFERENCE_WARNING_MESSAGE = 'Verifique a fonte antes de utilizar esta referência.';
+export const REFERENCE_WARNING_MESSAGE =
+  'Verifique a fonte antes de utilizar esta referência.';
 
 export const VALIDATION_MESSAGES = {
   REQUIRED_FIELD: 'Este campo é obrigatório',

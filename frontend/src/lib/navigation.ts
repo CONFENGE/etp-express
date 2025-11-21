@@ -53,7 +53,7 @@ export const setNavigate = (navigate: NavigateFunction): void => {
 export const getNavigate = (): NavigateFunction => {
   if (!navigateInstance) {
     throw new Error(
-      'Navigate not initialized. Call setNavigate() in App.tsx before using getNavigate().'
+      'Navigate not initialized. Call setNavigate() in App.tsx before using getNavigate().',
     );
   }
   return navigateInstance;

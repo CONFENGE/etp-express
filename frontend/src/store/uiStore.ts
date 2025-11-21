@@ -44,8 +44,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   toasts: [],
   activeModal: null,
 
-  toggleSidebar: () =>
-    set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
   setSidebarOpen: (open: boolean) => set({ sidebarOpen: open }),
 

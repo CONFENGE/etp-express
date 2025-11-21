@@ -28,9 +28,17 @@ interface ETFState {
   setCurrentETP: (etp: ETP | null) => void;
 
   // Section Operations
-  updateSection: (etpId: string, sectionId: string, data: Partial<Section>) => Promise<void>;
-  generateSection: (request: AIGenerationRequest) => Promise<AIGenerationResponse>;
-  regenerateSection: (request: AIGenerationRequest) => Promise<AIGenerationResponse>;
+  updateSection: (
+    etpId: string,
+    sectionId: string,
+    data: Partial<Section>,
+  ) => Promise<void>;
+  generateSection: (
+    request: AIGenerationRequest,
+  ) => Promise<AIGenerationResponse>;
+  regenerateSection: (
+    request: AIGenerationRequest,
+  ) => Promise<AIGenerationResponse>;
 
   // Validation
   validateETP: (id: string) => Promise<ValidationResult>;
@@ -144,19 +152,23 @@ export const useETPStore = create<ETFState>((set, _get) => ({
 
   setCurrentETP: (etp: ETP | null) => set({ currentETP: etp }),
 
-  updateSection: async (etpId: string, sectionId: string, data: Partial<Section>) => {
+  updateSection: async (
+    etpId: string,
+    sectionId: string,
+    data: Partial<Section>,
+  ) => {
     set({ isLoading: true, error: null });
     try {
       const updated = await apiHelpers.put<Section>(
         `/etps/${etpId}/sections/${sectionId}`,
-        data
+        data,
       );
 
       set((state) => {
         if (!state.currentETP) return state;
 
         const updatedSections = state.currentETP.sections.map((section) =>
-          section.id === sectionId ? updated : section
+          section.id === sectionId ? updated : section,
         );
 
         return {
@@ -169,7 +181,8 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao atualizar seção',
+        error:
+          error instanceof Error ? error.message : 'Erro ao atualizar seção',
         isLoading: false,
       });
       throw error;
@@ -181,13 +194,14 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     try {
       const response = await apiHelpers.post<AIGenerationResponse>(
         `/etps/${request.etpId}/sections/${request.sectionNumber}/generate`,
-        request
+        request,
       );
       set({ aiGenerating: false });
       return response;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao gerar seção com IA',
+        error:
+          error instanceof Error ? error.message : 'Erro ao gerar seção com IA',
         aiGenerating: false,
       });
       throw error;
@@ -199,13 +213,14 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     try {
       const response = await apiHelpers.post<AIGenerationResponse>(
         `/etps/${request.etpId}/sections/${request.sectionNumber}/regenerate`,
-        request
+        request,
       );
       set({ aiGenerating: false });
       return response;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao regenerar seção',
+        error:
+          error instanceof Error ? error.message : 'Erro ao regenerar seção',
         aiGenerating: false,
       });
       throw error;
@@ -215,7 +230,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   validateETP: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const result = await apiHelpers.get<ValidationResult>(`/etps/${id}/validate`);
+      const result = await apiHelpers.get<ValidationResult>(
+        `/etps/${id}/validate`,
+      );
       set({ validationResult: result, isLoading: false });
       return result;
     } catch (error) {
@@ -230,7 +247,10 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   exportPDF: async (id: string, options?: ExportOptions) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiHelpers.post<Blob>(`/etps/${id}/export/pdf`, options);
+      const response = await apiHelpers.post<Blob>(
+        `/etps/${id}/export/pdf`,
+        options,
+      );
       set({ isLoading: false });
       return response;
     } catch (error) {
@@ -259,7 +279,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
 
   fetchReferences: async (etpId: string) => {
     try {
-      const references = await apiHelpers.get<Reference[]>(`/etps/${etpId}/references`);
+      const references = await apiHelpers.get<Reference[]>(
+        `/etps/${etpId}/references`,
+      );
       set({ references });
     } catch (error) {
       console.error('Erro ao carregar referências:', error);

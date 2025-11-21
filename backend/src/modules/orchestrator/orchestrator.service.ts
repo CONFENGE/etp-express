@@ -15,8 +15,15 @@ export interface GenerationRequest {
   sectionType: string;
   title: string;
   userInput: string;
-  context?: any;
-  etpData?: any;
+  context?: Record<string, unknown>;
+  etpData?: {
+    objeto?: string;
+    metadata?: {
+      orgao?: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
 }
 
 /**
@@ -31,11 +38,11 @@ export interface GenerationResult {
     agentsUsed: string[];
   };
   validationResults: {
-    legal?: any;
-    fundamentacao?: any;
-    clareza?: any;
-    simplificacao?: any;
-    antiHallucination?: any;
+    legal?: unknown;
+    fundamentacao?: unknown;
+    clareza?: unknown;
+    simplificacao?: unknown;
+    antiHallucination?: unknown;
   };
   warnings: string[];
   disclaimer: string;
