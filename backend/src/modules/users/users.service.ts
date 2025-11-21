@@ -9,10 +9,11 @@ import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
-import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
+import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailService } from '../email/email.service';
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,7 @@ export class UsersService {
     @InjectRepository(AuditLog)
     private auditLogsRepository: Repository<AuditLog>,
     private emailService: EmailService,
+    private auditService: AuditService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -142,22 +144,24 @@ export class UsersService {
       take: 1000,
     });
 
-    // 5. Create audit log for this export
-    const exportLog = this.auditLogsRepository.create({
-      action: AuditAction.EXPORT,
-      entityType: 'user',
-      entityId: userId,
-      userId,
-      description: 'User data exported for LGPD compliance',
-      changes: {
-        metadata: {
-          etpsCount: etps.length,
-          analyticsCount: analytics.length,
-          auditLogsCount: auditLogs.length,
-        },
-      },
+    // 5. Create audit log for this export using AuditService
+    const totalSections = etps.reduce(
+      (sum, etp) => sum + (etp.sections?.length || 0),
+      0,
+    );
+    const totalVersions = etps.reduce(
+      (sum, etp) => sum + (etp.versions?.length || 0),
+      0,
+    );
+
+    await this.auditService.logDataExport(userId, {
+      format: 'JSON',
+      etpsCount: etps.length,
+      sectionsCount: totalSections,
+      versionsCount: totalVersions,
+      analyticsCount: analytics.length,
+      auditLogsCount: auditLogs.length,
     });
-    await this.auditLogsRepository.save(exportLog);
 
     this.logger.log(
       `User data exported: ${user.email} (${etps.length} ETPs, ${analytics.length} analytics, ${auditLogs.length} audit logs)`,
@@ -219,22 +223,32 @@ export class UsersService {
     const scheduledDeletionDate = new Date();
     scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 30);
 
-    // Create audit log
-    const auditLog = this.auditLogsRepository.create({
-      action: AuditAction.DELETE,
-      entityType: 'user',
-      entityId: userId,
-      userId,
-      description: 'User account soft deleted (LGPD Art. 18, VI)',
-      changes: {
-        metadata: {
-          deletedAt: user.deletedAt.toISOString(),
-          scheduledHardDeletionAt: scheduledDeletionDate.toISOString(),
-          reason: reason || 'Não informado',
-        },
-      },
+    // Count ETPs and related data for audit log
+    const etpsCount = await this.etpsRepository.count({
+      where: { createdById: userId },
     });
-    await this.auditLogsRepository.save(auditLog);
+
+    const etps = await this.etpsRepository.find({
+      where: { createdById: userId },
+      relations: ['sections', 'versions'],
+    });
+
+    const sectionsCount = etps.reduce(
+      (sum, etp) => sum + (etp.sections?.length || 0),
+      0,
+    );
+    const versionsCount = etps.reduce(
+      (sum, etp) => sum + (etp.versions?.length || 0),
+      0,
+    );
+
+    // Create audit log using AuditService
+    await this.auditService.logAccountDeletion(userId, 'SOFT', {
+      reason: reason || 'Não informado',
+      etpsCount,
+      sectionsCount,
+      versionsCount,
+    });
 
     // Send deletion confirmation email with cancellation link
     try {
@@ -278,26 +292,18 @@ export class UsersService {
       throw new BadRequestException('Conta não está marcada para deleção');
     }
 
+    const originalDeletionDate = user.deletedAt.toISOString();
+
     // Reactivate account
     user.deletedAt = null;
     user.isActive = true;
     await this.usersRepository.save(user);
 
-    // Create audit log
-    const auditLog = this.auditLogsRepository.create({
-      action: AuditAction.UPDATE,
-      entityType: 'user',
-      entityId: userId,
-      userId,
-      description: 'User account deletion cancelled',
-      changes: {
-        metadata: {
-          cancelledAt: new Date().toISOString(),
-          previousDeletionDate: user.deletedAt,
-        },
-      },
+    // Create audit log using AuditService
+    await this.auditService.logDeletionCancelled(userId, {
+      originalDeletionDate,
+      reason: 'Usuário cancelou a deleção dentro do prazo de 30 dias',
     });
-    await this.auditLogsRepository.save(auditLog);
 
     this.logger.log(
       `User deletion cancelled: ${user.email} (account reactivated)`,
