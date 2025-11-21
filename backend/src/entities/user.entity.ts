@@ -71,6 +71,14 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   internationalTransferConsentAt: Date;
 
+  /**
+   * Timestamp when user requested account deletion (soft delete).
+   * Required for LGPD Art. 18, VI compliance (direito de exclusão).
+   * Account will be permanently deleted after 30 days (hard delete).
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  deletedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
