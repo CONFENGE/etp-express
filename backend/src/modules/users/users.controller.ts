@@ -191,7 +191,8 @@ export class UsersController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Confirmação inválida - deve ser exatamente "DELETE MY ACCOUNT"',
+    description:
+      'Confirmação inválida - deve ser exatamente "DELETE MY ACCOUNT"',
   })
   async deleteMyAccount(
     @CurrentUser('id') userId: string,
@@ -204,8 +205,10 @@ export class UsersController {
       );
     }
 
-    const { scheduledDeletionDate } =
-      await this.usersService.softDeleteAccount(userId, deleteDto.reason);
+    const { scheduledDeletionDate } = await this.usersService.softDeleteAccount(
+      userId,
+      deleteDto.reason,
+    );
 
     return {
       message:
