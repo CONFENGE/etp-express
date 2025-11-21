@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 1 (Foundation - Testes) - 100% (36/36) ⚡ COMPLETO!
-**Última Atualização:** 2025-11-20 (#243 TypeScript build errors FIXED via PR #244)
-**Total de Issues:** 154 issues (61 abertas + 93 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 1 (Foundation - Testes) - 100% (35/35) ⚡ COMPLETO!
+**Última Atualização:** 2025-11-21 (Auditoria ROADMAP: Sincronizado com GitHub - 155 issues, 61 abertas + 94 fechadas)
+**Total de Issues:** 155 issues (61 abertas + 94 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~85% - M3 próximo da conclusão! 🚀
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
@@ -25,26 +25,26 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ## 📊 Progresso Geral
 
 ```
-[M1] Foundation - Testes          ████████████████████ 36/36 (100%) 🎉 COMPLETO!
+[M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ████████████████░░░░ 34/43 (79%)  ⚡ EM PROGRESSO (+6 sub-issues)
+[M3] Quality & Security           ████████████████░░░░ 35/42 (83%)  ⚡ EM PROGRESSO (+6 sub-issues)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 93/154 issues concluídas (60%)  |  M1 100% ✅ | M2 100% ✅ | M3 79% ⚡ | M4 26% ⚡
+TOTAL: 94/155 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 83% ⚡ | M4 26% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
 - #86 → #191-#197 (7 sub-issues de LGPD audit) ✅ COMPLETO! (todas 7 concluídas)
-- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (2 de 7 concluídas: #233 ✅, #235 ✅)
+- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ⏳ EM EXECUÇÃO (4 de 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #237 ✅)
 ```
 
 ---
 
-## 🎉 Progresso Realizado (93 issues fechadas - aguardando merge de PR #244)
+## 🎉 Progresso Realizado (94 issues fechadas)
 
-### ✅ M1: Foundation - Testes (36 fechadas de 36) 🎉
+### ✅ M1: Foundation - Testes (35 fechadas de 35) 🎉
 **Status**: 100% CONCLUÍDO! 🎉 | **M1 FINALIZADO EM 20/11/2025**
 
 **Testes concluídos:**
@@ -83,8 +83,8 @@ Sub-issues atômicas (desmembradas):
 
 **M2 100% COMPLETO - INFRAESTRUTURA DE PRODUÇÃO FINALIZADA!** 🎉
 
-### ⚡ M3: Quality & Security (34 fechadas de 43)
-**Status**: 79% concluído | **9 issues restantes** (4 originais + 5 sub-issues novas)
+### ⚡ M3: Quality & Security (35 fechadas de 42)
+**Status**: 83% concluído | **7 issues restantes** (3 originais + 4 sub-issues novas)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -92,6 +92,7 @@ Sub-issues atômicas (desmembradas):
 - ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
 - ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐ **PR #146 MERGED** ✅
+- ✅ #247 - [SECURITY] Resolver vulnerabilidades HIGH no npm audit 🔒 ⭐ (CLOSED 2025-11-21)
 - ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
 - ✅ #153 - [SEC-109a] Avaliar soluções de Secrets Management 🔒 ⭐
 - ✅ #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback 🔒 ⭐
@@ -136,24 +137,26 @@ Sub-issues atômicas (desmembradas):
 - ✅ #203 - [P0][Backend] Implementar sanitização PII antes de envio para LLMs (CLOSED 2025-11-20) 🔒 ⭐ **PR #226 MERGED** ✅
 - ✅ #204 - [P0][Frontend] Aviso de transferência internacional de dados (CLOSED 2025-11-19) 🔒 ⭐ **PR #227 MERGED** ✅
 - ✅ #205 - [P0][Docs] Política de Privacidade completa conforme LGPD (CLOSED 2025-11-19) 🔒 ⭐ **PR #228** ✅
-- ✅ #233 - [P0][LGPD-113a] Implementar endpoint GET /users/me/export (CLOSED 2025-11-20) 🔒 ⭐ **PR #241 MERGED** ✅ **NOVO!**
+- ✅ #233 - [P0][LGPD-113a] Implementar endpoint GET /users/me/export (CLOSED 2025-11-20) 🔒 ⭐ **PR #241 MERGED** ✅
+- ✅ #234 - [P0][LGPD-113b] Implementar endpoint DELETE /users/me (CLOSED 2025-11-20) 🔒 ⭐ **PR #245 MERGED** ✅ **NOVO!**
 - ✅ #235 - [P0][LGPD-113c] Configurar cascade delete para ETPs (CLOSED 2025-11-20) 🔒 ⭐ **PR #240 MERGED** ✅
+- ✅ #237 - [P1][LGPD-113e] Email de confirmação para deleção (CLOSED 2025-11-21) 🔒 ⭐ **PR #246 MERGED** ✅ **NOVO!**
 
 **Sub-issues de #113 (LGPD Data Export & Deletion Automation):**
 - ✅ #233 - [LGPD-113a] Implementar endpoint GET /users/me/export (3-4h, P0) - **MERGED** via PR #241 ✅
-- ⏳ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0)
-- ✅ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0) - **MERGED** via PR #240
+- ✅ #234 - [LGPD-113b] Implementar endpoint DELETE /users/me (3-4h, P0) - **MERGED** via PR #245 ✅
+- ✅ #235 - [LGPD-113c] Configurar cascade delete para ETPs (2h, P0) - **MERGED** via PR #240 ✅
 - ⏳ #236 - [LGPD-113d] Hard delete após 30 dias (2-3h, P1)
-- ⏳ #237 - [LGPD-113e] Email de confirmação para deleção (2h, P1)
+- ✅ #237 - [LGPD-113e] Email de confirmação para deleção (2h, P1) - **MERGED** via PR #246 ✅
 - ⏳ #238 - [LGPD-113f] Audit trail para exports/deletions (2h, P1)
 - ⏳ #239 - [LGPD-113g] Testes E2E de export e delete (3h, P1)
 
-**Pendente M3** (11 issues abertas):
+**Pendente M3** (7 issues abertas):
 - ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent issue - desbloqueada por #197)
 - ⏳ #87 - [#46c] Implementar remediações de segurança (desbloqueada por #197)
-- ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - desmembrada em #233-#239)
+- ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - 4 de 7 sub-issues concluídas)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing
-- ⏳ #233-#239 - Sub-issues de #113 (7 issues atômicas, total 17-20h)
+- ⏳ #236, #238, #239 - Sub-issues restantes de #113 (3 issues, ~7-8h)
 
 ### ⚡ M4: Refactoring & Performance (8 fechadas de 31)
 **Status**: 26% concluído

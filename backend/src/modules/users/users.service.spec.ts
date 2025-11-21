@@ -10,6 +10,7 @@ import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailService } from '../email/email.service';
+import { AuditService } from '../audit/audit.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -49,6 +50,7 @@ describe('UsersService', () => {
 
   const mockEtpsRepository = {
     find: jest.fn(),
+    count: jest.fn(),
   };
 
   const mockAnalyticsRepository = {
@@ -63,6 +65,12 @@ describe('UsersService', () => {
 
   const mockEmailService = {
     sendDeletionConfirmation: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const mockAuditService = {
+    logDataExport: jest.fn().mockResolvedValue({}),
+    logAccountDeletion: jest.fn().mockResolvedValue({}),
+    logDeletionCancelled: jest.fn().mockResolvedValue({}),
   };
 
   beforeEach(async () => {
@@ -88,6 +96,10 @@ describe('UsersService', () => {
         {
           provide: EmailService,
           useValue: mockEmailService,
+        },
+        {
+          provide: AuditService,
+          useValue: mockAuditService,
         },
       ],
     }).compile();
@@ -604,31 +616,23 @@ describe('UsersService', () => {
       });
     });
 
-    it('should create audit log for export action', async () => {
+    it('should create audit log for export action via AuditService', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
       mockEtpsRepository.find.mockResolvedValue(mockEtps);
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
-      mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
-      mockAuditLogsRepository.save.mockResolvedValue(mockExportLog);
 
       await service.exportUserData(mockUser.id);
 
-      expect(mockAuditLogsRepository.create).toHaveBeenCalledWith({
-        action: 'export',
-        entityType: 'user',
-        entityId: mockUser.id,
-        userId: mockUser.id,
-        description: 'User data exported for LGPD compliance',
-        changes: {
-          metadata: {
-            etpsCount: 2,
-            analyticsCount: 2,
-            auditLogsCount: 1,
-          },
-        },
-      });
-      expect(mockAuditLogsRepository.save).toHaveBeenCalledWith(mockExportLog);
+      expect(mockAuditService.logDataExport).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.objectContaining({
+          format: 'JSON',
+          etpsCount: 2,
+          analyticsCount: 2,
+          auditLogsCount: 1,
+        }),
+      );
     });
 
     it('should log export action', async () => {

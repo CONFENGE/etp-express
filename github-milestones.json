@@ -1,6 +1,6 @@
-{"closed_issues":1,"open_issues":1,"title":"M6: Maintenance (Recurring)"}
-{"closed_issues":35,"open_issues":0,"title":"M1: Foundation - Testes"}
-{"closed_issues":10,"open_issues":0,"title":"M2: CI/CD Pipeline"}
-{"closed_issues":11,"open_issues":9,"title":"M3: Quality \u0026 Security"}
-{"closed_issues":5,"open_issues":15,"title":"M4: Refactoring \u0026 Performance"}
-{"closed_issues":1,"open_issues":16,"title":"M5: E2E Testing \u0026 Documentation"}
+{"closed_issues":1,"due_on":null,"number":6,"open_issues":9,"title":"M6: Maintenance (Recurring)"}
+{"closed_issues":36,"due_on":"2025-11-20T08:00:00Z","number":1,"open_issues":0,"title":"M1: Foundation - Testes"}
+{"closed_issues":12,"due_on":"2025-11-27T08:00:00Z","number":2,"open_issues":0,"title":"M2: CI/CD Pipeline"}
+{"closed_issues":36,"due_on":"2025-12-04T08:00:00Z","number":3,"open_issues":7,"title":"M3: Quality \u0026 Security"}
+{"closed_issues":9,"due_on":"2025-12-18T08:00:00Z","number":4,"open_issues":23,"title":"M4: Refactoring \u0026 Performance"}
+{"closed_issues":2,"due_on":"2026-01-08T08:00:00Z","number":5,"open_issues":20,"title":"M5: E2E Testing \u0026 Documentation"}

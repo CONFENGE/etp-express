@@ -5,6 +5,7 @@ import {
   SecretAccessLog,
   SecretAccessStatus,
 } from '../../entities/secret-access-log.entity';
+import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
 
 @Injectable()
 export class AuditService {
@@ -13,6 +14,8 @@ export class AuditService {
   constructor(
     @InjectRepository(SecretAccessLog)
     private logsRepository: Repository<SecretAccessLog>,
+    @InjectRepository(AuditLog)
+    private auditLogRepository: Repository<AuditLog>,
   ) {}
 
   /**
@@ -244,5 +247,226 @@ export class AuditService {
     }
 
     return deletedCount;
+  }
+
+  /**
+   * Log user data export (LGPD compliance)
+   * @param userId User ID who requested the export
+   * @param metadata Export metadata (IP, userAgent, counts, etc.)
+   */
+  async logDataExport(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      format?: string;
+      etpsCount?: number;
+      sectionsCount?: number;
+      versionsCount?: number;
+      analyticsCount?: number;
+      auditLogsCount?: number;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.USER_DATA_EXPORT,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: 'User requested data export (LGPD Art. 18, II and V)',
+      changes: {
+        metadata: {
+          format: metadata.format || 'JSON',
+          recordCount: {
+            user: 1,
+            etps: metadata.etpsCount || 0,
+            sections: metadata.sectionsCount || 0,
+            versions: metadata.versionsCount || 0,
+            analytics: metadata.analyticsCount || 0,
+            auditLogs: metadata.auditLogsCount || 0,
+          },
+          exportedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(
+      `User data export logged: User ${userId} exported data (${metadata.format || 'JSON'})`,
+    );
+
+    return savedLog;
+  }
+
+  /**
+   * Log account deletion (LGPD compliance)
+   * @param userId User ID being deleted
+   * @param type Deletion type (SOFT or HARD)
+   * @param metadata Deletion metadata (IP, userAgent, confirmation, etc.)
+   */
+  async logAccountDeletion(
+    userId: string,
+    type: 'SOFT' | 'HARD',
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      confirmation?: string;
+      reason?: string;
+      etpsCount?: number;
+      sectionsCount?: number;
+      versionsCount?: number;
+    },
+  ): Promise<AuditLog> {
+    const scheduledFor =
+      type === 'SOFT' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
+
+    const log = this.auditLogRepository.create({
+      action:
+        type === 'SOFT'
+          ? AuditAction.ACCOUNT_DELETION_SOFT
+          : AuditAction.ACCOUNT_DELETION_HARD,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: `Account ${type.toLowerCase()} deletion (LGPD Art. 18, VI)`,
+      changes: {
+        metadata: {
+          deletionType: type,
+          confirmation: metadata.confirmation || null,
+          reason: metadata.reason || null,
+          scheduledFor: scheduledFor ? scheduledFor.toISOString() : null,
+          cascadeDeleted: {
+            etps: metadata.etpsCount || 0,
+            sections: metadata.sectionsCount || 0,
+            versions: metadata.versionsCount || 0,
+          },
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    if (type === 'SOFT') {
+      this.logger.warn(
+        `Account soft deletion logged: User ${userId} scheduled for deletion on ${scheduledFor}`,
+      );
+    } else {
+      this.logger.warn(
+        `Account hard deletion logged: User ${userId} permanently deleted`,
+      );
+    }
+
+    return savedLog;
+  }
+
+  /**
+   * Log account deletion cancellation (LGPD compliance)
+   * @param userId User ID who cancelled deletion
+   * @param metadata Cancellation metadata
+   */
+  async logDeletionCancelled(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      originalDeletionDate?: string;
+      reason?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.ACCOUNT_DELETION_CANCELLED,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: 'Account deletion cancelled by user',
+      changes: {
+        metadata: {
+          originalDeletionDate: metadata.originalDeletionDate || null,
+          cancelledAt: new Date().toISOString(),
+          reason: metadata.reason || 'User requested cancellation',
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(
+      `Account deletion cancelled: User ${userId} cancelled scheduled deletion`,
+    );
+
+    return savedLog;
+  }
+
+  /**
+   * Get LGPD operation logs with filtering
+   * @param options Filter options
+   */
+  async getLGPDOperations(options?: {
+    startDate?: Date;
+    endDate?: Date;
+    action?: AuditAction;
+    limit?: number;
+  }): Promise<{
+    logs: AuditLog[];
+    summary: {
+      totalExports: number;
+      totalDeletions: number;
+      totalCancellations: number;
+    };
+  }> {
+    const { startDate, endDate, action, limit = 1000 } = options || {};
+
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const queryBuilder = this.auditLogRepository
+      .createQueryBuilder('log')
+      .leftJoinAndSelect('log.user', 'user')
+      .where('log.action IN (:...actions)', {
+        actions: [
+          AuditAction.USER_DATA_EXPORT,
+          AuditAction.ACCOUNT_DELETION_SOFT,
+          AuditAction.ACCOUNT_DELETION_HARD,
+          AuditAction.ACCOUNT_DELETION_CANCELLED,
+        ],
+      });
+
+    if (startDate || endDate) {
+      queryBuilder.andWhere('log.createdAt BETWEEN :startDate AND :endDate', {
+        startDate: startDate || threeMonthsAgo,
+        endDate: endDate || new Date(),
+      });
+    }
+
+    if (action) {
+      queryBuilder.andWhere('log.action = :action', { action });
+    }
+
+    queryBuilder.orderBy('log.createdAt', 'DESC').take(limit);
+
+    const logs = await queryBuilder.getMany();
+
+    const summary = {
+      totalExports: logs.filter(
+        (l) => l.action === AuditAction.USER_DATA_EXPORT,
+      ).length,
+      totalDeletions: logs.filter((l) =>
+        [
+          AuditAction.ACCOUNT_DELETION_SOFT,
+          AuditAction.ACCOUNT_DELETION_HARD,
+        ].includes(l.action),
+      ).length,
+      totalCancellations: logs.filter(
+        (l) => l.action === AuditAction.ACCOUNT_DELETION_CANCELLED,
+      ).length,
+    };
+
+    return { logs, summary };
   }
 }

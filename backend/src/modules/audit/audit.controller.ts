@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User, UserRole } from '../../entities/user.entity';
 import { SecretAccessStatus } from '../../entities/secret-access-log.entity';
+import { AuditAction } from '../../entities/audit-log.entity';
 
 /**
  * Audit Controller for Secret Access Logs
@@ -199,5 +200,57 @@ export class AuditController {
   ) {
     this.ensureAdmin(user);
     return this.auditService.getAccessStats(secretName);
+  }
+
+  /**
+   * Get LGPD operations logs (data exports, account deletions)
+   */
+  @Get('lgpd-operations')
+  @ApiOperation({
+    summary: 'List LGPD operations (exports, deletions)',
+    description:
+      'Retrieve audit logs for LGPD compliance operations: data exports, account deletions, and cancellations. Requires admin role.',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Start date for filtering (ISO 8601 format)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'End date for filtering (ISO 8601 format)',
+  })
+  @ApiQuery({
+    name: 'action',
+    required: false,
+    enum: AuditAction,
+    description: 'Filter by specific action type',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Maximum number of logs to return (default: 1000)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'LGPD operation logs retrieved successfully',
+  })
+  @ApiResponse({ status: 403, description: 'Admin role required' })
+  async getLGPDOperations(
+    @CurrentUser() user: User,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('action') action?: AuditAction,
+    @Query('limit', new DefaultValuePipe(1000), ParseIntPipe) limit?: number,
+  ) {
+    this.ensureAdmin(user);
+
+    return this.auditService.getLGPDOperations({
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      action,
+      limit,
+    });
   }
 }

@@ -17,6 +17,10 @@ export enum AuditAction {
   EXPORT = 'export',
   VERSION = 'version',
   STATUS_CHANGE = 'status_change',
+  USER_DATA_EXPORT = 'user_data_export',
+  ACCOUNT_DELETION_SOFT = 'account_deletion_soft',
+  ACCOUNT_DELETION_HARD = 'account_deletion_hard',
+  ACCOUNT_DELETION_CANCELLED = 'account_deletion_cancelled',
 }
 
 @Entity('audit_logs')

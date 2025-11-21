@@ -6,16 +6,25 @@ import {
   SecretAccessLog,
   SecretAccessStatus,
 } from '../../entities/secret-access-log.entity';
+import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
 
 describe('AuditService', () => {
   let service: AuditService;
   let repository: jest.Mocked<Repository<SecretAccessLog>>;
+  let auditLogRepository: jest.Mocked<Repository<AuditLog>>;
 
   const mockRepository = {
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
     count: jest.fn(),
+    createQueryBuilder: jest.fn(),
+  };
+
+  const mockAuditLogRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
     createQueryBuilder: jest.fn(),
   };
 
@@ -27,11 +36,16 @@ describe('AuditService', () => {
           provide: getRepositoryToken(SecretAccessLog),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(AuditLog),
+          useValue: mockAuditLogRepository,
+        },
       ],
     }).compile();
 
     service = module.get<AuditService>(AuditService);
     repository = module.get(getRepositoryToken(SecretAccessLog));
+    auditLogRepository = module.get(getRepositoryToken(AuditLog));
 
     // Reset mocks
     jest.clearAllMocks();
@@ -311,6 +325,322 @@ describe('AuditService', () => {
       await service.cleanupOldLogs();
 
       expect(deleteBuilder.execute).toHaveBeenCalled();
+    });
+  });
+
+  describe('LGPD Operations', () => {
+    describe('logDataExport', () => {
+      it('should log user data export with metadata', async () => {
+        const userId = 'user-123';
+        const metadata = {
+          ip: '192.168.1.1',
+          userAgent: 'Mozilla/5.0',
+          format: 'JSON',
+          etpsCount: 5,
+          sectionsCount: 25,
+          versionsCount: 10,
+          analyticsCount: 100,
+          auditLogsCount: 50,
+        };
+
+        const expectedLog = {
+          id: 'log-123',
+          action: AuditAction.USER_DATA_EXPORT,
+          entityType: 'User',
+          entityId: userId,
+          userId,
+          ipAddress: metadata.ip,
+          userAgent: metadata.userAgent,
+          description: 'User requested data export (LGPD Art. 18, II and V)',
+          changes: {
+            metadata: {
+              format: 'JSON',
+              recordCount: {
+                user: 1,
+                etps: 5,
+                sections: 25,
+                versions: 10,
+                analytics: 100,
+                auditLogs: 50,
+              },
+              exportedAt: expect.any(String),
+            },
+          },
+          createdAt: new Date(),
+        };
+
+        mockAuditLogRepository.create.mockReturnValue(expectedLog as any);
+        mockAuditLogRepository.save.mockResolvedValue(expectedLog as any);
+
+        const result = await service.logDataExport(userId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.USER_DATA_EXPORT,
+            entityType: 'User',
+            entityId: userId,
+            userId,
+            ipAddress: metadata.ip,
+            userAgent: metadata.userAgent,
+          }),
+        );
+        expect(mockAuditLogRepository.save).toHaveBeenCalled();
+        expect(result.action).toBe(AuditAction.USER_DATA_EXPORT);
+      });
+
+      it('should use default format JSON if not provided', async () => {
+        const userId = 'user-456';
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logDataExport(userId, {});
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                format: 'JSON',
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('logAccountDeletion', () => {
+      it('should log soft deletion with scheduled date', async () => {
+        const userId = 'user-789';
+        const metadata = {
+          ip: '10.0.0.1',
+          userAgent: 'Chrome',
+          confirmation: 'CONFIRMED',
+          reason: 'User requested deletion',
+          etpsCount: 3,
+          sectionsCount: 15,
+          versionsCount: 5,
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logAccountDeletion(userId, 'SOFT', metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.ACCOUNT_DELETION_SOFT,
+            entityType: 'User',
+            entityId: userId,
+            userId,
+            ipAddress: metadata.ip,
+            description: 'Account soft deletion (LGPD Art. 18, VI)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                deletionType: 'SOFT',
+                confirmation: 'CONFIRMED',
+                reason: 'User requested deletion',
+                scheduledFor: expect.any(String),
+                cascadeDeleted: {
+                  etps: 3,
+                  sections: 15,
+                  versions: 5,
+                },
+              }),
+            }),
+          }),
+        );
+      });
+
+      it('should log hard deletion without scheduled date', async () => {
+        const userId = 'user-999';
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logAccountDeletion(userId, 'HARD', {});
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.ACCOUNT_DELETION_HARD,
+            description: 'Account hard deletion (LGPD Art. 18, VI)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                deletionType: 'HARD',
+                scheduledFor: null,
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('logDeletionCancelled', () => {
+      it('should log deletion cancellation with metadata', async () => {
+        const userId = 'user-111';
+        const metadata = {
+          ip: '172.16.0.1',
+          userAgent: 'Safari',
+          originalDeletionDate: '2025-01-01T00:00:00.000Z',
+          reason: 'Changed mind',
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logDeletionCancelled(userId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.ACCOUNT_DELETION_CANCELLED,
+            entityType: 'User',
+            entityId: userId,
+            userId,
+            description: 'Account deletion cancelled by user',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                originalDeletionDate: '2025-01-01T00:00:00.000Z',
+                cancelledAt: expect.any(String),
+                reason: 'Changed mind',
+              }),
+            }),
+          }),
+        );
+      });
+
+      it('should use default reason if not provided', async () => {
+        const userId = 'user-222';
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logDeletionCancelled(userId, {});
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                reason: 'User requested cancellation',
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('getLGPDOperations', () => {
+      it('should retrieve LGPD logs with summary', async () => {
+        const mockLogs = [
+          {
+            id: '1',
+            action: AuditAction.USER_DATA_EXPORT,
+            createdAt: new Date(),
+          },
+          {
+            id: '2',
+            action: AuditAction.ACCOUNT_DELETION_SOFT,
+            createdAt: new Date(),
+          },
+          {
+            id: '3',
+            action: AuditAction.ACCOUNT_DELETION_CANCELLED,
+            createdAt: new Date(),
+          },
+        ];
+
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(mockLogs),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        const result = await service.getLGPDOperations();
+
+        expect(result.logs).toEqual(mockLogs);
+        expect(result.summary).toEqual({
+          totalExports: 1,
+          totalDeletions: 1,
+          totalCancellations: 1,
+        });
+      });
+
+      it('should filter by date range', async () => {
+        const startDate = new Date('2025-01-01');
+        const endDate = new Date('2025-01-31');
+
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        await service.getLGPDOperations({ startDate, endDate });
+
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.createdAt BETWEEN :startDate AND :endDate',
+          {
+            startDate,
+            endDate,
+          },
+        );
+      });
+
+      it('should filter by action type', async () => {
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        await service.getLGPDOperations({
+          action: AuditAction.USER_DATA_EXPORT,
+        });
+
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.action = :action',
+          { action: AuditAction.USER_DATA_EXPORT },
+        );
+      });
+
+      it('should respect limit parameter', async () => {
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        await service.getLGPDOperations({ limit: 100 });
+
+        expect(queryBuilder.take).toHaveBeenCalledWith(100);
+      });
     });
   });
 });
