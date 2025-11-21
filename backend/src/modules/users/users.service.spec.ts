@@ -30,7 +30,7 @@ describe('UsersService', () => {
     lgpdConsentAt: new Date('2024-01-01'),
     lgpdConsentVersion: '1.0.0',
     internationalTransferConsentAt: new Date('2024-01-01'),
-    deletedAt: null,
+    deletedAt: null as any,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     etps: [],
