@@ -19,9 +19,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { BadRequestException } from '@nestjs/common';
 
 /**
  * Controller handling user management HTTP endpoints.
@@ -152,6 +154,70 @@ export class UsersController {
     return {
       data,
       disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Soft deletes the authenticated user's account for LGPD compliance (Art. 18, VI - direito de exclusão).
+   *
+   * @remarks
+   * Performs soft delete by marking account for deletion with 30-day grace period.
+   * Requires explicit confirmation phrase "DELETE MY ACCOUNT".
+   * Account will be hard deleted after 30 days by scheduled job.
+   * This endpoint fulfills LGPD right to deletion requirements.
+   *
+   * @param userId - Current user ID (extracted from JWT token)
+   * @param deleteDto - Deletion confirmation and optional reason
+   * @returns Success message with scheduled deletion date
+   * @throws {BadRequestException} 400 - If confirmation phrase is invalid
+   * @throws {NotFoundException} 404 - If user not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
+  @Delete('me')
+  @ApiOperation({
+    summary: 'Deletar minha própria conta (soft delete) - LGPD Art. 18, VI',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Conta marcada para deleção com período de 30 dias',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        deletionScheduledFor: { type: 'string', format: 'date-time' },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Confirmação inválida - deve ser exatamente "DELETE MY ACCOUNT"',
+  })
+  async deleteMyAccount(
+    @CurrentUser('id') userId: string,
+    @Body() deleteDto: DeleteAccountDto,
+  ) {
+    // Validate confirmation phrase
+    if (deleteDto.confirmation !== 'DELETE MY ACCOUNT') {
+      throw new BadRequestException(
+        'Confirmação inválida. Digite exatamente "DELETE MY ACCOUNT" para confirmar.',
+      );
+    }
+
+    const { scheduledDeletionDate } = await this.usersService.softDeleteAccount(
+      userId,
+      deleteDto.reason,
+    );
+
+    return {
+      message:
+        'Sua conta foi marcada para deleção e será removida permanentemente em 30 dias.',
+      deletionScheduledFor: scheduledDeletionDate.toISOString(),
+      disclaimer:
+        'Para cancelar a deleção, entre em contato com o suporte dentro de 30 dias. ' +
+        'Após este período, todos os dados serão permanentemente removidos e não poderão ser recuperados. ' +
+        DISCLAIMER,
     };
   }
 
