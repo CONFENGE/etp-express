@@ -129,9 +129,7 @@ export class EmailService {
 
       // Log email content in development if using test transporter
       if (info.message) {
-        this.logger.debug(
-          `Email content:\n${info.message.toString('utf8')}`,
-        );
+        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
       }
     } catch (error) {
       this.logger.error(

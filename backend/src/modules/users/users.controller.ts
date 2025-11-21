@@ -292,7 +292,9 @@ export class UsersController {
         );
       }
       if (error.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('Token inválido ou assinatura inválida.');
+        throw new UnauthorizedException(
+          'Token inválido ou assinatura inválida.',
+        );
       }
       // Re-throw BadRequestException from service
       throw error;
