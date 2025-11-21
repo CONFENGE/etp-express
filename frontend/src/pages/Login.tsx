@@ -9,7 +9,14 @@ import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
 
 const loginSchema = z.object({
@@ -41,7 +48,9 @@ export function Login() {
       navigate('/dashboard');
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : 'Erro ao fazer login. Verifique suas credenciais.'
+        error instanceof Error
+          ? error.message
+          : 'Erro ao fazer login. Verifique suas credenciais.',
       );
     } finally {
       setIsLoading(false);

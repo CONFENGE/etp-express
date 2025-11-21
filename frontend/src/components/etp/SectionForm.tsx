@@ -31,7 +31,9 @@ export function SectionForm({
           <div className="flex items-center gap-2">
             <Label htmlFor={field.name}>
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && (
+                <span className="text-destructive ml-1">*</span>
+              )}
             </Label>
             {field.helpText && <HelpTooltip content={field.helpText} />}
           </div>

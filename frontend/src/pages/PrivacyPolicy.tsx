@@ -46,12 +46,17 @@ export function PrivacyPolicy() {
           {/* 1. Identificação do Controlador */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">1. Identificação do Controlador</CardTitle>
+              <CardTitle className="text-xl">
+                1. Identificação do Controlador
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <p className="font-semibold">Controlador de Dados:</p>
-                <p>ETP Express - Sistema de Geração de Estudos Técnicos Preliminares</p>
+                <p>
+                  ETP Express - Sistema de Geração de Estudos Técnicos
+                  Preliminares
+                </p>
               </div>
               <div>
                 <p className="font-semibold">Contato para Proteção de Dados:</p>
@@ -70,9 +75,12 @@ export function PrivacyPolicy() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                O ETP Express está comprometido com a proteção da privacidade e dos dados pessoais de seus usuários.
-                Esta Política de Privacidade descreve como coletamos, usamos, armazenamos, compartilhamos e protegemos
-                suas informações pessoais em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018).
+                O ETP Express está comprometido com a proteção da privacidade e
+                dos dados pessoais de seus usuários. Esta Política de
+                Privacidade descreve como coletamos, usamos, armazenamos,
+                compartilhamos e protegemos suas informações pessoais em
+                conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei
+                13.709/2018).
               </p>
             </CardContent>
           </Card>
@@ -80,7 +88,9 @@ export function PrivacyPolicy() {
           {/* 3. Dados Coletados */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">3. Dados Pessoais Coletados</CardTitle>
+              <CardTitle className="text-xl">
+                3. Dados Pessoais Coletados
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
@@ -103,7 +113,9 @@ export function PrivacyPolicy() {
                       <tr>
                         <td className="px-4 py-2">Email</td>
                         <td className="px-4 py-2">Sim</td>
-                        <td className="px-4 py-2">Autenticação e comunicação</td>
+                        <td className="px-4 py-2">
+                          Autenticação e comunicação
+                        </td>
                       </tr>
                       <tr>
                         <td className="px-4 py-2">Senha</td>
@@ -142,7 +154,9 @@ export function PrivacyPolicy() {
           {/* 4. Finalidades */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">4. Finalidades do Tratamento</CardTitle>
+              <CardTitle className="text-xl">
+                4. Finalidades do Tratamento
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -167,7 +181,9 @@ export function PrivacyPolicy() {
           {/* 5. Base Legal */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">5. Base Legal para Tratamento</CardTitle>
+              <CardTitle className="text-xl">
+                5. Base Legal para Tratamento
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -209,11 +225,15 @@ export function PrivacyPolicy() {
           {/* 6. Compartilhamento */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">6. Compartilhamento de Dados</CardTitle>
+              <CardTitle className="text-xl">
+                6. Compartilhamento de Dados
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="font-semibold mb-3">Provedores de Inteligência Artificial</h4>
+                <h4 className="font-semibold mb-3">
+                  Provedores de Inteligência Artificial
+                </h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-muted">
@@ -243,7 +263,8 @@ export function PrivacyPolicy() {
                   </table>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  <strong>Importante:</strong> Dados pessoais diretos (nome, email) NÃO são enviados aos provedores de IA.
+                  <strong>Importante:</strong> Dados pessoais diretos (nome,
+                  email) NÃO são enviados aos provedores de IA.
                 </p>
               </div>
             </CardContent>
@@ -252,12 +273,15 @@ export function PrivacyPolicy() {
           {/* 7. Transferência Internacional */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">7. Transferência Internacional de Dados</CardTitle>
+              <CardTitle className="text-xl">
+                7. Transferência Internacional de Dados
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Seus dados são transferidos para os Estados Unidos, onde estão localizados os servidores
-                de nossos provedores. Esta transferência é realizada com base no seu
+                Seus dados são transferidos para os Estados Unidos, onde estão
+                localizados os servidores de nossos provedores. Esta
+                transferência é realizada com base no seu
                 <strong> consentimento específico</strong> (LGPD Art. 33, VIII).
               </p>
               <div className="bg-muted p-4 rounded-lg">
@@ -300,7 +324,9 @@ export function PrivacyPolicy() {
                     </tr>
                     <tr>
                       <td className="px-4 py-2">Analytics</td>
-                      <td className="px-4 py-2">1 ano (anonimizado após 30 dias)</td>
+                      <td className="px-4 py-2">
+                        1 ano (anonimizado após 30 dias)
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -311,7 +337,9 @@ export function PrivacyPolicy() {
           {/* 9. Direitos do Titular */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">9. Seus Direitos como Titular</CardTitle>
+              <CardTitle className="text-xl">
+                9. Seus Direitos como Titular
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-muted-foreground">
@@ -319,37 +347,54 @@ export function PrivacyPolicy() {
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="bg-muted p-3 rounded-lg">
-                  <h5 className="font-semibold text-sm">Confirmação e acesso</h5>
-                  <p className="text-xs text-muted-foreground">Confirmar se tratamos seus dados e obter cópia</p>
+                  <h5 className="font-semibold text-sm">
+                    Confirmação e acesso
+                  </h5>
+                  <p className="text-xs text-muted-foreground">
+                    Confirmar se tratamos seus dados e obter cópia
+                  </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">Correção</h5>
-                  <p className="text-xs text-muted-foreground">Corrigir dados incompletos ou desatualizados</p>
+                  <p className="text-xs text-muted-foreground">
+                    Corrigir dados incompletos ou desatualizados
+                  </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">Portabilidade</h5>
-                  <p className="text-xs text-muted-foreground">Receber seus dados em formato estruturado</p>
+                  <p className="text-xs text-muted-foreground">
+                    Receber seus dados em formato estruturado
+                  </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">Eliminação</h5>
-                  <p className="text-xs text-muted-foreground">Solicitar exclusão de dados</p>
+                  <p className="text-xs text-muted-foreground">
+                    Solicitar exclusão de dados
+                  </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">Revogação</h5>
-                  <p className="text-xs text-muted-foreground">Revogar consentimento a qualquer momento</p>
+                  <p className="text-xs text-muted-foreground">
+                    Revogar consentimento a qualquer momento
+                  </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">Informação</h5>
-                  <p className="text-xs text-muted-foreground">Saber com quem compartilhamos seus dados</p>
+                  <p className="text-xs text-muted-foreground">
+                    Saber com quem compartilhamos seus dados
+                  </p>
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <h4 className="font-semibold mb-2">Como Exercer Seus Direitos</h4>
+                <h4 className="font-semibold mb-2">
+                  Como Exercer Seus Direitos
+                </h4>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Entre em contato pelo email abaixo com o assunto "[LGPD] Solicitação de [direito]":
+                  Entre em contato pelo email abaixo com o assunto "[LGPD]
+                  Solicitação de [direito]":
                 </p>
                 <p className="flex items-center gap-2 font-semibold">
                   <Mail className="h-4 w-4" />
@@ -380,7 +425,9 @@ export function PrivacyPolicy() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Medidas Organizacionais</h4>
+                  <h4 className="font-semibold mb-2">
+                    Medidas Organizacionais
+                  </h4>
                   <ul className="list-disc pl-5 text-sm text-muted-foreground">
                     <li>Acesso restrito por necessidade</li>
                     <li>Logs de auditoria</li>
@@ -410,7 +457,8 @@ export function PrivacyPolicy() {
               <Separator />
               <div>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Caso não esteja satisfeito com nossa resposta, você pode contatar a ANPD:
+                  Caso não esteja satisfeito com nossa resposta, você pode
+                  contatar a ANPD:
                 </p>
                 <a
                   href="https://www.gov.br/anpd"
@@ -429,11 +477,13 @@ export function PrivacyPolicy() {
           <Card className="bg-muted/50">
             <CardContent className="py-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Ao utilizar o {APP_NAME}, você declara ter lido e concordado com esta Política de Privacidade.
+                Ao utilizar o {APP_NAME}, você declara ter lido e concordado com
+                esta Política de Privacidade.
               </p>
               <Separator className="my-4" />
               <p className="text-xs text-muted-foreground">
-                Esta política é regida pela legislação brasileira, especialmente a LGPD (Lei 13.709/2018).
+                Esta política é regida pela legislação brasileira, especialmente
+                a LGPD (Lei 13.709/2018).
               </p>
             </CardContent>
           </Card>

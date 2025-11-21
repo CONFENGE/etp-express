@@ -47,7 +47,7 @@ export function truncate(text: string, length: number): string {
 
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -67,8 +67,10 @@ export function sleep(ms: number): Promise<void> {
 }
 
 export function generateId(): string {
-  return Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
 }
 
 export function getInitials(name: string): string {
@@ -84,7 +86,11 @@ export function copyToClipboard(text: string): Promise<void> {
   return navigator.clipboard.writeText(text);
 }
 
-export function downloadFile(content: string, filename: string, type: string): void {
+export function downloadFile(
+  content: string,
+  filename: string,
+  type: string,
+): void {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

@@ -9,7 +9,9 @@ interface SimilarContractsPanelProps {
   contracts: SimilarContract[];
 }
 
-export function SimilarContractsPanel({ contracts }: SimilarContractsPanelProps) {
+export function SimilarContractsPanel({
+  contracts,
+}: SimilarContractsPanelProps) {
   return (
     <Card>
       <CardHeader>
@@ -23,7 +25,9 @@ export function SimilarContractsPanel({ contracts }: SimilarContractsPanelProps)
         ) : (
           <div className="space-y-4">
             <div className="p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-              <p className="text-xs text-yellow-800">{REFERENCE_WARNING_MESSAGE}</p>
+              <p className="text-xs text-yellow-800">
+                {REFERENCE_WARNING_MESSAGE}
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -33,7 +37,9 @@ export function SimilarContractsPanel({ contracts }: SimilarContractsPanelProps)
                   className="p-3 border rounded-md hover:bg-accent transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="text-sm font-medium line-clamp-2">{contract.title}</h4>
+                    <h4 className="text-sm font-medium line-clamp-2">
+                      {contract.title}
+                    </h4>
                     <Badge variant="secondary" className="ml-2 flex-shrink-0">
                       {Math.round(contract.similarity * 100)}%
                     </Badge>
@@ -47,8 +53,12 @@ export function SimilarContractsPanel({ contracts }: SimilarContractsPanelProps)
 
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     {contract.year && <span>Ano: {contract.year}</span>}
-                    {contract.value && <span>{formatCurrency(contract.value)}</span>}
-                    {contract.organ && <span className="truncate">{contract.organ}</span>}
+                    {contract.value && (
+                      <span>{formatCurrency(contract.value)}</span>
+                    )}
+                    {contract.organ && (
+                      <span className="truncate">{contract.organ}</span>
+                    )}
                   </div>
 
                   <button className="flex items-center gap-1 text-xs text-primary hover:underline mt-2">
