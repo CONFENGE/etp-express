@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SimilarContract } from '../../entities/similar-contract.entity';
-import { PerplexityService } from './perplexity/perplexity.service';
+import {
+  PerplexityService,
+  PerplexityResponse,
+} from './perplexity/perplexity.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 @Injectable()
@@ -15,7 +18,10 @@ export class SearchService {
     private perplexityService: PerplexityService,
   ) {}
 
-  async searchSimilarContracts(query: string, filters?: any) {
+  async searchSimilarContracts(
+    query: string,
+    filters?: Record<string, unknown>,
+  ) {
     this.logger.log(`Searching similar contracts for: ${query}`);
 
     // First, check if we have cached results
@@ -79,7 +85,7 @@ export class SearchService {
 
   private async saveSearchResults(
     query: string,
-    perplexityResults: any,
+    perplexityResults: PerplexityResponse,
   ): Promise<SimilarContract[]> {
     const contracts: SimilarContract[] = [];
 

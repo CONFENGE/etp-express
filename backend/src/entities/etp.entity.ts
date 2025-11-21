@@ -55,7 +55,7 @@ export class Etp {
     responsavelTecnico?: string;
     fundamentacaoLegal?: string[];
     tags?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
   @Column({ default: 1 })

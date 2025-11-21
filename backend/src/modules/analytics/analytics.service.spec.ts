@@ -66,13 +66,13 @@ describe('AnalyticsService', () => {
     sessionID: 'session-abc',
     ip: '192.168.1.1',
     get: jest.fn((header: string) => {
-      const headers = {
+      const headers: Record<string, string> = {
         'user-agent': 'Mozilla/5.0',
         referer: 'https://example.com',
       };
       return headers[header.toLowerCase()];
     }),
-  };
+  } as any;
 
   /**
    * Mock repository factory with common query builder methods
