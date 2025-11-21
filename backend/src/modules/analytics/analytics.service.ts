@@ -1,7 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, FindOptionsWhere } from 'typeorm';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
+import { Request } from 'express';
+
+// Extend Express Request to include session
+interface RequestWithSession extends Request {
+  sessionID?: string;
+}
 
 @Injectable()
 export class AnalyticsService {
@@ -15,19 +21,20 @@ export class AnalyticsService {
   async trackEvent(
     eventType: string,
     eventName: string,
-    properties?: any,
+    properties?: Record<string, unknown>,
     userId?: string,
     etpId?: string,
-    request?: any,
+    request?: Request,
   ): Promise<void> {
     try {
+      const reqWithSession = request as RequestWithSession;
       const event = this.analyticsRepository.create({
         eventType,
         eventName,
         properties: properties || {},
         userId,
         etpId,
-        sessionId: request?.sessionID,
+        sessionId: reqWithSession?.sessionID,
         ipAddress: request?.ip,
         userAgent: request?.get?.('user-agent'),
         referer: request?.get?.('referer'),
@@ -57,7 +64,7 @@ export class AnalyticsService {
   }
 
   async getEventsByType(eventType: string, startDate?: Date, endDate?: Date) {
-    const query: any = { eventType };
+    const query: FindOptionsWhere<AnalyticsEvent> = { eventType };
 
     if (startDate && endDate) {
       query.createdAt = Between(startDate, endDate);
@@ -136,10 +143,13 @@ export class AnalyticsService {
         endDate: new Date(),
       },
       totalEvents,
-      eventsByType: eventsByType.reduce((acc, item) => {
-        acc[item.type] = parseInt(item.count);
-        return acc;
-      }, {}),
+      eventsByType: eventsByType.reduce(
+        (acc, item) => {
+          acc[item.type] = parseInt(item.count);
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       mostActiveUsers,
       eventsByDay,
       averageGenerationTime: avgGenerationTime?.avgDuration

@@ -4,7 +4,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export interface PerplexitySearchResult {
   title: string;
@@ -18,6 +18,15 @@ export interface PerplexityResponse {
   results: PerplexitySearchResult[];
   summary: string;
   sources: string[];
+}
+
+interface PerplexityAPIResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+  citations?: string[];
 }
 
 @Injectable()
@@ -39,7 +48,7 @@ export class PerplexityService {
     this.logger.log(`Searching with Perplexity: ${query}`);
 
     try {
-      const response = await axios.post(
+      const response = await axios.post<PerplexityAPIResponse>(
         this.apiUrl,
         {
           model: this.model,
@@ -64,7 +73,7 @@ export class PerplexityService {
         },
       );
 
-      const content = response.data.choices[0]?.message?.content || '';
+      const content = response.data.choices?.[0]?.message?.content || '';
       const citations = response.data.citations || [];
 
       // Parse results from content
@@ -80,9 +89,10 @@ export class PerplexityService {
         sources: citations,
       };
     } catch (error) {
+      const axiosError = error as AxiosError;
       this.logger.error('Perplexity API failed', {
         query,
-        error: error.message,
+        error: axiosError.message,
       });
       throw new ServiceUnavailableException(
         'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.',
@@ -114,7 +124,7 @@ export class PerplexityService {
 
   async searchSimilarContracts(
     objeto: string,
-    _filters?: any,
+    _filters?: Record<string, unknown>,
   ): Promise<PerplexityResponse> {
     const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
     Inclua informações sobre:

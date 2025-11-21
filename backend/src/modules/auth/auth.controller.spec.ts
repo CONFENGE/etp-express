@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { UserRole } from '../../entities/user.entity';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -19,9 +20,19 @@ describe('AuthController', () => {
     id: '123',
     email: 'test@example.com',
     name: 'Test User',
-    role: 'servidor',
+    role: UserRole.USER,
     orgao: 'CONFENGE',
     cargo: 'Analista',
+    isActive: true,
+    lastLoginAt: new Date('2025-01-01'),
+    lgpdConsentAt: new Date('2025-01-01'),
+    lgpdConsentVersion: '1.0',
+    internationalTransferConsentAt: new Date('2025-01-01'),
+    deletedAt: null,
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
+    etps: [],
+    auditLogs: [],
   };
 
   const mockAuthResponse = {

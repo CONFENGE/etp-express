@@ -74,8 +74,8 @@ export class EtpSection {
     temperature?: number;
     generationTime?: number;
     agentsUsed?: string[];
-    similarContracts?: any[];
-    [key: string]: any;
+    similarContracts?: unknown[];
+    [key: string]: unknown;
   };
 
   @Column({ type: 'jsonb', nullable: true })

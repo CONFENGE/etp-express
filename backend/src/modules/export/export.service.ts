@@ -97,7 +97,7 @@ export class ExportService {
     }
   }
 
-  async exportToJSON(etpId: string): Promise<any> {
+  async exportToJSON(etpId: string): Promise<Record<string, unknown>> {
     this.logger.log(`Exporting ETP ${etpId} to JSON`);
 
     const etp = await this.getEtpWithSections(etpId);

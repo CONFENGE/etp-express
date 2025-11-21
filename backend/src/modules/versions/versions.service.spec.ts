@@ -484,7 +484,7 @@ describe('VersionsService', () => {
           ...mockVersion.snapshot!,
           sections: [
             {
-              ...mockVersion.snapshot!.sections[0],
+              ...(mockVersion.snapshot!.sections[0] as any),
               title: 'Introdução Modificada',
               status: 'approved',
             },

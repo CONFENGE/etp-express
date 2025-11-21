@@ -3,8 +3,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EtpVersion } from '../../entities/etp-version.entity';
 import { Etp } from '../../entities/etp.entity';
-import { EtpSection } from '../../entities/etp-section.entity';
+import {
+  EtpSection,
+  SectionType,
+  SectionStatus,
+} from '../../entities/etp-section.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
+
+interface VersionSnapshot {
+  title: string;
+  description?: string;
+  objeto: string;
+  status: string;
+  sections: Array<{
+    id: string;
+    type: string;
+    title: string;
+    content?: string;
+    status: string;
+    order: number;
+    metadata?: Record<string, unknown>;
+    validationResults?: Record<string, unknown>;
+  }>;
+  metadata?: Record<string, unknown>;
+}
 
 @Injectable()
 export class VersionsService {
@@ -47,7 +69,7 @@ export class VersionsService {
       : 1;
 
     // Create snapshot
-    const snapshot = {
+    const snapshot: VersionSnapshot = {
       title: etp.title,
       description: etp.description,
       objeto: etp.objeto,
@@ -65,11 +87,11 @@ export class VersionsService {
       metadata: etp.metadata,
     };
 
-    // Create version
+    // Create version - cast to unknown first for type safety
     const version = this.versionsRepository.create({
       etpId,
       versionNumber: newVersionNumber,
-      snapshot,
+      snapshot: snapshot as unknown as Record<string, unknown>,
       changeLog: changeLog || 'Snapshot automático',
       createdByName: etp.createdBy?.name || 'Sistema',
     });
@@ -111,10 +133,13 @@ export class VersionsService {
     ]);
 
     const differences = {
-      metadata: this.compareMetadata(version1.snapshot, version2.snapshot),
+      metadata: this.compareMetadata(
+        version1.snapshot as VersionSnapshot,
+        version2.snapshot as VersionSnapshot,
+      ),
       sections: this.compareSections(
-        version1.snapshot.sections,
-        version2.snapshot.sections,
+        (version1.snapshot as VersionSnapshot).sections,
+        (version2.snapshot as VersionSnapshot).sections,
       ),
     };
 
@@ -155,28 +180,35 @@ export class VersionsService {
       _userId,
     );
 
-    // Restore ETP data
-    etp.title = version.snapshot.title;
-    etp.description = version.snapshot.description;
-    etp.objeto = version.snapshot.objeto;
-    etp.metadata = version.snapshot.metadata;
+    const snapshot = version.snapshot as VersionSnapshot;
+
+    // Restore ETP data - Use Object.assign to handle type-safe assignment
+    Object.assign(etp, {
+      title: snapshot.title,
+      description: snapshot.description || '',
+      objeto: snapshot.objeto,
+      metadata: snapshot.metadata || {},
+    });
 
     // Delete current sections
     await this.sectionsRepository.delete({ etpId: etp.id });
 
     // Restore sections
-    const restoredSections = version.snapshot.sections.map((sectionData) => {
-      return this.sectionsRepository.create({
-        etpId: etp.id,
-        type: sectionData.type,
-        title: sectionData.title,
-        content: sectionData.content,
-        status: sectionData.status,
-        order: sectionData.order,
-        metadata: sectionData.metadata,
-        validationResults: sectionData.validationResults,
-      });
-    });
+    const restoredSections: EtpSection[] = [];
+
+    for (const sectionData of snapshot.sections) {
+      const section = new EtpSection();
+      section.etpId = etp.id;
+      section.type = sectionData.type as SectionType;
+      section.title = sectionData.title;
+      section.content = sectionData.content || '';
+      section.status = sectionData.status as SectionStatus;
+      section.order = sectionData.order;
+      section.metadata = (sectionData.metadata || {}) as EtpSection['metadata'];
+      section.validationResults = (sectionData.validationResults ||
+        {}) as EtpSection['validationResults'];
+      restoredSections.push(section);
+    }
 
     await this.sectionsRepository.save(restoredSections);
 
@@ -189,8 +221,8 @@ export class VersionsService {
     return savedEtp;
   }
 
-  private compareMetadata(snap1: any, snap2: any) {
-    const changes: any = {};
+  private compareMetadata(snap1: VersionSnapshot, snap2: VersionSnapshot) {
+    const changes: Record<string, { old: unknown; new: unknown }> = {};
 
     if (snap1.title !== snap2.title) {
       changes.title = { old: snap1.title, new: snap2.title };
@@ -211,10 +243,25 @@ export class VersionsService {
     return changes;
   }
 
-  private compareSections(sections1: any[], sections2: any[]) {
-    const added: any[] = [];
-    const removed: any[] = [];
-    const modified: any[] = [];
+  private compareSections(
+    sections1: VersionSnapshot['sections'],
+    sections2: VersionSnapshot['sections'],
+  ) {
+    const added: Array<{
+      id: string;
+      type: string;
+      title: string;
+    }> = [];
+    const removed: Array<{
+      id: string;
+      type: string;
+      title: string;
+    }> = [];
+    const modified: Array<{
+      id: string;
+      type: string;
+      changes: Record<string, unknown>;
+    }> = [];
 
     const sections1Map = new Map(sections1.map((s) => [s.id, s]));
     const sections2Map = new Map(sections2.map((s) => [s.id, s]));
@@ -245,7 +292,7 @@ export class VersionsService {
     sections1.forEach((section1) => {
       const section2 = sections2Map.get(section1.id);
       if (section2) {
-        const changes: any = {};
+        const changes: Record<string, unknown> = {};
 
         if (section1.title !== section2.title) {
           changes.title = { old: section1.title, new: section2.title };
