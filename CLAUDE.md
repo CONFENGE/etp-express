@@ -1,1 +1,2 @@
 - sempre que uma tarefa impactar na evolução do projeto, ROADMAP.md deve ser atualizado.
+- sempre que for realizado qualquer merge, o ROADMAP.md do projeto deve ser atualizado imediatamente

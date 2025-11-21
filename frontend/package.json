@@ -63,6 +63,7 @@
     "jsdom": "^27.2.0",
     "msw": "^2.12.2",
     "postcss": "^8.4.33",
+    "prettier": "^3.6.2",
     "serve": "^14.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",

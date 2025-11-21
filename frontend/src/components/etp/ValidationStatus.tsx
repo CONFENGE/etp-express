@@ -16,7 +16,9 @@ export function ValidationStatus({ validation }: ValidationStatusProps) {
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Completude</span>
-          <Badge variant={validation.completeness === 100 ? 'success' : 'warning'}>
+          <Badge
+            variant={validation.completeness === 100 ? 'success' : 'warning'}
+          >
             {validation.completeness}%
           </Badge>
         </div>

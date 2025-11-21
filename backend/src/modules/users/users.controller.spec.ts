@@ -521,7 +521,10 @@ describe('UsersController', () => {
       });
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(service.softDeleteAccount).toHaveBeenCalledWith(
@@ -629,7 +632,10 @@ describe('UsersController', () => {
       });
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(result.deletionScheduledFor).toBe(
@@ -648,7 +654,10 @@ describe('UsersController', () => {
       });
 
       // Act
-      const result = await controller.deleteMyAccount(mockUserId, validDeleteDto);
+      const result = await controller.deleteMyAccount(
+        mockUserId,
+        validDeleteDto,
+      );
 
       // Assert
       expect(result.disclaimer).toContain('30 dias');

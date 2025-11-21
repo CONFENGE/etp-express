@@ -1,4 +1,8 @@
-import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { API_URL } from './constants';
 import { getNavigate } from './navigation';
 
@@ -21,7 +25,7 @@ api.interceptors.request.use(
   },
   (error: AxiosError) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor - Handle errors globally
@@ -46,7 +50,7 @@ api.interceptors.response.use(
 
     // Return error response
     return Promise.reject(error.response?.data || error);
-  }
+  },
 );
 
 export default api;
@@ -65,6 +69,5 @@ export const apiHelpers = {
   patch: <T>(url: string, data?: unknown) =>
     api.patch<T>(url, data).then((res) => res.data),
 
-  delete: <T>(url: string) =>
-    api.delete<T>(url).then((res) => res.data),
+  delete: <T>(url: string) => api.delete<T>(url).then((res) => res.data),
 };
