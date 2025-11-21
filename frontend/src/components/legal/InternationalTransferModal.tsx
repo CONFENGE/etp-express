@@ -104,7 +104,7 @@ export function InternationalTransferModal({
             <Checkbox
               id="transferConsent"
               checked={confirmed}
-              onCheckedChange={(checked) => setConfirmed(checked === true)}
+              onCheckedChange={(checked: boolean) => setConfirmed(checked === true)}
             />
             <Label
               htmlFor="transferConsent"
