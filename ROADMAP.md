@@ -2,9 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 98% (41/42) ⚡ QUASE LÁ!
-**Última Atualização:** 2025-11-21 (Issue #262 closed - LGPD consent audit | PR #271 merged)
-**Total de Issues:** 170 issues (67 abertas + 103 fechadas) organizadas em 6 milestones
+**Status Atual:** Milestone 3 (Quality & Security) - 98% (42/43) ⚡ QUASE LÁ!
+**Última Atualização:** 2025-11-21 (Issue #264 closed - Data Retention Policy v2.0.0 | PR #272 merged)
+**Total de Issues:** 170 issues (66 abertas + 104 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~63% - M1 e M2 completos! 🚀
 
 > 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_REPORT.md)** - Auditoria completa realizada em 2025-11-21 (98.2% de acurácia)
@@ -29,17 +29,17 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████████████░ 41/42 (98%)  ⚡ EM PROGRESSO (+1 issue restante)
+[M3] Quality & Security           ███████████████████░ 42/43 (98%)  ⚡ EM PROGRESSO (+1 issue restante)
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 9/31 (29%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 103/170 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% ⚡ | M4 29% ⚡
+TOTAL: 104/170 issues concluídas (61%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% ⚡ | M4 29% ⚡
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
-- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ⚡ EM PROGRESSO (2/9 concluídas: #261 ✅, #262 ✅)
-- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ✅ COMPLETO! (todas 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #236 ✅, #237 ✅, #238 ✅, #239 ✅) **NOVO!**
+- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ⚡ EM PROGRESSO (3/9 concluídas: #261 ✅, #262 ✅, #264 ✅)
+- #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ✅ COMPLETO! (todas 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #236 ✅, #237 ✅, #238 ✅, #239 ✅)
 ```
 
 ## 📊 Métricas de Velocidade
@@ -53,11 +53,11 @@ Sub-issues atômicas (desmembradas):
 └─ Tendência: ACELERANDO (158% acima da meta de 5/dia)
 
 Projeções:
-├─ Issues restantes: 68 (40%)
-├─ Dias para conclusão: ~9 dias
+├─ Issues restantes: 66 (39%)
+├─ Dias para conclusão: ~8 dias
 └─ Data estimada: 2025-11-30 (1 semana!)
 
-Progresso geral: 102/170 (60%)
+Progresso geral: 104/170 (61%)
 Acurácia da documentação: 98.2% ✅
 ```
 
@@ -135,6 +135,8 @@ Acurácia da documentação: 98.2% ✅
 - ✅ #158 - [SEC-109f] Audit trail para acesso a secrets 🔒 **PR #190 MERGED** ✅
 - ✅ #109 - Secrets Management (parent) 🔒 **CLOSED - todas sub-issues completas** ✅
 - ✅ #261 - [LGPD-86a] Mapear fluxo de dados pessoais 🔒 **PR #270 MERGED** ✅ (desmembramento v2)
+- ✅ #262 - [LGPD-86b] Verificar mecanismos de consentimento 🔒 **PR #271 MERGED** ✅
+- ✅ #264 - [LGPD-86d] Política de Retenção de Dados v2.0.0 🔒 **PR #272 MERGED** ✅ **NOVO!**
 - ✅ UX e segurança frontend aprimoradas
 - ✅ Production build 100% livre de vulnerabilidades HIGH ✅
 - ✅ API cost abuse prevention implementado ✅
@@ -155,9 +157,9 @@ Acurácia da documentação: 98.2% ✅
 
 **Sub-issues de #86 (LGPD Audit v2) - Desmembramento 2025-11-21:**
 - ✅ #261 - [LGPD-86a] Mapear fluxo de dados pessoais (CLOSED 2025-11-21) 🔒 **PR #270 MERGED** ✅
-- ✅ #262 - [LGPD-86b] Verificar mecanismos de consentimento (CLOSED 2025-11-21) 🔒 **PR #271** ✅ **NOVO!**
+- ✅ #262 - [LGPD-86b] Verificar mecanismos de consentimento (CLOSED 2025-11-21) 🔒 **PR #271 MERGED** ✅
 - ⏳ #263 - [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso
-- ⏳ #264 - [LGPD-86d] Revisar e documentar política de retenção de dados
+- ✅ #264 - [LGPD-86d] Revisar e documentar política de retenção de dados (CLOSED 2025-11-21) 🔒 **PR #272 MERGED** ✅ **NOVO!**
 - ⏳ #265 - [LGPD-86e] Verificar implementação dos direitos do titular (acesso, correção, exclusão)
 - ⏳ #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais
 - ⏳ #267 - [LGPD-86g] Criar política de privacidade e termos de uso
@@ -189,9 +191,9 @@ Acurácia da documentação: 98.2% ✅
 
 **TODAS 7 SUB-ISSUES CONCLUÍDAS! Parent #113 ready to close! 🎉**
 
-**Pendente M3** (10 issues abertas - 7 sub-issues + 3 parents/bloqueadas):
-- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 2/9 sub-issues concluídas)
-  - Sub-issues pendentes: #263, #264, #265, #266, #267, #268, #269 (7 restantes)
+**Pendente M3** (10 issues abertas - 6 sub-issues + 4 parents/bloqueadas):
+- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 3/9 sub-issues concluídas)
+  - Sub-issues pendentes: #263, #265, #266, #267, #268, #269 (6 restantes)
 - ⏳ #87 - [#46c] Implementar remediações de segurança (bloqueada por #86)
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - 7/7 sub-issues concluídas, ready to close!)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing (vendor externo)
@@ -230,7 +232,37 @@ Acurácia da documentação: 98.2% ✅
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-21 (Atualização 43 - Issue #262 Closed - LGPD Consent Audit) 🔒✅ **NOVO!**
+### 2025-11-21 (Atualização 44 - Issue #264 Closed - Data Retention Policy v2.0.0) 🔒✅ **NOVO!**
+- ✅ **Issue #264 CLOSED**: [LGPD-86d] Revisar e documentar política de retenção de dados 🔒 **PR #272 MERGED**
+- ✅ **PROGRESSO**: 103 → **104 issues fechadas** (61% → 61%)
+- ⚡ **M3 Quality & Security**: 98% (42/43) - 6 sub-issues pendentes de #86
+
+**O que foi entregue (#264):**
+- ✅ Documento `docs/DATA_RETENTION_POLICY.md` v2.0.0 (411 linhas, -67 net lines)
+  - Períodos de retenção por tipo de dado (contas, ETPs, logs, analytics, backups)
+  - Procedimentos de exclusão automática e manual (soft/hard delete)
+  - Exceções legais e obrigações de guarda (comprovantes de consentimento)
+  - Referências a código específico (file:line) para implementação
+  - Análise de conformidade com LGPD Art. 15 e 16
+
+**Implementação Atual:**
+- ✅ **Soft/Hard Delete**: Cron diário às 02:00 AM (users.service.ts:331)
+- ✅ **Retention Period**: 30 dias após soft delete
+- ✅ **Cascade Delete**: ETPs removidos automaticamente com usuário
+
+**Gaps Identificados (3):**
+- ❌ GAP-01: Analytics Events Purge (1 ano) - não implementado
+- ❌ GAP-02: Audit Logs Purge (2 anos) - não implementado
+- ❌ GAP-03: lastLoginAt Cleanup (1 ano em contas inativas) - não implementado
+
+**Artefatos:**
+- PR #272: https://github.com/tjsasakifln/etp-express/pull/272
+- Validation Score: **100/100** (Perfect - automated merge via /review-pr)
+- Post-Merge Tests: Backend 652 tests ✅ | Frontend 29 tests ✅
+
+---
+
+### 2025-11-21 (Atualização 43 - Issue #262 Closed - LGPD Consent Audit) 🔒✅
 - ✅ **Issue #262 CLOSED**: [LGPD-86b] Verificar mecanismos de consentimento 🔒 **PR #271 MERGED**
 - ✅ **PROGRESSO**: 102 → **103 issues fechadas** (63% mantido)
 - ⚡ **M3 Quality & Security**: 95% mantido (7 sub-issues pendentes de #86)
@@ -265,7 +297,7 @@ Issue #86 (Auditoria LGPD) foi re-desmembrada em 9 sub-issues mais granulares:
 - #261 - [LGPD-86a] Mapear fluxo de dados pessoais ✅ FECHADA
 - #262 - [LGPD-86b] Verificar mecanismos de consentimento de usuários ✅ FECHADA
 - #263 - [LGPD-86c] Validar criptografia de dados sensíveis
-- #264 - [LGPD-86d] Revisar e documentar política de retenção
+- #264 - [LGPD-86d] Revisar e documentar política de retenção ✅ FECHADA
 - #265 - [LGPD-86e] Verificar direitos do titular (acesso, correção, exclusão)
 - #266 - [LGPD-86f] Implementar logs de auditoria para dados pessoais
 - #267 - [LGPD-86g] Criar política de privacidade e termos de uso
@@ -1487,11 +1519,11 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 - [x] #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback ✅
 - [x] #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type ✅
 
-**LGPD Sub-issues de #86 v2 (9 issues) - ⚡ 2 DE 9 CONCLUÍDAS** (desmembramento 2025-11-21)
+**LGPD Sub-issues de #86 v2 (9 issues) - ⚡ 3 DE 9 CONCLUÍDAS** (desmembramento 2025-11-21)
 - [x] #261 - [LGPD-86a] Mapear fluxo de dados pessoais ✅ **FECHADA 2025-11-21 - PR #270**
 - [x] #262 - [LGPD-86b] Verificar mecanismos de consentimento de usuários ✅ **FECHADA 2025-11-21 - PR #271**
 - [ ] #263 - [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso ⏳
-- [ ] #264 - [LGPD-86d] Revisar e documentar política de retenção de dados ⏳
+- [x] #264 - [LGPD-86d] Revisar e documentar política de retenção de dados ✅ **FECHADA 2025-11-21 - PR #272**
 - [ ] #265 - [LGPD-86e] Verificar implementação dos direitos do titular ⏳
 - [ ] #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais ⏳
 - [ ] #267 - [LGPD-86g] Criar política de privacidade e termos de uso ⏳
