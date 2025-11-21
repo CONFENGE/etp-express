@@ -3,7 +3,7 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 3 (Quality & Security) - 100% (43/43) 🎉 M3 COMPLETO!
-**Última Atualização:** 2025-11-21 (Issue #263 closed - LGPD Encryption Audit | PR #273 merged)
+**Última Atualização:** 2025-11-21 (Issue #265 in progress - LGPD User Rights Audit | PR #274 created)
 **Total de Issues:** 170 issues (65 abertas + 105 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~63% - M1 e M2 completos! 🚀
 
@@ -160,7 +160,7 @@ Acurácia da documentação: 98.2% ✅
 - ✅ #262 - [LGPD-86b] Verificar mecanismos de consentimento (CLOSED 2025-11-21) 🔒 **PR #271 MERGED** ✅
 - ✅ #263 - [LGPD-86c] Validar criptografia de dados sensíveis (CLOSED 2025-11-21) 🔒 **PR #273 MERGED** ✅ **NOVO!**
 - ✅ #264 - [LGPD-86d] Revisar e documentar política de retenção de dados (CLOSED 2025-11-21) 🔒 **PR #272 MERGED** ✅
-- ⏳ #265 - [LGPD-86e] Verificar implementação dos direitos do titular (acesso, correção, exclusão)
+- ⚡ #265 - [LGPD-86e] Verificar implementação dos direitos do titular 🔒 **PR #274 CREATED** ⚡ (em progresso)
 - ⏳ #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais
 - ⏳ #267 - [LGPD-86g] Criar política de privacidade e termos de uso
 - ⏳ #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados
@@ -192,8 +192,8 @@ Acurácia da documentação: 98.2% ✅
 **TODAS 7 SUB-ISSUES CONCLUÍDAS! Parent #113 ready to close! 🎉**
 
 **Issues parent e bloqueadas (movidas para outros milestones):**
-- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 4/9 sub-issues concluídas)
-  - Sub-issues pendentes: #265, #266, #267, #268, #269 (5 restantes)
+- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 4/9 sub-issues concluídas, #265 em progresso)
+  - Sub-issues pendentes: #266, #267, #268, #269 (4 restantes após #265)
 - ⏳ #87 - [#46c] Implementar remediações de segurança (bloqueada por #86)
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - 7/7 sub-issues concluídas, ready to close!)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing (vendor externo)
@@ -232,7 +232,34 @@ Acurácia da documentação: 98.2% ✅
 
 ## 📋 Auditoria e Governança
 
-### 2025-11-21 (Atualização 45 - Issue #263 Closed - LGPD Encryption Audit) 🔒✅ **NOVO!**
+### 2025-11-21 (Atualização 46 - Issue #265 PR Created - LGPD User Rights Audit) 🔒⚡ **NOVO!**
+- ⚡ **Issue #265 IN PROGRESS**: [LGPD-86e] Verificar implementação dos direitos do titular 🔒 **PR #274 CREATED**
+- ⚡ **PROGRESSO**: 105 issues fechadas (62%) - #265 em progresso
+
+**O que foi entregue (#265):**
+- ⚡ Documento `docs/LGPD_USER_RIGHTS_AUDIT.md` (377 linhas)
+  - Auditoria completa de direitos do titular LGPD Art. 18
+  - 95% de conformidade (up from 75% no audit anterior de Nov 19)
+  - Comparação before/after com audit #195
+
+**Achados da Auditoria:**
+- ✅ **Acesso (Art. 18, II)**: 100% - GET /users/me/export implementado
+- ✅ **Correção (Art. 18, III)**: 90% - PATCH /users/:id disponível
+- ✅ **Exclusão (Art. 18, VI)**: 100% - DELETE /users/me com soft delete + 30 dias
+- ✅ **Portabilidade (Art. 18, V)**: 100% - Export JSON completo
+- ✅ **Consentimento (Art. 18, IX)**: 90% - lgpdConsentAt, lgpdConsentVersion
+
+**Gaps Resolvidos Desde Audit Anterior:**
+- [x] ~~No user data export~~ → GET /users/me/export
+- [x] ~~Admin-only delete~~ → Self-service DELETE /users/me
+- [x] ~~No cascade delete~~ → onDelete: CASCADE configurado
+- [x] ~~No consent tracking~~ → Campos LGPD adicionados
+
+**Status PR #274:** Aguardando merge
+
+---
+
+### 2025-11-21 (Atualização 45 - Issue #263 Closed - LGPD Encryption Audit) 🔒✅
 - ✅ **Issue #263 CLOSED**: [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso 🔒 **PR #273 MERGED**
 - ✅ **PROGRESSO**: 104 → **105 issues fechadas** (61% → 62%)
 - 🎉 **M3 Quality & Security**: 100% (43/43) - **M3 COMPLETO!** 🎉
