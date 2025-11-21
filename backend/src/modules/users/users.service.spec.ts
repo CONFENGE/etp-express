@@ -9,6 +9,7 @@ import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 import { AuditLog } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailService } from '../email/email.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -60,6 +61,10 @@ describe('UsersService', () => {
     save: jest.fn(),
   };
 
+  const mockEmailService = {
+    sendDeletionConfirmation: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -79,6 +84,10 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(AuditLog),
           useValue: mockAuditLogsRepository,
+        },
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
         },
       ],
     }).compile();
