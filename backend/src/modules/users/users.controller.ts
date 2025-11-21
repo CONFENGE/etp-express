@@ -9,6 +9,8 @@ import {
   UseGuards,
   ClassSerializerInterceptor,
   UseInterceptors,
+  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,14 +18,15 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
+import { CancelDeletionDto } from './dto/cancel-deletion.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
-import { BadRequestException } from '@nestjs/common';
 
 /**
  * Controller handling user management HTTP endpoints.
@@ -49,7 +52,10 @@ import { BadRequestException } from '@nestjs/common';
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   /**
    * Creates a new user (admin only).
@@ -219,6 +225,80 @@ export class UsersController {
         'Após este período, todos os dados serão permanentemente removidos e não poderão ser recuperados. ' +
         DISCLAIMER,
     };
+  }
+
+  /**
+   * Cancels account deletion using token from confirmation email.
+   *
+   * @remarks
+   * Verifies JWT token from deletion confirmation email and reactivates account.
+   * Token must be valid (not expired, correct type) and account must be marked for deletion.
+   * This endpoint does NOT require authentication (public endpoint for token-based cancellation).
+   *
+   * @param cancelDto - Contains JWT token from email
+   * @returns Success message confirming cancellation
+   * @throws {BadRequestException} 400 - If token is invalid or account not marked for deletion
+   * @throws {UnauthorizedException} 401 - If token is expired or signature invalid
+   */
+  @Post('cancel-deletion')
+  @UseGuards() // Remove JwtAuthGuard for this endpoint (public)
+  @ApiOperation({ summary: 'Cancelar exclusão de conta usando token do email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Deleção cancelada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        accountReactivated: { type: 'boolean' },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido ou conta não marcada para deleção',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token expirado ou assinatura inválida',
+  })
+  async cancelDeletion(@Body() cancelDto: CancelDeletionDto) {
+    try {
+      // Verify JWT token
+      const payload = await this.jwtService.verifyAsync(cancelDto.token);
+
+      // Validate token type
+      if (payload.type !== 'CANCEL_DELETION') {
+        throw new BadRequestException(
+          'Token inválido. Este token não é para cancelamento de deleção.',
+        );
+      }
+
+      // Cancel deletion
+      await this.usersService.cancelDeletion(payload.sub);
+
+      return {
+        message: 'Exclusão de conta cancelada com sucesso',
+        accountReactivated: true,
+        disclaimer:
+          'Sua conta foi reativada. Você pode fazer login normalmente. ' +
+          DISCLAIMER,
+      };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException(
+          'Token expirado. O período de 30 dias para cancelamento expirou.',
+        );
+      }
+      if (error.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException(
+          'Token inválido ou assinatura inválida.',
+        );
+      }
+      // Re-throw BadRequestException from service
+      throw error;
+    }
   }
 
   /**

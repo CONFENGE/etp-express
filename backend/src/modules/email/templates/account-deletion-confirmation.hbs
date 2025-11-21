@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação de Exclusão de Conta</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #d32f2f;
+      margin-top: 0;
+    }
+    .warning-box {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .info-box {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white !important;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>⚠️ Confirmação de Exclusão de Conta</h2>
+
+    <p>Olá <strong>{{userName}}</strong>,</p>
+
+    <p>Sua solicitação de exclusão de conta foi recebida e está em processamento.</p>
+
+    <div class="warning-box">
+      <strong>⏰ Data de Exclusão Permanente:</strong><br>
+      Sua conta será permanentemente excluída em: <strong>{{deletionScheduledFor}}</strong>
+    </div>
+
+    <h3>📋 O que será deletado:</h3>
+    <ul>
+      <li><strong>Informações de perfil:</strong> Nome, email, órgão, cargo</li>
+      <li><strong>Todos os ETPs criados</strong> e suas respectivas seções</li>
+      <li><strong>Todas as versões</strong> de ETPs armazenadas</li>
+      <li><strong>Histórico de ações</strong> (analytics e audit logs)</li>
+    </ul>
+
+    <div class="info-box">
+      <h4>📅 Dados Residuais (Remoção Automática):</h4>
+      <ul>
+        <li><strong>Backups técnicos:</strong> Removidos em até 30 dias adicionais</li>
+        <li><strong>Logs anonimizados:</strong> Mantidos por até 90 dias para conformidade legal</li>
+      </ul>
+      <small>Conforme política de retenção de dados (LGPD Art. 16)</small>
+    </div>
+
+    <h3>🔄 Deseja Cancelar a Exclusão?</h3>
+    <p>Você tem <strong>30 dias</strong> para cancelar esta solicitação. Após este período, a exclusão será irreversível.</p>
+
+    <p style="text-align: center;">
+      <a href="{{cancelUrl}}" class="button">
+        🛑 Cancelar Exclusão de Conta
+      </a>
+    </p>
+
+    <p><small>Link válido por 30 dias. Após este período, o link expirará.</small></p>
+
+    <hr>
+
+    <h4>⚠️ ATENÇÃO - Exclusão Permanente</h4>
+    <p>
+      Após a data de exclusão (<strong>{{deletionScheduledFor}}</strong>), todos os seus dados
+      serão <strong>permanentemente removidos</strong> e não poderão ser recuperados.
+      Esta ação é irreversível.
+    </p>
+
+    <p>
+      <strong>Se você NÃO solicitou esta exclusão:</strong><br>
+      Entre em contato imediatamente com nosso suporte:
+      <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>
+    </p>
+
+    <div class="footer">
+      <p>
+        <strong>ETP Express</strong> - Sistema de Estudos Técnicos Preliminares<br>
+        Este é um email automático. Por favor, não responda diretamente.
+      </p>
+      <p>
+        <small>
+          Para mais informações sobre seus direitos LGPD, consulte nossa
+          <a href="#">Política de Privacidade</a>.
+        </small>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
