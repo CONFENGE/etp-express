@@ -32,10 +32,10 @@ export class User {
   name: string;
 
   @Column({ nullable: true })
-  orgao: string;
+  orgao: string | null;
 
   @Column({ nullable: true })
-  cargo: string;
+  cargo: string | null;
 
   @Column({
     type: 'enum',
@@ -48,28 +48,28 @@ export class User {
   isActive: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
-  lastLoginAt: Date;
+  lastLoginAt: Date | null;
 
   /**
    * Timestamp when user consented to LGPD terms.
    * Required for LGPD Art. 7º, I compliance.
    */
   @Column({ type: 'timestamp', nullable: true })
-  lgpdConsentAt: Date;
+  lgpdConsentAt: Date | null;
 
   /**
    * Version of LGPD terms accepted by user.
    * Enables audit trail per LGPD Art. 8º, §4º.
    */
   @Column({ nullable: true })
-  lgpdConsentVersion: string;
+  lgpdConsentVersion: string | null;
 
   /**
    * Timestamp when user consented to international data transfer.
    * Required for LGPD Art. 33 compliance (USA servers: Railway, OpenAI, Perplexity).
    */
   @Column({ type: 'timestamp', nullable: true })
-  internationalTransferConsentAt: Date;
+  internationalTransferConsentAt: Date | null;
 
   /**
    * Timestamp when user requested account deletion (soft delete).
@@ -77,7 +77,7 @@ export class User {
    * Account will be permanently deleted after 30 days (hard delete).
    */
   @Column({ type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
