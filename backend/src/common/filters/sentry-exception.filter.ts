@@ -74,7 +74,9 @@ export class SentryExceptionFilter extends BaseExceptionFilter {
   /**
    * Sanitiza headers sensíveis antes de enviar para Sentry
    */
-  private sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
+  private sanitizeHeaders(
+    headers: Record<string, unknown>,
+  ): Record<string, unknown> {
     const sanitized = { ...headers };
     delete sanitized.authorization;
     delete sanitized.cookie;
@@ -85,12 +87,12 @@ export class SentryExceptionFilter extends BaseExceptionFilter {
   /**
    * Sanitiza body sensível antes de enviar para Sentry
    */
-  private sanitizeBody(body: any): any {
+  private sanitizeBody(body: unknown): unknown {
     if (!body || typeof body !== 'object') {
       return body;
     }
 
-    const sanitized = { ...body };
+    const sanitized = { ...(body as Record<string, unknown>) };
     delete sanitized.password;
     delete sanitized.token;
     delete sanitized.apiKey;

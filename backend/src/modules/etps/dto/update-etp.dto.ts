@@ -55,6 +55,6 @@ export class UpdateEtpDto {
     responsavelTecnico?: string;
     fundamentacaoLegal?: string[];
     tags?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }

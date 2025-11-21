@@ -21,6 +21,13 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Request } from 'express';
 import { DISCLAIMER } from '../../common/constants/messages';
 
+interface TrackEventDto {
+  eventType: string;
+  eventName: string;
+  properties?: Record<string, unknown>;
+  etpId?: string;
+}
+
 @ApiTags('analytics')
 @Controller('analytics')
 @UseGuards(JwtAuthGuard)
@@ -46,7 +53,7 @@ export class AnalyticsController {
   })
   @ApiResponse({ status: 201, description: 'Evento registrado' })
   async trackEvent(
-    @Body() body: any,
+    @Body() body: TrackEventDto,
     @CurrentUser('id') userId: string,
     @Req() request: Request,
   ) {

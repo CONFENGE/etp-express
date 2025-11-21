@@ -42,9 +42,9 @@ export class AuditLog {
 
   @Column({ type: 'jsonb', nullable: true })
   changes: {
-    before?: any;
-    after?: any;
-    metadata?: any;
+    before?: unknown;
+    after?: unknown;
+    metadata?: unknown;
   };
 
   @Column({ type: 'text', nullable: true })

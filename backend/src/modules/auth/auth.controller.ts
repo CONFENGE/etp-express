@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { UserWithoutPassword } from './types/user.types';
 
 /**
  * Controller handling authentication HTTP endpoints.
@@ -81,7 +82,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Obter dados do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Dados do usuário' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
-  async getMe(@CurrentUser() user: any) {
+  async getMe(@CurrentUser() user: UserWithoutPassword) {
     return {
       user,
       disclaimer: DISCLAIMER,
@@ -105,7 +106,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Validar token JWT' })
   @ApiResponse({ status: 200, description: 'Token válido' })
   @ApiResponse({ status: 401, description: 'Token inválido' })
-  async validateToken(@CurrentUser() user: any) {
+  async validateToken(@CurrentUser() user: UserWithoutPassword) {
     return {
       valid: true,
       user,

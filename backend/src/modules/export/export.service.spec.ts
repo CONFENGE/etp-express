@@ -101,10 +101,10 @@ describe('ExportService', () => {
       expect(result).toHaveProperty('sections');
       expect(result).toHaveProperty('exportedAt');
       expect(result).toHaveProperty('disclaimer');
-      expect(result.etp.id).toBe('etp-123');
-      expect(result.etp.title).toBe('ETP de Teste');
-      expect(result.sections).toHaveLength(1);
-      expect(result.sections[0].id).toBe('section-1');
+      expect((result as any).etp.id).toBe('etp-123');
+      expect((result as any).etp.title).toBe('ETP de Teste');
+      expect((result as any).sections).toHaveLength(1);
+      expect((result as any).sections[0].id).toBe('section-1');
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
@@ -128,8 +128,8 @@ describe('ExportService', () => {
 
       const result = await service.exportToJSON('etp-123');
 
-      expect(result.sections).toEqual([]);
-      expect(result.etp.id).toBe('etp-123');
+      expect((result as any).sections).toEqual([]);
+      expect((result as any).etp.id).toBe('etp-123');
     });
   });
 
@@ -289,8 +289,8 @@ describe('ExportService', () => {
       const result = await service.exportToJSON('etp-123');
 
       // Sections should be sorted by order
-      expect(result.sections[0].order).toBe(1);
-      expect(result.sections[1].order).toBe(2);
+      expect((result as any).sections[0].order).toBe(1);
+      expect((result as any).sections[1].order).toBe(2);
       expect(mockEtpsRepository.findOne).toHaveBeenCalledWith({
         where: { id: 'etp-123' },
         relations: ['sections', 'createdBy'],
