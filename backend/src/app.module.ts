@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import * as Joi from 'joi';
 
 // Modules
@@ -116,6 +117,9 @@ import { AppService } from './app.service';
         },
       ],
     }),
+
+    // Scheduled tasks (cron jobs)
+    ScheduleModule.forRoot(),
 
     // Feature modules
     AuthModule,

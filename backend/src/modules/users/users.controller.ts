@@ -366,4 +366,48 @@ export class UsersController {
       disclaimer: DISCLAIMER,
     };
   }
+
+  /**
+   * Manually triggers hard delete purge of accounts soft-deleted for >30 days (admin only).
+   *
+   * @remarks
+   * Admin authorization is not yet enforced. This endpoint should be
+   * protected with an admin guard in the future.
+   *
+   * This endpoint allows manual triggering of the automated daily purge job.
+   * Useful for testing or immediate cleanup without waiting for scheduled cron.
+   *
+   * @returns Purge statistics (count, timestamp, purged user IDs)
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
+  @Post('admin/purge-deleted')
+  @ApiOperation({
+    summary:
+      'Purge manual de contas deletadas há >30 dias (admin only - testing)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Purge executado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        purgedCount: { type: 'number' },
+        purgedAt: { type: 'string', format: 'date-time' },
+        purgedUserIds: { type: 'array', items: { type: 'string' } },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async adminPurgeDeleted() {
+    const result = await this.usersService.purgeDeletedAccounts();
+    return {
+      message: 'Purge de contas deletadas executado com sucesso',
+      ...result,
+      disclaimer:
+        'ATENÇÃO: Esta operação remove permanentemente todos os dados de usuários soft-deleted há mais de 30 dias. ' +
+        'A remoção é irreversível. ' +
+        DISCLAIMER,
+    };
+  }
 }
