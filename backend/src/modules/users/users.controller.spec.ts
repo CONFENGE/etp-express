@@ -3,17 +3,21 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
+import { CancelDeletionDto } from './dto/cancel-deletion.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
+  let jwtService: JwtService;
 
   const mockUserId = 'user-123';
 
@@ -36,6 +40,11 @@ describe('UsersController', () => {
     remove: jest.fn(),
     exportUserData: jest.fn(),
     softDeleteAccount: jest.fn(),
+    cancelDeletion: jest.fn(),
+  };
+
+  const mockJwtService = {
+    verifyAsync: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -46,6 +55,10 @@ describe('UsersController', () => {
           provide: UsersService,
           useValue: mockUsersService,
         },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -54,6 +67,7 @@ describe('UsersController', () => {
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
 
     // Reset mocks before each test
     jest.clearAllMocks();
@@ -677,6 +691,151 @@ describe('UsersController', () => {
         mockUserId,
         validDeleteDto.reason,
       );
+    });
+  });
+
+  describe('cancelDeletion', () => {
+    const mockToken = 'valid-jwt-token-123';
+    const cancelDto: CancelDeletionDto = { token: mockToken };
+
+    it('should successfully cancel deletion with valid token', async () => {
+      // Arrange
+      mockJwtService.verifyAsync.mockResolvedValue({
+        sub: mockUserId,
+        type: 'CANCEL_DELETION',
+      });
+      mockUsersService.cancelDeletion.mockResolvedValue(undefined);
+
+      // Act
+      const result = await controller.cancelDeletion(cancelDto);
+
+      // Assert
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith(mockToken);
+      expect(service.cancelDeletion).toHaveBeenCalledWith(mockUserId);
+      expect(service.cancelDeletion).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({
+        message: 'Exclusão de conta cancelada com sucesso',
+        accountReactivated: true,
+        disclaimer: expect.any(String),
+      });
+      expect(result.disclaimer).toContain('reativada');
+      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    it('should throw BadRequestException if token type is wrong', async () => {
+      // Arrange
+      mockJwtService.verifyAsync.mockResolvedValue({
+        sub: mockUserId,
+        type: 'WRONG_TYPE', // Invalid type
+      });
+
+      // Act & Assert
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        'Token inválido. Este token não é para cancelamento de deleção.',
+      );
+
+      // Verify service was NOT called
+      expect(service.cancelDeletion).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException if token is expired', async () => {
+      // Arrange
+      const expiredError = new Error('Token expired');
+      expiredError.name = 'TokenExpiredError';
+      mockJwtService.verifyAsync.mockRejectedValue(expiredError);
+
+      // Act & Assert
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        'Token expirado. O período de 30 dias para cancelamento expirou.',
+      );
+
+      // Verify service was NOT called
+      expect(service.cancelDeletion).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException if token signature is invalid', async () => {
+      // Arrange
+      const jwtError = new Error('Invalid signature');
+      jwtError.name = 'JsonWebTokenError';
+      mockJwtService.verifyAsync.mockRejectedValue(jwtError);
+
+      // Act & Assert
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        'Token inválido ou assinatura inválida.',
+      );
+
+      // Verify service was NOT called
+      expect(service.cancelDeletion).not.toHaveBeenCalled();
+    });
+
+    it('should re-throw BadRequestException from service if account not marked for deletion', async () => {
+      // Arrange
+      mockJwtService.verifyAsync.mockResolvedValue({
+        sub: mockUserId,
+        type: 'CANCEL_DELETION',
+      });
+
+      const serviceError = new BadRequestException(
+        'Conta não está marcada para deleção',
+      );
+      mockUsersService.cancelDeletion.mockRejectedValue(serviceError);
+
+      // Act & Assert
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        'Conta não está marcada para deleção',
+      );
+
+      // Verify JWT was verified and service was called
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith(mockToken);
+      expect(service.cancelDeletion).toHaveBeenCalledWith(mockUserId);
+    });
+
+    it('should re-throw NotFoundException from service if user not found', async () => {
+      // Arrange
+      mockJwtService.verifyAsync.mockResolvedValue({
+        sub: 'non-existent-user-id',
+        type: 'CANCEL_DELETION',
+      });
+
+      mockUsersService.cancelDeletion.mockRejectedValue(
+        new NotFoundException('Usuário não encontrado'),
+      );
+
+      // Act & Assert
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(controller.cancelDeletion(cancelDto)).rejects.toThrow(
+        'Usuário não encontrado',
+      );
+    });
+
+    it('should extract userId from JWT token payload', async () => {
+      // Arrange
+      const testUserId = 'test-user-uuid-456';
+      mockJwtService.verifyAsync.mockResolvedValue({
+        sub: testUserId,
+        type: 'CANCEL_DELETION',
+      });
+      mockUsersService.cancelDeletion.mockResolvedValue(undefined);
+
+      // Act
+      await controller.cancelDeletion(cancelDto);
+
+      // Assert - verify service called with extracted userId
+      expect(service.cancelDeletion).toHaveBeenCalledWith(testUserId);
     });
   });
 });
