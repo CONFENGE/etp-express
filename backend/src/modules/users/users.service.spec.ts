@@ -712,4 +712,206 @@ describe('UsersService', () => {
       expect(result.user).toBeDefined();
     });
   });
+
+  describe('purgeDeletedAccounts', () => {
+    it('should purge users soft-deleted more than 30 days ago', async () => {
+      // User deleted 31 days ago (should be purged)
+      const oldDeletedUser: User = {
+        ...mockUser,
+        id: 'old-user-id',
+        email: 'old@example.com',
+        deletedAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000), // 31 days ago
+        isActive: false,
+      };
+
+      const mockEtps = [
+        {
+          id: 'etp-1',
+          sections: [{}, {}],
+          versions: [{}],
+        },
+        {
+          id: 'etp-2',
+          sections: [{}],
+          versions: [],
+        },
+      ];
+
+      mockRepository.find.mockResolvedValue([oldDeletedUser]);
+      mockEtpsRepository.count.mockResolvedValue(2);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockRepository.remove.mockResolvedValue(oldDeletedUser);
+
+      const result = await service.purgeDeletedAccounts();
+
+      // Verify correct cutoff date was used (30 days ago)
+      expect(mockRepository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            isActive: false,
+          }),
+        }),
+      );
+
+      // Verify audit log was created
+      expect(mockAuditService.logAccountDeletion).toHaveBeenCalledWith(
+        oldDeletedUser.id,
+        'HARD',
+        expect.objectContaining({
+          reason: expect.stringContaining('Hard delete after 30-day retention'),
+          etpsCount: 2,
+          sectionsCount: 3, // 2 + 1
+          versionsCount: 1,
+        }),
+      );
+
+      // Verify user was removed
+      expect(mockRepository.remove).toHaveBeenCalledWith(oldDeletedUser);
+
+      // Verify result
+      expect(result.purgedCount).toBe(1);
+      expect(result.purgedUserIds).toEqual([oldDeletedUser.id]);
+      expect(result.purgedAt).toBeInstanceOf(Date);
+    });
+
+    it('should NOT purge users soft-deleted less than 30 days ago', async () => {
+      // User deleted 29 days ago (should NOT be purged)
+      const recentDeletedUser: User = {
+        ...mockUser,
+        id: 'recent-user-id',
+        email: 'recent@example.com',
+        deletedAt: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000), // 29 days ago
+        isActive: false,
+      };
+
+      // Mock find to return no users (because LessThan(30 days) won't match)
+      mockRepository.find.mockResolvedValue([]);
+
+      const result = await service.purgeDeletedAccounts();
+
+      // Verify no users were removed
+      expect(mockRepository.remove).not.toHaveBeenCalled();
+      expect(mockAuditService.logAccountDeletion).not.toHaveBeenCalled();
+
+      // Verify result
+      expect(result.purgedCount).toBe(0);
+      expect(result.purgedUserIds).toEqual([]);
+    });
+
+    it('should purge multiple users in a single run', async () => {
+      const deletedUser1: User = {
+        ...mockUser,
+        id: 'user-1',
+        email: 'user1@example.com',
+        deletedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      const deletedUser2: User = {
+        ...mockUser,
+        id: 'user-2',
+        email: 'user2@example.com',
+        deletedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      mockRepository.find.mockResolvedValue([deletedUser1, deletedUser2]);
+      mockEtpsRepository.count.mockResolvedValue(0);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockRepository.remove
+        .mockResolvedValueOnce(deletedUser1)
+        .mockResolvedValueOnce(deletedUser2);
+
+      const result = await service.purgeDeletedAccounts();
+
+      expect(result.purgedCount).toBe(2);
+      expect(result.purgedUserIds).toEqual(['user-1', 'user-2']);
+      expect(mockRepository.remove).toHaveBeenCalledTimes(2);
+      expect(mockAuditService.logAccountDeletion).toHaveBeenCalledTimes(2);
+    });
+
+    it('should continue purging other users if one fails', async () => {
+      const deletedUser1: User = {
+        ...mockUser,
+        id: 'user-1',
+        email: 'user1@example.com',
+        deletedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      const deletedUser2: User = {
+        ...mockUser,
+        id: 'user-2',
+        email: 'user2@example.com',
+        deletedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      mockRepository.find.mockResolvedValue([deletedUser1, deletedUser2]);
+      mockEtpsRepository.count.mockResolvedValue(0);
+      mockEtpsRepository.find.mockResolvedValue([]);
+
+      // First user fails, second succeeds
+      mockRepository.remove
+        .mockRejectedValueOnce(new Error('Database error'))
+        .mockResolvedValueOnce(deletedUser2);
+
+      const result = await service.purgeDeletedAccounts();
+
+      // Only user2 should be purged
+      expect(result.purgedCount).toBe(1);
+      expect(result.purgedUserIds).toEqual(['user-2']);
+      expect(mockRepository.remove).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return empty result when no users to purge', async () => {
+      mockRepository.find.mockResolvedValue([]);
+
+      const result = await service.purgeDeletedAccounts();
+
+      expect(result.purgedCount).toBe(0);
+      expect(result.purgedUserIds).toEqual([]);
+      expect(mockRepository.remove).not.toHaveBeenCalled();
+      expect(mockAuditService.logAccountDeletion).not.toHaveBeenCalled();
+    });
+
+    it('should calculate correct related data counts for audit log', async () => {
+      const deletedUser: User = {
+        ...mockUser,
+        id: 'user-id',
+        deletedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      const mockEtps = [
+        {
+          id: 'etp-1',
+          sections: [{}, {}, {}], // 3 sections
+          versions: [{}, {}], // 2 versions
+        },
+        {
+          id: 'etp-2',
+          sections: [{}, {}], // 2 sections
+          versions: [{}], // 1 version
+        },
+      ];
+
+      mockRepository.find.mockResolvedValue([deletedUser]);
+      mockEtpsRepository.count.mockResolvedValue(2);
+      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockRepository.remove.mockResolvedValue(deletedUser);
+
+      await service.purgeDeletedAccounts();
+
+      expect(mockAuditService.logAccountDeletion).toHaveBeenCalledWith(
+        deletedUser.id,
+        'HARD',
+        expect.objectContaining({
+          etpsCount: 2,
+          sectionsCount: 5, // 3 + 2
+          versionsCount: 3, // 2 + 1
+        }),
+      );
+    });
+  });
 });
