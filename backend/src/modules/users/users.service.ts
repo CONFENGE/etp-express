@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
-import { AuditLog } from '../../entities/audit-log.entity';
+import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -137,7 +137,7 @@ export class UsersService {
 
     // 5. Create audit log for this export
     const exportLog = this.auditLogsRepository.create({
-      action: 'export' as any,
+      action: AuditAction.EXPORT,
       entityType: 'user',
       entityId: userId,
       userId,
@@ -177,5 +177,62 @@ export class UsersService {
         },
       },
     };
+  }
+
+  /**
+   * Soft deletes a user account for LGPD compliance (Art. 18, VI - direito de exclusão).
+   *
+   * @remarks
+   * Performs soft delete by:
+   * - Setting deletedAt timestamp
+   * - Deactivating account (isActive = false)
+   * - Creating audit log entry
+   * - Account will be hard deleted after 30 days by scheduled job
+   *
+   * This method fulfills LGPD right to deletion with grace period for reversal.
+   *
+   * @param userId - User unique identifier (UUID)
+   * @param reason - Optional reason for account deletion
+   * @returns Deletion scheduled date (30 days from now)
+   * @throws {NotFoundException} If user not found
+   */
+  async softDeleteAccount(
+    userId: string,
+    reason?: string,
+  ): Promise<{ scheduledDeletionDate: Date }> {
+    const user = await this.findOne(userId);
+
+    // Soft delete: mark for deletion without removing data
+    user.deletedAt = new Date();
+    user.isActive = false;
+
+    await this.usersRepository.save(user);
+
+    // Calculate scheduled hard deletion date (30 days from now)
+    const scheduledDeletionDate = new Date();
+    scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 30);
+
+    // Create audit log
+    const auditLog = this.auditLogsRepository.create({
+      action: AuditAction.DELETE,
+      entityType: 'user',
+      entityId: userId,
+      userId,
+      description: 'User account soft deleted (LGPD Art. 18, VI)',
+      changes: {
+        metadata: {
+          deletedAt: user.deletedAt.toISOString(),
+          scheduledHardDeletionAt: scheduledDeletionDate.toISOString(),
+          reason: reason || 'Não informado',
+        },
+      },
+    });
+    await this.auditLogsRepository.save(auditLog);
+
+    this.logger.log(
+      `User soft deleted: ${user.email} (scheduled hard deletion: ${scheduledDeletionDate.toISOString()})`,
+    );
+
+    return { scheduledDeletionDate };
   }
 }
