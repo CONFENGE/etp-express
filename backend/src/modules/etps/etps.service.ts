@@ -179,12 +179,13 @@ export class EtpsService {
       throw new NotFoundException(`ETP com ID ${id} não encontrado`);
     }
 
-    // Optional: Check ownership
+    // Check ownership - users can only access their own ETPs
     if (userId && etp.createdById !== userId) {
-      // You might want to implement role-based access here
-      // For now, we'll allow viewing but log it
       this.logger.warn(
-        `User ${userId} accessed ETP ${id} owned by ${etp.createdById}`,
+        `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
       );
     }
 

@@ -8,6 +8,7 @@ import {
   Req,
   Ip,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiTags,
   ApiOperation,
@@ -67,15 +68,24 @@ export class AuthController {
   /**
    * Authenticates user credentials and issues JWT token.
    *
+   * @remarks
+   * Rate limited to 5 attempts per minute per IP to prevent brute force attacks.
+   *
    * @param loginDto - User credentials (email and password)
    * @returns Authentication response with JWT token and user data
    * @throws {UnauthorizedException} 401 - If credentials are invalid
+   * @throws {ThrottlerException} 429 - Too many login attempts
    */
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per 60 seconds (brute force protection)
   @Post('login')
   @ApiOperation({ summary: 'Login de usuário' })
   @ApiResponse({ status: 200, description: 'Login realizado com sucesso' })
   @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  @ApiResponse({
+    status: 429,
+    description: 'Muitas tentativas de login. Tente novamente em 1 minuto.',
+  })
   async login(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
