@@ -33,10 +33,10 @@ export function TermsOfService() {
             <div className="flex items-center justify-center gap-4 mt-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                Versão 1.0
+                Versão 1.1
               </span>
               <span>|</span>
-              <span>Vigência: 20/11/2025</span>
+              <span>Atualizada: 22/11/2025</span>
             </div>
           </CardHeader>
         </Card>

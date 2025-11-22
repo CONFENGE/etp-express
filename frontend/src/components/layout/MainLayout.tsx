@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { Footer } from './Footer';
 import { WarningBanner } from '@/components/common/WarningBanner';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
@@ -13,18 +14,19 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { sidebarOpen } = useUIStore();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <WarningBanner />
       <Header />
-      <div className="flex">
+      <div className="flex flex-1">
         <Sidebar />
         <main
           className={cn(
-            'flex-1 transition-all duration-300',
+            'flex-1 transition-all duration-300 flex flex-col',
             sidebarOpen ? 'ml-64' : 'ml-0',
           )}
         >
-          <div className="container mx-auto px-4 py-8">{children}</div>
+          <div className="container mx-auto px-4 py-8 flex-1">{children}</div>
+          <Footer />
         </main>
       </div>
     </div>
