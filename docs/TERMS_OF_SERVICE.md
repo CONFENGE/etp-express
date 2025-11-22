@@ -1,8 +1,8 @@
 # Termos de Uso - ETP Express
 
-**Versão:** 1.0
-**Data de Vigência:** 20 de Novembro de 2025
-**Última Atualização:** 20 de Novembro de 2025
+**Versão:** 1.1
+**Data de Vigência:** 22 de Novembro de 2025
+**Última Atualização:** 22 de Novembro de 2025
 
 ---
 
@@ -247,7 +247,8 @@ Você pode encerrar sua conta a qualquer momento:
 
 **Efeitos:**
 - Seus dados serão excluídos conforme [Política de Privacidade](./PRIVACY_POLICY.md)
-- ETPs serão mantidos por 30 dias (backup) e depois eliminados
+- Dados pessoais permanentemente excluídos após 90 dias
+- Logs de auditoria mantidos por 90 dias para compliance legal, após excluídos
 - Você perderá acesso imediato a todos os documentos
 
 ### 9.2 Rescisão pelo ETP Express
@@ -350,4 +351,5 @@ Estamos comprometidos em fornecer uma ferramenta útil, segura e em conformidade
 
 ---
 
-*Documento criado como parte da conformidade LGPD - Issue #196*
+*Documento atualizado como parte da conformidade LGPD - Issue #267 (v1.1)*
+*Documento criado originalmente na Issue #196 (v1.0)*
