@@ -195,14 +195,16 @@ describe('EtpsService', () => {
       );
     });
 
-    it('should log warning when user accesses ETP owned by another user', async () => {
+    it('should throw ForbiddenException when user attempts to access ETP owned by another user', async () => {
       const loggerSpy = jest.spyOn(service['logger'], 'warn');
       mockRepository.findOne.mockResolvedValue(mockEtp);
 
-      await service.findOne('etp-123', mockUser2Id);
+      await expect(service.findOne('etp-123', mockUser2Id)).rejects.toThrow(
+        'Você não tem permissão para acessar este ETP',
+      );
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        `User ${mockUser2Id} accessed ETP etp-123 owned by ${mockUser1Id}`,
+        `User ${mockUser2Id} attempted to access ETP etp-123 owned by ${mockUser1Id}`,
       );
     });
 

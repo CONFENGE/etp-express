@@ -91,16 +91,27 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    customSiteTitle: 'ETP Express API Docs',
-    customCss: '.swagger-ui .topbar { display: none }',
-    swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-  });
+  // Only expose Swagger in non-production environments for security
+  const nodeEnv = configService.get('NODE_ENV');
+  if (nodeEnv !== 'production') {
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document, {
+      customSiteTitle: 'ETP Express API Docs',
+      customCss: '.swagger-ui .topbar { display: none }',
+      swaggerOptions: {
+        persistAuthorization: true,
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+    console.log(
+      `📚 Swagger documentation available at http://localhost:${configService.get('PORT') || 3001}/api/docs`,
+    );
+  } else {
+    console.log(
+      '🔒 Swagger documentation disabled in production for security',
+    );
+  }
 
   const port = configService.get('PORT') || 3001;
 
