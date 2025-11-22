@@ -21,6 +21,15 @@ export enum AuditAction {
   ACCOUNT_DELETION_SOFT = 'account_deletion_soft',
   ACCOUNT_DELETION_HARD = 'account_deletion_hard',
   ACCOUNT_DELETION_CANCELLED = 'account_deletion_cancelled',
+  // LGPD-compliant authentication events (Art. 37 - registro das operações)
+  LOGIN = 'login',
+  LOGOUT = 'logout',
+  LOGIN_FAILED = 'login_failed',
+  // LGPD-compliant personal data access events (Art. 50 - boas práticas)
+  PROFILE_VIEW = 'profile_view',
+  PROFILE_UPDATE = 'profile_update',
+  PASSWORD_CHANGE = 'password_change',
+  DATA_ACCESS = 'data_access',
 }
 
 @Entity('audit_logs')

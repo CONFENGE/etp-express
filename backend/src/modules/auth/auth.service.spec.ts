@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
+import { AuditService } from '../audit/audit.service';
 
 // Mock bcrypt
 jest.mock('bcrypt');
@@ -47,6 +48,14 @@ describe('AuthService', () => {
     get: jest.fn(),
   };
 
+  const mockAuditService = {
+    logLogin: jest.fn(),
+    logLogout: jest.fn(),
+    logLoginFailed: jest.fn(),
+    logProfileAccess: jest.fn(),
+    logDataAccess: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -54,6 +63,7 @@ describe('AuthService', () => {
         { provide: UsersService, useValue: mockUsersService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: AuditService, useValue: mockAuditService },
       ],
     }).compile();
 
