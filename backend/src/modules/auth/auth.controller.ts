@@ -1,10 +1,20 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  UseInterceptors,
+  Req,
+  Ip,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -13,6 +23,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword } from './types/user.types';
+import { AuditInterceptor } from '../../common/interceptors/audit.interceptor';
 
 /**
  * Controller handling authentication HTTP endpoints.
@@ -65,8 +76,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Login de usuário' })
   @ApiResponse({ status: 200, description: 'Login realizado com sucesso' })
   @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Ip() ip: string,
+    @Req() req: Request,
+  ) {
+    const userAgent = req.headers['user-agent'];
+    return this.authService.login(loginDto, { ip, userAgent });
   }
 
   /**
@@ -78,6 +94,7 @@ export class AuthController {
    */
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obter dados do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Dados do usuário' })

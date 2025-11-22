@@ -642,5 +642,265 @@ describe('AuditService', () => {
         expect(queryBuilder.take).toHaveBeenCalledWith(100);
       });
     });
+
+    describe('logLogin', () => {
+      it('should log successful login with metadata', async () => {
+        const userId = 'user-login-123';
+        const metadata = {
+          ip: '192.168.1.1',
+          userAgent: 'Mozilla/5.0',
+          email: 'test@example.com',
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logLogin(userId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.LOGIN,
+            entityType: 'User',
+            entityId: userId,
+            userId,
+            ipAddress: metadata.ip,
+            userAgent: metadata.userAgent,
+            description: 'User login (LGPD Art. 37 - registro das operações)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                email: metadata.email,
+                loginAt: expect.any(String),
+              }),
+            }),
+          }),
+        );
+      });
+
+      it('should log login without optional metadata', async () => {
+        const userId = 'user-login-456';
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logLogin(userId, {});
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.LOGIN,
+            entityId: userId,
+            ipAddress: undefined,
+            userAgent: undefined,
+          }),
+        );
+      });
+    });
+
+    describe('logLogout', () => {
+      it('should log logout with metadata', async () => {
+        const userId = 'user-logout-123';
+        const metadata = {
+          ip: '10.0.0.1',
+          userAgent: 'Chrome/100',
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logLogout(userId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.LOGOUT,
+            entityType: 'User',
+            entityId: userId,
+            userId,
+            ipAddress: metadata.ip,
+            userAgent: metadata.userAgent,
+            description: 'User logout (LGPD Art. 37 - registro das operações)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                logoutAt: expect.any(String),
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('logLoginFailed', () => {
+      it('should log failed login attempt', async () => {
+        const email = 'attacker@example.com';
+        const metadata = {
+          ip: '1.2.3.4',
+          userAgent: 'BotScript',
+          reason: 'Invalid credentials',
+        };
+
+        // logLoginFailed logs to console (warn) but doesn't save to DB
+        // as it doesn't have a userId
+        await service.logLoginFailed(email, metadata);
+
+        // Verify it didn't try to save (no userId available)
+        expect(mockAuditLogRepository.save).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('logProfileAccess', () => {
+      it('should log profile view access', async () => {
+        const userId = 'viewer-123';
+        const targetUserId = 'target-456';
+        const metadata = {
+          ip: '192.168.0.1',
+          userAgent: 'Firefox',
+          action: 'view' as const,
+          fields: ['email', 'name'],
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logProfileAccess(userId, targetUserId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.PROFILE_VIEW,
+            entityType: 'User',
+            entityId: targetUserId,
+            userId,
+            description: 'Profile view (LGPD Art. 50 - boas práticas)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                targetUserId,
+                fields: ['email', 'name'],
+                selfAccess: false,
+              }),
+            }),
+          }),
+        );
+      });
+
+      it('should log profile update access', async () => {
+        const userId = 'user-self-123';
+        const metadata = {
+          action: 'update' as const,
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logProfileAccess(userId, userId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.PROFILE_UPDATE,
+            description: 'Profile update (LGPD Art. 50 - boas práticas)',
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                selfAccess: true,
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('logDataAccess', () => {
+      it('should log generic data access', async () => {
+        const userId = 'data-accessor-123';
+        const resource = 'ETP';
+        const resourceId = 'etp-456';
+        const metadata = {
+          ip: '127.0.0.1',
+          userAgent: 'Safari',
+          operation: 'read',
+        };
+
+        mockAuditLogRepository.create.mockReturnValue({} as any);
+        mockAuditLogRepository.save.mockResolvedValue({} as any);
+
+        await service.logDataAccess(userId, resource, resourceId, metadata);
+
+        expect(mockAuditLogRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: AuditAction.DATA_ACCESS,
+            entityType: resource,
+            entityId: resourceId,
+            userId,
+            description: `Data access: ${resource} (LGPD Art. 37)`,
+            changes: expect.objectContaining({
+              metadata: expect.objectContaining({
+                resource,
+                resourceId,
+                operation: 'read',
+              }),
+            }),
+          }),
+        );
+      });
+    });
+
+    describe('getAuthLogs', () => {
+      it('should retrieve authentication logs for a user', async () => {
+        const userId = 'user-auth-logs';
+        const mockLogs = [
+          { id: '1', action: AuditAction.LOGIN, createdAt: new Date() },
+          { id: '2', action: AuditAction.LOGOUT, createdAt: new Date() },
+        ];
+
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(mockLogs),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        const result = await service.getAuthLogs(userId);
+
+        expect(queryBuilder.where).toHaveBeenCalledWith(
+          'log.userId = :userId',
+          { userId },
+        );
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.action IN (:...actions)',
+          { actions: [AuditAction.LOGIN, AuditAction.LOGOUT] },
+        );
+        expect(result).toEqual(mockLogs);
+      });
+
+      it('should filter auth logs by date range', async () => {
+        const userId = 'user-date-filter';
+        const startDate = new Date('2025-01-01');
+        const endDate = new Date('2025-01-31');
+
+        const queryBuilder = {
+          createQueryBuilder: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        await service.getAuthLogs(userId, { startDate, endDate });
+
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.createdAt >= :startDate',
+          { startDate },
+        );
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.createdAt <= :endDate',
+          { endDate },
+        );
+      });
+    });
   });
 });
