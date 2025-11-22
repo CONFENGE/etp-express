@@ -93,6 +93,67 @@ export class OrchestratorService {
   ) {}
 
   /**
+   * Sanitizes user input to prevent prompt injection attacks.
+   *
+   * @remarks
+   * Detects and blocks common prompt injection patterns such as:
+   * - Instructions to ignore previous prompts
+   * - Role manipulation attempts (system:, assistant:, etc.)
+   * - Attempts to extract sensitive information
+   * - Command injection patterns
+   *
+   * @param input - User input to sanitize
+   * @returns Sanitized input safe for LLM processing
+   * @private
+   */
+  private sanitizeUserInput(input: string): string {
+    if (!input || typeof input !== 'string') {
+      return '';
+    }
+
+    // Detect malicious patterns (case-insensitive)
+    const maliciousPatterns = [
+      /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/i,
+      /forget\s+(everything|all|previous)/i,
+      /disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/i,
+      /(system|assistant|user)\s*:/i,
+      /you\s+are\s+now\s+(a|an)\s+/i,
+      /reveal\s+(your|the)\s+(prompt|instructions|system)/i,
+      /what\s+(is|are)\s+your\s+(instructions|prompt|rules)/i,
+      /show\s+me\s+your\s+(instructions|prompt|system)/i,
+      /bypass\s+(security|safety|content\s+policy)/i,
+      /<\s*script|javascript:|onerror\s*=/i, // XSS patterns
+    ];
+
+    // Check for malicious patterns
+    const hasMaliciousPattern = maliciousPatterns.some((pattern) =>
+      pattern.test(input),
+    );
+
+    if (hasMaliciousPattern) {
+      this.logger.warn(
+        `Prompt injection attempt detected and blocked: ${input.substring(0, 100)}...`,
+      );
+      // Return sanitized version without the malicious content
+      return input
+        .replace(/ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi, '')
+        .replace(/forget\s+(everything|all|previous)/gi, '')
+        .replace(/disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/gi, '')
+        .replace(/(system|assistant|user)\s*:/gi, '')
+        .replace(/you\s+are\s+now\s+(a|an)\s+/gi, '')
+        .replace(/reveal\s+(your|the)\s+(prompt|instructions|system)/gi, '')
+        .replace(/what\s+(is|are)\s+your\s+(instructions|prompt|rules)/gi, '')
+        .replace(/show\s+me\s+your\s+(instructions|prompt|system)/gi, '')
+        .replace(/bypass\s+(security|safety|content\s+policy)/gi, '')
+        .replace(/<\s*script|javascript:|onerror\s*=/gi, '')
+        .trim();
+    }
+
+    // Basic sanitization: trim and normalize whitespace
+    return input.trim().replace(/\s+/g, ' ');
+  }
+
+  /**
    * Generates ETP section content using multi-agent AI orchestration.
    *
    * @remarks
@@ -138,12 +199,20 @@ export class OrchestratorService {
     const warnings: string[] = [];
 
     try {
+      // 0. Sanitize user input to prevent prompt injection attacks
+      const sanitizedInput = this.sanitizeUserInput(request.userInput);
+      if (sanitizedInput !== request.userInput) {
+        warnings.push(
+          'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
+        );
+      }
+
       // 1. Build system prompt with all agents
       const systemPrompt = await this.buildSystemPrompt(request.sectionType);
       agentsUsed.push('base-prompt');
 
       // 2. Enrich user prompt with legal context
-      let enrichedUserPrompt = request.userInput;
+      let enrichedUserPrompt = sanitizedInput;
       enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
         enrichedUserPrompt,
         request.sectionType,
