@@ -2,10 +2,10 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 86% (44/51) ⚡ 7 issues pendentes
-**Última Atualização:** 2025-11-22 (Issue #268 CLOSED ✅ - Auditoria de anonimização/pseudonimização LGPD)
-**Total de Issues:** 170 issues (63 abertas + 107 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~63% - M1 e M2 completos! 🚀
+**Status Atual:** Milestone 3 (Quality & Security) - 90% (46/51) ⚡ 5 issues pendentes
+**Última Atualização:** 2025-11-22 (Issue #267 CLOSED ✅ - Política de privacidade e termos de uso LGPD)
+**Total de Issues:** 170 issues (61 abertas + 109 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~64% - M1 e M2 completos! 🚀
 
 > 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_REPORT.md)** - Auditoria completa realizada em 2025-11-21 (85% → 98% após correções)
 
@@ -29,16 +29,16 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           █████████████████░░░ 44/51 (86%)  ⚡ 7 issues pendentes
+[M3] Quality & Security           ██████████████████░░ 46/51 (90%)  ⚡ 5 issues pendentes
 [M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 107/170 issues concluídas (63%)  |  M1 100% ✅ | M2 100% ✅ | M3 86% ⚡ | M4 26%
+TOTAL: 109/170 issues concluídas (64%)  |  M1 100% ✅ | M2 100% ✅ | M3 90% ⚡ | M4 26%
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
-- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ⚡ EM PROGRESSO (6/9 concluídas: #261 ✅, #262 ✅, #263 ✅, #264 ✅, #265 ✅, #268 ✅)
+- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ⚡ EM PROGRESSO (8/9 concluídas: #261 ✅, #262 ✅, #263 ✅, #264 ✅, #265 ✅, #266 ✅, #267 ✅, #268 ✅)
 - #113 → #233-#239 (7 sub-issues de LGPD data export & deletion) ✅ COMPLETO! (todas 7 concluídas: #233 ✅, #234 ✅, #235 ✅, #236 ✅, #237 ✅, #238 ✅, #239 ✅)
 ```
 
@@ -116,8 +116,8 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 
 **🎉 CI WORKFLOWS RESTAURADOS!** 4 issues críticas resolvidas em PR #259 (merged 2025-11-21)
 
-### ⚡ M3: Quality & Security (44 fechadas de 51) - 86%
-**Status**: 86% concluído | **7 issues pendentes** (parents #86, #87, #113, #114 + sub-issues #266, #267, #269)
+### ⚡ M3: Quality & Security (46 fechadas de 51) - 90%
+**Status**: 90% concluído | **5 issues pendentes** (parents #86, #87, #113, #114 + sub-issue #269)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
@@ -163,8 +163,8 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 - ✅ #264 - [LGPD-86d] Revisar e documentar política de retenção de dados (CLOSED 2025-11-21) 🔒 **PR #272 MERGED** ✅
 - ✅ #265 - [LGPD-86e] Verificar implementação dos direitos do titular (CLOSED 2025-11-21) 🔒 **PR #274 MERGED** ✅
 - ✅ #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais (CLOSED 2025-11-21) 🔒 **PR #275 MERGED** ✅
-- ⏳ #267 - [LGPD-86g] Criar política de privacidade e termos de uso
-- ✅ #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados (CLOSED 2025-11-22) 🔒 **PR #276 MERGED** ✅ **NOVO!**
+- ✅ #267 - [LGPD-86g] Criar política de privacidade e termos de uso (CLOSED 2025-11-22) 🔒 **PR #277 MERGED** ✅ **NOVO!**
+- ✅ #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados (CLOSED 2025-11-22) 🔒 **PR #276 MERGED** ✅
 - ⏳ #269 - [LGPD-86i] Gerar relatório consolidado de conformidade LGPD
 
 **Nota:** Desmembramento anterior (#191-#197) foi substituído por versão mais granular com 9 sub-issues.
@@ -192,13 +192,12 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 
 **TODAS 7 SUB-ISSUES CONCLUÍDAS! Parent #113 ready to close! 🎉**
 
-**Issues parent ainda ABERTAS em M3 (6 total):**
-- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 6/9 sub-issues concluídas)
-  - Sub-issues pendentes: #267, #269 (2 restantes)
+**Issues parent ainda ABERTAS em M3 (5 total):**
+- ⏳ #86 - [#46b] Auditoria de conformidade LGPD (parent - 8/9 sub-issues concluídas)
+  - Sub-issues pendentes: #269 (1 restante)
 - ⏳ #87 - [#46c] Implementar remediações de segurança (bloqueada por #86)
 - ⏳ #113 - [LGPD] Data Export & Deletion Automation (parent - **7/7 sub-issues concluídas, PRONTO PARA FECHAR!**)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing (vendor externo)
-- ⏳ #267 - [LGPD-86g] Política de privacidade e termos de uso
 - ⏳ #269 - [LGPD-86i] Relatório consolidado LGPD
 
 ### ⚡ M4: Refactoring & Performance (8 fechadas de 31)
@@ -265,8 +264,8 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 - #273 - [P1] Sanitizar logs de aplicação (4h)
 
 **Progresso Parent #86 (LGPD Audit):**
-- Sub-issues: 6/9 concluídas (67%)
-- Restantes: #267 (Política de Privacidade), #269 (Relatório Final)
+- Sub-issues: 8/9 concluídas (89%)
+- Restantes: #269 (Relatório Final)
 
 ---
 
@@ -1651,15 +1650,15 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 - [x] #178 - [P0][Data Integrity] Remove silent Perplexity mock data fallback ✅
 - [x] #179 - [P0][Legal Safety] Implement dynamic LLM temperature by section type ✅
 
-**LGPD Sub-issues de #86 v2 (9 issues) - ⚡ 3 DE 9 CONCLUÍDAS** (desmembramento 2025-11-21)
+**LGPD Sub-issues de #86 v2 (9 issues) - ⚡ 8 DE 9 CONCLUÍDAS** (desmembramento 2025-11-21)
 - [x] #261 - [LGPD-86a] Mapear fluxo de dados pessoais ✅ **FECHADA 2025-11-21 - PR #270**
 - [x] #262 - [LGPD-86b] Verificar mecanismos de consentimento de usuários ✅ **FECHADA 2025-11-21 - PR #271**
 - [ ] #263 - [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso ⏳
 - [x] #264 - [LGPD-86d] Revisar e documentar política de retenção de dados ✅ **FECHADA 2025-11-21 - PR #272**
-- [ ] #265 - [LGPD-86e] Verificar implementação dos direitos do titular ⏳
-- [ ] #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais ⏳
-- [ ] #267 - [LGPD-86g] Criar política de privacidade e termos de uso ⏳
-- [ ] #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados ⏳
+- [x] #265 - [LGPD-86e] Verificar implementação dos direitos do titular ✅ **FECHADA 2025-11-21 - PR #274**
+- [x] #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais ✅ **FECHADA 2025-11-21 - PR #275**
+- [x] #267 - [LGPD-86g] Criar política de privacidade e termos de uso ✅ **FECHADA 2025-11-22 - PR #277**
+- [x] #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados ✅ **FECHADA 2025-11-22 - PR #276**
 - [ ] #269 - [LGPD-86i] Gerar relatório consolidado de conformidade LGPD ⏳
 
 **Nota histórica:** Desmembramento anterior (#191-#197) foi substituído em 2025-11-21 por versão mais granular.
