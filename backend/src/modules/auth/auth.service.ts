@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { AuditService } from '../audit/audit.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
@@ -45,6 +46,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private auditService: AuditService,
   ) {}
 
   /**
@@ -108,10 +110,19 @@ export class AuthService {
    * console.log(response.accessToken); // JWT token
    * ```
    */
-  async login(loginDto: LoginDto) {
+  async login(
+    loginDto: LoginDto,
+    metadata?: { ip?: string; userAgent?: string },
+  ) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     if (!user) {
+      // Log failed login attempt for LGPD compliance
+      await this.auditService.logLoginFailed(loginDto.email, {
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+        reason: 'Invalid credentials',
+      });
       throw new UnauthorizedException('Email ou senha incorretos');
     }
 
@@ -123,6 +134,13 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload);
+
+    // Log successful login for LGPD compliance (Art. 37)
+    await this.auditService.logLogin(user.id, {
+      ip: metadata?.ip,
+      userAgent: metadata?.userAgent,
+      email: user.email,
+    });
 
     this.logger.log(`User logged in: ${user.email}`);
 

@@ -404,6 +404,223 @@ export class AuditService {
   }
 
   /**
+   * Log user login (LGPD Art. 37 compliance)
+   * @param userId User ID who logged in
+   * @param metadata Login metadata (IP, userAgent)
+   */
+  async logLogin(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      email?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.LOGIN,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: 'User login (LGPD Art. 37 - registro das operações)',
+      changes: {
+        metadata: {
+          email: metadata.email,
+          loginAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(
+      `Login logged: User ${userId} (${metadata.email || 'N/A'})`,
+    );
+
+    return savedLog;
+  }
+
+  /**
+   * Log user logout (LGPD Art. 37 compliance)
+   * @param userId User ID who logged out
+   * @param metadata Logout metadata (IP, userAgent)
+   */
+  async logLogout(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.LOGOUT,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: 'User logout (LGPD Art. 37 - registro das operações)',
+      changes: {
+        metadata: {
+          logoutAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(`Logout logged: User ${userId}`);
+
+    return savedLog;
+  }
+
+  /**
+   * Log failed login attempt (LGPD Art. 37 compliance - security monitoring)
+   * @param email Email that attempted to login
+   * @param metadata Login attempt metadata
+   */
+  async logLoginFailed(
+    email: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      reason?: string;
+    },
+  ): Promise<void> {
+    // For failed logins, we don't have a userId, so we log differently
+    this.logger.warn(
+      `Failed login attempt: ${email} from IP ${metadata.ip || 'unknown'} - ${metadata.reason || 'Invalid credentials'}`,
+    );
+
+    // We can't save to audit_logs without userId, but we log the security event
+    // This could be extended to a separate security_events table in the future
+  }
+
+  /**
+   * Log access to personal data (LGPD Art. 50 - boas práticas)
+   * @param userId User who accessed the data
+   * @param targetUserId User whose data was accessed
+   * @param metadata Access metadata
+   */
+  async logProfileAccess(
+    userId: string,
+    targetUserId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      action?: 'view' | 'update';
+      fields?: string[];
+    },
+  ): Promise<AuditLog> {
+    const action =
+      metadata.action === 'update'
+        ? AuditAction.PROFILE_UPDATE
+        : AuditAction.PROFILE_VIEW;
+
+    const log = this.auditLogRepository.create({
+      action,
+      entityType: 'User',
+      entityId: targetUserId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: `Profile ${metadata.action || 'view'} (LGPD Art. 50 - boas práticas)`,
+      changes: {
+        metadata: {
+          targetUserId,
+          accessedAt: new Date().toISOString(),
+          fields: metadata.fields || [],
+          selfAccess: userId === targetUserId,
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(
+      `Profile ${metadata.action || 'view'} logged: User ${userId} accessed profile of ${targetUserId}`,
+    );
+
+    return savedLog;
+  }
+
+  /**
+   * Log generic data access for LGPD compliance
+   * @param userId User who accessed the data
+   * @param resource Resource type being accessed
+   * @param resourceId Resource ID being accessed
+   * @param metadata Access metadata
+   */
+  async logDataAccess(
+    userId: string,
+    resource: string,
+    resourceId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      operation?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.DATA_ACCESS,
+      entityType: resource,
+      entityId: resourceId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: `Data access: ${resource} (LGPD Art. 37)`,
+      changes: {
+        metadata: {
+          resource,
+          resourceId,
+          operation: metadata.operation || 'read',
+          accessedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    return savedLog;
+  }
+
+  /**
+   * Get authentication logs for a user (login/logout history)
+   * @param userId User ID to get logs for
+   * @param options Filter options
+   */
+  async getAuthLogs(
+    userId: string,
+    options?: {
+      startDate?: Date;
+      endDate?: Date;
+      limit?: number;
+    },
+  ): Promise<AuditLog[]> {
+    const { startDate, endDate, limit = 100 } = options || {};
+
+    const queryBuilder = this.auditLogRepository
+      .createQueryBuilder('log')
+      .where('log.userId = :userId', { userId })
+      .andWhere('log.action IN (:...actions)', {
+        actions: [AuditAction.LOGIN, AuditAction.LOGOUT],
+      });
+
+    if (startDate) {
+      queryBuilder.andWhere('log.createdAt >= :startDate', { startDate });
+    }
+
+    if (endDate) {
+      queryBuilder.andWhere('log.createdAt <= :endDate', { endDate });
+    }
+
+    queryBuilder.orderBy('log.createdAt', 'DESC').take(limit);
+
+    return queryBuilder.getMany();
+  }
+
+  /**
    * Get LGPD operation logs with filtering
    * @param options Filter options
    */

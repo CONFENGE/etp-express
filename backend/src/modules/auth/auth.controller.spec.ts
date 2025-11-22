@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuditService } from '../audit/audit.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
@@ -14,6 +15,14 @@ describe('AuthController', () => {
   const mockAuthService = {
     register: jest.fn(),
     login: jest.fn(),
+  };
+
+  const mockAuditService = {
+    logLogin: jest.fn(),
+    logLogout: jest.fn(),
+    logLoginFailed: jest.fn(),
+    logDataAccess: jest.fn(),
+    logProfileAccess: jest.fn(),
   };
 
   const mockUser = {
@@ -44,7 +53,10 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: mockAuthService }],
+      providers: [
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: AuditService, useValue: mockAuditService },
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -121,15 +133,25 @@ describe('AuthController', () => {
       password: 'password123',
     };
 
+    const mockIp = '192.168.1.1';
+    const mockRequest = {
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Test)',
+      },
+    } as any;
+
     it('should login user successfully with valid credentials', async () => {
       // Arrange
       mockAuthService.login.mockResolvedValue(mockAuthResponse);
 
       // Act
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockIp, mockRequest);
 
       // Assert
-      expect(authService.login).toHaveBeenCalledWith(loginDto);
+      expect(authService.login).toHaveBeenCalledWith(loginDto, {
+        ip: mockIp,
+        userAgent: 'Mozilla/5.0 (Test)',
+      });
       expect(authService.login).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockAuthResponse);
       expect(result).toHaveProperty('accessToken');
@@ -143,13 +165,16 @@ describe('AuthController', () => {
       );
 
       // Act & Assert
-      await expect(controller.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      await expect(controller.login(loginDto)).rejects.toThrow(
-        'Email ou senha incorretos',
-      );
-      expect(authService.login).toHaveBeenCalledWith(loginDto);
+      await expect(
+        controller.login(loginDto, mockIp, mockRequest),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.login(loginDto, mockIp, mockRequest),
+      ).rejects.toThrow('Email ou senha incorretos');
+      expect(authService.login).toHaveBeenCalledWith(loginDto, {
+        ip: mockIp,
+        userAgent: 'Mozilla/5.0 (Test)',
+      });
     });
 
     it('should return access token in response', async () => {
@@ -157,7 +182,7 @@ describe('AuthController', () => {
       mockAuthService.login.mockResolvedValue(mockAuthResponse);
 
       // Act
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockIp, mockRequest);
 
       // Assert
       expect(result.accessToken).toBeDefined();
@@ -169,7 +194,7 @@ describe('AuthController', () => {
       mockAuthService.login.mockResolvedValue(mockAuthResponse);
 
       // Act
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockIp, mockRequest);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
