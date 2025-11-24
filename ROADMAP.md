@@ -3,9 +3,26 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 4 (Refactoring & Performance) - 29% (9/31) ⚡ Em progresso
-**Última Atualização:** 2025-11-24 (Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas)
+**Última Atualização:** 2025-11-24
+- Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
+- Dependabot PRs: 2/11 merged (✅ #288, ✅ #287) - 9 aguardando billing resolution
 **Total de Issues:** 170 issues (59 abertas + 111 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~65% - M1 e M2 completos! 🚀
+
+### 📦 Atualizações de Dependências (Dependabot)
+**Status:** 2/11 PRs merged | 9 aguardando resolução de GitHub Actions billing
+
+**Merged:**
+- ✅ PR #288: Frontend production deps (@sentry/react 10.26.0, jspdf 3.0.4)
+- ✅ PR #287: Frontend dev deps (Vitest 4.0.13, Vite 7.2.4, MSW 2.12.3)
+
+**Aguardando (após billing):**
+- 🔄 2 PRs type definitions (baixo risco)
+- 🔄 4 PRs core libraries (médio risco, testes obrigatórios)
+- 🔄 2 PRs breaking changes (alto risco, refatoração necessária)
+- 🔄 1 PR GitHub Actions (requer validação de runners)
+
+📄 Detalhes completos em [DEPENDABOT_PR_ANALYSIS.md](DEPENDABOT_PR_ANALYSIS.md)
 
 > 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_REPORT.md)** - Auditoria completa realizada em 2025-11-21 (85% → 98% após correções)
 
