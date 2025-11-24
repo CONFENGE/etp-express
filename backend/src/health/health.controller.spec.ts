@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
+import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
 
 describe('HealthController', () => {
   let controller: HealthController;
   let service: HealthService;
   let openaiService: OpenAIService;
+  let perplexityService: PerplexityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,12 +26,19 @@ describe('HealthController', () => {
             getCircuitState: jest.fn(),
           },
         },
+        {
+          provide: PerplexityService,
+          useValue: {
+            getCircuitState: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<HealthController>(HealthController);
     service = module.get<HealthService>(HealthService);
     openaiService = module.get<OpenAIService>(OpenAIService);
+    perplexityService = module.get<PerplexityService>(PerplexityService);
   });
 
   afterEach(() => {
@@ -220,6 +229,85 @@ describe('HealthController', () => {
       expect(result.stats.fires).toBe(100);
       expect(result.stats.successes).toBe(95);
       expect(result.stats.failures).toBe(5);
+    });
+  });
+
+  describe('getPerplexityHealth', () => {
+    it('should return circuit state when circuit is closed', () => {
+      // Arrange
+      const circuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {
+          fires: 5,
+          successes: 5,
+          failures: 0,
+          timeouts: 0,
+        },
+      } as any;
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getPerplexityHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return circuit state when circuit is open', () => {
+      // Arrange
+      const circuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {
+          fires: 10,
+          successes: 2,
+          failures: 8,
+          timeouts: 3,
+        },
+      } as any;
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getPerplexityHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+      expect(result.opened).toBe(true);
+    });
+
+    it('should return circuit state when circuit is half-open', () => {
+      // Arrange
+      const circuitState = {
+        opened: false,
+        halfOpen: true,
+        closed: false,
+        stats: {
+          fires: 8,
+          successes: 4,
+          failures: 4,
+          timeouts: 1,
+        },
+      } as any;
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(circuitState);
+
+      // Act
+      const result = controller.getPerplexityHealth();
+
+      // Assert
+      expect(result).toEqual(circuitState);
+      expect(result.halfOpen).toBe(true);
+      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
+import CircuitBreaker from 'opossum';
 
 export interface PerplexitySearchResult {
   title: string;
@@ -18,6 +19,8 @@ export interface PerplexityResponse {
   results: PerplexitySearchResult[];
   summary: string;
   sources: string[];
+  /** Indica se o resultado foi obtido via fallback (quando circuit breaker está aberto) */
+  isFallback?: boolean;
 }
 
 interface PerplexityAPIResponse {
@@ -29,12 +32,17 @@ interface PerplexityAPIResponse {
   citations?: string[];
 }
 
+/** Disclaimer exibido quando busca externa está indisponível */
+const FALLBACK_DISCLAIMER =
+  '⚠️ Busca externa temporariamente indisponível. Informações de mercado podem estar incompletas.';
+
 @Injectable()
 export class PerplexityService {
   private readonly logger = new Logger(PerplexityService.name);
   private readonly apiKey: string;
   private readonly model: string;
   private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
+  private readonly circuitBreaker: CircuitBreaker;
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || '';
@@ -42,62 +50,137 @@ export class PerplexityService {
       'PERPLEXITY_MODEL',
       'pplx-7b-online',
     );
+
+    // Initialize Circuit Breaker for Perplexity API
+    // Perplexity API is slower than OpenAI, so we use higher timeout
+    this.circuitBreaker = new CircuitBreaker(
+      (query: string) => this.callPerplexity(query),
+      {
+        timeout: 45000, // 45s timeout (API mais lenta)
+        errorThresholdPercentage: 50, // Abre após 50% de erros
+        resetTimeout: 60000, // Tenta novamente após 60s
+        volumeThreshold: 3, // Mínimo de requests para avaliar
+      },
+    );
+
+    // Circuit Breaker event listeners for monitoring
+    this.circuitBreaker.on('open', () => {
+      this.logger.warn(
+        'Perplexity circuit breaker OPENED - too many failures, using fallback',
+      );
+    });
+
+    this.circuitBreaker.on('halfOpen', () => {
+      this.logger.log(
+        'Perplexity circuit breaker half-open, testing connection...',
+      );
+    });
+
+    this.circuitBreaker.on('close', () => {
+      this.logger.log('Perplexity circuit breaker CLOSED - service healthy');
+    });
+
+    this.circuitBreaker.on('timeout', () => {
+      this.logger.warn('Perplexity API request timed out');
+    });
+
+    this.circuitBreaker.on('reject', () => {
+      this.logger.warn('Perplexity request rejected - circuit is open');
+    });
   }
 
   async search(query: string): Promise<PerplexityResponse> {
     this.logger.log(`Searching with Perplexity: ${query}`);
 
     try {
-      const response = await axios.post<PerplexityAPIResponse>(
-        this.apiUrl,
-        {
-          model: this.model,
-          messages: [
-            {
-              role: 'system',
-              content:
-                'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
-            },
-            {
-              role: 'user',
-              content: query,
-            },
-          ],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 30000,
-        },
-      );
-
-      const content = response.data.choices?.[0]?.message?.content || '';
-      const citations = response.data.citations || [];
-
-      // Parse results from content
-      const results = this.parseResults(content, citations);
-
-      this.logger.log(
-        `Perplexity search completed. Found ${results.length} results`,
-      );
-
-      return {
-        results,
-        summary: content,
-        sources: citations,
-      };
+      return (await this.circuitBreaker.fire(query)) as PerplexityResponse;
     } catch (error) {
+      // Circuit breaker opened - return fallback response instead of throwing
+      if (error.code === 'EOPENBREAKER') {
+        this.logger.warn(
+          'Perplexity circuit breaker is open - returning fallback response',
+        );
+        return this.getFallbackResponse();
+      }
+
+      // Timeout - return fallback response
+      if (error.code === 'ETIMEDOUT') {
+        this.logger.warn(
+          'Perplexity request timed out - returning fallback response',
+        );
+        return this.getFallbackResponse();
+      }
+
+      // Other errors - log and return fallback for graceful degradation
       const axiosError = error as AxiosError;
       this.logger.error('Perplexity API failed', {
         query,
         error: axiosError.message,
       });
-      throw new ServiceUnavailableException(
-        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.',
-      );
+      return this.getFallbackResponse();
     }
+  }
+
+  /**
+   * Calls Perplexity API directly (used by circuit breaker)
+   * @param query Search query string
+   * @returns Perplexity response with results
+   */
+  private async callPerplexity(query: string): Promise<PerplexityResponse> {
+    const response = await axios.post<PerplexityAPIResponse>(
+      this.apiUrl,
+      {
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
+          },
+          {
+            role: 'user',
+            content: query,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000,
+      },
+    );
+
+    const content = response.data.choices?.[0]?.message?.content || '';
+    const citations = response.data.citations || [];
+
+    // Parse results from content
+    const results = this.parseResults(content, citations);
+
+    this.logger.log(
+      `Perplexity search completed. Found ${results.length} results`,
+    );
+
+    return {
+      results,
+      summary: content,
+      sources: citations,
+      isFallback: false,
+    };
+  }
+
+  /**
+   * Returns a fallback response when Perplexity API is unavailable
+   * Enables graceful degradation - ETP generation continues without external search
+   */
+  private getFallbackResponse(): PerplexityResponse {
+    return {
+      results: [],
+      summary: FALLBACK_DISCLAIMER,
+      sources: [],
+      isFallback: true,
+    };
   }
 
   private parseResults(
@@ -149,5 +232,18 @@ export class PerplexityService {
     Cite as fontes oficiais e artigos específicos quando possível.`;
 
     return this.search(query);
+  }
+
+  /**
+   * Get the current state of the circuit breaker for monitoring
+   * @returns Circuit breaker state including stats and status flags
+   */
+  getCircuitState() {
+    return {
+      stats: this.circuitBreaker.stats,
+      opened: this.circuitBreaker.opened,
+      halfOpen: this.circuitBreaker.halfOpen,
+      closed: this.circuitBreaker.closed,
+    };
   }
 }
