@@ -2,8 +2,9 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 4 (Refactoring & Performance) - 29% (9/31) ⚡ Em progresso
+**Status Atual:** Milestone 4 (Refactoring & Performance) - 32% (10/31) ⚡ Em progresso
 **Última Atualização:** 2025-11-24
+- Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
 **Total de Issues:** 170 issues (59 abertas + 111 fechadas) organizadas em 6 milestones
@@ -56,11 +57,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ███████████████████░ 47/51 (92%)  ⚡ 4 issues pendentes
-[M4] Refactoring & Performance    ██████░░░░░░░░░░░░░░ 9/31 (29%)   ⚡ +8 issues críticas (+1 CLOSED)
+[M4] Refactoring & Performance    ██████░░░░░░░░░░░░░░ 10/31 (32%)  ⚡ +8 issues críticas (+2 CLOSED: #208, #211)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 111/170 issues concluídas (65%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% ⚡ | M4 29%
+TOTAL: 112/170 issues concluídas (66%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% ⚡ | M4 32%
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -1799,10 +1800,10 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 - [ ] #210 - [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **P1**
 
 **RAG e Anti-Alucinação - Quesitos Críticos (4 issues) 🆕🔴 P1**
-- [ ] #211 - [P1][Backend] PoC RAG com Lei 14.133/2021 🔴 **P1**
-- [ ] #212 - [P1][Backend] Integrar RAG no AntiHallucinationAgent 🔴 **P1**
-- [ ] #213 - [P1][Backend] Fact-checking reverso via Perplexity 🔴 **P1**
-- [ ] #214 - [P1][Backend] Melhorar scoring do AntiHallucinationAgent 🔴 **P1**
+- [x] #211 - [P1][Backend] PoC RAG com Lei 14.133/2021 🔴 **P1** ✅ **Merged via PR #293** (2025-11-24)
+- [ ] #212 - [P1][Backend] Integrar RAG no AntiHallucinationAgent 🔴 **P1** (desbloqueado)
+- [ ] #213 - [P1][Backend] Fact-checking reverso via Perplexity 🔴 **P1** (desbloqueado)
+- [ ] #214 - [P1][Backend] Melhorar scoring do AntiHallucinationAgent 🔴 **P1** (desbloqueado)
 
 #### Critérios de Conclusão
 - ✅ Zero duplicações de strings (DRY principle)
