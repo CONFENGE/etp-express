@@ -11,7 +11,6 @@ initSentry();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* @ts-expect-error - Sentry ErrorBoundary type mismatch with React 18 types */}
     <Sentry.ErrorBoundary fallback={ErrorFallback} showDialog>
       <App />
     </Sentry.ErrorBoundary>
