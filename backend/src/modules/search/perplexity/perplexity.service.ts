@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
 import CircuitBreaker from 'opossum';
+import { withRetry, RetryOptions } from '../../../common/utils/retry';
 
 export interface PerplexitySearchResult {
   title: string;
@@ -39,8 +40,31 @@ export class PerplexityService {
   private readonly model: string;
   private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
   private readonly circuitBreaker: CircuitBreaker;
+  private readonly retryOptions: Partial<RetryOptions>;
 
   constructor(private configService: ConfigService) {
+    // Configure retry options for Perplexity API
+    // Perplexity has higher timeouts, so we adjust retry delays accordingly
+    this.retryOptions = {
+      maxRetries: 3,
+      baseDelay: 2000, // Longer base delay for Perplexity (slower API)
+      maxDelay: 15000,
+      retryableErrors: [
+        'ETIMEDOUT',
+        'ECONNRESET',
+        'ECONNREFUSED',
+        '429', // Rate limit
+        '500',
+        '502',
+        '503',
+        '504',
+        'rate_limit',
+        'timeout',
+        'network error',
+      ],
+      logger: this.logger,
+      operationName: 'Perplexity API',
+    };
     this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || '';
     this.model = this.configService.get<string>(
       'PERPLEXITY_MODEL',
@@ -123,29 +147,34 @@ export class PerplexityService {
    * @returns Perplexity response with results
    */
   private async callPerplexity(query: string): Promise<PerplexityResponse> {
-    const response = await axios.post<PerplexityAPIResponse>(
-      this.apiUrl,
-      {
-        model: this.model,
-        messages: [
+    // Wrap API call with retry logic for transient failures
+    const response = await withRetry(
+      () =>
+        axios.post<PerplexityAPIResponse>(
+          this.apiUrl,
           {
-            role: 'system',
-            content:
-              'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
+            model: this.model,
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
+              },
+              {
+                role: 'user',
+                content: query,
+              },
+            ],
           },
           {
-            role: 'user',
-            content: query,
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            timeout: 30000,
           },
-        ],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: 30000,
-      },
+        ),
+      this.retryOptions,
     );
 
     const content = response.data.choices?.[0]?.message?.content || '';

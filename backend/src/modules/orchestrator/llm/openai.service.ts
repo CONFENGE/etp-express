@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import CircuitBreaker from 'opossum';
+import { withRetry, RetryOptions } from '../../../common/utils/retry';
 
 export interface LLMRequest {
   systemPrompt: string;
@@ -27,8 +28,29 @@ export class OpenAIService {
   private readonly logger = new Logger(OpenAIService.name);
   private openai: OpenAI;
   private circuitBreaker: CircuitBreaker;
+  private readonly retryOptions: Partial<RetryOptions>;
 
   constructor(private configService: ConfigService) {
+    // Configure retry options for OpenAI API
+    this.retryOptions = {
+      maxRetries: 3,
+      baseDelay: 1000,
+      maxDelay: 8000,
+      retryableErrors: [
+        'ETIMEDOUT',
+        'ECONNRESET',
+        'ECONNREFUSED',
+        '429', // Rate limit
+        '500',
+        '502',
+        '503',
+        '504',
+        'rate_limit',
+        'timeout',
+      ],
+      logger: this.logger,
+      operationName: 'OpenAI API',
+    };
     this.openai = new OpenAI({
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
     });
@@ -96,15 +118,20 @@ export class OpenAIService {
 
     const startTime = Date.now();
 
-    const completion = await this.openai.chat.completions.create({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature,
-      max_tokens: maxTokens,
-    });
+    // Wrap OpenAI API call with retry logic for transient failures
+    const completion = await withRetry(
+      () =>
+        this.openai.chat.completions.create({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          temperature,
+          max_tokens: maxTokens,
+        }),
+      this.retryOptions,
+    );
 
     const duration = Date.now() - startTime;
 
@@ -153,16 +180,24 @@ export class OpenAIService {
     this.logger.log(`Generating streaming completion with model: ${model}`);
 
     try {
-      const stream = await this.openai.chat.completions.create({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature,
-        max_tokens: maxTokens,
-        stream: true,
-      });
+      // Wrap stream creation with retry logic for connection failures
+      const stream = await withRetry(
+        () =>
+          this.openai.chat.completions.create({
+            model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt },
+            ],
+            temperature,
+            max_tokens: maxTokens,
+            stream: true,
+          }),
+        {
+          ...this.retryOptions,
+          operationName: 'OpenAI Streaming API',
+        },
+      );
 
       let fullContent = '';
       let tokenCount = 0;
