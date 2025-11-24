@@ -57,9 +57,9 @@ export class RAGService {
       });
 
       return response.data[0].embedding;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error('Failed to create embedding', {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         text: text.substring(0, 100),
       });
       throw error;

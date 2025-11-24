@@ -123,7 +123,7 @@ export class MetricsService {
         ),
         database_connections_max: 100, // Railway default max_connections
       };
-    } catch (error) {
+    } catch {
       // Se queries falharem, retornar zeros
       return {
         database_connections_active: 0,
