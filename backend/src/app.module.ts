@@ -16,6 +16,7 @@ import { SearchModule } from './modules/search/search.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { OrchestratorModule } from './modules/orchestrator/orchestrator.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { RAGModule } from './modules/rag/rag.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -135,6 +136,7 @@ import { AppService } from './app.service';
     AnalyticsModule,
     OrchestratorModule,
     AuditModule,
+    RAGModule,
     HealthModule,
   ],
   controllers: [AppController],
