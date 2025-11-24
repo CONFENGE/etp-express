@@ -136,9 +136,15 @@ export class OrchestratorService {
       );
       // Return sanitized version without the malicious content
       return input
-        .replace(/ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi, '')
+        .replace(
+          /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi,
+          '',
+        )
         .replace(/forget\s+(everything|all|previous)/gi, '')
-        .replace(/disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/gi, '')
+        .replace(
+          /disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/gi,
+          '',
+        )
         .replace(/(system|assistant|user)\s*:/gi, '')
         .replace(/you\s+are\s+now\s+(a|an)\s+/gi, '')
         .replace(/reveal\s+(your|the)\s+(prompt|instructions|system)/gi, '')
