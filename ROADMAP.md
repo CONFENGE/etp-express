@@ -5,22 +5,31 @@
 **Status Atual:** Milestone 4 (Refactoring & Performance) - 29% (9/31) ⚡ Em progresso
 **Última Atualização:** 2025-11-24
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
-- Dependabot PRs: 2/11 merged (✅ #288, ✅ #287) - 9 aguardando billing resolution
+- Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
 **Total de Issues:** 170 issues (59 abertas + 111 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~65% - M1 e M2 completos! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
-**Status:** 2/11 PRs merged | 9 aguardando resolução de GitHub Actions billing
+**Status:** ✅ 9/9 PRs merged com sucesso (100% completo)
 
-**Merged:**
-- ✅ PR #288: Frontend production deps (@sentry/react 10.26.0, jspdf 3.0.4)
-- ✅ PR #287: Frontend dev deps (Vitest 4.0.13, Vite 7.2.4, MSW 2.12.3)
+**Fase 1 - Type Definitions:**
+- ✅ PR #282: @types/bcrypt 5.0.2 → 6.0.0
+- ✅ PR #283: @types/jest 29.5.14 → 30.0.0
 
-**Aguardando (após billing):**
-- 🔄 2 PRs type definitions (baixo risco)
-- 🔄 4 PRs core libraries (médio risco, testes obrigatórios)
-- 🔄 2 PRs breaking changes (alto risco, refatoração necessária)
-- 🔄 1 PR GitHub Actions (requer validação de runners)
+**Fase 2 - Core Libraries:**
+- ✅ PR #285: joi 17.13.3 → 18.0.2
+- ✅ PR #284: @nestjs/passport 10.0.3 → 11.0.5
+- ✅ PR #286: @typescript-eslint/eslint-plugin 7.18.0 → 8.47.0 (backend)
+- ✅ PR #291: @typescript-eslint/parser 7.18.0 → 8.47.0 (frontend)
+
+**Fase 3 - Breaking Changes:**
+- ✅ PR #290: react-markdown 9.1.0 → 10.1.0
+- ✅ PR #289: date-fns 3.6.0 → 4.1.0
+
+**Fase 4 - Infrastructure:**
+- ✅ PR #292: GitHub Actions (4 major version updates)
+
+**Validação:** Todos os testes (690 backend + 29 frontend), lint e builds passaram
 
 📄 Detalhes completos em [DEPENDABOT_PR_ANALYSIS.md](DEPENDABOT_PR_ANALYSIS.md)
 
