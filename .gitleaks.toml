@@ -12,6 +12,10 @@ paths = [
   '''package-lock\.json$''',
   '''pnpm-lock\.yaml$''',
   '''^docs/''',
+  '''backend/\.env\.test$''',
+  '''backend/\.env\.example$''',
+  '''frontend/\.env\.example$''',
+  '''\.env\.template$''',
 ]
 
 # Custom rules for ETP Express specific patterns
