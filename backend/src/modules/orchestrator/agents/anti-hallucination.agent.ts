@@ -1,4 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { RAGService, VerificationResult } from '../../rag/rag.service';
+import { LegislationType } from '../../../entities/legislation.entity';
+
+export interface LegalReference {
+  type: LegislationType;
+  number: string;
+  year: number;
+  raw: string; // Original text matched
+}
 
 export interface HallucinationCheckResult {
   score: number;
@@ -10,11 +19,15 @@ export interface HallucinationCheckResult {
     severity: 'low' | 'medium' | 'high';
   }>;
   verified: boolean;
+  references?: VerificationResult[]; // RAG verification results
+  suggestions?: string[]; // Improvement suggestions
 }
 
 @Injectable()
 export class AntiHallucinationAgent {
   private readonly logger = new Logger(AntiHallucinationAgent.name);
+
+  constructor(private readonly ragService: RAGService) {}
 
   private readonly suspiciousPatterns = [
     {
@@ -60,6 +73,96 @@ export class AntiHallucinationAgent {
     'todos sabem',
   ];
 
+  /**
+   * Extract legal references from content for RAG verification.
+   * Parses patterns like "Lei 14.133/2021", "Decreto 10.024/2019", etc.
+   */
+  private extractLegalReferences(content: string): LegalReference[] {
+    const references: LegalReference[] = [];
+    const pattern =
+      /(?:lei|decreto|portaria|instrução normativa|in|resolução|mp|medida provisória)\s+n?[º°]?\s*([\d.]+)(?:\s*\/|\s+de\s+)(\d{4})/gi;
+
+    let match;
+    while ((match = pattern.exec(content)) !== null) {
+      const rawType = match[0].split(/\s+/)[0].toLowerCase();
+      const number = match[1].replace(/\./g, '');
+      const year = parseInt(match[2], 10);
+
+      let type: LegislationType;
+      if (rawType.includes('lei')) type = LegislationType.LEI;
+      else if (rawType.includes('decreto')) type = LegislationType.DECRETO;
+      else if (rawType.includes('portaria')) type = LegislationType.PORTARIA;
+      else if (rawType.includes('in') || rawType.includes('instrução'))
+        type = LegislationType.INSTRUCAO_NORMATIVA;
+      else if (rawType.includes('resolução') || rawType.includes('resolu'))
+        type = LegislationType.RESOLUCAO;
+      else if (rawType.includes('mp') || rawType.includes('medida'))
+        type = LegislationType.MEDIDA_PROVISORIA;
+      else continue; // Skip unknown types
+
+      references.push({
+        type,
+        number,
+        year,
+        raw: match[0],
+      });
+    }
+
+    return references;
+  }
+
+  /**
+   * Verify legal references using RAG service.
+   * Returns verification results for each reference found.
+   */
+  private async verifyReferences(
+    references: LegalReference[],
+  ): Promise<VerificationResult[]> {
+    const verifications = await Promise.all(
+      references.map(async (ref) => {
+        try {
+          return await this.ragService.verifyReference(
+            ref.type,
+            ref.number,
+            ref.year,
+          );
+        } catch (error: unknown) {
+          this.logger.error('Failed to verify reference', {
+            error: error instanceof Error ? error.message : String(error),
+            reference: ref.raw,
+          });
+          // Return unverified result on error
+          return {
+            reference: ref.raw,
+            exists: false,
+            confidence: 0.0,
+          };
+        }
+      }),
+    );
+
+    return verifications;
+  }
+
+  /**
+   * Generate improvement suggestions based on verification results.
+   */
+  private generateSuggestions(verifications: VerificationResult[]): string[] {
+    const suggestions: string[] = [];
+
+    verifications.forEach((v) => {
+      if (!v.exists && v.suggestion) {
+        suggestions.push(v.suggestion);
+      } else if (!v.exists) {
+        suggestions.push(
+          `Referência "${v.reference}" não foi encontrada no banco de dados. Verifique a veracidade antes de usar.`,
+        );
+      }
+    });
+
+    return suggestions;
+  }
+
   async check(
     content: string,
     _context?: unknown,
@@ -73,17 +176,39 @@ export class AntiHallucinationAgent {
       severity: 'low' | 'medium' | 'high';
     }> = [];
 
-    // Check for suspicious patterns
+    // **NEW: Extract and verify legal references via RAG**
+    const legalReferences = this.extractLegalReferences(content);
+    const verifications = await this.verifyReferences(legalReferences);
+
+    // Add warnings for unverified references
+    verifications.forEach((v) => {
+      if (!v.exists) {
+        suspiciousElements.push({
+          element: v.reference,
+          reason: `Referência legal não verificada${v.suggestion ? ` - ${v.suggestion}` : ''}`,
+          severity: 'high',
+        });
+        warnings.push(`Referência não verificada: "${v.reference}"`);
+      }
+    });
+
+    // Check for suspicious patterns (legacy heuristic - kept for backward compatibility)
     this.suspiciousPatterns.forEach(({ pattern, description, severity }) => {
       const matches = content.match(pattern);
       if (matches && matches.length > 0) {
         matches.forEach((match) => {
-          suspiciousElements.push({
-            element: match,
-            reason: `${description} - VERIFICAR VERACIDADE`,
-            severity,
-          });
-          warnings.push(`Verifique a veracidade de: "${match}"`);
+          // Skip if already verified via RAG
+          const alreadyVerified = verifications.some(
+            (v) => v.reference.includes(match) && v.exists,
+          );
+          if (!alreadyVerified) {
+            suspiciousElements.push({
+              element: match,
+              reason: `${description} - VERIFICAR VERACIDADE`,
+              severity,
+            });
+            warnings.push(`Verifique a veracidade de: "${match}"`);
+          }
         });
       }
     });
@@ -161,8 +286,10 @@ export class AntiHallucinationAgent {
 
     const verified = suspiciousElements.length === 0 || score >= 70;
 
+    const suggestions = this.generateSuggestions(verifications);
+
     this.logger.log(
-      `Hallucination check completed. Score: ${score}%, Confidence: ${confidence}%, Verified: ${verified}`,
+      `Hallucination check completed. Score: ${score}%, Confidence: ${confidence}%, Verified: ${verified}, References verified: ${verifications.filter((v) => v.exists).length}/${verifications.length}`,
     );
 
     return {
@@ -171,6 +298,8 @@ export class AntiHallucinationAgent {
       warnings: [...new Set(warnings)],
       suspiciousElements,
       verified,
+      references: verifications.length > 0 ? verifications : undefined,
+      suggestions: suggestions.length > 0 ? suggestions : undefined,
     };
   }
 
