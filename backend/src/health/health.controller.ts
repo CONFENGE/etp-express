@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
+import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
 
 /**
  * Health Check Controller
@@ -10,12 +11,14 @@ import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
  *
  * @endpoint GET /api/health - Health geral do serviço
  * @endpoint GET /api/health/providers/openai - Status do circuit breaker OpenAI
+ * @endpoint GET /api/health/providers/perplexity - Status do circuit breaker Perplexity
  */
 @Controller('health')
 export class HealthController {
   constructor(
     private readonly healthService: HealthService,
     private readonly openaiService: OpenAIService,
+    private readonly perplexityService: PerplexityService,
   ) {}
 
   /**
@@ -61,5 +64,31 @@ export class HealthController {
   @Get('providers/openai')
   getOpenAIHealth() {
     return this.openaiService.getCircuitState();
+  }
+
+  /**
+   * Perplexity Circuit Breaker Status Endpoint
+   *
+   * Retorna o estado atual do circuit breaker da Perplexity API.
+   * Útil para monitoramento e debugging de problemas de busca externa.
+   *
+   * @returns {object} Estado do circuit breaker
+   * @example
+   * // Response quando circuit fechado (saudável):
+   * {
+   *   "opened": false,
+   *   "halfOpen": false,
+   *   "closed": true,
+   *   "stats": {
+   *     "fires": 5,
+   *     "successes": 5,
+   *     "failures": 0,
+   *     "timeouts": 0
+   *   }
+   * }
+   */
+  @Get('providers/perplexity')
+  getPerplexityHealth() {
+    return this.perplexityService.getCircuitState();
   }
 }
