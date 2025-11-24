@@ -108,9 +108,7 @@ async function bootstrap() {
       `📚 Swagger documentation available at http://localhost:${configService.get('PORT') || 3001}/api/docs`,
     );
   } else {
-    console.log(
-      '🔒 Swagger documentation disabled in production for security',
-    );
+    console.log('🔒 Swagger documentation disabled in production for security');
   }
 
   const port = configService.get('PORT') || 3001;

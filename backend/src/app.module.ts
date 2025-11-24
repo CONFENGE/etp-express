@@ -36,13 +36,10 @@ import { AppService } from './app.service';
           .default('development'),
         PORT: Joi.number().default(3001),
         DATABASE_URL: Joi.string().required(),
-        JWT_SECRET: Joi.string()
-          .min(32)
-          .required()
-          .messages({
-            'string.min':
-              'JWT_SECRET must be at least 32 characters for security. Generate with: openssl rand -hex 32',
-          }),
+        JWT_SECRET: Joi.string().min(32).required().messages({
+          'string.min':
+            'JWT_SECRET must be at least 32 characters for security. Generate with: openssl rand -hex 32',
+        }),
         JWT_EXPIRATION: Joi.string().default('7d'),
         OPENAI_API_KEY: Joi.string().required(),
         OPENAI_MODEL: Joi.string().default('gpt-4-turbo-preview'),
