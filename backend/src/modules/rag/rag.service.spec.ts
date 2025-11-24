@@ -35,7 +35,7 @@ describe('RAGService', () => {
     year: 2021,
     title: 'Lei de Licitações e Contratos Administrativos',
     content: 'Dispõe sobre licitações e contratos administrativos...',
-    embedding: null,
+    embedding: '',
     articles: [
       {
         number: '1',
@@ -137,7 +137,8 @@ describe('RAGService', () => {
       jest.spyOn(legislationRepository, 'save').mockResolvedValue({
         ...mockLegislation,
         embedding: mockEmbeddingString,
-      });
+        getFormattedReference: () => 'Lei 14.133/2021',
+      } as Legislation);
       jest.spyOn(service, 'createEmbedding').mockResolvedValue(mockEmbedding);
 
       const result = await service.indexLegislation(mockLegislation);
@@ -278,7 +279,11 @@ describe('RAGService', () => {
 
   describe('deleteLegislation', () => {
     it('should soft delete legislation', async () => {
-      jest.spyOn(legislationRepository, 'update').mockResolvedValue(undefined);
+      jest.spyOn(legislationRepository, 'update').mockResolvedValue({
+        affected: 1,
+        raw: {},
+        generatedMaps: [],
+      });
 
       await service.deleteLegislation('leg-123');
 
