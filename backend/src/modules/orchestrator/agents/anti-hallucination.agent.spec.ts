@@ -1,15 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntiHallucinationAgent } from './anti-hallucination.agent';
+import { RAGService } from '../../rag/rag.service';
+import { LegislationType } from '../../../entities/legislation.entity';
 
 describe('AntiHallucinationAgent', () => {
   let agent: AntiHallucinationAgent;
+  let ragService: RAGService;
+
+  // Mock RAG Service
+  const mockRagService = {
+    verifyReference: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AntiHallucinationAgent],
+      providers: [
+        AntiHallucinationAgent,
+        {
+          provide: RAGService,
+          useValue: mockRagService,
+        },
+      ],
     }).compile();
 
     agent = module.get<AntiHallucinationAgent>(AntiHallucinationAgent);
+    ragService = module.get<RAGService>(RAGService);
+
+    // Reset mocks
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -380,6 +398,208 @@ describe('AntiHallucinationAgent', () => {
 
       expect(prompt.toLowerCase()).toContain('consequências legais');
       expect(prompt.toLowerCase()).toContain('documento oficial');
+    });
+  });
+
+  describe('RAG Integration Tests (Issue #212)', () => {
+    it('deve verificar referência legal válida via RAG', async () => {
+      const content = 'Conforme a Lei 14.133/2021, as licitações devem...';
+
+      // Mock: Lei 14.133/2021 existe no banco
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2021',
+        exists: true,
+        confidence: 1.0,
+        legislation: {
+          type: LegislationType.LEI,
+          number: '14133',
+          year: 2021,
+          title: 'Lei de Licitações e Contratos',
+        },
+      });
+
+      const result = await agent.check(content);
+
+      // Deve ter chamado RAG
+      expect(mockRagService.verifyReference).toHaveBeenCalledWith(
+        LegislationType.LEI,
+        '14133',
+        2021,
+      );
+
+      // Deve ter resultado de verificação
+      expect(result.references).toBeDefined();
+      expect(result.references?.length).toBe(1);
+      expect(result.references?.[0].exists).toBe(true);
+
+      // NÃO deve adicionar warning para referência verificada
+      const unverifiedWarning = result.warnings.find((w) =>
+        w.includes('não verificada'),
+      );
+      expect(unverifiedWarning).toBeUndefined();
+    });
+
+    it('deve detectar referência legal inválida via RAG', async () => {
+      const content = 'Conforme a Lei 99.999/2099, as regras são...';
+
+      // Mock: Lei 99.999/2099 NÃO existe
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 99999/2099',
+        exists: false,
+        confidence: 0.0,
+      });
+
+      const result = await agent.check(content);
+
+      // Deve ter chamado RAG
+      expect(mockRagService.verifyReference).toHaveBeenCalled();
+
+      // Deve ter resultado de verificação
+      expect(result.references).toBeDefined();
+      expect(result.references?.length).toBe(1);
+      expect(result.references?.[0].exists).toBe(false);
+
+      // Deve adicionar warning para referência NÃO verificada
+      const unverifiedWarning = result.warnings.find((w) =>
+        w.includes('não verificada'),
+      );
+      expect(unverifiedWarning).toBeDefined();
+
+      // Deve adicionar elemento suspeito
+      const suspiciousElement = result.suspiciousElements.find((el) =>
+        el.reason.includes('não verificada'),
+      );
+      expect(suspiciousElement).toBeDefined();
+      expect(suspiciousElement?.severity).toBe('high');
+    });
+
+    it('deve fornecer sugestão quando referência similar é encontrada', async () => {
+      const content = 'A Lei 14.133/2020 estabelece...';
+
+      // Mock: Lei 14.133/2020 não existe, mas 14.133/2021 existe (sugestão)
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2020',
+        exists: false,
+        confidence: 0.0,
+        suggestion: 'Você quis dizer Lei 14.133/2021? (95% similar)',
+      });
+
+      const result = await agent.check(content);
+
+      // Deve ter sugestão
+      expect(result.suggestions).toBeDefined();
+      expect(result.suggestions?.length).toBeGreaterThan(0);
+      expect(result.suggestions?.[0]).toContain('14.133/2021');
+    });
+
+    it('deve verificar múltiplas referências legais', async () => {
+      const content =
+        'A Lei 14.133/2021 e o Decreto 10.024/2019 estabelecem...';
+
+      mockRagService.verifyReference
+        .mockResolvedValueOnce({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        })
+        .mockResolvedValueOnce({
+          reference: 'decreto 10024/2019',
+          exists: true,
+          confidence: 1.0,
+        });
+
+      const result = await agent.check(content);
+
+      // Deve ter verificado ambas
+      expect(mockRagService.verifyReference).toHaveBeenCalledTimes(2);
+      expect(result.references?.length).toBe(2);
+      expect(result.references?.every((r) => r.exists)).toBe(true);
+    });
+
+    it('deve tolerar erro do RAG e continuar verificação', async () => {
+      const content = 'Lei 14.133/2021 está em vigor.';
+
+      // Mock: RAG lança erro
+      mockRagService.verifyReference.mockRejectedValue(
+        new Error('Database connection failed'),
+      );
+
+      const result = await agent.check(content);
+
+      // Não deve lançar erro
+      expect(result).toBeDefined();
+
+      // Deve ter resultado de verificação com exists=false
+      expect(result.references).toBeDefined();
+      expect(result.references?.[0].exists).toBe(false);
+    });
+
+    it('deve não verificar quando não há referências legais', async () => {
+      const content = 'Este é um texto simples sem referências.';
+
+      const result = await agent.check(content);
+
+      // NÃO deve chamar RAG
+      expect(mockRagService.verifyReference).not.toHaveBeenCalled();
+
+      // Não deve ter referências
+      expect(result.references).toBeUndefined();
+    });
+
+    it('deve extrair e verificar tipos diferentes de legislação', async () => {
+      const content =
+        'Lei 14.133/2021, Decreto 10.024/2019, Portaria 1.234/2020, IN 5/2021';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'mock',
+        exists: true,
+        confidence: 1.0,
+      });
+
+      await agent.check(content);
+
+      // Deve ter verificado 4 referências de tipos diferentes
+      expect(mockRagService.verifyReference).toHaveBeenCalledTimes(4);
+      expect(mockRagService.verifyReference).toHaveBeenCalledWith(
+        LegislationType.LEI,
+        '14133',
+        2021,
+      );
+      expect(mockRagService.verifyReference).toHaveBeenCalledWith(
+        LegislationType.DECRETO,
+        '10024',
+        2019,
+      );
+      expect(mockRagService.verifyReference).toHaveBeenCalledWith(
+        LegislationType.PORTARIA,
+        '1234',
+        2020,
+      );
+      expect(mockRagService.verifyReference).toHaveBeenCalledWith(
+        LegislationType.INSTRUCAO_NORMATIVA,
+        '5',
+        2021,
+      );
+    });
+
+    it('deve ser backward compatible com heurísticas antigas', async () => {
+      const content = 'Valor de 100% e certamente correto';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'mock',
+        exists: true,
+        confidence: 1.0,
+      });
+
+      const result = await agent.check(content);
+
+      // Deve ainda detectar afirmações proibidas e números sem fonte
+      expect(result.suspiciousElements.length).toBeGreaterThan(0);
+
+      const prohibitedClaim = result.suspiciousElements.find((el) =>
+        el.reason.includes('categórica'),
+      );
+      expect(prohibitedClaim).toBeDefined();
     });
   });
 });
