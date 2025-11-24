@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { ServiceUnavailableException } from '@nestjs/common';
 import { PerplexityService } from './perplexity.service';
 import axios from 'axios';
 
@@ -98,15 +97,16 @@ describe('PerplexityService', () => {
       expect(result.results[0].url).toBe('https://pncp.gov.br/contratos/123');
     });
 
-    it('should throw ServiceUnavailableException when API fails', async () => {
+    it('should return fallback response when API fails (graceful degradation)', async () => {
       mockedAxios.post.mockRejectedValue(new Error('API Error'));
 
-      await expect(service.search('test query')).rejects.toThrow(
-        ServiceUnavailableException,
-      );
-      await expect(service.search('test query')).rejects.toThrow(
-        'Busca externa temporariamente indisponível. Tente novamente em alguns minutos.',
-      );
+      const result = await service.search('test query');
+
+      // Should return fallback instead of throwing
+      expect(result.isFallback).toBe(true);
+      expect(result.results).toEqual([]);
+      expect(result.sources).toEqual([]);
+      expect(result.summary).toContain('indisponível');
     });
 
     it('should handle empty content from API', async () => {
@@ -282,6 +282,55 @@ describe('PerplexityService', () => {
       expect(result.results[0].relevance).toBe(1.0);
       expect(result.results[1].relevance).toBe(0.9);
       expect(result.results[2].relevance).toBe(0.8);
+    });
+  });
+
+  describe('getCircuitState', () => {
+    it('should return circuit breaker state', () => {
+      const state = service.getCircuitState();
+
+      expect(state).toHaveProperty('stats');
+      expect(state).toHaveProperty('opened');
+      expect(state).toHaveProperty('halfOpen');
+      expect(state).toHaveProperty('closed');
+      // Initially circuit should be closed
+      expect(state.closed).toBe(true);
+      expect(state.opened).toBe(false);
+    });
+  });
+
+  describe('graceful degradation', () => {
+    it('should mark successful responses with isFallback: false', async () => {
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'Success' } }],
+          citations: ['https://example.com'],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await service.search('test');
+
+      expect(result.isFallback).toBe(false);
+    });
+
+    it('should return fallback with isFallback: true when API fails', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('Network Error'));
+
+      const result = await service.search('test query');
+
+      expect(result.isFallback).toBe(true);
+      expect(result.results).toHaveLength(0);
+    });
+
+    it('should include disclaimer message in fallback response', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('API Error'));
+
+      const result = await service.search('test');
+
+      expect(result.summary).toContain('indisponível');
+      expect(result.summary).toContain('⚠️');
     });
   });
 });
