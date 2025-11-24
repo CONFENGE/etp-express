@@ -315,32 +315,24 @@ describe('PerplexityService', () => {
       expect(result.isFallback).toBe(false);
     });
 
-    it(
-      'should return fallback with isFallback: true when API fails',
-      async () => {
-        // Use an error that triggers retry behavior
-        // The test needs longer timeout to account for retry delays
-        mockedAxios.post.mockRejectedValue(new Error('Network Error'));
+    it('should return fallback with isFallback: true when API fails', async () => {
+      // Use an error that triggers retry behavior
+      // The test needs longer timeout to account for retry delays
+      mockedAxios.post.mockRejectedValue(new Error('Network Error'));
 
-        const result = await service.search('test query');
+      const result = await service.search('test query');
 
-        expect(result.isFallback).toBe(true);
-        expect(result.results).toHaveLength(0);
-      },
-      30000,
-    ); // Extended timeout for retry behavior
+      expect(result.isFallback).toBe(true);
+      expect(result.results).toHaveLength(0);
+    }, 30000); // Extended timeout for retry behavior
 
-    it(
-      'should include disclaimer message in fallback response',
-      async () => {
-        mockedAxios.post.mockRejectedValue(new Error('API Error'));
+    it('should include disclaimer message in fallback response', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('API Error'));
 
-        const result = await service.search('test');
+      const result = await service.search('test');
 
-        expect(result.summary).toContain('indisponível');
-        expect(result.summary).toContain('⚠️');
-      },
-      30000,
-    ); // Extended timeout for retry behavior
+      expect(result.summary).toContain('indisponível');
+      expect(result.summary).toContain('⚠️');
+    }, 30000); // Extended timeout for retry behavior
   });
 });

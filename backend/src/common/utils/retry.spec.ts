@@ -91,7 +91,10 @@ describe('Retry Utility', () => {
     it('should throw after exhausting all retries', async () => {
       jest.useRealTimers(); // Use real timers for this test
 
-      const retryableError = { code: 'ETIMEDOUT', message: 'Connection timeout' };
+      const retryableError = {
+        code: 'ETIMEDOUT',
+        message: 'Connection timeout',
+      };
       const fn = jest.fn().mockRejectedValue(retryableError);
 
       await expect(
@@ -185,7 +188,10 @@ describe('Retry Utility', () => {
 
       const fn = jest
         .fn()
-        .mockRejectedValueOnce({ response: { status: 503 }, message: 'Service unavailable' })
+        .mockRejectedValueOnce({
+          response: { status: 503 },
+          message: 'Service unavailable',
+        })
         .mockResolvedValue('success');
 
       const result = await withRetry(fn, {
