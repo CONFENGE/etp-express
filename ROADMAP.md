@@ -2,10 +2,10 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 92% (47/51) ⚡ 4 issues pendentes
-**Última Atualização:** 2025-11-22 (Issue #269 CLOSED ✅ - Relatório consolidado de conformidade LGPD)
-**Total de Issues:** 170 issues (61 abertas + 109 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~64% - M1 e M2 completos! 🚀
+**Status Atual:** Milestone 4 (Refactoring & Performance) - 29% (9/31) ⚡ Em progresso
+**Última Atualização:** 2025-11-24 (Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas)
+**Total de Issues:** 170 issues (59 abertas + 111 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~65% - M1 e M2 completos! 🚀
 
 > 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_REPORT.md)** - Auditoria completa realizada em 2025-11-21 (85% → 98% após correções)
 
@@ -30,11 +30,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ███████████████████░ 47/51 (92%)  ⚡ 4 issues pendentes
-[M4] Refactoring & Performance    █████░░░░░░░░░░░░░░░ 8/31 (26%)   ⚡ +9 issues críticas
+[M4] Refactoring & Performance    ██████░░░░░░░░░░░░░░ 9/31 (29%)   ⚡ +8 issues críticas (+1 CLOSED)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 110/170 issues concluídas (65%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% ⚡ | M4 26%
+TOTAL: 111/170 issues concluídas (65%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% ⚡ | M4 29%
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -200,8 +200,8 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 - ⏳ #114 - [SEC] Third-Party Penetration Testing (vendor externo)
 - ⏳ #269 - [LGPD-86i] Relatório consolidado LGPD
 
-### ⚡ M4: Refactoring & Performance (8 fechadas de 31)
-**Status**: 26% concluído
+### ⚡ M4: Refactoring & Performance (9 fechadas de 31)
+**Status**: 29% concluído
 
 **Refatoração:**
 - ✅ #25 - Extrair constante DISCLAIMER (46+ duplicações eliminadas) ⚡ **PR #149 MERGED** ✅
@@ -233,6 +233,36 @@ Acurácia da documentação: 98% ✅ (após correções de auditoria)
 ---
 
 ## 📋 Auditoria e Governança
+
+### 2025-11-24 (Atualização 49 - Issue #208 CLOSED - Retry Exponential Backoff) ⚡✅
+- ✅ **Issue #208 CLOSED**: [P1][Backend] Retry com exponential backoff para APIs externas **PR #281 MERGED** ✅
+- ✅ **PROGRESSO M4**: 26% → **29%** (9/31) ⚡ Progresso em resiliência de APIs
+- ✅ **PROGRESSO TOTAL**: 110 → **111 issues fechadas** (65%)
+
+**O que foi entregue (#208):**
+- ✅ Novo utility `backend/src/common/utils/retry.ts` (185 linhas)
+- ✅ Integração com OpenAI service (completions + streaming)
+- ✅ Integração com Perplexity service
+- ✅ 22 testes unitários para retry behavior
+- ✅ Complementa Circuit Breakers (#206, #207)
+
+**Funcionalidades:**
+- Exponential backoff com jitter (previne thundering herd)
+- Configuração flexível: max retries, delays, erros retryáveis
+- Suporte para HTTP 429, 5xx, ETIMEDOUT, ECONNRESET, etc.
+- Logger integration para observabilidade
+
+**Configuração por Serviço:**
+| Service    | Max Retries | Base Delay | Max Delay |
+|------------|-------------|------------|-----------|
+| OpenAI     | 3           | 1000ms     | 8000ms    |
+| Perplexity | 3           | 2000ms     | 15000ms   |
+
+**Próximas issues habilitadas:**
+- #209 - Health check proativo de provedores externos
+- #210 - Graceful degradation quando Perplexity falha
+
+---
 
 ### 2025-11-22 (Atualização 48 - Issue #268 CLOSED - Auditoria de Anonimização LGPD) 🔒✅
 - ✅ **Issue #268 CLOSED**: [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados 🔒 **PR #276 MERGED** ✅
@@ -1736,9 +1766,9 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 - [x] #108 - Database Performance Optimization & Production Tuning (12-16h) ✅ **PR #147 MERGED**
 
 **Resiliência de APIs Externas - Quesitos Críticos (5 issues) 🆕🔴 P1**
-- [x] #206 - [P1][Backend] Implementar Circuit Breaker para OpenAI 🔴 **P1** ✅ **PR #230 MERGED** ⚡ **NOVO!**
-- [ ] #207 - [P1][Backend] Implementar Circuit Breaker para Perplexity 🔴 **P1**
-- [ ] #208 - [P1][Backend] Retry com exponential backoff para APIs externas 🔴 **P1**
+- [x] #206 - [P1][Backend] Implementar Circuit Breaker para OpenAI 🔴 **P1** ✅ **PR #230 MERGED** ⚡
+- [x] #207 - [P1][Backend] Implementar Circuit Breaker para Perplexity 🔴 **P1** ✅ **PR #280 MERGED** ⚡
+- [x] #208 - [P1][Backend] Retry com exponential backoff para APIs externas 🔴 **P1** ✅ **PR #281 MERGED** ⚡ **NOVO!**
 - [ ] #209 - [P1][Backend] Health check proativo de provedores externos 🔴 **P1**
 - [ ] #210 - [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **P1**
 
