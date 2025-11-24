@@ -6,6 +6,7 @@ import { MetricsController } from './metrics.controller';
 import { MetricsService } from './metrics.service';
 import { User } from '../entities/user.entity';
 import { OrchestratorModule } from '../modules/orchestrator/orchestrator.module';
+import { SearchModule } from '../modules/search/search.module';
 
 /**
  * Health Check & Metrics Module
@@ -13,7 +14,7 @@ import { OrchestratorModule } from '../modules/orchestrator/orchestrator.module'
  * Fornece:
  * - Health check endpoint (/api/health) para validação de prontidão
  * - Metrics endpoint (/api/metrics) para Prometheus scraping
- * - Provider health checks (OpenAI circuit breaker status)
+ * - Provider health checks (OpenAI, Perplexity circuit breaker status)
  *
  * Essencial para:
  * - Zero-downtime deployment no Railway
@@ -24,7 +25,7 @@ import { OrchestratorModule } from '../modules/orchestrator/orchestrator.module'
  * @module HealthModule
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), OrchestratorModule],
+  imports: [TypeOrmModule.forFeature([User]), OrchestratorModule, SearchModule],
   controllers: [HealthController, MetricsController],
   providers: [HealthService, MetricsService],
 })
