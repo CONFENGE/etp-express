@@ -46,7 +46,7 @@ export function ETPEditor() {
         ),
       });
       success('Seção salva com sucesso!');
-    } catch (err) {
+    } catch {
       error('Erro ao salvar seção');
     }
   };
