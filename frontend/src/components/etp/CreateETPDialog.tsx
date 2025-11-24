@@ -58,7 +58,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
       reset();
       onOpenChange(false);
       navigate(`/etps/${etp.id}`);
-    } catch (err) {
+    } catch {
       error('Erro ao criar ETP. Tente novamente.');
     } finally {
       setIsLoading(false);
