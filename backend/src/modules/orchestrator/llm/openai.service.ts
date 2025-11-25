@@ -162,6 +162,35 @@ export class OpenAIService {
     };
   }
 
+  /**
+   * Lightweight health check for OpenAI API availability
+   * Makes a minimal API call to verify connectivity and measure latency
+   * @returns Promise<{ latency: number }> Latency in milliseconds
+   * @throws Error if OpenAI API is unreachable
+   */
+  async ping(): Promise<{ latency: number }> {
+    const start = Date.now();
+
+    try {
+      // Make a minimal API call to check connectivity
+      // Using a very short completion request with low token limit
+      await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo', // Use cheaper model for ping
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 1,
+      });
+
+      const latency = Date.now() - start;
+      this.logger.debug(`OpenAI ping successful - latency: ${latency}ms`);
+
+      return { latency };
+    } catch (error) {
+      const latency = Date.now() - start;
+      this.logger.error(`OpenAI ping failed after ${latency}ms`, error);
+      throw error;
+    }
+  }
+
   async generateStreamCompletion(
     request: LLMRequest,
     onChunk: (chunk: string) => void,

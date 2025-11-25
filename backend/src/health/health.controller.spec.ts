@@ -24,12 +24,14 @@ describe('HealthController', () => {
           provide: OpenAIService,
           useValue: {
             getCircuitState: jest.fn(),
+            ping: jest.fn(),
           },
         },
         {
           provide: PerplexityService,
           useValue: {
             getCircuitState: jest.fn(),
+            ping: jest.fn(),
           },
         },
       ],
@@ -308,6 +310,250 @@ describe('HealthController', () => {
       expect(result).toEqual(circuitState);
       expect(result.halfOpen).toBe(true);
       expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getProvidersHealth', () => {
+    it('should return healthy status for both providers when ping succeeds', async () => {
+      // Arrange
+      const openaiLatency = 245;
+      const perplexityLatency = 892;
+      const openaiCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 10, successes: 10, failures: 0 },
+      };
+      const perplexityCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 5, successes: 5, failures: 0 },
+      };
+
+      jest
+        .spyOn(openaiService, 'ping')
+        .mockResolvedValue({ latency: openaiLatency });
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockResolvedValue({ latency: perplexityLatency });
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(openaiCircuitState as any);
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(perplexityCircuitState as any);
+
+      // Act
+      const result = await controller.getProvidersHealth();
+
+      // Assert
+      expect(result.openai.status).toBe('healthy');
+      expect(result.openai.latency).toBe(openaiLatency);
+      expect(result.openai.circuitState).toEqual(openaiCircuitState);
+      expect(result.openai.lastCheck).toBeInstanceOf(Date);
+
+      expect(result.perplexity.status).toBe('healthy');
+      expect(result.perplexity.latency).toBe(perplexityLatency);
+      expect(result.perplexity.circuitState).toEqual(perplexityCircuitState);
+      expect(result.perplexity.lastCheck).toBeInstanceOf(Date);
+
+      expect(openaiService.ping).toHaveBeenCalledTimes(1);
+      expect(perplexityService.ping).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return degraded status for OpenAI when ping fails', async () => {
+      // Arrange
+      const perplexityLatency = 723;
+      const perplexityCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 5, successes: 5, failures: 0 },
+      };
+      const openaiCircuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: { fires: 10, successes: 3, failures: 7 },
+      };
+
+      jest
+        .spyOn(openaiService, 'ping')
+        .mockRejectedValue(new Error('Connection timeout'));
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockResolvedValue({ latency: perplexityLatency });
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(openaiCircuitState as any);
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(perplexityCircuitState as any);
+
+      // Act
+      const result = await controller.getProvidersHealth();
+
+      // Assert
+      expect(result.openai.status).toBe('degraded');
+      expect(result.openai.latency).toBeUndefined();
+      expect(result.openai.circuitState).toEqual(openaiCircuitState);
+      expect(result.openai.error).toBe('Connection timeout');
+      expect(result.openai.lastCheck).toBeInstanceOf(Date);
+
+      expect(result.perplexity.status).toBe('healthy');
+      expect(result.perplexity.latency).toBe(perplexityLatency);
+    });
+
+    it('should return degraded status for Perplexity when ping fails', async () => {
+      // Arrange
+      const openaiLatency = 245;
+      const openaiCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 10, successes: 10, failures: 0 },
+      };
+      const perplexityCircuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: { fires: 5, successes: 1, failures: 4 },
+      };
+
+      jest
+        .spyOn(openaiService, 'ping')
+        .mockResolvedValue({ latency: openaiLatency });
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockRejectedValue(new Error('API key invalid'));
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(openaiCircuitState as any);
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(perplexityCircuitState as any);
+
+      // Act
+      const result = await controller.getProvidersHealth();
+
+      // Assert
+      expect(result.openai.status).toBe('healthy');
+      expect(result.openai.latency).toBe(openaiLatency);
+
+      expect(result.perplexity.status).toBe('degraded');
+      expect(result.perplexity.latency).toBeUndefined();
+      expect(result.perplexity.circuitState).toEqual(perplexityCircuitState);
+      expect(result.perplexity.error).toBe('API key invalid');
+      expect(result.perplexity.lastCheck).toBeInstanceOf(Date);
+    });
+
+    it('should return degraded status for both providers when both ping fail', async () => {
+      // Arrange
+      const openaiCircuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: { fires: 10, successes: 2, failures: 8 },
+      };
+      const perplexityCircuitState = {
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: { fires: 5, successes: 1, failures: 4 },
+      };
+
+      jest
+        .spyOn(openaiService, 'ping')
+        .mockRejectedValue(new Error('OpenAI down'));
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockRejectedValue(new Error('Perplexity down'));
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(openaiCircuitState as any);
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(perplexityCircuitState as any);
+
+      // Act
+      const result = await controller.getProvidersHealth();
+
+      // Assert
+      expect(result.openai.status).toBe('degraded');
+      expect(result.openai.error).toBe('OpenAI down');
+      expect(result.perplexity.status).toBe('degraded');
+      expect(result.perplexity.error).toBe('Perplexity down');
+    });
+
+    it('should handle errors without message property', async () => {
+      // Arrange
+      const perplexityLatency = 500;
+      const openaiCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 1, successes: 1, failures: 0 },
+      };
+      const perplexityCircuitState = {
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: { fires: 1, successes: 1, failures: 0 },
+      };
+
+      jest.spyOn(openaiService, 'ping').mockRejectedValue('string error');
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockResolvedValue({ latency: perplexityLatency });
+      jest
+        .spyOn(openaiService, 'getCircuitState')
+        .mockReturnValue(openaiCircuitState as any);
+      jest
+        .spyOn(perplexityService, 'getCircuitState')
+        .mockReturnValue(perplexityCircuitState as any);
+
+      // Act
+      const result = await controller.getProvidersHealth();
+
+      // Assert
+      expect(result.openai.status).toBe('degraded');
+      expect(result.openai.error).toBe('Unknown error');
+      expect(result.perplexity.status).toBe('healthy');
+    });
+
+    it('should use Promise.allSettled to check providers in parallel', async () => {
+      // Arrange
+      jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
+      jest
+        .spyOn(perplexityService, 'ping')
+        .mockResolvedValue({ latency: 200 });
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+      jest.spyOn(perplexityService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+
+      const startTime = Date.now();
+
+      // Act
+      await controller.getProvidersHealth();
+
+      const duration = Date.now() - startTime;
+
+      // Assert
+      // If running in parallel, should complete in ~200ms (not 300ms if sequential)
+      // Adding buffer for test environment overhead
+      expect(duration).toBeLessThan(400);
+      expect(openaiService.ping).toHaveBeenCalledTimes(1);
+      expect(perplexityService.ping).toHaveBeenCalledTimes(1);
     });
   });
 });
