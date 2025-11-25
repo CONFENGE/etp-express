@@ -8,9 +8,10 @@ import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PrivacyModule } from '../privacy/privacy.module';
 import { RAGModule } from '../rag/rag.module';
+import { SearchModule } from '../search/search.module';
 
 @Module({
-  imports: [PrivacyModule, RAGModule],
+  imports: [PrivacyModule, RAGModule, SearchModule],
   providers: [
     OrchestratorService,
     OpenAIService,
