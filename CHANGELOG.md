@@ -13,16 +13,6 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
-#### 🤖 Enriquecimento com IA (2025-11-25)
-- ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
-  - Integração do PerplexityService no OrchestratorService
-  - Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
-  - Graceful degradation: geração continua mesmo sem dados externos
-  - Indicadores visuais no frontend quando enrichment indisponível
-  - Queries customizadas por tipo de seção para busca otimizada
-  - 30 novos testes backend (100% passing, 0 regressões)
-  - Flag `hasEnrichmentWarning` para transparência ao usuário
-
 #### 🛡️ Resiliência e Confiabilidade (2025-11-20)
 - ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)
   - Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
