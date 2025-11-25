@@ -6,6 +6,7 @@ import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
+import { PerplexityService } from '../search/perplexity/perplexity.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -46,6 +47,11 @@ export interface GenerationResult {
   };
   warnings: string[];
   disclaimer: string;
+  /**
+   * Indica se a geração foi realizada sem enriquecimento externo (Perplexity).
+   * True quando a Perplexity falhou ou retornou fallback.
+   */
+  hasEnrichmentWarning?: boolean;
 }
 
 /**
@@ -90,6 +96,7 @@ export class OrchestratorService {
     private simplificacaoAgent: SimplificacaoAgent,
     private antiHallucinationAgent: AntiHallucinationAgent,
     private piiRedactionService: PIIRedactionService,
+    private perplexityService: PerplexityService,
   ) {}
 
   /**
@@ -232,6 +239,51 @@ export class OrchestratorService {
         agentsUsed.push('fundamentacao-guidance');
       }
 
+      // 3.5. Enrich with market fundamentation from Perplexity (optional)
+      let hasEnrichmentWarning = false;
+      if (this.needsMarketEnrichment(request.sectionType)) {
+        try {
+          const enrichmentQuery = this.buildEnrichmentQuery(
+            request.sectionType,
+            request.etpData?.objeto || sanitizedInput,
+          );
+
+          const enrichmentResult =
+            await this.perplexityService.search(enrichmentQuery);
+
+          if (enrichmentResult.isFallback) {
+            // Perplexity returned fallback - graceful degradation
+            this.logger.warn(
+              'Perplexity enrichment unavailable, continuing without market data',
+              {
+                sectionType: request.sectionType,
+              },
+            );
+            warnings.push(
+              '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
+            );
+            hasEnrichmentWarning = true;
+          } else if (enrichmentResult.summary) {
+            // Success - add market context to prompt
+            enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
+            agentsUsed.push('market-enrichment');
+            this.logger.log(
+              `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
+            );
+          }
+        } catch (error) {
+          // Unexpected error - log and continue (graceful degradation)
+          this.logger.error('Unexpected error during Perplexity enrichment', {
+            error: error.message,
+            sectionType: request.sectionType,
+          });
+          warnings.push(
+            '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
+          );
+          hasEnrichmentWarning = true;
+        }
+      }
+
       // 4. Add anti-hallucination safety prompt
       const safetyPrompt =
         await this.antiHallucinationAgent.generateSafetyPrompt();
@@ -355,6 +407,7 @@ export class OrchestratorService {
         },
         warnings: [...new Set(warnings)],
         disclaimer: DISCLAIMER,
+        hasEnrichmentWarning,
       };
     } catch (error) {
       this.logger.error('Error generating section:', error);
@@ -482,6 +535,83 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     } else {
       return 0.5; // Default balanced
     }
+  }
+
+  /**
+   * Determines if a section type benefits from market enrichment via Perplexity.
+   *
+   * @remarks
+   * Sections like justificativa, contextualizacao, and orcamento benefit from
+   * external market data and similar contract examples to strengthen argumentation.
+   *
+   * @param sectionType - Type of section being checked
+   * @returns True if section should be enriched with market data, false otherwise
+   */
+  private needsMarketEnrichment(sectionType: string): boolean {
+    return [
+      'justificativa',
+      'contextualizacao',
+      'orcamento',
+      'pesquisa_mercado',
+      'especificacao_tecnica',
+    ].includes(sectionType.toLowerCase());
+  }
+
+  /**
+   * Builds an enrichment query for Perplexity based on section type and ETP context.
+   *
+   * @remarks
+   * Creates a targeted query to retrieve relevant market data, similar contracts,
+   * and pricing information to enrich the ETP section generation.
+   *
+   * @param sectionType - Type of section being generated
+   * @param objeto - The object/item being contracted
+   * @returns Formatted query string for Perplexity search
+   */
+  private buildEnrichmentQuery(sectionType: string, objeto: string): string {
+    const baseQuery = `Busque informações sobre contratações públicas brasileiras similares a: "${objeto}".`;
+
+    const sectionSpecificQueries: Record<string, string> = {
+      justificativa: `${baseQuery}
+      Inclua:
+      - Exemplos de justificativas de órgãos públicos
+      - Benefícios observados em contratações similares
+      - Dados quantitativos sobre impacto e eficiência
+      - Referências a casos de sucesso`,
+
+      contextualizacao: `${baseQuery}
+      Inclua:
+      - Contexto de mercado atual
+      - Tendências em contratações públicas do setor
+      - Desafios e oportunidades identificados
+      - Casos relevantes de outros órgãos`,
+
+      orcamento: `${baseQuery}
+      Inclua:
+      - Valores praticados em contratações similares
+      - Faixas de preço de mercado
+      - Referências de preços de órgãos públicos
+      - Links para processos licitatórios relacionados`,
+
+      pesquisa_mercado: `${baseQuery}
+      Inclua:
+      - Fornecedores principais no mercado
+      - Valores de referência
+      - Condições comerciais típicas
+      - Análise de mercado do setor`,
+
+      especificacao_tecnica: `${baseQuery}
+      Inclua:
+      - Especificações técnicas de referência
+      - Padrões de mercado adotados
+      - Requisitos técnicos comuns em contratações similares
+      - Normas e certificações aplicáveis`,
+    };
+
+    const query =
+      sectionSpecificQueries[sectionType.toLowerCase()] || baseQuery;
+
+    return `${query}\n\nFoque em dados oficiais e cite as fontes. Priorize informações de órgãos públicos brasileiros.`;
   }
 
   /**

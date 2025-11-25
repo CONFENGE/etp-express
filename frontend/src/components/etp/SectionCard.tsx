@@ -1,6 +1,7 @@
-import { CheckCircle, Circle, AlertCircle } from 'lucide-react';
+import { CheckCircle, Circle, AlertCircle, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { Section } from '@/types/etp';
 
@@ -51,6 +52,14 @@ export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
         <p className="text-xs text-muted-foreground line-clamp-2">
           {section.content || 'Nenhum conteúdo ainda'}
         </p>
+        {section.hasEnrichmentWarning && section.aiGenerated && (
+          <Alert variant="warning" className="mt-3">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              Esta seção foi gerada sem busca de fundamentação externa. Recomendamos revisar e adicionar referências manualmente.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );
