@@ -21,6 +21,16 @@ const alertVariants = cva(
   },
 );
 
+/**
+ * Alert component for displaying contextual messages with variant support.
+ * Supports default, destructive, and warning variants.
+ *
+ * @example
+ * <Alert variant="warning">
+ *   <AlertTitle>Warning</AlertTitle>
+ *   <AlertDescription>This is a warning message.</AlertDescription>
+ * </Alert>
+ */
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
@@ -34,6 +44,12 @@ const Alert = React.forwardRef<
 ));
 Alert.displayName = 'Alert';
 
+/**
+ * AlertTitle component for displaying the title/heading of an alert.
+ *
+ * @example
+ * <AlertTitle>Important Notice</AlertTitle>
+ */
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
@@ -46,6 +62,13 @@ const AlertTitle = React.forwardRef<
 ));
 AlertTitle.displayName = 'AlertTitle';
 
+/**
+ * AlertDescription component for displaying the body/description text of an alert.
+ * Supports paragraph content with relaxed leading.
+ *
+ * @example
+ * <AlertDescription>This is the alert description text.</AlertDescription>
+ */
 const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
