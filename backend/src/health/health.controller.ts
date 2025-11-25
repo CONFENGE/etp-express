@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
+import CircuitBreaker from 'opossum';
 
 /**
  * Provider Health Status
@@ -17,7 +18,7 @@ export interface ProviderHealth {
     opened: boolean;
     halfOpen: boolean;
     closed: boolean;
-    stats: any;
+    stats: CircuitBreaker.Stats;
   };
   /** Timestamp of last health check */
   lastCheck: Date;

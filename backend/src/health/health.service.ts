@@ -111,9 +111,7 @@ export class HealthService {
           },
         );
       } else {
-        this.logger.debug(
-          `Perplexity health check OK - latency: ${latency}ms`,
-        );
+        this.logger.debug(`Perplexity health check OK - latency: ${latency}ms`);
       }
     } catch (error) {
       this.logger.error('Perplexity health check failed', {
