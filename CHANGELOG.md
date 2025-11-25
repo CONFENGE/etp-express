@@ -13,6 +13,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🐛 Hotfixes (2025-11-25)
+- ✅ #297 - Adicionar componente Alert faltante para SectionCard (PR #297)
+  - Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
+  - Suporte para variantes: default, destructive, warning
+  - Correção de falha de build pós-merge da PR #296
+  - JSDoc completo para todos os componentes públicos
+  - Rollback automático da PR #296 executado com sucesso
+
 #### 🛡️ Resiliência e Confiabilidade (2025-11-20)
 - ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)
   - Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
