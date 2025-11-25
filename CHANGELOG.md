@@ -13,13 +13,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🤖 Enriquecimento com IA (2025-11-25)
+- ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
+  - Integração do PerplexityService no OrchestratorService
+  - Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
+  - Graceful degradation: geração continua mesmo sem dados externos
+  - Indicadores visuais no frontend quando enrichment indisponível
+  - Queries customizadas por tipo de seção para busca otimizada
+  - 30 novos testes backend (100% passing, 0 regressões)
+  - Flag `hasEnrichmentWarning` para transparência ao usuário
+
 #### 🐛 Hotfixes (2025-11-25)
 - ✅ #297 - Adicionar componente Alert faltante para SectionCard (PR #297)
   - Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
   - Suporte para variantes: default, destructive, warning
   - Correção de falha de build pós-merge da PR #296
   - JSDoc completo para todos os componentes públicos
-  - Rollback automático da PR #296 executado com sucesso
+  - Re-merge da PR #296 executado com sucesso após correção
 
 #### 🛡️ Resiliência e Confiabilidade (2025-11-20)
 - ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)

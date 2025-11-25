@@ -19,6 +19,7 @@ export interface Section {
   isRequired: boolean;
   isCompleted: boolean;
   aiGenerated: boolean;
+  hasEnrichmentWarning?: boolean;
   metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
