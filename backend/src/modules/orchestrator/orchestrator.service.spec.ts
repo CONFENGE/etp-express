@@ -7,6 +7,7 @@ import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
+import { PerplexityService } from '../search/perplexity/perplexity.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -160,6 +161,38 @@ describe('OrchestratorService', () => {
     getSystemPrompt: jest.fn().mockReturnValue('Regras anti-alucinação...'),
   });
 
+  /**
+   * Creates a mock PerplexityService instance
+   * @returns Mock object with search methods
+   */
+  const createMockPerplexityService = () => ({
+    search: jest.fn().mockResolvedValue({
+      results: [],
+      summary: 'Fundamentação de mercado encontrada',
+      sources: ['https://example.com'],
+      isFallback: false,
+    }),
+    searchSimilarContracts: jest.fn().mockResolvedValue({
+      results: [],
+      summary: '',
+      sources: [],
+      isFallback: false,
+    }),
+    searchLegalReferences: jest.fn().mockResolvedValue({
+      results: [],
+      summary: '',
+      sources: [],
+      isFallback: false,
+    }),
+    getCircuitState: jest.fn().mockReturnValue({
+      opened: false,
+      halfOpen: false,
+      closed: true,
+      stats: {},
+    }),
+    ping: jest.fn().mockResolvedValue({ latency: 100 }),
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -178,6 +211,10 @@ describe('OrchestratorService', () => {
         {
           provide: AntiHallucinationAgent,
           useValue: createMockAntiHallucinationAgent(),
+        },
+        {
+          provide: PerplexityService,
+          useValue: createMockPerplexityService(),
         },
         {
           provide: PIIRedactionService,
