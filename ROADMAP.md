@@ -2,13 +2,15 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 4 (Refactoring & Performance) - 32% (10/31) ⚡ Em progresso
-**Última Atualização:** 2025-11-24
+**Status Atual:** Milestone 4 (Refactoring & Performance) - 38% (12/31) ⚡ Em progresso
+**Última Atualização:** 2025-11-25
+- Issue #210 CLOSED ✅ - Graceful degradation Perplexity (PR #296 re-merged após hotfix #297)
+- Issue #209 CLOSED ✅ - Health check proativo de provedores externos
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-**Total de Issues:** 170 issues (52 abertas + 118 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~69% - M1 e M2 completos, M3 98%, M4 44%! 🚀
+**Total de Issues:** 170 issues (50 abertas + 120 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~71% - M1 e M2 completos, M3 98%, M4 50%! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 **Status:** ✅ 9/9 PRs merged com sucesso (100% completo)
@@ -57,11 +59,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ███████████████████░ 51/52 (98%)  ⚡ 1 issue pendente
-[M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 14/32 (44%)  ⚡ +4 CLOSED: #208, #209, #211, #212
+[M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/32 (50%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 118/170 issues concluídas (69%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% 🔥 | M4 44% 🚀
+TOTAL: 120/170 issues concluídas (71%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% 🔥 | M4 50% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -287,9 +289,47 @@ Acurácia da documentação: 100% ✅ (após audit 2025-11-24)
 | OpenAI     | 3           | 1000ms     | 8000ms    |
 | Perplexity | 3           | 2000ms     | 15000ms   |
 
-**Próximas issues habilitadas:**
-- #209 - Health check proativo de provedores externos
-- #210 - Graceful degradation quando Perplexity falha
+**Issues concluídas:**
+- ✅ #209 - Health check proativo de provedores externos (PR #294)
+- ✅ #210 - Graceful degradation quando Perplexity falha (PR #296 re-merged após hotfix #297)
+
+---
+
+### 2025-11-25 (Atualização 49 - Re-merge PRs #296 e #297 - Perplexity Enrichment + Alert Component) 🤖✅
+- ✅ **Issue #210 CLOSED**: [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **PR #296 RE-MERGED** ✅
+- ✅ **Issue #209 CLOSED**: [P1][Backend] Health check proativo de provedores externos 🔴 **PR #294 MERGED** ✅
+- ✅ **Hotfix #297 MERGED**: Adicionar componente Alert faltante para SectionCard **PR #297 MERGED** ✅
+- ✅ **PROGRESSO M4**: 44% → **50%** (16/32) ⚡ 16 issues pendentes
+- ✅ **PROGRESSO TOTAL**: 120 issues fechadas (71%)
+
+**Contexto do Re-merge:**
+A PR #296 foi inicialmente merged mas revertida devido à falta do componente Alert (usado em SectionCard.tsx). Após merge da PR #297 (hotfix que adicionou o componente Alert), a PR #296 foi re-merged com sucesso.
+
+**O que foi entregue (#296):**
+- ✅ Integração do PerplexityService no OrchestratorService
+- ✅ Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
+- ✅ Graceful degradation: geração continua mesmo sem dados externos
+- ✅ Indicadores visuais no frontend (Alert em SectionCard) quando enrichment indisponível
+- ✅ Queries customizadas por tipo de seção para busca otimizada
+- ✅ 30 novos testes backend (100% passing, 0 regressões)
+- ✅ Flag `hasEnrichmentWarning` para transparência ao usuário
+
+**O que foi entregue (#297):**
+- ✅ Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
+- ✅ Suporte para variantes: default, destructive, warning
+- ✅ JSDoc completo para todos os componentes públicos
+
+**Validação:**
+- ✅ Backend build: SUCCESS
+- ✅ Frontend build: SUCCESS (sem erros TypeScript)
+- ✅ Todos os testes passando
+
+**Resiliência APIs Externas:**
+- ✅ 5/5 issues concluídas (#206, #207, #208, #209, #210) 🎉
+- ✅ Circuit Breaker: OpenAI + Perplexity
+- ✅ Retry exponential backoff implementado
+- ✅ Health check proativo de provedores
+- ✅ Graceful degradation quando Perplexity falha
 
 ---
 
@@ -1797,9 +1837,9 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 **Resiliência de APIs Externas - Quesitos Críticos (5 issues) 🆕🔴 P1**
 - [x] #206 - [P1][Backend] Implementar Circuit Breaker para OpenAI 🔴 **P1** ✅ **PR #230 MERGED** ⚡
 - [x] #207 - [P1][Backend] Implementar Circuit Breaker para Perplexity 🔴 **P1** ✅ **PR #280 MERGED** ⚡
-- [x] #208 - [P1][Backend] Retry com exponential backoff para APIs externas 🔴 **P1** ✅ **PR #281 MERGED** ⚡ **NOVO!**
-- [ ] #209 - [P1][Backend] Health check proativo de provedores externos 🔴 **P1**
-- [ ] #210 - [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **P1**
+- [x] #208 - [P1][Backend] Retry com exponential backoff para APIs externas 🔴 **P1** ✅ **PR #281 MERGED** ⚡
+- [x] #209 - [P1][Backend] Health check proativo de provedores externos 🔴 **P1** ✅ **PR #294 MERGED** ⚡ **NOVO!**
+- [x] #210 - [P1][Backend] Graceful degradation quando Perplexity falha 🔴 **P1** ✅ **PR #296 MERGED** (re-merged após hotfix #297) ⚡ **NOVO!**
 
 **RAG e Anti-Alucinação - Quesitos Críticos (4 issues) 🆕🔴 P1**
 - [x] #211 - [P1][Backend] PoC RAG com Lei 14.133/2021 🔴 **P1** ✅ **Merged via PR #293** (2025-11-24)
