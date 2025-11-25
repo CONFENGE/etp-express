@@ -1,0 +1,287 @@
+{
+  "totalPhantoms": 79,
+  "prReferences": [
+    119,
+    120,
+    121,
+    122,
+    128,
+    129,
+    130,
+    131,
+    132,
+    135,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    146,
+    147,
+    149,
+    150,
+    151,
+    159,
+    182,
+    184,
+    185,
+    187,
+    188,
+    189,
+    190,
+    198,
+    226,
+    227,
+    228,
+    230,
+    240,
+    241,
+    244,
+    245,
+    246,
+    249,
+    250,
+    251,
+    259,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277
+  ],
+  "issueReferences": [
+    {
+      "number": 49,
+      "occurrences": 1,
+      "lines": [
+        2208
+      ]
+    },
+    {
+      "number": 64,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 65,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 66,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 67,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 68,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 69,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 70,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 71,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 72,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 73,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 74,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 75,
+      "occurrences": 0,
+      "lines": []
+    },
+    {
+      "number": 76,
+      "occurrences": 1,
+      "lines": [
+        2208
+      ]
+    },
+    {
+      "number": 124,
+      "occurrences": 2,
+      "lines": [
+        1492,
+        2125
+      ]
+    },
+    {
+      "number": 126,
+      "occurrences": 2,
+      "lines": [
+        1492,
+        2125
+      ]
+    },
+    {
+      "number": 127,
+      "occurrences": 2,
+      "lines": [
+        1492,
+        2125
+      ]
+    },
+    {
+      "number": 269,
+      "occurrences": 13,
+      "lines": [
+        6,
+        41,
+        120,
+        168,
+        197,
+        201,
+        268,
+        295,
+        305,
+        421,
+        436,
+        450,
+        1662
+      ]
+    }
+  ],
+  "problematicRanges": [
+    {
+      "range": "#261-#269",
+      "start": 261,
+      "end": 269,
+      "total": 9,
+      "existing": 0,
+      "phantom": 9,
+      "phantomNumbers": [
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269
+      ],
+      "lineNumber": 41,
+      "lineContent": "- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ✅ COMPLETO! (todas 9 concluídas: #261 ✅, #262 ✅, #263 ✅, #264 ✅, #265 ✅, #266 ✅, #267 ✅, #268 ✅, #269 ✅)"
+    },
+    {
+      "range": "#270-#273",
+      "start": 270,
+      "end": 273,
+      "total": 4,
+      "existing": 0,
+      "phantom": 4,
+      "phantomNumbers": [
+        270,
+        271,
+        272,
+        273
+      ],
+      "lineNumber": 245,
+      "lineContent": "- 4 issues críticas de remediação criadas (#270-#273)"
+    },
+    {
+      "range": "#266-#269",
+      "start": 266,
+      "end": 269,
+      "total": 4,
+      "existing": 0,
+      "phantom": 4,
+      "phantomNumbers": [
+        266,
+        267,
+        268,
+        269
+      ],
+      "lineNumber": 305,
+      "lineContent": "- [ ] Completar #266-#269 para finalizar M3"
+    },
+    {
+      "range": "#261-#269",
+      "start": 261,
+      "end": 269,
+      "total": 9,
+      "existing": 0,
+      "phantom": 9,
+      "phantomNumbers": [
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269
+      ],
+      "lineNumber": 41,
+      "lineContent": "- #86 → #261-#269 (9 sub-issues de LGPD audit v2) ✅ COMPLETO! (todas 9 concluídas: #261 ✅, #262 ✅, #263 ✅, #264 ✅, #265 ✅, #266 ✅, #267 ✅, #268 ✅, #269 ✅)"
+    },
+    {
+      "range": "#49-#76",
+      "start": 49,
+      "end": 76,
+      "total": 28,
+      "existing": 14,
+      "phantom": 14,
+      "phantomNumbers": [
+        49,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76
+      ],
+      "lineNumber": 2208,
+      "lineContent": "- ✅ **Correção crítica**: #49-#76 → #50-#63 (14 issues fantasma removidas)"
+    }
+  ]
+}

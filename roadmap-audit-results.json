@@ -1,0 +1,403 @@
+{
+  "date": "2025-11-22T22:28:27.990Z",
+  "issueCount": {
+    "roadmap": {
+      "total": 170,
+      "open": 61,
+      "closed": 109
+    },
+    "github": {
+      "total": 161,
+      "open": 60,
+      "closed": 101
+    },
+    "drift": {
+      "total": -9,
+      "open": -1,
+      "closed": -8,
+      "percentage": "5.3"
+    }
+  },
+  "milestones": {
+    "discrepancies": [
+      {
+        "milestone": "M3",
+        "roadmapCompleted": 47,
+        "roadmapTotal": 51,
+        "roadmapPct": 92,
+        "githubCompleted": 38,
+        "githubTotal": 42,
+        "githubPct": 90,
+        "openInGithub": 4
+      }
+    ]
+  },
+  "phantoms": [
+    {
+      "number": 49,
+      "exists": false
+    },
+    {
+      "number": 64,
+      "exists": false
+    },
+    {
+      "number": 65,
+      "exists": false
+    },
+    {
+      "number": 66,
+      "exists": false
+    },
+    {
+      "number": 67,
+      "exists": false
+    },
+    {
+      "number": 68,
+      "exists": false
+    },
+    {
+      "number": 69,
+      "exists": false
+    },
+    {
+      "number": 70,
+      "exists": false
+    },
+    {
+      "number": 71,
+      "exists": false
+    },
+    {
+      "number": 72,
+      "exists": false
+    },
+    {
+      "number": 73,
+      "exists": false
+    },
+    {
+      "number": 74,
+      "exists": false
+    },
+    {
+      "number": 75,
+      "exists": false
+    },
+    {
+      "number": 76,
+      "exists": false
+    },
+    {
+      "number": 119,
+      "exists": false
+    },
+    {
+      "number": 120,
+      "exists": false
+    },
+    {
+      "number": 121,
+      "exists": false
+    },
+    {
+      "number": 122,
+      "exists": false
+    },
+    {
+      "number": 124,
+      "exists": false
+    },
+    {
+      "number": 126,
+      "exists": false
+    },
+    {
+      "number": 127,
+      "exists": false
+    },
+    {
+      "number": 128,
+      "exists": false
+    },
+    {
+      "number": 129,
+      "exists": false
+    },
+    {
+      "number": 130,
+      "exists": false
+    },
+    {
+      "number": 131,
+      "exists": false
+    },
+    {
+      "number": 132,
+      "exists": false
+    },
+    {
+      "number": 135,
+      "exists": false
+    },
+    {
+      "number": 137,
+      "exists": false
+    },
+    {
+      "number": 138,
+      "exists": false
+    },
+    {
+      "number": 139,
+      "exists": false
+    },
+    {
+      "number": 140,
+      "exists": false
+    },
+    {
+      "number": 141,
+      "exists": false
+    },
+    {
+      "number": 142,
+      "exists": false
+    },
+    {
+      "number": 143,
+      "exists": false
+    },
+    {
+      "number": 144,
+      "exists": false
+    },
+    {
+      "number": 146,
+      "exists": false
+    },
+    {
+      "number": 147,
+      "exists": false
+    },
+    {
+      "number": 149,
+      "exists": false
+    },
+    {
+      "number": 150,
+      "exists": false
+    },
+    {
+      "number": 151,
+      "exists": false
+    },
+    {
+      "number": 159,
+      "exists": false
+    },
+    {
+      "number": 182,
+      "exists": false
+    },
+    {
+      "number": 184,
+      "exists": false
+    },
+    {
+      "number": 185,
+      "exists": false
+    },
+    {
+      "number": 187,
+      "exists": false
+    },
+    {
+      "number": 188,
+      "exists": false
+    },
+    {
+      "number": 189,
+      "exists": false
+    },
+    {
+      "number": 190,
+      "exists": false
+    },
+    {
+      "number": 198,
+      "exists": false
+    },
+    {
+      "number": 226,
+      "exists": false
+    },
+    {
+      "number": 227,
+      "exists": false
+    },
+    {
+      "number": 228,
+      "exists": false
+    },
+    {
+      "number": 230,
+      "exists": false
+    },
+    {
+      "number": 240,
+      "exists": false
+    },
+    {
+      "number": 241,
+      "exists": false
+    },
+    {
+      "number": 244,
+      "exists": false
+    },
+    {
+      "number": 245,
+      "exists": false
+    },
+    {
+      "number": 246,
+      "exists": false
+    },
+    {
+      "number": 249,
+      "exists": false
+    },
+    {
+      "number": 250,
+      "exists": false
+    },
+    {
+      "number": 251,
+      "exists": false
+    },
+    {
+      "number": 259,
+      "exists": false
+    },
+    {
+      "number": 261,
+      "exists": false
+    },
+    {
+      "number": 262,
+      "exists": false
+    },
+    {
+      "number": 263,
+      "exists": false
+    },
+    {
+      "number": 264,
+      "exists": false
+    },
+    {
+      "number": 265,
+      "exists": false
+    },
+    {
+      "number": 266,
+      "exists": false
+    },
+    {
+      "number": 267,
+      "exists": false
+    },
+    {
+      "number": 268,
+      "exists": false
+    },
+    {
+      "number": 269,
+      "exists": false
+    },
+    {
+      "number": 270,
+      "exists": false
+    },
+    {
+      "number": 271,
+      "exists": false
+    },
+    {
+      "number": 272,
+      "exists": false
+    },
+    {
+      "number": 273,
+      "exists": false
+    },
+    {
+      "number": 274,
+      "exists": false
+    },
+    {
+      "number": 275,
+      "exists": false
+    },
+    {
+      "number": 276,
+      "exists": false
+    },
+    {
+      "number": 277,
+      "exists": false
+    }
+  ],
+  "orphans": [],
+  "stateMismatches": {
+    "shouldBeClosedInRoadmap": [
+      {
+        "number": 252,
+        "title": "[P0-CRITICAL] Fix package-lock.json inconsistency breaking CI test workflows",
+        "closedAt": "2025-11-21T14:29:06Z"
+      },
+      {
+        "number": 253,
+        "title": "[P1-HIGH] Configure Prettier endOfLine to fix CRLF lint errors in CI",
+        "closedAt": "2025-11-21T17:42:04Z"
+      },
+      {
+        "number": 254,
+        "title": "[P1-HIGH] Add .gitattributes to enforce LF line endings across codebase",
+        "closedAt": "2025-11-21T17:42:04Z"
+      },
+      {
+        "number": 255,
+        "title": "[P1-HIGH] Normalize existing CRLF files to LF in backend",
+        "closedAt": "2025-11-21T17:42:04Z"
+      }
+    ],
+    "shouldBeOpenInRoadmap": []
+  },
+  "velocity": {
+    "last7Days": 45,
+    "perDay": "6.43",
+    "remainingIssues": 60,
+    "projectedDaysToCompletion": "9.3"
+  },
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "Update ROADMAP header: 170 → 161 total, 61 → 60 open, 109 → 101 closed"
+    },
+    {
+      "priority": "P0",
+      "action": "Update M3 progress: 47/51 (92%) → 38/42 (90%)"
+    },
+    {
+      "priority": "P1",
+      "action": "Mark 4 closed issues as [x]: #252, #253, #254, #255"
+    },
+    {
+      "priority": "P0",
+      "action": "Remove 79 phantom issue references from ROADMAP"
+    }
+  ]
+}

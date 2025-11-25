@@ -271,4 +271,49 @@ export class PerplexityService {
       closed: this.circuitBreaker.closed,
     };
   }
+
+  /**
+   * Lightweight health check for Perplexity API availability
+   * Makes a minimal API call to verify connectivity and measure latency
+   * @returns Promise<{ latency: number }> Latency in milliseconds
+   * @throws Error if Perplexity API is unreachable
+   */
+  async ping(): Promise<{ latency: number }> {
+    const start = Date.now();
+
+    try {
+      // Make a minimal API call to check connectivity
+      await axios.post<PerplexityAPIResponse>(
+        this.apiUrl,
+        {
+          model: this.model,
+          messages: [
+            {
+              role: 'user',
+              content: 'ping',
+            },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 5000, // Short timeout for health check
+        },
+      );
+
+      const latency = Date.now() - start;
+      this.logger.debug(`Perplexity ping successful - latency: ${latency}ms`);
+
+      return { latency };
+    } catch (error) {
+      const latency = Date.now() - start;
+      const axiosError = error as AxiosError;
+      this.logger.error(`Perplexity ping failed after ${latency}ms`, {
+        error: axiosError.message,
+      });
+      throw error;
+    }
+  }
 }
