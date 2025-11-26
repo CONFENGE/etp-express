@@ -20,6 +20,14 @@ export interface PerplexityResponse {
   isFallback?: boolean;
 }
 
+export interface FactCheckResult {
+  reference: string;
+  exists: boolean;
+  source: string;
+  description: string;
+  confidence: number;
+}
+
 interface PerplexityAPIResponse {
   choices?: Array<{
     message?: {
@@ -270,6 +278,69 @@ export class PerplexityService {
       halfOpen: this.circuitBreaker.halfOpen,
       closed: this.circuitBreaker.closed,
     };
+  }
+
+  /**
+   * Fact-checks a legal reference using Perplexity AI.
+   * Used as fallback when reference is not found in local RAG database.
+   * @param reference Legal reference object with type, number and year
+   * @returns FactCheckResult with existence status and description
+   */
+  async factCheckLegalReference(reference: {
+    type: string;
+    number: string;
+    year: number;
+  }): Promise<FactCheckResult> {
+    const query = `Verifique se existe a ${reference.type} ${reference.number}/${reference.year} no ordenamento jurídico brasileiro. Responda APENAS:
+
+1. "EXISTE" ou "NÃO EXISTE"
+2. Se existir, forneça uma breve descrição (máximo 100 palavras) sobre do que trata essa norma.
+
+Seja objetivo e preciso.`;
+
+    this.logger.log(
+      `Fact-checking legal reference via Perplexity: ${reference.type} ${reference.number}/${reference.year}`,
+    );
+
+    const response = await this.search(query);
+
+    // If search returned fallback (API unavailable), return low-confidence result
+    if (response.isFallback) {
+      this.logger.warn(
+        `Fact-check unavailable due to fallback for ${reference.type} ${reference.number}/${reference.year}`,
+      );
+      return {
+        reference: `${reference.type} ${reference.number}/${reference.year}`,
+        exists: false,
+        source: 'perplexity',
+        description: 'Erro ao verificar referência via Perplexity',
+        confidence: 0.0,
+      };
+    }
+
+    // Parse response to determine if reference exists
+    const content = response.summary.toLowerCase();
+    const exists =
+      content.includes('existe') &&
+      !content.includes('não existe') &&
+      !content.includes('nao existe');
+
+    // Extract confidence based on existence result
+    const confidence = exists ? 0.7 : 0.8;
+
+    const result: FactCheckResult = {
+      reference: `${reference.type} ${reference.number}/${reference.year}`,
+      exists,
+      source: 'perplexity',
+      description: response.summary,
+      confidence,
+    };
+
+    this.logger.log(
+      `Fact-check completed for ${result.reference}: ${exists ? 'EXISTS' : 'NOT FOUND'} (confidence: ${confidence})`,
+    );
+
+    return result;
   }
 
   /**
