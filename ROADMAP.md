@@ -2,15 +2,16 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 4 (Refactoring & Performance) - 38% (12/31) ⚡ Em progresso
-**Última Atualização:** 2025-11-25
+**Status Atual:** Milestone 3 (Quality & Security) - 94% (52/55) ⚡ Finalizando M3
+**Última Atualização:** 2025-11-26
+- Issue #299 CLOSED ✅ - Security Vulnerability Triage Process (PR #303)
 - Issue #210 CLOSED ✅ - Graceful degradation Perplexity (PR #296 re-merged após hotfix #297)
 - Issue #209 CLOSED ✅ - Health check proativo de provedores externos
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-**Total de Issues:** 174 issues (54 abertas + 120 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~71% - M1 e M2 completos, M3 98%, M4 50%! 🚀
+**Total de Issues:** 174 issues (53 abertas + 121 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~72% - M1 e M2 completos, M3 94%, M4 50%! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 **Status:** ✅ 9/9 PRs merged com sucesso (100% completo)
@@ -58,12 +59,12 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ██████████████████░░ 51/55 (92%)  ⚡ +4 SEC-114 sub-issues (#298-301)
+[M3] Quality & Security           ███████████████████░ 52/55 (94%)  ⚡ #298 ✅, #299 ✅ (SEC-114 sub-issues)
 [M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/32 (50%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 120/174 issues concluídas (69%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% 🔥 | M4 50% 🚀
+TOTAL: 121/174 issues concluídas (70%)  |  M1 100% ✅ | M2 100% ✅ | M3 94% 🔥 | M4 50% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -145,14 +146,16 @@ Acurácia da documentação: 97.6% ✅ (após audit 2025-11-25)
 
 **🎉 CI WORKFLOWS RESTAURADOS!** 4 issues críticas resolvidas em PR #259 (merged 2025-11-21)
 
-### ⚡ M3: Quality & Security (51 fechadas de 52) - 98%
-**Status**: 98% concluído | **1 issue pendente** (#87 - parent issue)
+### ⚡ M3: Quality & Security (52 fechadas de 55) - 94%
+**Status**: 94% concluído | **3 issues pendentes** (#300, #301, #114 - parent issue)
 
 **Segurança e qualidade:**
 - ✅ #14-#17 - Correções useEffect (4 de 4 completas) ✅ **TODAS RESOLVIDAS!**
 - ✅ #38 - Rate limiting por usuário (5 req/min, protege OpenAI API) 🔒 ⭐
 - ✅ #39 - React Router Navigation (window.location → navigate()) ⭐
 - ✅ #85 - Auditoria OWASP Top 10 (2023)
+- ✅ #298 - [SEC-114a] SECURITY.md com Vulnerability Disclosure Policy 🔒 **PR #302 MERGED** ✅
+- ✅ #299 - [SEC-114b] Security Vulnerability Triage Process 🔒 **PR #303 MERGED** ✅ (CLOSED 2025-11-26)
 - ✅ #145 - [SECURITY] Fix HIGH vulnerability in dompurify (via jspdf) 🔒 ⭐ **PR #146 MERGED** ✅
 - ✅ #247 - [SECURITY] Resolver vulnerabilidades HIGH no npm audit 🔒 ⭐ (CLOSED 2025-11-21)
 - ✅ #154 - Secret scanning (Gitleaks + GitHub + CI/CD) 🔒 ⭐
