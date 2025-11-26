@@ -299,6 +299,123 @@ describe('PerplexityService', () => {
     });
   });
 
+  describe('factCheckLegalReference', () => {
+    it('should fact-check reference and return exists=true when found', async () => {
+      const mockResponse = {
+        data: {
+          choices: [
+            {
+              message: {
+                content:
+                  'EXISTE. A Lei 14.133/2021 é a Nova Lei de Licitações e Contratos Administrativos.',
+              },
+            },
+          ],
+          citations: ['https://planalto.gov.br/lei14133'],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await service.factCheckLegalReference({
+        type: 'Lei',
+        number: '14133',
+        year: 2021,
+      });
+
+      expect(result.reference).toBe('Lei 14133/2021');
+      expect(result.exists).toBe(true);
+      expect(result.source).toBe('perplexity');
+      expect(result.confidence).toBe(0.7);
+      expect(result.description).toContain('EXISTE');
+    });
+
+    it('should fact-check reference and return exists=false when not found', async () => {
+      const mockResponse = {
+        data: {
+          choices: [
+            {
+              message: {
+                content: 'NÃO EXISTE. Esta lei não foi encontrada.',
+              },
+            },
+          ],
+          citations: [],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await service.factCheckLegalReference({
+        type: 'Lei',
+        number: '99999',
+        year: 2099,
+      });
+
+      expect(result.reference).toBe('Lei 99999/2099');
+      expect(result.exists).toBe(false);
+      expect(result.source).toBe('perplexity');
+      expect(result.confidence).toBe(0.8);
+      expect(result.description).toContain('NÃO EXISTE');
+    });
+
+    it('should handle search fallback with confidence 0.0', async () => {
+      // Mock circuit breaker open scenario
+      mockedAxios.post.mockRejectedValue(new Error('EOPENBREAKER'));
+
+      const result = await service.factCheckLegalReference({
+        type: 'Portaria',
+        number: '123',
+        year: 2020,
+      });
+
+      expect(result.reference).toBe('Portaria 123/2020');
+      expect(result.exists).toBe(false);
+      expect(result.confidence).toBe(0.0);
+      expect(result.description).toContain('Erro ao verificar');
+    }, 30000);
+
+    it('should format query correctly for fact-checking', async () => {
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'EXISTE' } }],
+          citations: [],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      await service.factCheckLegalReference({
+        type: 'Decreto',
+        number: '10024',
+        year: 2019,
+      });
+
+      const callArgs = mockedAxios.post.mock.calls[0];
+      const userMessage = (callArgs[1] as any).messages[1].content;
+
+      expect(userMessage).toContain('Decreto 10024/2019');
+      expect(userMessage).toContain('EXISTE');
+      expect(userMessage).toContain('NÃO EXISTE');
+      expect(userMessage).toContain('ordenamento jurídico brasileiro');
+    });
+
+    it('should return error result when API throws exception', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('API Error'));
+
+      const result = await service.factCheckLegalReference({
+        type: 'IN',
+        number: '5',
+        year: 2021,
+      });
+
+      expect(result.reference).toBe('IN 5/2021');
+      expect(result.exists).toBe(false);
+      expect(result.confidence).toBe(0.0);
+      expect(result.description).toContain('Erro ao verificar');
+    }, 30000);
+  });
+
   describe('graceful degradation', () => {
     it('should mark successful responses with isFallback: false', async () => {
       const mockResponse = {

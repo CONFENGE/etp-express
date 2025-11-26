@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RAGService, VerificationResult } from '../../rag/rag.service';
 import { LegislationType } from '../../../entities/legislation.entity';
+import { PerplexityService } from '../../search/perplexity/perplexity.service';
 
 export interface LegalReference {
   type: LegislationType;
@@ -27,7 +28,10 @@ export interface HallucinationCheckResult {
 export class AntiHallucinationAgent {
   private readonly logger = new Logger(AntiHallucinationAgent.name);
 
-  constructor(private readonly ragService: RAGService) {}
+  constructor(
+    private readonly ragService: RAGService,
+    private readonly perplexityService: PerplexityService,
+  ) {}
 
   private readonly suspiciousPatterns = [
     {
@@ -112,7 +116,8 @@ export class AntiHallucinationAgent {
   }
 
   /**
-   * Verify legal references using RAG service.
+   * Verify legal references using RAG service with Perplexity fallback.
+   * First attempts local RAG verification, then falls back to Perplexity for external fact-checking.
    * Returns verification results for each reference found.
    */
   private async verifyReferences(
@@ -121,13 +126,59 @@ export class AntiHallucinationAgent {
     const verifications = await Promise.all(
       references.map(async (ref) => {
         try {
-          return await this.ragService.verifyReference(
+          // 1. First, try local RAG verification (fast)
+          const localResult = await this.ragService.verifyReference(
             ref.type,
             ref.number,
             ref.year,
           );
+
+          // 2. If found locally, return local result with high confidence
+          if (localResult.exists) {
+            this.logger.debug('Reference verified locally', {
+              reference: ref.raw,
+            });
+            return { ...localResult, source: 'local' };
+          }
+
+          // 3. If not found locally, fact-check via Perplexity (slower, fallback)
+          this.logger.log(
+            'Reference not found locally, attempting fact-check via Perplexity',
+            { reference: ref.raw },
+          );
+
+          const externalResult =
+            await this.perplexityService.factCheckLegalReference({
+              type: ref.type,
+              number: ref.number,
+              year: ref.year,
+            });
+
+          // 4. If found externally, suggest adding to local DB
+          if (externalResult.exists) {
+            this.logger.log(
+              'Reference found externally via Perplexity - consider adding to local database',
+              {
+                reference: ref.raw,
+                description: externalResult.description,
+              },
+            );
+          }
+
+          // Convert PerplexityService.FactCheckResult to RAGService.VerificationResult
+          // Preserve RAG suggestion if it exists, otherwise use Perplexity description
+          return {
+            reference: externalResult.reference,
+            exists: externalResult.exists,
+            confidence: externalResult.confidence,
+            suggestion:
+              localResult.suggestion ||
+              (externalResult.exists
+                ? undefined
+                : `Referência não encontrada em verificação externa. Descrição: ${externalResult.description}`),
+          };
         } catch (error: unknown) {
-          this.logger.error('Failed to verify reference', {
+          this.logger.error('Failed to verify reference (local and external)', {
             error: error instanceof Error ? error.message : String(error),
             reference: ref.raw,
           });

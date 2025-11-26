@@ -1,15 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntiHallucinationAgent } from './anti-hallucination.agent';
 import { RAGService } from '../../rag/rag.service';
+import { PerplexityService } from '../../search/perplexity/perplexity.service';
 import { LegislationType } from '../../../entities/legislation.entity';
 
 describe('AntiHallucinationAgent', () => {
   let agent: AntiHallucinationAgent;
   let ragService: RAGService;
+  let perplexityService: PerplexityService;
 
   // Mock RAG Service
   const mockRagService = {
     verifyReference: jest.fn(),
+  };
+
+  // Mock Perplexity Service
+  const mockPerplexityService = {
+    factCheckLegalReference: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -20,11 +27,16 @@ describe('AntiHallucinationAgent', () => {
           provide: RAGService,
           useValue: mockRagService,
         },
+        {
+          provide: PerplexityService,
+          useValue: mockPerplexityService,
+        },
       ],
     }).compile();
 
     agent = module.get<AntiHallucinationAgent>(AntiHallucinationAgent);
     ragService = module.get<RAGService>(RAGService);
+    perplexityService = module.get<PerplexityService>(PerplexityService);
 
     // Reset mocks
     jest.clearAllMocks();
@@ -476,7 +488,7 @@ describe('AntiHallucinationAgent', () => {
     it('deve fornecer sugestão quando referência similar é encontrada', async () => {
       const content = 'A Lei 14.133/2020 estabelece...';
 
-      // Mock: Lei 14.133/2020 não existe, mas 14.133/2021 existe (sugestão)
+      // Mock: Lei 14.133/2020 não existe no RAG, mas sugestão de 14.133/2021
       mockRagService.verifyReference.mockResolvedValue({
         reference: 'lei 14133/2020',
         exists: false,
@@ -484,9 +496,18 @@ describe('AntiHallucinationAgent', () => {
         suggestion: 'Você quis dizer Lei 14.133/2021? (95% similar)',
       });
 
+      // Mock: Perplexity fact-check também não encontra (fallback após RAG)
+      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        reference: 'Lei 14133/2020',
+        exists: false,
+        source: 'perplexity',
+        description: 'NÃO EXISTE. Lei não encontrada.',
+        confidence: 0.8,
+      });
+
       const result = await agent.check(content);
 
-      // Deve ter sugestão
+      // Deve ter sugestão do RAG
       expect(result.suggestions).toBeDefined();
       expect(result.suggestions?.length).toBeGreaterThan(0);
       expect(result.suggestions?.[0]).toContain('14.133/2021');
