@@ -9,7 +9,7 @@
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-**Total de Issues:** 170 issues (50 abertas + 120 fechadas) organizadas em 6 milestones
+**Total de Issues:** 174 issues (54 abertas + 120 fechadas) organizadas em 6 milestones
 **Prontidão para Produção:** ~71% - M1 e M2 completos, M3 98%, M4 50%! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
@@ -36,7 +36,7 @@
 
 📄 Detalhes completos em [DEPENDABOT_PR_ANALYSIS.md](DEPENDABOT_PR_ANALYSIS.md)
 
-> 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_REPORT.md)** - Auditoria completa realizada em 2025-11-21 (85% → 98% após correções)
+> 📋 **[Relatório de Auditoria](ROADMAP_AUDIT_2025-11-25.md)** - Auditoria completa realizada em 2025-11-25 (97.6% → 99.5% após correções P0)
 
 ### 🔴 Quesitos Críticos de Arquitetura (23 novas issues)
 
@@ -58,12 +58,12 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████████████░ 51/52 (98%)  ⚡ 1 issue pendente
+[M3] Quality & Security           ██████████████████░░ 51/55 (92%)  ⚡ +4 SEC-114 sub-issues (#298-301)
 [M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/32 (50%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 120/170 issues concluídas (71%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% 🔥 | M4 50% 🚀
+TOTAL: 120/174 issues concluídas (69%)  |  M1 100% ✅ | M2 100% ✅ | M3 92% 🔥 | M4 50% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -73,24 +73,24 @@ Sub-issues atômicas (desmembradas):
 
 ## 📊 Métricas de Velocidade
 
-**Auditoria realizada em:** 2025-11-21
+**Auditoria realizada em:** 2025-11-25
 
 ```
 Última semana (7 dias):
-├─ Issues fechadas: 57 issues
-├─ Velocidade média: 8.1 issues/dia 🚀
-└─ Tendência: ACELERANDO (162% acima da meta de 5/dia)
+├─ Issues fechadas: 47 issues
+├─ Velocidade média: 6.7 issues/dia 🚀
+└─ Tendência: FORTE (134% acima da meta de 5/dia)
 
 Projeções:
-├─ Issues restantes: 64 (38%)
+├─ Issues restantes: 54 (31%)
 ├─ Dias para conclusão: ~8 dias
-└─ Data estimada: 2025-11-29
+└─ Data estimada: 2025-12-04
 
-Progresso geral: 118/170 (69%)
-Acurácia da documentação: 100% ✅ (após audit 2025-11-24)
+Progresso geral: 120/174 (69%)
+Acurácia da documentação: 97.6% ✅ (após audit 2025-11-25)
 ```
 
-**🎉 Performance Excepcional!** O projeto está 3 semanas à frente do cronograma original graças à velocidade consistente de 7.9 issues/dia.
+**🎉 Performance Excepcional!** O projeto está 2-3 semanas à frente do cronograma original graças à velocidade consistente de 6.7 issues/dia.
 
 ---
 
@@ -383,7 +383,7 @@ A PR #296 foi inicialmente merged mas revertida devido à falta do componente Al
 | #86 sub-issues | 4/9 | 5/9 |
 | #265 status | In Progress | CLOSED ✅ |
 
-**8 Issues Ainda ABERTAS em M3:**
+**12 Issues Ainda ABERTAS em M3:**
 1. #86 - LGPD Audit (parent - 5/9 sub-issues done)
 2. #87 - Security remediations
 3. #113 - LGPD Data Export/Deletion (parent - **7/7 done, PRONTO FECHAR!**)
@@ -392,18 +392,23 @@ A PR #296 foi inicialmente merged mas revertida devido à falta do componente Al
 6. #267 - Privacy policy & terms
 7. #268 - Anonymization/pseudonymization
 8. #269 - LGPD final report
+9. #298 - [SEC-114a] Criar SECURITY.md com Vulnerability Disclosure Policy ✅ (CLOSED 2025-11-26)
+10. #299 - [SEC-114b] Documentar processo de triage de vulnerabilidades
+11. #300 - [SEC-114c] Criar guia de Security Awareness para o time
+12. #301 - [SEC-114d] Documentar vendor research e RFP para pentest
 
 **Métricas de Velocidade (Atualizadas):**
-- 57 issues fechadas nos últimos 7 dias
-- Velocidade: 8.1 issues/dia (162% da meta)
-- ETA: 2025-11-29 (~8 dias)
+- 47 issues fechadas nos últimos 7 dias
+- Velocidade: 6.7 issues/dia (134% da meta)
+- ETA: 2025-12-04 (~8 dias)
 
 **Ações Recomendadas:**
 - [ ] Fechar #113 no GitHub (todas sub-issues completas)
 - [ ] Decidir sobre #86, #87, #114 (fechar ou mover para M6)
 - [ ] Completar #266-#269 para finalizar M3
+- [x] Adicionar #298-#301 (SEC-114 sub-issues) ao M3 ✅ (2025-11-25)
 
-**Acurácia:** 85% → **98%** após correções ✅
+**Acurácia:** 85% → **97.6%** após audit 2025-11-25 ✅
 
 ---
 
