@@ -484,6 +484,155 @@ export class AntiHallucinationAgent {
     };
   }
 
+  /**
+   * Enhanced hallucination check with detailed categorization.
+   * Returns comprehensive analysis with separate scores for legal references,
+   * factual claims, and prohibited phrases.
+   */
+  async checkEnhanced(
+    content: string,
+    _context?: unknown,
+  ): Promise<EnhancedHallucinationCheckResult> {
+    this.logger.log('Running enhanced hallucination check with categorization');
+
+    // Extract and verify legal references
+    const legalReferences = this.extractLegalReferences(content);
+    const verifications = await this.verifyReferences(legalReferences);
+
+    // Calculate legal references score (weighted)
+    const legalReferencesScore = this.calculateScore(
+      verifications,
+      legalReferences,
+    );
+    const verifiedCount = verifications.filter((v) => v.exists).length;
+
+    // Build detailed reference verification results
+    const referenceDetails: ReferenceVerification[] = verifications.map(
+      (v) => ({
+        reference: v.reference,
+        verified: v.exists,
+        confidence: v.confidence || 0,
+        suggestion: v.suggestion,
+      }),
+    );
+
+    // Check for prohibited phrases
+    const prohibitedFound: string[] = [];
+    this.prohibitedClaims.forEach((claim) => {
+      const regex = new RegExp(claim, 'gi');
+      const matches = content.match(regex);
+      if (matches && matches.length > 0) {
+        prohibitedFound.push(...matches.map((m) => m));
+      }
+    });
+
+    // Prohibited phrases score (100 if none, decreasing by 10 per phrase)
+    const prohibitedPhrasesScore = Math.max(
+      0,
+      100 - prohibitedFound.length * 10,
+    );
+
+    // Check for factual claims (numbers without sources)
+    const factualWarnings: string[] = [];
+    const hasSpecificNumbers =
+      /\d+%|\d+\s*milhões?|\d+\s*bilhões?|\d+\s*vezes/gi.test(content);
+    const hasSources = /fonte:|referência:|conforme|segundo/gi.test(content);
+
+    if (hasSpecificNumbers && !hasSources) {
+      factualWarnings.push(
+        'Dados numéricos específicos detectados sem citação de fonte',
+      );
+    }
+
+    // Factual claims score (100 if no warnings, 70 if has warnings)
+    const factualClaimsScore = factualWarnings.length > 0 ? 70 : 100;
+
+    // Calculate overall score (weighted average)
+    const categoryWeights = {
+      legalReferences: 0.5, // 50% weight (most important)
+      factualClaims: 0.3, // 30% weight
+      prohibitedPhrases: 0.2, // 20% weight
+    };
+
+    const overallScore =
+      legalReferencesScore * categoryWeights.legalReferences +
+      factualClaimsScore * categoryWeights.factualClaims +
+      prohibitedPhrasesScore * categoryWeights.prohibitedPhrases;
+
+    // Get configurable threshold from environment
+    const threshold = this.configService.get<number>(
+      'HALLUCINATION_THRESHOLD',
+      70,
+    );
+    const overallVerified = overallScore >= threshold;
+
+    // Generate specific recommendations by category
+    const recommendations: string[] = [];
+
+    // Legal references recommendations
+    if (legalReferencesScore < 80) {
+      recommendations.push(
+        `Apenas ${verifiedCount}/${legalReferences.length} referências legais foram verificadas. Revise as referências não verificadas.`,
+      );
+    }
+    verifications.forEach((v) => {
+      if (!v.exists && v.suggestion) {
+        recommendations.push(v.suggestion);
+      } else if (!v.exists) {
+        recommendations.push(
+          `Verificar veracidade da referência: "${v.reference}"`,
+        );
+      }
+    });
+
+    // Factual claims recommendations
+    if (factualWarnings.length > 0) {
+      recommendations.push(
+        'Adicione fontes para dados numéricos específicos mencionados',
+      );
+    }
+
+    // Prohibited phrases recommendations
+    if (prohibitedFound.length > 0) {
+      recommendations.push(
+        `Remova ou substitua frases categóricas: ${prohibitedFound.slice(0, 3).join(', ')}${prohibitedFound.length > 3 ? '...' : ''}`,
+      );
+    }
+
+    // General recommendation if score is low
+    if (overallScore < threshold) {
+      recommendations.push(
+        `Score geral (${overallScore.toFixed(1)}%) está abaixo do threshold (${threshold}%). Revise o conteúdo antes de usar.`,
+      );
+    }
+
+    this.logger.log(
+      `Enhanced check completed. Overall: ${overallScore.toFixed(1)}%, Legal: ${legalReferencesScore.toFixed(1)}%, Factual: ${factualClaimsScore}%, Prohibited: ${prohibitedPhrasesScore}%, Verified: ${overallVerified}`,
+    );
+
+    return {
+      overallScore: Math.round(overallScore * 10) / 10, // Round to 1 decimal
+      overallVerified,
+      categories: {
+        legalReferences: {
+          score: Math.round(legalReferencesScore * 10) / 10,
+          total: legalReferences.length,
+          verified: verifiedCount,
+          details: referenceDetails,
+        },
+        factualClaims: {
+          score: factualClaimsScore,
+          warnings: factualWarnings,
+        },
+        prohibitedPhrases: {
+          score: prohibitedPhrasesScore,
+          found: prohibitedFound,
+        },
+      },
+      recommendations: [...new Set(recommendations)], // Remove duplicates
+    };
+  }
+
   async generateSafetyPrompt(): Promise<string> {
     return `IMPORTANTE - DIRETRIZES DE SEGURANÇA:
 

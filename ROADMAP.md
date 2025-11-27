@@ -5,6 +5,12 @@
 **Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
 **Última Atualização:** 2025-11-27
 
+- Issue #214 CLOSED ✅ - Melhorar scoring do AntiHallucinationAgent (PR #312)
+  - ✅ Implementado método checkEnhanced() com categorização detalhada
+  - ✅ Score ponderado por categoria: 50% legal + 30% factual + 20% prohibited
+  - ✅ Recomendações específicas por tipo de problema (legal, factual, prohibited)
+  - ✅ 12 novos testes implementados (72/72 testes passando)
+  - ✅ **M4 (Refactoring & Performance): 55% → 58% (18/31 issues)**
 - Issue #29 CLOSED ✅ - Corrigir duplicação de localStorage em authStore (PR #311)
   - ✅ Removidas chamadas manuais a localStorage em login/register/logout
   - ✅ Single source of truth via zustand persist middleware
@@ -85,11 +91,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    █████████░░░░░░░░░░░ 17/31 (55%)  ⚡ +1 CLOSED: #29
+[M4] Refactoring & Performance    ███████████░░░░░░░░░ 18/31 (58%)  ⚡ +1 CLOSED: #214
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 130/174 issues concluídas (75%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 55% 🚀
+TOTAL: 131/174 issues concluídas (75%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 58% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
