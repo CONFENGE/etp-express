@@ -39,9 +39,6 @@ export const useAuthStore = create<AuthState>()(
             credentials,
           );
 
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
-
           set({
             user: response.user,
             token: response.token,
@@ -69,9 +66,6 @@ export const useAuthStore = create<AuthState>()(
             data,
           );
 
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
-
           set({
             user: response.user,
             token: response.token,
@@ -92,8 +86,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
         set({
           user: null,
           token: null,
