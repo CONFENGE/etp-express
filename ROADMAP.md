@@ -2,9 +2,13 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 100% (57/57) 🎉 M3 COMPLETO! M2 quase completo (94%)
+**Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
 **Última Atualização:** 2025-11-27
 
+- Issue #257 CLOSED ✅ - Add CI workflow validation for package-lock.json consistency (PR #310)
+  - ✅ Workflow detecta lockfile desatualizado antes dos testes
+  - ✅ Previne repetição de Issue #252
+  - ✅ **M2 (CI/CD Pipeline): 94% → 100% (18/18 issues) 🎉 COMPLETO!**
 - Issue #256 CLOSED ✅ - Add pre-commit hook to validate line endings (PR #309)
   - ✅ Husky + lint-staged configurado para bloquear commits com CRLF
   - ✅ Feedback imediato antes do commit (não no CI)
@@ -21,8 +25,8 @@
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-  **Total de Issues:** 174 issues (46 abertas + 128 fechadas) organizadas em 6 milestones
-  **Prontidão para Produção:** ~76% - M1 completo (100%), M2 quase completo (94%), M3 completo (100%), M4 em progresso (52%)! 🚀
+  **Total de Issues:** 174 issues (45 abertas + 129 fechadas) organizadas em 6 milestones
+  **Prontidão para Produção:** ~77% - **M1 completo (100%), M2 COMPLETO (100%), M3 completo (100%)**, M4 em progresso (52%)! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 
@@ -74,13 +78,13 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ███████████████████░ 17/18 (94%)  ⚡ 1 issue P2-MEDIUM (#257)
+[M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO! +1 CLOSED: #257
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
 [M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/31 (52%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 128/174 issues concluídas (74%)  |  M1 100% ✅ | M2 94% 🔥 | M3 100% ✅ | M4 52% 🚀
+TOTAL: 129/174 issues concluídas (74%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 52% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -100,11 +104,11 @@ Sub-issues atômicas (desmembradas):
 └─ Tendência: FORTE (126% acima da meta de 5/dia)
 
 Projeções:
-├─ Issues restantes: 46 (26%)
+├─ Issues restantes: 45 (26%)
 ├─ Dias para conclusão: ~7 dias
 └─ Data estimada: 2025-12-04
 
-Progresso geral: 128/174 (74%)
+Progresso geral: 129/174 (74%)
 Acurácia da documentação: 95.4% ✅ (após audit 2025-11-26)
 ```
 
@@ -112,7 +116,43 @@ Acurácia da documentação: 95.4% ✅ (após audit 2025-11-26)
 
 ---
 
-## 🎉 Progresso Realizado (106 issues fechadas)
+## 📅 Histórico de Atualizações
+
+### 2025-11-27 (Atualização - PR #310 Merged - M2 100% COMPLETO!) 🎉✅
+
+- ✅ **MARCO**: **M2: CI/CD Pipeline - 100% COMPLETO!** (18/18 issues)
+- ✅ **PROGRESSO**: 128 issues fechadas → **129 issues fechadas** (74%)
+- ✅ **M2 CI/CD Pipeline**: 94% → **100%** (+6 p.p.) - Issue #257 concluída
+- ✅ **PR #310 merged**: https://github.com/tjsasakifln/etp-express/pull/310
+
+**O que foi implementado (#257):**
+
+- ✅ **Workflow validate-lockfile.yml** (40 linhas):
+  - Detecta package-lock.json desatualizado **antes** dos testes
+  - Executa em push/PR para branch master
+  - Falha com mensagem clara se lockfile não estiver sincronizado
+  - Economiza ~1-2min de CI por run (detecção precoce)
+- ✅ **Validação completa**:
+  - 8/8 CI checks passaram (validate-lockfile: 58s)
+  - Prettier formatting aplicado
+  - Pre-commit hooks validados
+  - Teste local (npm ci + npm install --package-lock-only) OK
+
+**Benefícios Implementados:**
+
+- ✅ **Prevenção**: Evita repetição de Issue #252 (lockfile divergence)
+- ✅ **Feedback rápido**: Detecta problema antes de testes falharem
+- ✅ **Developer Experience**: Mensagem clara sobre como corrigir
+
+**Impacto Estratégico:**
+
+🎉 **MILESTONE M2 FINALIZADO!** Todos os 3 primeiros milestones (M1, M2, M3) agora estão 100% completos!
+
+**M2 Progress:** 94% → **100%** (+6 p.p.) 🎉 **COMPLETO!**
+
+---
+
+## 🎉 Progresso Realizado (129 issues fechadas)
 
 ### ✅ M1: Foundation - Testes (35 fechadas de 35) 🎉
 
