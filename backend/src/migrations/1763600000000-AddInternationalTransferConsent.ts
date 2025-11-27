@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddInternationalTransferConsent1763600000000
-  implements MigrationInterface
-{
+export class AddInternationalTransferConsent1763600000000 implements MigrationInterface {
   name = 'AddInternationalTransferConsent1763600000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
