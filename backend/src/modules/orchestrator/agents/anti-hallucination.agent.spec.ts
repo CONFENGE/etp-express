@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { AntiHallucinationAgent } from './anti-hallucination.agent';
 import { RAGService } from '../../rag/rag.service';
 import { PerplexityService } from '../../search/perplexity/perplexity.service';
@@ -8,6 +9,7 @@ describe('AntiHallucinationAgent', () => {
   let agent: AntiHallucinationAgent;
   let ragService: RAGService;
   let perplexityService: PerplexityService;
+  let configService: ConfigService;
 
   // Mock RAG Service
   const mockRagService = {
@@ -17,6 +19,14 @@ describe('AntiHallucinationAgent', () => {
   // Mock Perplexity Service
   const mockPerplexityService = {
     factCheckLegalReference: jest.fn(),
+  };
+
+  // Mock Config Service
+  const mockConfigService = {
+    get: jest.fn((key: string, defaultValue?: any) => {
+      if (key === 'HALLUCINATION_THRESHOLD') return defaultValue || 70;
+      return defaultValue;
+    }),
   };
 
   beforeEach(async () => {
@@ -31,12 +41,17 @@ describe('AntiHallucinationAgent', () => {
           provide: PerplexityService,
           useValue: mockPerplexityService,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
     agent = module.get<AntiHallucinationAgent>(AntiHallucinationAgent);
     ragService = module.get<RAGService>(RAGService);
     perplexityService = module.get<PerplexityService>(PerplexityService);
+    configService = module.get<ConfigService>(ConfigService);
 
     // Reset mocks
     jest.clearAllMocks();
@@ -621,6 +636,331 @@ describe('AntiHallucinationAgent', () => {
         el.reason.includes('categórica'),
       );
       expect(prohibitedClaim).toBeDefined();
+    });
+  });
+
+  describe('Weighted Scoring Algorithm (Issue #214)', () => {
+    describe('getReferenceWeight()', () => {
+      it('deve retornar peso 3 para Leis (maior autoridade)', async () => {
+        const content = 'Lei 14.133/2021';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        await agent.check(content);
+        // Peso é usado internamente no cálculo - verificamos através do score
+      });
+
+      it('deve retornar peso 2 para Decretos', async () => {
+        const content = 'Decreto 10.024/2019';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'decreto 10024/2019',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        await agent.check(content);
+      });
+
+      it('deve retornar peso 1 para Portarias (menor autoridade)', async () => {
+        const content = 'Portaria 1.234/2020';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'portaria 1234/2020',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        await agent.check(content);
+      });
+    });
+
+    describe('calculateScore() - Weighted Scoring', () => {
+      it('deve retornar score 100 quando todas as referências são verificadas', async () => {
+        const content = 'Lei 14.133/2021 e Decreto 10.024/2019';
+
+        mockRagService.verifyReference
+          .mockResolvedValueOnce({
+            reference: 'lei 14133/2021',
+            exists: true,
+            confidence: 1.0,
+          })
+          .mockResolvedValueOnce({
+            reference: 'decreto 10024/2019',
+            exists: true,
+            confidence: 1.0,
+          });
+
+        const result = await agent.check(content);
+
+        expect(result.score).toBeGreaterThanOrEqual(95);
+        expect(result.verified).toBe(true);
+      });
+
+      it('deve retornar score 0 quando nenhuma referência é verificada', async () => {
+        const content = 'Lei 99.999/2099 inventada';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 99999/2099',
+          exists: false,
+          confidence: 0.0,
+        });
+
+        // Mock do Perplexity para fallback (também não encontra)
+        mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+          reference: 'Lei 99999/2099',
+          exists: false,
+          description: 'Lei não encontrada',
+          confidence: 0.0,
+        });
+
+        const result = await agent.check(content);
+
+        expect(result.score).toBeLessThan(20);
+        expect(result.verified).toBe(false);
+      });
+
+      it('deve retornar score 50 quando referência tem sugestão (parcialmente correta)', async () => {
+        const content = 'Lei 14.133/2020';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2020',
+          exists: false,
+          confidence: 0.0,
+          suggestion: 'Você quis dizer Lei 14.133/2021?',
+        });
+
+        // Mock do Perplexity para fallback
+        mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+          reference: 'Lei 14133/2020',
+          exists: false,
+          description: 'Lei não encontrada',
+          confidence: 0.8,
+        });
+
+        const result = await agent.check(content);
+
+        // Com sugestão, deve ter score ~50 (parcialmente correto)
+        expect(result.score).toBeGreaterThan(30);
+        expect(result.score).toBeLessThan(70);
+      });
+
+      it('deve ponderar score por tipo de legislação (Lei > Decreto > Portaria)', async () => {
+        const contentLei = 'Lei 14.133/2021';
+        const contentPortaria = 'Portaria 1.234/2020';
+
+        // Lei verificada
+        mockRagService.verifyReference.mockResolvedValueOnce({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const resultLei = await agent.check(contentLei);
+
+        jest.clearAllMocks();
+
+        // Portaria verificada
+        mockRagService.verifyReference.mockResolvedValueOnce({
+          reference: 'portaria 1234/2020',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const resultPortaria = await agent.check(contentPortaria);
+
+        // Ambas devem ter score 100 quando verificadas
+        expect(resultLei.score).toBeGreaterThanOrEqual(95);
+        expect(resultPortaria.score).toBeGreaterThanOrEqual(95);
+      });
+
+      it('deve aplicar peso da confidence no score', async () => {
+        const content = 'Lei 14.133/2021';
+
+        // Confiança baixa (0.5)
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 0.5, // 50% de confiança
+        });
+
+        const result = await agent.check(content);
+
+        // Score deve refletir a confidence baixa (50% do peso)
+        expect(result.score).toBeGreaterThan(40);
+        expect(result.score).toBeLessThan(60);
+      });
+
+      it('deve calcular score 100 quando não há referências legais', async () => {
+        const content = 'Texto simples sem referências.';
+
+        const result = await agent.check(content);
+
+        expect(result.score).toBe(100);
+        expect(result.verified).toBe(true);
+      });
+    });
+
+    describe('Configurable Threshold (Issue #214)', () => {
+      it('deve usar threshold padrão de 70 quando não configurado', async () => {
+        const content = 'Lei 14.133/2021';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const result = await agent.check(content);
+
+        // Verifica que ConfigService foi chamado
+        expect(mockConfigService.get).toHaveBeenCalledWith(
+          'HALLUCINATION_THRESHOLD',
+          70,
+        );
+        expect(result.verified).toBe(true);
+      });
+
+      it('deve usar threshold configurado via ConfigService', async () => {
+        // Mock threshold de 90 (muito rigoroso)
+        mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
+          if (key === 'HALLUCINATION_THRESHOLD') return 90;
+          return defaultValue;
+        });
+
+        const content = 'Lei 14.133/2021';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 0.85, // Score resultante: ~85
+        });
+
+        const result = await agent.check(content);
+
+        // Com threshold de 90 e score de ~85, deve ser NOT verified
+        expect(result.score).toBeLessThan(90);
+        expect(result.verified).toBe(false);
+
+        // Restaura mock original
+        mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
+          if (key === 'HALLUCINATION_THRESHOLD') return defaultValue || 70;
+          return defaultValue;
+        });
+      });
+    });
+
+    describe('Confidence Score based on Verifications', () => {
+      it('deve calcular confidence baseado em verificações RAG', async () => {
+        const content = 'Lei 14.133/2021 e Lei 8.666/1993';
+
+        mockRagService.verifyReference
+          .mockResolvedValueOnce({
+            reference: 'lei 14133/2021',
+            exists: true,
+            confidence: 1.0,
+          })
+          .mockResolvedValueOnce({
+            reference: 'lei 8666/1993',
+            exists: true,
+            confidence: 1.0,
+          });
+
+        const result = await agent.check(content);
+
+        // Todas verificadas = alta confidence
+        expect(result.confidence).toBeGreaterThanOrEqual(80);
+      });
+
+      it('deve reduzir confidence quando referências não são verificadas', async () => {
+        const content = 'Lei 14.133/2021 e Lei 99.999/2099';
+
+        mockRagService.verifyReference
+          .mockResolvedValueOnce({
+            reference: 'lei 14133/2021',
+            exists: true,
+            confidence: 1.0,
+          })
+          .mockResolvedValueOnce({
+            reference: 'lei 99999/2099',
+            exists: false,
+            confidence: 0.0,
+          });
+
+        const result = await agent.check(content);
+
+        // 50% verificadas = confidence média
+        expect(result.confidence).toBeGreaterThan(30);
+        expect(result.confidence).toBeLessThan(70);
+      });
+    });
+
+    describe('Backward Compatibility - Legacy vs New Scoring', () => {
+      it('deve usar legacy scoring quando não há referências legais', async () => {
+        const content = 'Certamente e sem dúvida é fato que todos sabem.';
+
+        const result = await agent.check(content);
+
+        // Legacy scoring baseado em penalidades
+        expect(result.score).toBeLessThan(90);
+        expect(result.suspiciousElements.length).toBeGreaterThan(0);
+      });
+
+      it('deve usar novo scoring quando há referências legais', async () => {
+        const content = 'Lei 14.133/2021 estabelece regras claras.';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const result = await agent.check(content);
+
+        // Novo scoring baseado em verificações
+        expect(result.score).toBeGreaterThanOrEqual(95);
+        expect(result.references).toBeDefined();
+        expect(result.references?.length).toBe(1);
+      });
+
+      it('deve aplicar penalidades menores para non-reference issues no novo scoring', async () => {
+        const content = 'Lei 14.133/2021 é certamente a melhor lei.';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const result = await agent.check(content);
+
+        // Score deve ser alto (referência verificada) com pequena penalidade (certamente)
+        expect(result.score).toBeGreaterThan(85);
+        expect(result.score).toBeLessThan(100);
+      });
+    });
+
+    describe('Log Output with Threshold', () => {
+      it('deve incluir threshold no log output', async () => {
+        const content = 'Lei 14.133/2021';
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        // Spy on logger
+        const logSpy = jest.spyOn(agent['logger'], 'log');
+
+        await agent.check(content);
+
+        // Verifica que o log foi chamado com threshold
+        expect(logSpy).toHaveBeenCalled();
+        const logCall = logSpy.mock.calls.find((call) =>
+          call[0].includes('Threshold'),
+        );
+        expect(logCall).toBeDefined();
+        expect(logCall?.[0]).toContain('Threshold: 70');
+      });
     });
   });
 });

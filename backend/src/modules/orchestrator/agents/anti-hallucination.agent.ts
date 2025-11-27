@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RAGService, VerificationResult } from '../../rag/rag.service';
 import { LegislationType } from '../../../entities/legislation.entity';
 import { PerplexityService } from '../../search/perplexity/perplexity.service';
@@ -10,6 +11,38 @@ export interface LegalReference {
   raw: string; // Original text matched
 }
 
+export interface ReferenceVerification {
+  reference: string;
+  verified: boolean;
+  confidence: number;
+  suggestion?: string;
+}
+
+export interface EnhancedHallucinationCheckResult {
+  overallScore: number; // 0-100
+  overallVerified: boolean; // score >= threshold
+
+  categories: {
+    legalReferences: {
+      score: number;
+      total: number;
+      verified: number;
+      details: ReferenceVerification[];
+    };
+    factualClaims: {
+      score: number;
+      warnings: string[];
+    };
+    prohibitedPhrases: {
+      score: number;
+      found: string[];
+    };
+  };
+
+  recommendations: string[];
+}
+
+// Legacy interface - maintained for backward compatibility
 export interface HallucinationCheckResult {
   score: number;
   confidence: number;
@@ -31,6 +64,7 @@ export class AntiHallucinationAgent {
   constructor(
     private readonly ragService: RAGService,
     private readonly perplexityService: PerplexityService,
+    private readonly configService: ConfigService,
   ) {}
 
   private readonly suspiciousPatterns = [
@@ -166,16 +200,12 @@ export class AntiHallucinationAgent {
           }
 
           // Convert PerplexityService.FactCheckResult to RAGService.VerificationResult
-          // Preserve RAG suggestion if it exists, otherwise use Perplexity description
+          // Only preserve RAG suggestion if it exists (don't treat Perplexity "not found" as suggestion)
           return {
             reference: externalResult.reference,
             exists: externalResult.exists,
             confidence: externalResult.confidence,
-            suggestion:
-              localResult.suggestion ||
-              (externalResult.exists
-                ? undefined
-                : `Referência não encontrada em verificação externa. Descrição: ${externalResult.description}`),
+            suggestion: localResult.suggestion, // Only use RAG suggestion, not external "not found"
           };
         } catch (error: unknown) {
           this.logger.error('Failed to verify reference (local and external)', {
@@ -212,6 +242,60 @@ export class AntiHallucinationAgent {
     });
 
     return suggestions;
+  }
+
+  /**
+   * Get weight for a legal reference based on its type.
+   * Higher weights for more authoritative legislation (Leis > Decretos > Portarias).
+   */
+  private getReferenceWeight(reference: LegalReference): number {
+    const weights: Record<LegislationType, number> = {
+      [LegislationType.LEI]: 3,
+      [LegislationType.DECRETO]: 2,
+      [LegislationType.PORTARIA]: 1,
+      [LegislationType.INSTRUCAO_NORMATIVA]: 1,
+      [LegislationType.RESOLUCAO]: 1,
+      [LegislationType.MEDIDA_PROVISORIA]: 2,
+    };
+    return weights[reference.type] || 1;
+  }
+
+  /**
+   * Calculate weighted score based on RAG verification results.
+   * Returns 0-100 score where:
+   * - 100 = all references verified with high confidence
+   * - 50 = partially correct references (suggestions exist)
+   * - 0 = no references verified
+   */
+  private calculateScore(
+    verifications: VerificationResult[],
+    references: LegalReference[],
+  ): number {
+    if (verifications.length === 0) return 100; // No references to verify = perfect score
+
+    let totalWeight = 0;
+    let weightedScore = 0;
+
+    for (let i = 0; i < verifications.length; i++) {
+      const verification = verifications[i];
+      const reference = references[i]; // Assumes same order
+
+      if (!reference) continue; // Safety check
+
+      const weight = this.getReferenceWeight(reference);
+      totalWeight += weight;
+
+      if (verification.exists) {
+        // Verified reference: full score weighted by confidence
+        weightedScore += weight * (verification.confidence || 1.0);
+      } else if (verification.suggestion) {
+        // Partially correct (e.g., right law, wrong article): 50% score
+        weightedScore += weight * 0.5;
+      }
+      // If not exists and no suggestion: 0 points
+    }
+
+    return totalWeight > 0 ? (weightedScore / totalWeight) * 100 : 0;
   }
 
   async check(
@@ -320,27 +404,70 @@ export class AntiHallucinationAgent {
       );
     }
 
-    // Calculate confidence score
-    const highSeverityCount = suspiciousElements.filter(
-      (e) => e.severity === 'high',
-    ).length;
-    const mediumSeverityCount = suspiciousElements.filter(
-      (e) => e.severity === 'medium',
-    ).length;
+    // **NEW: Calculate score based on RAG verification results (weighted scoring)**
+    // If there are legal references, use weighted scoring based on verification
+    // Otherwise, fall back to legacy heuristic scoring
+    let score: number;
 
-    // Higher penalties for high severity items
-    const penaltyScore = highSeverityCount * 15 + mediumSeverityCount * 5;
-    const score = Math.max(0, 100 - penaltyScore);
+    if (legalReferences.length > 0) {
+      // Use new weighted scoring algorithm based on RAG verifications
+      score = this.calculateScore(verifications, legalReferences);
 
-    // Confidence is inverse of suspicious elements
-    const confidence = Math.max(0, 100 - suspiciousElements.length * 10);
+      // Apply penalties for non-reference issues (prohibited claims, unsourced data)
+      const nonReferenceIssues = suspiciousElements.filter(
+        (e) =>
+          !verifications.some((v) => v.reference.includes(e.element)) &&
+          e.element !== 'Dados numéricos',
+      );
+      const prohibitedClaimsCount = nonReferenceIssues.filter(
+        (e) => e.reason.includes('categórica'),
+      ).length;
+      const unsourcedDataPenalty = suspiciousElements.some(
+        (e) => e.element === 'Dados numéricos',
+      )
+        ? 10
+        : 0;
 
-    const verified = suspiciousElements.length === 0 || score >= 70;
+      // Apply minor penalties (don't let non-reference issues dominate)
+      score = Math.max(0, score - prohibitedClaimsCount * 5 - unsourcedDataPenalty);
+    } else {
+      // Legacy heuristic scoring (no legal references to verify)
+      const highSeverityCount = suspiciousElements.filter(
+        (e) => e.severity === 'high',
+      ).length;
+      const mediumSeverityCount = suspiciousElements.filter(
+        (e) => e.severity === 'medium',
+      ).length;
+      const penaltyScore = highSeverityCount * 15 + mediumSeverityCount * 5;
+      score = Math.max(0, 100 - penaltyScore);
+    }
+
+    // Confidence is based on verification results (if available) or inverse of suspicious elements
+    const verifiedReferencesRatio =
+      legalReferences.length > 0
+        ? verifications.filter((v) => v.exists).length / legalReferences.length
+        : 1.0;
+    const confidence = Math.round(
+      verifiedReferencesRatio * 100 -
+        suspiciousElements.filter(
+          (e) =>
+            !verifications.some((v) => v.reference.includes(e.element)) &&
+            e.element !== 'Dados numéricos',
+        ).length *
+          5,
+    );
+
+    // Get configurable threshold from environment (default: 70)
+    const threshold = this.configService.get<number>(
+      'HALLUCINATION_THRESHOLD',
+      70,
+    );
+    const verified = suspiciousElements.length === 0 || score >= threshold;
 
     const suggestions = this.generateSuggestions(verifications);
 
     this.logger.log(
-      `Hallucination check completed. Score: ${score}%, Confidence: ${confidence}%, Verified: ${verified}, References verified: ${verifications.filter((v) => v.exists).length}/${verifications.length}`,
+      `Hallucination check completed. Score: ${score.toFixed(1)}%, Confidence: ${confidence}%, Verified: ${verified}, References verified: ${verifications.filter((v) => v.exists).length}/${verifications.length}, Threshold: ${threshold}`,
     );
 
     return {
