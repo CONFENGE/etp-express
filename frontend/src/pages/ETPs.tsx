@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, PlusCircle, Search } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -27,11 +27,14 @@ export function ETPs() {
     fetchETPs();
   }, [fetchETPs]);
 
-  const filteredETPs = etps.filter(
-    (etp) =>
-      etp.title.toLowerCase().includes(search.toLowerCase()) ||
-      etp.description?.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredETPs = useMemo(() => {
+    const lowerSearch = search.toLowerCase();
+    return etps.filter(
+      (etp) =>
+        etp.title.toLowerCase().includes(lowerSearch) ||
+        etp.description?.toLowerCase().includes(lowerSearch),
+    );
+  }, [etps, search]);
 
   return (
     <MainLayout>
