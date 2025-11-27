@@ -5,6 +5,12 @@
 **Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
 **Última Atualização:** 2025-11-27
 
+- Issue #30 CLOSED ✅ - Adicionar useMemo em Dashboard.tsx para stats (PR #313)
+  - ✅ Otimizado cálculo de stats com useMemo hook
+  - ✅ Substituídas 2 chamadas filter() por 1 reduce() memoizado
+  - ✅ Performance: stats recalculam apenas quando array etps muda
+  - ✅ 29/29 testes frontend passando, zero mudanças comportamentais
+  - ✅ **M4 (Refactoring & Performance): 58% → 61% (19/31 issues)**
 - Issue #214 CLOSED ✅ - Melhorar scoring do AntiHallucinationAgent (PR #312)
   - ✅ Implementado método checkEnhanced() com categorização detalhada
   - ✅ Score ponderado por categoria: 50% legal + 30% factual + 20% prohibited
@@ -91,11 +97,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    ███████████░░░░░░░░░ 18/31 (58%)  ⚡ +1 CLOSED: #214
+[M4] Refactoring & Performance    ████████████░░░░░░░░ 19/31 (61%)  ⚡ +1 CLOSED: #30
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 131/174 issues concluídas (75%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 58% 🚀
+TOTAL: 132/174 issues concluídas (76%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 61% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -128,6 +134,37 @@ Acurácia da documentação: 95.4% ✅ (após audit 2025-11-26)
 ---
 
 ## 📅 Histórico de Atualizações
+
+### 2025-11-27 (Atualização - PR #313 Merged - M4 61%) ✅
+
+- ✅ **PROGRESSO**: 131 issues fechadas → **132 issues fechadas** (76%)
+- ✅ **M4 Refactoring & Performance**: 58% → **61%** (+3 p.p.) - Issue #30 concluída
+- ✅ **PR #313 merged**: https://github.com/tjsasakifln/etp-express/pull/313
+
+**O que foi implementado (#30):**
+
+- ✅ **Otimização de performance com useMemo**:
+  - Adicionado `useMemo` hook ao cálculo de stats em Dashboard.tsx
+  - Substituídas 2 chamadas `filter()` por 1 chamada `reduce()` memoizada
+  - Stats agora recalculam apenas quando array `etps` muda (não a cada render)
+  - Performance: elimina re-computação desnecessária em renders subsequentes
+- ✅ **Validação completa**:
+  - 29/29 testes frontend passando
+  - Prettier formatting aplicado
+  - Zero mudanças comportamentais
+  - Saída idêntica à implementação anterior
+
+**Benefícios Implementados:**
+
+- ✅ **Performance**: 2 iterações de array → 1 iteração (memoizada)
+- ✅ **React Best Practices**: Uso idiomático de useMemo para otimização
+- ✅ **Manutenibilidade**: Código mais limpo e React-idiomatic
+
+**Impacto Estratégico:**
+
+**M4 Progress:** 58% → **61%** (+3 p.p.) 🚀
+
+---
 
 ### 2025-11-27 (Atualização - PR #311 Merged - M4 55%) ✅
 
