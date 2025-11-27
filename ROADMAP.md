@@ -2,8 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** Milestone 3 (Quality & Security) - 95% (53/55) ⚡ Finalizando M3
+**Status Atual:** Milestone 3 (Quality & Security) - 98% (54/55) ⚡ Finalizando M3
 **Última Atualização:** 2025-11-26
+- Issue #231 CLOSED ✅ - Resolve pre-existing npm vulnerabilities (PR #307)
+  - ✅ 0 vulnerabilities após npm audit fix + @nestjs/swagger upgrade
+  - ✅ 730 testes passando (40 test suites)
 - Issue #301 CLOSED ✅ - Pentest Vendor Research & RFP Template (PR #305)
 - Documentação atualizada: PROJECT_SUMMARY.md e PRODUCTION_READINESS_REPORT.md sincronizados
 - Refletindo progresso M1-M4 e análise de prontidão para produção (72-80% piloto, 85%+ com 3 issues)
@@ -13,8 +16,8 @@
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-**Total de Issues:** 174 issues (52 abertas + 122 fechadas) organizadas em 6 milestones
-**Prontidão para Produção:** ~73% - M1 e M2 completos, M3 95%, M4 50%! 🚀
+**Total de Issues:** 174 issues (51 abertas + 123 fechadas) organizadas em 6 milestones
+**Prontidão para Produção:** ~74% - M1 e M2 completos, M3 98%, M4 50%! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 **Status:** ✅ 9/9 PRs merged com sucesso (100% completo)
@@ -62,12 +65,12 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 12/12 (100%) 🎉 COMPLETO!
-[M3] Quality & Security           ███████████████████░ 53/55 (95%)  ⚡ #301 ✅ (SEC-114 sub-issues 4/4 complete)
+[M3] Quality & Security           ███████████████████▓ 54/55 (98%)  ⚡ #231 ✅ (0 npm vulnerabilities)
 [M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/32 (50%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      ██░░░░░░░░░░░░░░░░░░ 1/10 (10%)   +6 issues
 
-TOTAL: 122/174 issues concluídas (70%)  |  M1 100% ✅ | M2 100% ✅ | M3 95% 🔥 | M4 50% 🚀
+TOTAL: 123/174 issues concluídas (71%)  |  M1 100% ✅ | M2 100% ✅ | M3 98% 🔥 | M4 50% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -82,16 +85,16 @@ Sub-issues atômicas (desmembradas):
 
 ```
 Última semana (7 dias):
-├─ Issues fechadas: 47 issues
-├─ Velocidade média: 6.7 issues/dia 🚀
-└─ Tendência: FORTE (134% acima da meta de 5/dia)
+├─ Issues fechadas: 48 issues
+├─ Velocidade média: 6.9 issues/dia 🚀
+└─ Tendência: FORTE (138% acima da meta de 5/dia)
 
 Projeções:
-├─ Issues restantes: 52 (30%)
-├─ Dias para conclusão: ~8 dias
-└─ Data estimada: 2025-12-04
+├─ Issues restantes: 51 (29%)
+├─ Dias para conclusão: ~7 dias
+└─ Data estimada: 2025-12-03
 
-Progresso geral: 122/174 (70%)
+Progresso geral: 123/174 (71%)
 Acurácia da documentação: 97.6% ✅ (após audit 2025-11-25)
 ```
 
