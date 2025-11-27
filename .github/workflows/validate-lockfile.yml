@@ -1,0 +1,40 @@
+name: Validate Package Lock
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  validate-lockfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate package-lock.json consistency
+        run: |
+          # Install dependencies from lockfile
+          npm ci
+
+          # Check if lockfile is up-to-date with package.json
+          npm install --package-lock-only
+
+          # If lockfile changed, it was out of sync
+          if ! git diff --exit-code package-lock.json; then
+            echo "❌ ERROR: package-lock.json is out of sync with package.json"
+            echo ""
+            echo "Run 'npm install' locally and commit the updated package-lock.json"
+            echo ""
+            git diff package-lock.json
+            exit 1
+          fi
+
+          echo "✅ package-lock.json is consistent with package.json"
