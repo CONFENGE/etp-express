@@ -5,6 +5,11 @@
 **Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
 **Última Atualização:** 2025-11-27
 
+- Issue #29 CLOSED ✅ - Corrigir duplicação de localStorage em authStore (PR #311)
+  - ✅ Removidas chamadas manuais a localStorage em login/register/logout
+  - ✅ Single source of truth via zustand persist middleware
+  - ✅ Elimina risco de dessincronização entre persistência manual e automática
+  - ✅ **M4 (Refactoring & Performance): 52% → 55% (17/31 issues)**
 - Issue #257 CLOSED ✅ - Add CI workflow validation for package-lock.json consistency (PR #310)
   - ✅ Workflow detecta lockfile desatualizado antes dos testes
   - ✅ Previne repetição de Issue #252
@@ -25,8 +30,8 @@
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-  **Total de Issues:** 174 issues (45 abertas + 129 fechadas) organizadas em 6 milestones
-  **Prontidão para Produção:** ~77% - **M1 completo (100%), M2 COMPLETO (100%), M3 completo (100%)**, M4 em progresso (52%)! 🚀
+  **Total de Issues:** 174 issues (44 abertas + 130 fechadas) organizadas em 6 milestones
+  **Prontidão para Produção:** ~78% - **M1 completo (100%), M2 COMPLETO (100%), M3 completo (100%)**, M4 em progresso (55%)! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 
@@ -78,13 +83,13 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 
 ```
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
-[M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO! +1 CLOSED: #257
+[M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    ████████░░░░░░░░░░░░ 16/31 (52%)  ⚡ +2 CLOSED: #209, #210 (re-merged)
+[M4] Refactoring & Performance    █████████░░░░░░░░░░░ 17/31 (55%)  ⚡ +1 CLOSED: #29
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 129/174 issues concluídas (74%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 52% 🚀
+TOTAL: 130/174 issues concluídas (75%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 55% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -104,11 +109,11 @@ Sub-issues atômicas (desmembradas):
 └─ Tendência: FORTE (126% acima da meta de 5/dia)
 
 Projeções:
-├─ Issues restantes: 45 (26%)
+├─ Issues restantes: 44 (25%)
 ├─ Dias para conclusão: ~7 dias
 └─ Data estimada: 2025-12-04
 
-Progresso geral: 129/174 (74%)
+Progresso geral: 130/174 (75%)
 Acurácia da documentação: 95.4% ✅ (após audit 2025-11-26)
 ```
 
@@ -117,6 +122,39 @@ Acurácia da documentação: 95.4% ✅ (após audit 2025-11-26)
 ---
 
 ## 📅 Histórico de Atualizações
+
+### 2025-11-27 (Atualização - PR #311 Merged - M4 55%) ✅
+
+- ✅ **PROGRESSO**: 129 issues fechadas → **130 issues fechadas** (75%)
+- ✅ **M4 Refactoring & Performance**: 52% → **55%** (+3 p.p.) - Issue #29 concluída
+- ✅ **PR #311 merged**: https://github.com/tjsasakifln/etp-express/pull/311
+
+**O que foi implementado (#29):**
+
+- ✅ **Correção de duplicação localStorage em authStore**:
+  - Removidas 6 linhas de chamadas manuais a localStorage
+  - Login: removido localStorage.setItem (2 linhas)
+  - Register: removido localStorage.setItem (2 linhas)
+  - Logout: removido localStorage.removeItem (2 linhas)
+  - Agora confia exclusivamente no zustand persist middleware
+- ✅ **Validação completa**:
+  - 29/29 testes frontend passando
+  - Linting OK (0 warnings)
+  - Type checking OK
+  - Build successful
+  - 8/8 CI checks passaram
+
+**Benefícios Implementados:**
+
+- ✅ **Prevenção**: Elimina risco de dessincronização entre localStorage manual e automático
+- ✅ **DRY**: Single source of truth para persistência de auth state
+- ✅ **Simplicidade**: Redução de 8 linhas de código
+
+**Impacto Estratégico:**
+
+**M4 Progress:** 52% → **55%** (+3 p.p.) 🚀
+
+---
 
 ### 2025-11-27 (Atualização - PR #310 Merged - M2 100% COMPLETO!) 🎉✅
 
