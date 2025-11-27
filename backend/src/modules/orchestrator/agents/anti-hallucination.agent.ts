@@ -419,8 +419,8 @@ export class AntiHallucinationAgent {
           !verifications.some((v) => v.reference.includes(e.element)) &&
           e.element !== 'Dados numéricos',
       );
-      const prohibitedClaimsCount = nonReferenceIssues.filter(
-        (e) => e.reason.includes('categórica'),
+      const prohibitedClaimsCount = nonReferenceIssues.filter((e) =>
+        e.reason.includes('categórica'),
       ).length;
       const unsourcedDataPenalty = suspiciousElements.some(
         (e) => e.element === 'Dados numéricos',
@@ -429,7 +429,10 @@ export class AntiHallucinationAgent {
         : 0;
 
       // Apply minor penalties (don't let non-reference issues dominate)
-      score = Math.max(0, score - prohibitedClaimsCount * 5 - unsourcedDataPenalty);
+      score = Math.max(
+        0,
+        score - prohibitedClaimsCount * 5 - unsourcedDataPenalty,
+      );
     } else {
       // Legacy heuristic scoring (no legal references to verify)
       const highSeverityCount = suspiciousElements.filter(
