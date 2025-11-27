@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, PlusCircle, TrendingUp } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -24,11 +24,17 @@ export function Dashboard() {
     fetchETPs();
   }, [fetchETPs]);
 
-  const stats = {
-    total: etps.length,
-    inProgress: etps.filter((e) => e.status === 'in_progress').length,
-    completed: etps.filter((e) => e.status === 'completed').length,
-  };
+  const stats = useMemo(() => {
+    return etps.reduce(
+      (acc, etp) => {
+        acc.total++;
+        if (etp.status === 'in_progress') acc.inProgress++;
+        if (etp.status === 'completed') acc.completed++;
+        return acc;
+      },
+      { total: 0, inProgress: 0, completed: 0 },
+    );
+  }, [etps]);
 
   const recentETPs = etps.slice(0, 5);
 
