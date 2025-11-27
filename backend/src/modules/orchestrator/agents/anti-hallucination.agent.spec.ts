@@ -823,10 +823,12 @@ describe('AntiHallucinationAgent', () => {
 
       it('deve usar threshold configurado via ConfigService', async () => {
         // Mock threshold de 90 (muito rigoroso)
-        mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
-          if (key === 'HALLUCINATION_THRESHOLD') return 90;
-          return defaultValue;
-        });
+        mockConfigService.get.mockImplementation(
+          (key: string, defaultValue?: any) => {
+            if (key === 'HALLUCINATION_THRESHOLD') return 90;
+            return defaultValue;
+          },
+        );
 
         const content = 'Lei 14.133/2021';
         mockRagService.verifyReference.mockResolvedValue({
@@ -842,10 +844,12 @@ describe('AntiHallucinationAgent', () => {
         expect(result.verified).toBe(false);
 
         // Restaura mock original
-        mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
-          if (key === 'HALLUCINATION_THRESHOLD') return defaultValue || 70;
-          return defaultValue;
-        });
+        mockConfigService.get.mockImplementation(
+          (key: string, defaultValue?: any) => {
+            if (key === 'HALLUCINATION_THRESHOLD') return defaultValue || 70;
+            return defaultValue;
+          },
+        );
       });
     });
 
@@ -961,6 +965,300 @@ describe('AntiHallucinationAgent', () => {
         expect(logCall).toBeDefined();
         expect(logCall?.[0]).toContain('Threshold: 70');
       });
+    });
+  });
+
+  describe('checkEnhanced() - Enhanced Hallucination Check with Categorization (Issue #214)', () => {
+    it('deve retornar EnhancedHallucinationCheckResult com todas as categorias', async () => {
+      const content = 'Lei 14.133/2021 certamente estabelece 85% das regras.';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2021',
+        exists: true,
+        confidence: 1.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Verifica estrutura do resultado
+      expect(result).toBeDefined();
+      expect(result.overallScore).toBeDefined();
+      expect(result.overallVerified).toBeDefined();
+      expect(result.categories).toBeDefined();
+      expect(result.recommendations).toBeDefined();
+
+      // Verifica categorias
+      expect(result.categories.legalReferences).toBeDefined();
+      expect(result.categories.factualClaims).toBeDefined();
+      expect(result.categories.prohibitedPhrases).toBeDefined();
+    });
+
+    it('deve calcular score ponderado por categoria (50% legal, 30% factual, 20% prohibited)', async () => {
+      const content = 'Lei 14.133/2021 está em vigor.';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2021',
+        exists: true,
+        confidence: 1.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Legal: 100, Factual: 100, Prohibited: 100
+      // Overall = 100*0.5 + 100*0.3 + 100*0.2 = 100
+      expect(result.overallScore).toBe(100);
+      expect(result.overallVerified).toBe(true);
+    });
+
+    it('deve preencher detalhes de legalReferences corretamente', async () => {
+      const content = 'Lei 14.133/2021 e Decreto 10.024/2019';
+
+      mockRagService.verifyReference
+        .mockResolvedValueOnce({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        })
+        .mockResolvedValueOnce({
+          reference: 'decreto 10024/2019',
+          exists: false,
+          confidence: 0.0,
+          suggestion: 'Você quis dizer Decreto 10.024/2019?',
+        });
+
+      const result = await agent.checkEnhanced(content);
+
+      expect(result.categories.legalReferences.total).toBe(2);
+      expect(result.categories.legalReferences.verified).toBe(1);
+      expect(result.categories.legalReferences.details.length).toBe(2);
+
+      // Primeira referência verificada
+      expect(result.categories.legalReferences.details[0].verified).toBe(true);
+      expect(result.categories.legalReferences.details[0].confidence).toBe(1.0);
+
+      // Segunda referência não verificada com sugestão
+      expect(result.categories.legalReferences.details[1].verified).toBe(false);
+      expect(result.categories.legalReferences.details[1].suggestion).toContain(
+        'Decreto 10.024/2019',
+      );
+    });
+
+    it('deve detectar prohibited phrases e calcular score correto', async () => {
+      const content =
+        'Certamente, sem dúvida, é fato que este texto está correto.';
+
+      const result = await agent.checkEnhanced(content);
+
+      // 3 frases proibidas detectadas
+      expect(
+        result.categories.prohibitedPhrases.found.length,
+      ).toBeGreaterThanOrEqual(3);
+
+      // Score prohibited = 100 - (3 * 10) = 70
+      expect(result.categories.prohibitedPhrases.score).toBeLessThanOrEqual(70);
+    });
+
+    it('deve detectar factual claims (números sem fonte) e gerar warning', async () => {
+      const content = 'O projeto custará 85% do orçamento total de 2 milhões.';
+
+      const result = await agent.checkEnhanced(content);
+
+      // Factual claims score deve ser 70 (tem números sem fonte)
+      expect(result.categories.factualClaims.score).toBe(70);
+      expect(result.categories.factualClaims.warnings.length).toBeGreaterThan(
+        0,
+      );
+      expect(result.categories.factualClaims.warnings[0]).toContain(
+        'sem citação de fonte',
+      );
+    });
+
+    it('NÃO deve penalizar factual claims quando há fonte citada', async () => {
+      const content = 'Conforme relatório do TCU, representa 85% do orçamento.';
+
+      const result = await agent.checkEnhanced(content);
+
+      // Factual claims score deve ser 100 (tem fonte)
+      expect(result.categories.factualClaims.score).toBe(100);
+      expect(result.categories.factualClaims.warnings.length).toBe(0);
+    });
+
+    it('deve gerar recomendações específicas por categoria', async () => {
+      const content = 'Lei 99.999/2099 certamente estabelece 100% das regras.';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 99999/2099',
+        exists: false,
+        confidence: 0.0,
+      });
+
+      // Mock do Perplexity para fallback
+      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        reference: 'Lei 99999/2099',
+        exists: false,
+        description: 'Lei não encontrada',
+        confidence: 0.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Deve ter recomendações
+      expect(result.recommendations.length).toBeGreaterThan(0);
+
+      // Recomendação sobre referências não verificadas
+      const legalRecommendation = result.recommendations.find((r) =>
+        r.includes('referências legais'),
+      );
+      expect(legalRecommendation).toBeDefined();
+
+      // Recomendação sobre frases proibidas
+      const prohibitedRecommendation = result.recommendations.find((r) =>
+        r.includes('categóricas'),
+      );
+      expect(prohibitedRecommendation).toBeDefined();
+
+      // Recomendação sobre factual claims
+      const factualRecommendation = result.recommendations.find((r) =>
+        r.includes('fontes para dados numéricos'),
+      );
+      expect(factualRecommendation).toBeDefined();
+    });
+
+    it('deve usar threshold configurável para determinar overallVerified', async () => {
+      const content = 'Lei 14.133/2021 certamente é a melhor lei.';
+
+      // Mock threshold de 95 (muito rigoroso)
+      mockConfigService.get.mockImplementation(
+        (key: string, defaultValue?: any) => {
+          if (key === 'HALLUCINATION_THRESHOLD') return 95;
+          return defaultValue;
+        },
+      );
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2021',
+        exists: true,
+        confidence: 0.85,
+        // legalReferences score: 85
+        // factualClaims score: 100
+        // prohibitedPhrases score: 90 (1 frase proibida: "certamente")
+        // Overall: 85*0.5 + 100*0.3 + 90*0.2 = 42.5 + 30 + 18 = 90.5
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Score ~90.5 < threshold 95 = not verified
+      expect(result.overallScore).toBeGreaterThan(85);
+      expect(result.overallScore).toBeLessThan(95);
+      expect(result.overallVerified).toBe(false);
+
+      // Restaura mock original
+      mockConfigService.get.mockImplementation(
+        (key: string, defaultValue?: any) => {
+          if (key === 'HALLUCINATION_THRESHOLD') return defaultValue || 70;
+          return defaultValue;
+        },
+      );
+    });
+
+    it('deve remover recomendações duplicadas', async () => {
+      const content = 'Lei 99.999/2099 certamente é a melhor lei.';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 99999/2099',
+        exists: false,
+        confidence: 0.0,
+      });
+
+      // Mock do Perplexity para fallback
+      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        reference: 'Lei 99999/2099',
+        exists: false,
+        description: 'Lei não encontrada',
+        confidence: 0.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Verifica que não há duplicatas
+      const uniqueRecommendations = new Set(result.recommendations);
+      expect(uniqueRecommendations.size).toBe(result.recommendations.length);
+    });
+
+    it('deve arredondar scores para 1 casa decimal', async () => {
+      const content = 'Lei 14.133/2021';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2021',
+        exists: true,
+        confidence: 1.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Verifica que scores têm no máximo 1 casa decimal
+      expect(result.overallScore).toBe(
+        Math.round(result.overallScore * 10) / 10,
+      );
+      expect(result.categories.legalReferences.score).toBe(
+        Math.round(result.categories.legalReferences.score * 10) / 10,
+      );
+    });
+
+    it('deve incluir sugestões do RAG nas recomendações', async () => {
+      const content = 'Lei 14.133/2020';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 14133/2020',
+        exists: false,
+        confidence: 0.0,
+        suggestion: 'Você quis dizer Lei 14.133/2021? (95% similar)',
+      });
+
+      // Mock do Perplexity para fallback
+      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        reference: 'Lei 14133/2020',
+        exists: false,
+        description: 'Lei não encontrada',
+        confidence: 0.8,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Deve ter recomendação com a sugestão do RAG
+      const suggestionRecommendation = result.recommendations.find((r) =>
+        r.includes('14.133/2021'),
+      );
+      expect(suggestionRecommendation).toBeDefined();
+    });
+
+    it('deve adicionar recomendação geral quando score < threshold', async () => {
+      const content = 'Lei 99.999/2099 certamente é correta.';
+
+      mockRagService.verifyReference.mockResolvedValue({
+        reference: 'lei 99999/2099',
+        exists: false,
+        confidence: 0.0,
+      });
+
+      // Mock do Perplexity para fallback
+      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        reference: 'Lei 99999/2099',
+        exists: false,
+        description: 'Lei não encontrada',
+        confidence: 0.0,
+      });
+
+      const result = await agent.checkEnhanced(content);
+
+      // Score deve estar abaixo de 70
+      expect(result.overallScore).toBeLessThan(70);
+
+      // Deve ter recomendação geral mencionando threshold
+      const generalRecommendation = result.recommendations.find((r) =>
+        r.includes('threshold'),
+      );
+      expect(generalRecommendation).toBeDefined();
     });
   });
 });
