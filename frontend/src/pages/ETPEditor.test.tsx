@@ -28,6 +28,49 @@ vi.mock('@/types/etp', async () => {
   };
 });
 
+// Mock section-templates loader
+vi.mock('@/lib/section-templates', () => ({
+  loadSectionTemplates: vi.fn(() =>
+    Promise.resolve([
+      {
+        number: 1,
+        title: 'I - Necessidade da Contratação',
+        description: 'Demonstração da necessidade da contratação',
+        isRequired: true,
+        fields: [],
+      },
+      {
+        number: 4,
+        title: 'IV - Requisitos da Contratação',
+        description: 'Especificação dos requisitos da contratação',
+        isRequired: true,
+        fields: [],
+      },
+      {
+        number: 6,
+        title: 'VI - Estimativa de Preços',
+        description: 'Estimativa do valor da contratação',
+        isRequired: true,
+        fields: [],
+      },
+      {
+        number: 8,
+        title: 'VIII - Adequação Orçamentária',
+        description: 'Demonstração da adequação orçamentária',
+        isRequired: true,
+        fields: [],
+      },
+      {
+        number: 13,
+        title: 'XIII - Contratações Correlatas e/ou Interdependentes',
+        description: 'Análise de contratações correlatas',
+        isRequired: true,
+        fields: [],
+      },
+    ]),
+  ),
+}));
+
 // Mock components
 vi.mock('@/components/layout/MainLayout', () => ({
   MainLayout: ({ children }: { children: React.ReactNode }) => (
@@ -250,12 +293,17 @@ describe('ETPEditor', () => {
   /**
    * Teste 1: Componente renderiza sem erros com ETP mockado
    */
-  it('renderiza sem erros com ETP mockado', () => {
+  it('renderiza sem erros com ETP mockado', async () => {
     render(
       <BrowserRouter>
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(screen.getByText('ETP de Teste')).toBeInTheDocument();
+    });
 
     // Verifica que o título do ETP é exibido
     expect(screen.getByText('ETP de Teste')).toBeInTheDocument();
@@ -268,12 +316,17 @@ describe('ETPEditor', () => {
   /**
    * Teste 2: Progress bar exibe porcentagem correta
    */
-  it('exibe a porcentagem correta na progress bar', () => {
+  it('exibe a porcentagem correta na progress bar', async () => {
     render(
       <BrowserRouter>
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(screen.getByText('45%')).toBeInTheDocument();
+    });
 
     // Verifica que o progresso de 45% é exibido
     expect(screen.getByText('45%')).toBeInTheDocument();
@@ -297,6 +350,11 @@ describe('ETPEditor', () => {
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(screen.getAllByRole('tab').length).toBeGreaterThan(0);
+    });
 
     // Busca todas as tabs
     const tabs = screen.getAllByRole('tab');
@@ -348,6 +406,15 @@ describe('ETPEditor', () => {
       </BrowserRouter>,
     );
 
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText(
+          /Digite o conteúdo da seção I - Necessidade da Contratação/,
+        ),
+      ).toBeInTheDocument();
+    });
+
     // Pega o textarea da seção 1
     const textarea = screen.getByPlaceholderText(
       /Digite o conteúdo da seção I - Necessidade da Contratação/,
@@ -377,6 +444,15 @@ describe('ETPEditor', () => {
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText(
+          /Digite o conteúdo da seção I - Necessidade da Contratação/,
+        ),
+      ).toBeInTheDocument();
+    });
 
     // Modifica o conteúdo da seção 1
     const textarea = screen.getByPlaceholderText(
@@ -410,12 +486,19 @@ describe('ETPEditor', () => {
    * Nota: Como não há AIGenerationPanel no código atual,
    * este teste apenas valida que o botão existe.
    */
-  it('exibe botão "Gerar com IA"', () => {
+  it('exibe botão "Gerar com IA"', async () => {
     render(
       <BrowserRouter>
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /Gerar com IA/i }),
+      ).toBeInTheDocument();
+    });
 
     // Verifica que o botão "Gerar com IA" existe
     const aiButton = screen.getByRole('button', { name: /Gerar com IA/i });
@@ -449,7 +532,11 @@ describe('ETPEditor', () => {
 
     // Verifica que o loading state é exibido
     expect(screen.getByTestId('loading-state')).toBeInTheDocument();
-    expect(screen.getByText('Carregando ETP...')).toBeInTheDocument();
+    // A mensagem pode ser "Carregando templates..." ou "Carregando ETP..."
+    // dependendo do que carrega primeiro
+    expect(
+      screen.getByText(/Carregando (templates\.\.\.|ETP\.\.\.)/),
+    ).toBeInTheDocument();
   });
 
   /**
@@ -465,6 +552,13 @@ describe('ETPEditor', () => {
         <ETPEditor />
       </BrowserRouter>,
     );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /Salvar/i }),
+      ).toBeInTheDocument();
+    });
 
     // Clica no botão Salvar
     const saveButton = screen.getByRole('button', { name: /Salvar/i });
