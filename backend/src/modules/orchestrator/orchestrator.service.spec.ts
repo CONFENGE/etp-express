@@ -891,4 +891,193 @@ describe('OrchestratorService', () => {
       }
     });
   });
+
+  /**
+   * Testes para o método privado generateWithLLM()
+   * Issue #317 - Extração de métodos do OrchestratorService
+   */
+  describe('generateWithLLM', () => {
+    it('deve gerar conteúdo com sucesso usando OpenAI', async () => {
+      // Arrange
+      const userPrompt = 'Teste de geração';
+      const systemPrompt = 'Sistema de teste';
+      const sectionType = 'justificativa';
+
+      // Act
+      const result = await service['generateWithLLM'](
+        userPrompt,
+        systemPrompt,
+        sectionType,
+      );
+
+      // Assert
+      expect(result).toEqual(mockOpenAIResponse);
+      expect(openaiService.generateCompletion).toHaveBeenCalledWith({
+        systemPrompt,
+        userPrompt,
+        temperature: 0.2, // justificativa is factual
+        maxTokens: 4000,
+      });
+      expect(result.content).toBe(
+        'Conteúdo gerado pela IA para teste de integração',
+      );
+      expect(result.tokens).toBe(150);
+      expect(result.model).toBe('gpt-4');
+    });
+
+    it('deve usar temperatura correta baseada no tipo de seção', async () => {
+      // Arrange
+      const userPrompt = 'Teste';
+      const systemPrompt = 'Sistema';
+
+      // Act & Assert - Seção factual (0.2)
+      await service['generateWithLLM'](userPrompt, systemPrompt, 'orcamento');
+      expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+        expect.objectContaining({ temperature: 0.2 }),
+      );
+
+      // Act & Assert - Seção criativa (0.6)
+      jest.clearAllMocks();
+      await service['generateWithLLM'](userPrompt, systemPrompt, 'introducao');
+      expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+        expect.objectContaining({ temperature: 0.6 }),
+      );
+
+      // Act & Assert - Seção desconhecida (0.5)
+      jest.clearAllMocks();
+      await service['generateWithLLM'](
+        userPrompt,
+        systemPrompt,
+        'unknown_section',
+      );
+      expect(openaiService.generateCompletion).toHaveBeenCalledWith(
+        expect.objectContaining({ temperature: 0.5 }),
+      );
+    });
+
+    it('deve propagar erro se OpenAI falhar', async () => {
+      // Arrange
+      const error = new Error('OpenAI API Error');
+      openaiService.generateCompletion = jest.fn().mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(
+        service['generateWithLLM']('teste', 'sistema', 'justificativa'),
+      ).rejects.toThrow('OpenAI API Error');
+    });
+  });
+
+  /**
+   * Testes para o método privado postProcessContent()
+   * Issue #317 - Extração de métodos do OrchestratorService
+   */
+  describe('postProcessContent', () => {
+    it('deve retornar conteúdo original se score >= 70', async () => {
+      // Arrange
+      const rawContent = 'Conteúdo com boa legibilidade';
+      const warnings: string[] = [];
+      const agentsUsed: string[] = [];
+
+      simplificacaoAgent.analyze = jest
+        .fn()
+        .mockResolvedValue(mockSimplificacaoResultHigh);
+
+      // Act
+      const result = await service['postProcessContent'](
+        rawContent,
+        warnings,
+        agentsUsed,
+      );
+
+      // Assert
+      expect(result.content).toBe(rawContent);
+      expect(result.simplificationResult).toEqual(mockSimplificacaoResultHigh);
+      expect(simplificacaoAgent.analyze).toHaveBeenCalledWith(rawContent);
+      expect(simplificacaoAgent.simplify).not.toHaveBeenCalled();
+      expect(warnings).toHaveLength(0);
+      expect(agentsUsed).toContain('simplification-analysis');
+    });
+
+    it('deve simplificar automaticamente se score < 70', async () => {
+      // Arrange
+      const rawContent = 'Conteúdo com texto complexo e difícil de ler';
+      const simplifiedContent = 'Conteúdo simples e fácil de ler';
+      const warnings: string[] = [];
+      const agentsUsed: string[] = [];
+
+      simplificacaoAgent.analyze = jest
+        .fn()
+        .mockResolvedValue(mockSimplificacaoResultLow);
+      simplificacaoAgent.simplify = jest
+        .fn()
+        .mockResolvedValue(simplifiedContent);
+
+      // Act
+      const result = await service['postProcessContent'](
+        rawContent,
+        warnings,
+        agentsUsed,
+      );
+
+      // Assert
+      expect(result.content).toBe(simplifiedContent);
+      expect(result.simplificationResult).toEqual(mockSimplificacaoResultLow);
+      expect(simplificacaoAgent.analyze).toHaveBeenCalledWith(rawContent);
+      expect(simplificacaoAgent.simplify).toHaveBeenCalledWith(rawContent);
+      expect(warnings).toContain(
+        'Texto foi simplificado automaticamente. Revise para garantir correção.',
+      );
+      expect(agentsUsed).toContain('simplification-analysis');
+    });
+
+    it('deve adicionar agente usado ao array agentsUsed', async () => {
+      // Arrange
+      const rawContent = 'Conteúdo de teste';
+      const warnings: string[] = [];
+      const agentsUsed: string[] = ['agent1', 'agent2'];
+
+      simplificacaoAgent.analyze = jest
+        .fn()
+        .mockResolvedValue(mockSimplificacaoResultHigh);
+
+      // Act
+      const result = await service['postProcessContent'](
+        rawContent,
+        warnings,
+        agentsUsed,
+      );
+
+      // Assert
+      expect(result.content).toBe(rawContent);
+      expect(agentsUsed).toHaveLength(3);
+      expect(agentsUsed).toEqual([
+        'agent1',
+        'agent2',
+        'simplification-analysis',
+      ]);
+    });
+
+    it('deve lidar com conteúdo vazio sem erro', async () => {
+      // Arrange
+      const rawContent = '';
+      const warnings: string[] = [];
+      const agentsUsed: string[] = [];
+
+      simplificacaoAgent.analyze = jest
+        .fn()
+        .mockResolvedValue(mockSimplificacaoResultHigh);
+
+      // Act
+      const result = await service['postProcessContent'](
+        rawContent,
+        warnings,
+        agentsUsed,
+      );
+
+      // Assert
+      expect(result.content).toBe('');
+      expect(result.simplificationResult).toEqual(mockSimplificacaoResultHigh);
+      expect(simplificacaoAgent.analyze).toHaveBeenCalledWith('');
+    });
+  });
 });
