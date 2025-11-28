@@ -310,35 +310,20 @@ export class OrchestratorService {
       }
 
       // 6. Generate content with LLM
-      const temperature = this.getSectionTemperature(request.sectionType);
-      const llmRequest: LLMRequest = {
-        systemPrompt: finalSystemPrompt,
-        userPrompt: sanitizedPrompt, // Use sanitized version
-        temperature,
-        maxTokens: 4000,
-      };
-
-      this.logger.log(
-        `Generating section with temperature ${temperature} for sectionType: ${request.sectionType}`,
+      const llmResponse = await this.generateWithLLM(
+        sanitizedPrompt,
+        finalSystemPrompt,
+        request.sectionType,
       );
 
-      const llmResponse =
-        await this.openaiService.generateCompletion(llmRequest);
-      let generatedContent = llmResponse.content;
-
       // 7. Post-processing: Simplification
-      const simplificationResult =
-        await this.simplificacaoAgent.analyze(generatedContent);
-      agentsUsed.push('simplification-analysis');
-
-      if (simplificationResult.score < 70) {
-        // Try to auto-simplify
-        generatedContent =
-          await this.simplificacaoAgent.simplify(generatedContent);
-        warnings.push(
-          'Texto foi simplificado automaticamente. Revise para garantir correção.',
+      const { content: processedContent, simplificationResult } =
+        await this.postProcessContent(
+          llmResponse.content,
+          warnings,
+          agentsUsed,
         );
-      }
+      let generatedContent = processedContent;
 
       // 8. Validation: Run all agents
       const [
@@ -471,6 +456,74 @@ ${simplificacaoPrompt}
 ${hallucinationPrompt}
 
 ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
+  }
+
+  /**
+   * Generates content using the OpenAI LLM with the provided prompts.
+   *
+   * @remarks
+   * Constructs an LLM request with appropriate temperature settings and token limits,
+   * logs the generation request, and invokes the OpenAI service to generate content.
+   *
+   * @param userPrompt - The enriched user prompt containing context and requirements
+   * @param systemPrompt - The system prompt with guidelines and constraints
+   * @param sectionType - Type of section being generated (affects temperature)
+   * @returns LLM response containing content, tokens, and model information
+   * @private
+   */
+  private async generateWithLLM(
+    userPrompt: string,
+    systemPrompt: string,
+    sectionType: string,
+  ): Promise<{ content: string; tokens: number; model: string }> {
+    const temperature = this.getSectionTemperature(sectionType);
+    const llmRequest: LLMRequest = {
+      systemPrompt,
+      userPrompt,
+      temperature,
+      maxTokens: 4000,
+    };
+
+    this.logger.log(
+      `Generating section with temperature ${temperature} for sectionType: ${sectionType}`,
+    );
+
+    const llmResponse = await this.openaiService.generateCompletion(llmRequest);
+    return llmResponse;
+  }
+
+  /**
+   * Post-processes generated content by analyzing and applying simplification if needed.
+   *
+   * @remarks
+   * Analyzes the content readability score and automatically simplifies if below 70%.
+   * Updates the warnings array when simplification is applied.
+   *
+   * @param rawContent - Raw content from LLM generation
+   * @param warnings - Array to collect warning messages (modified in place)
+   * @param agentsUsed - Array to track which agents were used (modified in place)
+   * @returns Object containing processed content and simplification analysis result
+   * @private
+   */
+  private async postProcessContent(
+    rawContent: string,
+    warnings: string[],
+    agentsUsed: string[],
+  ): Promise<{ content: string; simplificationResult: any }> {
+    const simplificationResult =
+      await this.simplificacaoAgent.analyze(rawContent);
+    agentsUsed.push('simplification-analysis');
+
+    if (simplificationResult.score < 70) {
+      const simplifiedContent =
+        await this.simplificacaoAgent.simplify(rawContent);
+      warnings.push(
+        'Texto foi simplificado automaticamente. Revise para garantir correção.',
+      );
+      return { content: simplifiedContent, simplificationResult };
+    }
+
+    return { content: rawContent, simplificationResult };
   }
 
   /**
