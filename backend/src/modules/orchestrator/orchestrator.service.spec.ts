@@ -891,4 +891,77 @@ describe('OrchestratorService', () => {
       }
     });
   });
+
+  describe('buildEnrichedPrompt (Issue #316)', () => {
+    it('should build enriched prompts with all agents', async () => {
+      const request = {
+        sectionType: 'justificativa',
+        title: 'Justificativa da Contratação',
+        userInput: 'Necessidade de notebooks para equipe de TI',
+        etpData: {
+          objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
+          metadata: { orgao: 'Secretaria de Tecnologia' },
+        },
+      };
+
+      const sanitizedInput = request.userInput;
+
+      const result = await (service as any).buildEnrichedPrompt(
+        request.etpData,
+        request.sectionType,
+        sanitizedInput,
+      );
+
+      expect(result).toHaveProperty('userPrompt');
+      expect(result).toHaveProperty('systemPrompt');
+      expect(result).toHaveProperty('agentsUsed');
+      expect(result).toHaveProperty('warnings');
+      expect(result).toHaveProperty('hasEnrichmentWarning');
+
+      expect(result.agentsUsed).toContain('base-prompt');
+      expect(result.agentsUsed).toContain('legal-context');
+      expect(result.agentsUsed).toContain('fundamentacao-guidance');
+      expect(result.agentsUsed).toContain('anti-hallucination');
+
+      expect(result.userPrompt).toContain('Secretaria de Tecnologia');
+      expect(result.systemPrompt).toContain('anti-alucinação');
+    });
+
+    it('should not add fundamentacao for non-justificativa sections', async () => {
+      const request = {
+        sectionType: 'identificacao',
+        title: 'Identificação',
+        userInput: 'Dados básicos',
+      };
+
+      const result = await (service as any).buildEnrichedPrompt(
+        null,
+        request.sectionType,
+        request.userInput,
+      );
+
+      expect(result.agentsUsed).not.toContain('fundamentacao-guidance');
+      expect(result.agentsUsed).toContain('base-prompt');
+      expect(result.agentsUsed).toContain('legal-context');
+      expect(result.agentsUsed).toContain('anti-hallucination');
+    });
+
+    it('should handle empty etpData gracefully', async () => {
+      const request = {
+        sectionType: 'contextualizacao',
+        title: 'Contexto',
+        userInput: 'Teste contexto',
+      };
+
+      const result = await (service as any).buildEnrichedPrompt(
+        null,
+        request.sectionType,
+        request.userInput,
+      );
+
+      expect(result.userPrompt).not.toContain('[CONTEXTO DO ETP]');
+      expect(result.agentsUsed).toContain('base-prompt');
+      expect(result.systemPrompt).toBeTruthy();
+    });
+  });
 });

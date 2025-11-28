@@ -220,80 +220,21 @@ export class OrchestratorService {
         );
       }
 
-      // 1. Build system prompt with all agents
-      const systemPrompt = await this.buildSystemPrompt(request.sectionType);
-      agentsUsed.push('base-prompt');
-
-      // 2. Enrich user prompt with legal context
-      let enrichedUserPrompt = sanitizedInput;
-      enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
-        enrichedUserPrompt,
+      // 1-5. Build enriched prompts with all agent enhancements
+      const {
+        userPrompt: enrichedUserPrompt,
+        systemPrompt: finalSystemPrompt,
+        agentsUsed: promptAgents,
+        warnings: promptWarnings,
+        hasEnrichmentWarning,
+      } = await this.buildEnrichedPrompt(
+        request.etpData,
         request.sectionType,
+        sanitizedInput,
       );
-      agentsUsed.push('legal-context');
 
-      // 3. Add fundamentação guidance if applicable
-      if (this.needsFundamentacao(request.sectionType)) {
-        enrichedUserPrompt =
-          await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
-        agentsUsed.push('fundamentacao-guidance');
-      }
-
-      // 3.5. Enrich with market fundamentation from Perplexity (optional)
-      let hasEnrichmentWarning = false;
-      if (this.needsMarketEnrichment(request.sectionType)) {
-        try {
-          const enrichmentQuery = this.buildEnrichmentQuery(
-            request.sectionType,
-            request.etpData?.objeto || sanitizedInput,
-          );
-
-          const enrichmentResult =
-            await this.perplexityService.search(enrichmentQuery);
-
-          if (enrichmentResult.isFallback) {
-            // Perplexity returned fallback - graceful degradation
-            this.logger.warn(
-              'Perplexity enrichment unavailable, continuing without market data',
-              {
-                sectionType: request.sectionType,
-              },
-            );
-            warnings.push(
-              '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
-            );
-            hasEnrichmentWarning = true;
-          } else if (enrichmentResult.summary) {
-            // Success - add market context to prompt
-            enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
-            agentsUsed.push('market-enrichment');
-            this.logger.log(
-              `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
-            );
-          }
-        } catch (error) {
-          // Unexpected error - log and continue (graceful degradation)
-          this.logger.error('Unexpected error during Perplexity enrichment', {
-            error: error.message,
-            sectionType: request.sectionType,
-          });
-          warnings.push(
-            '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
-          );
-          hasEnrichmentWarning = true;
-        }
-      }
-
-      // 4. Add anti-hallucination safety prompt
-      const safetyPrompt =
-        await this.antiHallucinationAgent.generateSafetyPrompt();
-      const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
-      agentsUsed.push('anti-hallucination');
-
-      // 5. Add ETP context if available
-      if (request.etpData) {
-        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
-      }
+      agentsUsed.push(...promptAgents);
+      warnings.push(...promptWarnings);
 
       // 5.5. Sanitize PII before sending to external LLM (LGPD compliance)
       const { redacted: sanitizedPrompt, findings: piiFindings } =
@@ -612,6 +553,122 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       sectionSpecificQueries[sectionType.toLowerCase()] || baseQuery;
 
     return `${query}\n\nFoque em dados oficiais e cite as fontes. Priorize informações de órgãos públicos brasileiros.`;
+  }
+
+  /**
+   * Builds enriched prompts (system and user) with all agent enhancements.
+   *
+   * @remarks
+   * Constructs both system and user prompts by:
+   * 1. Building comprehensive system prompt with all agent guidelines
+   * 2. Enriching user prompt with legal context
+   * 3. Adding fundamentação guidance if applicable
+   * 4. Enriching with market data from Perplexity (optional)
+   * 5. Adding anti-hallucination safety prompts
+   * 6. Injecting ETP context data
+   *
+   * @param etpData - ETP context data (objeto, orgao, etc)
+   * @param sectionType - Type of section being generated
+   * @param sanitizedInput - Sanitized user input
+   * @returns Object with userPrompt, systemPrompt, agentsUsed, warnings, and hasEnrichmentWarning
+   * @private
+   */
+  private async buildEnrichedPrompt(
+    etpData: GenerationRequest['etpData'],
+    sectionType: string,
+    sanitizedInput: string,
+  ): Promise<{
+    userPrompt: string;
+    systemPrompt: string;
+    agentsUsed: string[];
+    warnings: string[];
+    hasEnrichmentWarning: boolean;
+  }> {
+    const agentsUsed: string[] = [];
+    const warnings: string[] = [];
+    let hasEnrichmentWarning = false;
+
+    // 1. Build system prompt with all agents
+    const systemPrompt = await this.buildSystemPrompt(sectionType);
+    agentsUsed.push('base-prompt');
+
+    // 2. Enrich user prompt with legal context
+    let enrichedUserPrompt = sanitizedInput;
+    enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
+      enrichedUserPrompt,
+      sectionType,
+    );
+    agentsUsed.push('legal-context');
+
+    // 3. Add fundamentação guidance if applicable
+    if (this.needsFundamentacao(sectionType)) {
+      enrichedUserPrompt =
+        await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
+      agentsUsed.push('fundamentacao-guidance');
+    }
+
+    // 3.5. Enrich with market fundamentation from Perplexity (optional)
+    if (this.needsMarketEnrichment(sectionType)) {
+      try {
+        const enrichmentQuery = this.buildEnrichmentQuery(
+          sectionType,
+          etpData?.objeto || sanitizedInput,
+        );
+
+        const enrichmentResult =
+          await this.perplexityService.search(enrichmentQuery);
+
+        if (enrichmentResult.isFallback) {
+          // Perplexity returned fallback - graceful degradation
+          this.logger.warn(
+            'Perplexity enrichment unavailable, continuing without market data',
+            {
+              sectionType,
+            },
+          );
+          warnings.push(
+            '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
+          );
+          hasEnrichmentWarning = true;
+        } else if (enrichmentResult.summary) {
+          // Success - add market context to prompt
+          enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
+          agentsUsed.push('market-enrichment');
+          this.logger.log(
+            `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
+          );
+        }
+      } catch (error) {
+        // Unexpected error - log and continue (graceful degradation)
+        this.logger.error('Unexpected error during Perplexity enrichment', {
+          error: error.message,
+          sectionType,
+        });
+        warnings.push(
+          '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
+        );
+        hasEnrichmentWarning = true;
+      }
+    }
+
+    // 4. Add anti-hallucination safety prompt
+    const safetyPrompt =
+      await this.antiHallucinationAgent.generateSafetyPrompt();
+    const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
+    agentsUsed.push('anti-hallucination');
+
+    // 5. Add ETP context if available
+    if (etpData) {
+      enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${etpData.objeto}\nÓrgão: ${etpData.metadata?.orgao || 'Não especificado'}`;
+    }
+
+    return {
+      userPrompt: enrichedUserPrompt,
+      systemPrompt: finalSystemPrompt,
+      agentsUsed,
+      warnings,
+      hasEnrichmentWarning,
+    };
   }
 
   /**
