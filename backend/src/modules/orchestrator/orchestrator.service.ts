@@ -167,139 +167,6 @@ export class OrchestratorService {
   }
 
   /**
-   * Builds enriched prompts for LLM generation.
-   *
-   * @remarks
-   * This method constructs both system and user prompts by:
-   * - Sanitizing user input to prevent prompt injection
-   * - Building base system prompt with all agent guidelines
-   * - Enriching user prompt with legal context
-   * - Adding fundamentação guidance for applicable sections
-   * - Enriching with market data via Perplexity (when applicable)
-   * - Adding anti-hallucination safety prompts
-   * - Injecting ETP context data
-   * - Redacting PII for LGPD compliance
-   *
-   * @param request - Generation request containing section type, user input, and ETP data
-   * @param agentsUsed - Array to track which agents were used (mutated)
-   * @param warnings - Array to collect warnings (mutated)
-   * @returns Object with systemPrompt, userPrompt, and hasEnrichmentWarning flag
-   * @private
-   */
-  private async buildEnrichedPrompt(
-    request: GenerationRequest,
-    agentsUsed: string[],
-    warnings: string[],
-  ): Promise<{
-    systemPrompt: string;
-    userPrompt: string;
-    hasEnrichmentWarning: boolean;
-  }> {
-    // 0. Sanitize user input to prevent prompt injection attacks
-    const sanitizedInput = this.sanitizeUserInput(request.userInput);
-    if (sanitizedInput !== request.userInput) {
-      warnings.push(
-        'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
-      );
-    }
-
-    // 1. Build system prompt with all agents
-    const systemPrompt = await this.buildSystemPrompt(request.sectionType);
-    agentsUsed.push('base-prompt');
-
-    // 2. Enrich user prompt with legal context
-    let enrichedUserPrompt = sanitizedInput;
-    enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
-      enrichedUserPrompt,
-      request.sectionType,
-    );
-    agentsUsed.push('legal-context');
-
-    // 3. Add fundamentação guidance if applicable
-    if (this.needsFundamentacao(request.sectionType)) {
-      enrichedUserPrompt =
-        await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
-      agentsUsed.push('fundamentacao-guidance');
-    }
-
-    // 3.5. Enrich with market fundamentation from Perplexity (optional)
-    let hasEnrichmentWarning = false;
-    if (this.needsMarketEnrichment(request.sectionType)) {
-      try {
-        const enrichmentQuery = this.buildEnrichmentQuery(
-          request.sectionType,
-          request.etpData?.objeto || sanitizedInput,
-        );
-
-        const enrichmentResult =
-          await this.perplexityService.search(enrichmentQuery);
-
-        if (enrichmentResult.isFallback) {
-          // Perplexity returned fallback - graceful degradation
-          this.logger.warn(
-            'Perplexity enrichment unavailable, continuing without market data',
-            {
-              sectionType: request.sectionType,
-            },
-          );
-          warnings.push(
-            '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
-          );
-          hasEnrichmentWarning = true;
-        } else if (enrichmentResult.summary) {
-          // Success - add market context to prompt
-          enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
-          agentsUsed.push('market-enrichment');
-          this.logger.log(
-            `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
-          );
-        }
-      } catch (error) {
-        // Unexpected error - log and continue (graceful degradation)
-        this.logger.error('Unexpected error during Perplexity enrichment', {
-          error: error.message,
-          sectionType: request.sectionType,
-        });
-        warnings.push(
-          '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
-        );
-        hasEnrichmentWarning = true;
-      }
-    }
-
-    // 4. Add anti-hallucination safety prompt
-    const safetyPrompt =
-      await this.antiHallucinationAgent.generateSafetyPrompt();
-    const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
-    agentsUsed.push('anti-hallucination');
-
-    // 5. Add ETP context if available
-    if (request.etpData) {
-      enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
-    }
-
-    // 5.5. Sanitize PII before sending to external LLM (LGPD compliance)
-    const { redacted: sanitizedPrompt, findings: piiFindings } =
-      this.piiRedactionService.redact(enrichedUserPrompt);
-
-    if (piiFindings.length > 0) {
-      this.logger.warn('PII detected and redacted before LLM call', {
-        section: request.sectionType,
-        findings: piiFindings,
-      });
-      warnings.push(
-        'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
-      );
-    }
-
-    return {
-      systemPrompt: finalSystemPrompt,
-      userPrompt: sanitizedPrompt,
-      hasEnrichmentWarning,
-    };
-  }
-
-  /**
    * Generates ETP section content using multi-agent AI orchestration.
    *
    * @remarks
@@ -345,12 +212,102 @@ export class OrchestratorService {
     const warnings: string[] = [];
 
     try {
-      // Build enriched prompts
-      const {
-        systemPrompt: finalSystemPrompt,
-        userPrompt: sanitizedPrompt,
-        hasEnrichmentWarning,
-      } = await this.buildEnrichedPrompt(request, agentsUsed, warnings);
+      // 0. Sanitize user input to prevent prompt injection attacks
+      const sanitizedInput = this.sanitizeUserInput(request.userInput);
+      if (sanitizedInput !== request.userInput) {
+        warnings.push(
+          'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
+        );
+      }
+
+      // 1. Build system prompt with all agents
+      const systemPrompt = await this.buildSystemPrompt(request.sectionType);
+      agentsUsed.push('base-prompt');
+
+      // 2. Enrich user prompt with legal context
+      let enrichedUserPrompt = sanitizedInput;
+      enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
+        enrichedUserPrompt,
+        request.sectionType,
+      );
+      agentsUsed.push('legal-context');
+
+      // 3. Add fundamentação guidance if applicable
+      if (this.needsFundamentacao(request.sectionType)) {
+        enrichedUserPrompt =
+          await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
+        agentsUsed.push('fundamentacao-guidance');
+      }
+
+      // 3.5. Enrich with market fundamentation from Perplexity (optional)
+      let hasEnrichmentWarning = false;
+      if (this.needsMarketEnrichment(request.sectionType)) {
+        try {
+          const enrichmentQuery = this.buildEnrichmentQuery(
+            request.sectionType,
+            request.etpData?.objeto || sanitizedInput,
+          );
+
+          const enrichmentResult =
+            await this.perplexityService.search(enrichmentQuery);
+
+          if (enrichmentResult.isFallback) {
+            // Perplexity returned fallback - graceful degradation
+            this.logger.warn(
+              'Perplexity enrichment unavailable, continuing without market data',
+              {
+                sectionType: request.sectionType,
+              },
+            );
+            warnings.push(
+              '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
+            );
+            hasEnrichmentWarning = true;
+          } else if (enrichmentResult.summary) {
+            // Success - add market context to prompt
+            enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
+            agentsUsed.push('market-enrichment');
+            this.logger.log(
+              `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
+            );
+          }
+        } catch (error) {
+          // Unexpected error - log and continue (graceful degradation)
+          this.logger.error('Unexpected error during Perplexity enrichment', {
+            error: error.message,
+            sectionType: request.sectionType,
+          });
+          warnings.push(
+            '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
+          );
+          hasEnrichmentWarning = true;
+        }
+      }
+
+      // 4. Add anti-hallucination safety prompt
+      const safetyPrompt =
+        await this.antiHallucinationAgent.generateSafetyPrompt();
+      const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
+      agentsUsed.push('anti-hallucination');
+
+      // 5. Add ETP context if available
+      if (request.etpData) {
+        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
+      }
+
+      // 5.5. Sanitize PII before sending to external LLM (LGPD compliance)
+      const { redacted: sanitizedPrompt, findings: piiFindings } =
+        this.piiRedactionService.redact(enrichedUserPrompt);
+
+      if (piiFindings.length > 0) {
+        this.logger.warn('PII detected and redacted before LLM call', {
+          section: request.sectionType,
+          findings: piiFindings,
+        });
+        warnings.push(
+          'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
+        );
+      }
 
       // 6. Generate content with LLM
       const temperature = this.getSectionTemperature(request.sectionType);

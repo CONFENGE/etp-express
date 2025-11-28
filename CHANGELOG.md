@@ -14,7 +14,6 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 Trabalho em progresso para alcançar qualidade de produção:
 
 #### 🤖 Enriquecimento com IA (2025-11-25)
-
 - ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
   - Integração do PerplexityService no OrchestratorService
   - Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
@@ -25,7 +24,6 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Flag `hasEnrichmentWarning` para transparência ao usuário
 
 #### 🐛 Hotfixes (2025-11-25)
-
 - ✅ #297 - Adicionar componente Alert faltante para SectionCard (PR #297)
   - Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
   - Suporte para variantes: default, destructive, warning
@@ -33,19 +31,7 @@ Trabalho em progresso para alcançar qualidade de produção:
   - JSDoc completo para todos os componentes públicos
   - Re-merge da PR #296 executado com sucesso após correção
 
-#### ♻️ Refatoração de Código (2025-11-28)
-
-- ✅ #316 - Extrair método buildEnrichedPrompt() do OrchestratorService (PR #320)
-  - **Parte 1 de 4** da refatoração para Clean Code compliance (#28)
-  - Novo método privado `buildEnrichedPrompt()` (132 linhas) encapsula lógica de construção de prompts
-  - Reduz `generateSection()` de 120 para 86 linhas (próximas PRs: #317, #318, #319)
-  - Sanitização de input (prompt injection), enriquecimento legal, fundamentação, PII redaction
-  - 7 novos testes unitários (766/766 passing, 96% coverage mantido)
-  - Zero mudanças comportamentais - output idêntico à implementação anterior
-  - Cleanup: remoção de arquivos temporários `github-issues.json` e `github-milestones.json`
-
 #### 🛡️ Resiliência e Confiabilidade (2025-11-20)
-
 - ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)
   - Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
   - Thresholds: 50% erro rate, 5 requests mínimas, 60s timeout, 30s reset
@@ -55,7 +41,6 @@ Trabalho em progresso para alcançar qualidade de produção:
   - 590 testes passando (0 regressões)
 
 #### 🔒 Conformidade LGPD (2025-11-19 a 2025-11-20)
-
 - ✅ #202 - Implementar consentimento LGPD no registro (PR #215)
 - ✅ #203 - Implementar sanitização PII antes de envio para LLMs (PR #219)
 - ✅ #204 - Aviso de transferência internacional de dados (PR #221)
@@ -67,7 +52,6 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Conformidade com LGPD, Marco Civil, CDC, Lei 14.133
 
 #### ⚙️ Infraestrutura Técnica (2025-11-06 a 2025-11-12)
-
 - ✅ Configuração Jest para testes backend
 - ✅ ESLint + Prettier configurados
 - ✅ Testes unitários: auth, sections, ETPs, controllers, services
@@ -79,14 +63,12 @@ Trabalho em progresso para alcançar qualidade de produção:
 - 🔄 Cobertura de testes em aumento (0.46% → ~50%, meta: 70%)
 
 #### 📊 Progresso Geral
-
 - **25 de 77 issues concluídas** (32%)
 - **M1 (Foundation)**: 70% concluído (21/30)
 - **M3 (Security)**: 30% concluído (3/10)
 - **M4 (Refactoring)**: 5% iniciado (1/20)
 
 #### 🎯 Próximas Entregas
-
 - [ ] Finalizar M1 - Testes (9 issues restantes)
 - [ ] Completar M3 - Auditoria OWASP + LGPD
 - [ ] M2 - CI/CD Pipeline
@@ -104,7 +86,6 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 ### ✨ Adicionado
 
 #### Backend (NestJS)
-
 - Sistema completo de autenticação JWT
 - CRUD de usuários com roles (admin, user)
 - CRUD de ETPs (Estudos Técnicos Preliminares)
@@ -134,7 +115,6 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - 64 arquivos TypeScript
 
 #### Frontend (React)
-
 - Interface moderna com **Tailwind CSS** + **shadcn/ui**
 - Sistema de autenticação com JWT
 - Dashboard com estatísticas
@@ -160,7 +140,6 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - 62 arquivos TypeScript + TSX
 
 #### Infraestrutura
-
 - Configuração completa para **Railway**
 - Schema PostgreSQL completo com:
   - 8 tabelas principais
@@ -173,7 +152,6 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - Variáveis de ambiente documentadas
 
 #### Documentação
-
 - **README.md**: Documentação principal completa
 - **ARCHITECTURE.md**: Arquitetura detalhada do sistema
 - **DEPLOY_RAILWAY.md**: Guia completo de deploy
@@ -233,7 +211,6 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 ### 🔮 Planejado para v1.1+
 
 #### A Adicionar
-
 - [ ] Suporte a modelos on-premise (Llama, Mistral)
 - [ ] IA híbrida (local + cloud)
 - [ ] Workflow de aprovação
