@@ -10,7 +10,8 @@ import { Sparkles, Save, Download, Eye } from 'lucide-react';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
 import { LoadingState } from '@/components/common/LoadingState';
-import { SECTION_TEMPLATES, REQUIRED_SECTIONS } from '@/types/etp';
+import { REQUIRED_SECTIONS, type SectionTemplate } from '@/types/etp';
+import { loadSectionTemplates } from '@/lib/section-templates';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
@@ -20,6 +21,26 @@ export function ETPEditor() {
   const { success, error } = useToast();
   const [activeSection, setActiveSection] = useState(1);
   const [content, setContent] = useState('');
+  const [sectionTemplates, setSectionTemplates] = useState<SectionTemplate[]>(
+    [],
+  );
+  const [templatesLoading, setTemplatesLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const templates = await loadSectionTemplates();
+        setSectionTemplates(templates);
+      } catch (err) {
+        error('Erro ao carregar templates de seções');
+        console.error('Failed to load section templates:', err);
+      } finally {
+        setTemplatesLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, [error]);
 
   useEffect(() => {
     if (id) {
@@ -51,10 +72,14 @@ export function ETPEditor() {
     }
   };
 
-  if (isLoading || !currentETP) {
+  if (isLoading || !currentETP || templatesLoading) {
     return (
       <MainLayout>
-        <LoadingState message="Carregando ETP..." />
+        <LoadingState
+          message={
+            templatesLoading ? 'Carregando templates...' : 'Carregando ETP...'
+          }
+        />
       </MainLayout>
     );
   }
@@ -106,7 +131,7 @@ export function ETPEditor() {
                 onValueChange={(v) => setActiveSection(Number(v))}
               >
                 <TabsList className="grid grid-cols-7 lg:grid-cols-13 h-auto">
-                  {SECTION_TEMPLATES.map((template) => (
+                  {sectionTemplates.map((template) => (
                     <TabsTrigger
                       key={template.number}
                       value={String(template.number)}
@@ -120,7 +145,7 @@ export function ETPEditor() {
                   ))}
                 </TabsList>
 
-                {SECTION_TEMPLATES.map((template) => (
+                {sectionTemplates.map((template) => (
                   <TabsContent
                     key={template.number}
                     value={String(template.number)}
