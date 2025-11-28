@@ -24,18 +24,21 @@ describe('section-templates', () => {
     },
   ];
 
+  const mockFetch = vi.fn();
+
   beforeEach(() => {
     // Clear cache before each test
     clearTemplatesCache();
 
     // Reset fetch mock
-    global.fetch = vi.fn();
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
   });
 
   describe('loadSectionTemplates', () => {
     it('should load templates from JSON file', async () => {
       // Mock successful fetch
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -49,7 +52,7 @@ describe('section-templates', () => {
 
     it('should cache templates after first load', async () => {
       // Mock successful fetch
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -67,7 +70,7 @@ describe('section-templates', () => {
 
     it('should return cached templates on subsequent calls', async () => {
       // Mock successful fetch
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -82,7 +85,7 @@ describe('section-templates', () => {
 
     it('should handle fetch errors gracefully', async () => {
       const errorMessage = 'Network error';
-      (global.fetch as any).mockRejectedValueOnce(new Error(errorMessage));
+      mockFetch.mockRejectedValueOnce(new Error(errorMessage));
 
       // Mock console.error to avoid polluting test output
       const consoleSpy = vi
@@ -99,7 +102,7 @@ describe('section-templates', () => {
     });
 
     it('should throw error when response is not ok', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: 'Not Found',
       });
@@ -123,7 +126,7 @@ describe('section-templates', () => {
     });
 
     it('should return cached templates after load', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -138,7 +141,7 @@ describe('section-templates', () => {
   describe('clearTemplatesCache', () => {
     it('should clear the cached templates', async () => {
       // Load templates first
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -155,7 +158,7 @@ describe('section-templates', () => {
 
     it('should allow reloading after cache clear', async () => {
       // First load
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
@@ -167,7 +170,7 @@ describe('section-templates', () => {
       clearTemplatesCache();
 
       // Second load should fetch again
-      (global.fetch as any).mockResolvedValueOnce({
+      mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTemplates,
       });
