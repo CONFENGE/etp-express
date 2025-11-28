@@ -20,7 +20,8 @@ export async function loadSectionTemplates(): Promise<SectionTemplate[]> {
         `Failed to load section templates: ${response.statusText}`,
       );
     }
-    cachedTemplates = await response.json();
+    const templates = (await response.json()) as SectionTemplate[];
+    cachedTemplates = templates;
     return cachedTemplates;
   } catch (error) {
     console.error('Error loading section templates:', error);
