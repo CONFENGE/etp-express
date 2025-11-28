@@ -3,14 +3,14 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
-**Última Atualização:** 2025-11-27
+**Última Atualização:** 2025-11-28
 
 - Issue #31 CLOSED ✅ - Adicionar useMemo em ETPs.tsx para filteredETPs (PR #314)
   - ✅ Adicionado useMemo para memoizar filteredETPs
   - ✅ Otimizado search.toLowerCase() para computar apenas uma vez
   - ✅ Performance: filteredETPs recalcula apenas quando etps ou search mudam
   - ✅ 29/29 testes frontend passando, 8/8 CI checks verdes
-  - ✅ **M4 (Refactoring & Performance): 61% → 65% (20/31 issues)**
+  - ✅ **M4 (Refactoring & Performance): 61% → 60% (21/35 issues)**
 - Issue #30 CLOSED ✅ - Adicionar useMemo em Dashboard.tsx para stats (PR #313)
   - ✅ Otimizado cálculo de stats com useMemo hook
   - ✅ Substituídas 2 chamadas filter() por 1 reduce() memoizado
@@ -48,8 +48,8 @@
 - Issue #211 CLOSED ✅ - PoC RAG com pgvector + Lei 14.133/2021 (PR #293)
 - Issue #208 CLOSED ✅ - Retry exponential backoff para APIs externas
 - Dependabot PRs: ✅ 9/9 PRs merged com sucesso (validação manual completa)
-  **Total de Issues:** 174 issues (41 abertas + 133 fechadas) organizadas em 6 milestones
-  **Prontidão para Produção:** ~78% - **M1 completo (100%), M2 COMPLETO (100%), M3 completo (100%)**, M4 em progresso (65%)! 🚀
+  **Total de Issues:** 174 issues (54 abertas + 120 fechadas) organizadas em 6 milestones
+  **Prontidão para Produção:** ~69% (120/174 issues fechadas) - **M1 completo (100%), M2 COMPLETO (100%), M3 completo (100%)**, M4 em progresso (60%)! 🚀
 
 ### 📦 Atualizações de Dependências (Dependabot)
 
@@ -105,11 +105,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    █████████████░░░░░░░ 20/31 (65%)  ⚡ +1 CLOSED: #31
+[M4] Refactoring & Performance    ████████████░░░░░░░░ 21/35 (60%)  ⚡ +1 CLOSED: #316
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 133/174 issues concluídas (76%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 65% 🚀
+TOTAL: 120/174 issues concluídas (69%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 60% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
@@ -294,8 +294,8 @@ Acurácia da documentação: 99.4% ✅ (após audit 2025-11-27)
 - [x] #253 - [P1] Configure Prettier endOfLine to fix CRLF lint errors 🟡 ✅ **PR #259 MERGED**
 - [x] #254 - [P1] Add .gitattributes to enforce LF line endings 🟡 ✅ **PR #259 MERGED**
 - [x] #255 - [P1] Normalize existing CRLF files to LF in backend 🟡 ✅ **PR #259 MERGED**
-- [ ] #256 - [P2] Add pre-commit hook to validate line endings 🟢
-- [ ] #257 - [P2] Add CI workflow validation for package-lock.json 🟢
+- [x] #256 - [P2] Add pre-commit hook to validate line endings 🟢
+- [x] #257 - [P2] Add CI workflow validation for package-lock.json 🟢
 
 **🎉 CI WORKFLOWS RESTAURADOS!** 4 issues críticas resolvidas em PR #259 (merged 2025-11-21)
 
@@ -388,9 +388,9 @@ Acurácia da documentação: 99.4% ✅ (após audit 2025-11-27)
 
 - ⏳ #87 - [#46c] Implementar remediações de segurança (única issue M3 pendente)
 
-### ⚡ M4: Refactoring & Performance (14 fechadas de 32)
+### ⚡ M4: Refactoring & Performance (21 fechadas de 35)
 
-**Status**: 44% concluído 🚀
+**Status**: 60% concluído 🚀
 
 **Refatoração:**
 
@@ -409,6 +409,15 @@ Acurácia da documentação: 99.4% ✅ (após audit 2025-11-27)
 
 - ✅ #211 - PoC RAG com Lei 14.133/2021 (pgvector) 🔒 ⚡ **PR #293 MERGED** ✅ **NOVO!**
 - ✅ #212 - Integrar RAG no AntiHallucinationAgent 🔒 ⚡ **PR #294 MERGED** ✅ **NOVO!**
+- [x] #213 - Adicionar flags para habilitar/desabilitar RAG via env vars 🔒 ✅
+- [x] #214 - Melhorar scoring do AntiHallucinationAgent 🔒 ⚡ **PR #312 MERGED** ✅ **NOVO!**
+
+**Orquestrador (OrchestratorService):**
+
+- [x] #316 - [ORCH-28a] Extrair buildEnrichedPrompt() do OrchestratorService ⚡ **PR #320 MERGED** ✅ **NOVO!**
+- [ ] #317 - [ORCH-28b] Extrair generateWithLLM() e postProcessContent() do OrchestratorService 🚧
+- [ ] #318 - [ORCH-28c] Extrair runValidations() do OrchestratorService 🚧
+- [ ] #319 - [ORCH-28d] Refatorar generateSection() como orquestrador + validar testes de integração 🚧
 
 **Performance:**
 
@@ -417,6 +426,7 @@ Acurácia da documentação: 99.4% ✅ (após audit 2025-11-27)
 **Tooling & Dependências:**
 
 - ✅ #172 - chore(deps): Investigate and upgrade major dependency versions ⚡ (CLOSED 2025-11-18)
+- [ ] #321 - [BUG] Monorepo @nestjs/common dependency conflict breaks builds 🔴 **CRÍTICO**
 
 **Pendente**: Load testing (#88-#91), refatorações de código (#77-#81), otimizações (#28-#33, #41)
 
@@ -2026,12 +2036,12 @@ Automatizar validação de código (lint + testes) em GitHub Actions, configurar
 
 **🚨 CI Fixes - Hotfix (6 issues) 🆕 - 0 DE 6 CONCLUÍDAS**
 
-- [ ] #252 - [P0-CRITICAL] Fix package-lock.json inconsistency breaking CI test workflows (5min) 🔴 **CRÍTICO**
-- [ ] #253 - [P1-HIGH] Configure Prettier endOfLine to fix CRLF lint errors in CI (2min) 🟡 **ALTO**
-- [ ] #254 - [P1-HIGH] Add .gitattributes to enforce LF line endings across codebase (3min) 🟡 **ALTO**
-- [ ] #255 - [P1-HIGH] Normalize existing CRLF files to LF in backend (5min) 🟡 **ALTO** (depende #253, #254)
-- [ ] #256 - [P2-MEDIUM] Add pre-commit hook to validate line endings (10min) 🟢 **MÉDIO**
-- [ ] #257 - [P2-MEDIUM] Add CI workflow validation for package-lock.json consistency (15min) 🟢 **MÉDIO**
+- [x] #252 - [P0-CRITICAL] Fix package-lock.json inconsistency breaking CI test workflows (5min) 🔴 **CRÍTICO**
+- [x] #253 - [P1-HIGH] Configure Prettier endOfLine to fix CRLF lint errors in CI (2min) 🟡 **ALTO**
+- [x] #254 - [P1-HIGH] Add .gitattributes to enforce LF line endings across codebase (3min) 🟡 **ALTO**
+- [x] #255 - [P1-HIGH] Normalize existing CRLF files to LF in backend (5min) 🟡 **ALTO** (depende #253, #254)
+- [x] #256 - [P2-MEDIUM] Add pre-commit hook to validate line endings (10min) 🟢 **MÉDIO**
+- [x] #257 - [P2-MEDIUM] Add CI workflow validation for package-lock.json consistency (15min) 🟢 **MÉDIO**
 
 **Nota:** Issues #21 e #40 foram movidas para M6 (Maintenance)
 **⚠️ ATENÇÃO:** 5 workflows de CI estão falhando (#252-#257 resolve todos os problemas)
@@ -2086,8 +2096,8 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 
 - [x] #46 - Auditoria de segurança completa (parent, desmembrada) ✅
 - [x] #85 - [#46a] Auditoria OWASP Top 10 (2023) (6h) ✅
-- [ ] #86 - [#46b] Conformidade LGPD e privacidade (parent issue) ⏳
-- [ ] #87 - [#46c] Implementar remediações identificadas (8h) ⏳
+- [x] #86 - [#46b] Conformidade LGPD e privacidade (parent issue) ⏳
+- [x] #87 - [#46c] Implementar remediações identificadas (8h) ⏳
 
 **Vulnerabilidades Críticas (1 issue) - ✅ 1 DE 1 CONCLUÍDA**
 
@@ -2117,13 +2127,13 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 
 - [x] #261 - [LGPD-86a] Mapear fluxo de dados pessoais ✅ **FECHADA 2025-11-21 - PR #270**
 - [x] #262 - [LGPD-86b] Verificar mecanismos de consentimento de usuários ✅ **FECHADA 2025-11-21 - PR #271**
-- [ ] #263 - [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso ⏳
+- [x] #263 - [LGPD-86c] Validar criptografia de dados sensíveis em trânsito e repouso ⏳
 - [x] #264 - [LGPD-86d] Revisar e documentar política de retenção de dados ✅ **FECHADA 2025-11-21 - PR #272**
 - [x] #265 - [LGPD-86e] Verificar implementação dos direitos do titular ✅ **FECHADA 2025-11-21 - PR #274**
 - [x] #266 - [LGPD-86f] Implementar logs de auditoria para acesso a dados pessoais ✅ **FECHADA 2025-11-21 - PR #275**
 - [x] #267 - [LGPD-86g] Criar política de privacidade e termos de uso ✅ **FECHADA 2025-11-22 - PR #277**
 - [x] #268 - [LGPD-86h] Avaliar e documentar anonimização/pseudonimização de dados ✅ **FECHADA 2025-11-22 - PR #276**
-- [ ] #269 - [LGPD-86i] Gerar relatório consolidado de conformidade LGPD ⏳
+- [x] #269 - [LGPD-86i] Gerar relatório consolidado de conformidade LGPD ⏳
 
 **Nota histórica:** Desmembramento anterior (#191-#197) foi substituído em 2025-11-21 por versão mais granular.
 
@@ -2136,8 +2146,8 @@ Corrigir bugs de useEffect (memory leaks), implementar controles de segurança e
 
 **Production Readiness - TIER 2 (2 issues) - ⏳ 0 DE 2 CONCLUÍDAS**
 
-- [ ] #113 - LGPD Data Export & Deletion Automation (10-12h) ⏳
-- [ ] #114 - Third-Party Penetration Testing (20-24h) ⏳
+- [x] #113 - LGPD Data Export & Deletion Automation (10-12h) ⏳
+- [x] #114 - Third-Party Penetration Testing (20-24h) ⏳
 
 #### Critérios de Conclusão
 
@@ -2183,11 +2193,11 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 
 **Frontend - Refatoração (5 issues)**
 
-- [ ] #29 - Corrigir duplicação de localStorage em authStore (2h)
-- [ ] #30 - Adicionar useMemo em Dashboard.tsx (1h)
-- [ ] #31 - Adicionar useMemo em ETPs.tsx (1h)
+- [x] #29 - Corrigir duplicação de localStorage em authStore (2h)
+- [x] #30 - Adicionar useMemo em Dashboard.tsx (1h)
+- [x] #31 - Adicionar useMemo em ETPs.tsx (1h)
 - [ ] #32 - Dividir ETPEditor.tsx em subcomponentes (6h)
-- [ ] #33 - Mover SECTION_TEMPLATES para arquivo JSON (3h)
+- [x] #33 - Mover SECTION_TEMPLATES para arquivo JSON (3h)
 
 **Observabilidade (0 issues)** _(#35 movida para M5)_
 
@@ -2221,9 +2231,9 @@ Refatorar código legado, eliminar duplicações, adicionar tipos TypeScript, ot
 **RAG e Anti-Alucinação - Quesitos Críticos (4 issues) 🆕🔴 P1**
 
 - [x] #211 - [P1][Backend] PoC RAG com Lei 14.133/2021 🔴 **P1** ✅ **Merged via PR #293** (2025-11-24)
-- [ ] #212 - [P1][Backend] Integrar RAG no AntiHallucinationAgent 🔴 **P1** (desbloqueado)
-- [ ] #213 - [P1][Backend] Fact-checking reverso via Perplexity 🔴 **P1** (desbloqueado)
-- [ ] #214 - [P1][Backend] Melhorar scoring do AntiHallucinationAgent 🔴 **P1** (desbloqueado)
+- [x] #212 - [P1][Backend] Integrar RAG no AntiHallucinationAgent 🔴 **P1** (desbloqueado)
+- [x] #213 - [P1][Backend] Fact-checking reverso via Perplexity 🔴 **P1** (desbloqueado)
+- [x] #214 - [P1][Backend] Melhorar scoring do AntiHallucinationAgent 🔴 **P1** (desbloqueado)
 
 #### Critérios de Conclusão
 
@@ -2396,15 +2406,15 @@ Issues identificadas durante auditoria que não têm milestone atribuída no Git
 
 ### Issues Pendentes (2 total)
 
-- [ ] #231 - [Security] Resolve pre-existing npm vulnerabilities 🔒 **Segurança**
+- [x] #231 - [Security] Resolve pre-existing npm vulnerabilities 🔒 **Segurança**
 - [ ] #248 - [PROCESS] Estabelecer limite de tamanho para PRs futuras 📏 **Processo**
 
 ### Issues Concluídas (4 total) ✅
 
 **CI Fixes (P2 - Nice to have):**
 
-- [ ] #256 - [P2] Add pre-commit hook to validate line endings 🟢
-- [ ] #257 - [P2] Add CI workflow validation for package-lock.json 🟢
+- [x] #256 - [P2] Add pre-commit hook to validate line endings 🟢
+- [x] #257 - [P2] Add CI workflow validation for package-lock.json 🟢
 
 **Nota:** Issues #252-#255 foram concluídas (ver seção M2) mas não têm milestone atribuída.
 
