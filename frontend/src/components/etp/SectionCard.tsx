@@ -56,7 +56,8 @@ export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
           <Alert variant="warning" className="mt-3">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-xs">
-              Esta seção foi gerada sem busca de fundamentação externa. Recomendamos revisar e adicionar referências manualmente.
+              Esta seção foi gerada sem busca de fundamentação externa.
+              Recomendamos revisar e adicionar referências manualmente.
             </AlertDescription>
           </Alert>
         )}
