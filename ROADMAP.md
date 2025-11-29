@@ -2,11 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (90%)
+**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (92%)
 **Última Atualização:** 2025-11-29
 
-**Total de Issues:** 186 issues (36 abertas + 150 fechadas)
-**Prontidão para Produção:** 84% - M1-M3 FINALIZADOS, M4 quase completo
+**Total de Issues:** 191 issues (40 abertas + 151 fechadas)
+**Prontidão para Produção:** 85% - M1-M3 FINALIZADOS, M4 quase completo
 
 ### Progresso Global
 
@@ -14,13 +14,13 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ██████████████████░░ 35/39  (90%)  ⚡ Refactoring & Performance
+M4: ██████████████████▓░ 36/39  (92%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
 
-**Velocidade Atual:** 5.1 issues/dia (36 fechadas nos últimos 7 dias)
-**Previsão de Conclusão:** ~2025-12-04 (6 dias)
+**Velocidade Atual:** 5.3 issues/dia (37 fechadas nos últimos 7 dias)
+**Previsão de Conclusão:** ~2025-12-04 (5 dias)
 
 ---
 
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (35/39) - 90%
+### ⚡ M4: Refactoring & Performance (36/39) - 92%
 
-**Status:** EM PROGRESSO | 4 issues pendentes
+**Status:** EM PROGRESSO | 3 issues pendentes
 
 **Concluídas:**
 
@@ -131,6 +131,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 - ✅ #108 - Database performance optimization
 - ✅ #147 - Database production tuning
+- ✅ #343 - [PERF-91e] Configurar connection pooling explícito PostgreSQL
 
 **Tooling:**
 
@@ -156,22 +157,33 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
 - [ ] #79-#81 - Auditorias adicionais (Sections, Orchestrator, User)
-- [ ] #91 - Implementar otimizações de performance identificadas
+- [ ] #91 - Parent: Implementar otimizações de performance (PARENT - 1/5 sub-issues concluídas)
+  - [ ] #339 - [PERF-91a] Implementar cache de respostas LLM OpenAI
+  - [ ] #340 - [PERF-91b] Implementar cache de respostas Perplexity
+  - [ ] #341 - [PERF-91c] Verificar e garantir paralelização de agentes
+  - [ ] #342 - [PERF-91d] Implementar selective loading de relations
+  - [x] #343 - [PERF-91e] Configurar connection pooling PostgreSQL ✅
 - [ ] #300 - Security Penetration Testing
 
-**Issues:** #25-#33, #41, #77-#81, #88-#91, #108, #147, #172, #206-#212, #214, #231, #300-#301, #316-#319, #321, #326-#329
+**Issues:** #25-#33, #41, #77-#81, #88-#91, #108, #147, #172, #206-#212, #214, #231, #300-#301, #316-#319, #321, #326-#329, #339-#343
 
-**Última Conquista (2025-11-29):**
+**Últimas Conquistas (2025-11-29):**
+
+- ✅ #343 - Configure connection pooling for Railway Postgres - PR #344
+- 📊 Progresso M4: 90% → 92% (+2 p.p.)
+- ⚙️ Connection pooling: max 50 → 20 (Railway limit), min 10 → 5
+- 📝 Slow query logging: queries >3s logadas automaticamente
+- 📚 Documentação: ARCHITECTURE.md seção 2.5 (Database Configuration)
+- ✅ 780/780 testes passando
+- 🎯 Primeira sub-issue de #91 concluída (1/5 - 20%)
 
 - ✅ #90 - Bottleneck analysis and load test playbook - PR #338
-- 📊 Progresso M4: 87% → 90% (+3 p.p.)
 - 🔍 Análise estática: 8 bottlenecks identificados (P0-P3)
 - 📝 Documentação: PERFORMANCE_BOTTLENECK_ANALYSIS.md (686 linhas) + LOAD_TEST_EXECUTION_PLAYBOOK.md (538 linhas)
 - 🎯 Priorização por impacto: P0 (LLM APIs, sem cache), P1 (DB queries, agents)
 - 💰 Economia estimada: 80% custos OpenAI via caching (~$40/1000 gerações)
 - ⚡ Otimizações: Latência 60s → <40s com cache + parallelization
-- 📚 Playbook completo para execução de load tests futuros
-- 🚀 Desbloqueia: #91 (implementar otimizações de performance)
+- 🚀 Desbloqueia: #91 (desmembrada em #339-#343)
 
 ---
 
