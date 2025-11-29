@@ -35,27 +35,27 @@ O **ETP Express** é um sistema wrapper de LLM projetado para auxiliar servidore
 
 ### 2.1 Backend
 
-| Componente | Tecnologia | Justificativa |
-|------------|-----------|---------------|
-| Framework | NestJS | Arquitetura modular, TypeScript nativo, decorators |
-| Runtime | Node.js 20 LTS | Performance, ecossistema maduro |
-| Database | PostgreSQL 15 | ACID, jsonb, versionamento eficiente |
-| ORM | TypeORM | Migrations robustas, relations |
-| Validação | class-validator | Validação declarativa, pipes NestJS |
-| Auth | Passport + JWT | Padrão industry, extensível |
-| Docs API | Swagger/OpenAPI | Auto-documentação, testing |
+| Componente | Tecnologia      | Justificativa                                      |
+| ---------- | --------------- | -------------------------------------------------- |
+| Framework  | NestJS          | Arquitetura modular, TypeScript nativo, decorators |
+| Runtime    | Node.js 20 LTS  | Performance, ecossistema maduro                    |
+| Database   | PostgreSQL 15   | ACID, jsonb, versionamento eficiente               |
+| ORM        | TypeORM         | Migrations robustas, relations                     |
+| Validação  | class-validator | Validação declarativa, pipes NestJS                |
+| Auth       | Passport + JWT  | Padrão industry, extensível                        |
+| Docs API   | Swagger/OpenAPI | Auto-documentação, testing                         |
 
 ### 2.2 Frontend
 
-| Componente | Tecnologia | Justificativa |
-|------------|-----------|---------------|
-| Framework | React 18 | Virtual DOM, hooks, ecossistema |
-| Language | TypeScript 5 | Type safety, refatoração segura |
+| Componente | Tecnologia               | Justificativa                         |
+| ---------- | ------------------------ | ------------------------------------- |
+| Framework  | React 18                 | Virtual DOM, hooks, ecossistema       |
+| Language   | TypeScript 5             | Type safety, refatoração segura       |
 | UI Library | Tailwind CSS + shadcn/ui | Componentes acessíveis, customizáveis |
-| Forms | React Hook Form + Zod | Performance, validação schema |
-| State | Zustand | Simples, performático, DevTools |
-| HTTP | Axios | Interceptors, cancelation |
-| Build | Vite | Fast HMR, tree-shaking |
+| Forms      | React Hook Form + Zod    | Performance, validação schema         |
+| State      | Zustand                  | Simples, performático, DevTools       |
+| HTTP       | Axios                    | Interceptors, cancelation             |
+| Build      | Vite                     | Fast HMR, tree-shaking                |
 
 ### 2.3 Integrações Externas
 
@@ -77,6 +77,47 @@ Railway Stack:
 └── Env Variables: API_KEYS, JWT_SECRET, DATABASE_URL
 ```
 
+### 2.5 Database Configuration & Performance
+
+**PostgreSQL Connection Pooling (#108, #343)**
+
+Configuração otimizada para Railway Postgres Starter (max 20 connections):
+
+```typescript
+// backend/src/app.module.ts
+TypeOrmModule.forRootAsync({
+  extra: {
+    max: 20, // Max connections (Railway limit)
+    min: 5, // Min connections (always warm)
+    idleTimeoutMillis: 30000, // Close idle connections after 30s
+    connectionTimeoutMillis: 5000, // Fail after 5s if pool exhausted
+  },
+  maxQueryExecutionTime: 3000, // Log slow queries (>3s)
+  retryAttempts: 3, // Retry on transient failures
+  retryDelay: 1000, // Wait 1s between retries
+});
+```
+
+**Environment Variables:**
+
+- `DB_POOL_MAX=20` - Maximum pool size (Railway Postgres Starter limit)
+- `DB_POOL_MIN=5` - Minimum pool size (warm connections)
+- `DB_IDLE_TIMEOUT=30000` - Idle timeout in ms
+- `DB_CONNECTION_TIMEOUT=5000` - Acquisition timeout in ms
+
+**Performance Characteristics:**
+
+- Supports 100+ concurrent VUs without connection exhaustion
+- Slow query logging (>3s) for performance monitoring
+- Automatic retry logic for transient connection failures
+- Conservative pool size prevents Railway connection limit errors
+
+**Monitoring:**
+
+- Slow queries logged automatically by TypeORM
+- Connection pool metrics available via health checks
+- Railway database metrics dashboard
+
 ---
 
 ## 3. ARQUITETURA DE SUBAGENTES
@@ -88,16 +129,15 @@ class ETOrchestratorService {
   async generateSection(
     sectionId: string,
     userContext: UserInput,
-    etpDraft: ETPDraft
+    etpDraft: ETPDraft,
   ): Promise<GeneratedSection> {
-
     // Chain de subagentes
     const chain = [
-      this.legalAgent,           // Valida coerência legal superficial
-      this.fundamentacaoAgent,   // Busca contratações similares
-      this.clarezaAgent,         // Revisa clareza textual
-      this.simplificacaoAgent,   // Simplifica linguagem jurídica
-      this.antiHallucinationAgent // Mitiga alucinações
+      this.legalAgent, // Valida coerência legal superficial
+      this.fundamentacaoAgent, // Busca contratações similares
+      this.clarezaAgent, // Revisa clareza textual
+      this.simplificacaoAgent, // Simplifica linguagem jurídica
+      this.antiHallucinationAgent, // Mitiga alucinações
     ];
 
     let result = await this.llmWrapper.generate(userContext);
@@ -114,6 +154,7 @@ class ETOrchestratorService {
 ### 3.2 Subagentes Especializados
 
 #### 🔹 Agente Legal
+
 ```typescript
 @Injectable()
 export class LegalAgent {
@@ -126,6 +167,7 @@ export class LegalAgent {
 ```
 
 #### 🔹 Agente de Fundamentação
+
 ```typescript
 @Injectable()
 export class FundamentacaoAgent {
@@ -140,6 +182,7 @@ export class FundamentacaoAgent {
 ```
 
 #### 🔹 Agente de Clareza
+
 ```typescript
 @Injectable()
 export class ClarezaAgent {
@@ -152,6 +195,7 @@ export class ClarezaAgent {
 ```
 
 #### 🔹 Agente de Mitigação de Alucinação
+
 ```typescript
 @Injectable()
 export class AntiHallucinationAgent {
@@ -262,21 +306,21 @@ CREATE INDEX idx_analytics_events_created_at ON analytics_events(created_at);
 
 ### 4.2 Incisos Obrigatórios (Art. 18 §1º)
 
-| Código | Descrição | Obrigatório |
-|--------|-----------|-------------|
-| I | Descrição da necessidade da contratação | ✅ SIM |
-| II | Demonstração da previsão de recursos orçamentários | ❌ Não |
-| III | Estimativa preliminar de despesa | ❌ Não |
-| IV | Justificativa da solução escolhida | ✅ SIM |
-| V | Descrição da solução como um todo | ❌ Não |
-| VI | Requisitos da contratação | ✅ SIM |
-| VII | Estimativas de valor da contratação | ❌ Não |
-| VIII | Justificativa do parcelamento ou não da contratação | ✅ SIM |
-| IX | Contratações correlatas | ❌ Não |
-| X | Demonstração de compatibilidade do orçamento | ❌ Não |
-| XI | Descrição dos riscos | ❌ Não |
-| XII | Providências a serem adotadas | ❌ Não |
-| XIII | Declaração de viabilidade | ✅ SIM |
+| Código | Descrição                                           | Obrigatório |
+| ------ | --------------------------------------------------- | ----------- |
+| I      | Descrição da necessidade da contratação             | ✅ SIM      |
+| II     | Demonstração da previsão de recursos orçamentários  | ❌ Não      |
+| III    | Estimativa preliminar de despesa                    | ❌ Não      |
+| IV     | Justificativa da solução escolhida                  | ✅ SIM      |
+| V      | Descrição da solução como um todo                   | ❌ Não      |
+| VI     | Requisitos da contratação                           | ✅ SIM      |
+| VII    | Estimativas de valor da contratação                 | ❌ Não      |
+| VIII   | Justificativa do parcelamento ou não da contratação | ✅ SIM      |
+| IX     | Contratações correlatas                             | ❌ Não      |
+| X      | Demonstração de compatibilidade do orçamento        | ❌ Não      |
+| XI     | Descrição dos riscos                                | ❌ Não      |
+| XII    | Providências a serem adotadas                       | ❌ Não      |
+| XIII   | Declaração de viabilidade                           | ✅ SIM      |
 
 ---
 
@@ -391,6 +435,7 @@ sequenceDiagram
 ### 7.1 Estratégias Implementadas
 
 #### 🔹 Prompts Defensivos
+
 ```typescript
 const ANTI_HALLUCINATION_PROMPT = `
 IMPORTANTE: Você está auxiliando na elaboração de um documento administrativo oficial.
@@ -407,6 +452,7 @@ Seu objetivo é AUXILIAR, não decidir. Toda afirmação deve ser auditável.
 ```
 
 #### 🔹 Validação Pós-Geração
+
 ```typescript
 class AntiHallucinationAgent {
   private readonly FORBIDDEN_PATTERNS = [
@@ -414,7 +460,7 @@ class AntiHallucinationAgent {
     /\bcom certeza\b/i,
     /\bsempre\b/i,
     /\bnunca\b/i,
-    /\bdefinitivamente\b/i
+    /\bdefinitivamente\b/i,
   ];
 
   async process(draft: string): Promise<ProcessedDraft> {
@@ -480,15 +526,14 @@ class AntiHallucinationAgent {
 ```yaml
 # railway.json (monorepo)
 {
-  "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "numReplicas": 1,
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
+  '$schema': 'https://railway.app/railway.schema.json',
+  'build': { 'builder': 'NIXPACKS' },
+  'deploy':
+    {
+      'numReplicas': 1,
+      'restartPolicyType': 'ON_FAILURE',
+      'restartPolicyMaxRetries': 10,
+    },
 }
 ```
 
@@ -535,6 +580,7 @@ VITE_APP_NAME="ETP Express"
 ## 10. ROADMAP INCREMENTAL
 
 ### Fase 1: MVP Core (Semanas 1-2)
+
 - ✅ Auth básica (JWT)
 - ✅ CRUD de ETPs
 - ✅ Orquestrador + wrapper OpenAI
@@ -543,28 +589,33 @@ VITE_APP_NAME="ETP Express"
 - ✅ Deploy Railway
 
 ### Fase 2: Busca e Fundamentação (Semana 3)
+
 - ✅ Integração Perplexity
 - ✅ Agente de fundamentação
 - ✅ Painel de referências
 
 ### Fase 3: Versionamento e Auditoria (Semana 4)
+
 - ✅ Sistema de versões
 - ✅ Diff textual
 - ✅ Trilha de auditoria
 
 ### Fase 4: UX Avançado (Semana 5)
+
 - 🔄 Telemetria analytics
 - 🔄 Tooltips contextuais
 - 🔄 Microinterações
 - 🔄 Loading states elegantes
 
 ### Fase 5: Otimizações (Semana 6)
+
 - 🔄 Cache de sugestões LLM
 - 🔄 Rate limiting
 - 🔄 Testes E2E
 - 🔄 Documentação completa
 
 ### Fase Futura (Pós-MVP)
+
 - 🔮 Suporte a modelos on-premise (Llama, Mistral)
 - 🔮 IA híbrida (modelo local + cloud fallback)
 - 🔮 Integração com COMPRASNET
@@ -626,17 +677,18 @@ Railway platform provides integrated environment variable management with sealed
 
 #### Managed Secrets
 
-| Secret | Frequency | Method |
-|--------|-----------|--------|
-| JWT_SECRET | Monthly | Manual rotation + documentation |
-| SESSION_SECRET | Monthly | Manual rotation + documentation |
-| OPENAI_API_KEY | Quarterly | Manual rotation (provider) |
-| PERPLEXITY_API_KEY | Quarterly | Manual rotation (provider) |
-| DATABASE_URL | On-demand | Manual rotation (DB password) |
+| Secret             | Frequency | Method                          |
+| ------------------ | --------- | ------------------------------- |
+| JWT_SECRET         | Monthly   | Manual rotation + documentation |
+| SESSION_SECRET     | Monthly   | Manual rotation + documentation |
+| OPENAI_API_KEY     | Quarterly | Manual rotation (provider)      |
+| PERPLEXITY_API_KEY | Quarterly | Manual rotation (provider)      |
+| DATABASE_URL       | On-demand | Manual rotation (DB password)   |
 
 #### Rotation Procedure
 
 Simple 4-step process for manual rotation:
+
 1. Generate new secret value (openssl rand -base64 32)
 2. Update in Railway dashboard
 3. Trigger auto-redeploy
@@ -647,6 +699,7 @@ No external platforms. No AWS accounts. No bootstrap credentials.
 #### Audit Trail (GitHub-based)
 
 Track all rotations via:
+
 - **GitHub Issues**: One per rotation cycle (label: `security`)
 - **Railway logs**: Auto-captured deployment logs
 - **Git commits**: Signed commits for any automation scripts
@@ -654,7 +707,6 @@ Track all rotations via:
 Meets LGPD audit trail requirement at MVP scale.
 
 For full strategy: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
-
 
 ## 12. TESTES
 
@@ -690,7 +742,7 @@ this.logger.log({
   sectionCode: 'IV',
   llmProvider: 'openai',
   tokensUsed: 1250,
-  latencyMs: 3400
+  latencyMs: 3400,
 });
 ```
 
