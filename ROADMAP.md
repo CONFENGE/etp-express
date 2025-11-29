@@ -2,11 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (67%)
-**Última Atualização:** 2025-11-28
+**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (69%)
+**Última Atualização:** 2025-11-29
 
-**Total de Issues:** 183 issues (43 abertas + 140 fechadas)
-**Prontidão para Produção:** 76% - M1-M3 FINALIZADOS, M4 acelerado
+**Total de Issues:** 183 issues (42 abertas + 141 fechadas)
+**Prontidão para Produção:** 77% - M1-M3 FINALIZADOS, M4 acelerado
 
 ### Progresso Global
 
@@ -14,13 +14,13 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: █████████████░░░░░░░ 26/39  (67%)  ⚡ Refactoring & Performance
+M4: ██████████████░░░░░░ 27/39  (69%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
 
-**Velocidade Atual:** 4.7 issues/dia (33 fechadas nos últimos 7 dias)
-**Previsão de Conclusão:** ~2025-12-07 (9 dias)
+**Velocidade Atual:** 4.8 issues/dia (34 fechadas nos últimos 7 dias)
+**Previsão de Conclusão:** ~2025-12-06 (8 dias)
 
 ---
 
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (26/39) - 67%
+### ⚡ M4: Refactoring & Performance (27/39) - 69%
 
-**Status:** EM PROGRESSO | 13 issues pendentes
+**Status:** EM PROGRESSO | 12 issues pendentes
 
 **Concluídas:**
 
@@ -109,6 +109,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - ✅ #318 - Extrair runValidations() (28c)
 - ✅ #319 - Refatorar generateSection() (28d)
 - ✅ #326 - Criar ETPEditorHeader + Progress (32a)
+- ✅ #327 - Criar ETPEditorTabsList + Content (32b)
 
 **Resiliência APIs Externas:**
 
@@ -142,8 +143,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 - [ ] #28 - Parent: Refatorar orchestrator (PARENT - sub-issues concluídas)
 - [ ] #32 - Componentizar ETPEditor.tsx (PARENT)
-- [ ] #327 - Criar ETPEditorTabsList + Content (32b)
-- [ ] #328 - Criar ETPEditorSidebar (32c)
+- [ ] #328 - Criar ETPEditorSidebar (32c) ⚡ DESBLOQUEADA
 - [ ] #329 - Refatorar ETPEditor para composição (32d)
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
