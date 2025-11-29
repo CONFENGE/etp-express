@@ -48,9 +48,10 @@ import { AppService } from './app.service';
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
         CORS_ORIGINS: Joi.string().default('http://localhost:5173'),
 
-        // Database connection pooling (#108)
-        DB_POOL_MAX: Joi.number().default(50),
-        DB_POOL_MIN: Joi.number().default(10),
+        // Database connection pooling (#108, #343)
+        // Railway Postgres Starter: max 20 connections
+        DB_POOL_MAX: Joi.number().default(20),
+        DB_POOL_MIN: Joi.number().default(5),
         DB_IDLE_TIMEOUT: Joi.number().default(30000),
         DB_CONNECTION_TIMEOUT: Joi.number().default(5000),
         DB_RETRY_ATTEMPTS: Joi.number().default(3),
@@ -78,18 +79,15 @@ import { AppService } from './app.service';
             ? { rejectUnauthorized: false }
             : false,
 
-        // Connection pooling optimization (#108)
-        // Configuração otimizada para Railway PostgreSQL (default: max_connections=100)
+        // Connection pooling optimization (#108, #343)
+        // Configuração otimizada para Railway PostgreSQL Starter (max_connections=20)
         extra: {
-          // Pool size: Railway default 10 → 50 (production) ou 10 (development)
-          // Deixa 50 connections livres para outros serviços/workers
-          max:
-            configService.get('NODE_ENV') === 'production'
-              ? parseInt(configService.get('DB_POOL_MAX', '50'))
-              : parseInt(configService.get('DB_POOL_MAX', '10')),
+          // Pool size: Railway Postgres Starter max 20 connections
+          // Configuração conservadora para evitar connection exhaustion
+          max: parseInt(configService.get('DB_POOL_MAX', '20')),
 
-          // Minimum pool size (sempre mantém 10 connections ativas)
-          min: parseInt(configService.get('DB_POOL_MIN', '10')),
+          // Minimum pool size (mantém 5 connections sempre ativas)
+          min: parseInt(configService.get('DB_POOL_MIN', '5')),
 
           // Timeout para conexões idle serem fechadas (30 segundos)
           idleTimeoutMillis: parseInt(
@@ -97,11 +95,14 @@ import { AppService } from './app.service';
           ),
 
           // Timeout para adquirir conexão do pool (5 segundos)
-          // Se todas as 50 conexões estiverem ocupadas, falha após 5s
+          // Se todas as 20 conexões estiverem ocupadas, falha após 5s
           connectionTimeoutMillis: parseInt(
             configService.get('DB_CONNECTION_TIMEOUT', '5000'),
           ),
         },
+
+        // Slow query logging (#343) - Log queries > 3s
+        maxQueryExecutionTime: 3000,
 
         // Retry logic para reconnections
         retryAttempts: parseInt(configService.get('DB_RETRY_ATTEMPTS', '3')),
