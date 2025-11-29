@@ -103,8 +103,8 @@ export class SectionsService {
   ): Promise<EtpSection> {
     this.logger.log(`Generating section ${generateDto.type} for ETP ${etpId}`);
 
-    // Verify ETP exists and user has access
-    const etp = await this.etpsService.findOne(etpId, userId);
+    // Verify ETP exists and user has access (minimal loading - only needs metadata)
+    const etp = await this.etpsService.findOneMinimal(etpId, userId);
 
     if (!etp) {
       throw new NotFoundException(`ETP ${etpId} não encontrado`);
@@ -267,8 +267,8 @@ export class SectionsService {
   async regenerateSection(id: string, userId: string): Promise<EtpSection> {
     const section = await this.findOne(id);
 
-    // Verify user access
-    await this.etpsService.findOne(section.etpId, userId);
+    // Verify user access (minimal loading - only needs ownership check)
+    await this.etpsService.findOneMinimal(section.etpId, userId);
 
     section.status = SectionStatus.GENERATING;
     await this.sectionsRepository.save(section);
@@ -373,8 +373,8 @@ export class SectionsService {
   async remove(id: string, userId: string): Promise<void> {
     const section = await this.findOne(id);
 
-    // Verify user access
-    await this.etpsService.findOne(section.etpId, userId);
+    // Verify user access (minimal loading - only needs ownership check)
+    await this.etpsService.findOneMinimal(section.etpId, userId);
 
     await this.sectionsRepository.remove(section);
 

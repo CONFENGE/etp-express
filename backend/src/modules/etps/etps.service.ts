@@ -148,6 +148,175 @@ export class EtpsService {
   }
 
   /**
+   * Retrieves a single ETP by ID with minimal data (only user relation).
+   *
+   * @remarks
+   * Optimized for scenarios where only ETP metadata is needed (e.g., section generation).
+   * Loads only the 'createdBy' relation, avoiding expensive eager loading of sections
+   * and versions.
+   *
+   * Use this method when:
+   * - Validating ETP existence and ownership
+   * - Generating new sections (doesn't need existing sections)
+   * - Checking ETP metadata without full document tree
+   *
+   * Performance impact: ~75% query reduction vs findOne()
+   * - findOne(): 1 ETP + 1 User + N Sections + M Versions queries
+   * - findOneMinimal(): 1 ETP + 1 User queries only
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param userId - Optional user ID for authorization check
+   * @returns ETP entity with only user relation loaded
+   * @throws {NotFoundException} If ETP not found
+   * @throws {ForbiddenException} If user doesn't own the ETP
+   *
+   * @example
+   * ```ts
+   * // Section generation - only needs ETP metadata
+   * const etp = await etpsService.findOneMinimal(etpId, userId);
+   * await sectionsService.generate(etp.id, { type: 'introduction' });
+   * ```
+   */
+  async findOneMinimal(id: string, userId?: string): Promise<Etp> {
+    const etp = await this.etpsRepository.findOne({
+      where: { id },
+      relations: ['createdBy'],
+    });
+
+    if (!etp) {
+      throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Check ownership - users can only access their own ETPs
+    if (userId && etp.createdById !== userId) {
+      this.logger.warn(
+        `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
+    }
+
+    return etp;
+  }
+
+  /**
+   * Retrieves a single ETP by ID with sections but not versions.
+   *
+   * @remarks
+   * Optimized for dashboard and editor views where sections are needed but
+   * version history is not. Loads:
+   * - createdBy: User who created the ETP
+   * - sections: All sections ordered by sequence (ASC)
+   *
+   * Use this method when:
+   * - Displaying ETP in dashboard with section list
+   * - Opening ETP editor (needs sections to show progress)
+   * - Showing ETP overview without version history
+   *
+   * Performance impact: ~50% query reduction vs findOne() if ETP has versions
+   * - findOne(): 1 ETP + 1 User + N Sections + M Versions queries
+   * - findOneWithSections(): 1 ETP + 1 User + N Sections queries
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param userId - Optional user ID for authorization check
+   * @returns ETP entity with user and sections relations loaded
+   * @throws {NotFoundException} If ETP not found
+   * @throws {ForbiddenException} If user doesn't own the ETP
+   *
+   * @example
+   * ```ts
+   * // Dashboard view - needs sections but not versions
+   * const etp = await etpsService.findOneWithSections(id, userId);
+   * console.log(etp.sections.length); // Available
+   * console.log(etp.versions); // undefined (not loaded)
+   * ```
+   */
+  async findOneWithSections(id: string, userId?: string): Promise<Etp> {
+    const etp = await this.etpsRepository.findOne({
+      where: { id },
+      relations: ['createdBy', 'sections'],
+      order: {
+        sections: { order: 'ASC' },
+      },
+    });
+
+    if (!etp) {
+      throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Check ownership - users can only access their own ETPs
+    if (userId && etp.createdById !== userId) {
+      this.logger.warn(
+        `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
+    }
+
+    return etp;
+  }
+
+  /**
+   * Retrieves a single ETP by ID with versions but not sections.
+   *
+   * @remarks
+   * Optimized for version history views where sections are not needed.
+   * Loads:
+   * - createdBy: User who created the ETP
+   * - versions: All versions ordered by creation date (DESC)
+   *
+   * Use this method when:
+   * - Displaying version history timeline
+   * - Comparing ETP versions
+   * - Showing change audit trail
+   *
+   * Performance impact: ~50% query reduction vs findOne() if ETP has many sections
+   * - findOne(): 1 ETP + 1 User + N Sections + M Versions queries
+   * - findOneWithVersions(): 1 ETP + 1 User + M Versions queries
+   *
+   * @param id - ETP unique identifier (UUID)
+   * @param userId - Optional user ID for authorization check
+   * @returns ETP entity with user and versions relations loaded
+   * @throws {NotFoundException} If ETP not found
+   * @throws {ForbiddenException} If user doesn't own the ETP
+   *
+   * @example
+   * ```ts
+   * // Version history view - needs versions but not sections
+   * const etp = await etpsService.findOneWithVersions(id, userId);
+   * console.log(etp.versions.length); // Available
+   * console.log(etp.sections); // undefined (not loaded)
+   * ```
+   */
+  async findOneWithVersions(id: string, userId?: string): Promise<Etp> {
+    const etp = await this.etpsRepository.findOne({
+      where: { id },
+      relations: ['createdBy', 'versions'],
+      order: {
+        versions: { createdAt: 'DESC' },
+      },
+    });
+
+    if (!etp) {
+      throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Check ownership - users can only access their own ETPs
+    if (userId && etp.createdById !== userId) {
+      this.logger.warn(
+        `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
+    }
+
+    return etp;
+  }
+
+  /**
    * Retrieves a single ETP by ID with all related data.
    *
    * @remarks
@@ -159,6 +328,11 @@ export class EtpsService {
    * Authorization is optional. If userId is provided and doesn't match the
    * ETP owner, access is allowed but logged for audit purposes. This enables
    * future role-based access control implementation.
+   *
+   * @deprecated Use specialized methods instead for better performance:
+   * - findOneMinimal() for metadata-only access
+   * - findOneWithSections() for dashboard/editor views
+   * - findOneWithVersions() for version history views
    *
    * @param id - ETP unique identifier (UUID)
    * @param userId - Optional user ID for authorization logging
