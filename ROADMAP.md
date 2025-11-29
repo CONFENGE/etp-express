@@ -14,7 +14,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████░░░░ 30/39  (76%)  ⚡ Refactoring & Performance
+M4: ████████████████░░░░ 31/39  (79%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (30/39) - 76%
+### ⚡ M4: Refactoring & Performance (31/39) - 79%
 
-**Status:** EM PROGRESSO | 9 issues pendentes
+**Status:** EM PROGRESSO | 8 issues pendentes
 
 **Concluídas:**
 
@@ -138,6 +138,10 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - ✅ #231 - Resolve npm vulnerabilities
 - ✅ #301 - Pentest vendor research
 
+**Auditorias:**
+
+- ✅ #77 - [#42a] Auditar módulo Auth contra ARCHITECTURE.md
+
 **Hotfixes:**
 
 - ✅ #321 - [BUG] Monorepo dependency conflict
@@ -147,7 +151,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #28 - Parent: Refatorar orchestrator (PARENT - sub-issues concluídas)
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
-- [ ] #77-#81 - Refatorações adicionais
+- [ ] #78-#81 - Auditorias adicionais (ETPs, Sections, Orchestrator, User)
 - [ ] #88-#91 - Load testing
 - [ ] #300 - Security Penetration Testing
 
@@ -155,10 +159,12 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 **Última Conquista (2025-11-29):**
 
-- ✅ #329 - Refatoração final ETPEditor.tsx (sub-issue 4/4 de #32) - PR #333 merged
-- ✅ #32 - Parent issue FECHADA (todas 4 sub-issues concluídas)
-- 📊 Progresso M4: 74% → 76% (+2 p.p.)
-- 🎯 ETPEditor.tsx reduzido de 229 para 165 linhas (28% de redução)
+- ✅ #77 - Auditoria módulo Auth contra ARCHITECTURE.md - PR #334 merged
+- 📊 Progresso M4: 76% → 79% (+3 p.p.)
+- 📋 Relatório: docs/AUDIT_AUTH_MODULE_2025-11-29.md (648 linhas)
+- ✅ Conformidade: 92.3% (12/13 componentes conforme)
+- 🔍 Achados: Dual-key rotation, LGPD compliance, rate limiting
+- ⚠️ Desvios: 2 não-conformidades menores documentadas
 
 ---
 
