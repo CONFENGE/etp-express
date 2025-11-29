@@ -392,21 +392,14 @@ export class OrchestratorService {
       );
 
       // 9. Collect warnings from validations
-      if (!legalValidation.isCompliant) {
-        warnings.push(...legalValidation.recommendations);
-      }
+      const validationResult = await this.runValidations(
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
 
-      if (fundamentacaoValidation && fundamentacaoValidation.score < 70) {
-        warnings.push(...fundamentacaoValidation.suggestions);
-      }
-
-      if (clarezaValidation.score < 70) {
-        warnings.push(...clarezaValidation.suggestions);
-      }
-
-      if (!hallucinationCheck.verified) {
-        warnings.push(...hallucinationCheck.warnings);
-      }
+      warnings.push(...validationResult.warnings);
 
       // 10. Add mandatory disclaimer
       generatedContent +=
@@ -567,6 +560,59 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     }
 
     return { content: rawContent, simplificationResult };
+  }
+
+  /**
+   * Runs validation checks on generated content and collects warnings.
+   *
+   * @remarks
+   * Analyzes validation results from all agents (legal, fundamentacao, clareza, hallucination)
+   * and extracts warnings and recommendations. Returns a structured object indicating if
+   * content is valid and what issues were found.
+   *
+   * @param legalValidation - Validation result from LegalAgent
+   * @param fundamentacaoValidation - Validation result from FundamentacaoAgent (nullable)
+   * @param clarezaValidation - Validation result from ClarezaAgent
+   * @param hallucinationCheck - Validation result from AntiHallucinationAgent
+   * @returns Object with isValid flag, warnings array, and errors array
+   * @private
+   */
+  private async runValidations(
+    legalValidation: any,
+    fundamentacaoValidation: any,
+    clarezaValidation: any,
+    hallucinationCheck: any,
+  ): Promise<{ isValid: boolean; warnings: string[]; errors: string[] }> {
+    const warnings: string[] = [];
+    const errors: string[] = [];
+
+    // Legal compliance validation
+    if (!legalValidation.isCompliant) {
+      warnings.push(...legalValidation.recommendations);
+    }
+
+    // Fundamentacao validation (if applicable)
+    if (fundamentacaoValidation && fundamentacaoValidation.score < 70) {
+      warnings.push(...fundamentacaoValidation.suggestions);
+    }
+
+    // Clarity validation
+    if (clarezaValidation.score < 70) {
+      warnings.push(...clarezaValidation.suggestions);
+    }
+
+    // Anti-hallucination validation
+    if (!hallucinationCheck.verified) {
+      warnings.push(...hallucinationCheck.warnings);
+    }
+
+    const isValid =
+      legalValidation.isCompliant &&
+      (!fundamentacaoValidation || fundamentacaoValidation.score >= 70) &&
+      clarezaValidation.score >= 70 &&
+      hallucinationCheck.verified;
+
+    return { isValid, warnings, errors };
   }
 
   /**
