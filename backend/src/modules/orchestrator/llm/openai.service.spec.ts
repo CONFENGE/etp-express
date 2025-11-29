@@ -376,6 +376,170 @@ describe('OpenAIService', () => {
     });
   });
 
+  describe('Cache', () => {
+    const mockRequest: LLMRequest = {
+      systemPrompt: 'You are a helpful assistant',
+      userPrompt: 'Test prompt for cache',
+    };
+
+    const mockCompletion = {
+      model: 'gpt-4-turbo-preview',
+      choices: [
+        {
+          message: {
+            content: 'Cached response',
+          },
+          finish_reason: 'stop',
+        },
+      ],
+      usage: {
+        total_tokens: 100,
+      },
+    };
+
+    it('should call OpenAI on cache MISS', async () => {
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      const result = await service.generateCompletion(mockRequest);
+
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(result.content).toBe('Cached response');
+    });
+
+    it('should NOT call OpenAI on cache HIT (second identical request)', async () => {
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // First call - cache MISS
+      await service.generateCompletion(mockRequest);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        1,
+      );
+
+      // Second call - cache HIT (should not call OpenAI again)
+      const result = await service.generateCompletion(mockRequest);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        1,
+      ); // Still 1, not 2
+      expect(result.content).toBe('Cached response');
+    });
+
+    it('should generate different cache keys for different temperatures', async () => {
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // First request with temperature 0.7
+      const request1: LLMRequest = {
+        ...mockRequest,
+        temperature: 0.7,
+      };
+      await service.generateCompletion(request1);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        1,
+      );
+
+      // Second request with temperature 0.9 (different cache key)
+      const request2: LLMRequest = {
+        ...mockRequest,
+        temperature: 0.9,
+      };
+      await service.generateCompletion(request2);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        2,
+      ); // Should call OpenAI again (different cache key)
+    });
+
+    it('should generate different cache keys for different prompts', async () => {
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // First request
+      await service.generateCompletion(mockRequest);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        1,
+      );
+
+      // Second request with different user prompt
+      const differentRequest: LLMRequest = {
+        ...mockRequest,
+        userPrompt: 'Different prompt',
+      };
+      await service.generateCompletion(differentRequest);
+      expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledTimes(
+        2,
+      ); // Should call OpenAI again
+    });
+
+    it('should log Cache HIT and Cache MISS correctly', async () => {
+      const loggerSpy = jest.spyOn(service['logger'], 'log');
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // First call - cache MISS
+      await service.generateCompletion(mockRequest);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Cache MISS:'),
+      );
+
+      loggerSpy.mockClear();
+
+      // Second call - cache HIT
+      await service.generateCompletion(mockRequest);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Cache HIT:'),
+      );
+    });
+
+    it('should return cache stats with correct structure', () => {
+      const stats = service.getCacheStats();
+
+      expect(stats).toHaveProperty('keys');
+      expect(stats).toHaveProperty('hits');
+      expect(stats).toHaveProperty('misses');
+      expect(stats).toHaveProperty('hitRate');
+      expect(typeof stats.keys).toBe('number');
+      expect(typeof stats.hits).toBe('number');
+      expect(typeof stats.misses).toBe('number');
+      expect(typeof stats.hitRate).toBe('number');
+    });
+
+    it('should calculate hitRate correctly', async () => {
+      mockOpenAIInstance.chat.completions.create.mockResolvedValue(
+        mockCompletion,
+      );
+
+      // First call - cache MISS
+      await service.generateCompletion(mockRequest);
+
+      // Second call - cache HIT
+      await service.generateCompletion(mockRequest);
+
+      const stats = service.getCacheStats();
+
+      expect(stats.misses).toBeGreaterThan(0);
+      expect(stats.hits).toBeGreaterThan(0);
+      expect(stats.hitRate).toBeGreaterThan(0);
+      expect(stats.hitRate).toBeLessThanOrEqual(1);
+    });
+
+    it('should handle hitRate when no requests have been made', () => {
+      const stats = service.getCacheStats();
+
+      // When there are no hits or misses, hitRate should be 0
+      if (stats.hits === 0 && stats.misses === 0) {
+        expect(stats.hitRate).toBe(0);
+      }
+    });
+  });
+
   describe('Circuit Breaker', () => {
     const mockRequest: LLMRequest = {
       systemPrompt: 'You are a helpful assistant',
