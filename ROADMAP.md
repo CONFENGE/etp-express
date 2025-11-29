@@ -2,11 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (80%)
+**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (85%)
 **Última Atualização:** 2025-11-29
 
-**Total de Issues:** 184 issues (39 abertas + 145 fechadas)
-**Prontidão para Produção:** 80% - M1-M3 FINALIZADOS, M4 acelerado
+**Total de Issues:** 185 issues (38 abertas + 147 fechadas)
+**Prontidão para Produção:** 82% - M1-M3 FINALIZADOS, M4 acelerado
 
 ### Progresso Global
 
@@ -14,7 +14,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████░░░░ 32/39  (82%)  ⚡ Refactoring & Performance
+M4: █████████████████░░░ 33/39  (85%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (32/39) - 82%
+### ⚡ M4: Refactoring & Performance (33/39) - 85%
 
-**Status:** EM PROGRESSO | 7 issues pendentes
+**Status:** EM PROGRESSO | 6 issues pendentes
 
 **Concluídas:**
 
@@ -137,6 +137,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - ✅ #172 - Upgrade major dependencies
 - ✅ #231 - Resolve npm vulnerabilities
 - ✅ #301 - Pentest vendor research
+- ✅ #88 - [#47a] Setup ambiente de load testing (k6)
 
 **Auditorias:**
 
@@ -153,20 +154,21 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
 - [ ] #79-#81 - Auditorias adicionais (Sections, Orchestrator, User)
-- [ ] #88-#91 - Load testing
+- [ ] #89-#91 - Load testing (executar, analisar, otimizar)
 - [ ] #300 - Security Penetration Testing
 
 **Issues:** #25-#33, #41, #77-#81, #88-#91, #108, #147, #172, #206-#212, #214, #231, #300-#301, #316-#319, #321, #326-#329
 
 **Última Conquista (2025-11-29):**
 
-- ✅ #78 - Auditoria módulo ETPs contra ARCHITECTURE.md - PR #335 (em andamento)
-- 📊 Progresso M4: 79% → 82% (+3 p.p.)
-- 📋 Relatório: docs/AUDIT_ETPS_MODULE_2025-11-29.md (700+ linhas)
-- ✅ Conformidade: 94.7% (18/19 componentes conforme)
-- 🔍 Achados: Completion tracking, statistics API, 5-state workflow
-- ⭐ Recursos além da spec: numeroProcesso, valorEstimado, metadata JSONB
-- ⚠️ Desvios: 2 não-conformidades menores (nomenclatura campo 'objeto', enum não documentado)
+- ✅ #88 - Setup k6 load testing environment - PR #336
+- 📊 Progresso M4: 82% → 85% (+3 p.p.)
+- 🧪 Ferramenta: k6 v1.2.3 (Grafana Labs)
+- 📝 Estrutura completa: /tests/load/ (6 arquivos, 774 linhas)
+- ✅ 3 scripts: auth-login, etp-create, section-generate
+- 📊 5 profiles: smoke, load, stress, spike, soak
+- 🎯 Thresholds: Auth p95<500ms, CRUD p95<1.5s, LLM p95<15s
+- ⚡ Desbloqueia: #89 (executar testes), #90 (análise), #91 (otimizações)
 
 ---
 
