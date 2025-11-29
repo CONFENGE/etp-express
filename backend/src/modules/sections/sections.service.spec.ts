@@ -143,6 +143,9 @@ describe('SectionsService', () => {
 
   const mockEtpsService = {
     findOne: jest.fn(),
+    findOneMinimal: jest.fn(),
+    findOneWithSections: jest.fn(),
+    findOneWithVersions: jest.fn(),
     updateCompletionPercentage: jest.fn(),
   };
 
@@ -206,7 +209,7 @@ describe('SectionsService', () => {
 
     it('should generate a new section successfully', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(null); // No existing section
       mockSectionsRepository.create.mockReturnValue({
         ...mockSection,
@@ -233,7 +236,7 @@ describe('SectionsService', () => {
       );
 
       // Assert
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockEtpId,
         mockUserId,
       );
@@ -260,13 +263,13 @@ describe('SectionsService', () => {
 
     it('should throw NotFoundException when ETP does not exist', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(null);
+      mockEtpsService.findOneMinimal.mockResolvedValue(null);
 
       // Act & Assert
       await expect(
         service.generateSection(mockEtpId, generateDto, mockUserId),
       ).rejects.toThrow(NotFoundException);
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockEtpId,
         mockUserId,
       );
@@ -274,7 +277,7 @@ describe('SectionsService', () => {
 
     it('should throw BadRequestException when section already exists', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(mockSection); // Existing section
 
       // Act & Assert
@@ -558,7 +561,7 @@ describe('SectionsService', () => {
     it('should regenerate section successfully', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.save
         .mockResolvedValueOnce({
           ...mockSection,
@@ -577,7 +580,7 @@ describe('SectionsService', () => {
 
       // Assert
       expect(mockSectionsRepository.findOne).toHaveBeenCalled();
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
         mockUserId,
       );
@@ -588,7 +591,7 @@ describe('SectionsService', () => {
     it('should verify user access before regenerating', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockEtpsService.findOne.mockRejectedValue(
+      mockEtpsService.findOneMinimal.mockRejectedValue(
         new NotFoundException('ETP não encontrado'),
       ); // User has no access
 
@@ -596,7 +599,7 @@ describe('SectionsService', () => {
       await expect(
         service.regenerateSection(mockSectionId, mockUserId),
       ).rejects.toThrow(NotFoundException);
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
         mockUserId,
       );
@@ -605,7 +608,7 @@ describe('SectionsService', () => {
     it('should include regeneratedAt timestamp in metadata', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.save
         .mockResolvedValueOnce({
           ...mockSection,
@@ -724,7 +727,7 @@ describe('SectionsService', () => {
     it('should remove section successfully', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.remove.mockResolvedValue(mockSection);
 
       // Act
@@ -732,7 +735,7 @@ describe('SectionsService', () => {
 
       // Assert
       expect(mockSectionsRepository.findOne).toHaveBeenCalled();
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
         mockUserId,
       );
@@ -745,7 +748,7 @@ describe('SectionsService', () => {
     it('should verify user access before removing', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockEtpsService.findOne.mockRejectedValue(
+      mockEtpsService.findOneMinimal.mockRejectedValue(
         new NotFoundException('ETP não encontrado'),
       ); // User has no access
 
@@ -753,7 +756,7 @@ describe('SectionsService', () => {
       await expect(service.remove(mockSectionId, mockUserId)).rejects.toThrow(
         NotFoundException,
       );
-      expect(mockEtpsService.findOne).toHaveBeenCalledWith(
+      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
         mockUserId,
       );
@@ -779,7 +782,7 @@ describe('SectionsService', () => {
     describe('getNextOrder', () => {
       it('should return 1 for first section in ETP', async () => {
         // Arrange
-        mockEtpsService.findOne.mockResolvedValue(mockEtp);
+        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
         mockSectionsRepository.findOne.mockResolvedValue(null);
         mockSectionsRepository.create.mockReturnValue(mockSection);
         mockSectionsRepository.save
@@ -820,7 +823,7 @@ describe('SectionsService', () => {
         ];
 
         for (const type of requiredTypes) {
-          mockEtpsService.findOne.mockResolvedValue(mockEtp);
+          mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
           mockSectionsRepository.findOne.mockResolvedValue(null);
           mockSectionsRepository.create.mockReturnValue({
             ...mockSection,
@@ -853,7 +856,7 @@ describe('SectionsService', () => {
       });
 
       it('should mark custom sections as not required', async () => {
-        mockEtpsService.findOne.mockResolvedValue(mockEtp);
+        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
         mockSectionsRepository.findOne.mockResolvedValue(null);
         mockSectionsRepository.create.mockReturnValue({
           ...mockSection,
