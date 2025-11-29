@@ -345,91 +345,55 @@ export class OrchestratorService {
     const warnings: string[] = [];
 
     try {
-      // Build enriched prompts
+      // 1. Build enriched prompts
       const {
         systemPrompt: finalSystemPrompt,
         userPrompt: sanitizedPrompt,
         hasEnrichmentWarning,
       } = await this.buildEnrichedPrompt(request, agentsUsed, warnings);
 
-      // 6. Generate content with LLM
+      // 2. Generate content with LLM
       const llmResponse = await this.generateWithLLM(
         sanitizedPrompt,
         finalSystemPrompt,
         request.sectionType,
       );
 
-      // 7. Post-processing: Simplification
+      // 3. Post-process content
       const { content: processedContent, simplificationResult } =
         await this.postProcessContent(
           llmResponse.content,
           warnings,
           agentsUsed,
         );
-      let generatedContent = processedContent;
 
-      // 8. Validation: Run all agents
-      const [
-        legalValidation,
-        fundamentacaoValidation,
-        clarezaValidation,
-        hallucinationCheck,
-      ] = await Promise.all([
-        this.legalAgent.validate(generatedContent, {
-          type: request.sectionType,
-        }),
-        this.needsFundamentacao(request.sectionType)
-          ? this.fundamentacaoAgent.analyze(generatedContent)
-          : Promise.resolve(null),
-        this.clarezaAgent.analyze(generatedContent),
-        this.antiHallucinationAgent.check(generatedContent, request.context),
-      ]);
-
-      agentsUsed.push(
-        'validation-legal',
-        'validation-clareza',
-        'validation-hallucination',
+      // 4. Run validations
+      const validationResults = await this.runParallelValidations(
+        processedContent,
+        request,
+        agentsUsed,
       );
 
-      // 9. Collect warnings from validations
-      const validationResult = await this.runValidations(
-        legalValidation,
-        fundamentacaoValidation,
-        clarezaValidation,
-        hallucinationCheck,
+      const validationWarnings = await this.runValidations(
+        validationResults.legalValidation,
+        validationResults.fundamentacaoValidation,
+        validationResults.clarezaValidation,
+        validationResults.hallucinationCheck,
       );
 
-      warnings.push(...validationResult.warnings);
+      warnings.push(...validationWarnings.warnings);
 
-      // 10. Add mandatory disclaimer
-      generatedContent +=
-        '\n\n⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
-
-      const generationTime = Date.now() - startTime;
-
-      this.logger.log(
-        `Section generated successfully in ${generationTime}ms. Agents used: ${agentsUsed.length}`,
-      );
-
-      return {
-        content: generatedContent,
-        metadata: {
-          tokens: llmResponse.tokens,
-          model: llmResponse.model,
-          generationTime,
-          agentsUsed,
-        },
-        validationResults: {
-          legal: legalValidation,
-          fundamentacao: fundamentacaoValidation,
-          clareza: clarezaValidation,
-          simplificacao: simplificationResult,
-          antiHallucination: hallucinationCheck,
-        },
-        warnings: [...new Set(warnings)],
-        disclaimer: DISCLAIMER,
+      // 5. Finalize and return
+      return this.buildFinalResult(
+        processedContent,
+        llmResponse,
+        simplificationResult,
+        validationResults,
+        warnings,
+        agentsUsed,
         hasEnrichmentWarning,
-      };
+        startTime,
+      );
     } catch (error) {
       this.logger.error('Error generating section:', error);
       throw error;
@@ -563,6 +527,59 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
   }
 
   /**
+   * Runs all validation agents in parallel on the generated content.
+   *
+   * @remarks
+   * Executes legal, fundamentacao (if applicable), clarity, and hallucination checks
+   * concurrently to minimize validation time. Updates the agentsUsed array.
+   *
+   * @param content - The generated content to validate
+   * @param request - Original generation request (needed for section type and context)
+   * @param agentsUsed - Array to track which agents were used (mutated)
+   * @returns Validation results from all agents
+   * @private
+   */
+  private async runParallelValidations(
+    content: string,
+    request: GenerationRequest,
+    agentsUsed: string[],
+  ): Promise<{
+    legalValidation: any;
+    fundamentacaoValidation: any;
+    clarezaValidation: any;
+    hallucinationCheck: any;
+  }> {
+    const [
+      legalValidation,
+      fundamentacaoValidation,
+      clarezaValidation,
+      hallucinationCheck,
+    ] = await Promise.all([
+      this.legalAgent.validate(content, {
+        type: request.sectionType,
+      }),
+      this.needsFundamentacao(request.sectionType)
+        ? this.fundamentacaoAgent.analyze(content)
+        : Promise.resolve(null),
+      this.clarezaAgent.analyze(content),
+      this.antiHallucinationAgent.check(content, request.context),
+    ]);
+
+    agentsUsed.push(
+      'validation-legal',
+      'validation-clareza',
+      'validation-hallucination',
+    );
+
+    return {
+      legalValidation,
+      fundamentacaoValidation,
+      clarezaValidation,
+      hallucinationCheck,
+    };
+  }
+
+  /**
    * Runs validation checks on generated content and collects warnings.
    *
    * @remarks
@@ -613,6 +630,72 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       hallucinationCheck.verified;
 
     return { isValid, warnings, errors };
+  }
+
+  /**
+   * Builds the final GenerationResult with all metadata and validations.
+   *
+   * @remarks
+   * Assembles the complete result object including content, metadata, validation results,
+   * warnings, and disclaimer. Adds the mandatory AI disclaimer to the content.
+   * Logs completion time and agent usage.
+   *
+   * @param content - The processed content
+   * @param llmResponse - Response from LLM generation
+   * @param simplificationResult - Result from simplification analysis
+   * @param validationResults - Results from all validation agents
+   * @param warnings - Accumulated warnings from all steps
+   * @param agentsUsed - List of agents used during generation
+   * @param hasEnrichmentWarning - Flag indicating if enrichment failed
+   * @param startTime - Timestamp when generation started
+   * @returns Complete GenerationResult object
+   * @private
+   */
+  private buildFinalResult(
+    content: string,
+    llmResponse: { content: string; tokens: number; model: string },
+    simplificationResult: any,
+    validationResults: {
+      legalValidation: any;
+      fundamentacaoValidation: any;
+      clarezaValidation: any;
+      hallucinationCheck: any;
+    },
+    warnings: string[],
+    agentsUsed: string[],
+    hasEnrichmentWarning: boolean,
+    startTime: number,
+  ): GenerationResult {
+    // Add mandatory disclaimer
+    const finalContent =
+      content +
+      '\n\n⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
+
+    const generationTime = Date.now() - startTime;
+
+    this.logger.log(
+      `Section generated successfully in ${generationTime}ms. Agents used: ${agentsUsed.length}`,
+    );
+
+    return {
+      content: finalContent,
+      metadata: {
+        tokens: llmResponse.tokens,
+        model: llmResponse.model,
+        generationTime,
+        agentsUsed,
+      },
+      validationResults: {
+        legal: validationResults.legalValidation,
+        fundamentacao: validationResults.fundamentacaoValidation,
+        clareza: validationResults.clarezaValidation,
+        simplificacao: simplificationResult,
+        antiHallucination: validationResults.hallucinationCheck,
+      },
+      warnings: [...new Set(warnings)],
+      disclaimer: DISCLAIMER,
+      hasEnrichmentWarning,
+    };
   }
 
   /**
