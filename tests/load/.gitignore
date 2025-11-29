@@ -1,0 +1,11 @@
+# k6 load testing results
+results/
+*.json
+*.csv
+*.log
+
+# k6 cloud outputs
+k6-cloud-*.json
+
+# Temporary test data
+*.tmp
