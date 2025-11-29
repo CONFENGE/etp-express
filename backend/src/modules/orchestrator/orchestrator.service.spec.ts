@@ -1313,4 +1313,219 @@ describe('OrchestratorService', () => {
       );
     });
   });
+
+  /**
+   * Tests for runValidations() method
+   * Validates that the method correctly processes validation results from all agents
+   * and returns appropriate warnings and errors
+   */
+  describe('Teste 8: runValidations() coleta e processa resultados de validação', () => {
+    it('deve retornar isValid=true quando todas validações passam', async () => {
+      const legalValidation = {
+        isCompliant: true,
+        score: 85,
+        recommendations: [],
+      };
+      const fundamentacaoValidation = {
+        score: 80,
+        suggestions: [],
+      };
+      const clarezaValidation = {
+        score: 90,
+        suggestions: [],
+      };
+      const hallucinationCheck = {
+        verified: true,
+        warnings: [],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('deve coletar warnings quando legal não é compliant', async () => {
+      const legalValidation = {
+        isCompliant: false,
+        score: 60,
+        recommendations: ['Adicione referência à Lei 14.133/2021'],
+      };
+      const fundamentacaoValidation = null;
+      const clarezaValidation = {
+        score: 90,
+        suggestions: [],
+      };
+      const hallucinationCheck = {
+        verified: true,
+        warnings: [],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.warnings).toContain(
+        'Adicione referência à Lei 14.133/2021',
+      );
+    });
+
+    it('deve coletar warnings quando fundamentacao score < 70', async () => {
+      const legalValidation = {
+        isCompliant: true,
+        score: 85,
+        recommendations: [],
+      };
+      const fundamentacaoValidation = {
+        score: 65,
+        suggestions: ['Melhore a fundamentação da necessidade'],
+      };
+      const clarezaValidation = {
+        score: 90,
+        suggestions: [],
+      };
+      const hallucinationCheck = {
+        verified: true,
+        warnings: [],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.warnings).toContain(
+        'Melhore a fundamentação da necessidade',
+      );
+    });
+
+    it('deve coletar warnings quando clareza score < 70', async () => {
+      const legalValidation = {
+        isCompliant: true,
+        score: 85,
+        recommendations: [],
+      };
+      const fundamentacaoValidation = null;
+      const clarezaValidation = {
+        score: 65,
+        suggestions: ['Melhore a clareza do texto'],
+      };
+      const hallucinationCheck = {
+        verified: true,
+        warnings: [],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.warnings).toContain('Melhore a clareza do texto');
+    });
+
+    it('deve coletar warnings quando hallucination não é verified', async () => {
+      const legalValidation = {
+        isCompliant: true,
+        score: 85,
+        recommendations: [],
+      };
+      const fundamentacaoValidation = null;
+      const clarezaValidation = {
+        score: 90,
+        suggestions: [],
+      };
+      const hallucinationCheck = {
+        verified: false,
+        warnings: ['Detectada referência suspeita à Lei'],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.warnings).toContain('Detectada referência suspeita à Lei');
+    });
+
+    it('deve coletar múltiplos warnings quando várias validações falham', async () => {
+      const legalValidation = {
+        isCompliant: false,
+        score: 60,
+        recommendations: ['Warning legal 1', 'Warning legal 2'],
+      };
+      const fundamentacaoValidation = {
+        score: 65,
+        suggestions: ['Warning fundamentacao'],
+      };
+      const clarezaValidation = {
+        score: 65,
+        suggestions: ['Warning clareza'],
+      };
+      const hallucinationCheck = {
+        verified: false,
+        warnings: ['Warning hallucination'],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(false);
+      expect(result.warnings).toHaveLength(5);
+      expect(result.warnings).toContain('Warning legal 1');
+      expect(result.warnings).toContain('Warning legal 2');
+      expect(result.warnings).toContain('Warning fundamentacao');
+      expect(result.warnings).toContain('Warning clareza');
+      expect(result.warnings).toContain('Warning hallucination');
+    });
+
+    it('deve lidar corretamente quando fundamentacaoValidation é null', async () => {
+      const legalValidation = {
+        isCompliant: true,
+        score: 85,
+        recommendations: [],
+      };
+      const fundamentacaoValidation = null;
+      const clarezaValidation = {
+        score: 90,
+        suggestions: [],
+      };
+      const hallucinationCheck = {
+        verified: true,
+        warnings: [],
+      };
+
+      const result = await service['runValidations'](
+        legalValidation,
+        fundamentacaoValidation,
+        clarezaValidation,
+        hallucinationCheck,
+      );
+
+      expect(result.isValid).toBe(true);
+      expect(result.warnings).toHaveLength(0);
+    });
+  });
 });
