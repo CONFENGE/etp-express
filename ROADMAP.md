@@ -14,7 +14,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ███████████████░░░░░ 29/39  (74%)  ⚡ Refactoring & Performance
+M4: ████████████████░░░░ 30/39  (76%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (29/39) - 74%
+### ⚡ M4: Refactoring & Performance (30/39) - 76%
 
-**Status:** EM PROGRESSO | 10 issues pendentes
+**Status:** EM PROGRESSO | 9 issues pendentes
 
 **Concluídas:**
 
@@ -112,6 +112,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - ✅ #327 - Criar ETPEditorTabsList + Content (32b)
 - ✅ #328 - Criar ETPEditorSidebar (32c)
 - ✅ #329 - Refatorar ETPEditor para composição (32d)
+- ✅ #32 - Parent: Componentizar ETPEditor.tsx (todas 4 sub-issues concluídas)
 
 **Resiliência APIs Externas:**
 
@@ -144,7 +145,6 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 **Pendentes:**
 
 - [ ] #28 - Parent: Refatorar orchestrator (PARENT - sub-issues concluídas)
-- [ ] #32 - Componentizar ETPEditor.tsx (PARENT - sub-issues concluídas)
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
 - [ ] #77-#81 - Refatorações adicionais
@@ -155,9 +155,10 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 **Última Conquista (2025-11-29):**
 
-- ✅ #329 - Refatoração final ETPEditor.tsx (sub-issue 4/4 de #32)
-- 📊 Progresso M4: 72% → 74% (+2 p.p.)
-- 🎯 Parent #32 PRONTO PARA FECHAR (todas 4 sub-issues completas)
+- ✅ #329 - Refatoração final ETPEditor.tsx (sub-issue 4/4 de #32) - PR #333 merged
+- ✅ #32 - Parent issue FECHADA (todas 4 sub-issues concluídas)
+- 📊 Progresso M4: 74% → 76% (+2 p.p.)
+- 🎯 ETPEditor.tsx reduzido de 229 para 165 linhas (28% de redução)
 
 ---
 
