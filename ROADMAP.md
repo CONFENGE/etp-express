@@ -3,8 +3,15 @@
 ## Visão Geral do Projeto
 
 **Status Atual:** Milestone 2 & 3 (CI/CD + Quality & Security) - 100% COMPLETOS! 🎉 M1, M2, M3 FINALIZADOS!
-**Última Atualização:** 2025-11-27
+**Última Atualização:** 2025-11-28
 
+- Issue #318 CLOSED ✅ - Extrair runValidations() do OrchestratorService (PR #324)
+  - ✅ Extraído método privado runValidations() (25 linhas) do generateSection()
+  - ✅ Retorno estruturado com isValid, warnings, errors
+  - ✅ 7 novos testes unitários implementados (51/51 testes passando)
+  - ✅ Cobertura do método: 100%
+  - ✅ Desbloqueia #319 (sub-issue final da refatoração #28)
+  - ✅ **M4 (Refactoring & Performance): 65% → 68% (21/31 issues)**
 - Issue #31 CLOSED ✅ - Adicionar useMemo em ETPs.tsx para filteredETPs (PR #314)
   - ✅ Adicionado useMemo para memoizar filteredETPs
   - ✅ Otimizado search.toLowerCase() para computar apenas uma vez
@@ -105,11 +112,11 @@ Issues criadas para endereçar riscos arquiteturais identificados:
 [M1] Foundation - Testes          ████████████████████ 35/35 (100%) 🎉 COMPLETO!
 [M2] CI/CD Pipeline               ████████████████████ 18/18 (100%) 🎉 COMPLETO!
 [M3] Quality & Security           ████████████████████ 57/57 (100%) 🎉 COMPLETO!
-[M4] Refactoring & Performance    █████████████░░░░░░░ 20/31 (65%)  ⚡ +1 CLOSED: #31
+[M4] Refactoring & Performance    █████████████░░░░░░░ 21/31 (68%)  ⚡ +1 CLOSED: #318
 [M5] E2E Testing & Documentation  █░░░░░░░░░░░░░░░░░░░ 2/22 (9%)    +4 issues
 [M6] Maintenance (Recurring)      █░░░░░░░░░░░░░░░░░░░ 1/11 (9%)    +6 issues
 
-TOTAL: 133/174 issues concluídas (76%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 65% 🚀
+TOTAL: 134/174 issues concluídas (77%)  |  M1 100% ✅ | M2 100% 🎉 | M3 100% ✅ | M4 68% 🚀
 
 Sub-issues atômicas (desmembradas):
 - #109 → #153-#158 (6 sub-issues de secrets management) ✅ COMPLETO
