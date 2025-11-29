@@ -6,6 +6,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import CircuitBreaker from 'opossum';
+import NodeCache from 'node-cache';
+import * as crypto from 'crypto';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
 
 export interface LLMRequest {
@@ -29,6 +31,7 @@ export class OpenAIService {
   private openai: OpenAI;
   private circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
+  private cache: NodeCache;
 
   constructor(private configService: ConfigService) {
     // Configure retry options for OpenAI API
@@ -53,6 +56,13 @@ export class OpenAIService {
     };
     this.openai = new OpenAI({
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
+    });
+
+    // Initialize Cache
+    this.cache = new NodeCache({
+      stdTTL: 86400, // 24h TTL
+      checkperiod: 3600, // Check for expired keys every 1h
+      useClones: false, // Performance optimization - don't clone objects
     });
 
     // Initialize Circuit Breaker
@@ -102,6 +112,32 @@ export class OpenAIService {
     }
   }
 
+  /**
+   * Generate deterministic cache key from request parameters
+   * @param systemPrompt System prompt for the LLM
+   * @param userPrompt User prompt for the LLM
+   * @param model Model name (e.g., 'gpt-4-turbo-preview')
+   * @param temperature Temperature parameter (0.0-2.0)
+   * @returns SHA-256 hash of concatenated parameters
+   */
+  private getCacheKey(
+    systemPrompt: string,
+    userPrompt: string,
+    model: string,
+    temperature: number,
+  ): string {
+    const content = `${systemPrompt}|${userPrompt}|${model}|${temperature}`;
+    return crypto.createHash('sha256').update(content).digest('hex');
+  }
+
+  /**
+   * Call OpenAI API with cache support
+   * Checks cache before making API call. If cache hit, returns cached response immediately.
+   * If cache miss, calls OpenAI API with retry logic and stores response in cache (TTL: 24h).
+   * Cache key is SHA-256 hash of (systemPrompt + userPrompt + model + temperature).
+   * @param request LLM request parameters
+   * @returns LLM response (from cache or API)
+   */
   private async callOpenAI(request: LLMRequest): Promise<LLMResponse> {
     const {
       systemPrompt,
@@ -114,6 +150,23 @@ export class OpenAIService {
       ),
     } = request;
 
+    // Generate cache key
+    const cacheKey = this.getCacheKey(
+      systemPrompt,
+      userPrompt,
+      model,
+      temperature,
+    );
+
+    // Check cache
+    const cached = this.cache.get<LLMResponse>(cacheKey);
+    if (cached) {
+      this.logger.log(`Cache HIT: ${cacheKey.substring(0, 16)}...`);
+      return cached;
+    }
+
+    // Cache MISS - call OpenAI
+    this.logger.log(`Cache MISS: ${cacheKey.substring(0, 16)}...`);
     this.logger.log(`Generating completion with model: ${model}`);
 
     const startTime = Date.now();
@@ -146,6 +199,9 @@ export class OpenAIService {
       `Completion generated in ${duration}ms. Tokens: ${response.tokens}`,
     );
 
+    // Store in cache
+    this.cache.set(cacheKey, response);
+
     return response;
   }
 
@@ -159,6 +215,23 @@ export class OpenAIService {
       opened: this.circuitBreaker.opened,
       halfOpen: this.circuitBreaker.halfOpen,
       closed: this.circuitBreaker.closed,
+    };
+  }
+
+  /**
+   * Get cache statistics for monitoring
+   * @returns Cache statistics including keys count, hits, misses and hit rate
+   */
+  getCacheStats() {
+    const stats = this.cache.getStats();
+    return {
+      keys: this.cache.keys().length,
+      hits: stats.hits,
+      misses: stats.misses,
+      hitRate:
+        stats.hits + stats.misses > 0
+          ? stats.hits / (stats.hits + stats.misses)
+          : 0,
     };
   }
 
