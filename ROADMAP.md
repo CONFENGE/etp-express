@@ -2,11 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (74%)
+**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (80%)
 **Última Atualização:** 2025-11-29
 
-**Total de Issues:** 184 issues (40 abertas + 144 fechadas)
-**Prontidão para Produção:** 79% - M1-M3 FINALIZADOS, M4 acelerado
+**Total de Issues:** 184 issues (39 abertas + 145 fechadas)
+**Prontidão para Produção:** 80% - M1-M3 FINALIZADOS, M4 acelerado
 
 ### Progresso Global
 
@@ -14,7 +14,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████░░░░ 31/39  (79%)  ⚡ Refactoring & Performance
+M4: ████████████████░░░░ 32/39  (82%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (31/39) - 79%
+### ⚡ M4: Refactoring & Performance (32/39) - 82%
 
-**Status:** EM PROGRESSO | 8 issues pendentes
+**Status:** EM PROGRESSO | 7 issues pendentes
 
 **Concluídas:**
 
@@ -141,6 +141,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 **Auditorias:**
 
 - ✅ #77 - [#42a] Auditar módulo Auth contra ARCHITECTURE.md
+- ✅ #78 - [#42b] Auditar módulo ETPs contra ARCHITECTURE.md
 
 **Hotfixes:**
 
@@ -151,7 +152,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #28 - Parent: Refatorar orchestrator (PARENT - sub-issues concluídas)
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
-- [ ] #78-#81 - Auditorias adicionais (ETPs, Sections, Orchestrator, User)
+- [ ] #79-#81 - Auditorias adicionais (Sections, Orchestrator, User)
 - [ ] #88-#91 - Load testing
 - [ ] #300 - Security Penetration Testing
 
@@ -159,12 +160,13 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 **Última Conquista (2025-11-29):**
 
-- ✅ #77 - Auditoria módulo Auth contra ARCHITECTURE.md - PR #334 merged
-- 📊 Progresso M4: 76% → 79% (+3 p.p.)
-- 📋 Relatório: docs/AUDIT_AUTH_MODULE_2025-11-29.md (648 linhas)
-- ✅ Conformidade: 92.3% (12/13 componentes conforme)
-- 🔍 Achados: Dual-key rotation, LGPD compliance, rate limiting
-- ⚠️ Desvios: 2 não-conformidades menores documentadas
+- ✅ #78 - Auditoria módulo ETPs contra ARCHITECTURE.md - PR #335 (em andamento)
+- 📊 Progresso M4: 79% → 82% (+3 p.p.)
+- 📋 Relatório: docs/AUDIT_ETPS_MODULE_2025-11-29.md (700+ linhas)
+- ✅ Conformidade: 94.7% (18/19 componentes conforme)
+- 🔍 Achados: Completion tracking, statistics API, 5-state workflow
+- ⭐ Recursos além da spec: numeroProcesso, valorEstimado, metadata JSONB
+- ⚠️ Desvios: 2 não-conformidades menores (nomenclatura campo 'objeto', enum não documentado)
 
 ---
 
