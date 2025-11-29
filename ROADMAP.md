@@ -2,11 +2,11 @@
 
 ## Visão Geral do Projeto
 
-**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (69%)
+**Status Atual:** M1, M2, M3 COMPLETOS! (100%) - M4 em progresso (72%)
 **Última Atualização:** 2025-11-29
 
-**Total de Issues:** 183 issues (42 abertas + 141 fechadas)
-**Prontidão para Produção:** 77% - M1-M3 FINALIZADOS, M4 acelerado
+**Total de Issues:** 184 issues (41 abertas + 143 fechadas)
+**Prontidão para Produção:** 78% - M1-M3 FINALIZADOS, M4 acelerado
 
 ### Progresso Global
 
@@ -14,7 +14,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ██████████████░░░░░░ 27/39  (69%)  ⚡ Refactoring & Performance
+M4: ███████████████░░░░░ 28/39  (72%)  ⚡ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
@@ -89,9 +89,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (27/39) - 69%
+### ⚡ M4: Refactoring & Performance (28/39) - 72%
 
-**Status:** EM PROGRESSO | 12 issues pendentes
+**Status:** EM PROGRESSO | 11 issues pendentes
 
 **Concluídas:**
 
@@ -110,6 +110,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - ✅ #319 - Refatorar generateSection() (28d)
 - ✅ #326 - Criar ETPEditorHeader + Progress (32a)
 - ✅ #327 - Criar ETPEditorTabsList + Content (32b)
+- ✅ #328 - Criar ETPEditorSidebar (32c)
 
 **Resiliência APIs Externas:**
 
@@ -143,8 +144,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 - [ ] #28 - Parent: Refatorar orchestrator (PARENT - sub-issues concluídas)
 - [ ] #32 - Componentizar ETPEditor.tsx (PARENT)
-- [ ] #328 - Criar ETPEditorSidebar (32c) ⚡ DESBLOQUEADA
-- [ ] #329 - Refatorar ETPEditor para composição (32d)
+- [ ] #329 - Refatorar ETPEditor para composição (32d) ⚡ DESBLOQUEADA
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
 - [ ] #77-#81 - Refatorações adicionais
@@ -152,6 +152,12 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #300 - Security Penetration Testing
 
 **Issues:** #25-#33, #41, #77-#81, #88-#91, #108, #147, #172, #206-#212, #214, #231, #300-#301, #316-#319, #321, #326-#329
+
+**Última Conquista (2025-11-29):**
+
+- ✅ #328 - Criado ETPEditorSidebar.tsx + 7 testes (sub-issue 3/4 de #32)
+- 📊 Progresso M4: 69% → 72% (+3 p.p.)
+- 🎯 Issue #329 DESBLOQUEADA (última sub-issue da refatoração)
 
 ---
 
