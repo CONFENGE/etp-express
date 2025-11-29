@@ -37,15 +37,51 @@ docker pull grafana/k6:latest
 
 ```
 tests/load/
-├── README.md               # Este arquivo
-├── config.js              # Configurações globais e profiles
-├── auth-login.js          # Load test: POST /auth/login
-├── etp-create.js          # Load test: POST /etps
-├── section-generate.js    # Load test: POST /sections/etp/:id/generate
-└── results/               # Outputs dos testes (gitignored)
+├── README.md                         # Este arquivo
+├── config.js                         # Configurações globais e profiles
+├── auth-login.js                     # Load test: POST /auth/login
+├── etp-create.js                     # Load test: POST /etps
+├── section-generate.js               # Load test: POST /sections/etp/:id/generate
+├── run-progressive-load-test.sh      # Script automatizado (Bash/macOS/Linux)
+├── run-progressive-load-test.ps1     # Script automatizado (PowerShell/Windows)
+├── RESULTS_TEMPLATE.md               # Template de relatório de resultados
+└── results/                          # Outputs dos testes (gitignored)
 ```
 
 ## 🚀 Execução Rápida
+
+### Progressive Load Test (Issue #89) - Recomendado
+
+Executa suite completa de testes progressivos (10 → 50 → 100 → 200 VUs) para identificar breaking point:
+
+```bash
+# Linux/macOS (Bash)
+chmod +x tests/load/run-progressive-load-test.sh
+./tests/load/run-progressive-load-test.sh
+
+# Windows (PowerShell)
+.\tests\load\run-progressive-load-test.ps1
+```
+
+**Duração total:** ~40 minutos
+**Output:** Relatório markdown em `tests/load/results/progressive_load_test_[timestamp].md`
+
+**Pré-requisitos:**
+
+1. Backend rodando: `cd backend && npm run start:dev`
+2. Usuário de teste criado (email: `testuser@example.com`, senha: `Test@1234`)
+3. k6 instalado e no PATH
+
+**Customização:**
+
+```bash
+# Usar credenciais diferentes
+export TEST_EMAIL="outro@example.com"
+export TEST_PASSWORD="OutraSenha@123"
+./tests/load/run-progressive-load-test.sh
+```
+
+---
 
 ### Smoke Test (validação básica)
 
@@ -315,4 +351,5 @@ Para adicionar novos testes:
 
 ## 📝 Changelog
 
+- **2025-11-29**: Progressive load test automation scripts + results template - Issue #89
 - **2025-11-29**: Setup inicial k6 + 3 scripts base (auth, etps, sections) - Issue #88
