@@ -3,8 +3,22 @@ name: CI - Lint
 on:
   push:
     branches: [master]
+    paths:
+      - 'backend/**/*.ts'
+      - 'frontend/**/*.{ts,tsx}'
+      - '.eslintrc*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-lint.yml'
   pull_request:
     branches: [master]
+    paths:
+      - 'backend/**/*.ts'
+      - 'frontend/**/*.{ts,tsx}'
+      - '.eslintrc*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-lint.yml'
 
 jobs:
   lint-backend:
@@ -19,6 +33,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies (workspace root)
         run: npm ci
@@ -39,6 +54,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies (workspace root)
         run: npm ci

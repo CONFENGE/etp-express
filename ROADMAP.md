@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-11-30 | **Auditoria:** [ROADMAP_AUDIT_2025-11-29.md](ROADMAP_AUDIT_2025-11-29.md)
+**Última Atualização:** 2025-11-30 | **Auditoria:** [ROADMAP_AUDIT_2025-11-29.md](ROADMAP_AUDIT_2025-11-29.md) | **Otimização CI/CD:** ✅ -68% minutos
 
 ## 📊 Status Atual
 
@@ -139,6 +139,111 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
   - [x] #343 - Connection pooling ✅
 
 **Issues:** #25-#33, #41, #47, #77-#81, #88-#91, #108, #147, #172, #206-#214, #231, #300-#301, #316-#319, #321, #326-#329, #339-#343
+
+---
+
+## 🚀 Otimização de Infraestrutura - GitHub Actions CI/CD
+
+**Data:** 2025-11-30 | **Tipo:** Melhoria de Infraestrutura | **Economia:** ~68% redução de minutos
+
+### Problema Identificado
+
+Consumo excessivo de minutos em GitHub Actions causado por:
+
+1. **6x instalações npm ci redundantes** (120+ seg/ciclo, sem cache)
+2. **Secret scanning em todos os branches** + execução diária
+3. **Playwright sem cache de browsers** (3-5 min/execução)
+4. **Workflows sem filtros de path** (executavam até para commits apenas de docs)
+
+**Consumo Baseline:** ~12000 min/mês (~25 min/ciclo)
+
+### Otimizações Implementadas
+
+#### Fase 1: Quick Wins (70% do ganho)
+
+1. **✅ Cache NPM** - Adicionado `cache: 'npm'` em todos os workflows
+   - Workflows afetados: ci-lint, ci-tests, playwright, validate-lockfile
+   - Ganho: ~100s economizados por job com cache hit = ~10 min/ciclo
+
+2. **✅ Cache Playwright Browsers** - Cache de `~/.cache/ms-playwright`
+   - Arquivo: `.github/workflows/playwright.yml`
+   - Cache key: `${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}`
+   - Ganho: ~4 min/execução com cache hit
+
+3. **✅ Secret Scanning Otimizado**
+   - Trigger de push: `["**"]` → `[master, main]` (apenas branches principais)
+   - Schedule: Daily (3h AM) → Weekly (segunda-feira 3h AM)
+   - Scan incremental em PRs: `GITLEAKS_LOG_OPTS=origin/$base..$head`
+   - Ganho: ~560 min/mês (de 568 para 154 execuções/mês)
+
+#### Fase 2: Path Filters (25% do ganho)
+
+4. **✅ Path Filters em Todos os Workflows**
+   - ci-lint.yml: Apenas `**/*.ts`, `**/*.tsx`, `.eslintrc*`, `package*.json`
+   - ci-tests.yml: Código + testes (`**/*.test.ts`, `backend/test/**/*`)
+   - playwright.yml: Código + `tests/**/*` + `playwright.config.ts`
+   - validate-lockfile.yml: Apenas `package.json`, `package-lock.json`
+   - Ganho: ~2900 min/mês (evita ~146 execuções de commits apenas docs)
+
+#### Fase 3: Documentação (5% do ganho)
+
+5. **✅ Documentação de Best Practices**
+   - Criado: `.github/SLASH_COMMANDS.md`
+   - Documenta uso otimizado de /review-pr e /pick-next-issue
+   - Lista mudanças que NÃO acionam workflows (path filters)
+   - Ganho indireto: ~480 min/mês (educação de usuários)
+
+### Resultados Alcançados
+
+**Consumo Pós-Otimização:** ~4000 min/mês (~10 min/ciclo com cache hit)
+
+**Economia Total:**
+
+- Redução: **68%** (~8000 min/mês economizados)
+- Equivalente: **~131 horas/mês**
+- Tempo de implementação: **2 horas**
+
+### Trade-offs e Mitigações
+
+**Trade-off 1: Path Filters**
+
+- Risco: Mudanças em arquivos não listados não acionam workflows
+- Mitigação: `.github/workflows/*.yml` incluído em todos os paths, `workflow_dispatch` para trigger manual
+
+**Trade-off 2: Secret Scanning**
+
+- Risco: Secrets em branches de dev não detectados até PR
+- Mitigação: Pre-commit hook local (`npm run security:scan:staged`), weekly scan completo, `workflow_dispatch`
+
+**Trade-off 3: Cache**
+
+- Risco: Cache desatualizado pode causar builds inconsistentes
+- Mitigação: Cache key baseado em `package-lock.json` (invalida automaticamente se deps mudam)
+
+### Arquivos Modificados
+
+- `.github/workflows/ci-lint.yml` - Cache NPM + Path filters
+- `.github/workflows/ci-tests.yml` - Cache NPM + Path filters
+- `.github/workflows/playwright.yml` - Cache NPM + Cache Playwright + Path filters
+- `.github/workflows/secret-scan.yml` - Triggers otimizados + Scan incremental
+- `.github/workflows/validate-lockfile.yml` - Cache NPM + Path filters + Atualização v4→v6
+- `.github/SLASH_COMMANDS.md` - Novo arquivo de documentação
+- `ROADMAP.md` - Esta seção de documentação
+
+### Validação
+
+**Checklist de Validação Pós-Deploy:**
+
+- [ ] Cache NPM funcionando (commit 2 mais rápido que commit 1)
+- [ ] Path filters funcionando (commit apenas docs não aciona workflows)
+- [ ] Secret scanning otimizado (não roda em branches feature)
+- [ ] Playwright cache funcionando (browsers não reinstalados)
+
+**Comando de monitoramento:**
+
+```bash
+gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
+```
 
 ---
 

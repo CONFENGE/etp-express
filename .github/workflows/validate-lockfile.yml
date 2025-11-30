@@ -3,8 +3,20 @@ name: Validate Package Lock
 on:
   push:
     branches: [master]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'backend/package.json'
+      - 'frontend/package.json'
+      - '.github/workflows/validate-lockfile.yml'
   pull_request:
     branches: [master]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'backend/package.json'
+      - 'frontend/package.json'
+      - '.github/workflows/validate-lockfile.yml'
 
 jobs:
   validate-lockfile:
@@ -12,12 +24,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Validate package-lock.json consistency
         run: |
