@@ -218,6 +218,134 @@ describe('EtpsService', () => {
     });
   });
 
+  describe('findOneMinimal', () => {
+    it('should return ETP with only user relation', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneMinimal('etp-123');
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123' },
+        relations: ['createdBy'],
+      });
+      expect(result).toEqual(mockEtp);
+    });
+
+    it('should throw NotFoundException when ETP not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findOneMinimal('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.findOneMinimal('non-existent')).rejects.toThrow(
+        'ETP com ID non-existent não encontrado',
+      );
+    });
+
+    it('should throw ForbiddenException when user attempts to access ETP owned by another user', async () => {
+      const loggerSpy = jest.spyOn(service['logger'], 'warn');
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      await expect(
+        service.findOneMinimal('etp-123', mockUser2Id),
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
+
+      expect(loggerSpy).toHaveBeenCalledWith(
+        `User ${mockUser2Id} attempted to access ETP etp-123 owned by ${mockUser1Id}`,
+      );
+    });
+
+    it('should allow owner to access ETP', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneMinimal('etp-123', mockUser1Id);
+
+      expect(result).toEqual(mockEtp);
+    });
+  });
+
+  describe('findOneWithSections', () => {
+    it('should return ETP with user and sections relations', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneWithSections('etp-123');
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123' },
+        relations: ['createdBy', 'sections'],
+        order: {
+          sections: { order: 'ASC' },
+        },
+      });
+      expect(result).toEqual(mockEtp);
+    });
+
+    it('should throw NotFoundException when ETP not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findOneWithSections('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw ForbiddenException when user attempts to access ETP owned by another user', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      await expect(
+        service.findOneWithSections('etp-123', mockUser2Id),
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
+    });
+
+    it('should allow owner to access ETP', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneWithSections('etp-123', mockUser1Id);
+
+      expect(result).toEqual(mockEtp);
+    });
+  });
+
+  describe('findOneWithVersions', () => {
+    it('should return ETP with user and versions relations', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneWithVersions('etp-123');
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123' },
+        relations: ['createdBy', 'versions'],
+        order: {
+          versions: { createdAt: 'DESC' },
+        },
+      });
+      expect(result).toEqual(mockEtp);
+    });
+
+    it('should throw NotFoundException when ETP not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findOneWithVersions('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw ForbiddenException when user attempts to access ETP owned by another user', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      await expect(
+        service.findOneWithVersions('etp-123', mockUser2Id),
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
+    });
+
+    it('should allow owner to access ETP', async () => {
+      mockRepository.findOne.mockResolvedValue(mockEtp);
+
+      const result = await service.findOneWithVersions('etp-123', mockUser1Id);
+
+      expect(result).toEqual(mockEtp);
+    });
+  });
+
   describe('update', () => {
     it('should update ETP when user is owner', async () => {
       const updateDto: UpdateEtpDto = {

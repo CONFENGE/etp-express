@@ -124,7 +124,8 @@ export class EtpsController {
   @ApiResponse({ status: 200, description: 'Dados do ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async findOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    const etp = await this.etpsService.findOne(id, userId);
+    // Load with sections for dashboard/editor view (no versions needed)
+    const etp = await this.etpsService.findOneWithSections(id, userId);
     return {
       data: etp,
       disclaimer: DISCLAIMER,
