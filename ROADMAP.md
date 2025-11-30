@@ -5,8 +5,8 @@
 **Status Atual:** M1, M2, M3, M4 COMPLETOS! (100%) - M5 em progresso (9%)
 **Última Atualização:** 2025-11-29
 
-**Total de Issues:** 191 issues (37 abertas + 154 fechadas)
-**Prontidão para Produção:** 90% - M1-M4 FINALIZADOS, M5 iniciado
+**Total de Issues:** 192 issues (36 abertas + 156 fechadas)
+**Prontidão para Produção:** 91% - M1-M4 FINALIZADOS, M5 iniciado
 
 ### Progresso Global
 
@@ -14,12 +14,12 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████████ 39/39  (100%) ✅ Refactoring & Performance
+M4: ████████████████████ 40/40  (100%) ✅ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   🔄 Maintenance
 ```
 
-**Velocidade Atual:** 5.5 issues/dia (39 fechadas nos últimos 7 dias)
+**Velocidade Atual:** 5.7 issues/dia (40 fechadas nos últimos 7 dias)
 **Previsão de Conclusão:** ~2025-12-02 (3 dias)
 
 ---
@@ -89,7 +89,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 ---
 
-### ✅ M4: Refactoring & Performance (39/39) 🎉
+### ✅ M4: Refactoring & Performance (40/40) 🎉
 
 **Status:** 100% CONCLUÍDO | Finalizado em 2025-11-29
 
@@ -157,9 +157,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 - [ ] #33 - Adicionar useMemo em cálculos caros
 - [ ] #41 - Otimizar re-renders desnecessários
 - [ ] #79-#81 - Auditorias adicionais (Sections, Orchestrator, User)
-- [ ] #91 - Parent: Implementar otimizações de performance (PARENT - 4/5 sub-issues concluídas - 80%)
+- [x] #91 - Parent: Implementar otimizações de performance (PARENT - 5/5 sub-issues concluídas - 100%) ✅
   - [x] #339 - [PERF-91a] Implementar cache de respostas LLM OpenAI ✅
-  - [ ] #340 - [PERF-91b] Implementar cache de respostas Perplexity
+  - [x] #340 - [PERF-91b] Implementar cache de respostas Perplexity ✅
   - [x] #341 - [PERF-91c] Verificar e garantir paralelização de agentes ✅
   - [x] #342 - [PERF-91d] Implementar selective loading de relations ✅
   - [x] #343 - [PERF-91e] Configurar connection pooling PostgreSQL ✅
@@ -169,8 +169,16 @@ M6: ██░░░░░░░░░░░░░░░░░░  1/11  (9%)   �
 
 **Últimas Conquistas (2025-11-29):**
 
+- ✅ #340 - Implementar cache de respostas Perplexity - PR #348
+- 🎉 **PARENT ISSUE #91 COMPLETA!** Todas as 5 sub-issues de otimização concluídas (100%)
+- ⚡ Cache Perplexity: TTL 7 dias, SHA-256 key, HIT/MISS logs, fallback não cacheado
+- 📈 Impacto esperado: ~70% hit rate, ~30s latência reduzida, custos Perplexity reduzidos
+- 📊 Métricas expostas: getCacheStats() para monitoring em produção
+- 🧪 25/25 testes passando (+5 novos testes de cache)
+- 🎯 Quinta e última sub-issue de #91 concluída (5/5 - 100%) - **#91 FINALIZADA**
+
 - ✅ #342 - Implementar selective loading de relations - PR #347
-- 🎉 **MILESTONE M4 COMPLETO!** Refactoring & Performance 100% (39/39 issues)
+- 🎉 **MILESTONE M4 COMPLETO!** Refactoring & Performance 100% (40/40 issues)
 - 📊 Progresso M4: 97% → 100% (+3 p.p.) - M4 FINALIZADO
 - ⚡ Selective loading: 3 métodos especializados (findOneMinimal, findOneWithSections, findOneWithVersions)
 - 📈 Performance: 75% query reduction (section generation), 50% query reduction (dashboard views)
