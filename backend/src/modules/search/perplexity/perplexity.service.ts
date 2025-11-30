@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
 import CircuitBreaker from 'opossum';
+import NodeCache from 'node-cache';
+import { createHash } from 'crypto';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
 
 export interface PerplexitySearchResult {
@@ -49,6 +51,7 @@ export class PerplexityService {
   private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
   private readonly circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
+  private readonly cache: NodeCache;
 
   constructor(private configService: ConfigService) {
     // Configure retry options for Perplexity API
@@ -78,6 +81,13 @@ export class PerplexityService {
       'PERPLEXITY_MODEL',
       'pplx-7b-online',
     );
+
+    // Initialize cache with 7-day TTL (604800 seconds)
+    this.cache = new NodeCache({
+      stdTTL: 604800, // 7 days
+      checkperiod: 3600, // Check for expired keys every hour
+      useClones: false, // Performance optimization - don't clone cached objects
+    });
 
     // Initialize Circuit Breaker for Perplexity API
     // Perplexity API is slower than OpenAI, so we use higher timeout
@@ -117,11 +127,62 @@ export class PerplexityService {
     });
   }
 
+  /**
+   * Searches using Perplexity API with caching support.
+   * Cache is checked first, and only misses trigger API calls.
+   * Fallback responses are NOT cached to ensure retries on recovery.
+   *
+   * @param query - Search query string
+   * @returns Promise<PerplexityResponse> - Search results with cache metadata
+   *
+   * @remarks
+   * - Cache TTL: 7 days (604800s)
+   * - Cache key: SHA-256 hash of normalized query
+   * - Fallback responses are never cached
+   * - Logs include Cache HIT/MISS for monitoring
+   *
+   * @example
+   * const results = await perplexityService.search('Lei 14.133/2021');
+   * // First call: Cache MISS → API call → cached
+   * // Second call: Cache HIT → instant return
+   */
   async search(query: string): Promise<PerplexityResponse> {
     this.logger.log(`Searching with Perplexity: ${query}`);
 
+    // Generate cache key from normalized query
+    const cacheKey = this.generateCacheKey(query);
+
+    // Check cache first
+    const cached = this.cache.get<PerplexityResponse>(cacheKey);
+    if (cached) {
+      this.logger.log(
+        `Cache HIT for query: ${query.substring(0, 50)}... (key: ${cacheKey.substring(0, 16)}...)`,
+      );
+      return cached;
+    }
+
+    this.logger.log(
+      `Cache MISS for query: ${query.substring(0, 50)}... - calling Perplexity API`,
+    );
+
     try {
-      return (await this.circuitBreaker.fire(query)) as PerplexityResponse;
+      const response = (await this.circuitBreaker.fire(
+        query,
+      )) as PerplexityResponse;
+
+      // Only cache successful responses (NOT fallback responses)
+      if (!response.isFallback) {
+        this.cache.set(cacheKey, response);
+        this.logger.log(
+          `Response cached with key: ${cacheKey.substring(0, 16)}... (TTL: 7 days)`,
+        );
+      } else {
+        this.logger.warn(
+          'Fallback response NOT cached - will retry on next request',
+        );
+      }
+
+      return response;
     } catch (error) {
       // Circuit breaker opened - return fallback response instead of throwing
       if (error.code === 'EOPENBREAKER') {
@@ -341,6 +402,53 @@ Seja objetivo e preciso.`;
     );
 
     return result;
+  }
+
+  /**
+   * Generates a SHA-256 hash cache key from a normalized query string.
+   * Normalization ensures consistent caching for equivalent queries.
+   *
+   * @param query - Raw search query string
+   * @returns string - SHA-256 hash (64 hex characters)
+   *
+   * @remarks
+   * Normalization steps:
+   * 1. Trim whitespace
+   * 2. Convert to lowercase
+   * 3. Normalize multiple spaces to single space
+   *
+   * @example
+   * generateCacheKey('  Lei 14.133/2021  ')
+   * // Returns: 'a1b2c3d4...' (same hash for 'lei 14.133/2021')
+   */
+  private generateCacheKey(query: string): string {
+    // Normalize query: trim, lowercase, collapse multiple spaces
+    const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');
+
+    // Generate SHA-256 hash
+    return createHash('sha256').update(normalized).digest('hex');
+  }
+
+  /**
+   * Returns cache statistics for monitoring and debugging.
+   * Useful for analyzing cache effectiveness and hit rates.
+   *
+   * @returns Cache statistics object
+   *
+   * @remarks
+   * - hits: Number of cache hits (successful retrievals)
+   * - misses: Number of cache misses (API calls required)
+   * - keys: Number of entries currently in cache
+   * - ksize: Total size of cached keys
+   * - vsize: Total size of cached values
+   *
+   * @example
+   * const stats = perplexityService.getCacheStats();
+   * const hitRate = stats.hits / (stats.hits + stats.misses);
+   * console.log(`Cache hit rate: ${(hitRate * 100).toFixed(2)}%`);
+   */
+  getCacheStats() {
+    return this.cache.getStats();
   }
 
   /**

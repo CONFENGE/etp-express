@@ -416,6 +416,138 @@ describe('PerplexityService', () => {
     }, 30000);
   });
 
+  describe('cache', () => {
+    it('should return cached response on second identical query (Cache HIT)', async () => {
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'Cached content' } }],
+          citations: ['https://cached.com'],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      // First call - Cache MISS
+      const firstResult = await service.search('Lei 14.133/2021');
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+      expect(firstResult.summary).toBe('Cached content');
+      expect(firstResult.isFallback).toBe(false);
+
+      // Second call - Cache HIT (should NOT call API again)
+      const secondResult = await service.search('Lei 14.133/2021');
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1); // Still 1, not 2
+      expect(secondResult.summary).toBe('Cached content');
+      expect(secondResult).toEqual(firstResult);
+    });
+
+    it('should normalize queries for cache key (case-insensitive, whitespace-agnostic)', async () => {
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'Normalized' } }],
+          citations: [],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      // Different casing and whitespace, but same normalized query
+      await service.search('Lei 14.133/2021');
+      await service.search('  LEI 14.133/2021  ');
+      await service.search('lei    14.133/2021');
+
+      // Should only call API once (all 3 queries normalize to same key)
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+    });
+
+    it('should NOT cache fallback responses', async () => {
+      // First call - API failure triggers fallback
+      mockedAxios.post.mockRejectedValueOnce(new Error('API Error'));
+      const firstResult = await service.search('test query');
+      expect(firstResult.isFallback).toBe(true);
+
+      // Second call - API recovers and returns success
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'Recovered' } }],
+          citations: [],
+        },
+      };
+      mockedAxios.post.mockResolvedValueOnce(mockResponse);
+
+      const secondResult = await service.search('test query');
+
+      // Should call API again (fallback was NOT cached)
+      expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+      expect(secondResult.isFallback).toBe(false);
+      expect(secondResult.summary).toBe('Recovered');
+    }, 30000); // Extended timeout for retry behavior
+
+    it('should expose cache statistics via getCacheStats()', async () => {
+      const mockResponse = {
+        data: {
+          choices: [{ message: { content: 'Stats test' } }],
+          citations: [],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      // Initial state
+      const initialStats = service.getCacheStats();
+      expect(initialStats).toHaveProperty('hits');
+      expect(initialStats).toHaveProperty('misses');
+      expect(initialStats).toHaveProperty('keys');
+
+      const initialMisses = initialStats.misses;
+      const initialHits = initialStats.hits;
+
+      // First call - Cache MISS
+      await service.search('unique query stats test');
+      const statsAfterMiss = service.getCacheStats();
+      expect(statsAfterMiss.misses).toBeGreaterThanOrEqual(initialMisses + 1);
+
+      // Second call (same query) - Cache HIT
+      await service.search('unique query stats test');
+      const statsAfterHit = service.getCacheStats();
+      expect(statsAfterHit.hits).toBeGreaterThanOrEqual(initialHits + 1);
+    });
+
+    it('should cache different queries separately', async () => {
+      const mockResponse1 = {
+        data: {
+          choices: [{ message: { content: 'Response 1' } }],
+          citations: [],
+        },
+      };
+      const mockResponse2 = {
+        data: {
+          choices: [{ message: { content: 'Response 2' } }],
+          citations: [],
+        },
+      };
+
+      mockedAxios.post.mockResolvedValueOnce(mockResponse1);
+      mockedAxios.post.mockResolvedValueOnce(mockResponse2);
+
+      // Two different queries
+      const result1 = await service.search('query one');
+      const result2 = await service.search('query two');
+
+      expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+      expect(result1.summary).toBe('Response 1');
+      expect(result2.summary).toBe('Response 2');
+
+      // Retrieve from cache
+      const cachedResult1 = await service.search('query one');
+      const cachedResult2 = await service.search('query two');
+
+      // Should NOT call API again (both cached)
+      expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+      expect(cachedResult1.summary).toBe('Response 1');
+      expect(cachedResult2.summary).toBe('Response 2');
+    });
+  });
+
   describe('graceful degradation', () => {
     it('should mark successful responses with isFallback: false', async () => {
       const mockResponse = {
