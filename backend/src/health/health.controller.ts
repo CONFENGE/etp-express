@@ -55,22 +55,55 @@ export class HealthController {
   ) {}
 
   /**
-   * Health Check Endpoint
+   * Liveness Probe Endpoint
    *
-   * Retorna status de saúde do serviço incluindo conectividade com banco de dados.
+   * Verifica se a aplicação está viva (não crashou).
+   * Retorna 200 mesmo durante initialization/migrations.
+   * Usado pelo Railway para detectar crashes e reiniciar containers.
    *
-   * @returns {Promise<object>} Status do serviço
+   * @returns {Promise<object>} Status liveness do serviço
    * @example
    * // Response quando saudável:
    * {
    *   "status": "healthy",
-   *   "timestamp": "2025-11-14T12:00:00.000Z",
+   *   "timestamp": "2025-11-29T12:00:00.000Z",
    *   "database": "connected"
    * }
    */
   @Get()
   async check() {
     return this.healthService.check();
+  }
+
+  /**
+   * Readiness Probe Endpoint
+   *
+   * Verifica se a aplicação está pronta para receber tráfego.
+   * Retorna 503 durante migrations/initialization.
+   * Usado pelo deploy.sh para decisão de switch de tráfego.
+   *
+   * @returns {Promise<object>} Status de prontidão do serviço
+   * @example
+   * // Response quando pronto:
+   * {
+   *   "status": "ready",
+   *   "timestamp": "2025-11-29T12:00:00.000Z",
+   *   "database": "connected",
+   *   "migrations": "completed"
+   * }
+   *
+   * @example
+   * // Response durante migrations:
+   * {
+   *   "status": "starting",
+   *   "reason": "migrations_in_progress",
+   *   "database": "connected",
+   *   "timestamp": "2025-11-29T12:00:00.000Z"
+   * }
+   */
+  @Get('ready')
+  async ready() {
+    return this.healthService.checkReadiness();
   }
 
   /**
