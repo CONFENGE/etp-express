@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
@@ -23,6 +23,7 @@ export class HealthService {
     private userRepository: Repository<User>,
     private readonly openaiService: OpenAIService,
     private readonly perplexityService: PerplexityService,
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
@@ -63,6 +64,63 @@ export class HealthService {
     } catch (error) {
       this.logger.error('Database connectivity check failed', error);
       return false;
+    }
+  }
+
+  /**
+   * Verifica se a aplicação está pronta para receber tráfego
+   *
+   * Diferente de liveness: valida que migrations completaram.
+   * Retorna status "starting" durante migrations para evitar falsos-positivos.
+   *
+   * @returns {Promise<object>} Status de readiness
+   */
+  async checkReadiness() {
+    const dbHealth = await this.checkDatabase();
+
+    if (!dbHealth) {
+      return {
+        status: 'not_ready',
+        reason: 'database_disconnected',
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    // Verificar se há migrations pendentes
+    const migrationsPending = await this.checkPendingMigrations();
+
+    if (migrationsPending) {
+      return {
+        status: 'starting',
+        reason: 'migrations_in_progress',
+        database: 'connected',
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    return {
+      status: 'ready',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+      migrations: 'completed',
+    };
+  }
+
+  /**
+   * Verifica se há migrations pendentes (TypeORM)
+   *
+   * Usa TypeORM DataSource.showMigrations() para detectar migrations não executadas.
+   * Durante boot, TypeORM executa migrations síncronas - este método detecta esse estado.
+   *
+   * @returns {Promise<boolean>} true se há migrations pendentes
+   */
+  private async checkPendingMigrations(): Promise<boolean> {
+    try {
+      const pendingMigrations = await this.dataSource.showMigrations();
+      return pendingMigrations; // true se há pendentes
+    } catch (error) {
+      this.logger.warn('Could not check migrations status', error);
+      return false; // Assume não há pendentes em caso de erro
     }
   }
 

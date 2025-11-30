@@ -118,6 +118,60 @@ TypeOrmModule.forRootAsync({
 - Connection pool metrics available via health checks
 - Railway database metrics dashboard
 
+### 2.6 Health Checks
+
+O ETP Express implementa dois tipos de health checks para garantir zero-downtime deployment (#181):
+
+**GET /api/health** (Liveness Probe)
+
+- **Propósito**: Verifica se a aplicação está viva (não crashou)
+- **Comportamento**: Retorna 200 mesmo durante initialization/migrations
+- **Uso**: Railway utiliza para detectar crashes e reiniciar containers
+- **Response**:
+  ```json
+  {
+    "status": "healthy",
+    "timestamp": "2025-11-29T12:00:00.000Z",
+    "database": "connected"
+  }
+  ```
+
+**GET /api/health/ready** (Readiness Probe)
+
+- **Propósito**: Verifica se está pronto para receber tráfego
+- **Comportamento**: Retorna 503 durante migrations/initialization
+- **Uso**: deploy.sh utiliza para decisão de switch de tráfego
+- **Response (ready)**:
+  ```json
+  {
+    "status": "ready",
+    "timestamp": "2025-11-29T12:00:00.000Z",
+    "database": "connected",
+    "migrations": "completed"
+  }
+  ```
+- **Response (starting)**:
+  ```json
+  {
+    "status": "starting",
+    "reason": "migrations_in_progress",
+    "database": "connected",
+    "timestamp": "2025-11-29T12:00:00.000Z"
+  }
+  ```
+
+**Distinção Liveness vs Readiness:**
+
+- **Liveness**: "A aplicação está respondendo?" (evita restarts desnecessários durante boot)
+- **Readiness**: "A aplicação pode processar requests?" (evita rotear tráfego antes de pronta)
+
+**Migration-Aware Design:**
+
+- TypeORM executa migrations síncronas no boot
+- Readiness probe detecta migrations pendentes via `DataSource.showMigrations()`
+- Deploy script aguarda status `ready` antes de switch de tráfego
+- Evita falsos-positivos quando DB está conectado mas migrations pendentes
+
 ---
 
 ## 3. ARQUITETURA DE SUBAGENTES

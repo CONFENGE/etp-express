@@ -18,6 +18,7 @@ describe('HealthController', () => {
           provide: HealthService,
           useValue: {
             check: jest.fn(),
+            checkReadiness: jest.fn(),
           },
         },
         {
@@ -122,6 +123,77 @@ describe('HealthController', () => {
       // Assert
       expect(result).toBe(serviceResponse);
       expect(service.check).toHaveBeenCalled();
+    });
+  });
+
+  describe('ready', () => {
+    it('should return ready status when application is ready', async () => {
+      // Arrange
+      const expectedResponse = {
+        status: 'ready',
+        timestamp: '2025-11-29T12:00:00.000Z',
+        database: 'connected',
+        migrations: 'completed',
+      };
+      jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
+
+      // Act
+      const result = await controller.ready();
+
+      // Assert
+      expect(result).toEqual(expectedResponse);
+      expect(service.checkReadiness).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return starting status during migrations', async () => {
+      // Arrange
+      const expectedResponse = {
+        status: 'starting',
+        reason: 'migrations_in_progress',
+        database: 'connected',
+        timestamp: '2025-11-29T12:00:00.000Z',
+      };
+      jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
+
+      // Act
+      const result = await controller.ready();
+
+      // Assert
+      expect(result).toEqual(expectedResponse);
+      expect(result.status).toBe('starting');
+      expect(result.reason).toBe('migrations_in_progress');
+      expect(service.checkReadiness).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return not_ready status when database disconnected', async () => {
+      // Arrange
+      const expectedResponse = {
+        status: 'not_ready',
+        reason: 'database_disconnected',
+        timestamp: '2025-11-29T12:00:00.000Z',
+      };
+      jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
+
+      // Act
+      const result = await controller.ready();
+
+      // Assert
+      expect(result).toEqual(expectedResponse);
+      expect(result.status).toBe('not_ready');
+      expect(result.reason).toBe('database_disconnected');
+      expect(service.checkReadiness).toHaveBeenCalledTimes(1);
+    });
+
+    it('should propagate errors from checkReadiness service', async () => {
+      // Arrange
+      const error = new Error('Migration check failed');
+      jest.spyOn(service, 'checkReadiness').mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(controller.ready()).rejects.toThrow(
+        'Migration check failed',
+      );
+      expect(service.checkReadiness).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -525,9 +597,7 @@ describe('HealthController', () => {
     it('should use Promise.allSettled to check providers in parallel', async () => {
       // Arrange
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: 200 });
+      jest.spyOn(perplexityService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,

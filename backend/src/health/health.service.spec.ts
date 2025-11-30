@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { HealthService } from './health.service';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
@@ -10,6 +10,7 @@ import { PerplexityService } from '../modules/search/perplexity/perplexity.servi
 describe('HealthService', () => {
   let service: HealthService;
   let userRepository: Repository<User>;
+  let dataSource: DataSource;
   let openaiService: OpenAIService;
   let perplexityService: PerplexityService;
   let loggerErrorSpy: jest.SpyInstance;
@@ -24,6 +25,12 @@ describe('HealthService', () => {
           provide: getRepositoryToken(User),
           useValue: {
             query: jest.fn(),
+          },
+        },
+        {
+          provide: DataSource,
+          useValue: {
+            showMigrations: jest.fn(),
           },
         },
         {
@@ -45,6 +52,7 @@ describe('HealthService', () => {
 
     service = module.get<HealthService>(HealthService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    dataSource = module.get<DataSource>(DataSource);
     openaiService = module.get<OpenAIService>(OpenAIService);
     perplexityService = module.get<PerplexityService>(PerplexityService);
 
@@ -302,9 +310,7 @@ describe('HealthService', () => {
         stats: { fires: 10, successes: 2, failures: 8 },
       };
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 5000 });
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: 200 });
+      jest.spyOn(perplexityService, 'ping').mockResolvedValue({ latency: 200 });
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
@@ -361,9 +367,7 @@ describe('HealthService', () => {
       // Arrange
       const error = new Error('OpenAI timeout');
       jest.spyOn(openaiService, 'ping').mockRejectedValue(error);
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: 200 });
+      jest.spyOn(perplexityService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(perplexityService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
@@ -414,9 +418,7 @@ describe('HealthService', () => {
       jest
         .spyOn(openaiService, 'ping')
         .mockRejectedValue(new Error('OpenAI down'));
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: 200 });
+      jest.spyOn(perplexityService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(perplexityService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
@@ -459,6 +461,202 @@ describe('HealthService', () => {
           error: 'Perplexity down',
         }),
       );
+    });
+  });
+
+  describe('checkReadiness', () => {
+    it('should return ready status when database connected and no pending migrations', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result).toEqual({
+        status: 'ready',
+        timestamp: expect.any(String),
+        database: 'connected',
+        migrations: 'completed',
+      });
+      expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    });
+
+    it('should return starting status when migrations are in progress', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(true);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result).toEqual({
+        status: 'starting',
+        reason: 'migrations_in_progress',
+        database: 'connected',
+        timestamp: expect.any(String),
+      });
+      expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    });
+
+    it('should return not_ready status when database is disconnected', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockRejectedValue(new Error('Connection refused'));
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result).toEqual({
+        status: 'not_ready',
+        reason: 'database_disconnected',
+        timestamp: expect.any(String),
+      });
+      expect(dataSource.showMigrations).not.toHaveBeenCalled();
+    });
+
+    it('should not check migrations if database is disconnected', async () => {
+      // Arrange
+      const checkPendingMigrationsSpy = jest.spyOn(
+        service as any,
+        'checkPendingMigrations',
+      );
+      jest
+        .spyOn(userRepository, 'query')
+        .mockRejectedValue(new Error('ECONNREFUSED'));
+
+      // Act
+      await service.checkReadiness();
+
+      // Assert
+      expect(checkPendingMigrationsSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return valid ISO 8601 timestamp in all status types', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      const timestamp = new Date(result.timestamp);
+      expect(timestamp.toISOString()).toBe(result.timestamp);
+    });
+  });
+
+  describe('checkPendingMigrations (private method)', () => {
+    it('should return true when there are pending migrations', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(true);
+
+      // Act
+      const result = await (service as any).checkPendingMigrations();
+
+      // Assert
+      expect(result).toBe(true);
+      expect(dataSource.showMigrations).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return false when there are no pending migrations', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+
+      // Act
+      const result = await (service as any).checkPendingMigrations();
+
+      // Assert
+      expect(result).toBe(false);
+      expect(dataSource.showMigrations).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return false when showMigrations throws error', async () => {
+      // Arrange
+      const error = new Error('Migration check failed');
+      jest.spyOn(dataSource, 'showMigrations').mockRejectedValue(error);
+
+      // Act
+      const result = await (service as any).checkPendingMigrations();
+
+      // Assert
+      expect(result).toBe(false);
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'Could not check migrations status',
+        error,
+      );
+    });
+
+    it('should handle TypeORM errors gracefully', async () => {
+      // Arrange
+      const typeormError = new Error('QueryRunner already released');
+      jest.spyOn(dataSource, 'showMigrations').mockRejectedValue(typeormError);
+
+      // Act
+      const result = await (service as any).checkPendingMigrations();
+
+      // Assert
+      expect(result).toBe(false);
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'Could not check migrations status',
+        typeormError,
+      );
+    });
+  });
+
+  describe('readiness integration scenarios', () => {
+    it('should handle transition from starting to ready', async () => {
+      // Arrange - First call: migrations pending
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest
+        .spyOn(dataSource, 'showMigrations')
+        .mockResolvedValueOnce(true) // First call: migrations pending
+        .mockResolvedValueOnce(false); // Second call: migrations completed
+
+      // Act - First check (starting)
+      const result1 = await service.checkReadiness();
+      expect(result1.status).toBe('starting');
+
+      // Act - Second check (ready)
+      const result2 = await service.checkReadiness();
+      expect(result2.status).toBe('ready');
+      expect(result2.migrations).toBe('completed');
+    });
+
+    it('should handle rapid consecutive readiness checks', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+
+      // Act
+      const results = await Promise.all([
+        service.checkReadiness(),
+        service.checkReadiness(),
+        service.checkReadiness(),
+      ]);
+
+      // Assert
+      expect(results).toHaveLength(3);
+      results.forEach((result) => {
+        expect(result.status).toBe('ready');
+        expect(result.database).toBe('connected');
+        expect(result.migrations).toBe('completed');
+      });
+      expect(dataSource.showMigrations).toHaveBeenCalledTimes(3);
     });
   });
 });
