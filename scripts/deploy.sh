@@ -25,7 +25,7 @@ set -euo pipefail
 
 # Configuração
 RAILWAY_SERVICE="${1:-etp-express-backend}"
-HEALTH_CHECK_URL="${RAILWAY_BACKEND_URL}/api/health"
+HEALTH_CHECK_URL="${RAILWAY_BACKEND_URL}/api/health/ready"
 MAX_RETRIES=30
 RETRY_INTERVAL=10
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -122,8 +122,8 @@ wait_for_health_check() {
 run_smoke_tests() {
     log_info "Executando smoke tests..."
 
-    # Test 1: Health endpoint retorna JSON válido
-    log_info "Test 1/3: Validando formato JSON do health check..."
+    # Test 1: Readiness endpoint retorna JSON válido
+    log_info "Test 1/3: Validando formato JSON do readiness check..."
     HEALTH_RESPONSE=$(curl -s "$HEALTH_CHECK_URL")
 
     if ! echo "$HEALTH_RESPONSE" | jq -e '.status' > /dev/null 2>&1; then
@@ -132,11 +132,11 @@ run_smoke_tests() {
     fi
 
     HEALTH_STATUS=$(echo "$HEALTH_RESPONSE" | jq -r '.status')
-    if [ "$HEALTH_STATUS" != "healthy" ]; then
-        log_error "Health status é '${HEALTH_STATUS}', esperado 'healthy'"
+    if [ "$HEALTH_STATUS" != "ready" ]; then
+        log_error "Readiness status é '${HEALTH_STATUS}', esperado 'ready'"
         return 1
     fi
-    log_success "Test 1/3: JSON válido e status healthy"
+    log_success "Test 1/3: JSON válido e status ready"
 
     # Test 2: Database conectado
     log_info "Test 2/3: Validando conectividade database..."
