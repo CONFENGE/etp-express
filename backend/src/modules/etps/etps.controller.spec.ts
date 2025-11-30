@@ -54,6 +54,9 @@ describe('EtpsController', () => {
     findAll: jest.fn(),
     getStatistics: jest.fn(),
     findOne: jest.fn(),
+    findOneMinimal: jest.fn(),
+    findOneWithSections: jest.fn(),
+    findOneWithVersions: jest.fn(),
     update: jest.fn(),
     updateStatus: jest.fn(),
     remove: jest.fn(),
@@ -232,14 +235,17 @@ describe('EtpsController', () => {
   describe('findOne', () => {
     it('should return a single ETP by ID', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
 
       // Act
       const result = await controller.findOne(mockEtpId, mockUserId);
 
       // Assert
-      expect(service.findOne).toHaveBeenCalledWith(mockEtpId, mockUserId);
-      expect(service.findOne).toHaveBeenCalledTimes(1);
+      expect(service.findOneWithSections).toHaveBeenCalledWith(
+        mockEtpId,
+        mockUserId,
+      );
+      expect(service.findOneWithSections).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(mockEtp);
       expect(result.data.id).toBe(mockEtpId);
       expect(result.disclaimer).toBeDefined();
@@ -247,7 +253,7 @@ describe('EtpsController', () => {
 
     it('should throw NotFoundException when ETP not found', async () => {
       // Arrange
-      mockEtpsService.findOne.mockRejectedValue(
+      mockEtpsService.findOneWithSections.mockRejectedValue(
         new NotFoundException('ETP não encontrado'),
       );
 
@@ -262,7 +268,7 @@ describe('EtpsController', () => {
 
     it('should throw ForbiddenException when user does not own the ETP', async () => {
       // Arrange
-      mockEtpsService.findOne.mockRejectedValue(
+      mockEtpsService.findOneWithSections.mockRejectedValue(
         new ForbiddenException('Você não tem permissão para acessar este ETP'),
       );
 
@@ -274,7 +280,7 @@ describe('EtpsController', () => {
 
     it('should include disclaimer in response', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
 
       // Act
       const result = await controller.findOne(mockEtpId, mockUserId);
