@@ -1,0 +1,29 @@
+# E2E Test Artifacts - Git Ignore
+
+# Screenshots (capturados em falhas)
+screenshots/
+*.png
+*.jpg
+*.jpeg
+
+# Configuração temporária do Jest
+jest.config.temp.json
+
+# Relatórios de testes
+test-results/
+*.xml
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos temporários
+.tmp/
+temp/
+*.tmp
+
+# Chrome/Chromium cache (Puppeteer)
+.cache/

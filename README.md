@@ -448,6 +448,238 @@ docker system df
 
 ---
 
+## 🧪 E2E TESTS (PUPPETEER)
+
+**M5 (Issue #22)** - Infraestrutura completa de testes end-to-end com Puppeteer + Jest.
+
+### Visão Geral
+
+O projeto possui suite de testes E2E automatizados que validam fluxos críticos da aplicação:
+
+- ✅ Fluxo de autenticação (login/logout)
+- ✅ Criação de ETPs
+- ✅ Navegação entre páginas
+- ✅ Validação de formulários
+- ✅ Integração frontend-backend
+
+### Pré-requisitos
+
+```bash
+# Frontend DEVE estar rodando
+cd frontend
+npm run dev
+# Aguardar: http://localhost:5173
+```
+
+### Executar Testes E2E
+
+```bash
+# Na raiz do projeto (monorepo)
+npm run test:e2e
+
+# Ou diretamente no diretório e2e/
+cd e2e
+npx tsx run-tests.ts
+```
+
+### Estrutura de Arquivos
+
+```
+e2e/
+├── puppeteer.config.js       # Configuração do Puppeteer (base URL, timeouts, viewport)
+├── jest.config.js            # Configuração do Jest (TypeScript, environment node)
+├── utils/
+│   └── setup.ts              # Helpers (setupBrowser, login, createETP, screenshots)
+├── login.spec.ts             # Suite de testes do fluxo de login (6 casos)
+├── run-tests.ts              # Test runner customizado (verifica servidor, executa specs)
+└── .gitignore                # Ignora screenshots/, test-results/, temp files
+
+Gerado em runtime:
+├── screenshots/              # Screenshots de falhas (auto-capturados)
+│   └── YYYY-MM-DD_HH-MM-SS_test-name.png
+└── test-results/             # Relatórios XML (Jest JUnit)
+    └── e2e-test-results.xml
+```
+
+### Configuração (puppeteer.config.js)
+
+| Configuração        | Padrão                  | Variável de Ambiente | Descrição                          |
+| ------------------- | ----------------------- | -------------------- | ---------------------------------- |
+| `baseUrl`           | `http://localhost:5173` | `E2E_BASE_URL`       | URL da aplicação                   |
+| `headless`          | `true`                  | `E2E_HEADLESS=false` | Modo headless (true para CI)       |
+| `devtools`          | `false`                 | `E2E_DEVTOOLS=true`  | Abrir DevTools (debug)             |
+| `slowMo`            | `0`                     | `E2E_SLOW_MO=250`    | Slow motion (ms) para debug visual |
+| `viewport.width`    | `1920`                  | -                    | Largura do browser                 |
+| `viewport.height`   | `1080`                  | -                    | Altura do browser                  |
+| `testTimeout`       | `60000` (60s)           | -                    | Timeout padrão por teste           |
+| `testUser.email`    | `test@etpexpress.com`   | `E2E_TEST_EMAIL`     | Usuário padrão para testes         |
+| `testUser.password` | `Test@123456`           | `E2E_TEST_PASSWORD`  | Senha padrão para testes           |
+
+### Helpers Disponíveis (utils/setup.ts)
+
+```typescript
+// Inicializar browser e page
+const { browser, page } = await setupBrowser();
+
+// Fazer login
+await login(page, 'user@example.com', 'password123');
+
+// Criar ETP
+await createETP(page, { title: 'Projeto Teste', description: 'Descrição' });
+
+// Capturar screenshot em falha
+await takeScreenshotOnFailure(page, 'test-name');
+
+// Obter texto de elemento
+const text = await getTextContent(page, '.error-message');
+
+// Aguardar URL conter path
+await waitForUrlContains(page, '/dashboard');
+
+// Teardown
+await teardownBrowser(browser);
+```
+
+### Exemplo de Teste (login.spec.ts)
+
+```typescript
+import { setupBrowser, teardownBrowser, login } from './utils/setup';
+
+describe('Login Flow E2E', () => {
+  let browser, page;
+
+  beforeEach(async () => {
+    ({ browser, page } = await setupBrowser());
+  });
+
+  afterEach(async () => {
+    await teardownBrowser(browser);
+  });
+
+  test('deve fazer login com credenciais válidas', async () => {
+    try {
+      await page.goto('http://localhost:5173/login');
+      await page.type('#email', 'test@etpexpress.com');
+      await page.type('#password', 'Test@123456');
+      await page.click('button[type="submit"]');
+      await page.waitForNavigation();
+
+      // Validações
+      expect(page.url()).toContain('/dashboard');
+    } catch (error) {
+      await takeScreenshotOnFailure(page, 'login-valid-credentials');
+      throw error;
+    }
+  }, 60000);
+});
+```
+
+### Executar com Opções de Debug
+
+```bash
+# Modo visual (browser visível)
+E2E_HEADLESS=false npm run test:e2e
+
+# Com DevTools aberto
+E2E_DEVTOOLS=true npm run test:e2e
+
+# Slow motion (250ms entre ações)
+E2E_SLOW_MO=250 E2E_HEADLESS=false npm run test:e2e
+
+# Combinar opções
+E2E_HEADLESS=false E2E_SLOW_MO=500 npm run test:e2e
+```
+
+### Criar Novos Testes
+
+1. Criar arquivo `e2e/<nome>.spec.ts`
+2. Importar helpers de `./utils/setup`
+3. Seguir padrão Jest (describe, test, expect)
+4. Adicionar try-catch com `takeScreenshotOnFailure` em caso de erro
+5. Executar `npm run test:e2e` para validar
+
+### CI/CD Integration (Futuro)
+
+```yaml
+# .github/workflows/e2e-tests.yml (exemplo)
+name: E2E Tests
+on: [pull_request]
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Instalar dependências
+      - run: npm ci
+      - run: cd frontend && npm ci
+      - run: cd backend && npm ci
+
+      # Iniciar aplicação em background
+      - run: cd frontend && npm run dev &
+      - run: cd backend && npm run start:dev &
+
+      # Aguardar servidor (health check)
+      - run: npx wait-on http://localhost:5173 http://localhost:3001/health
+
+      # Executar testes E2E
+      - run: npm run test:e2e
+        env:
+          E2E_HEADLESS: true
+          E2E_BASE_URL: http://localhost:5173
+
+      # Upload screenshots de falhas
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-screenshots
+          path: e2e/screenshots/
+```
+
+### Troubleshooting
+
+#### "Servidor não está rodando"
+
+```bash
+# Certifique-se de que o frontend está rodando
+cd frontend
+npm run dev
+
+# Verificar porta 5173
+curl http://localhost:5173
+```
+
+#### "Timeout aguardando navegação"
+
+- Aumentar timeout em `puppeteer.config.js` → `timeouts.navigation`
+- Verificar se backend está rodando (frontend pode carregar mas API falhar)
+- Usar `E2E_SLOW_MO=500` para debug visual
+
+#### "Element not found"
+
+- Capturar screenshot: `await page.screenshot({ path: 'debug.png' })`
+- Verificar seletores no frontend (ID, classes, data-testid)
+- Usar `page.waitForSelector('#elemento', { visible: true })`
+
+#### "Browser não abre (headless=false)"
+
+- Verificar instalação do Chromium: `npx puppeteer browsers install chrome`
+- Linux: Instalar dependências: `sudo apt-get install -y libx11-xcb1 libxcomposite1`
+
+### Referências
+
+- 📚 [Documentação Puppeteer](https://pptr.dev/)
+- 📚 [Jest Documentation](https://jestjs.io/docs/getting-started)
+- 🔗 [Issue #22 - Configure Puppeteer E2E](https://github.com/tjsasakifln/etp-express/issues/22)
+- 🔗 [Issue #23 - E2E Critical Flow Tests](https://github.com/tjsasakifln/etp-express/issues/23)
+- 🔗 [Issue #24 - Accessibility Tests (Axe-core)](https://github.com/tjsasakifln/etp-express/issues/24)
+
+---
+
 ## 📦 DEPLOY EM PRODUÇÃO (RAILWAY)
 
 Consulte o guia completo: **[DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)**
