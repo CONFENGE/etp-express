@@ -1,20 +1,21 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-11-29.md](ROADMAP_AUDIT_2025-11-29.md) | **Otimização CI/CD:** ✅ -68% minutos
+**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01.md](ROADMAP_AUDIT_2025-12-01.md) | **Otimização CI/CD:** ✅ -68% minutos
 
 ## 📊 Status Atual
 
-**Progresso Global:** 159/188 issues concluídas (84.6%)
+**Progresso Global:** 160/194 issues concluídas (82.5%)
 **Velocidade:** 6.0 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-05 (5 dias)
+**ETA Conclusão:** ~2025-12-06 (6 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
+M5: ███░░░░░░░░░░░░░░░░░  3/22  (14%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
+M7: ░░░░░░░░░░░░░░░░░░░░  0/6   (0%)   🏢 Multi-Tenancy B2G
 ```
 
 ---
@@ -121,7 +122,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
 
 **Auditoria Arquitetural:**
 
-- ✅ Módulo Sections: 83% conformidade (PR #350)
+- ✅ Módulo Sections: 83% conformidade (2025-11-30)
   - Relatório: [SECTIONS_MODULE_AUDIT.md](docs/audits/SECTIONS_MODULE_AUDIT.md)
   - 5 desvios críticos + 3 menores identificados
   - 6 melhorias implementadas (não especificadas originalmente)
@@ -134,7 +135,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
   - Highlights: RAG fact-checking, Cache LLM (TTL 24h), Paralelização validações 4-5x
   - **APROVADO para produção**
 
-- ✅ Módulo User: 92% conformidade (PR #352)
+- ✅ Módulo User: 92% conformidade (2025-11-30)
   - Relatório: [USER_MODULE_AUDIT.md](docs/audits/USER_MODULE_AUDIT.md)
   - 1 desvio crítico identificado (Sistema RBAC ausente)
   - LGPD Compliance Exemplar (100%): soft delete, exportação dados, audit trail
@@ -151,7 +152,7 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
   - [x] #342 - Selective loading ✅
   - [x] #343 - Connection pooling ✅
 
-**Issues:** #25-#33, #41, #47, #77-#81, #88-#91, #108, #147, #172, #206-#214, #231, #300-#301, #316-#319, #321, #326-#329, #339-#343
+**Issues:** #25-#33, #41, #47, #77-#81, #88-#91, #108, #172, #206-#214, #231, #300-#301, #316-#319, #321, #326-#329, #339-#343
 
 ---
 
@@ -260,16 +261,17 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (2/22) - 9%
+### 📚 M5: E2E Testing & Documentation (3/22) - 14%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-03
 
-#### Concluídas (2):
+#### Concluídas (3):
 
+- ✅ #22 - Configurar Puppeteer para testes E2E
 - ✅ #48 - UAT (parent - desmembrada em #92-#95)
 - ✅ #97 - Documentation sync & JSDoc
 
-#### Pendentes (20):
+#### Pendentes (19):
 
 **Testes E2E:**
 
@@ -306,6 +308,69 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
+### 🏢 M7: Multi-Tenancy B2G (0/6) - 0%
+
+**Status:** PLANEJADO | **ETA:** 2025-12-05 | **Estimativa Total:** 28h (4 dias úteis)
+
+**Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
+
+**Arquitetura:** Column-Based Isolation
+
+- Modelo: organizationId em User e Etp
+- Kill Switch: TenantGuard global para suspender organizações
+- Validação: Registro apenas para domínios autorizados (whitelist)
+- Remoção: Campo 'orgao' removido completamente (breaking change limpo)
+
+#### Pendentes (6):
+
+**Infraestrutura:**
+
+- [ ] #354 - [MT-01] Infraestrutura de Dados (Schema Organization) - 4h
+  - Criar entidade Organization + migration
+  - OrganizationsModule (service/controller/DTOs)
+  - Validação CNPJ, domainWhitelist, isActive
+
+**Backend Core:**
+
+- [ ] #355 - [MT-02] Associação de Usuários (User-Org Relation) - 3h
+  - Adicionar organizationId em User entity
+  - Remover campo 'orgao' completamente
+  - Migration + relação ManyToOne
+
+- [ ] #356 - [MT-03] Refatoração do Registro (Auth Guardrails) - 6h
+  - Validação de domínio de email
+  - Busca Organization por domainWhitelist
+  - JWT payload com organizationId
+  - Rejeitar domínios não autorizados (400)
+
+- [ ] #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h
+  - TenantGuard global
+  - Bloquear org suspensa (403)
+  - Audit trail de bloqueios
+
+**Data Isolation:**
+
+- [ ] #358 - [MT-05] Isolamento de Dados dos ETPs (Data Scoping) - 7h
+  - Adicionar organizationId em Etp entity
+  - Remover metadata.orgao completamente
+  - EtpsService: inject organizationId, filter by org
+  - Testes de segurança: cross-tenant isolation
+
+**Frontend:**
+
+- [ ] #359 - [MT-06] Adaptação do Frontend (Onboarding) - 4h
+  - Remover campo "Órgão" do registro
+  - UnauthorizedDomainModal (contato comercial)
+  - Exibir nome da organização no Header
+
+**Ordem de Implementação:** MT-01 → MT-02 → MT-03 → MT-04 → MT-05 → MT-06 (sequencial)
+
+**Issues:** #354-#359
+
+**Plano Detalhado:** [PLAN_MULTI_TENANCY.md](C:\Users\tj_sa.claude\plans\valiant-humming-jellyfish.md)
+
+---
+
 ## 🎯 Próximos Passos (Prioridade)
 
 ### ✅ P0 - Concluído (2025-12-01):
@@ -317,9 +382,12 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### P1 - Esta Semana (2025-12-01 a 2025-12-07):
 
-1. Iniciar E2E tests (#22-#24)
-2. Documentação API (#34)
-3. JSDoc completo (#97 - já iniciado)
+1. **Multi-Tenancy B2G (M7)** - Iniciar implementação sequencial
+   - MT-01: Infraestrutura de Dados (#354)
+   - MT-02: Associação de Usuários (#355)
+   - MT-03: Refatoração do Registro (#356)
+2. Iniciar E2E tests (#22-#24)
+3. Documentação API (#34)
 
 ### P2 - Próxima Sprint:
 
@@ -357,6 +425,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### Auditorias ROADMAP:
 
+- [Auditoria 2025-12-01](ROADMAP_AUDIT_2025-12-01.md) - 99.5% acurácia (160/160 issues rastreadas)
 - [Auditoria 2025-11-29](ROADMAP_AUDIT_2025-11-29.md) - 89.9% → 97.8% acurácia
 - [Auditoria 2025-11-28](ROADMAP_AUDIT_2025-11-28.md) - 99.4% acurácia
 - [Auditoria 2025-11-27](ROADMAP_AUDIT_2025-11-27.md) - 99.4% acurácia
