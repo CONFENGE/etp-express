@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-11-30 | **Auditoria:** [ROADMAP_AUDIT_2025-11-29.md](ROADMAP_AUDIT_2025-11-29.md) | **Otimização CI/CD:** ✅ -68% minutos
+**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-11-29.md](ROADMAP_AUDIT_2025-11-29.md) | **Otimização CI/CD:** ✅ -68% minutos
 
 ## 📊 Status Atual
 
-**Progresso Global:** 158/188 issues concluídas (84.0%)
+**Progresso Global:** 159/188 issues concluídas (84.6%)
 **Velocidade:** 6.0 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-05 (5 dias)
 
@@ -12,7 +12,7 @@
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████████ 43/44  (98%)  ⚡ Refactoring & Performance
+M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 ```
@@ -79,9 +79,9 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
 
 ---
 
-### ⚡ M4: Refactoring & Performance (43/44) - 98%
+### ✅ M4: Refactoring & Performance (44/44) - 100%
 
-**Status:** 1 issue pendente | **ETA:** 2025-11-30
+**Finalizado:** 2025-12-01
 
 #### Conquistas Principais:
 
@@ -141,10 +141,10 @@ M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  �
   - Testes: 86 testes passando (42 service + 44 controller)
   - **APROVADO CONDICIONALMENTE** - Requer implementação RBAC antes de produção
 
-#### Pendentes (1):
+#### ✅ Completado (2025-12-01):
 
 - [x] **#81** - Auditar módulo User contra ARCHITECTURE.md ✅
-- [ ] **#91** - Parent: Otimizações performance (⚠️ 5/5 sub-issues DONE, aguardando closure)
+- [x] **#91** - Parent: Otimizações performance ✅ (5/5 sub-issues DONE)
   - [x] #339 - Cache OpenAI ✅
   - [x] #340 - Cache Perplexity ✅
   - [x] #341 - Paralelização agentes ✅
@@ -308,17 +308,18 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ## 🎯 Próximos Passos (Prioridade)
 
-### P0 - Hoje (2025-11-30):
+### ✅ P0 - Concluído (2025-12-01):
 
 1. ✅ Fechar parent issue #91 no GitHub (sub-issues completas)
 2. ✅ Executar auditoria #80 (módulo Orchestrator) - 95% conformidade
 3. ✅ Executar auditoria #81 (módulo User) - 92% conformidade
+4. ✅ M4 100% completo - Todas 44 issues finalizadas
 
-### P1 - Esta Semana:
+### P1 - Esta Semana (2025-12-01 a 2025-12-07):
 
-1. Fechar M4 (100%)
-2. Iniciar E2E tests (#22-#24)
-3. Documentação API (#34)
+1. Iniciar E2E tests (#22-#24)
+2. Documentação API (#34)
+3. JSDoc completo (#97 - já iniciado)
 
 ### P2 - Próxima Sprint:
 
