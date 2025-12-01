@@ -378,4 +378,35 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
+## 🧹 Changelog Operacional
+
+### 2025-12-01: Limpeza Massiva de Branches
+
+**Objetivo:** Despoluir o repositório mantendo apenas a branch master
+
+**Execução:**
+
+- ✅ Criadas 85 tags de backup (formato: `backup/2025-12-01/<branch-name>`)
+- ✅ Merged 3 branches não-merged: feat/319, feat/339, feat/343
+- ✅ Descartadas 2 branches problemáticas com conflitos complexos (backups disponíveis)
+- ✅ Deletadas 15 branches locais
+- ✅ Deletadas 76 branches remotas (13 manuais + 63 auto-deletadas pelo GitHub)
+
+**Resultado:**
+
+- **Antes:** 100 branches (15 locais + 85 remotas)
+- **Depois:** 2 referências (master + origin/master)
+- **Redução:** 98% (98 branches removidas)
+- **Segurança:** 85 tags de backup permanentes para recuperação
+
+**Branches Merged:**
+
+- `feat/319-refactor-orchestrator` - Refatoração do generateSection() como orchestrator limpo
+- `feat/339-openai-cache` - Implementação de cache de respostas OpenAI
+- `feat/343-configure-connection-pooling` - Configuração de connection pooling para Railway Postgres
+
+**Nota:** Todas as branches deletadas têm backups via tags git. Recuperação disponível com: `git checkout -b <branch-name>-restored backup/2025-12-01/<branch-name>`
+
+---
+
 **Status:** 🟢 No caminho certo | **Confiança:** Alta | **Risco:** Baixo
