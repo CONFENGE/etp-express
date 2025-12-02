@@ -141,7 +141,7 @@ describe('UsersService', () => {
         email: 'test@example.gov.br',
         password: 'SenhaSegura123!',
         name: 'João da Silva',
-        orgao: 'CONFENGE',
+        organizationId: 'org-123',
         cargo: 'Analista',
         role: UserRole.USER,
       };
@@ -161,6 +161,7 @@ describe('UsersService', () => {
         email: 'test@example.gov.br',
         password: 'SenhaSegura123!',
         name: 'João da Silva',
+        organizationId: 'org-123',
       };
 
       const userWithDefaultRole = { ...mockUser, role: UserRole.USER };
@@ -177,6 +178,7 @@ describe('UsersService', () => {
         email: 'test@example.gov.br',
         password: 'SenhaSegura123!',
         name: 'João da Silva',
+        organizationId: 'org-123',
       };
 
       const loggerSpy = jest.spyOn(service['logger'], 'log');
@@ -396,6 +398,7 @@ describe('UsersService', () => {
         email: 'duplicate@example.gov.br',
         password: 'SenhaSegura123!',
         name: 'Duplicate User',
+        organizationId: 'org-123',
       };
 
       const dbError = new Error('Duplicate key violation');
@@ -435,6 +438,7 @@ describe('UsersService', () => {
         email: 'test@example.gov.br',
         password: 'SenhaSegura123!',
         name: 'Test User',
+        organizationId: 'org-123',
       };
 
       const dbError = new Error('Database connection error');
