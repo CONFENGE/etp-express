@@ -276,7 +276,6 @@ describe('UsersController', () => {
   describe('update', () => {
     const updateUserDto: UpdateUserDto = {
       name: 'Updated User',
-      organizationId: 'org-123',
     };
 
     it('should update a user', async () => {

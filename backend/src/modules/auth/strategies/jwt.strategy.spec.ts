@@ -70,6 +70,7 @@ describe('JwtStrategy', () => {
       email: 'test@example.com',
       name: 'Test User',
       role: 'servidor',
+      organizationId: 'org-123',
     };
 
     it('should return user data when token payload is valid', async () => {
@@ -87,6 +88,7 @@ describe('JwtStrategy', () => {
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
+        organizationId: mockUser.organizationId,
       });
     });
 
