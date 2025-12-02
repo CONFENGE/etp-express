@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
-// import { Etp } from './etp.entity'; // Will be added in MT-05
+import { Etp } from './etp.entity';
 
 /**
  * Organization entity for Multi-Tenancy B2G (Business-to-Government).
@@ -88,9 +88,10 @@ export class Organization {
   users: User[];
 
   /**
-   * Etp relation will be added in MT-05 (#358):
-   *
-   * @OneToMany(() => Etp, (etp) => etp.organization)
-   * etps: Etp[];
+   * ETPs belonging to this organization (MT-05 #358).
+   * One organization can have many ETPs.
+   * Column-based isolation: Ensures data is scoped to organization.
    */
+  @OneToMany(() => Etp, (etp) => etp.organization)
+  etps: Etp[];
 }

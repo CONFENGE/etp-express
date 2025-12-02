@@ -9,6 +9,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Organization } from './organization.entity';
 import { EtpSection } from './etp-section.entity';
 import { EtpVersion } from './etp-version.entity';
 import { AuditLog } from './audit-log.entity';
@@ -50,13 +51,31 @@ export class Etp {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: {
-    orgao?: string;
     unidadeRequisitante?: string;
     responsavelTecnico?: string;
     fundamentacaoLegal?: string[];
     tags?: string[];
     [key: string]: unknown;
   };
+
+  /**
+   * Organization ID (Multi-Tenancy B2G - MT-05).
+   * Foreign key to organizations table.
+   * NOT NULL - every ETP must belong to an organization.
+   *
+   * Column-based isolation: Ensures ETPs are scoped to a single organization.
+   * Used by EtpsService to filter queries and enforce cross-tenant isolation.
+   */
+  @Column({ type: 'uuid' })
+  organizationId: string;
+
+  /**
+   * Organization relation (Multi-Tenancy B2G - MT-05).
+   * Eager loaded for quick access to organization data.
+   */
+  @ManyToOne(() => Organization, { eager: true })
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   @Column({ default: 1 })
   currentVersion: number;
