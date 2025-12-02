@@ -4,9 +4,9 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 166/194 issues concluídas (85.6%)
+**Progresso Global:** 167/194 issues concluídas (86.1%)
 **Velocidade:** 6.2 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-05 (5 dias)
+**ETA Conclusão:** ~2025-12-04 (4 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -15,7 +15,7 @@ M3: ████████████████████ 57/57  (100%) �
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████░░░░░░░░░░░░░░░░  4/22  (18%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
-M7: ████████████████░░░░  5/6   (83%)  🏢 Multi-Tenancy B2G
+M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
 ---
@@ -162,9 +162,9 @@ M7: ████████████████░░░░  5/6   (83%)  �
 
 ---
 
-### 🏢 M7: Multi-Tenancy B2G (5/6) - 83%
+### ✅ M7: Multi-Tenancy B2G (6/6) - 100%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-02 | **Tempo Executado:** 27h de 28h
+**Finalizado:** 2025-12-02 | **Tempo Executado:** 30h de 31h
 
 **Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
 
@@ -174,7 +174,7 @@ M7: ████████████████░░░░  5/6   (83%)  �
 - Kill Switch: TenantGuard global para suspender organizações
 - Validação: Registro apenas para domínios autorizados (whitelist)
 
-#### Concluídas (5):
+#### Concluídas (6):
 
 - ✅ #354 - [MT-01] Infraestrutura de Dados (Schema Organization) - 4h (PR #360)
   - Entidade Organization + OrganizationsModule
@@ -204,16 +204,16 @@ M7: ████████████████░░░░  5/6   (83%)  �
   - SectionsService: organizationId em todos métodos
   - Tests: 823/836 passando (98.4%)
 
-#### Pendentes (1):
+- ✅ #359 - [MT-06] Adaptação do Frontend (Onboarding) - 3h (PR #365)
+  - User interface: organization { id, name }
+  - UnauthorizedDomainModal + OrganizationSuspendedModal
+  - Register.tsx: domain validation message + error handling
+  - Header.tsx: organization name display
+  - Tests: 71/71 passando (100%)
 
-- [ ] #359 - [MT-06] Adaptação do Frontend (Onboarding) - 4h
-  - Remover campo "Órgão" do registro
-  - UnauthorizedDomainModal (contato comercial)
-  - Exibir nome da organização no Header
+**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → ✅ MT-04 → ✅ MT-05 → ✅ MT-06
 
-**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → ✅ MT-04 → ✅ MT-05 → MT-06
-
-**Issues:** #354-#359 | **PRs:** #360, #361, #362, #363, #364
+**Issues:** #354-#359 | **PRs:** #360, #361, #362, #363, #364, #365
 
 ---
 
@@ -221,13 +221,13 @@ M7: ████████████████░░░░  5/6   (83%)  �
 
 ### P0 - URGENTE (Esta Semana):
 
-1. **MT-06: Adaptação Frontend (#359)** - Concluir M7 (83% → 100%)
-2. **E2E Tests (#23-#24)** - Iniciar M5 (18% → 30%+)
+1. **E2E Tests (#23-#24)** - Iniciar M5 (18% → 30%+)
+2. **API Documentation (#34)** - JSDoc completo no backend
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
-1. Documentação API (#34)
-2. UAT scenarios (#92-#95)
+1. UAT scenarios (#92-#95)
+2. Testes de integração adicionais (#82-#84)
 
 ### P2 - Próxima Sprint:
 
@@ -241,9 +241,9 @@ M7: ████████████████░░░░  5/6   (83%)  �
 
 ### Velocidade (7 dias):
 
-- **Issues fechadas:** 46
-- **Taxa:** 6.2 issues/dia
-- **Tendência:** Acelerando (+8% vs semana anterior)
+- **Issues fechadas:** 47
+- **Taxa:** 6.3 issues/dia
+- **Tendência:** Acelerando (+9% vs semana anterior)
 
 ### Quality Metrics:
 
