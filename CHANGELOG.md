@@ -25,6 +25,29 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Suite de testes abrangente: 40 testes, 100% coverage
   - Preparação para próximas issues: MT-02 (relação User-Organization), MT-03 (registro com whitelist), MT-04 (TenantGuard), MT-05 (isolamento de dados ETP), MT-06 (adaptação frontend)
 
+- ✅ #356 - Validação de domínio de email no registro (MT-03) (PR #362)
+  - **MT-03** - Auth Guardrails para Multi-Tenancy B2G
+  - Validação automática de domínio de email durante registro (`AuthService.register()`)
+  - Apenas emails de domínios whitelisted podem criar conta
+  - OrganizationId incluído no JWT payload para autorização de tenant
+  - Validação de `organization.isActive` antes de permitir registro
+  - Remoção do campo legacy `orgao` de CreateUserDto
+  - 6 novos testes MT-03 (818 testes passing, 0 regressões)
+  - Casos cobertos: domínio válido, inválido, case-insensitive, organização suspensa
+
+- ✅ #357 - Tenant Kill Switch + RBAC (MT-04) (PR #363)
+  - **MT-04** - Kill Switch para suspender organizações + controle de acesso por roles
+  - **TenantGuard** bloqueia todos os usuários de organizações suspensas (isActive=false)
+  - Retorna 403 Forbidden com mensagem clara ao usuário
+  - Respeita rotas @Public() (login, register, health checks)
+  - Logs de auditoria para todas as tentativas bloqueadas (compliance LGPD)
+  - **RolesGuard** + decorator @Roles() para controle de acesso baseado em roles
+  - Endpoints de Organizations restritos a role ADMIN
+  - Ordem de execução: JwtAuthGuard → TenantGuard → RolesGuard
+  - Endpoints ADMIN: `PATCH /organizations/:id/suspend` e `/reactivate`
+  - 7 novos testes TenantGuard (873 testes passing, 43 test suites)
+  - AuditAction.TENANT_BLOCKED para trilha de auditoria completa
+
 #### 🤖 Enriquecimento com IA (2025-11-25)
 
 - ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
