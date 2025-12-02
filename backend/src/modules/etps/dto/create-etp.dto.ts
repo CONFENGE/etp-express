@@ -32,7 +32,6 @@ export class CreateEtpDto {
 
   @ApiPropertyOptional({
     example: {
-      orgao: 'Ministério da Economia',
       unidadeRequisitante: 'Secretaria de Tecnologia',
       responsavelTecnico: 'João Silva',
       tags: ['TI', 'Desenvolvimento'],
@@ -41,7 +40,6 @@ export class CreateEtpDto {
   @IsOptional()
   @IsObject()
   metadata?: {
-    orgao?: string;
     unidadeRequisitante?: string;
     responsavelTecnico?: string;
     fundamentacaoLegal?: string[];

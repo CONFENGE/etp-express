@@ -25,7 +25,7 @@ describe('OrganizationsService', () => {
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     users: [], // MT-02 (#355)
-    // etps relation will be added in MT-05 (#358)
+    etps: [], // MT-05 (#358)
   };
 
   const mockQueryBuilder = {
