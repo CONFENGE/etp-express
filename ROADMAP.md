@@ -131,8 +131,8 @@ M7: ████████████████████  6/6   (100%) �
 
 **Correções de Testes (P1 - CRÍTICO):**
 
-- [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing
-- [ ] #368 - Fix sections.controller.spec.ts - organizationId parameter missing
+- [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing (REQUER REABERTURA - escopo ampliado: ~25 erros TypeScript em create(), findAll(), getStatistics(), find\*(), update(), updateStatus())
+- [x] #368 - Fix sections.controller.spec.ts - organizationId parameter missing (PR #371 - em andamento)
 
 **Testes E2E:**
 
