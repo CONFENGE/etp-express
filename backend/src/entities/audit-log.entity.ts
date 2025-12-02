@@ -30,6 +30,8 @@ export enum AuditAction {
   PROFILE_UPDATE = 'profile_update',
   PASSWORD_CHANGE = 'password_change',
   DATA_ACCESS = 'data_access',
+  // Multi-Tenancy B2G events (MT-04)
+  TENANT_BLOCKED = 'tenant_blocked',
 }
 
 @Entity('audit_logs')
