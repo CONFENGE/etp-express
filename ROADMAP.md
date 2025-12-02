@@ -309,9 +309,9 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
-### 🏢 M7: Multi-Tenancy B2G (3/6) - 50%
+### 🏢 M7: Multi-Tenancy B2G (4/6) - 67%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-03 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 13h
+**Status:** EM PROGRESSO | **ETA:** 2025-12-03 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 17h
 
 **Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
 
@@ -322,7 +322,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 - Validação: Registro apenas para domínios autorizados (whitelist)
 - Remoção: Campo 'orgao' removido completamente (breaking change limpo)
 
-#### Concluídas (3):
+#### Concluídas (4):
 
 **Infraestrutura:**
 
@@ -346,14 +346,14 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - JWT payload com organizationId
   - Domínios não autorizados rejeitados (400)
 
-#### Pendentes (3):
+- ✅ #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h (**2025-12-02**: PR #363 created)
+  - TenantGuard global implementado (bloqueia orgs suspensas)
+  - RolesGuard + @Roles decorator para RBAC
+  - Audit trail de bloqueios (AuditAction.TENANT_BLOCKED)
+  - Endpoints suspend/reactivate protegidos (ADMIN only)
+  - Tests: +7 testes TenantGuard (873 total)
 
-**Backend Core:**
-
-- [ ] #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h
-  - TenantGuard global
-  - Bloquear org suspensa (403)
-  - Audit trail de bloqueios
+#### Pendentes (2):
 
 **Data Isolation:**
 
@@ -370,9 +370,9 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - UnauthorizedDomainModal (contato comercial)
   - Exibir nome da organização no Header
 
-**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → MT-04 → MT-05 → MT-06 (sequencial)
+**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → ✅ MT-04 → MT-05 → MT-06 (sequencial)
 
-**Issues:** #354-#361 (includes PRs #360, #361)
+**Issues:** #354-#359 | **PRs:** #360, #361, #362, #363
 
 **Plano Detalhado:** [PLAN_MULTI_TENANCY.md](C:\Users\tj_sa.claude\plans\valiant-humming-jellyfish.md)
 
@@ -392,12 +392,12 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### P1 - Esta Semana (2025-12-01 a 2025-12-07):
 
-1. **Multi-Tenancy B2G (M7)** - Continuar implementação sequencial
+1. **Multi-Tenancy B2G (M7)** - Continuar implementação sequencial (67% completo)
    - ✅ MT-01: Infraestrutura de Dados (#354) - CONCLUÍDO
    - ✅ MT-02: Associação de Usuários (#355) - CONCLUÍDO
    - ✅ MT-03: Refatoração do Registro (#356) - CONCLUÍDO
-   - 🔄 MT-04: Middleware de Contexto (#357) - PRÓXIMO
-   - MT-05: Isolamento de Dados ETPs (#358)
+   - ✅ MT-04: Middleware de Contexto (#357) - CONCLUÍDO
+   - 🔄 MT-05: Isolamento de Dados ETPs (#358) - PRÓXIMO (P0)
    - MT-06: Adaptação Frontend (#359)
 2. Avançar E2E tests (#23-#24)
 3. Documentação API (#34)
