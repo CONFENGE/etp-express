@@ -15,7 +15,7 @@ M3: ████████████████████ 57/57  (100%) �
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████░░░░░░░░░░░░░░░░  4/22  (18%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
-M7: █████████████░░░░░  4/6   (67%)  🏢 Multi-Tenancy B2G
+M7: ████████████████░░  5/6   (83%)  🏢 Multi-Tenancy B2G
 ```
 
 ---
@@ -309,9 +309,9 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
-### 🏢 M7: Multi-Tenancy B2G (4/6) - 67%
+### 🏢 M7: Multi-Tenancy B2G (5/6) - 83%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-02 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 21h
+**Status:** EM PROGRESSO | **ETA:** 2025-12-02 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 27h
 
 **Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
 
@@ -322,7 +322,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 - Validação: Registro apenas para domínios autorizados (whitelist)
 - Remoção: Campo 'orgao' removido completamente (breaking change limpo)
 
-#### Concluídas (4):
+#### Concluídas (5):
 
 **Infraestrutura:**
 
@@ -354,15 +354,18 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - Tests: +7 testes TenantGuard (873 total)
   - CHANGELOG documentado (MT-03 + MT-04)
 
-#### Pendentes (2):
-
 **Data Isolation:**
 
-- [ ] #358 - [MT-05] Isolamento de Dados dos ETPs (Data Scoping) - 7h
-  - Adicionar organizationId em Etp entity
-  - Remover metadata.orgao completamente
-  - EtpsService: inject organizationId, filter by org
-  - Testes de segurança: cross-tenant isolation
+- ✅ #358 - [MT-05] Isolamento de Dados dos ETPs (Data Scoping) - 6h (**2025-12-02**: PR #364 merged)
+  - Column organizationId adicionado em Etp entity (NOT NULL + FK)
+  - Campo metadata.orgao removido completamente (breaking change limpo)
+  - EtpsService: auto-inject organizationId, filter by org, cross-tenant validation
+  - SectionsService: organizationId em todos métodos (generate/regenerate/remove)
+  - Migration 1733154000000 criada com índice (organizationId, createdAt)
+  - Tests: 823/836 passando (98.4%) - 13 edge cases documentados para MT-06
+  - Audit logging de tentativas cross-tenant bloqueadas
+
+#### Pendentes (1):
 
 **Frontend:**
 
@@ -371,9 +374,9 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - UnauthorizedDomainModal (contato comercial)
   - Exibir nome da organização no Header
 
-**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → ✅ MT-04 → MT-05 → MT-06 (sequencial)
+**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → ✅ MT-04 → ✅ MT-05 → MT-06 (sequencial)
 
-**Issues:** #354-#359 | **PRs:** #360, #361, #362, #363
+**Issues:** #354-#359 | **PRs:** #360, #361, #362, #363, #364
 
 **Plano Detalhado:** [PLAN_MULTI_TENANCY.md](C:\Users\tj_sa.claude\plans\valiant-humming-jellyfish.md)
 
@@ -393,13 +396,13 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### P1 - Esta Semana (2025-12-01 a 2025-12-07):
 
-1. **Multi-Tenancy B2G (M7)** - Continuar implementação sequencial (67% completo)
+1. **Multi-Tenancy B2G (M7)** - Continuar implementação sequencial (83% completo)
    - ✅ MT-01: Infraestrutura de Dados (#354) - CONCLUÍDO
    - ✅ MT-02: Associação de Usuários (#355) - CONCLUÍDO
    - ✅ MT-03: Refatoração do Registro (#356) - CONCLUÍDO
    - ✅ MT-04: Middleware de Contexto (#357) - CONCLUÍDO
-   - 🔄 MT-05: Isolamento de Dados ETPs (#358) - PRÓXIMO (P0)
-   - MT-06: Adaptação Frontend (#359)
+   - ✅ MT-05: Isolamento de Dados ETPs (#358) - CONCLUÍDO (**2025-12-02**: PR #364 merged)
+   - 🔄 MT-06: Adaptação Frontend (#359) - PRÓXIMO (P0)
 2. Avançar E2E tests (#23-#24)
 3. Documentação API (#34)
 
