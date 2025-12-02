@@ -151,7 +151,6 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
-        orgao: user.orgao,
         cargo: user.cargo,
       },
       disclaimer: DISCLAIMER,
@@ -176,7 +175,6 @@ export class AuthService {
    *   email: 'newuser@example.com',
    *   password: 'securePassword123',
    *   name: 'João Silva',
-   *   orgao: 'CONFENGE',
    *   cargo: 'Analista'
    * });
    * // User is created and authenticated in one step
@@ -212,7 +210,6 @@ export class AuthService {
       email: registerDto.email,
       password: hashedPassword,
       name: registerDto.name,
-      orgao: registerDto.orgao,
       cargo: registerDto.cargo,
       lgpdConsentAt: new Date(),
       lgpdConsentVersion: LGPD_TERMS_VERSION,
@@ -239,7 +236,6 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
-        orgao: user.orgao,
         cargo: user.cargo,
       },
       disclaimer: DISCLAIMER,

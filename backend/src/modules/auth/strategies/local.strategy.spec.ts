@@ -11,12 +11,25 @@ describe('LocalStrategy', () => {
     validateUser: jest.fn(),
   };
 
+  const mockOrganization = {
+    id: 'org-123',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['confenge.gov.br'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    users: [],
+  };
+
   const mockUser = {
     id: '123',
     email: 'test@example.com',
     name: 'Test User',
     role: 'servidor',
-    orgao: 'CONFENGE',
+    organizationId: 'org-123',
+    organization: mockOrganization,
     cargo: 'Analista',
     isActive: true,
   };
