@@ -18,6 +18,8 @@ import { User } from '../../../entities/user.entity';
  *   name: 'João Silva',
  *   role: UserRole.USER,
  *   cargo: 'Analista',
+ *   organizationId: 'org-uuid',
+ *   organization: { ... },
  *   isActive: true,
  *   lastLoginAt: new Date(),
  *   createdAt: new Date(),
@@ -28,3 +30,31 @@ import { User } from '../../../entities/user.entity';
  * ```
  */
 export type UserWithoutPassword = Omit<User, 'password'>;
+
+/**
+ * JWT payload structure for authentication tokens.
+ *
+ * @remarks
+ * Includes organizationId for Multi-Tenancy B2G (MT-03).
+ * Used to enforce data isolation and organization-scoped access control.
+ *
+ * @see JwtStrategy - Validates and extracts this payload
+ *
+ * @example
+ * ```ts
+ * const payload: JwtPayload = {
+ *   sub: 'user-uuid',
+ *   email: 'user@lages.sc.gov.br',
+ *   name: 'João Silva',
+ *   role: 'user',
+ *   organizationId: 'org-uuid'
+ * };
+ * ```
+ */
+export interface JwtPayload {
+  sub: string;
+  email: string;
+  name: string;
+  role: string;
+  organizationId: string;
+}

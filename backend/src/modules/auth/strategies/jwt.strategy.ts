@@ -3,15 +3,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
+import { JwtPayload } from '../types/user.types';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-  name: string;
-  role: string;
-}
 
 /**
  * JWT authentication strategy with dual-key support for zero-downtime secret rotation.
@@ -89,11 +83,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Usuário inválido ou inativo');
     }
 
+    // MT-03: Return organizationId for Multi-Tenancy data isolation
     return {
       id: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
+      organizationId: user.organizationId,
     };
   }
 }

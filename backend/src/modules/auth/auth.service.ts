@@ -10,17 +10,11 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
-import { UserWithoutPassword } from './types/user.types';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-  name: string;
-  role: string;
-}
+import { UserWithoutPassword, JwtPayload } from './types/user.types';
 
 /**
  * Service responsible for user authentication and authorization.
@@ -47,6 +41,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private auditService: AuditService,
+    private organizationsService: OrganizationsService,
   ) {}
 
   /**
@@ -131,6 +126,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       role: user.role,
+      organizationId: user.organizationId,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -152,6 +148,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         cargo: user.cargo,
+        organizationId: user.organizationId,
       },
       disclaimer: DISCLAIMER,
     };
@@ -163,21 +160,28 @@ export class AuthService {
    * @remarks
    * Creates new user with bcrypt-hashed password (cost factor 10),
    * automatically generates JWT token, and returns authentication response.
-   * Validates email uniqueness before creation.
+   * Validates email uniqueness and email domain authorization (Multi-Tenancy B2G - MT-03).
+   *
+   * Domain validation flow:
+   * 1. Extract domain from email (e.g., "lages.sc.gov.br" from "joao@lages.sc.gov.br")
+   * 2. Search for Organization where domain is in domainWhitelist
+   * 3. Reject if domain not authorized or organization is suspended
+   * 4. Create user with organizationId if valid
    *
    * @param registerDto - New user registration data (email, password, name, etc.)
    * @returns Authentication response with JWT token for immediate login
    * @throws {ConflictException} If email is already registered
+   * @throws {BadRequestException} If email domain is not authorized or organization is suspended
    *
    * @example
    * ```ts
    * const response = await authService.register({
-   *   email: 'newuser@example.com',
+   *   email: 'newuser@lages.sc.gov.br',
    *   password: 'securePassword123',
    *   name: 'João Silva',
    *   cargo: 'Analista'
    * });
-   * // User is created and authenticated in one step
+   * // User is created with organizationId from 'lages.sc.gov.br' domain
    * ```
    */
   async register(registerDto: RegisterDto) {
@@ -201,30 +205,58 @@ export class AuthService {
       throw new ConflictException('Email já cadastrado');
     }
 
+    // MT-03: Extract domain from email (case-insensitive)
+    const emailDomain = registerDto.email.split('@')[1]?.toLowerCase();
+
+    if (!emailDomain) {
+      throw new BadRequestException('Email inválido');
+    }
+
+    // MT-03: Find organization by domain whitelist
+    const organization =
+      await this.organizationsService.findByDomain(emailDomain);
+
+    if (!organization) {
+      throw new BadRequestException(
+        `Domínio de email "${emailDomain}" não autorizado. Contate comercial@etpexpress.com.br para cadastrar sua organização.`,
+      );
+    }
+
+    // MT-03: Validate organization is active
+    if (!organization.isActive) {
+      throw new BadRequestException(
+        `Organização "${organization.name}" está suspensa. Contate o suporte.`,
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
     // Current LGPD terms version
     const LGPD_TERMS_VERSION = '1.0.0';
 
+    // MT-03: Create user with organizationId
     const user = await this.usersService.create({
       email: registerDto.email,
       password: hashedPassword,
       name: registerDto.name,
       cargo: registerDto.cargo,
+      organizationId: organization.id,
       lgpdConsentAt: new Date(),
       lgpdConsentVersion: LGPD_TERMS_VERSION,
       internationalTransferConsentAt: new Date(),
     });
 
     this.logger.log(
-      `User registered with LGPD consent v${LGPD_TERMS_VERSION} and international transfer consent: ${user.email}`,
+      `User registered with LGPD consent v${LGPD_TERMS_VERSION}, international transfer consent, and organizationId ${organization.id}: ${user.email}`,
     );
 
+    // MT-03: Include organizationId in JWT payload
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
+      organizationId: user.organizationId,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -237,6 +269,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         cargo: user.cargo,
+        organizationId: user.organizationId,
       },
       disclaimer: DISCLAIMER,
     };
@@ -285,6 +318,7 @@ export class AuthService {
           email: user.email,
           name: user.name,
           role: user.role,
+          organizationId: user.organizationId,
         },
       };
     } catch (error) {
