@@ -24,7 +24,8 @@ describe('OrganizationsService', () => {
     stripeCustomerId: 'cus_test123',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
-    // users and etps relations will be added in MT-02 (#355) and MT-05 (#358)
+    users: [], // MT-02 (#355)
+    // etps relation will be added in MT-05 (#358)
   };
 
   const mockQueryBuilder = {

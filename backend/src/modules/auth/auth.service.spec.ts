@@ -19,13 +19,26 @@ describe('AuthService', () => {
   let usersService: UsersService;
   let jwtService: JwtService;
 
+  const mockOrganization = {
+    id: 'org-123',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['confenge.gov.br'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    users: [],
+  };
+
   const mockUser = {
     id: '123',
     email: 'test@example.com',
     password: '$2b$10$hashedPassword',
     name: 'Test User',
     role: 'servidor',
-    orgao: 'CONFENGE',
+    organizationId: 'org-123',
+    organization: mockOrganization,
     cargo: 'Analista',
     isActive: true,
     createdAt: new Date(),
@@ -192,7 +205,6 @@ describe('AuthService', () => {
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
-        orgao: mockUser.orgao,
         cargo: mockUser.cargo,
       });
       expect(result).toHaveProperty('disclaimer');
@@ -218,7 +230,6 @@ describe('AuthService', () => {
       email: 'newuser@example.com',
       password: 'password123',
       name: 'New User',
-      orgao: 'CONFENGE',
       cargo: 'Analista',
       lgpdConsent: true,
       internationalTransferConsent: true,
@@ -295,7 +306,6 @@ describe('AuthService', () => {
           email: registerDto.email,
           password: hashedPassword,
           name: registerDto.name,
-          orgao: registerDto.orgao,
           cargo: registerDto.cargo,
           lgpdConsentVersion: '1.0.0',
         }),

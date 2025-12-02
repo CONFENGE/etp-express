@@ -17,7 +17,6 @@ import { User } from '../../../entities/user.entity';
  *   email: 'user@example.com',
  *   name: 'João Silva',
  *   role: UserRole.USER,
- *   orgao: 'CONFENGE',
  *   cargo: 'Analista',
  *   isActive: true,
  *   lastLoginAt: new Date(),

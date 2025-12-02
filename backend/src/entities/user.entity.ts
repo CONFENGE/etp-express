@@ -5,10 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Etp } from './etp.entity';
 import { AuditLog } from './audit-log.entity';
+import { Organization } from './organization.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -31,8 +34,21 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  orgao: string | null;
+  /**
+   * Organization ID (Multi-Tenancy B2G - MT-02).
+   * Foreign key to organizations table.
+   * NOT NULL - every user must belong to an organization.
+   */
+  @Column({ type: 'uuid' })
+  organizationId: string;
+
+  /**
+   * Organization relation (Multi-Tenancy B2G - MT-02).
+   * Eager loaded for quick access to organization data.
+   */
+  @ManyToOne(() => Organization, { eager: true })
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   @Column({ nullable: true })
   cargo: string | null;
