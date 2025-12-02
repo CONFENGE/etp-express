@@ -19,12 +19,25 @@ describe('UsersService', () => {
   let analyticsRepository: Repository<AnalyticsEvent>;
   let auditLogsRepository: Repository<AuditLog>;
 
+  const mockOrganization = {
+    id: '123e4567-e89b-12d3-a456-426614174001',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['example.gov.br'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    users: [],
+  };
+
   const mockUser: User = {
     id: '123e4567-e89b-12d3-a456-426614174000',
     email: 'test@example.gov.br',
     password: '$2b$10$hashedPassword',
     name: 'João da Silva',
-    orgao: 'CONFENGE',
+    organizationId: '123e4567-e89b-12d3-a456-426614174001',
+    organization: mockOrganization as any,
     cargo: 'Analista',
     role: UserRole.USER,
     isActive: true,
@@ -529,7 +542,7 @@ describe('UsersService', () => {
           'id',
           'name',
           'email',
-          'orgao',
+          'organizationId',
           'cargo',
           'role',
           'isActive',
