@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/card';
 import { APP_NAME } from '@/lib/constants';
 import { InternationalTransferModal } from '@/components/legal/InternationalTransferModal';
+import { UnauthorizedDomainModal } from '@/components/modals/UnauthorizedDomainModal';
 
 const registerSchema = z
   .object({
@@ -51,6 +52,8 @@ export function Register() {
   const { error: showError, success } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
+  const [unauthorizedEmail, setUnauthorizedEmail] = useState<string>('');
 
   const {
     register,
@@ -91,12 +94,29 @@ export function Register() {
       });
       success('Cadastro realizado com sucesso!');
       navigate('/dashboard');
-    } catch (error) {
-      showError(
-        error instanceof Error
-          ? error.message
-          : 'Erro ao cadastrar. Tente novamente.',
-      );
+    } catch (error: unknown) {
+      // Handle unauthorized domain error (400)
+      if (
+        error &&
+        typeof error === 'object' &&
+        'statusCode' in error &&
+        error.statusCode === 400 &&
+        'message' in error &&
+        typeof error.message === 'string' &&
+        (error.message.includes('domain') ||
+          error.message.includes('domínio') ||
+          error.message.includes('not authorized') ||
+          error.message.includes('não autorizado'))
+      ) {
+        setUnauthorizedEmail(data.email);
+        setShowUnauthorizedModal(true);
+      } else {
+        showError(
+          error instanceof Error
+            ? error.message
+            : 'Erro ao cadastrar. Tente novamente.',
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +165,10 @@ export function Register() {
                   {errors.email.message}
                 </p>
               )}
+              <p className="text-xs text-muted-foreground">
+                Use seu email institucional. Apenas domínios autorizados podem
+                se cadastrar.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -290,6 +314,12 @@ export function Register() {
         open={showTransferModal}
         onAccept={handleTransferAccept}
         onDecline={handleTransferDecline}
+      />
+
+      <UnauthorizedDomainModal
+        open={showUnauthorizedModal}
+        onClose={() => setShowUnauthorizedModal(false)}
+        email={unauthorizedEmail}
       />
     </div>
   );
