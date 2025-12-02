@@ -21,11 +21,24 @@ describe('UsersController', () => {
 
   const mockUserId = 'user-123';
 
+  const mockOrganization = {
+    id: '123e4567-e89b-12d3-a456-426614174001',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['example.com'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    users: [],
+  };
+
   const mockUser = {
     id: mockUserId,
     name: 'Test User',
     email: 'test@example.com',
-    orgao: 'CONFENGE',
+    organizationId: '123e4567-e89b-12d3-a456-426614174001',
+    organization: mockOrganization,
     cargo: 'Analista',
     role: 'servidor',
     createdAt: new Date(),
@@ -305,7 +318,7 @@ describe('UsersController', () => {
 
       // Assert
       expect(result.data.name).toBe('Only Name Updated');
-      expect(result.data.orgao).toBe(mockUser.orgao); // Orgao should remain unchanged
+      expect(result.data.organizationId).toBe(mockUser.organizationId); // Organization should remain unchanged
     });
 
     it('should include disclaimer in response', async () => {
