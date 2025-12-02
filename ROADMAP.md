@@ -4,7 +4,7 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 167/194 issues concluídas (86.1%)
+**Progresso Global:** 168/194 issues concluídas (86.6%)
 **Velocidade:** 6.2 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-04 (4 dias)
 
@@ -13,7 +13,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ████░░░░░░░░░░░░░░░░  4/22  (18%)  📚 E2E Testing & Documentation
+M5: █████░░░░░░░░░░░░░░░  5/22  (23%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -114,18 +114,19 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (4/22) - 18%
+### 📚 M5: E2E Testing & Documentation (5/22) - 23%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-03
 
-#### Concluídas (4):
+#### Concluídas (5):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
+- ✅ #34 - JSDoc completo em OrchestratorService e agentes (PR #366)
 - ✅ #48 - UAT (parent - desmembrada em #92-#95)
 - ✅ #97 - Documentation sync & JSDoc
 - ✅ #353 - Configure Puppeteer for E2E Testing
 
-#### Pendentes (18):
+#### Pendentes (17):
 
 **Testes E2E:**
 
@@ -135,7 +136,7 @@ M7: ████████████████████  6/6   (100%) �
 
 **Documentação:**
 
-- [ ] #34-#37 - Docs técnicas (API, deployment, arquitetura, contribuição)
+- [ ] #35-#37 - Docs técnicas (frontend logging, README badges, arquitetura)
 - [ ] #110 - Staged Rollout Strategy & Feature Flags
 - [ ] #111 - Production Support SLA & Training
 - [ ] #215-#218 - Prompt externalization (YAML, service, hot-reload)
