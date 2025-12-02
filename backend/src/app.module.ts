@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
 
 // Modules
@@ -25,6 +26,10 @@ import { HealthModule } from './health/health.module';
 // Common
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
+// Guards (MT-04)
+import { TenantGuard } from './common/guards/tenant.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [
@@ -143,6 +148,18 @@ import { AppService } from './app.service';
     HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Global guards (MT-04)
+    // Execution order: JwtAuthGuard (in AuthModule) → TenantGuard → RolesGuard
+    {
+      provide: APP_GUARD,
+      useClass: TenantGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
