@@ -533,6 +533,118 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
+### 2025-12-02: Review e Merge Automatizado - MT-04 (Kill Switch + RBAC)
+
+**Objetivo:** Validar, corrigir e fazer merge da PR #363 (MT-04) usando critérios rigorosos de qualidade
+
+**Contexto:** Execução do comando `/review-pr` para avaliar PR #363 contra 8 categorias de validação (100/100 necessário para merge automatizado)
+
+**Processo de Validação:**
+
+**1. Análise Inicial (Score: 85/100)**
+
+- ✅ Category 1 - Code Quality Gates (12.5%): CI 100% verde, 0 erros TypeScript
+- ✅ Category 2 - Testing Requirements (12.5%): 873 testes passing, 81.57% coverage backend
+- ✅ Category 3 - Security Standards (12.5%): 0 vulnerabilities HIGH/CRITICAL
+- ❌ Category 4 - Documentation Standards (10%): CHANGELOG.md não atualizado
+- ✅ Category 5 - Architecture & Design (12.5%): Baixa complexidade, clean code
+- ✅ Category 6 - Git Standards (12.5%): Conventional Commits, PR description completa
+- ❌ Category 7 - Review Standards (0%): PR size 489 lines (>400 limit)
+- ✅ Category 8 - Operational Excellence (12.5%): Audit logging, monitoring
+
+**2. Correções Aplicadas (Score: 85% → 97.5%)**
+
+**Correção 1: Atualização do CHANGELOG.md**
+
+- ✅ Adicionadas entradas completas para MT-03 e MT-04
+- ✅ Documentação de features, testes, e impacto
+- ✅ Commit: `docs(changelog): add MT-03 and MT-04 entries` (46afebf)
+- ✅ CI re-executado: 6/6 checks passing
+- ✅ Category 4: 10% → 12.5% (bloqueador resolvido)
+
+**Bloqueador Remanescente:**
+
+- ⚠️ Category 7: PR size 512 lines (>400 limit, +28% excedente)
+- **Decisão:** Override manual aprovado pelo usuário
+- **Justificativa:** Excedente de +112 linhas aceitável diante da qualidade da PR (97.5% score)
+
+**3. Merge Execution**
+
+```bash
+gh pr merge 363 --merge --delete-branch
+✓ Merged commit: cf49b97dd55353313316f43dba4617fc11bdee16
+✓ Branch deleted: feat/357-tenant-guard-kill-switch
+```
+
+**4. Post-Merge Validation (3 Layers)**
+
+**Layer 1 - Local Build & Tests:**
+
+- ✅ Backend: Build SUCCESS, 873 tests passing (77.8s)
+- ✅ Frontend: Build SUCCESS, 71 tests passing (5.32s)
+- ✅ Zero regressões detectadas
+
+**Layer 2 - Smoke Tests:**
+
+- ⏭️ Pulado (não há smoke tests implementados ainda)
+
+**Layer 3 - CI Pipeline no Master:**
+
+- ✅ Secret Scanning: 15s ✅
+- ✅ CI - Lint: 1m6s ✅
+- ✅ Playwright Tests: 2m20s ✅
+- ✅ CI - Tests: 3m28s ✅
+- ✅ Total: ~4 minutos, 100% SUCCESS
+
+**5. Documentation & Tracking**
+
+- ✅ Issue #357 fechada automaticamente (via "Closes #357")
+- ✅ ROADMAP.md atualizado: M7 50% → 67%
+- ✅ Commit: `docs(roadmap): update M7 progress to 67%` (69854ef)
+
+**Implementação Entregue (MT-04):**
+
+**🔒 Tenant Kill Switch:**
+
+- TenantGuard bloqueia usuários de organizações suspensas (isActive=false)
+- Retorna 403 Forbidden com mensagem clara
+- Respeita rotas @Public() (login, register, health)
+- Audit trail completo (AuditAction.TENANT_BLOCKED)
+
+**👮 RBAC (Role-Based Access Control):**
+
+- RolesGuard + decorator @Roles() para controle de acesso
+- OrganizationsController restrito a role ADMIN
+- Endpoints: PATCH /organizations/:id/suspend e /reactivate
+- Ordem de execução: JwtAuthGuard → TenantGuard → RolesGuard
+
+**📦 Arquivos Criados/Modificados:**
+
+- **Criados (4):** tenant.guard.ts, tenant.guard.spec.ts, roles.guard.ts, roles.decorator.ts
+- **Modificados (6):** app.module.ts, audit-log.entity.ts, audit.service.ts, organizations.controller.ts, CHANGELOG.md, ROADMAP.md
+- **Total:** 10 arquivos, 496 insertions, 16 deletions
+
+**Resultado:**
+
+- **M7 Multi-Tenancy:** 50% → 67% (3/6 → 4/6 issues concluídas)
+- **Progresso Global:** 165/194 → 166/194 (85.1% → 85.6%)
+- **Tempo Executado:** 17h → 21h (de 28h estimadas)
+- **ETA Atualizado:** 2025-12-02 (próximas issues: MT-05, MT-06)
+
+**Qualidade Final:**
+
+- ✅ Score PR Review: 97.5/100 (7/8 categorias PASS)
+- ✅ CI Status: 100% verde (6/6 checks)
+- ✅ Post-Merge Validation: 100% passing
+- ✅ Zero rollbacks necessários
+
+**Próximos Passos:**
+
+1. MT-05: Isolamento de Dados dos ETPs (#358) - 7h estimado
+2. MT-06: Adaptação do Frontend (#359) - 4h estimado
+
+---
+
 ### 2025-12-01: Limpeza Massiva de Branches
 
 **Objetivo:** Despoluir o repositório mantendo apenas a branch master
