@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 // Mock bcrypt
 jest.mock('bcrypt');
@@ -18,6 +19,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
+  let organizationsService: OrganizationsService;
 
   const mockOrganization = {
     id: 'org-123',
@@ -69,6 +71,17 @@ describe('AuthService', () => {
     logDataAccess: jest.fn(),
   };
 
+  const mockOrganizationsService = {
+    findByDomain: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+    findAll: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+    suspend: jest.fn(),
+    reactivate: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -77,12 +90,15 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
         { provide: AuditService, useValue: mockAuditService },
+        { provide: OrganizationsService, useValue: mockOrganizationsService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
+    organizationsService =
+      module.get<OrganizationsService>(OrganizationsService);
 
     // Reset mocks before each test
     jest.clearAllMocks();
@@ -197,6 +213,7 @@ describe('AuthService', () => {
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
+        organizationId: mockUser.organizationId,
       });
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result).toHaveProperty('user');
@@ -206,6 +223,7 @@ describe('AuthService', () => {
         name: mockUser.name,
         role: mockUser.role,
         cargo: mockUser.cargo,
+        organizationId: mockUser.organizationId,
       });
       expect(result).toHaveProperty('disclaimer');
     });
@@ -283,13 +301,17 @@ describe('AuthService', () => {
     it('should create user with hashed password and LGPD consent timestamp', async () => {
       // Arrange
       const hashedPassword = '$2b$10$newHashedPassword';
+      const authorizedDto = { ...registerDto, email: 'user@example.com' };
       mockUsersService.findByEmail.mockResolvedValue(null);
+      // MT-03: Mock organization lookup
+      mockOrganizationsService.findByDomain.mockResolvedValue(mockOrganization);
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
       mockUsersService.create.mockResolvedValue({
         ...mockUser,
-        email: registerDto.email,
-        name: registerDto.name,
+        email: authorizedDto.email,
+        name: authorizedDto.name,
         password: hashedPassword,
+        organizationId: mockOrganization.id,
         lgpdConsentAt: new Date(),
         lgpdConsentVersion: '1.0.0',
         internationalTransferConsentAt: new Date(),
@@ -297,16 +319,17 @@ describe('AuthService', () => {
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
       // Act
-      const result = await service.register(registerDto);
+      const result = await service.register(authorizedDto);
 
       // Assert
-      expect(bcrypt.hash).toHaveBeenCalledWith(registerDto.password, 10);
+      expect(bcrypt.hash).toHaveBeenCalledWith(authorizedDto.password, 10);
       expect(mockUsersService.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: registerDto.email,
+          email: authorizedDto.email,
           password: hashedPassword,
-          name: registerDto.name,
-          cargo: registerDto.cargo,
+          name: authorizedDto.name,
+          cargo: authorizedDto.cargo,
+          organizationId: mockOrganization.id,
           lgpdConsentVersion: '1.0.0',
         }),
       );
@@ -325,23 +348,26 @@ describe('AuthService', () => {
       expect(mockJwtService.sign).toHaveBeenCalled();
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result).toHaveProperty('user');
-      expect(result.user.email).toBe(registerDto.email);
+      expect(result.user.email).toBe(authorizedDto.email);
       expect(result).toHaveProperty('disclaimer');
     });
 
     it('should not store plain text password', async () => {
       // Arrange
       const hashedPassword = '$2b$10$newHashedPassword';
+      const authorizedDto = { ...registerDto, email: 'user@example.com' };
       mockUsersService.findByEmail.mockResolvedValue(null);
+      mockOrganizationsService.findByDomain.mockResolvedValue(mockOrganization);
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
       mockUsersService.create.mockResolvedValue({
         ...mockUser,
         password: hashedPassword,
+        organizationId: mockOrganization.id,
       });
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
       // Act
-      await service.register(registerDto);
+      await service.register(authorizedDto);
 
       // Assert
       expect(mockUsersService.create).toHaveBeenCalledWith(
@@ -351,7 +377,7 @@ describe('AuthService', () => {
       );
       expect(mockUsersService.create).not.toHaveBeenCalledWith(
         expect.objectContaining({
-          password: registerDto.password,
+          password: authorizedDto.password,
         }),
       );
     });
@@ -359,18 +385,21 @@ describe('AuthService', () => {
     it('should save LGPD consent version 1.0.0', async () => {
       // Arrange
       const hashedPassword = '$2b$10$newHashedPassword';
+      const authorizedDto = { ...registerDto, email: 'user@example.com' };
       mockUsersService.findByEmail.mockResolvedValue(null);
+      mockOrganizationsService.findByDomain.mockResolvedValue(mockOrganization);
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
       mockUsersService.create.mockResolvedValue({
         ...mockUser,
         password: hashedPassword,
+        organizationId: mockOrganization.id,
         lgpdConsentAt: new Date(),
         lgpdConsentVersion: '1.0.0',
       });
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
       // Act
-      await service.register(registerDto);
+      await service.register(authorizedDto);
 
       // Assert
       expect(mockUsersService.create).toHaveBeenCalledWith(
@@ -378,6 +407,150 @@ describe('AuthService', () => {
           lgpdConsentVersion: '1.0.0',
         }),
       );
+    });
+
+    // MT-03: Domain validation tests
+    describe('MT-03: Domain Validation & Multi-Tenancy', () => {
+      it('should reject registration when email domain is not authorized', async () => {
+        // Arrange
+        const unauthorizedDto = {
+          ...registerDto,
+          email: 'user@unauthorized-domain.com',
+        };
+        mockUsersService.findByEmail.mockResolvedValue(null);
+        mockOrganizationsService.findByDomain.mockResolvedValue(null);
+
+        // Act & Assert
+        await expect(service.register(unauthorizedDto)).rejects.toThrow(
+          BadRequestException,
+        );
+        await expect(service.register(unauthorizedDto)).rejects.toThrow(
+          'Domínio de email "unauthorized-domain.com" não autorizado. Contate comercial@etpexpress.com.br para cadastrar sua organização.',
+        );
+        expect(mockOrganizationsService.findByDomain).toHaveBeenCalledWith(
+          'unauthorized-domain.com',
+        );
+        expect(mockUsersService.create).not.toHaveBeenCalled();
+      });
+
+      it('should reject registration when organization is suspended', async () => {
+        // Arrange
+        const suspendedOrg = { ...mockOrganization, isActive: false };
+        const userDto = { ...registerDto, email: 'user@confenge.gov.br' };
+        mockUsersService.findByEmail.mockResolvedValue(null);
+        mockOrganizationsService.findByDomain.mockResolvedValue(suspendedOrg);
+
+        // Act & Assert
+        await expect(service.register(userDto)).rejects.toThrow(
+          BadRequestException,
+        );
+        await expect(service.register(userDto)).rejects.toThrow(
+          'Organização "CONFENGE" está suspensa. Contate o suporte.',
+        );
+        expect(mockOrganizationsService.findByDomain).toHaveBeenCalledWith(
+          'confenge.gov.br',
+        );
+        expect(mockUsersService.create).not.toHaveBeenCalled();
+      });
+
+      it('should create user with organizationId when domain is authorized', async () => {
+        // Arrange
+        const hashedPassword = '$2b$10$newHashedPassword';
+        const authorizedDto = { ...registerDto, email: 'user@confenge.gov.br' };
+        mockUsersService.findByEmail.mockResolvedValue(null);
+        mockOrganizationsService.findByDomain.mockResolvedValue(
+          mockOrganization,
+        );
+        (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+        mockUsersService.create.mockResolvedValue({
+          ...mockUser,
+          email: authorizedDto.email,
+          organizationId: mockOrganization.id,
+        });
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        const result = await service.register(authorizedDto);
+
+        // Assert
+        expect(mockOrganizationsService.findByDomain).toHaveBeenCalledWith(
+          'confenge.gov.br',
+        );
+        expect(mockUsersService.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            organizationId: mockOrganization.id,
+          }),
+        );
+        expect(result.user.organizationId).toBe(mockOrganization.id);
+      });
+
+      it('should extract domain in lowercase (case-insensitive matching)', async () => {
+        // Arrange
+        const hashedPassword = '$2b$10$newHashedPassword';
+        const mixedCaseDto = {
+          ...registerDto,
+          email: 'User@CONFENGE.GOV.BR',
+        };
+        mockUsersService.findByEmail.mockResolvedValue(null);
+        mockOrganizationsService.findByDomain.mockResolvedValue(
+          mockOrganization,
+        );
+        (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+        mockUsersService.create.mockResolvedValue({
+          ...mockUser,
+          organizationId: mockOrganization.id,
+        });
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        await service.register(mixedCaseDto);
+
+        // Assert
+        expect(mockOrganizationsService.findByDomain).toHaveBeenCalledWith(
+          'confenge.gov.br',
+        );
+      });
+
+      it('should include organizationId in JWT payload', async () => {
+        // Arrange
+        const hashedPassword = '$2b$10$newHashedPassword';
+        const authorizedDto = { ...registerDto, email: 'user@confenge.gov.br' };
+        mockUsersService.findByEmail.mockResolvedValue(null);
+        mockOrganizationsService.findByDomain.mockResolvedValue(
+          mockOrganization,
+        );
+        (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+        mockUsersService.create.mockResolvedValue({
+          ...mockUser,
+          organizationId: mockOrganization.id,
+        });
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        await service.register(authorizedDto);
+
+        // Assert
+        expect(mockJwtService.sign).toHaveBeenCalledWith(
+          expect.objectContaining({
+            organizationId: mockOrganization.id,
+          }),
+        );
+      });
+
+      it('should reject registration with invalid email format', async () => {
+        // Arrange
+        const invalidEmailDto = { ...registerDto, email: 'invalid-email' };
+
+        // Act & Assert
+        await expect(service.register(invalidEmailDto)).rejects.toThrow(
+          BadRequestException,
+        );
+        await expect(service.register(invalidEmailDto)).rejects.toThrow(
+          'Email inválido',
+        );
+        expect(mockOrganizationsService.findByDomain).not.toHaveBeenCalled();
+        expect(mockUsersService.create).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -408,6 +581,7 @@ describe('AuthService', () => {
           email: mockUser.email,
           name: mockUser.name,
           role: mockUser.role,
+          organizationId: mockUser.organizationId,
         },
       });
     });
@@ -491,6 +665,7 @@ describe('AuthService', () => {
             email: mockUser.email,
             name: mockUser.name,
             role: mockUser.role,
+            organizationId: mockUser.organizationId,
           },
         });
       });

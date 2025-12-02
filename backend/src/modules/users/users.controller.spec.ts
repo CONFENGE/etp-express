@@ -95,7 +95,7 @@ describe('UsersController', () => {
       name: 'New User',
       email: 'newuser@example.com',
       password: 'password123',
-      orgao: 'CONFENGE',
+      organizationId: 'org-123',
       cargo: 'Analista',
     };
 
@@ -276,7 +276,7 @@ describe('UsersController', () => {
   describe('update', () => {
     const updateUserDto: UpdateUserDto = {
       name: 'Updated User',
-      orgao: 'Ministério da Economia',
+      organizationId: 'org-123',
     };
 
     it('should update a user', async () => {

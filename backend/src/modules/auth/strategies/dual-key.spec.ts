@@ -41,6 +41,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
     email: mockUser.email,
     name: mockUser.name,
     role: mockUser.role,
+    organizationId: mockUser.organizationId,
   };
 
   const mockUsersService = {
@@ -90,6 +91,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
+        organizationId: mockUser.organizationId,
       });
     });
 
@@ -108,6 +110,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
+        organizationId: mockUser.organizationId,
       });
     });
 
