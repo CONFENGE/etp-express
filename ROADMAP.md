@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md) | **Otimização CI/CD:** ✅ -68% minutos
+**Última Atualização:** 2025-12-02 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md) | **Otimização CI/CD:** ✅ -68% minutos
 
 ## 📊 Status Atual
 
-**Progresso Global:** 165/194 issues concluídas (85.1%)
+**Progresso Global:** 166/194 issues concluídas (85.6%)
 **Velocidade:** 6.2 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-05 (5 dias)
 
@@ -15,7 +15,7 @@ M3: ████████████████████ 57/57  (100%) �
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████░░░░░░░░░░░░░░░░  4/22  (18%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
-M7: ███████████░░░░░░░░  3/6   (50%)  🏢 Multi-Tenancy B2G
+M7: █████████████░░░░░  4/6   (67%)  🏢 Multi-Tenancy B2G
 ```
 
 ---
@@ -311,7 +311,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### 🏢 M7: Multi-Tenancy B2G (4/6) - 67%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-03 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 17h
+**Status:** EM PROGRESSO | **ETA:** 2025-12-02 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 21h
 
 **Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
 
@@ -346,12 +346,13 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - JWT payload com organizationId
   - Domínios não autorizados rejeitados (400)
 
-- ✅ #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h (**2025-12-02**: PR #363 created)
+- ✅ #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h (**2025-12-02**: PR #363 merged)
   - TenantGuard global implementado (bloqueia orgs suspensas)
   - RolesGuard + @Roles decorator para RBAC
   - Audit trail de bloqueios (AuditAction.TENANT_BLOCKED)
   - Endpoints suspend/reactivate protegidos (ADMIN only)
   - Tests: +7 testes TenantGuard (873 total)
+  - CHANGELOG documentado (MT-03 + MT-04)
 
 #### Pendentes (2):
 
