@@ -68,6 +68,11 @@ export function Header() {
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
+                    {user.organization && (
+                      <p className="text-xs leading-none text-muted-foreground font-semibold mt-1">
+                        {user.organization.name}
+                      </p>
+                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
