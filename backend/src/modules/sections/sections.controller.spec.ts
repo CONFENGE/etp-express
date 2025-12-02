@@ -190,6 +190,7 @@ describe('SectionsController (Integration)', () => {
         mockEtpId,
         generateDto,
         expect.any(String), // userId from CurrentUser decorator
+        expect.any(String), // organizationId from CurrentUser decorator
       );
     });
 
@@ -584,6 +585,7 @@ describe('SectionsController (Integration)', () => {
         mockEtpId,
         expect.any(Object),
         mockUserId, // userId from mocked JwtAuthGuard
+        expect.any(String), // organizationId from mocked JwtAuthGuard
       );
     });
 

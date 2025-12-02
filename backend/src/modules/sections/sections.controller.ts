@@ -94,11 +94,13 @@ export class SectionsController {
     @Param('etpId') etpId: string,
     @Body() generateDto: GenerateSectionDto,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
     const section = await this.sectionsService.generateSection(
       etpId,
       generateDto,
       userId,
+      organizationId,
     );
     return {
       data: section,
@@ -200,8 +202,16 @@ export class SectionsController {
     description:
       'Limite de requisições excedido (5 regenerações por minuto por usuário)',
   })
-  async regenerate(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    const section = await this.sectionsService.regenerateSection(id, userId);
+  async regenerate(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    const section = await this.sectionsService.regenerateSection(
+      id,
+      userId,
+      organizationId,
+    );
     return {
       data: section,
       disclaimer: DISCLAIMER,
@@ -244,8 +254,12 @@ export class SectionsController {
   @ApiOperation({ summary: 'Deletar seção' })
   @ApiResponse({ status: 200, description: 'Seção deletada com sucesso' })
   @ApiResponse({ status: 404, description: 'Seção não encontrada' })
-  async remove(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    await this.sectionsService.remove(id, userId);
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    await this.sectionsService.remove(id, userId, organizationId);
     return {
       message: 'Seção deletada com sucesso',
       disclaimer: DISCLAIMER,

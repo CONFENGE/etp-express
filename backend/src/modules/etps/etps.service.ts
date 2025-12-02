@@ -60,12 +60,18 @@ export class EtpsService {
    * - Current version: 1
    * - Completion percentage: 0%
    * - Created by: current user ID
+   * - Organization ID: auto-injected from user (Multi-Tenancy B2G - MT-05)
    *
    * The new ETP has no sections initially. Sections must be generated
    * separately via SectionsService.
    *
+   * Multi-Tenancy: The organizationId is automatically extracted from the
+   * user entity and injected into the ETP. This ensures column-based isolation
+   * where each ETP belongs to exactly one organization.
+   *
    * @param createEtpDto - ETP creation data (objeto, metadata, etc.)
    * @param userId - Current user ID (becomes ETP owner)
+   * @param organizationId - User's organization ID (for multi-tenancy isolation)
    * @returns Created ETP entity with generated UUID
    *
    * @example
@@ -74,28 +80,37 @@ export class EtpsService {
    *   {
    *     objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
    *     metadata: {
-   *       orgao: 'Secretaria de Tecnologia',
+   *       unidadeRequisitante: 'Secretaria de Tecnologia',
    *       fiscalYear: 2025
    *     }
    *   },
-   *   'user-uuid-123'
+   *   'user-uuid-123',
+   *   'org-uuid-456'
    * );
    *
    * console.log(etp.status); // 'draft'
    * console.log(etp.completionPercentage); // 0
+   * console.log(etp.organizationId); // 'org-uuid-456'
    * ```
    */
-  async create(createEtpDto: CreateEtpDto, userId: string): Promise<Etp> {
+  async create(
+    createEtpDto: CreateEtpDto,
+    userId: string,
+    organizationId: string,
+  ): Promise<Etp> {
     const etp = this.etpsRepository.create({
       ...createEtpDto,
       createdById: userId,
+      organizationId,
       status: EtpStatus.DRAFT,
       currentVersion: 1,
       completionPercentage: 0,
     });
 
     const savedEtp = await this.etpsRepository.save(etp);
-    this.logger.log(`ETP created: ${savedEtp.id} by user ${userId}`);
+    this.logger.log(
+      `ETP created: ${savedEtp.id} by user ${userId} for organization ${organizationId}`,
+    );
 
     return savedEtp;
   }
@@ -105,12 +120,17 @@ export class EtpsService {
    *
    * @remarks
    * Returns ETPs ordered by most recently updated first. Supports pagination
-   * to handle large datasets efficiently. When userId is provided, filters
-   * to show only ETPs owned by that user.
+   * to handle large datasets efficiently.
+   *
+   * Multi-Tenancy (MT-05): ALWAYS filters by organizationId to ensure column-based
+   * isolation. Users can only see ETPs from their own organization.
+   *
+   * When userId is provided, additionally filters to show only ETPs owned by that user.
    *
    * Eagerly loads the 'createdBy' user relationship for each ETP.
    *
    * @param paginationDto - Pagination parameters (page number and limit)
+   * @param organizationId - Organization ID (required for multi-tenancy isolation)
    * @param userId - Optional user ID to filter ETPs by owner
    * @returns Paginated result with ETPs, total count, and pagination metadata
    *
@@ -118,24 +138,30 @@ export class EtpsService {
    * ```ts
    * const result = await etpsService.findAll(
    *   { page: 1, limit: 10 },
+   *   'org-uuid-456',
    *   'user-uuid-123'
    * );
    *
    * console.log(result.data.length); // Up to 10 ETPs
-   * console.log(result.meta.total); // Total ETPs for this user
+   * console.log(result.meta.total); // Total ETPs for this user in their organization
    * console.log(result.meta.totalPages); // Total pages available
    * ```
    */
-  async findAll(paginationDto: PaginationDto, userId?: string) {
+  async findAll(
+    paginationDto: PaginationDto,
+    organizationId: string,
+    userId?: string,
+  ) {
     const { page = 1, limit = 10 } = paginationDto;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.etpsRepository
       .createQueryBuilder('etp')
-      .leftJoinAndSelect('etp.createdBy', 'user');
+      .leftJoinAndSelect('etp.createdBy', 'user')
+      .where('etp.organizationId = :organizationId', { organizationId });
 
     if (userId) {
-      queryBuilder.where('etp.createdById = :userId', { userId });
+      queryBuilder.andWhere('etp.createdById = :userId', { userId });
     }
 
     const [etps, total] = await queryBuilder
@@ -155,6 +181,9 @@ export class EtpsService {
    * Loads only the 'createdBy' relation, avoiding expensive eager loading of sections
    * and versions.
    *
+   * Multi-Tenancy (MT-05): Validates organizationId to prevent cross-tenant access.
+   * Returns 403 Forbidden if ETP belongs to a different organization.
+   *
    * Use this method when:
    * - Validating ETP existence and ownership
    * - Generating new sections (doesn't need existing sections)
@@ -165,19 +194,24 @@ export class EtpsService {
    * - findOneMinimal(): 1 ETP + 1 User queries only
    *
    * @param id - ETP unique identifier (UUID)
+   * @param organizationId - Organization ID (for multi-tenancy validation)
    * @param userId - Optional user ID for authorization check
    * @returns ETP entity with only user relation loaded
    * @throws {NotFoundException} If ETP not found
-   * @throws {ForbiddenException} If user doesn't own the ETP
+   * @throws {ForbiddenException} If ETP belongs to different organization or user doesn't own it
    *
    * @example
    * ```ts
    * // Section generation - only needs ETP metadata
-   * const etp = await etpsService.findOneMinimal(etpId, userId);
+   * const etp = await etpsService.findOneMinimal(etpId, orgId, userId);
    * await sectionsService.generate(etp.id, { type: 'introduction' });
    * ```
    */
-  async findOneMinimal(id: string, userId?: string): Promise<Etp> {
+  async findOneMinimal(
+    id: string,
+    organizationId: string,
+    userId?: string,
+  ): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
       relations: ['createdBy'],
@@ -185,6 +219,16 @@ export class EtpsService {
 
     if (!etp) {
       throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Multi-Tenancy: Validate organizationId (MT-05)
+    if (etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `Organization ${organizationId} attempted to access ETP ${id} from organization ${etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
     }
 
     // Check ownership - users can only access their own ETPs
@@ -232,7 +276,11 @@ export class EtpsService {
    * console.log(etp.versions); // undefined (not loaded)
    * ```
    */
-  async findOneWithSections(id: string, userId?: string): Promise<Etp> {
+  async findOneWithSections(
+    id: string,
+    organizationId: string,
+    userId?: string,
+  ): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
       relations: ['createdBy', 'sections'],
@@ -243,6 +291,16 @@ export class EtpsService {
 
     if (!etp) {
       throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Multi-Tenancy: Validate organizationId (MT-05)
+    if (etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `Organization ${organizationId} attempted to access ETP ${id} from organization ${etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
     }
 
     // Check ownership - users can only access their own ETPs
@@ -290,7 +348,11 @@ export class EtpsService {
    * console.log(etp.sections); // undefined (not loaded)
    * ```
    */
-  async findOneWithVersions(id: string, userId?: string): Promise<Etp> {
+  async findOneWithVersions(
+    id: string,
+    organizationId: string,
+    userId?: string,
+  ): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
       relations: ['createdBy', 'versions'],
@@ -301,6 +363,16 @@ export class EtpsService {
 
     if (!etp) {
       throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Multi-Tenancy: Validate organizationId (MT-05)
+    if (etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `Organization ${organizationId} attempted to access ETP ${id} from organization ${etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
     }
 
     // Check ownership - users can only access their own ETPs
@@ -339,7 +411,11 @@ export class EtpsService {
    * @returns ETP entity with all relations loaded
    * @throws {NotFoundException} If ETP not found
    */
-  async findOne(id: string, userId?: string): Promise<Etp> {
+  async findOne(
+    id: string,
+    organizationId: string,
+    userId?: string,
+  ): Promise<Etp> {
     const etp = await this.etpsRepository.findOne({
       where: { id },
       relations: ['createdBy', 'sections', 'versions'],
@@ -351,6 +427,16 @@ export class EtpsService {
 
     if (!etp) {
       throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    // Multi-Tenancy: Validate organizationId (MT-05)
+    if (etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `Organization ${organizationId} attempted to access ETP ${id} from organization ${etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar este ETP',
+      );
     }
 
     // Check ownership - users can only access their own ETPs
@@ -385,8 +471,9 @@ export class EtpsService {
     id: string,
     updateEtpDto: UpdateEtpDto,
     userId: string,
+    organizationId: string,
   ): Promise<Etp> {
-    const etp = await this.findOne(id);
+    const etp = await this.findOne(id, organizationId);
 
     // Check ownership
     if (etp.createdById !== userId) {
@@ -425,8 +512,9 @@ export class EtpsService {
     id: string,
     status: EtpStatus,
     userId: string,
+    organizationId: string,
   ): Promise<Etp> {
-    const etp = await this.findOne(id);
+    const etp = await this.findOne(id, organizationId);
 
     if (etp.createdById !== userId) {
       throw new ForbiddenException(
@@ -499,8 +587,12 @@ export class EtpsService {
    * @throws {NotFoundException} If ETP not found
    * @throws {ForbiddenException} If user doesn't own the ETP
    */
-  async remove(id: string, userId: string): Promise<void> {
-    const etp = await this.findOne(id);
+  async remove(
+    id: string,
+    userId: string,
+    organizationId: string,
+  ): Promise<void> {
+    const etp = await this.findOne(id, organizationId);
 
     if (etp.createdById !== userId) {
       throw new ForbiddenException(
@@ -536,11 +628,13 @@ export class EtpsService {
    * console.log(stats.averageCompletion); // "67.50"
    * ```
    */
-  async getStatistics(userId?: string) {
-    const queryBuilder = this.etpsRepository.createQueryBuilder('etp');
+  async getStatistics(organizationId: string, userId?: string) {
+    const queryBuilder = this.etpsRepository
+      .createQueryBuilder('etp')
+      .where('etp.organizationId = :organizationId', { organizationId });
 
     if (userId) {
-      queryBuilder.where('etp.createdById = :userId', { userId });
+      queryBuilder.andWhere('etp.createdById = :userId', { userId });
     }
 
     const total = await queryBuilder.getCount();
