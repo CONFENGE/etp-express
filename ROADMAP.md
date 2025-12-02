@@ -4,16 +4,16 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 168/194 issues concluídas (86.6%)
+**Progresso Global:** 168/197 issues concluídas (85.3%)
 **Velocidade:** 6.2 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-04 (4 dias)
+**ETA Conclusão:** ~2025-12-07 (5 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: █████░░░░░░░░░░░░░░░  5/22  (23%)  📚 E2E Testing & Documentation
+M5: ████░░░░░░░░░░░░░░░░  5/25  (20%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -114,9 +114,9 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (5/22) - 23%
+### 📚 M5: E2E Testing & Documentation (5/25) - 20%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-03
+**Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
 #### Concluídas (5):
 
@@ -126,7 +126,13 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #97 - Documentation sync & JSDoc
 - ✅ #353 - Configure Puppeteer for E2E Testing
 
-#### Pendentes (17):
+#### Pendentes (20):
+
+**Correções de Testes (P1 - CRÍTICO):**
+
+- [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing
+- [ ] #368 - Fix sections.controller.spec.ts - organizationId parameter missing
+- [ ] #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property
 
 **Testes E2E:**
 
@@ -141,7 +147,7 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #111 - Production Support SLA & Training
 - [ ] #215-#218 - Prompt externalization (YAML, service, hot-reload)
 
-**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353
+**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353, #367-#369
 
 ---
 
@@ -220,15 +226,18 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### P0 - URGENTE (Esta Semana):
+### P0 - URGENTE (Hoje):
 
-1. **E2E Tests (#23-#24)** - Iniciar M5 (18% → 30%+)
-2. **API Documentation (#34)** - JSDoc completo no backend
+1. **Correção Testes Backend (#367-#369)** - 3 testes quebrados após multi-tenancy (P1 CRÍTICO)
+   - #367 - Fix etps.controller.spec.ts
+   - #368 - Fix sections.controller.spec.ts
+   - #369 - Fix auth.controller.spec.ts
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
-1. UAT scenarios (#92-#95)
-2. Testes de integração adicionais (#82-#84)
+1. **E2E Tests (#23-#24)** - Iniciar suite completa de testes E2E
+2. UAT scenarios (#92-#95)
+3. Testes de integração adicionais (#82-#84)
 
 ### P2 - Próxima Sprint:
 
