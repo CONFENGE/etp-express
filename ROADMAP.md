@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01.md](ROADMAP_AUDIT_2025-12-01.md) | **Otimização CI/CD:** ✅ -68% minutos
+**Última Atualização:** 2025-12-01 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md) | **Otimização CI/CD:** ✅ -68% minutos
 
 ## 📊 Status Atual
 
-**Progresso Global:** 164/194 issues concluídas (84.5%)
+**Progresso Global:** 165/194 issues concluídas (85.1%)
 **Velocidade:** 6.2 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-05 (5 dias)
 
@@ -15,7 +15,7 @@ M3: ████████████████████ 57/57  (100%) �
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████░░░░░░░░░░░░░░░░  4/22  (18%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
-M7: ███████░░░░░░░░░░░░░  2/6   (33%)  🏢 Multi-Tenancy B2G
+M7: ███████████░░░░░░░░  3/6   (50%)  🏢 Multi-Tenancy B2G
 ```
 
 ---
@@ -309,9 +309,9 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ---
 
-### 🏢 M7: Multi-Tenancy B2G (2/6) - 33%
+### 🏢 M7: Multi-Tenancy B2G (3/6) - 50%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-05 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 7h
+**Status:** EM PROGRESSO | **ETA:** 2025-12-03 | **Estimativa Total:** 28h (4 dias úteis) | **Executado:** 13h
 
 **Objetivo:** Transformar o sistema de Single-Tenant para Multi-Tenant (column-based isolation), permitindo múltiplas prefeituras/órgãos públicos utilizarem a mesma instância com isolamento de dados garantido.
 
@@ -322,7 +322,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 - Validação: Registro apenas para domínios autorizados (whitelist)
 - Remoção: Campo 'orgao' removido completamente (breaking change limpo)
 
-#### Concluídas (2):
+#### Concluídas (3):
 
 **Infraestrutura:**
 
@@ -340,15 +340,15 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - Migration + relação ManyToOne implementados
   - Tests atualizados (mocks com organizationId)
 
-#### Pendentes (4):
-
-**Backend Core:**
-
-- [ ] #356 - [MT-03] Refatoração do Registro (Auth Guardrails) - 6h
-  - Validação de domínio de email
+- ✅ #356 - [MT-03] Refatoração do Registro (Auth Guardrails) - 6h (**2025-12-01**: PR #362 merged)
+  - Validação de domínio de email implementada
   - Busca Organization por domainWhitelist
   - JWT payload com organizationId
-  - Rejeitar domínios não autorizados (400)
+  - Domínios não autorizados rejeitados (400)
+
+#### Pendentes (3):
+
+**Backend Core:**
 
 - [ ] #357 - [MT-04] Middleware de Contexto e Bloqueio (Kill Switch) - 4h
   - TenantGuard global
@@ -370,7 +370,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - UnauthorizedDomainModal (contato comercial)
   - Exibir nome da organização no Header
 
-**Ordem de Implementação:** MT-01 → MT-02 → MT-03 → MT-04 → MT-05 → MT-06 (sequencial)
+**Ordem de Implementação:** ✅ MT-01 → ✅ MT-02 → ✅ MT-03 → MT-04 → MT-05 → MT-06 (sequencial)
 
 **Issues:** #354-#361 (includes PRs #360, #361)
 
@@ -395,8 +395,8 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 1. **Multi-Tenancy B2G (M7)** - Continuar implementação sequencial
    - ✅ MT-01: Infraestrutura de Dados (#354) - CONCLUÍDO
    - ✅ MT-02: Associação de Usuários (#355) - CONCLUÍDO
-   - 🔄 MT-03: Refatoração do Registro (#356) - PRÓXIMO
-   - MT-04: Middleware de Contexto (#357)
+   - ✅ MT-03: Refatoração do Registro (#356) - CONCLUÍDO
+   - 🔄 MT-04: Middleware de Contexto (#357) - PRÓXIMO
    - MT-05: Isolamento de Dados ETPs (#358)
    - MT-06: Adaptação Frontend (#359)
 2. Avançar E2E tests (#23-#24)
@@ -438,7 +438,7 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ### Auditorias ROADMAP:
 
-- [Auditoria 2025-12-01](ROADMAP_AUDIT_2025-12-01.md) - 99.5% acurácia (160/160 issues rastreadas)
+- [Auditoria 2025-12-01 COMPREHENSIVE](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md) - **99.5% acurácia** (194/194 issues rastreadas, 0 phantoms, 0 orphans) ⭐
 - [Auditoria 2025-11-29](ROADMAP_AUDIT_2025-11-29.md) - 89.9% → 97.8% acurácia
 - [Auditoria 2025-11-28](ROADMAP_AUDIT_2025-11-28.md) - 99.4% acurácia
 - [Auditoria 2025-11-27](ROADMAP_AUDIT_2025-11-27.md) - 99.4% acurácia
@@ -495,6 +495,17 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
   - user.controller.spec.ts: validações de organização
   - Todos os testes passando (86 total)
 
+**MT-03: Refatoração do Registro (#356 - PR #362)**
+
+- ✅ Validação de domínio de email implementada
+  - AuthService verifica domínio do email contra Organization.domainWhitelist
+  - Rejeita registro de domínios não autorizados (400 Bad Request)
+- ✅ Busca Organization por domainWhitelist
+  - findByDomain() implementado em OrganizationsService
+- ✅ JWT payload com organizationId
+  - Token agora inclui organizationId para context switching
+- ✅ Testes atualizados com cenários de validação de domínio
+
 **Configuração E2E Testing (#22 - PR #353)**
 
 - ✅ Puppeteer configurado para testes E2E
@@ -507,18 +518,17 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 **Resultado:**
 
-- **M7 Multi-Tenancy:** 0% → 33% (2/6 issues concluídas)
+- **M7 Multi-Tenancy:** 0% → 50% (3/6 issues concluídas)
 - **M5 E2E Testing:** 14% → 18% (4/22 issues concluídas)
-- **Progresso Global:** 160/194 → 164/194 (+4 issues, 82.5% → 84.5%)
-- **Tempo Executado:** 7h de 28h estimadas (25% do milestone M7)
-- **ETA Atualizado:** 2025-12-05 (5 dias restantes)
+- **Progresso Global:** 160/194 → 165/194 (+5 issues, 82.5% → 85.1%)
+- **Tempo Executado:** 13h de 28h estimadas (46% do milestone M7)
+- **ETA Atualizado:** 2025-12-03 (3 dias restantes)
 
 **Próximos Passos:**
 
-1. MT-03: Refatoração do Registro com validação de domínio (#356)
-2. MT-04: Middleware de Contexto + Kill Switch (#357)
-3. MT-05: Isolamento de Dados dos ETPs (#358)
-4. MT-06: Adaptação do Frontend (#359)
+1. MT-04: Middleware de Contexto + Kill Switch (#357)
+2. MT-05: Isolamento de Dados dos ETPs (#358)
+3. MT-06: Adaptação do Frontend (#359)
 
 ---
 
