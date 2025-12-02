@@ -25,12 +25,25 @@ describe('AuthController', () => {
     logProfileAccess: jest.fn(),
   };
 
+  const mockOrganization = {
+    id: 'org-123',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['confenge.gov.br'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
+    users: [],
+  };
+
   const mockUser = {
     id: '123',
     email: 'test@example.com',
     name: 'Test User',
     role: UserRole.USER,
-    orgao: 'CONFENGE',
+    organizationId: 'org-123',
+    organization: mockOrganization,
     cargo: 'Analista',
     isActive: true,
     lastLoginAt: new Date('2025-01-01'),
@@ -75,7 +88,6 @@ describe('AuthController', () => {
       email: 'newuser@example.com',
       password: 'password123',
       name: 'New User',
-      orgao: 'CONFENGE',
       cargo: 'Analista',
       lgpdConsent: true,
       internationalTransferConsent: true,

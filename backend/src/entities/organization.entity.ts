@@ -4,9 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  // OneToMany will be added in MT-02 and MT-05
+  OneToMany,
 } from 'typeorm';
-// import { User } from './user.entity'; // Will be added in MT-02
+import { User } from './user.entity';
 // import { Etp } from './etp.entity'; // Will be added in MT-05
 
 /**
@@ -81,12 +81,14 @@ export class Organization {
   updatedAt: Date;
 
   /**
-   * Relations with User and Etp will be added in future issues:
-   * - MT-02 (#355): User.organization relation
-   * - MT-05 (#358): Etp.organization relation
-   *
-   * @OneToMany(() => User, (user) => user.organization)
-   * users: User[];
+   * Users belonging to this organization (MT-02 #355).
+   * One organization can have many users.
+   */
+  @OneToMany(() => User, (user) => user.organization)
+  users: User[];
+
+  /**
+   * Etp relation will be added in MT-05 (#358):
    *
    * @OneToMany(() => Etp, (etp) => etp.organization)
    * etps: Etp[];
