@@ -13,7 +13,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: █████░░░░░░░░░░░░░░░  6/25  (24%)  📚 E2E Testing & Documentation
+M5: █████░░░░░░░░░░░░░░░  7/25  (28%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -114,25 +114,26 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (6/25) - 24%
+### 📚 M5: E2E Testing & Documentation (7/25) - 28%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
-#### Concluídas (6):
+#### Concluídas (7):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #34 - JSDoc completo em OrchestratorService e agentes (PR #366)
 - ✅ #48 - UAT (parent - desmembrada em #92-#95)
+- ✅ #368 - Fix Multi-Tenancy tests - 60 tests fixed (sections + etps modules) (PR #371 - 2025-12-02)
 - ✅ #97 - Documentation sync & JSDoc
 - ✅ #353 - Configure Puppeteer for E2E Testing
 - ✅ #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property (PR #370)
 
-#### Pendentes (19):
+#### Pendentes (18):
 
 **Correções de Testes (P1 - CRÍTICO):**
 
-- [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing (REQUER REABERTURA - escopo ampliado: ~25 erros TypeScript em create(), findAll(), getStatistics(), find\*(), update(), updateStatus())
-- [x] #368 - Fix sections.controller.spec.ts - organizationId parameter missing (PR #371 - em andamento)
+- [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing (ESCOPO REAL: ALL controller methods + service spec - 60 tests fixed by PR #371)
+- [x] #368 - Fix sections.controller.spec.ts - organizationId parameter missing (✅ MERGED PR #371 - Expanded to fix entire ETPs module: 60 tests)
 
 **Testes E2E:**
 
@@ -228,9 +229,9 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P0 - URGENTE (Hoje):
 
-1. **Correção Testes Backend (#367-#368)** - 2 testes quebrados após multi-tenancy (P1 CRÍTICO)
-   - #367 - Fix etps.controller.spec.ts (pode estar fechada - verificar status)
-   - #368 - Fix sections.controller.spec.ts
+1. ✅ **CONCLUÍDO: Correção Testes Backend (#368)** - Merged PR #371 (2025-12-02)
+   - ✅ #368 - Fixed **60 tests** across sections + etps modules (controller + service spec)
+   - 📋 #367 - Documented scope expansion (15x larger than originally identified)
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
