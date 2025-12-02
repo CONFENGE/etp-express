@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsEnum,
   IsDate,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -24,10 +25,12 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({ example: 'Ministério da Economia' })
-  @IsOptional()
-  @IsString()
-  orgao?: string;
+  @ApiProperty({
+    example: 'org-uuid-123',
+    description: 'Organization ID (Multi-Tenancy B2G - MT-02)',
+  })
+  @IsUUID()
+  organizationId: string;
 
   @ApiPropertyOptional({ example: 'Analista de Contratos' })
   @IsOptional()
