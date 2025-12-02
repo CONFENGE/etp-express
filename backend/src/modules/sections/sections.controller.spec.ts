@@ -37,6 +37,7 @@ describe('SectionsController (Integration)', () => {
 
   // Mock data
   const mockUserId = 'user-123';
+  const mockOrganizationId = 'org-123';
   const mockEtpId = 'etp-456';
   const mockSectionId = 'section-789';
 
@@ -108,13 +109,17 @@ describe('SectionsController (Integration)', () => {
 
   /**
    * Mock JwtAuthGuard to bypass authentication in tests
-   * Simulates authenticated user with mockUserId
+   * Simulates authenticated user with mockUserId and mockOrganizationId
    */
   const mockJwtAuthGuard = {
     canActivate: jest.fn((context) => {
       const request = context.switchToHttp().getRequest();
       // Simulate authenticated user
-      request.user = { id: mockUserId, email: 'test@example.com' };
+      request.user = {
+        id: mockUserId,
+        email: 'test@example.com',
+        organizationId: mockOrganizationId,
+      };
       return true;
     }),
   };
@@ -429,6 +434,7 @@ describe('SectionsController (Integration)', () => {
       expect(sectionsService.regenerateSection).toHaveBeenCalledWith(
         mockSectionId,
         expect.any(String), // userId from CurrentUser decorator
+        expect.any(String), // organizationId from CurrentUser decorator
       );
     });
 
@@ -536,6 +542,7 @@ describe('SectionsController (Integration)', () => {
       expect(sectionsService.remove).toHaveBeenCalledWith(
         mockSectionId,
         expect.any(String), // userId from CurrentUser decorator
+        expect.any(String), // organizationId from CurrentUser decorator
       );
     });
 
