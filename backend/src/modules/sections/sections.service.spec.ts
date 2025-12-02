@@ -38,6 +38,7 @@ describe('SectionsService', () => {
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
   const mockSectionId = 'section-789';
+  const mockOrganizationId = 'org-789';
 
   const mockUser = {
     id: mockUserId,
@@ -53,11 +54,13 @@ describe('SectionsService', () => {
     numeroProcesso: '12345/2025',
     valorEstimado: 100000,
     status: 'draft' as any,
-    metadata: { orgao: 'CONFENGE' },
+    metadata: {},
     currentVersion: 1,
     completionPercentage: 0,
     createdById: mockUserId,
     createdBy: mockUser,
+    organizationId: mockOrganizationId,
+    organization: { id: mockOrganizationId, name: 'Test Org' } as any,
     sections: [],
     versions: [],
     auditLogs: [],
@@ -233,11 +236,13 @@ describe('SectionsService', () => {
         mockEtpId,
         generateDto,
         mockUserId,
+        mockOrganizationId,
       );
 
       // Assert
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockEtpId,
+        mockOrganizationId,
         mockUserId,
       );
       expect(mockSectionsRepository.findOne).toHaveBeenCalledWith({
@@ -267,10 +272,16 @@ describe('SectionsService', () => {
 
       // Act & Assert
       await expect(
-        service.generateSection(mockEtpId, generateDto, mockUserId),
+        service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockEtpId,
+        mockOrganizationId,
         mockUserId,
       );
     });
@@ -282,7 +293,12 @@ describe('SectionsService', () => {
 
       // Act & Assert
       await expect(
-        service.generateSection(mockEtpId, generateDto, mockUserId),
+        service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(BadRequestException);
       expect(mockSectionsRepository.findOne).toHaveBeenCalledWith({
         where: { etpId: mockEtpId, type: generateDto.type },
@@ -310,7 +326,12 @@ describe('SectionsService', () => {
 
       // Act & Assert
       await expect(
-        service.generateSection(mockEtpId, generateDto, mockUserId),
+        service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow('LLM timeout');
 
       // Verify error handling
@@ -351,7 +372,12 @@ describe('SectionsService', () => {
       );
 
       // Act
-      await service.generateSection(mockEtpId, generateDto, mockUserId);
+      await service.generateSection(
+        mockEtpId,
+        generateDto,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       const createCall = mockSectionsRepository.create.mock.calls[0][0];
@@ -378,7 +404,12 @@ describe('SectionsService', () => {
       });
 
       // Act
-      await service.generateSection(mockEtpId, requiredGenerateDto, mockUserId);
+      await service.generateSection(
+        mockEtpId,
+        requiredGenerateDto,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockSectionsRepository.create).toHaveBeenCalledWith(
@@ -408,6 +439,7 @@ describe('SectionsService', () => {
         mockEtpId,
         generateDto,
         mockUserId,
+        mockOrganizationId,
       );
 
       // Assert
@@ -576,12 +608,17 @@ describe('SectionsService', () => {
       );
 
       // Act
-      const result = await service.regenerateSection(mockSectionId, mockUserId);
+      const result = await service.regenerateSection(
+        mockSectionId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockSectionsRepository.findOne).toHaveBeenCalled();
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
         mockUserId,
       );
       expect(mockOrchestratorService.generateSection).toHaveBeenCalled();
@@ -597,10 +634,15 @@ describe('SectionsService', () => {
 
       // Act & Assert
       await expect(
-        service.regenerateSection(mockSectionId, mockUserId),
+        service.regenerateSection(
+          mockSectionId,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
         mockUserId,
       );
     });
@@ -627,7 +669,11 @@ describe('SectionsService', () => {
       );
 
       // Act
-      const result = await service.regenerateSection(mockSectionId, mockUserId);
+      const result = await service.regenerateSection(
+        mockSectionId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       const savedSection = mockSectionsRepository.save.mock.calls[1][0];
@@ -645,7 +691,11 @@ describe('SectionsService', () => {
 
       // Act & Assert
       await expect(
-        service.regenerateSection(mockSectionId, mockUserId),
+        service.regenerateSection(
+          mockSectionId,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow('LLM timeout');
 
       // Verify error handling
@@ -731,12 +781,13 @@ describe('SectionsService', () => {
       mockSectionsRepository.remove.mockResolvedValue(mockSection);
 
       // Act
-      await service.remove(mockSectionId, mockUserId);
+      await service.remove(mockSectionId, mockUserId, mockOrganizationId);
 
       // Assert
       expect(mockSectionsRepository.findOne).toHaveBeenCalled();
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
         mockUserId,
       );
       expect(mockSectionsRepository.remove).toHaveBeenCalledWith(mockSection);
@@ -753,11 +804,12 @@ describe('SectionsService', () => {
       ); // User has no access
 
       // Act & Assert
-      await expect(service.remove(mockSectionId, mockUserId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.remove(mockSectionId, mockUserId, mockOrganizationId),
+      ).rejects.toThrow(NotFoundException);
       expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
         mockUserId,
       );
       expect(mockSectionsRepository.remove).not.toHaveBeenCalled();
@@ -768,9 +820,9 @@ describe('SectionsService', () => {
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove('invalid-id', mockUserId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.remove('invalid-id', mockUserId, mockOrganizationId),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -801,7 +853,12 @@ describe('SectionsService', () => {
           title: 'Test',
           userInput: 'Test',
         };
-        await service.generateSection(mockEtpId, generateDto, mockUserId);
+        await service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        );
 
         // Assert
         expect(mockSectionsRepository.create).toHaveBeenCalledWith(
@@ -843,6 +900,7 @@ describe('SectionsService', () => {
             mockEtpId,
             { type, title: 'Test', userInput: 'Test' },
             mockUserId,
+            mockOrganizationId,
           );
 
           expect(mockSectionsRepository.create).toHaveBeenCalledWith(
@@ -876,6 +934,7 @@ describe('SectionsService', () => {
           mockEtpId,
           { type: SectionType.CUSTOM, title: 'Custom', userInput: 'Test' },
           mockUserId,
+          mockOrganizationId,
         );
 
         expect(mockSectionsRepository.create).toHaveBeenCalledWith(
