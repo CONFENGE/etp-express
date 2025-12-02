@@ -100,11 +100,16 @@ export class SectionsService {
     etpId: string,
     generateDto: GenerateSectionDto,
     userId: string,
+    organizationId: string,
   ): Promise<EtpSection> {
     this.logger.log(`Generating section ${generateDto.type} for ETP ${etpId}`);
 
     // Verify ETP exists and user has access (minimal loading - only needs metadata)
-    const etp = await this.etpsService.findOneMinimal(etpId, userId);
+    const etp = await this.etpsService.findOneMinimal(
+      etpId,
+      organizationId,
+      userId,
+    );
 
     if (!etp) {
       throw new NotFoundException(`ETP ${etpId} não encontrado`);
@@ -264,11 +269,19 @@ export class SectionsService {
    * @throws {ForbiddenException} If user doesn't own the parent ETP
    * @throws {Error} If AI generation fails (section kept with PENDING status)
    */
-  async regenerateSection(id: string, userId: string): Promise<EtpSection> {
+  async regenerateSection(
+    id: string,
+    userId: string,
+    organizationId: string,
+  ): Promise<EtpSection> {
     const section = await this.findOne(id);
 
     // Verify user access (minimal loading - only needs ownership check)
-    await this.etpsService.findOneMinimal(section.etpId, userId);
+    await this.etpsService.findOneMinimal(
+      section.etpId,
+      organizationId,
+      userId,
+    );
 
     section.status = SectionStatus.GENERATING;
     await this.sectionsRepository.save(section);
@@ -370,11 +383,19 @@ export class SectionsService {
    * @throws {NotFoundException} If section or parent ETP not found
    * @throws {ForbiddenException} If user doesn't own the parent ETP
    */
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(
+    id: string,
+    userId: string,
+    organizationId: string,
+  ): Promise<void> {
     const section = await this.findOne(id);
 
     // Verify user access (minimal loading - only needs ownership check)
-    await this.etpsService.findOneMinimal(section.etpId, userId);
+    await this.etpsService.findOneMinimal(
+      section.etpId,
+      organizationId,
+      userId,
+    );
 
     await this.sectionsRepository.remove(section);
 

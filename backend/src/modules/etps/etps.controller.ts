@@ -63,8 +63,13 @@ export class EtpsController {
   async create(
     @Body() createEtpDto: CreateEtpDto,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const etp = await this.etpsService.create(createEtpDto, userId);
+    const etp = await this.etpsService.create(
+      createEtpDto,
+      userId,
+      organizationId,
+    );
     return {
       data: etp,
       disclaimer: DISCLAIMER,
@@ -86,9 +91,10 @@ export class EtpsController {
   @ApiResponse({ status: 200, description: 'Lista de ETPs' })
   async findAll(
     @Query() paginationDto: PaginationDto,
+    @CurrentUser('organizationId') organizationId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.etpsService.findAll(paginationDto, userId);
+    return this.etpsService.findAll(paginationDto, organizationId, userId);
   }
 
   /**
@@ -101,8 +107,11 @@ export class EtpsController {
   @Get('statistics')
   @ApiOperation({ summary: 'Obter estatísticas dos ETPs' })
   @ApiResponse({ status: 200, description: 'Estatísticas' })
-  async getStatistics(@CurrentUser('id') userId: string) {
-    const stats = await this.etpsService.getStatistics(userId);
+  async getStatistics(
+    @CurrentUser('organizationId') organizationId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const stats = await this.etpsService.getStatistics(organizationId, userId);
     return {
       data: stats,
       disclaimer: DISCLAIMER,
@@ -123,9 +132,17 @@ export class EtpsController {
   @ApiOperation({ summary: 'Obter ETP por ID' })
   @ApiResponse({ status: 200, description: 'Dados do ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
-  async findOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser('organizationId') organizationId: string,
+    @CurrentUser('id') userId: string,
+  ) {
     // Load with sections for dashboard/editor view (no versions needed)
-    const etp = await this.etpsService.findOneWithSections(id, userId);
+    const etp = await this.etpsService.findOneWithSections(
+      id,
+      organizationId,
+      userId,
+    );
     return {
       data: etp,
       disclaimer: DISCLAIMER,
@@ -153,8 +170,14 @@ export class EtpsController {
     @Param('id') id: string,
     @Body() updateEtpDto: UpdateEtpDto,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const etp = await this.etpsService.update(id, updateEtpDto, userId);
+    const etp = await this.etpsService.update(
+      id,
+      updateEtpDto,
+      userId,
+      organizationId,
+    );
     return {
       data: etp,
       disclaimer: DISCLAIMER,
@@ -180,8 +203,14 @@ export class EtpsController {
     @Param('id') id: string,
     @Body('status') status: EtpStatus,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const etp = await this.etpsService.updateStatus(id, status, userId);
+    const etp = await this.etpsService.updateStatus(
+      id,
+      status,
+      userId,
+      organizationId,
+    );
     return {
       data: etp,
       disclaimer: DISCLAIMER,
@@ -203,8 +232,12 @@ export class EtpsController {
   @ApiResponse({ status: 200, description: 'ETP deletado com sucesso' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
-  async remove(@Param('id') id: string, @CurrentUser('id') userId: string) {
-    await this.etpsService.remove(id, userId);
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    await this.etpsService.remove(id, userId, organizationId);
     return {
       message: 'ETP deletado com sucesso',
       disclaimer: DISCLAIMER,
