@@ -3,6 +3,10 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'user';
+  organization: {
+    id: string;
+    name: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
