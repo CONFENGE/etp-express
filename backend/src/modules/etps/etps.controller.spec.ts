@@ -14,6 +14,7 @@ describe('EtpsController', () => {
 
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
+  const mockOrganizationId = 'org-789';
 
   const mockEtp = {
     id: mockEtpId,
@@ -62,6 +63,14 @@ describe('EtpsController', () => {
     remove: jest.fn(),
   };
 
+  const mockJwtAuthGuard = {
+    canActivate: jest.fn((context) => {
+      const request = context.switchToHttp().getRequest();
+      request.user = { id: mockUserId, organizationId: mockOrganizationId };
+      return true;
+    }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EtpsController],
@@ -73,7 +82,7 @@ describe('EtpsController', () => {
       ],
     })
       .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: jest.fn(() => true) })
+      .useValue(mockJwtAuthGuard)
       .compile();
 
     controller = module.get<EtpsController>(EtpsController);
@@ -101,10 +110,18 @@ describe('EtpsController', () => {
       mockEtpsService.create.mockResolvedValue(newEtp);
 
       // Act
-      const result = await controller.create(createEtpDto, mockUserId);
+      const result = await controller.create(
+        createEtpDto,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
-      expect(service.create).toHaveBeenCalledWith(createEtpDto, mockUserId);
+      expect(service.create).toHaveBeenCalledWith(
+        createEtpDto,
+        mockUserId,
+        mockOrganizationId,
+      );
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(newEtp);
       expect(result.data.title).toBe(createEtpDto.title);
@@ -118,11 +135,19 @@ describe('EtpsController', () => {
       mockEtpsService.create.mockResolvedValue(newEtp);
 
       // Act
-      const result = await controller.create(createEtpDto, mockUserId);
+      const result = await controller.create(
+        createEtpDto,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.data.createdById).toBe(mockUserId);
-      expect(service.create).toHaveBeenCalledWith(createEtpDto, mockUserId);
+      expect(service.create).toHaveBeenCalledWith(
+        createEtpDto,
+        mockUserId,
+        mockOrganizationId,
+      );
     });
 
     it('should include disclaimer in response', async () => {
@@ -130,7 +155,11 @@ describe('EtpsController', () => {
       mockEtpsService.create.mockResolvedValue(mockEtp);
 
       // Act
-      const result = await controller.create(createEtpDto, mockUserId);
+      const result = await controller.create(
+        createEtpDto,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result).toHaveProperty('disclaimer');
@@ -151,10 +180,18 @@ describe('EtpsController', () => {
       mockEtpsService.findAll.mockResolvedValue(mockPaginatedResponse);
 
       // Act
-      const result = await controller.findAll(paginationDto, mockUserId);
+      const result = await controller.findAll(
+        paginationDto,
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
-      expect(service.findAll).toHaveBeenCalledWith(paginationDto, mockUserId);
+      expect(service.findAll).toHaveBeenCalledWith(
+        paginationDto,
+        mockOrganizationId,
+        mockUserId,
+      );
       expect(service.findAll).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockPaginatedResponse);
       expect(result.data).toBeDefined();
@@ -166,7 +203,7 @@ describe('EtpsController', () => {
       mockEtpsService.findAll.mockResolvedValue(mockPaginatedResponse);
 
       // Act
-      await controller.findAll(paginationDto, mockUserId);
+      await controller.findAll(paginationDto, mockOrganizationId, mockUserId);
 
       // Assert
       expect(service.findAll).toHaveBeenCalledWith(
@@ -174,6 +211,7 @@ describe('EtpsController', () => {
           page: 1,
           limit: 10,
         }),
+        mockOrganizationId,
         mockUserId,
       );
     });
@@ -183,10 +221,14 @@ describe('EtpsController', () => {
       mockEtpsService.findAll.mockResolvedValue(mockPaginatedResponse);
 
       // Act
-      await controller.findAll(paginationDto, mockUserId);
+      await controller.findAll(paginationDto, mockOrganizationId, mockUserId);
 
       // Assert
-      expect(service.findAll).toHaveBeenCalledWith(paginationDto, mockUserId);
+      expect(service.findAll).toHaveBeenCalledWith(
+        paginationDto,
+        mockOrganizationId,
+        mockUserId,
+      );
     });
   });
 
@@ -196,10 +238,16 @@ describe('EtpsController', () => {
       mockEtpsService.getStatistics.mockResolvedValue(mockStatistics);
 
       // Act
-      const result = await controller.getStatistics(mockUserId);
+      const result = await controller.getStatistics(
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
-      expect(service.getStatistics).toHaveBeenCalledWith(mockUserId);
+      expect(service.getStatistics).toHaveBeenCalledWith(
+        mockOrganizationId,
+        mockUserId,
+      );
       expect(service.getStatistics).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(mockStatistics);
       expect(result.data.total).toBe(10);
@@ -211,7 +259,10 @@ describe('EtpsController', () => {
       mockEtpsService.getStatistics.mockResolvedValue(mockStatistics);
 
       // Act
-      const result = await controller.getStatistics(mockUserId);
+      const result = await controller.getStatistics(
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
       expect(result.data.byStatus).toBeDefined();
@@ -224,7 +275,10 @@ describe('EtpsController', () => {
       mockEtpsService.getStatistics.mockResolvedValue(mockStatistics);
 
       // Act
-      const result = await controller.getStatistics(mockUserId);
+      const result = await controller.getStatistics(
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
@@ -238,11 +292,16 @@ describe('EtpsController', () => {
       mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
 
       // Act
-      const result = await controller.findOne(mockEtpId, mockUserId);
+      const result = await controller.findOne(
+        mockEtpId,
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
       expect(service.findOneWithSections).toHaveBeenCalledWith(
         mockEtpId,
+        mockOrganizationId,
         mockUserId,
       );
       expect(service.findOneWithSections).toHaveBeenCalledTimes(1);
@@ -259,10 +318,10 @@ describe('EtpsController', () => {
 
       // Act & Assert
       await expect(
-        controller.findOne('invalid-id', mockUserId),
+        controller.findOne('invalid-id', mockOrganizationId, mockUserId),
       ).rejects.toThrow(NotFoundException);
       await expect(
-        controller.findOne('invalid-id', mockUserId),
+        controller.findOne('invalid-id', mockOrganizationId, mockUserId),
       ).rejects.toThrow('ETP não encontrado');
     });
 
@@ -273,9 +332,9 @@ describe('EtpsController', () => {
       );
 
       // Act & Assert
-      await expect(controller.findOne(mockEtpId, 'other-user')).rejects.toThrow(
-        ForbiddenException,
-      );
+      await expect(
+        controller.findOne(mockEtpId, mockOrganizationId, 'other-user'),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should include disclaimer in response', async () => {
@@ -283,7 +342,11 @@ describe('EtpsController', () => {
       mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
 
       // Act
-      const result = await controller.findOne(mockEtpId, mockUserId);
+      const result = await controller.findOne(
+        mockEtpId,
+        mockOrganizationId,
+        mockUserId,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
@@ -307,6 +370,7 @@ describe('EtpsController', () => {
         mockEtpId,
         updateEtpDto,
         mockUserId,
+        mockOrganizationId,
       );
 
       // Assert
@@ -314,6 +378,7 @@ describe('EtpsController', () => {
         mockEtpId,
         updateEtpDto,
         mockUserId,
+        mockOrganizationId,
       );
       expect(service.update).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(updatedEtp);
@@ -329,7 +394,12 @@ describe('EtpsController', () => {
 
       // Act & Assert
       await expect(
-        controller.update('invalid-id', updateEtpDto, mockUserId),
+        controller.update(
+          'invalid-id',
+          updateEtpDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -343,7 +413,12 @@ describe('EtpsController', () => {
 
       // Act & Assert
       await expect(
-        controller.update(mockEtpId, updateEtpDto, 'other-user'),
+        controller.update(
+          mockEtpId,
+          updateEtpDto,
+          'other-user',
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
   });
@@ -361,6 +436,7 @@ describe('EtpsController', () => {
         mockEtpId,
         newStatus,
         mockUserId,
+        mockOrganizationId,
       );
 
       // Assert
@@ -368,6 +444,7 @@ describe('EtpsController', () => {
         mockEtpId,
         newStatus,
         mockUserId,
+        mockOrganizationId,
       );
       expect(service.updateStatus).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(updatedEtp);
@@ -383,7 +460,12 @@ describe('EtpsController', () => {
 
       // Act & Assert
       await expect(
-        controller.updateStatus('invalid-id', newStatus, mockUserId),
+        controller.updateStatus(
+          'invalid-id',
+          newStatus,
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -397,7 +479,12 @@ describe('EtpsController', () => {
 
       // Act & Assert
       await expect(
-        controller.updateStatus(mockEtpId, newStatus, 'other-user'),
+        controller.updateStatus(
+          mockEtpId,
+          newStatus,
+          'other-user',
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -411,6 +498,7 @@ describe('EtpsController', () => {
         mockEtpId,
         newStatus,
         mockUserId,
+        mockOrganizationId,
       );
 
       // Assert
@@ -425,10 +513,18 @@ describe('EtpsController', () => {
       mockEtpsService.remove.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.remove(mockEtpId, mockUserId);
+      const result = await controller.remove(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
-      expect(service.remove).toHaveBeenCalledWith(mockEtpId, mockUserId);
+      expect(service.remove).toHaveBeenCalledWith(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
       expect(service.remove).toHaveBeenCalledTimes(1);
       expect(result.message).toBe('ETP deletado com sucesso');
       expect(result.disclaimer).toBeDefined();
@@ -441,9 +537,9 @@ describe('EtpsController', () => {
       );
 
       // Act & Assert
-      await expect(controller.remove('invalid-id', mockUserId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        controller.remove('invalid-id', mockUserId, mockOrganizationId),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ForbiddenException when user does not own the ETP', async () => {
@@ -453,9 +549,9 @@ describe('EtpsController', () => {
       );
 
       // Act & Assert
-      await expect(controller.remove(mockEtpId, 'other-user')).rejects.toThrow(
-        ForbiddenException,
-      );
+      await expect(
+        controller.remove(mockEtpId, 'other-user', mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should include disclaimer in delete response', async () => {
@@ -463,7 +559,11 @@ describe('EtpsController', () => {
       mockEtpsService.remove.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.remove(mockEtpId, mockUserId);
+      const result = await controller.remove(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();

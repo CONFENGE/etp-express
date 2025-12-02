@@ -40,6 +40,7 @@ describe('EtpsService', () => {
   const mockQueryBuilder: any = {
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
     skip: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
@@ -94,6 +95,7 @@ describe('EtpsService', () => {
         ...createDto,
         id: 'new-etp-id',
         createdById: mockUser1Id,
+        organizationId: mockOrganizationId,
         status: EtpStatus.DRAFT,
         currentVersion: 1,
         completionPercentage: 0,
@@ -111,6 +113,7 @@ describe('EtpsService', () => {
       expect(mockRepository.create).toHaveBeenCalledWith({
         ...createDto,
         createdById: mockUser1Id,
+        organizationId: mockOrganizationId,
         status: EtpStatus.DRAFT,
         currentVersion: 1,
         completionPercentage: 0,
@@ -157,8 +160,8 @@ describe('EtpsService', () => {
       await service.findAll(paginationDto, mockOrganizationId, mockUser1Id);
 
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'etp.createdById = :userId',
-        { userId: mockUser1Id },
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
       );
     });
 
@@ -211,7 +214,7 @@ describe('EtpsService', () => {
       ).rejects.toThrow('Você não tem permissão para acessar este ETP');
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        `User ${mockUser2Id} attempted to access ETP etp-123 owned by ${mockUser1Id}`,
+        `Organization ${mockOrganization2Id} attempted to access ETP etp-123 from organization ${mockOrganizationId}`,
       );
     });
 
@@ -261,7 +264,7 @@ describe('EtpsService', () => {
       ).rejects.toThrow('Você não tem permissão para acessar este ETP');
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        `User ${mockUser2Id} attempted to access ETP etp-123 owned by ${mockUser1Id}`,
+        `Organization ${mockOrganization2Id} attempted to access ETP etp-123 from organization ${mockOrganizationId}`,
       );
     });
 
@@ -361,14 +364,22 @@ describe('EtpsService', () => {
       mockRepository.findOne.mockResolvedValue(mockEtp);
 
       await expect(
-        service.findOneWithVersions('etp-123', mockUser2Id),
+        service.findOneWithVersions(
+          'etp-123',
+          mockOrganization2Id,
+          mockUser2Id,
+        ),
       ).rejects.toThrow('Você não tem permissão para acessar este ETP');
     });
 
     it('should allow owner to access ETP', async () => {
       mockRepository.findOne.mockResolvedValue(mockEtp);
 
-      const result = await service.findOneWithVersions('etp-123', mockUser1Id);
+      const result = await service.findOneWithVersions(
+        'etp-123',
+        mockOrganizationId,
+        mockUser1Id,
+      );
 
       expect(result).toEqual(mockEtp);
     });
@@ -406,7 +417,7 @@ describe('EtpsService', () => {
       ).rejects.toThrow(ForbiddenException);
       await expect(
         service.update('etp-123', updateDto, mockUser2Id, mockOrganization2Id),
-      ).rejects.toThrow('Você não tem permissão para editar este ETP');
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
@@ -455,9 +466,7 @@ describe('EtpsService', () => {
           mockUser2Id,
           mockOrganization2Id,
         ),
-      ).rejects.toThrow(
-        'Você não tem permissão para alterar o status deste ETP',
-      );
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
     });
   });
 
@@ -533,7 +542,7 @@ describe('EtpsService', () => {
       ).rejects.toThrow(ForbiddenException);
       await expect(
         service.remove('etp-123', mockUser2Id, mockOrganization2Id),
-      ).rejects.toThrow('Você não tem permissão para deletar este ETP');
+      ).rejects.toThrow('Você não tem permissão para acessar este ETP');
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
@@ -580,8 +589,8 @@ describe('EtpsService', () => {
       );
 
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'etp.createdById = :userId',
-        { userId: mockUser1Id },
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
       );
       expect(result.total).toBe(5);
     });
