@@ -48,13 +48,13 @@ export async function setupBrowser(): Promise<BrowserSetup> {
     const text = msg.text();
 
     // Log apenas erros e warnings no terminal (evita poluição)
-    if (type === 'error' || type === 'warning') {
+    if (type === 'error' || type === 'warn') {
       console.log(`[Browser ${type.toUpperCase()}]:`, text);
     }
   });
 
   // Interceptar page errors (uncaught exceptions)
-  page.on('pageerror', (error) => {
+  page.on('pageerror', (error: Error) => {
     console.error('[Browser Page Error]:', error.message);
   });
 
@@ -266,7 +266,7 @@ export async function waitForUrlContains(
     if (currentUrl.includes(expectedPath)) {
       return;
     }
-    await page.waitForTimeout(100); // Poll a cada 100ms
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Poll a cada 100ms
   }
 
   throw new Error(
