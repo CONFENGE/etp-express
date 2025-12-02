@@ -13,6 +13,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🏢 Multi-Tenancy B2G (2025-12-01)
+
+- ✅ #354 - Infraestrutura de Organizations para Multi-Tenancy B2G (PR #360)
+  - **MT-01** - Primeira issue da cadeia de Multi-Tenancy
+  - Entidade `Organization` com CNPJ, domainWhitelist, isActive (Kill Switch)
+  - Migration com índice GIN em domainWhitelist para lookup eficiente de domínios
+  - Módulo `OrganizationsModule` com operações CRUD completas
+  - Métodos `suspend()`/`reactivate()` para funcionalidade de Kill Switch
+  - Método `findByDomain()` para integração com AuthService.register (MT-03)
+  - Suite de testes abrangente: 40 testes, 100% coverage
+  - Preparação para próximas issues: MT-02 (relação User-Organization), MT-03 (registro com whitelist), MT-04 (TenantGuard), MT-05 (isolamento de dados ETP), MT-06 (adaptação frontend)
+
 #### 🤖 Enriquecimento com IA (2025-11-25)
 
 - ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
