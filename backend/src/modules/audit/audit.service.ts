@@ -686,4 +686,48 @@ export class AuditService {
 
     return { logs, summary };
   }
+
+  /**
+   * Log tenant access blocked (Multi-Tenancy B2G Kill Switch - MT-04)
+   * @param userId User ID who was blocked
+   * @param metadata Block metadata (organizationId, route, IP, etc.)
+   */
+  async logTenantBlocked(
+    userId: string,
+    metadata: {
+      organizationId: string;
+      organizationName: string;
+      ip?: string;
+      userAgent?: string;
+      route?: string;
+      method?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.TENANT_BLOCKED,
+      entityType: 'Organization',
+      entityId: metadata.organizationId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: `Tenant access blocked: Organization ${metadata.organizationName} is suspended (MT-04 Kill Switch)`,
+      changes: {
+        metadata: {
+          organizationId: metadata.organizationId,
+          organizationName: metadata.organizationName,
+          route: metadata.route,
+          method: metadata.method,
+          blockedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.warn(
+      `Tenant access BLOCKED: User ${userId} from suspended organization ${metadata.organizationName} attempted ${metadata.method || 'REQUEST'} ${metadata.route || 'UNKNOWN'}`,
+    );
+
+    return savedLog;
+  }
 }

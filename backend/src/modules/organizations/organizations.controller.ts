@@ -18,6 +18,8 @@ import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../entities/user.entity';
 
 /**
  * Controller for managing organizations in Multi-Tenancy B2G architecture.
@@ -52,6 +54,7 @@ export class OrganizationsController {
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Post()
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new organization (ADMIN only)' })
   @ApiResponse({
     status: 201,
@@ -59,6 +62,7 @@ export class OrganizationsController {
   })
   @ApiResponse({ status: 400, description: 'Validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 409, description: 'CNPJ already exists' })
   async create(@Body() createOrganizationDto: CreateOrganizationDto) {
     return this.organizationsService.create(createOrganizationDto);
@@ -70,12 +74,14 @@ export class OrganizationsController {
    * @returns Array of organizations ordered by creation date (newest first)
    */
   @Get()
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve all organizations (ADMIN only)' })
   @ApiResponse({
     status: 200,
     description: 'Organizations retrieved successfully',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   async findAll() {
     return this.organizationsService.findAll();
   }
@@ -88,12 +94,14 @@ export class OrganizationsController {
    * @throws {NotFoundException} 404 - If organization not found
    */
   @Get(':id')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve organization by ID (ADMIN only)' })
   @ApiResponse({
     status: 200,
     description: 'Organization retrieved successfully',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   async findOne(@Param('id') id: string) {
     return this.organizationsService.findOne(id);
@@ -109,6 +117,7 @@ export class OrganizationsController {
    * @throws {ConflictException} 409 - If updating CNPJ to an existing one
    */
   @Patch(':id')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update organization (ADMIN only)' })
   @ApiResponse({
     status: 200,
@@ -116,6 +125,7 @@ export class OrganizationsController {
   })
   @ApiResponse({ status: 400, description: 'Validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   @ApiResponse({ status: 409, description: 'CNPJ already exists' })
   async update(
@@ -137,6 +147,7 @@ export class OrganizationsController {
    * due to foreign key constraints (ON DELETE RESTRICT).
    */
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete organization (ADMIN only)' })
   @ApiResponse({
     status: 200,
@@ -147,6 +158,7 @@ export class OrganizationsController {
     description: 'Organization has associated users or ETPs',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   async remove(@Param('id') id: string) {
     await this.organizationsService.remove(id);
@@ -163,6 +175,7 @@ export class OrganizationsController {
    * @throws {BadRequestException} 400 - If organization is already suspended
    */
   @Patch(':id/suspend')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({
     summary: 'Suspend organization (Kill Switch) (ADMIN only)',
     description:
@@ -177,6 +190,7 @@ export class OrganizationsController {
     description: 'Organization is already suspended',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   async suspend(@Param('id') id: string) {
     return this.organizationsService.suspend(id);
@@ -191,6 +205,7 @@ export class OrganizationsController {
    * @throws {BadRequestException} 400 - If organization is already active
    */
   @Patch(':id/reactivate')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Reactivate suspended organization (ADMIN only)' })
   @ApiResponse({
     status: 200,
@@ -198,6 +213,7 @@ export class OrganizationsController {
   })
   @ApiResponse({ status: 400, description: 'Organization is already active' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   async reactivate(@Param('id') id: string) {
     return this.organizationsService.reactivate(id);
