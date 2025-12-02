@@ -4,16 +4,16 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 168/197 issues concluídas (85.3%)
-**Velocidade:** 6.2 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-07 (5 dias)
+**Progresso Global:** 169/197 issues concluídas (85.8%)
+**Velocidade:** 6.3 issues/dia (últimos 7 dias)
+**ETA Conclusão:** ~2025-12-06 (4 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ████░░░░░░░░░░░░░░░░  5/25  (20%)  📚 E2E Testing & Documentation
+M5: █████░░░░░░░░░░░░░░░  6/25  (24%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -114,25 +114,25 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (5/25) - 20%
+### 📚 M5: E2E Testing & Documentation (6/25) - 24%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
-#### Concluídas (5):
+#### Concluídas (6):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #34 - JSDoc completo em OrchestratorService e agentes (PR #366)
 - ✅ #48 - UAT (parent - desmembrada em #92-#95)
 - ✅ #97 - Documentation sync & JSDoc
 - ✅ #353 - Configure Puppeteer for E2E Testing
+- ✅ #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property (PR #370)
 
-#### Pendentes (20):
+#### Pendentes (19):
 
 **Correções de Testes (P1 - CRÍTICO):**
 
 - [ ] #367 - Fix etps.controller.spec.ts - organizationId parameter missing
 - [ ] #368 - Fix sections.controller.spec.ts - organizationId parameter missing
-- [ ] #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property
 
 **Testes E2E:**
 
@@ -228,10 +228,9 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P0 - URGENTE (Hoje):
 
-1. **Correção Testes Backend (#367-#369)** - 3 testes quebrados após multi-tenancy (P1 CRÍTICO)
-   - #367 - Fix etps.controller.spec.ts
+1. **Correção Testes Backend (#367-#368)** - 2 testes quebrados após multi-tenancy (P1 CRÍTICO)
+   - #367 - Fix etps.controller.spec.ts (pode estar fechada - verificar status)
    - #368 - Fix sections.controller.spec.ts
-   - #369 - Fix auth.controller.spec.ts
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
