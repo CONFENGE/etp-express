@@ -109,7 +109,7 @@ export class UsersService {
         'id',
         'name',
         'email',
-        'orgao',
+        'organizationId',
         'cargo',
         'role',
         'isActive',

@@ -22,11 +22,6 @@ export class RegisterDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({ example: 'Ministério da Economia' })
-  @IsOptional()
-  @IsString()
-  orgao?: string;
-
   @ApiPropertyOptional({ example: 'Analista de Contratos' })
   @IsOptional()
   @IsString()

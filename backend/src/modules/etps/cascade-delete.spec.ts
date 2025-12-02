@@ -36,7 +36,7 @@ describe('Cascade Delete - Referential Integrity (#235)', () => {
     id: mockUserId,
     name: 'Test User',
     email: 'cascade@test.com',
-    orgao: 'TEST',
+    organizationId: 'org-test-123',
     cargo: 'Tester',
     role: UserRole.USER,
   };
