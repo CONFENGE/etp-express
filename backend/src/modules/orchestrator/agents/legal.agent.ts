@@ -1,13 +1,43 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+/**
+ * Result structure for legal compliance validation.
+ */
 export interface LegalValidationResult {
+  /** Indicates if content meets minimum legal compliance threshold (score >= 70%) */
   isCompliant: boolean;
+  /** Overall compliance score (0-100) */
   score: number;
+  /** List of detected compliance issues */
   issues: string[];
+  /** Actionable recommendations to improve compliance */
   recommendations: string[];
+  /** Relevant legal references (Lei 14.133/2021, INs, etc.) */
   references: string[];
 }
 
+/**
+ * Agent responsible for ensuring legal compliance of ETP content with Brazilian public procurement law.
+ *
+ * @remarks
+ * This agent validates generated content against:
+ * - Lei 14.133/2021 (Nova Lei de Licitações e Contratos)
+ * - Lei 8.666/1993 (partially repealed but still referenced)
+ * - IN SEGES/ME nº 40/2020 (ETP methodology)
+ * - IN SEGES/ME nº 65/2021 (IT procurement)
+ * - TCU jurisprudence and best practices
+ *
+ * The agent performs heuristic checks for:
+ * - Presence of mandatory legal references
+ * - Required elements (objeto, necessidade, valor estimado)
+ * - Technical requirements compliance
+ * - Justification completeness (Art. 18, Lei 14.133/2021)
+ *
+ * Compliance score is calculated based on presence/absence of key elements.
+ * A score >= 70% is considered compliant.
+ *
+ * @see OrchestratorService - Orchestrates this agent with others
+ */
 @Injectable()
 export class LegalAgent {
   private readonly logger = new Logger(LegalAgent.name);
@@ -20,6 +50,34 @@ export class LegalAgent {
     'Decreto 10.024/2019 - Licitações eletrônicas',
   ];
 
+  /**
+   * Validates content for legal compliance with Brazilian public procurement law.
+   *
+   * @remarks
+   * Performs heuristic checks including:
+   * - Lei 14.133/2021 explicit reference check
+   * - Justification section presence (Art. 18)
+   * - Required elements: objeto, necessidade, valor estimado
+   * - Technical requirements for IT procurement (IN SEGES 40/2020)
+   *
+   * Compliance score formula: (passed_checks / total_checks) * 100
+   * Threshold for compliance: >= 70%
+   *
+   * @param content - Text content to validate
+   * @param context - Optional context (e.g., section type) for context-aware checks
+   * @returns Validation result with compliance status, score, issues, and recommendations
+   *
+   * @example
+   * ```ts
+   * const result = await legalAgent.validate(
+   *   'Este ETP está fundamentado na Lei 14.133/2021...',
+   *   { type: 'justificativa' }
+   * );
+   * console.log(result.isCompliant); // true/false
+   * console.log(result.score); // 85
+   * console.log(result.recommendations); // ['Inclua referência à...']
+   * ```
+   */
   async validate(
     content: string,
     context?: unknown,
@@ -98,6 +156,29 @@ export class LegalAgent {
     };
   }
 
+  /**
+   * Enriches user prompt with relevant legal context for the specific section type.
+   *
+   * @remarks
+   * Appends section-specific legal requirements to guide LLM generation:
+   * - Justificativa: Art. 18 requirements (necessidade, interesse público, benefícios, riscos)
+   * - Requisitos: IN SEGES 40/2020 guidelines (objetividade, mensurabilidade, anti-direcionamento)
+   * - Estimativa de valor: Art. 23 requirements (pesquisa de mercado, metodologia)
+   * - Default: Basic Lei 14.133/2021 reference
+   *
+   * @param userPrompt - Original user input prompt
+   * @param sectionType - Type of ETP section being generated
+   * @returns Enriched prompt with legal context appended
+   *
+   * @example
+   * ```ts
+   * const enriched = await legalAgent.enrichWithLegalContext(
+   *   'Descreva a justificativa para contratar notebooks',
+   *   'justificativa'
+   * );
+   * // Returns: original prompt + "\n\n[CONTEXTO LEGAL]\nConforme Art. 18..."
+   * ```
+   */
   async enrichWithLegalContext(
     userPrompt: string,
     sectionType: string,
@@ -129,6 +210,20 @@ export class LegalAgent {
     return contexts[sectionType] || 'Base legal: Lei 14.133/2021';
   }
 
+  /**
+   * Returns system prompt with legal compliance guidelines for the LLM.
+   *
+   * @remarks
+   * Instructs the LLM to:
+   * - Always cite applicable legal basis
+   * - Avoid dubious legal interpretations
+   * - Be conservative when uncertain
+   * - Signal need for legal review when appropriate
+   *
+   * Includes mandatory disclaimer: "⚠️ Este conteúdo requer validação jurídica..."
+   *
+   * @returns System prompt string with legal compliance instructions
+   */
   getSystemPrompt(): string {
     return `Você é um agente especializado em conformidade legal para Estudos Técnicos Preliminares (ETP).
 
