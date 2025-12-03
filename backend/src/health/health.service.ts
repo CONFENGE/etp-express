@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
@@ -24,29 +26,36 @@ export class HealthService {
     private readonly openaiService: OpenAIService,
     private readonly perplexityService: PerplexityService,
     private readonly dataSource: DataSource,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
    * Executa health check completo
    *
-   * Valida conectividade com PostgreSQL e retorna status agregado.
+   * Valida conectividade com PostgreSQL e Redis (se configurado),
+   * retornando status agregado.
    *
    * @returns {Promise<object>} Status de saúde do serviço
    */
   async check() {
     const dbHealth = await this.checkDatabase();
+    const redisHealth = await this.checkRedis();
 
-    const status = dbHealth ? 'healthy' : 'unhealthy';
+    const status = dbHealth && redisHealth ? 'healthy' : 'unhealthy';
 
     // Log apenas quando unhealthy (evitar poluir logs em produção)
     if (!dbHealth) {
       this.logger.error('Health check failed: Database not connected');
+    }
+    if (!redisHealth) {
+      this.logger.warn('Health check warning: Redis not available');
     }
 
     return {
       status,
       timestamp: new Date().toISOString(),
       database: dbHealth ? 'connected' : 'disconnected',
+      redis: redisHealth ? 'connected' : 'not_configured',
     };
   }
 
@@ -64,6 +73,41 @@ export class HealthService {
     } catch (error) {
       this.logger.error('Database connectivity check failed', error);
       return false;
+    }
+  }
+
+  /**
+   * Valida conectividade com Redis
+   *
+   * Executa PING para verificar se Redis está acessível.
+   * Retorna true se Redis não está configurado (REDIS_URL ausente),
+   * permitindo que a aplicação funcione sem Redis.
+   *
+   * @returns {Promise<boolean>} true se Redis está conectado ou não configurado
+   */
+  private async checkRedis(): Promise<boolean> {
+    const redisUrl = this.configService.get<string>('REDIS_URL');
+
+    // Se Redis não está configurado, não é um erro
+    if (!redisUrl) {
+      this.logger.debug('Redis not configured - skipping health check');
+      return true; // Não bloqueia health check se Redis não está configurado
+    }
+
+    let client: Redis | null = null;
+    try {
+      client = new Redis(redisUrl);
+      await client.ping();
+      return true;
+    } catch (error) {
+      this.logger.error('Redis connectivity check failed', {
+        error: error.message,
+      });
+      return false;
+    } finally {
+      if (client) {
+        client.disconnect();
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { HealthService } from './health.service';
@@ -47,6 +48,12 @@ describe('HealthService', () => {
             getCircuitState: jest.fn(),
           },
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue(undefined), // Redis not configured by default
+          },
+        },
       ],
     }).compile();
 
@@ -81,6 +88,7 @@ describe('HealthService', () => {
         status: 'healthy',
         timestamp: expect.any(String),
         database: 'connected',
+        redis: 'connected', // Redis not configured returns true (healthy)
       });
       expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
       expect(loggerErrorSpy).not.toHaveBeenCalled();
@@ -99,6 +107,7 @@ describe('HealthService', () => {
         status: 'unhealthy',
         timestamp: expect.any(String),
         database: 'disconnected',
+        redis: 'connected', // Redis not configured returns true (healthy)
       });
       expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
       expect(loggerErrorSpy).toHaveBeenCalledWith(
