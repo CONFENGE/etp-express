@@ -55,6 +55,7 @@ describe('HealthController', () => {
         status: 'healthy',
         timestamp: '2025-11-14T12:00:00.000Z',
         database: 'connected',
+        redis: 'connected',
       };
       jest.spyOn(service, 'check').mockResolvedValue(expectedResponse);
 
@@ -72,6 +73,7 @@ describe('HealthController', () => {
         status: 'unhealthy',
         timestamp: '2025-11-14T12:00:00.000Z',
         database: 'disconnected',
+        redis: 'connected',
       };
       jest.spyOn(service, 'check').mockResolvedValue(expectedResponse);
 
@@ -114,6 +116,7 @@ describe('HealthController', () => {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         database: 'connected',
+        redis: 'connected',
       };
       jest.spyOn(service, 'check').mockResolvedValue(serviceResponse);
 
