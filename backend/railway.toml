@@ -3,6 +3,9 @@ builder = "NIXPACKS"
 
 [deploy]
 startCommand = "npm run migration:run && npm run start:prod"
-healthcheckPath = "/api"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+
+[start]
+cmd = "npm run migration:run && npm run start:prod"
