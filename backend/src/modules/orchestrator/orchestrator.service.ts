@@ -232,7 +232,7 @@ export class OrchestratorService {
         );
 
         const enrichmentResult =
-          await this.perplexityService.search(enrichmentQuery);
+          await this.perplexityService.searchDeep(enrichmentQuery);
 
         if (enrichmentResult.isFallback) {
           // Perplexity returned fallback - graceful degradation

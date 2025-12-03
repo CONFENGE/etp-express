@@ -53,8 +53,10 @@ import { RolesGuard } from './common/guards/roles.guard';
         }),
         JWT_EXPIRATION: Joi.string().default('7d'),
         OPENAI_API_KEY: Joi.string().required(),
-        OPENAI_MODEL: Joi.string().default('gpt-4-turbo-preview'),
+        OPENAI_MODEL: Joi.string().default('gpt-4.1-nano'),
         PERPLEXITY_API_KEY: Joi.string().required(),
+        PERPLEXITY_MODEL_SIMPLE: Joi.string().default('sonar'),
+        PERPLEXITY_MODEL_DEEP: Joi.string().default('sonar-deep-research'),
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
         CORS_ORIGINS: Joi.string().default('http://localhost:5173'),
 

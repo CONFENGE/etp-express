@@ -153,11 +153,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (4/11) - 36%
+### 🔄 M6: Maintenance (5/11) - 45%
 
 **Status:** RECORRENTE
 
-#### Concluídas (4):
+#### Concluídas (5):
 
 - ✅ #181 - Migration-aware readiness probe
 - ✅ #219 - Setup Redis no Railway (PR #373 - 2025-12-03)
@@ -170,6 +170,11 @@ M7: ████████████████████  6/6   (100%) �
   - **Solução:** Adicionar tipo explícito `type: 'varchar'` em colunas nullable
   - **Impacto:** Desbloqueou deploy em produção no Railway
   - **Issues Relacionadas:** #375-#378 (preventivas para outras entidades)
+- ✅ #379 - Migrar modelos LLM obsoletos para GPT-4.1 nano e Perplexity sonar (2025-12-03)
+  - **OpenAI:** gpt-4-turbo-preview → gpt-4.1-nano (incluindo health check)
+  - **Perplexity:** pplx-7b-online → sonar (simple) + sonar-deep-research (complex)
+  - **Arquitetura:** Seleção dinâmica baseada em contexto de uso
+  - **Economia:** Redução estimada de ~30% custos LLM
 - ✅ Manutenção adicional
 
 #### Pendentes (7):

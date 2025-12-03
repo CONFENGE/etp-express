@@ -116,7 +116,7 @@ export class OpenAIService {
    * Generate deterministic cache key from request parameters
    * @param systemPrompt System prompt for the LLM
    * @param userPrompt User prompt for the LLM
-   * @param model Model name (e.g., 'gpt-4-turbo-preview')
+   * @param model Model name (e.g., 'gpt-4.1-nano')
    * @param temperature Temperature parameter (0.0-2.0)
    * @returns SHA-256 hash of concatenated parameters
    */
@@ -144,10 +144,7 @@ export class OpenAIService {
       userPrompt,
       temperature = this.configService.get<number>('OPENAI_TEMPERATURE', 0.7),
       maxTokens = this.configService.get<number>('OPENAI_MAX_TOKENS', 4000),
-      model = this.configService.get<string>(
-        'OPENAI_MODEL',
-        'gpt-4-turbo-preview',
-      ),
+      model = this.configService.get<string>('OPENAI_MODEL', 'gpt-4.1-nano'),
     } = request;
 
     // Generate cache key
@@ -248,7 +245,7 @@ export class OpenAIService {
       // Make a minimal API call to check connectivity
       // Using a very short completion request with low token limit
       await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo', // Use cheaper model for ping
+        model: 'gpt-4.1-nano', // Use cheapest model for ping
         messages: [{ role: 'user', content: 'ping' }],
         max_tokens: 1,
       });
@@ -273,10 +270,7 @@ export class OpenAIService {
       userPrompt,
       temperature = this.configService.get<number>('OPENAI_TEMPERATURE', 0.7),
       maxTokens = this.configService.get<number>('OPENAI_MAX_TOKENS', 4000),
-      model = this.configService.get<string>(
-        'OPENAI_MODEL',
-        'gpt-4-turbo-preview',
-      ),
+      model = this.configService.get<string>('OPENAI_MODEL', 'gpt-4.1-nano'),
     } = request;
 
     this.logger.log(`Generating streaming completion with model: ${model}`);
