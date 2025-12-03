@@ -47,7 +47,9 @@ const FALLBACK_DISCLAIMER =
 export class PerplexityService {
   private readonly logger = new Logger(PerplexityService.name);
   private readonly apiKey: string;
-  private readonly model: string;
+  private readonly model: string; // Legacy - deprecated
+  private readonly modelSimple: string; // sonar
+  private readonly modelDeep: string; // sonar-deep-research
   private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
   private readonly circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
@@ -77,10 +79,19 @@ export class PerplexityService {
       operationName: 'Perplexity API',
     };
     this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || '';
-    this.model = this.configService.get<string>(
-      'PERPLEXITY_MODEL',
-      'pplx-7b-online',
+
+    // Modelos específicos por tipo de busca
+    this.modelSimple = this.configService.get<string>(
+      'PERPLEXITY_MODEL_SIMPLE',
+      'sonar',
     );
+    this.modelDeep = this.configService.get<string>(
+      'PERPLEXITY_MODEL_DEEP',
+      'sonar-deep-research',
+    );
+
+    // Legacy: manter para backwards compatibility (deprecated)
+    this.model = this.configService.get<string>('PERPLEXITY_MODEL', 'sonar');
 
     // Initialize cache with 7-day TTL (604800 seconds)
     this.cache = new NodeCache({
@@ -132,6 +143,8 @@ export class PerplexityService {
    * Cache is checked first, and only misses trigger API calls.
    * Fallback responses are NOT cached to ensure retries on recovery.
    *
+   * @deprecated Use searchSimple() or searchDeep() instead for explicit model selection.
+   *
    * @param query - Search query string
    * @returns Promise<PerplexityResponse> - Search results with cache metadata
    *
@@ -147,92 +160,98 @@ export class PerplexityService {
    * // Second call: Cache HIT → instant return
    */
   async search(query: string): Promise<PerplexityResponse> {
-    this.logger.log(`Searching with Perplexity: ${query}`);
+    this.logger.warn(
+      'Using deprecated search() method. Use searchSimple() or searchDeep() instead.',
+    );
+    return this.searchSimple(query);
+  }
 
-    // Generate cache key from normalized query
-    const cacheKey = this.generateCacheKey(query);
+  /**
+   * Performs a simple, fast search using Perplexity's sonar model.
+   * Ideal for quick fact-checking and simple queries.
+   *
+   * @param query - Search query string
+   * @returns Promise<PerplexityResponse>
+   */
+  async searchSimple(query: string): Promise<PerplexityResponse> {
+    this.logger.log(
+      `Performing simple search with Perplexity (model: ${this.modelSimple})`,
+    );
+    return this.performSearch(query, this.modelSimple);
+  }
 
-    // Check cache first
+  /**
+   * Performs a deep research search using Perplexity's sonar-deep-research model.
+   * Ideal for complex queries requiring comprehensive market analysis.
+   *
+   * @param query - Search query string
+   * @returns Promise<PerplexityResponse>
+   */
+  async searchDeep(query: string): Promise<PerplexityResponse> {
+    this.logger.log(
+      `Performing deep research with Perplexity (model: ${this.modelDeep})`,
+    );
+    return this.performSearch(query, this.modelDeep);
+  }
+
+  /**
+   * Generic search method (internal use).
+   * @private
+   */
+  private async performSearch(
+    query: string,
+    model: string,
+  ): Promise<PerplexityResponse> {
+    // Incluir modelo na cache key
+    const cacheKey = this.generateCacheKey(`${model}:${query}`);
+
+    // Check cache
     const cached = this.cache.get<PerplexityResponse>(cacheKey);
     if (cached) {
       this.logger.log(
-        `Cache HIT for query: ${query.substring(0, 50)}... (key: ${cacheKey.substring(0, 16)}...)`,
+        `Cache HIT: ${query.substring(0, 50)}... (model: ${model})`,
       );
       return cached;
     }
 
-    this.logger.log(
-      `Cache MISS for query: ${query.substring(0, 50)}... - calling Perplexity API`,
-    );
+    this.logger.log(`Cache MISS - calling Perplexity API (model: ${model})`);
 
     try {
-      const response = (await this.circuitBreaker.fire(
-        query,
-      )) as PerplexityResponse;
+      const response = await this.callPerplexityWithModel(query, model);
 
-      // Only cache successful responses (NOT fallback responses)
+      // Cache apenas respostas bem-sucedidas
       if (!response.isFallback) {
         this.cache.set(cacheKey, response);
-        this.logger.log(
-          `Response cached with key: ${cacheKey.substring(0, 16)}... (TTL: 7 days)`,
-        );
-      } else {
-        this.logger.warn(
-          'Fallback response NOT cached - will retry on next request',
-        );
       }
 
       return response;
     } catch (error) {
-      // Circuit breaker opened - return fallback response instead of throwing
-      if (error.code === 'EOPENBREAKER') {
-        this.logger.warn(
-          'Perplexity circuit breaker is open - returning fallback response',
-        );
-        return this.getFallbackResponse();
-      }
-
-      // Timeout - return fallback response
-      if (error.code === 'ETIMEDOUT') {
-        this.logger.warn(
-          'Perplexity request timed out - returning fallback response',
-        );
-        return this.getFallbackResponse();
-      }
-
-      // Other errors - log and return fallback for graceful degradation
-      const axiosError = error as AxiosError;
-      this.logger.error('Perplexity API failed', {
-        query,
-        error: axiosError.message,
-      });
+      this.logger.error('Perplexity API failed', { query, model });
       return this.getFallbackResponse();
     }
   }
 
   /**
-   * Calls Perplexity API directly (used by circuit breaker)
-   * @param query Search query string
-   * @returns Perplexity response with results
+   * Calls Perplexity API with specified model.
+   * @private
    */
-  private async callPerplexity(query: string): Promise<PerplexityResponse> {
-    // Wrap API call with retry logic for transient failures
+  private async callPerplexityWithModel(
+    query: string,
+    model: string,
+  ): Promise<PerplexityResponse> {
     const response = await withRetry(
       () =>
         axios.post<PerplexityAPIResponse>(
           this.apiUrl,
           {
-            model: this.model,
+            model, // Usar parâmetro model
             messages: [
               {
                 role: 'system',
                 content:
-                  'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras. Forneça informações precisas e cite as fontes.',
+                  'Você é um assistente especializado em encontrar informações sobre contratações públicas brasileiras.',
               },
-              {
-                role: 'user',
-                content: query,
-              },
+              { role: 'user', content: query },
             ],
           },
           {
@@ -248,13 +267,7 @@ export class PerplexityService {
 
     const content = response.data.choices?.[0]?.message?.content || '';
     const citations = response.data.citations || [];
-
-    // Parse results from content
     const results = this.parseResults(content, citations);
-
-    this.logger.log(
-      `Perplexity search completed. Found ${results.length} results`,
-    );
 
     return {
       results,
@@ -262,6 +275,16 @@ export class PerplexityService {
       sources: citations,
       isFallback: false,
     };
+  }
+
+  /**
+   * Calls Perplexity API directly (used by circuit breaker)
+   * @deprecated Use callPerplexityWithModel() instead.
+   * @param query Search query string
+   * @returns Perplexity response with results
+   */
+  private async callPerplexity(query: string): Promise<PerplexityResponse> {
+    return this.callPerplexityWithModel(query, this.model);
   }
 
   /**
@@ -312,7 +335,8 @@ export class PerplexityService {
 
     Foque em dados do Brasil e cite as fontes oficiais.`;
 
-    return this.search(query);
+    // Usar deep research para busca de contratos
+    return this.searchDeep(query);
   }
 
   async searchLegalReferences(topic: string): Promise<PerplexityResponse> {
@@ -325,7 +349,8 @@ export class PerplexityService {
 
     Cite as fontes oficiais e artigos específicos quando possível.`;
 
-    return this.search(query);
+    // Usar deep research para referências legais
+    return this.searchDeep(query);
   }
 
   /**
@@ -363,7 +388,8 @@ Seja objetivo e preciso.`;
       `Fact-checking legal reference via Perplexity: ${reference.type} ${reference.number}/${reference.year}`,
     );
 
-    const response = await this.search(query);
+    // USAR searchSimple para fact-checking rápido
+    const response = await this.searchSimple(query);
 
     // If search returned fallback (API unavailable), return low-confidence result
     if (response.isFallback) {

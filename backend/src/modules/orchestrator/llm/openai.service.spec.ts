@@ -24,7 +24,7 @@ describe('OpenAIService', () => {
         OPENAI_API_KEY: 'test-api-key',
         OPENAI_TEMPERATURE: 0.7,
         OPENAI_MAX_TOKENS: 4000,
-        OPENAI_MODEL: 'gpt-4-turbo-preview',
+        OPENAI_MODEL: 'gpt-4.1-nano',
       };
       return config[key] || defaultValue;
     }),
@@ -65,7 +65,7 @@ describe('OpenAIService', () => {
     };
 
     const mockCompletion = {
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4.1-nano',
       choices: [
         {
           message: {
@@ -87,7 +87,7 @@ describe('OpenAIService', () => {
       const result = await service.generateCompletion(mockRequest);
 
       expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledWith({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4.1-nano',
         messages: [
           { role: 'system', content: 'You are a helpful assistant' },
           { role: 'user', content: 'Write a short essay' },
@@ -99,7 +99,7 @@ describe('OpenAIService', () => {
       expect(result).toEqual({
         content: 'This is a generated essay.',
         tokens: 150,
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4.1-nano',
         finishReason: 'stop',
       });
     });
@@ -201,7 +201,7 @@ describe('OpenAIService', () => {
       await service.generateCompletion(mockRequest);
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        'Generating completion with model: gpt-4-turbo-preview',
+        'Generating completion with model: gpt-4.1-nano',
       );
       expect(loggerSpy).toHaveBeenCalledWith(
         expect.stringContaining('Completion generated in'),
@@ -267,7 +267,7 @@ describe('OpenAIService', () => {
       );
 
       expect(mockOpenAIInstance.chat.completions.create).toHaveBeenCalledWith({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4.1-nano',
         messages: [
           { role: 'system', content: 'You are a helpful assistant' },
           { role: 'user', content: 'Write a story' },
@@ -283,7 +283,7 @@ describe('OpenAIService', () => {
       expect(onChunkMock).toHaveBeenCalledWith('a time...');
 
       expect(result.content).toBe('Once upon a time...');
-      expect(result.model).toBe('gpt-4-turbo-preview');
+      expect(result.model).toBe('gpt-4.1-nano');
       expect(result.finishReason).toBe('stop');
       expect(result.tokens).toBeGreaterThan(0);
     });
@@ -383,7 +383,7 @@ describe('OpenAIService', () => {
     };
 
     const mockCompletion = {
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4.1-nano',
       choices: [
         {
           message: {
@@ -583,7 +583,7 @@ describe('OpenAIService', () => {
 
     it('should track circuit breaker statistics', async () => {
       const mockCompletion = {
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4.1-nano',
         choices: [
           {
             message: {
