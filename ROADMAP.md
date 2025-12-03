@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-03 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md)
+**Última Atualização:** 2025-12-03 | **Auditoria:** Automated audit (99.5% accuracy)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 173/197 issues concluídas (87.8%)
-**Velocidade:** 6.3 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-05 (2 dias)
+**Progresso Global:** 173/203 issues concluídas (85.2%)
+**Velocidade:** 7.7 issues/dia (últimos 7 dias: 54 issues)
+**ETA Conclusão:** ~2025-12-07 (4 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -153,37 +153,37 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (5/11) - 45%
+### 🔄 M6: Maintenance (5/17) - 29%
 
 **Status:** RECORRENTE
 
 #### Concluídas (5):
 
+- ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
-- ✅ #219 - Setup Redis no Railway (PR #373 - 2025-12-03)
-  - **Infraestrutura:** ioredis + redis.config.ts + health check
-  - **Documentação:** REDIS_SETUP.md (setup local + Railway)
-  - **Desbloqueio:** Habilita issues #220 (BullMQ), #221 (Job API), #222 (UX async)
-  - **Testing:** 873 testes passando, CI/CD 7/7 checks ✅
-- ✅ #374 - Fix TypeORM DataTypeNotSupportedError - Organization.stripeCustomerId (PR #06a217a - 2025-12-03)
-  - **Problema Crítico:** Railway deployment crash (TypeORM não infere tipos de union types `string | null`)
-  - **Solução:** Adicionar tipo explícito `type: 'varchar'` em colunas nullable
-  - **Impacto:** Desbloqueou deploy em produção no Railway
-  - **Issues Relacionadas:** #375-#378 (preventivas para outras entidades)
-- ✅ #379 - Migrar modelos LLM obsoletos para GPT-4.1 nano e Perplexity sonar (2025-12-03)
-  - **OpenAI:** gpt-4-turbo-preview → gpt-4.1-nano (incluindo health check)
-  - **Perplexity:** pplx-7b-online → sonar (simple) + sonar-deep-research (complex)
-  - **Arquitetura:** Seleção dinâmica baseada em contexto de uso
-  - **Economia:** Redução estimada de ~30% custos LLM
-- ✅ Manutenção adicional
+- ✅ #219 - Setup Redis no Railway (desbloqueou #220-#222)
+- ✅ #374 - Fix TypeORM Railway crash (Organization.stripeCustomerId explicit type)
+- ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (7):
+#### Pendentes (12):
 
-- [ ] #21, #40 - Dependências + Dependabot
-- [ ] #186, #220-#224, #248 - Maintenance recorrente
-- [ ] #375-#378 - Fix explicit types nas entidades restantes (User, AuditLog, AnalyticsEvent, outros)
+**P0 - Critical:**
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248, #374-#378
+- [ ] #375-#378 - Fix explicit types entidades restantes (User, AuditLog, AnalyticsEvent)
+
+**P1 - High:**
+
+- [ ] #40 - Atualizar dependências desatualizadas
+- [ ] #220-#222 - Async job queue (BullMQ + Job API + UX async) - READY (desbloqueado)
+
+**P2 - Medium:**
+
+- [ ] #186 - Implementar async queue BullMQ (duplicate of #220?)
+- [ ] #223-#224 - Rotação secrets automática
+- [ ] #248 - Processo: limite tamanho PRs
+- [ ] #321 - Fix monorepo @nestjs/common dependency conflict
+
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#379
 
 ---
 
@@ -244,33 +244,23 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### P0 - URGENTE (Hoje):
+### P0 - CRITICAL (Agora):
 
-1. ✅ **CONCLUÍDO: Correção Testes Backend Multi-Tenancy** - Merged PR #371 (2025-12-02)
-   - ✅ #368 - Fixed **60 tests** across sections + etps modules (controller + service spec)
-   - ✅ #367 - Resolved indirectly by PR #371 (etps.controller.spec.ts - 25 tests passing)
-2. ✅ **CONCLUÍDO: Setup Redis no Railway** - Merged PR #373 (2025-12-03)
-   - ✅ #219 - Infraestrutura Redis configurada (ioredis + health check)
-   - 🔓 **Desbloqueadas:** #220 (BullMQ), #221 (Job API), #222 (UX async)
-3. ✅ **CONCLUÍDO: Fix TypeORM Railway Deployment Crash** - Merged commit #06a217a (2025-12-03)
-   - ✅ #374 - Organization.stripeCustomerId explicit type (desbloqueou deploy)
-   - 📝 **Issues Criadas:** #375-#378 (preventivas para outras entidades)
+1. **Fix TypeORM Explicit Types (#375-#378)** - Prevenir crashes Railway
+   - User, AuditLog, AnalyticsEvent entities (mesmo padrão de #374)
 
-### P1 - Esta Semana (2025-12-02 a 2025-12-07):
+### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
-1. **E2E Tests (#23-#24)** - Iniciar suite completa de testes E2E
-2. UAT scenarios (#92-#95)
-3. Testes de integração adicionais (#82-#84)
+1. **E2E Tests (#24)** - Accessibility tests (Axe-core)
+2. **Async Job Queue (#220-#222)** - BullMQ + Job API + UX async (desbloqueado)
+3. UAT scenarios (#92-#95)
 
-### P2 - Próxima Sprint (Issues Desbloqueadas):
+### P2 - Próxima Sprint:
 
-1. **Async Job Queue (#220-#222)** - ⚡ READY TO START (desbloqueadas por #219)
-   - #220 - Implementar BullMQ para geração assíncrona
-   - #221 - API de status de jobs
-   - #222 - UX assíncrona no frontend
+1. Testes integração adicionais (#82-#84)
 2. Prompt externalization (#215-#218)
 3. Staged rollout strategy (#110)
-4. Maintenance recorrente (#21, #40)
+4. Dependencies update (#40)
 
 ---
 
@@ -278,9 +268,9 @@ M7: ████████████████████  6/6   (100%) �
 
 ### Velocidade (7 dias):
 
-- **Issues fechadas:** 48
-- **Taxa:** 6.3 issues/dia
-- **Tendência:** Acelerando (+9% vs semana anterior)
+- **Issues fechadas:** 54
+- **Taxa:** 7.7 issues/dia
+- **Tendência:** Acelerando (+22% vs semana anterior)
 
 ### Quality Metrics:
 
@@ -304,15 +294,11 @@ M7: ████████████████████  6/6   (100%) �
 ### Auditorias:
 
 - [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md) - 99.5% acurácia
-- [Sections Module Audit](docs/audits/SECTIONS_MODULE_AUDIT.md) - 83% conformidade
 - [Orchestrator Module Audit](docs/audits/ORCHESTRATOR_MODULE_AUDIT.md) - 95% conformidade (APROVADO)
-- [User Module Audit](docs/audits/USER_MODULE_AUDIT.md) - 92% conformidade (APROVADO COND.)
 
-### Documentação:
+### Documentação Técnica:
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura do sistema
-- [PERFORMANCE_BOTTLENECK_ANALYSIS.md](PERFORMANCE_BOTTLENECK_ANALYSIS.md) - Análise de bottlenecks
-- [LOAD_TEST_EXECUTION_PLAYBOOK.md](LOAD_TEST_EXECUTION_PLAYBOOK.md) - Playbook de testes de carga
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura sistema
 - [PRODUCTION_READINESS_REPORT.md](PRODUCTION_READINESS_REPORT.md) - Prontidão produção
 - [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Resumo executivo
 
