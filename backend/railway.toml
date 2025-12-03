@@ -1,9 +1,8 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "backend/Dockerfile"
+builder = "NIXPACKS"
 
 [deploy]
-startCommand = "sh -c 'npm run migration:run && node dist/main'"
+startCommand = "npm run migration:run && npm run start:prod"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
