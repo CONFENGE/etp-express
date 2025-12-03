@@ -71,7 +71,7 @@ export class Organization {
    * Stripe Customer ID for billing integration.
    * Nullable for organizations without active subscription.
    */
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   stripeCustomerId: string | null;
 
   @CreateDateColumn()
