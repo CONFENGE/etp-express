@@ -4,9 +4,9 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 171/197 issues concluídas (86.8%)
+**Progresso Global:** 172/197 issues concluídas (87.3%)
 **Velocidade:** 6.3 issues/dia (últimos 7 dias)
-**ETA Conclusão:** ~2025-12-05 (3 dias)
+**ETA Conclusão:** ~2025-12-05 (2 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -14,7 +14,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
+M6: ███░░░░░░░░░░░░░░░░░  3/11  (27%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -153,19 +153,24 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (2/11) - 18%
+### 🔄 M6: Maintenance (3/11) - 27%
 
 **Status:** RECORRENTE
 
-#### Concluídas (2):
+#### Concluídas (3):
 
 - ✅ #181 - Migration-aware readiness probe
+- ✅ #219 - Setup Redis no Railway (PR #373 - 2025-12-03)
+  - **Infraestrutura:** ioredis + redis.config.ts + health check
+  - **Documentação:** REDIS_SETUP.md (setup local + Railway)
+  - **Desbloqueio:** Habilita issues #220 (BullMQ), #221 (Job API), #222 (UX async)
+  - **Testing:** 873 testes passando, CI/CD 7/7 checks ✅
 - ✅ Manutenção adicional
 
-#### Pendentes (9):
+#### Pendentes (8):
 
 - [ ] #21, #40 - Dependências + Dependabot
-- [ ] #186, #219-#224, #248 - Maintenance recorrente
+- [ ] #186, #220-#224, #248 - Maintenance recorrente
 
 **Issues:** #21, #40, #181, #186, #219-#224, #248
 
@@ -233,6 +238,9 @@ M7: ████████████████████  6/6   (100%) �
 1. ✅ **CONCLUÍDO: Correção Testes Backend Multi-Tenancy** - Merged PR #371 (2025-12-02)
    - ✅ #368 - Fixed **60 tests** across sections + etps modules (controller + service spec)
    - ✅ #367 - Resolved indirectly by PR #371 (etps.controller.spec.ts - 25 tests passing)
+2. ✅ **CONCLUÍDO: Setup Redis no Railway** - Merged PR #373 (2025-12-03)
+   - ✅ #219 - Infraestrutura Redis configurada (ioredis + health check)
+   - 🔓 **Desbloqueadas:** #220 (BullMQ), #221 (Job API), #222 (UX async)
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
@@ -240,11 +248,15 @@ M7: ████████████████████  6/6   (100%) �
 2. UAT scenarios (#92-#95)
 3. Testes de integração adicionais (#82-#84)
 
-### P2 - Próxima Sprint:
+### P2 - Próxima Sprint (Issues Desbloqueadas):
 
-1. Prompt externalization (#215-#218)
-2. Staged rollout strategy (#110)
-3. Maintenance recorrente (#21, #40)
+1. **Async Job Queue (#220-#222)** - ⚡ READY TO START (desbloqueadas por #219)
+   - #220 - Implementar BullMQ para geração assíncrona
+   - #221 - API de status de jobs
+   - #222 - UX assíncrona no frontend
+2. Prompt externalization (#215-#218)
+3. Staged rollout strategy (#110)
+4. Maintenance recorrente (#21, #40)
 
 ---
 
@@ -252,7 +264,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ### Velocidade (7 dias):
 
-- **Issues fechadas:** 47
+- **Issues fechadas:** 48
 - **Taxa:** 6.3 issues/dia
 - **Tendência:** Acelerando (+9% vs semana anterior)
 
