@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-02 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md)
+**Última Atualização:** 2025-12-03 | **Auditoria:** [ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md](ROADMAP_AUDIT_2025-12-01_COMPREHENSIVE.md)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 170/197 issues concluídas (86.3%)
+**Progresso Global:** 171/197 issues concluídas (86.8%)
 **Velocidade:** 6.3 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-05 (3 dias)
 
@@ -13,7 +13,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ██████░░░░░░░░░░░░░░  8/25  (32%)  📚 E2E Testing & Documentation
+M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
 M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -114,13 +114,18 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (8/25) - 32%
+### 📚 M5: E2E Testing & Documentation (9/25) - 36%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
-#### Concluídas (8):
+#### Concluídas (9):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
+- ✅ #23 - E2E Test - Critical Flow Complete (PR #372 - 2025-12-03)
+  - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 75% técnico / 100% qualitativo)
+  - **Test Suite:** 537 linhas (10-step critical flow: login → create ETP → AI generation → save → export PDF)
+  - **Qualidade:** API mocking ($0 cost), screenshots on failure, resource cleanup
+  - **Post-Merge:** ✅ Layer 1-3 validation passed (build+tests, CI pipeline)
 - ✅ #34 - JSDoc completo em OrchestratorService e agentes (PR #366)
 - ✅ #48 - UAT (parent - desmembrada em #92-#95)
 - ✅ #367 - Fix etps.controller.spec.ts - organizationId parameter missing (✅ RESOLVED by PR #371 - 2025-12-02)
@@ -129,11 +134,11 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #353 - Configure Puppeteer for E2E Testing
 - ✅ #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property (PR #370)
 
-#### Pendentes (17):
+#### Pendentes (16):
 
 **Testes E2E:**
 
-- [ ] #23-#24 - E2E test suite (auth, ETPs, sections)
+- [ ] #24 - E2E Accessibility tests (Axe-core)
 - [ ] #82-#84 - Testes integração adicionais
 - [ ] #92-#95 - UAT scenarios
 
