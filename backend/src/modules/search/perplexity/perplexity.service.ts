@@ -225,7 +225,7 @@ export class PerplexityService {
       }
 
       return response;
-    } catch (error) {
+    } catch {
       this.logger.error('Perplexity API failed', { query, model });
       return this.getFallbackResponse();
     }
