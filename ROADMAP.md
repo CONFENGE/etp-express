@@ -4,7 +4,7 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 172/197 issues concluídas (87.3%)
+**Progresso Global:** 173/197 issues concluídas (87.8%)
 **Velocidade:** 6.3 issues/dia (últimos 7 dias)
 **ETA Conclusão:** ~2025-12-05 (2 dias)
 
@@ -14,7 +14,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ███░░░░░░░░░░░░░░░░░  3/11  (27%)  🔄 Maintenance
+M6: ███████░░░░░░░░░░░░░  4/11  (36%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -153,11 +153,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (3/11) - 27%
+### 🔄 M6: Maintenance (4/11) - 36%
 
 **Status:** RECORRENTE
 
-#### Concluídas (3):
+#### Concluídas (4):
 
 - ✅ #181 - Migration-aware readiness probe
 - ✅ #219 - Setup Redis no Railway (PR #373 - 2025-12-03)
@@ -165,14 +165,20 @@ M7: ████████████████████  6/6   (100%) �
   - **Documentação:** REDIS_SETUP.md (setup local + Railway)
   - **Desbloqueio:** Habilita issues #220 (BullMQ), #221 (Job API), #222 (UX async)
   - **Testing:** 873 testes passando, CI/CD 7/7 checks ✅
+- ✅ #374 - Fix TypeORM DataTypeNotSupportedError - Organization.stripeCustomerId (PR #06a217a - 2025-12-03)
+  - **Problema Crítico:** Railway deployment crash (TypeORM não infere tipos de union types `string | null`)
+  - **Solução:** Adicionar tipo explícito `type: 'varchar'` em colunas nullable
+  - **Impacto:** Desbloqueou deploy em produção no Railway
+  - **Issues Relacionadas:** #375-#378 (preventivas para outras entidades)
 - ✅ Manutenção adicional
 
-#### Pendentes (8):
+#### Pendentes (7):
 
 - [ ] #21, #40 - Dependências + Dependabot
 - [ ] #186, #220-#224, #248 - Maintenance recorrente
+- [ ] #375-#378 - Fix explicit types nas entidades restantes (User, AuditLog, AnalyticsEvent, outros)
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #374-#378
 
 ---
 
@@ -241,6 +247,9 @@ M7: ████████████████████  6/6   (100%) �
 2. ✅ **CONCLUÍDO: Setup Redis no Railway** - Merged PR #373 (2025-12-03)
    - ✅ #219 - Infraestrutura Redis configurada (ioredis + health check)
    - 🔓 **Desbloqueadas:** #220 (BullMQ), #221 (Job API), #222 (UX async)
+3. ✅ **CONCLUÍDO: Fix TypeORM Railway Deployment Crash** - Merged commit #06a217a (2025-12-03)
+   - ✅ #374 - Organization.stripeCustomerId explicit type (desbloqueou deploy)
+   - 📝 **Issues Criadas:** #375-#378 (preventivas para outras entidades)
 
 ### P1 - Esta Semana (2025-12-02 a 2025-12-07):
 
