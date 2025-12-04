@@ -4,7 +4,7 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 177/205 issues concluídas (86.3%)
+**Progresso Global:** 178/205 issues concluídas (86.8%)
 **Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
 **ETA Conclusão:** ~2025-12-07 (3 dias)
 
@@ -174,11 +174,14 @@ M7: ████████████████████  6/6   (100%) �
 **P1 - High:**
 
 - [ ] #40 - Atualizar dependências desatualizadas
-- [ ] #220-#222 - Async job queue (BullMQ + Job API + UX async) - READY (desbloqueado)
+- [ ] #220-#222 - Async job queue (BullMQ + Job API + UX async) - IN PROGRESS
+  - ✅ #220 - BullMQ implementation (PR #386) - DONE
+  - [ ] #221 - Job status API
+  - [ ] #222 - Frontend async UX
 
 **P2 - Medium:**
 
-- [ ] #186 - Implementar async queue BullMQ (duplicate of #220?)
+- [ ] #186 - Implementar async queue BullMQ (duplicate of #220 - DONE)
 - [ ] #223-#224 - Rotação secrets automática
 - [ ] #248 - Processo: limite tamanho PRs
 - [ ] #321 - Fix monorepo @nestjs/common dependency conflict
@@ -262,7 +265,7 @@ M7: ████████████████████  6/6   (100%) �
 ### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
 1. **E2E Tests (#24)** - Accessibility tests (Axe-core)
-2. **Async Job Queue (#220-#222)** - BullMQ + Job API + UX async (desbloqueado)
+2. **Async Job Queue (#220-#222)** - ✅ #220 BullMQ done, #221-#222 pending
 3. UAT scenarios (#92-#95)
 
 ### P2 - Próxima Sprint:
