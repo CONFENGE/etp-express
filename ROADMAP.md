@@ -4,7 +4,7 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 176/205 issues concluídas (85.9%)
+**Progresso Global:** 177/205 issues concluídas (86.3%)
 **Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
 **ETA Conclusão:** ~2025-12-07 (3 dias)
 
@@ -14,7 +14,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ████████░░░░░░░░░░░░  8/20  (40%)  🔄 Maintenance
+M6: █████████░░░░░░░░░░░  9/20  (45%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -153,11 +153,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (8/20) - 40%
+### 🔄 M6: Maintenance (9/20) - 45%
 
 **Status:** RECORRENTE
 
-#### Concluídas (8):
+#### Concluídas (9):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -165,14 +165,11 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #374 - Fix TypeORM Railway crash (Organization.stripeCustomerId explicit type)
 - ✅ #375 - Fix TypeORM User entity explicit types (PR #380 - 2025-12-03)
 - ✅ #376 - Fix TypeORM AuditLog entity explicit types (PR #383 - 2025-12-03)
-- ✅ #377 - Fix TypeORM AnalyticsEvent entity explicit types (PR #384 - 2025-12-03)
+- ✅ #377 - Fix TypeORM AnalyticsEvent entity explicit types (PR #384 - 2025-12-04)
+- ✅ #378 - Fix TypeORM explicit types entidades restantes (PR #385 - 2025-12-04)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (12):
-
-**P0 - Critical:**
-
-- [ ] #378 - Fix explicit types entidades restantes (EtpVersion, Etp, SecretAccessLog, SimilarContract)
+#### Pendentes (11):
 
 **P1 - High:**
 
@@ -252,13 +249,15 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### P0 - CRITICAL (Agora):
+### ✅ P0 - CRITICAL (COMPLETO):
 
-1. **Fix TypeORM Explicit Types (#378)** - Prevenir crashes Railway
-   - ✅ #375 - User entity (concluído - PR #380 - 2025-12-03)
-   - ✅ #376 - AuditLog entity (concluído - PR #383 - 2025-12-03)
-   - ✅ #377 - AnalyticsEvent entity (concluído - PR #384 - 2025-12-04)
-   - [ ] #378 - Remaining entities (EtpVersion, Etp, SecretAccessLog, SimilarContract)
+1. **Fix TypeORM Explicit Types** - Prevenir crashes Railway ✅ SÉRIE COMPLETA
+   - ✅ #374 - Organization entity (PR #??? - 2025-12-03)
+   - ✅ #375 - User entity (PR #380 - 2025-12-03)
+   - ✅ #376 - AuditLog entity (PR #383 - 2025-12-03)
+   - ✅ #377 - AnalyticsEvent entity (PR #384 - 2025-12-04)
+   - ✅ #378 - Remaining entities (PR #385 - 2025-12-04)
+   - **Total:** 17 campos nullable corrigidos em 8 entidades críticas
 
 ### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
