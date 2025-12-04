@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-03 | **Auditoria:** Automated audit (99.5% accuracy)
+**Última Atualização:** 2025-12-04 | **Auditoria:** Automated audit (99.5% accuracy)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 174/205 issues concluídas (84.9%)
-**Velocidade:** 7.7 issues/dia (últimos 7 dias: 54 issues)
-**ETA Conclusão:** ~2025-12-07 (4 dias)
+**Progresso Global:** 176/205 issues concluídas (85.9%)
+**Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
+**ETA Conclusão:** ~2025-12-07 (3 dias)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -14,7 +14,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ██████░░░░░░░░░░░░░░  6/20  (30%)  🔄 Maintenance
+M6: ████████░░░░░░░░░░░░  8/20  (40%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -153,24 +153,26 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (6/20) - 30%
+### 🔄 M6: Maintenance (8/20) - 40%
 
 **Status:** RECORRENTE
 
-#### Concluídas (6):
+#### Concluídas (8):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
 - ✅ #219 - Setup Redis no Railway (desbloqueou #220-#222)
 - ✅ #374 - Fix TypeORM Railway crash (Organization.stripeCustomerId explicit type)
 - ✅ #375 - Fix TypeORM User entity explicit types (PR #380 - 2025-12-03)
+- ✅ #376 - Fix TypeORM AuditLog entity explicit types (PR #383 - 2025-12-03)
+- ✅ #377 - Fix TypeORM AnalyticsEvent entity explicit types (PR #384 - 2025-12-03)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (14):
+#### Pendentes (12):
 
 **P0 - Critical:**
 
-- [ ] #376-#378 - Fix explicit types entidades restantes (AuditLog, AnalyticsEvent, remaining)
+- [ ] #378 - Fix explicit types entidades restantes (EtpVersion, Etp, SecretAccessLog, SimilarContract)
 
 **P1 - High:**
 
@@ -252,11 +254,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P0 - CRITICAL (Agora):
 
-1. **Fix TypeORM Explicit Types (#376-#378)** - Prevenir crashes Railway
-   - ✅ #375 - User entity (concluído - PR #380)
-   - [ ] #376 - AuditLog entity (4 campos)
-   - [ ] #377 - AnalyticsEvent entity (6 campos)
-   - [ ] #378 - Remaining entities (múltiplos arquivos)
+1. **Fix TypeORM Explicit Types (#378)** - Prevenir crashes Railway
+   - ✅ #375 - User entity (concluído - PR #380 - 2025-12-03)
+   - ✅ #376 - AuditLog entity (concluído - PR #383 - 2025-12-03)
+   - ✅ #377 - AnalyticsEvent entity (concluído - PR #384 - 2025-12-04)
+   - [ ] #378 - Remaining entities (EtpVersion, Etp, SecretAccessLog, SimilarContract)
 
 ### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
