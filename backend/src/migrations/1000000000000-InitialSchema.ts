@@ -22,8 +22,8 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - secret_access_logs
  * - similar_contracts
  */
-export class InitialSchema0000000000000 implements MigrationInterface {
-  name = 'InitialSchema0000000000000';
+export class InitialSchema1000000000000 implements MigrationInterface {
+  name = 'InitialSchema1000000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create organization table (Multi-Tenancy)
