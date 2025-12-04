@@ -20,11 +20,19 @@ export class AddOrganizationToUsers1733098000000 implements MigrationInterface {
   name = 'AddOrganizationToUsers1733098000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Step 1: Add organizationId column (nullable temporarily)
-    await queryRunner.query(`
-      ALTER TABLE "users"
-      ADD COLUMN "organizationId" uuid;
-    `);
+    // Check if column already exists (idempotency)
+    const table = await queryRunner.getTable('users');
+    const hasOrganizationIdColumn = table?.columns.some(
+      (col) => col.name === 'organizationId',
+    );
+
+    // Step 1: Add organizationId column (nullable temporarily) - only if not exists
+    if (!hasOrganizationIdColumn) {
+      await queryRunner.query(`
+        ALTER TABLE "users"
+        ADD COLUMN "organizationId" uuid;
+      `);
+    }
 
     // Step 2: Create a default organization for existing users
     // This ensures data integrity during migration
@@ -55,36 +63,50 @@ export class AddOrganizationToUsers1733098000000 implements MigrationInterface {
         `)
           )[0].id;
 
-    // Step 3: Update all existing users to have the default organization
+    // Step 3: Update all existing users to have the default organization (always safe)
     await queryRunner.query(`
       UPDATE "users"
       SET "organizationId" = '${defaultOrgId}'
       WHERE "organizationId" IS NULL;
     `);
 
-    // Step 4: Make organizationId NOT NULL
-    await queryRunner.query(`
-      ALTER TABLE "users"
-      ALTER COLUMN "organizationId" SET NOT NULL;
-    `);
+    // Step 4: Make organizationId NOT NULL (only if column was just created)
+    if (!hasOrganizationIdColumn) {
+      await queryRunner.query(`
+        ALTER TABLE "users"
+        ALTER COLUMN "organizationId" SET NOT NULL;
+      `);
+    }
 
-    // Step 5: Add foreign key constraint with ON DELETE RESTRICT
+    // Step 5: Add foreign key constraint with ON DELETE RESTRICT (idempotent)
     // RESTRICT prevents deletion of an organization that has users
-    await queryRunner.query(`
-      ALTER TABLE "users"
-      ADD CONSTRAINT "FK_users_organizationId"
-      FOREIGN KEY ("organizationId")
-      REFERENCES "organizations"("id")
-      ON DELETE RESTRICT;
-    `);
+    const hasForeignKey = table?.foreignKeys.some(
+      (fk) => fk.name === 'FK_users_organizationId',
+    );
 
-    // Step 6: Create index on organizationId for efficient filtering
-    await queryRunner.query(`
-      CREATE INDEX "IDX_users_organizationId"
-      ON "users" ("organizationId");
-    `);
+    if (!hasForeignKey) {
+      await queryRunner.query(`
+        ALTER TABLE "users"
+        ADD CONSTRAINT "FK_users_organizationId"
+        FOREIGN KEY ("organizationId")
+        REFERENCES "organizations"("id")
+        ON DELETE RESTRICT;
+      `);
+    }
 
-    // Step 7: Remove orgao column (breaking change)
+    // Step 6: Create index on organizationId for efficient filtering (idempotent)
+    const hasIndex = table?.indices.some(
+      (idx) => idx.name === 'IDX_users_organizationId',
+    );
+
+    if (!hasIndex) {
+      await queryRunner.query(`
+        CREATE INDEX "IDX_users_organizationId"
+        ON "users" ("organizationId");
+      `);
+    }
+
+    // Step 7: Remove orgao column (breaking change) - always safe with IF EXISTS
     await queryRunner.query(`
       ALTER TABLE "users"
       DROP COLUMN IF EXISTS "orgao";
