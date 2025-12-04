@@ -1,40 +1,32 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 23:15 UTC | **Auditoria:** Issue #390 E2E validation - Backend crash detected (pgvector migration)
+**Última Atualização:** 2025-12-04 23:50 UTC | **Auditoria:** Issues #400 + #402 RESOLVIDAS - Backend estável
 
 ## 📊 Status Atual
 
-**Progresso Global:** 181/210 issues concluídas (86.2%)
-**Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
-**ETA Conclusão:** ~2025-12-09 (5 dias - quality-first approach)
-**⚠️ Deploy Status:** Backend production crashando - requer hotfix imediato (#400)
+**Progresso Global:** 183/210 issues concluídas (87.1%)
+**Velocidade:** 8.0 issues/dia (últimos 7 dias: 56 issues)
+**ETA Conclusão:** ~2025-12-08 (4 dias - quality-first approach)
+**✅ Deploy Status:** Backend production estável - crashes resolvidos (#400 + #402)
 
 ## 🚨 Railway Deploy Status
 
 **Bloqueadores Ativos:**
 
-- 🔴 **#400 - [P0][HOTFIX] Backend crashando - CreateLegislationTable migration** → **CRÍTICO** (2025-12-04 23:15 UTC)
-  - **Status:** Backend production completamente inoperante
-  - **Root Cause:** Migration usa tipo `vector(1536)` sem extensão pgvector
-  - **Error:** `QueryFailedError: column "embedding" does not exist (code 42703)`
-  - **Impacto:** 100% funcionalidades backend indisponíveis
-  - **Solução:** Desabilitar migration temporariamente (`.disabled`)
-  - **ETA:** 30 min (hotfix imediato)
-  - **Relacionado:** #387 (solução definitiva pgvector)
-
 - ⏳ #387 - pgvector migration → **EM MIGRAÇÃO** (ETA: 8 horas)
   - Status: Migração para PostgreSQL template com pgvector iniciada
-  - **⚠️ Workaround anterior INEFICAZ:** Migration ainda ativa em production
-  - Impacto: RAG Module bloqueado + Backend crashando (#400)
+  - **✅ Workaround #400 aplicado:** Migration CreateLegislationTable desabilitada
+  - Impacto: RAG Module bloqueado (funcionalidade ainda não crítica)
+  - Backend: Operacional com workaround temporário
 
-- ⚠️ #390 - [P1] Validação End-to-End Deploy Railway → **PAUSADA**
-  - Status: Validação E2E executada, detectou crash backend (#400)
+- 🟡 #390 - [P1] Validação End-to-End Deploy Railway → **DESBLOQUEADA**
+  - Status: Aguardando reexecução após resolução #400
   - Validation Report: `scripts/validation-results-20251204-104000.md`
-  - Taxa de Sucesso: 0% (0/16 critérios validados)
-  - Aguardando: Resolução de #400 para reexecutar validação completa
+  - Próximo passo: Reexecutar validação completa com backend operacional
+  - **Nota:** Nova issue detectada (AddOrganizationToUsers migration - coluna duplicada)
 
 - 🟡 #401 - [P2] Investigar discrepância Health endpoint (JSON vs text/plain)
-  - Status: Issue criada, bloqueada por #400
+  - Status: Desbloqueada para execução
   - Problema: Health endpoint retorna texto "OK" ao invés de JSON estruturado
   - Impacto: Observabilidade comprometida
 
@@ -43,14 +35,25 @@
 - ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
 - ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
 - ✅ #396 - Database schema vazio → **RESOLVIDO** (2025-12-04 22:41 UTC)
+- ✅ #400 - [P0][HOTFIX] Backend crashando - CreateLegislationTable migration → **RESOLVIDO** (2025-12-04 23:35 UTC)
+  - **Solução:** Migration desabilitada (.disabled) - workaround temporário
+  - **Commit:** 5e8b891
+  - **Resultado:** Backend production operacional, health check 200 OK
+  - **Nota:** Solução definitiva em #387 (pgvector migration)
+- ✅ #402 - [P0][HOTFIX] AddOrganizationToUsers migration causing crash loops → **RESOLVIDO** (2025-12-04 23:50 UTC)
+  - **Solução:** Migration idempotente (check-before-create pattern)
+  - **Commit:** f75ea52
+  - **Resultado:** Backend estável, startup limpo sem retries
+  - **Impacto:** Eliminados crash loops e startup delays (~6-10s reduzidos a <2s)
 
 **Novas Issues Criadas (2025-12-04):**
 
-- #390 - [P1] Validação End-to-End Deploy Railway (PAUSADA - aguardando #400)
+- #390 - [P1] Validação End-to-End Deploy Railway (DESBLOQUEADA - #400 + #402 resolvidos)
 - #391 - [P2] Implementar API de Status de Jobs Assíncronos
 - #392 - [P3] Documentar processo de deploy Railway completo
-- #400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable (CRÍTICO)
+- ~~#400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable~~ (✅ RESOLVIDO)
 - #401 - [P2] Investigar discrepância Health endpoint JSON vs text/plain
+- ~~#402 - [P0][HOTFIX] Fix AddOrganizationToUsers migration idempotency~~ (✅ RESOLVIDO)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
