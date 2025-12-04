@@ -19,11 +19,11 @@ export class AnalyticsEvent {
   @Index()
   eventName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Index()
   userId: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   etpId: string;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -37,16 +37,16 @@ export class AnalyticsEvent {
     [key: string]: unknown;
   };
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   sessionId: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   ipAddress: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   userAgent: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   referer: string;
 
   @CreateDateColumn()
