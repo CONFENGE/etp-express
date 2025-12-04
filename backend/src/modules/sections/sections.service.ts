@@ -5,7 +5,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Repository } from 'typeorm';
+import { Queue } from 'bullmq';
 import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
 import { Etp } from '../../entities/etp.entity';
 import { GenerateSectionDto } from './dto/generate-section.dto';
@@ -13,6 +15,7 @@ import { UpdateSectionDto } from './dto/update-section.dto';
 import { OrchestratorService } from '../orchestrator/orchestrator.service';
 import { EtpsService } from '../etps/etps.service';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { GenerateSectionJobData } from './sections.processor';
 
 /**
  * Service responsible for managing ETP sections and coordinating AI-powered content generation.
@@ -27,13 +30,15 @@ import { DISCLAIMER } from '../../common/constants/messages';
  *
  * Architecture notes:
  * - Uses TypeORM repositories for database operations on EtpSection entities
+ * - Uses BullMQ for asynchronous AI generation (Issue #220)
  * - Integrates with OrchestratorService for all AI generation and validation
  * - Coordinates with EtpsService for authorization checks and completion tracking
  * - Implements section ordering and required section flagging
  *
- * Generation is currently synchronous but could be moved to a queue-based
- * architecture for better scalability and user experience.
+ * Generation is now asynchronous via BullMQ queue for better scalability and UX.
+ * HTTP requests return immediately with a job ID, and generation happens in background workers.
  *
+ * @see SectionsProcessor - Background worker for AI generation jobs
  * @see OrchestratorService - AI orchestration for content generation
  * @see EtpsService - Parent ETP management and authorization
  * @see EtpSection - Section entity model
@@ -47,24 +52,27 @@ export class SectionsService {
     private sectionsRepository: Repository<EtpSection>,
     @InjectRepository(Etp)
     private etpsRepository: Repository<Etp>,
+    @InjectQueue('sections') private sectionsQueue: Queue,
     private orchestratorService: OrchestratorService,
     private etpsService: EtpsService,
   ) {}
 
   /**
-   * Generates a new ETP section with AI-powered content.
+   * Generates a new ETP section with AI-powered content asynchronously via BullMQ.
    *
    * @remarks
-   * This method orchestrates the complete section generation workflow:
+   * This method orchestrates the async section generation workflow:
    * 1. Verifies ETP exists and user has access (via EtpsService)
    * 2. Checks that section type doesn't already exist (prevents duplicates)
    * 3. Creates section entity with GENERATING status
-   * 4. Invokes OrchestratorService for AI content generation
-   * 5. Updates section with generated content and validation results
-   * 6. Recalculates parent ETP completion percentage
+   * 4. Queues generation job in BullMQ (returns immediately)
+   * 5. Returns section with jobId in metadata for progress tracking
    *
-   * Generation is synchronous and may take 30-60 seconds. If generation fails,
-   * the section status is set to PENDING with error message in content field.
+   * Generation is now **asynchronous** (Issue #220):
+   * - HTTP request returns in <100ms with section and jobId
+   * - AI generation happens in background worker (SectionsProcessor)
+   * - Client can poll job status via jobId (future: Issue #221)
+   * - Progress updates tracked: 10% → 90% → 95% → 100%
    *
    * Section ordering is automatically managed, and required section flags
    * are set based on section type.
@@ -72,11 +80,11 @@ export class SectionsService {
    * @param etpId - Parent ETP unique identifier
    * @param generateDto - Section generation parameters (type, title, user input, context)
    * @param userId - Current user ID for authorization check
-   * @returns Created section entity with AI-generated content and metadata
+   * @param organizationId - Organization ID for multi-tenancy
+   * @returns Created section entity with GENERATING status and jobId in metadata
    * @throws {NotFoundException} If parent ETP not found
    * @throws {ForbiddenException} If user doesn't own the ETP
    * @throws {BadRequestException} If section of this type already exists
-   * @throws {Error} If AI generation fails (section saved with PENDING status)
    *
    * @example
    * ```ts
@@ -88,12 +96,13 @@ export class SectionsService {
    *     userInput: 'Necessidade de modernizar infraestrutura de TI',
    *     context: { department: 'TI' }
    *   },
-   *   'user-uuid-456'
+   *   'user-uuid-456',
+   *   'org-uuid-789'
    * );
    *
-   * console.log(section.status); // 'generated'
-   * console.log(section.content); // AI-generated markdown content
-   * console.log(section.metadata.warnings); // Validation warnings
+   * console.log(section.status); // 'generating'
+   * console.log(section.metadata.jobId); // 'bull:sections:123'
+   * // Client polls /jobs/:jobId for progress
    * ```
    */
   async generateSection(
@@ -102,7 +111,9 @@ export class SectionsService {
     userId: string,
     organizationId: string,
   ): Promise<EtpSection> {
-    this.logger.log(`Generating section ${generateDto.type} for ETP ${etpId}`);
+    this.logger.log(
+      `Queueing section generation ${generateDto.type} for ETP ${etpId}`,
+    );
 
     // Verify ETP exists and user has access (minimal loading - only needs metadata)
     const etp = await this.etpsService.findOneMinimal(
@@ -126,7 +137,7 @@ export class SectionsService {
       );
     }
 
-    // Create section entity with pending status
+    // Create section entity with GENERATING status
     const section = this.sectionsRepository.create({
       etpId,
       type: generateDto.type,
@@ -139,49 +150,41 @@ export class SectionsService {
 
     const savedSection = await this.sectionsRepository.save(section);
 
-    // Generate content asynchronously (in real implementation, this could be a queue job)
-    try {
-      const generationResult = await this.orchestratorService.generateSection({
+    // Queue generation job in BullMQ (async)
+    const job = await this.sectionsQueue.add(
+      'generate',
+      {
+        etpId,
         sectionType: generateDto.type,
         title: generateDto.title,
-        userInput: generateDto.userInput || '',
+        userInput: generateDto.userInput,
         context: generateDto.context,
-        etpData: {
-          objeto: etp.objeto,
-          metadata: etp.metadata,
+        userId,
+        organizationId,
+        sectionId: savedSection.id,
+      } as GenerateSectionJobData,
+      {
+        attempts: 3, // Retry up to 3 times on failure
+        backoff: {
+          type: 'exponential',
+          delay: 5000, // Start with 5s delay, then 10s, 20s
         },
-      });
+        removeOnComplete: 100, // Keep last 100 completed jobs for debugging
+        removeOnFail: 1000, // Keep last 1000 failed jobs for analysis
+      },
+    );
 
-      // Update section with generated content
-      savedSection.content = generationResult.content;
-      savedSection.status = SectionStatus.GENERATED;
-      savedSection.metadata = {
-        ...generationResult.metadata,
-        warnings: generationResult.warnings,
-      };
-      savedSection.validationResults = this.convertValidationResults(
-        generationResult.validationResults,
-      );
+    // Update section metadata with job ID
+    savedSection.metadata = {
+      jobId: job.id,
+      queuedAt: new Date().toISOString(),
+    };
 
-      await this.sectionsRepository.save(savedSection);
+    await this.sectionsRepository.save(savedSection);
 
-      // Update ETP completion percentage
-      await this.etpsService.updateCompletionPercentage(etpId);
-
-      this.logger.log(`Section generated successfully: ${savedSection.id}`);
-    } catch (error) {
-      this.logger.error(
-        `Error generating section: ${error.message}`,
-        error.stack,
-      );
-
-      // Update section with error status
-      savedSection.status = SectionStatus.PENDING;
-      savedSection.content = `Erro ao gerar conteúdo: ${error.message}`;
-      await this.sectionsRepository.save(savedSection);
-
-      throw error;
-    }
+    this.logger.log(
+      `Section generation queued with job ID ${job.id}: ${savedSection.id}`,
+    );
 
     return savedSection;
   }
