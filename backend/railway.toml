@@ -1,5 +1,6 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "rm -rf node_modules && npm ci && npm run build"
 
 [deploy]
 startCommand = "npm run migration:run && npm run start:prod"
