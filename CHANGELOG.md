@@ -13,6 +13,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### ⚡ Async Processing & Performance (2025-12-04)
+
+- ✅ #220 - Implementar BullMQ para geração assíncrona de seções (PR #386)
+  - **Migração de processamento síncrono → assíncrono** eliminando timeouts HTTP (30-60s → <100ms)
+  - BullMQ instalado com configuração global de Redis (`@nestjs/bullmq` + `bullmq`)
+  - `SectionsProcessor` criado para processamento background de geração AI
+  - Progress tracking: 10% → 90% → 95% → 100% (habilita feedback em tempo real)
+  - Retry automático: 3 tentativas com backoff exponencial (5s → 10s → 20s)
+  - Error handling robusto: atualiza status para PENDING em falhas
+  - `SectionsService.generateSection()` retorna `jobId` imediatamente
+  - Múltiplos workers podem processar jobs em paralelo (escalabilidade)
+  - **Breaking Change:** API agora retorna `jobId` ao invés de conteúdo final
+  - **Próximos passos:** Issue #221 (API de status de jobs), #222 (UX assíncrona frontend)
+  - 77/77 testes passando no módulo sections (incluindo 9 novos testes do processor)
+  - Coverage: 98.81% no módulo sections
+
 #### 🏢 Multi-Tenancy B2G (2025-12-01)
 
 - ✅ #354 - Infraestrutura de Organizations para Multi-Tenancy B2G (PR #360)
