@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 | **Auditoria:** Automated audit (99.5% accuracy)
+**Última Atualização:** 2025-12-04 02:00 UTC | **Auditoria:** Automated audit (99.5% accuracy)
 
 ## 📊 Status Atual
 
@@ -153,15 +153,19 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (9/20) - 45%
+### 🔄 M6: Maintenance (10/21) - 48%
 
 **Status:** RECORRENTE
 
-#### Concluídas (9):
+#### Concluídas (10):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
 - ✅ #219 - Setup Redis no Railway (desbloqueou #220-#222)
+- ✅ #220 - BullMQ implementation (PR #386 - MERGED 2025-12-04)
+  - ✅ Fix: BullMQ config usa redisConfig (parseia REDIS_URL do Railway)
+  - ✅ Fix: Frontend railway.toml startCommand (npx serve)
+  - ✅ Railway: Redis service deployed + REDIS_URL configured
 - ✅ #374 - Fix TypeORM Railway crash (Organization.stripeCustomerId explicit type)
 - ✅ #375 - Fix TypeORM User entity explicit types (PR #380 - 2025-12-03)
 - ✅ #376 - Fix TypeORM AuditLog entity explicit types (PR #383 - 2025-12-03)
@@ -169,13 +173,21 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #378 - Fix TypeORM explicit types entidades restantes (PR #385 - 2025-12-04)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (11):
+#### Pendentes (12):
+
+**P0 - Critical:**
+
+- [ ] #387 - [P0] Migrar PostgreSQL para versão com suporte a pgvector
+  - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
+  - **Impacto:** RAG Module não funcional, deploy bloqueado
+  - **Solução:** Deploy template pgvector + pg_backup/restore (~6-8h)
+  - **Alternativa:** Workaround temporário (desabilitar migration + RAG module)
 
 **P1 - High:**
 
 - [ ] #40 - Atualizar dependências desatualizadas
-- [ ] #220-#222 - Async job queue (BullMQ + Job API + UX async) - IN PROGRESS
-  - ✅ #220 - BullMQ implementation (PR #386) - DONE
+- [ ] #221-#222 - Async job queue (Job API + UX async)
+  - ✅ #220 - BullMQ implementation (PR #386) - MERGED
   - [ ] #221 - Job status API
   - [ ] #222 - Frontend async UX
 
@@ -191,7 +203,7 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #381 - Replace console statements with structured logging (4 warnings)
 - [ ] #382 - Replace 'any' types in OrchestratorService (14 warnings)
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382, #387
 
 ---
 
@@ -252,7 +264,14 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### ✅ P0 - CRITICAL (COMPLETO):
+### 🚨 P0 - CRITICAL (AÇÃO IMEDIATA):
+
+1. **#387 - Migrar PostgreSQL para pgvector** - BLOQUEIA DEPLOY ⚠️
+   - **Status:** Issue criada, aguardando decisão (migração vs workaround)
+   - **Prazo:** Imediato (deploy production bloqueado)
+   - **Estimativa:** 6-8h (migração completa) ou 1h (workaround)
+
+### ✅ P0 - CRITICAL COMPLETADAS:
 
 1. **Fix TypeORM Explicit Types** - Prevenir crashes Railway ✅ SÉRIE COMPLETA
    - ✅ #374 - Organization entity (PR #??? - 2025-12-03)
@@ -262,11 +281,18 @@ M7: ████████████████████  6/6   (100%) �
    - ✅ #378 - Remaining entities (PR #385 - 2025-12-04)
    - **Total:** 17 campos nullable corrigidos em 8 entidades críticas
 
+2. **Fix Railway Deploy Crashes** - ✅ RESOLVIDOS (3/4 problemas)
+   - ✅ Redis não configurado → Redis service deployed + REDIS_URL
+   - ✅ BullMQ config incorreta → Usa redisConfig (parseia REDIS_URL)
+   - ✅ Frontend start command → npx serve -s dist -l 3000
+   - ⚠️ pgvector extension → Issue #387 (requer migração DB)
+
 ### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
-1. **E2E Tests (#24)** - Accessibility tests (Axe-core)
-2. **Async Job Queue (#220-#222)** - ✅ #220 BullMQ done, #221-#222 pending
-3. UAT scenarios (#92-#95)
+1. **#387 - PostgreSQL pgvector migration** - PRIORITÁRIO (bloqueia deploy)
+2. **E2E Tests (#24)** - Accessibility tests (Axe-core)
+3. **Async Job Queue (#221-#222)** - ✅ #220 BullMQ merged, API + UX pending
+4. UAT scenarios (#92-#95)
 
 ### P2 - Próxima Sprint:
 
