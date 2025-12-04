@@ -4,7 +4,7 @@
 
 ## 📊 Status Atual
 
-**Progresso Global:** 173/203 issues concluídas (85.2%)
+**Progresso Global:** 174/205 issues concluídas (84.9%)
 **Velocidade:** 7.7 issues/dia (últimos 7 dias: 54 issues)
 **ETA Conclusão:** ~2025-12-07 (4 dias)
 
@@ -14,7 +14,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ███████░░░░░░░░░░░░░  4/11  (36%)  🔄 Maintenance
+M6: ██████░░░░░░░░░░░░░░  6/20  (30%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -153,23 +153,24 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (5/17) - 29%
+### 🔄 M6: Maintenance (6/20) - 30%
 
 **Status:** RECORRENTE
 
-#### Concluídas (5):
+#### Concluídas (6):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
 - ✅ #219 - Setup Redis no Railway (desbloqueou #220-#222)
 - ✅ #374 - Fix TypeORM Railway crash (Organization.stripeCustomerId explicit type)
+- ✅ #375 - Fix TypeORM User entity explicit types (PR #380 - 2025-12-03)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (12):
+#### Pendentes (14):
 
 **P0 - Critical:**
 
-- [ ] #375-#378 - Fix explicit types entidades restantes (User, AuditLog, AnalyticsEvent)
+- [ ] #376-#378 - Fix explicit types entidades restantes (AuditLog, AnalyticsEvent, remaining)
 
 **P1 - High:**
 
@@ -183,7 +184,12 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #248 - Processo: limite tamanho PRs
 - [ ] #321 - Fix monorepo @nestjs/common dependency conflict
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#379
+**P3 - Low:**
+
+- [ ] #381 - Replace console statements with structured logging (4 warnings)
+- [ ] #382 - Replace 'any' types in OrchestratorService (14 warnings)
+
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382
 
 ---
 
@@ -246,8 +252,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P0 - CRITICAL (Agora):
 
-1. **Fix TypeORM Explicit Types (#375-#378)** - Prevenir crashes Railway
-   - User, AuditLog, AnalyticsEvent entities (mesmo padrão de #374)
+1. **Fix TypeORM Explicit Types (#376-#378)** - Prevenir crashes Railway
+   - ✅ #375 - User entity (concluído - PR #380)
+   - [ ] #376 - AuditLog entity (4 campos)
+   - [ ] #377 - AnalyticsEvent entity (6 campos)
+   - [ ] #378 - Remaining entities (múltiplos arquivos)
 
 ### P1 - Esta Semana (2025-12-04 a 2025-12-07):
 
