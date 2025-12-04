@@ -48,7 +48,7 @@ export class AuditLog {
   @Column()
   entityType: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   entityId: string;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -61,10 +61,10 @@ export class AuditLog {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   ipAddress: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   userAgent: string;
 
   @ManyToOne(() => User, (user) => user.auditLogs, { eager: true })
@@ -78,7 +78,7 @@ export class AuditLog {
   @JoinColumn({ name: 'etp_id' })
   etp: Etp;
 
-  @Column({ name: 'etp_id', nullable: true })
+  @Column({ type: 'varchar', name: 'etp_id', nullable: true })
   etpId: string;
 
   @CreateDateColumn()
