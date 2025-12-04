@@ -21,13 +21,13 @@ export class SimilarContract {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   orgao: string;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
   valor: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   dataContratacao: string;
 
   @Column({ type: 'text', nullable: true })

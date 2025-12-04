@@ -25,7 +25,7 @@ export class SecretAccessLog {
   @Column()
   accessedBy: string; // Service/context that accessed
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   ipAddress: string;
 
   @CreateDateColumn()
@@ -38,6 +38,6 @@ export class SecretAccessLog {
   })
   status: SecretAccessStatus;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   errorMessage: string;
 }
