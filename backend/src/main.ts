@@ -132,3 +132,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+// Trigger Railway auto-deploy after husky prepare script removal (#389)
