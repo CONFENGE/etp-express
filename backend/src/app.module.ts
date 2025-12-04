@@ -143,20 +143,25 @@ import { RolesGuard } from './common/guards/roles.guard';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        connection: {
-          host: configService.get('REDIS_HOST', 'localhost'),
-          port: parseInt(configService.get('REDIS_PORT', '6379'), 10),
-          password: configService.get('REDIS_PASSWORD'),
-          // Redis connection options
-          maxRetriesPerRequest: 3,
-          enableReadyCheck: true,
-          retryStrategy: (times: number) => {
-            const delay = Math.min(times * 1000, 5000);
-            return delay;
+      useFactory: (configService: ConfigService) => {
+        // Use the redis configuration that handles REDIS_URL from Railway
+        const redisConf = configService.get('redis');
+        return {
+          connection: {
+            host: redisConf.host,
+            port: redisConf.port,
+            password: redisConf.password,
+            db: redisConf.db,
+            // BullMQ-specific options
+            maxRetriesPerRequest: redisConf.maxRetriesPerRequest,
+            enableReadyCheck: redisConf.enableReadyCheck,
+            retryStrategy: (times: number) => {
+              const delay = Math.min(times * 1000, 5000);
+              return delay;
+            },
           },
-        },
-      }),
+        };
+      },
     }),
 
     // Feature modules
