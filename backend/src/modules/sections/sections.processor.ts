@@ -28,7 +28,7 @@ export interface GeneratedSectionResult {
   sectionId: string;
   status: SectionStatus;
   content?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   error?: string;
 }
 
@@ -227,16 +227,17 @@ export class SectionsProcessor extends WorkerHost {
    * @returns Converted validation results or null
    */
   private convertValidationResults(
-    validationResults: any,
-  ): Record<string, any> | null {
-    if (!validationResults) {
+    validationResults: unknown,
+  ): Record<string, unknown> | null {
+    if (!validationResults || typeof validationResults !== 'object') {
       return null;
     }
 
+    const results = validationResults as Record<string, unknown>;
     return {
-      isCompliant: validationResults.isCompliant,
-      complianceScore: validationResults.complianceScore,
-      issues: validationResults.issues || [],
+      isCompliant: results.isCompliant,
+      complianceScore: results.complianceScore,
+      issues: results.issues || [],
       checkedAt: new Date().toISOString(),
     };
   }
