@@ -50,7 +50,7 @@ export class User {
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   cargo: string | null;
 
   @Column({
@@ -77,7 +77,7 @@ export class User {
    * Version of LGPD terms accepted by user.
    * Enables audit trail per LGPD Art. 8º, §4º.
    */
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   lgpdConsentVersion: string | null;
 
   /**
