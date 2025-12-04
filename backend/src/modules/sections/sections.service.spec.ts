@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { getQueueToken } from '@nestjs/bullmq';
 import { Repository } from 'typeorm';
 import { SectionsService } from './sections.service';
 import {
@@ -152,6 +153,10 @@ describe('SectionsService', () => {
     updateCompletionPercentage: jest.fn(),
   };
 
+  const mockSectionsQueue = {
+    add: jest.fn().mockResolvedValue({ id: 'job-123' }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -163,6 +168,10 @@ describe('SectionsService', () => {
         {
           provide: getRepositoryToken(Etp),
           useValue: mockEtpsRepository,
+        },
+        {
+          provide: getQueueToken('sections'),
+          useValue: mockSectionsQueue,
         },
         {
           provide: OrchestratorService,
@@ -210,7 +219,7 @@ describe('SectionsService', () => {
       },
     };
 
-    it('should generate a new section successfully', async () => {
+    it('should queue a new section generation successfully', async () => {
       // Arrange
       mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(null); // No existing section
@@ -218,15 +227,11 @@ describe('SectionsService', () => {
         ...mockSection,
         status: SectionStatus.GENERATING,
       });
-      mockSectionsRepository.save
-        .mockResolvedValueOnce({
-          ...mockSection,
-          status: SectionStatus.GENERATING,
-        }) // First save (pending)
-        .mockResolvedValueOnce(mockSection); // Second save (generated)
-      mockOrchestratorService.generateSection.mockResolvedValue(
-        mockGenerationResult,
-      );
+      mockSectionsRepository.save.mockResolvedValue({
+        ...mockSection,
+        status: SectionStatus.GENERATING,
+        metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
+      });
       mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
         maxOrder: 0,
       });
@@ -239,31 +244,29 @@ describe('SectionsService', () => {
         mockOrganizationId,
       );
 
-      // Assert
-      expect(mockEtpsService.findOneMinimal).toHaveBeenCalledWith(
-        mockEtpId,
-        mockOrganizationId,
-        mockUserId,
+      // Assert - Verify queue was called
+      expect(mockSectionsQueue.add).toHaveBeenCalledWith(
+        'generate',
+        expect.objectContaining({
+          etpId: mockEtpId,
+          sectionType: generateDto.type,
+          title: generateDto.title,
+          userInput: generateDto.userInput,
+          context: generateDto.context,
+          userId: mockUserId,
+          organizationId: mockOrganizationId,
+          sectionId: expect.any(String),
+        }),
+        expect.objectContaining({
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 5000 },
+        }),
       );
-      expect(mockSectionsRepository.findOne).toHaveBeenCalledWith({
-        where: { etpId: mockEtpId, type: generateDto.type },
-      });
-      expect(mockOrchestratorService.generateSection).toHaveBeenCalledWith({
-        sectionType: generateDto.type,
-        title: generateDto.title,
-        userInput: generateDto.userInput,
-        context: generateDto.context,
-        etpData: {
-          objeto: mockEtp.objeto,
-          metadata: mockEtp.metadata,
-        },
-      });
-      expect(mockEtpsService.updateCompletionPercentage).toHaveBeenCalledWith(
-        mockEtpId,
-      );
+
+      // Verify section was created with GENERATING status
       expect(result).toBeDefined();
-      expect(result.content).toBe('Conteúdo gerado pela IA');
-      expect(result.status).toBe(SectionStatus.GENERATED);
+      expect(result.status).toBe(SectionStatus.GENERATING);
+      expect(result.metadata?.jobId).toBe('job-123');
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
@@ -305,9 +308,10 @@ describe('SectionsService', () => {
       });
     });
 
-    it('should handle generation errors and update section status to PENDING', async () => {
+    it('should queue generation even if orchestrator fails later (async)', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      // Note: This test validates that queueing succeeds even if generation will fail later
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(null);
       mockSectionsRepository.create.mockReturnValue({
         ...mockSection,
@@ -316,31 +320,27 @@ describe('SectionsService', () => {
       mockSectionsRepository.save.mockResolvedValue({
         ...mockSection,
         status: SectionStatus.GENERATING,
+        metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
-      mockOrchestratorService.generateSection.mockRejectedValue(
-        new Error('LLM timeout'),
-      );
       mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
         maxOrder: 0,
       });
 
-      // Act & Assert
-      await expect(
-        service.generateSection(
-          mockEtpId,
-          generateDto,
-          mockUserId,
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow('LLM timeout');
-
-      // Verify error handling
-      expect(mockSectionsRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: SectionStatus.PENDING,
-          content: expect.stringContaining('Erro ao gerar conteúdo'),
-        }),
+      // Act
+      const result = await service.generateSection(
+        mockEtpId,
+        generateDto,
+        mockUserId,
+        mockOrganizationId,
       );
+
+      // Assert - Queue call succeeds immediately
+      expect(mockSectionsQueue.add).toHaveBeenCalled();
+      expect(result.status).toBe(SectionStatus.GENERATING);
+      expect(result.metadata?.jobId).toBe('job-123');
+
+      // Note: Error handling now happens in SectionsProcessor (background worker)
+      // See sections.processor.spec.ts for error handling tests
     });
 
     it('should set correct order for new section', async () => {
