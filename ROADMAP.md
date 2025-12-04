@@ -1,12 +1,29 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 02:00 UTC | **Auditoria:** Automated audit (99.5% accuracy)
+**Última Atualização:** 2025-12-04 12:20 UTC | **Auditoria:** Manual audit + Railway deploy fixes
 
 ## 📊 Status Atual
 
-**Progresso Global:** 178/205 issues concluídas (86.8%)
+**Progresso Global:** 180/208 issues concluídas (86.5%)
 **Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
-**ETA Conclusão:** ~2025-12-07 (3 dias)
+**ETA Conclusão:** ~2025-12-09 (5 dias - quality-first approach)
+
+## 🚨 Railway Deploy Status
+
+**Bloqueadores Ativos:**
+
+- ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
+  - Solução: `railway variables --set "NODE_ENV=production" --service etp-express-backend`
+- ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
+- ⏳ #387 - pgvector migration → **EM MIGRAÇÃO** (ETA: 8 horas)
+  - Status: Migração para PostgreSQL template com pgvector iniciada
+  - Impacto: RAG Module bloqueado até conclusão
+
+**Novas Issues Criadas (2025-12-04):**
+
+- #390 - [P1] Validação End-to-End Deploy Railway
+- #391 - [P2] Implementar API de Status de Jobs Assíncronos
+- #392 - [P3] Documentar processo de deploy Railway completo
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -173,30 +190,42 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #378 - Fix TypeORM explicit types entidades restantes (PR #385 - 2025-12-04)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 
-#### Pendentes (12):
+#### Concluídas Recentes (2):
+
+- ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
+- ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
+
+#### Pendentes (14):
 
 **P0 - Critical:**
 
-- [ ] #387 - [P0] Migrar PostgreSQL para versão com suporte a pgvector
+- [ ] #387 - [P0] Migrar PostgreSQL para versão com suporte a pgvector **[EM PROGRESSO]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
   - **Solução:** Deploy template pgvector + pg_backup/restore (~6-8h)
-  - **Alternativa:** Workaround temporário (desabilitar migration + RAG module)
+  - **Status:** Migração iniciada (2025-12-04)
+  - **Alternativa:** Workaround temporário já aplicado (migration .disabled)
 
 **P1 - High:**
 
 - [ ] #40 - Atualizar dependências desatualizadas
-- [ ] #221-#222 - Async job queue (Job API + UX async)
-  - ✅ #220 - BullMQ implementation (PR #386) - MERGED
-  - [ ] #221 - Job status API
-  - [ ] #222 - Frontend async UX
+- [ ] #390 - [P1] Validação End-to-End Deploy Railway **[NOVA - 2025-12-04]**
+  - Checklist completo pós-resolução #387 e #388
+- [ ] #391 - [P2] Implementar API de Status de Jobs Assíncronos **[NOVA - 2025-12-04]**
+  - Endpoint REST para consulta status BullMQ jobs
+  - Bloqueador de #222 (Frontend async UX)
 
 **P2 - Medium:**
 
-- [ ] #186 - Implementar async queue BullMQ (duplicate of #220 - DONE)
+- [ ] #222 - Frontend async UX (depende de #391)
 - [ ] #223-#224 - Rotação secrets automática
 - [ ] #248 - Processo: limite tamanho PRs
 - [ ] #321 - Fix monorepo @nestjs/common dependency conflict
+
+**P3 - Low:**
+
+- [ ] #392 - [P3] Documentar processo de deploy Railway completo **[NOVA - 2025-12-04]**
+  - DEPLOYMENT.md com troubleshooting (#388, #387, #389)
 
 **P3 - Low:**
 
