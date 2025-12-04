@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 12:20 UTC | **Auditoria:** Manual audit + Railway deploy fixes
+**Última Atualização:** 2025-12-04 22:41 UTC | **Auditoria:** Issue #396 resolved - Initial schema migration
 
 ## 📊 Status Atual
 
-**Progresso Global:** 180/208 issues concluídas (86.5%)
+**Progresso Global:** 181/208 issues concluídas (87.0%)
 **Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
 **ETA Conclusão:** ~2025-12-09 (5 dias - quality-first approach)
 
@@ -15,6 +15,8 @@
 - ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
   - Solução: `railway variables --set "NODE_ENV=production" --service etp-express-backend`
 - ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
+- ✅ #396 - Database schema vazio → **RESOLVIDO** (2025-12-04 22:41 UTC)
+  - Solução: Migration inicial `1000000000000-InitialSchema.ts` (PR #399 + hotfix 0fbb813)
 - ⏳ #387 - pgvector migration → **EM MIGRAÇÃO** (ETA: 8 horas)
   - Status: Migração para PostgreSQL template com pgvector iniciada
   - Impacto: RAG Module bloqueado até conclusão
@@ -31,7 +33,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: █████████░░░░░░░░░░░  9/20  (45%)  🔄 Maintenance
+M6: ██████████░░░░░░░░░░ 11/21  (52%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -170,11 +172,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (10/21) - 48%
+### 🔄 M6: Maintenance (11/21) - 52%
 
 **Status:** RECORRENTE
 
-#### Concluídas (10):
+#### Concluídas (11):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -189,13 +191,18 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #377 - Fix TypeORM AnalyticsEvent entity explicit types (PR #384 - 2025-12-04)
 - ✅ #378 - Fix TypeORM explicit types entidades restantes (PR #385 - 2025-12-04)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
+- ✅ #396 - Railway: Database schema vazio - migrations falhando (PR #399 + hotfix 0fbb813)
 
-#### Concluídas Recentes (2):
+#### Concluídas Recentes (3):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
+- ✅ #396 - [P0] Railway: Database schema vazio - migrations falhando (RESOLVIDO 2025-12-04 22:41 UTC)
+  - **Solução:** Migration inicial `1000000000000-InitialSchema.ts` criada
+  - **Impacto:** 11 tabelas base criadas, backend production funcional
+  - **PR:** #399 + hotfix commit 0fbb813
 
-#### Pendentes (14):
+#### Pendentes (13):
 
 **P0 - Critical:**
 
