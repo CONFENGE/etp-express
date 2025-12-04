@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BullModule } from '@nestjs/bullmq';
 import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
 
@@ -137,6 +138,26 @@ import { RolesGuard } from './common/guards/roles.guard';
 
     // Scheduled tasks (cron jobs)
     ScheduleModule.forRoot(),
+
+    // Job Queue (BullMQ) - Issue #220
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: parseInt(configService.get('REDIS_PORT', '6379'), 10),
+          password: configService.get('REDIS_PASSWORD'),
+          // Redis connection options
+          maxRetriesPerRequest: 3,
+          enableReadyCheck: true,
+          retryStrategy: (times: number) => {
+            const delay = Math.min(times * 1000, 5000);
+            return delay;
+          },
+        },
+      }),
+    }),
 
     // Feature modules
     AuthModule,
