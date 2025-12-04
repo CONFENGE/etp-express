@@ -1,31 +1,56 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 22:41 UTC | **Auditoria:** Issue #396 resolved - Initial schema migration
+**Última Atualização:** 2025-12-04 23:15 UTC | **Auditoria:** Issue #390 E2E validation - Backend crash detected (pgvector migration)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 181/208 issues concluídas (87.0%)
+**Progresso Global:** 181/210 issues concluídas (86.2%)
 **Velocidade:** 7.8 issues/dia (últimos 7 dias: 55 issues)
 **ETA Conclusão:** ~2025-12-09 (5 dias - quality-first approach)
+**⚠️ Deploy Status:** Backend production crashando - requer hotfix imediato (#400)
 
 ## 🚨 Railway Deploy Status
 
 **Bloqueadores Ativos:**
 
-- ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
-  - Solução: `railway variables --set "NODE_ENV=production" --service etp-express-backend`
-- ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
-- ✅ #396 - Database schema vazio → **RESOLVIDO** (2025-12-04 22:41 UTC)
-  - Solução: Migration inicial `1000000000000-InitialSchema.ts` (PR #399 + hotfix 0fbb813)
+- 🔴 **#400 - [P0][HOTFIX] Backend crashando - CreateLegislationTable migration** → **CRÍTICO** (2025-12-04 23:15 UTC)
+  - **Status:** Backend production completamente inoperante
+  - **Root Cause:** Migration usa tipo `vector(1536)` sem extensão pgvector
+  - **Error:** `QueryFailedError: column "embedding" does not exist (code 42703)`
+  - **Impacto:** 100% funcionalidades backend indisponíveis
+  - **Solução:** Desabilitar migration temporariamente (`.disabled`)
+  - **ETA:** 30 min (hotfix imediato)
+  - **Relacionado:** #387 (solução definitiva pgvector)
+
 - ⏳ #387 - pgvector migration → **EM MIGRAÇÃO** (ETA: 8 horas)
   - Status: Migração para PostgreSQL template com pgvector iniciada
-  - Impacto: RAG Module bloqueado até conclusão
+  - **⚠️ Workaround anterior INEFICAZ:** Migration ainda ativa em production
+  - Impacto: RAG Module bloqueado + Backend crashando (#400)
+
+- ⚠️ #390 - [P1] Validação End-to-End Deploy Railway → **PAUSADA**
+  - Status: Validação E2E executada, detectou crash backend (#400)
+  - Validation Report: `scripts/validation-results-20251204-104000.md`
+  - Taxa de Sucesso: 0% (0/16 critérios validados)
+  - Aguardando: Resolução de #400 para reexecutar validação completa
+
+- 🟡 #401 - [P2] Investigar discrepância Health endpoint (JSON vs text/plain)
+  - Status: Issue criada, bloqueada por #400
+  - Problema: Health endpoint retorna texto "OK" ao invés de JSON estruturado
+  - Impacto: Observabilidade comprometida
+
+**Issues Resolvidas (2025-12-04):**
+
+- ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
+- ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
+- ✅ #396 - Database schema vazio → **RESOLVIDO** (2025-12-04 22:41 UTC)
 
 **Novas Issues Criadas (2025-12-04):**
 
-- #390 - [P1] Validação End-to-End Deploy Railway
+- #390 - [P1] Validação End-to-End Deploy Railway (PAUSADA - aguardando #400)
 - #391 - [P2] Implementar API de Status de Jobs Assíncronos
 - #392 - [P3] Documentar processo de deploy Railway completo
+- #400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable (CRÍTICO)
+- #401 - [P2] Investigar discrepância Health endpoint JSON vs text/plain
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -300,12 +325,21 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### 🚨 P0 - CRITICAL (AÇÃO IMEDIATA):
+### 🔴 P0 - CRITICAL (AÇÃO IMEDIATA - DEPLOY CRASHANDO):
 
-1. **#387 - Migrar PostgreSQL para pgvector** - BLOQUEIA DEPLOY ⚠️
-   - **Status:** Issue criada, aguardando decisão (migração vs workaround)
-   - **Prazo:** Imediato (deploy production bloqueado)
-   - **Estimativa:** 6-8h (migração completa) ou 1h (workaround)
+1. **#400 - [HOTFIX] Desabilitar migration CreateLegislationTable** - BLOQUEIA TUDO ⚠️
+   - **Status:** Issue criada (2025-12-04 23:15 UTC)
+   - **Prazo:** IMEDIATO (backend production completamente inoperante)
+   - **Estimativa:** 30 min
+   - **Ação:** Renomear migration para `.disabled`, redeploy backend
+   - **Impacto:** 100% funcionalidades backend indisponíveis até hotfix
+   - **Bloqueia:** #390 (validação E2E), #387 (pgvector), todas funcionalidades
+
+2. **#387 - Migrar PostgreSQL para pgvector** - SOLUÇÃO DEFINITIVA
+   - **Status:** EM MIGRAÇÃO (workaround anterior ineficaz)
+   - **Prazo:** Após #400 resolvido
+   - **Estimativa:** 6-8h (migração completa)
+   - **Nota:** Issue #400 é workaround temporário para #387
 
 ### ✅ P0 - CRITICAL COMPLETADAS:
 
