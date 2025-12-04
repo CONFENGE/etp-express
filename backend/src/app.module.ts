@@ -87,10 +87,16 @@ import { RolesGuard } from './common/guards/roles.guard';
         migrationsRun: configService.get('DB_MIGRATIONS_RUN', true), // Auto-run migrations on startup
         synchronize: configService.get('DB_SYNCHRONIZE', false),
         logging: configService.get('DB_LOGGING', false),
+        // SSL Configuration (#394)
+        // Railway PostgreSQL does not support SSL connections
+        // Only enable SSL for non-Railway production environments
         ssl:
-          configService.get('NODE_ENV') === 'production'
-            ? { rejectUnauthorized: false }
-            : false,
+          configService.get('PGSSLMODE') === 'disable'
+            ? false
+            : configService.get('NODE_ENV') === 'production' &&
+                !process.env.RAILWAY_ENVIRONMENT
+              ? { rejectUnauthorized: false }
+              : false,
 
         // Connection pooling optimization (#108, #343)
         // Configuração otimizada para Railway PostgreSQL Starter (max_connections=20)
