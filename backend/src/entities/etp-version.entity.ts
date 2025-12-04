@@ -29,7 +29,7 @@ export class EtpVersion {
   @Column({ type: 'text', nullable: true })
   changeLog: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   createdByName: string;
 
   @ManyToOne(() => Etp, (etp) => etp.versions, { onDelete: 'CASCADE' })

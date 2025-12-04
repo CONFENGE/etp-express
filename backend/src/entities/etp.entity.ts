@@ -36,7 +36,7 @@ export class Etp {
   @Column()
   objeto: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   numeroProcesso: string;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
