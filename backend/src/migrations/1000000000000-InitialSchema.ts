@@ -107,14 +107,14 @@ export class InitialSchema1000000000000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "etp_versions" (
         "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-        "etpId" uuid NOT NULL,
+        "etp_id" uuid NOT NULL,
         "versionNumber" integer NOT NULL,
         "metadata" jsonb NOT NULL,
         "sections" jsonb NOT NULL DEFAULT '{}',
         "createdById" uuid,
         "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_etp_versions_id" PRIMARY KEY ("id"),
-        CONSTRAINT "FK_etp_versions_etpId" FOREIGN KEY ("etpId")
+        CONSTRAINT "FK_etp_versions_etp_id" FOREIGN KEY ("etp_id")
           REFERENCES "etps"("id") ON DELETE CASCADE ON UPDATE NO ACTION,
         CONSTRAINT "FK_etp_versions_createdById" FOREIGN KEY ("createdById")
           REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -125,14 +125,14 @@ export class InitialSchema1000000000000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "etp_sections" (
         "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-        "etpId" uuid NOT NULL,
+        "etp_id" uuid NOT NULL,
         "sectionName" character varying NOT NULL,
         "content" text NOT NULL,
         "order" integer NOT NULL DEFAULT 0,
         "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_etp_sections_id" PRIMARY KEY ("id"),
-        CONSTRAINT "FK_etp_sections_etpId" FOREIGN KEY ("etpId")
+        CONSTRAINT "FK_etp_sections_etp_id" FOREIGN KEY ("etp_id")
           REFERENCES "etps"("id") ON DELETE CASCADE ON UPDATE NO ACTION
       )
     `);
