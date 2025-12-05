@@ -24,7 +24,22 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Zero vulnerabilities after fix (`npm audit --omit=dev`)
   - All 882 tests passing ✅
 
-#### ⚡ Async Processing & Performance (2025-12-04)
+#### ⚡ Async Processing & Performance (2025-12-04 to 2025-12-05)
+
+- ✅ #186 - Job Status Polling API for Async Section Generation (PR #416)
+  - **Endpoint final** para completar funcionalidade async queue processing (#220)
+  - Novo endpoint `GET /sections/jobs/:jobId` para polling de status em tempo real
+  - Suporte a 6 estados: waiting, active, completed, failed, delayed, unknown
+  - Progress tracking 0-100% para feedback visual no frontend
+  - Retry attempts tracking (attemptsMade/attemptsMax)
+  - Timestamps completos (createdAt, processedOn, completedAt, failedReason)
+  - Error messages detalhados quando job falha
+  - Novo DTO `JobStatusDto` com documentação OpenAPI completa
+  - Documentação técnica completa em ARCHITECTURE.md (nova seção 2.6 - Job Queue & Async Processing)
+  - 7 novos testes unitários para `getJobStatus()` (889/889 passing, 100%)
+  - Coverage mantido: 77.76% statements, 70.05% branches
+  - Ready para frontend polling implementation (Issue #222)
+  - Closes #391 (duplicada de #186)
 
 - ✅ #220 - Implementar BullMQ para geração assíncrona de seções (PR #386)
   - **Migração de processamento síncrono → assíncrono** eliminando timeouts HTTP (30-60s → <100ms)

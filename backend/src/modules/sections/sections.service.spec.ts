@@ -155,6 +155,7 @@ describe('SectionsService', () => {
 
   const mockSectionsQueue = {
     add: jest.fn().mockResolvedValue({ id: 'job-123' }),
+    getJob: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -450,6 +451,195 @@ describe('SectionsService', () => {
         warnings: [],
         suggestions: [],
       });
+    });
+  });
+
+  /**
+   * Tests for getJobStatus()
+   * Validates async job status polling
+   * @see #186 - Async queue processing
+   * @see #391 - Job Status API
+   */
+  describe('getJobStatus', () => {
+    const mockJobId = 'job-123';
+
+    it('should return job status for waiting job', async () => {
+      // Arrange
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 0,
+        opts: { attempts: 3 },
+        progress: 0,
+        getState: jest.fn().mockResolvedValue('waiting'),
+        processedOn: null,
+        finishedOn: null,
+        returnvalue: null,
+        failedReason: null,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(mockSectionsQueue.getJob).toHaveBeenCalledWith(mockJobId);
+      expect(result.jobId).toBe(mockJobId);
+      expect(result.status).toBe('waiting');
+      expect(result.progress).toBe(0);
+      expect(result.attemptsMade).toBe(0);
+      expect(result.attemptsMax).toBe(3);
+    });
+
+    it('should return job status for active job with progress', async () => {
+      // Arrange
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 0,
+        opts: { attempts: 3 },
+        progress: 75,
+        getState: jest.fn().mockResolvedValue('active'),
+        processedOn: Date.now(),
+        finishedOn: null,
+        returnvalue: null,
+        failedReason: null,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(result.status).toBe('active');
+      expect(result.progress).toBe(75);
+      expect(result.processedOn).toBeDefined();
+    });
+
+    it('should return job status for completed job with result', async () => {
+      // Arrange
+      const mockResult = {
+        sectionId: mockSectionId,
+        status: SectionStatus.GENERATED,
+        content: 'Generated content',
+      };
+
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 0,
+        opts: { attempts: 3 },
+        progress: 95,
+        getState: jest.fn().mockResolvedValue('completed'),
+        processedOn: Date.now(),
+        finishedOn: Date.now(),
+        returnvalue: mockResult,
+        failedReason: null,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(result.status).toBe('completed');
+      expect(result.progress).toBe(100); // Always 100 for completed
+      expect(result.completedAt).toBeDefined();
+      expect(result.result).toEqual(mockResult);
+    });
+
+    it('should return job status for failed job with error', async () => {
+      // Arrange
+      const mockFailureReason = 'OpenAI API timeout';
+
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 3,
+        opts: { attempts: 3 },
+        progress: 50,
+        getState: jest.fn().mockResolvedValue('failed'),
+        processedOn: Date.now(),
+        finishedOn: Date.now(),
+        returnvalue: null,
+        failedReason: mockFailureReason,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(result.status).toBe('failed');
+      expect(result.error).toBe(mockFailureReason);
+      expect(result.failedReason).toBe(mockFailureReason);
+      expect(result.attemptsMade).toBe(3);
+      expect(result.completedAt).toBeDefined();
+    });
+
+    it('should throw NotFoundException when job not found', async () => {
+      // Arrange
+      mockSectionsQueue.getJob.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.getJobStatus(mockJobId)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.getJobStatus(mockJobId)).rejects.toThrow(
+        `Job ${mockJobId} não encontrado ou já expirou`,
+      );
+    });
+
+    it('should map job state correctly for delayed jobs', async () => {
+      // Arrange
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 1,
+        opts: { attempts: 3 },
+        progress: 10,
+        getState: jest.fn().mockResolvedValue('delayed'),
+        processedOn: null,
+        finishedOn: null,
+        returnvalue: null,
+        failedReason: null,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(result.status).toBe('delayed');
+    });
+
+    it('should map unknown job states to "unknown"', async () => {
+      // Arrange
+      const mockJob = {
+        id: mockJobId,
+        timestamp: Date.now(),
+        attemptsMade: 0,
+        opts: { attempts: 3 },
+        progress: 0,
+        getState: jest.fn().mockResolvedValue('some-weird-state'),
+        processedOn: null,
+        finishedOn: null,
+        returnvalue: null,
+        failedReason: null,
+      };
+
+      mockSectionsQueue.getJob.mockResolvedValue(mockJob);
+
+      // Act
+      const result = await service.getJobStatus(mockJobId);
+
+      // Assert
+      expect(result.status).toBe('unknown');
     });
   });
 

@@ -147,6 +147,54 @@ export class SectionsController {
   }
 
   /**
+   * Retrieves the status of an async section generation job.
+   *
+   * @remarks
+   * This endpoint allows clients to poll the progress of asynchronous section
+   * generation jobs. It returns real-time status, progress percentage, and
+   * completion/error information.
+   *
+   * **Polling Strategy:**
+   * - Poll every 2-3 seconds while status is 'waiting' or 'active'
+   * - Stop polling when status is 'completed' or 'failed'
+   * - Progress ranges from 0-100
+   *
+   * **Job Lifecycle:**
+   * - waiting: Job queued but not yet processing
+   * - active: Job currently being processed (check progress)
+   * - completed: Job finished successfully (result available)
+   * - failed: Job failed after all retry attempts (error available)
+   *
+   * @param jobId - BullMQ job identifier (returned from generateSection)
+   * @returns Job status with progress, result, and metadata
+   * @throws {NotFoundException} 404 - If job not found or expired
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @see #186 - Async queue processing
+   * @see #391 - Job Status API
+   */
+  @Get('jobs/:jobId')
+  @ApiOperation({
+    summary: 'Obter status de job de geração',
+    description:
+      'Consulta o status de um job de geração assíncrona. Use para polling de progresso.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Status do job retornado com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Job não encontrado ou expirado',
+  })
+  async getJobStatus(@Param('jobId') jobId: string) {
+    const jobStatus = await this.sectionsService.getJobStatus(jobId);
+    return {
+      data: jobStatus,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
    * Updates a section manually (user edits).
    *
    * @param id - Section unique identifier (UUID)
