@@ -81,13 +81,13 @@ export class InitialSchema1000000000000 implements MigrationInterface {
         "status" character varying NOT NULL DEFAULT 'draft',
         "version" integer NOT NULL DEFAULT 1,
         "organizationId" uuid NOT NULL,
-        "createdById" uuid,
+        "created_by" uuid,
         "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
         "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_etps_id" PRIMARY KEY ("id"),
         CONSTRAINT "FK_etps_organizationId" FOREIGN KEY ("organizationId")
           REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
-        CONSTRAINT "FK_etps_createdById" FOREIGN KEY ("createdById")
+        CONSTRAINT "FK_etps_created_by" FOREIGN KEY ("created_by")
           REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
       )
     `);
@@ -97,7 +97,7 @@ export class InitialSchema1000000000000 implements MigrationInterface {
       CREATE INDEX IF NOT EXISTS "IDX_etps_organizationId" ON "etps" ("organizationId")
     `);
     await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_etps_createdById" ON "etps" ("createdById")
+      CREATE INDEX IF NOT EXISTS "IDX_etps_created_by" ON "etps" ("created_by")
     `);
     await queryRunner.query(`
       CREATE INDEX IF NOT EXISTS "IDX_etps_status" ON "etps" ("status")
