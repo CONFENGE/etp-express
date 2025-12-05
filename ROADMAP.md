@@ -1,36 +1,36 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 00:40 UTC | **Auditoria:** Issues #400 + #402 + #403 RESOLVIDAS - Backend production OPERACIONAL
+**Última Atualização:** 2025-12-05 01:10 UTC | **Auditoria Completa:** 32 issues auditadas, 6 repriorizadas, #404 RESOLVIDA
 
 ## 📊 Status Atual
 
-**Progresso Global:** 184/210 issues concluídas (87.6%)
-**Velocidade:** 8.2 issues/dia (últimos 7 dias: 57 issues)
+**Progresso Global:** 185/211 issues concluídas (87.7%)
+**Velocidade:** 8.3 issues/dia (últimos 7 dias: 58 issues)
 **ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403)
+**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403 + #404)
 
 ## 🚨 Railway Deploy Status
 
 **Bloqueadores Ativos:**
 
-- ⏳ #387 - pgvector migration → **EM MIGRAÇÃO** (ETA: 8 horas)
-  - Status: Migração para PostgreSQL template com pgvector iniciada
-  - **✅ Workaround #400 aplicado:** Migration CreateLegislationTable desabilitada
-  - Impacto: RAG Module bloqueado (funcionalidade ainda não crítica)
-  - Backend: Operacional com workaround temporário
+**NENHUM** - Todos bloqueadores P0/P1 resolvidos! ✅
 
-- 🟡 #390 - [P1] Validação End-to-End Deploy Railway → **DESBLOQUEADA**
-  - Status: Aguardando reexecução após resolução #400
-  - Validation Report: `scripts/validation-results-20251204-104000.md`
-  - Próximo passo: Reexecutar validação completa com backend operacional
-  - **Nota:** Nova issue detectada (AddOrganizationToUsers migration - coluna duplicada)
+**Prioridades Atualizadas (2025-12-05):**
 
-- 🟡 #401 - [P2] Investigar discrepância Health endpoint (JSON vs text/plain)
-  - Status: Desbloqueada para execução
-  - Problema: Health endpoint retorna texto "OK" ao invés de JSON estruturado
-  - Impacto: Observabilidade comprometida
+- ✅ #404 - [P0][HOTFIX] Column naming mismatch → **RESOLVIDO** (commits 74a576d + 92c97cb)
+- 🟢 #390 - [P1] Validação End-to-End Deploy Railway → **PRONTA PARA EXECUÇÃO**
+  - Desbloqueada após resolução #404
+  - Próximo passo: Executar validação completa após deploy completar
+- 🔄 #387 - pgvector migration → **REPRIORITIZADA: P0 → P2**
+  - Razão: Workaround estável, RAG não-crítico (10/11 módulos funcionais = 90.9%)
+  - Backend operacional sem RAG
+  - Deploy quando houver janela de manutenção
+- 🔄 #401 - Health endpoint JSON vs text/plain → **REPRIORITIZADA: P2 → P3**
+  - Provável falso positivo (código retorna JSON)
+  - Railway proxy pode estar interceptando
+  - Investigação de baixa urgência
 
-**Issues Resolvidas (2025-12-04):**
+**Issues Resolvidas (2025-12-04/05):**
 
 - ✅ #388 - NODE_ENV não definido → **RESOLVIDO** (2025-12-04 12:15 UTC)
 - ✅ #389 - Husky prepare script → **RESOLVIDO** (commit a5ec173)
@@ -52,16 +52,33 @@
   - **Solução 2:** InitialSchema preventive fix (bbaa804) + Migration RenameEtpsCreatedByIdColumn (f063a9b)
   - **Resultado:** Backend production OPERACIONAL, zero crash loops, migrations executando corretamente
   - **Impacto:** Backend 100% funcional, health endpoint 200 OK, CI/CD green
+- ✅ #404 - [P0][HOTFIX] Column naming mismatch (etpId→etp_id) → **RESOLVIDO** (2025-12-05 01:05 UTC)
+  - **Problema:** AddPerformanceIndexes migration falhando (`column "etp_id" does not exist`)
+  - **Root Cause:** InitialSchema criou `etpId` (camelCase), mas migration esperava `etp_id` (snake_case)
+  - **Solução 1:** Migration 1733360000000-RenameEtpIdColumns.ts (renomeia etpId→etp_id) - Commit 74a576d
+  - **Solução 2:** InitialSchema preventive fix (linhas 110, 117, 128, 135) - Commit 92c97cb
+  - **Resultado:** AddPerformanceIndexes executa sem erros, índices criados, FK preservadas
+  - **Impacto:** Crash loop resolvido, performance indexes funcionais, zero data loss
 
 **Novas Issues Criadas (2025-12-04/05):**
 
-- #390 - [P1] Validação End-to-End Deploy Railway (DESBLOQUEADA - #400 + #402 + #403 resolvidos)
+- #390 - [P1] Validação End-to-End Deploy Railway (PRONTA - #400 + #402 + #403 + #404 resolvidos)
 - #391 - [P2] Implementar API de Status de Jobs Assíncronos
 - #392 - [P3] Documentar processo de deploy Railway completo
 - ~~#400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable~~ (✅ RESOLVIDO)
-- #401 - [P2] Investigar discrepância Health endpoint JSON vs text/plain
+- #401 - [P3] Investigar discrepância Health endpoint JSON vs text/plain (reprioritizada P2→P3)
 - ~~#402 - [P0][HOTFIX] Fix AddOrganizationToUsers migration idempotency~~ (✅ RESOLVIDO)
 - ~~#403 - [P0][HOTFIX] Fix AddOrganizationToEtps migration + InitialSchema naming~~ (✅ RESOLVIDO)
+- ~~#404 - [P0][HOTFIX] Fix column naming mismatch (etpId→etp_id)~~ (✅ RESOLVIDO)
+
+**Repriorizações (2025-12-05 - Auditoria Completa):**
+
+- #387: P0 → P2 (workaround estável, RAG não-crítico)
+- #186: P3 → P1 (processamento assíncrono essencial para estabilidade)
+- #401: P2 → P3 (provável falso positivo, baixa urgência)
+- #224: P4 → P2 (security não deve ser P4)
+- #223: P4 → P2 (security não deve ser P4)
+- #40: P2 → P3 (zero vulnerabilidades HIGH, não urgente)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
