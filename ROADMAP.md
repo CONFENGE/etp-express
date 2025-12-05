@@ -1,25 +1,19 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 12:10 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +4 issues resolvidas (#405, #406, #407, #409), +1 nova (#411)
+**Última Atualização:** 2025-12-05 12:40 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +5 issues resolvidas (#405, #406, #407, #409, #411), +1 nova (#413)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 191/220 issues concluídas (86.8%)
-**Velocidade:** 8.3 issues/dia (últimos 7 dias: 59 issues)
+**Progresso Global:** 192/220 issues concluídas (87.3%)
+**Velocidade:** 8.5 issues/dia (últimos 7 dias: 60 issues)
 **ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
-**⚠️ Deploy Status:** Backend production CRASHING - AddDeletedAtToUsers migration não-idempotente (#411 BLOCKER) | Resolvidos: #400, #402-#407, #409
+**✅ Deploy Status:** Backend production OPERATIONAL | Resolvidos: #400, #402-#407, #409, #411 | Pendente: #413 (security)
 
 ## 🚨 Railway Deploy Status
 
-**Bloqueadores Ativos:**
+**Bloqueadores Ativos:** NENHUM ✅
 
-**#411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency**
-
-- **Problema:** Backend crashing com `column "deletedAt" already exists` (PostgreSQL 42701)
-- **Impacto:** 100% backend functionality unavailable
-- **Descoberto:** Durante validação post-merge PR #410
-- **Solução:** Aplicar check-before-create pattern (mesmo padrão #402-#410)
-- **Status:** Issue criada 2025-12-05 12:10 UTC, aguardando hotfix
+**Backend Production:** OPERATIONAL (all migrations idempotent, zero crash loops)
 
 **Prioridades Atualizadas (2025-12-05):**
 
@@ -88,6 +82,18 @@
   - **Resultado:** Migration idempotente, 100/100 validation score, CI 6/6 passing
   - **Impacto:** PR #410 merged successfully (commit 265f61f), zero data loss, automated merge via /review-pr
   - **Post-merge:** Descobriu #411 (AddDeletedAtToUsers) durante validação Layer 3
+- ✅ #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency → **RESOLVIDO** (2025-12-05 12:35 UTC)
+  - **Problema:** Backend production CRASHING com `column "deletedAt" already exists` (PostgreSQL 42701)
+  - **Root Cause:** Migration completamente não-idempotente (up/down sem existence checks)
+  - **Solução:** Applied check-before-create pattern (information_schema) - PR #412
+  - **Resultado:** Migration idempotente, 100/100 validation score, CI 6/6 passing (all green)
+  - **Post-merge Validation:**
+    - Layer 1 (Health Checks): ✅ Backend (882 tests) + Frontend (71 tests) passing
+    - Layer 2 (Smoke Tests): N/A (not implemented)
+    - Layer 3 (CI Pipeline): ✅ ALL 4 workflows passing (Lint, Tests, Playwright, Secret Scan)
+  - **Impacto:** PR #412 merged successfully (commit c1c0058), backend production OPERATIONAL, zero data loss
+  - **Automated merge:** /review-pr command executed full validation + merge + post-merge validation
+  - **Security Note:** Discovered pre-existing jws vulnerability (HIGH) during review → Issue #413 created
 
 **Novas Issues Criadas (2025-12-04/05):**
 
@@ -103,7 +109,8 @@
 - ~~#406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations~~ (✅ RESOLVIDO)
 - ~~#407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency~~ (✅ RESOLVIDO)
 - ~~#409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency~~ (✅ RESOLVIDO via PR #410)
-- #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (CRIADA 2025-12-05 12:10 UTC)
+- ~~#411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency~~ (✅ RESOLVIDO via PR #412)
+- #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) (CRIADA 2025-12-05 12:40 UTC)
 
 **Repriorizações (2025-12-05 - Auditoria Completa):**
 
@@ -120,7 +127,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
 M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 23/34  (67.6%) 🔄 Maintenance
+M6: ██████████████░░░░░░ 24/34  (70.6%) 🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
