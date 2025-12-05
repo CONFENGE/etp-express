@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 22:50 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +7 issues resolvidas (#390, #405, #406, #407, #409, #411, #413)
+**Última Atualização:** 2025-12-05 23:30 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +8 issues resolvidas (#186, #390, #405, #406, #407, #409, #411, #413)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 194/220 issues concluídas (88.2%)
-**Velocidade:** 8.7 issues/dia (últimos 7 dias: 61 issues)
+**Progresso Global:** 195/220 issues concluídas (88.6%)
+**Velocidade:** 8.9 issues/dia (últimos 7 dias: 62 issues)
 **ETA Conclusão:** ~2025-12-07 (2 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #390, #400, #402-#407, #409, #411, #413 (security fix - zero vulnerabilities)
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186, #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix - zero vulnerabilities)
 
 ## 🚨 Railway Deploy Status
 
@@ -123,7 +123,8 @@
 - ~~#407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency~~ (✅ RESOLVIDO)
 - ~~#409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency~~ (✅ RESOLVIDO via PR #410)
 - ~~#411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency~~ (✅ RESOLVIDO via PR #412)
-- 🔄 #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) → **EM REVIEW** (PR #415 - 2025-12-05 13:30 UTC)
+- ✅ #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) → **RESOLVIDO** (PR #415 merged - 2025-12-05 22:50 UTC)
+- 🔄 #186 - [P1] Implementar processamento assíncrono com BullMQ → **EM REVIEW** (PR #416 - 2025-12-05 23:30 UTC)
 
 **Repriorizações (2025-12-05 - Auditoria Completa):**
 
