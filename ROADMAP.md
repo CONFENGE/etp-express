@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 03:45 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), +9 orphans, M6 +13 issues
+**Última Atualização:** 2025-12-05 11:40 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +3 issues resolvidas (#405, #406, #407)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 187/220 issues concluídas (85.0%)
-**Velocidade:** 7.9 issues/dia (últimos 7 dias: 55 issues)
-**ETA Conclusão:** ~2025-12-09 (4 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403 + #404)
+**Progresso Global:** 190/220 issues concluídas (86.4%)
+**Velocidade:** 8.2 issues/dia (últimos 7 dias: 58 issues)
+**ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
+**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403 + #404 + #405 + #406 + #407)
 
 ## 🚨 Railway Deploy Status
 
@@ -59,6 +59,22 @@
   - **Solução 2:** InitialSchema preventive fix (linhas 110, 117, 128, 135) - Commit 92c97cb
   - **Resultado:** AddPerformanceIndexes executa sem erros, índices criados, FK preservadas
   - **Impacto:** Crash loop resolvido, performance indexes funcionais, zero data loss
+- ✅ #405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent → **RESOLVIDO** (2025-12-05 10:28 UTC)
+  - **Problema:** Migration falhando com `table "secret_access_logs" already exists`
+  - **Solução:** Added table existence check before CREATE TABLE - Commit 9452594
+  - **Resultado:** Migration safe to re-run, zero crash loops
+  - **Impacto:** Backend production estável, idempotency pattern aplicado
+- ✅ #406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations → **RESOLVIDO** (2025-12-05 10:35 UTC)
+  - **Problema:** CreateSecretAccessLogs + AddSecretsAccessColumn causing crash loops
+  - **Solução:** Both migrations disabled (.disabled) - Commit 3333fd3
+  - **Resultado:** Backend production estável, workaround temporário funcionando
+  - **Impacto:** Eliminados crash loops, feature não-crítica pode ser reativada depois
+- ✅ #407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency → **RESOLVIDO** (2025-12-05 11:28 UTC)
+  - **Problema:** Migration falhando com `column "lgpdConsentAt" already exists` (PostgreSQL 42701)
+  - **Root Cause:** Migration não-idempotente tentava ADD COLUMN sem verificar existência
+  - **Solução:** Added column existence checks (information_schema) - Commit 9bbe285
+  - **Resultado:** Migration idempotente, safe to re-run multiple times
+  - **Impacto:** Backend production OPERACIONAL, crash loop resolvido, zero data loss
 
 **Novas Issues Criadas (2025-12-04/05):**
 
@@ -70,6 +86,9 @@
 - ~~#402 - [P0][HOTFIX] Fix AddOrganizationToUsers migration idempotency~~ (✅ RESOLVIDO)
 - ~~#403 - [P0][HOTFIX] Fix AddOrganizationToEtps migration + InitialSchema naming~~ (✅ RESOLVIDO)
 - ~~#404 - [P0][HOTFIX] Fix column naming mismatch (etpId→etp_id)~~ (✅ RESOLVIDO)
+- ~~#405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent~~ (✅ RESOLVIDO)
+- ~~#406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations~~ (✅ RESOLVIDO)
+- ~~#407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency~~ (✅ RESOLVIDO)
 
 **Repriorizações (2025-12-05 - Auditoria Completa):**
 
@@ -86,7 +105,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
 M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: ███████████░░░░░░░░░ 19/34  (55.9%) 🔄 Maintenance
+M6: █████████████░░░░░░░ 22/34  (64.7%) 🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -225,7 +244,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (19/34) - 55.9%
+### 🔄 M6: Maintenance (22/34) - 64.7%
 
 **Status:** RECORRENTE
 
@@ -249,20 +268,19 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #394 - [P0] Railway crash: PostgreSQL SSL connection error (RESOLVIDO 2025-12-04 13:45 UTC)
 - ✅ #397 - [P2] Railway: Corrigir healthcheckPath no railway.toml (RESOLVIDO 2025-12-04 22:16 UTC)
 
-#### Concluídas Recentes (2):
+#### Concluídas Recentes (5):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
+- ✅ #404 - [P0][HOTFIX] Column naming mismatch (etpId→etp_id) (PR #408 - MERGED 2025-12-05)
+- ✅ #405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent (Commit 9452594)
+- ✅ #406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations (Commit 3333fd3)
+- ✅ #407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency (PR #408 - MERGED 2025-12-05)
 
-#### Pendentes (15):
+#### Pendentes (12):
 
 **P0 - Critical:**
 
-- [ ] #404 - [P0][HOTFIX] Fix column naming mismatch (etp_sections/etp_versions: etpId→etp_id) **[NOVA - 2025-12-05]**
-  - **Bloqueio:** AddPerformanceIndexes migration falhando (`column "etp_id" does not exist`)
-  - **Root Cause:** InitialSchema criou `etpId` (camelCase), mas migration esperava `etp_id` (snake_case)
-  - **Solução:** Migration 1733360000000-RenameEtpIdColumns.ts + preventive fix InitialSchema
-  - **Status:** Issue criada 2025-12-05 01:09 UTC
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
