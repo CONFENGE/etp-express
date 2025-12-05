@@ -13,6 +13,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### 🔒 Security & Infrastructure (2025-12-05)
+
+- ✅ #413 - Fix HIGH severity jws vulnerability + Update Railway domain (PR #415)
+  - **Security Fix:** Upgraded `jws` from 3.2.2 to 3.2.3 (CVE Score: 7.5 HIGH)
+  - Fixed GHSA-869p-cjfg-cm3x: Improper Verification of Cryptographic Signature (CWE-347)
+  - Added npm `overrides` for `jws@^4.0.0` to force secure version
+  - Upgraded `nodemailer` from 7.0.10 to 7.0.11 (LOW severity fix)
+  - **Documentation:** Updated all Railway domain references from `etp-express-backend.up.railway.app` to `etp-express-backend-production.up.railway.app`
+  - Zero vulnerabilities after fix (`npm audit --omit=dev`)
+  - All 882 tests passing ✅
+
 #### ⚡ Async Processing & Performance (2025-12-04)
 
 - ✅ #220 - Implementar BullMQ para geração assíncrona de seções (PR #386)

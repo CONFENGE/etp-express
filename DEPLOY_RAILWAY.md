@@ -84,6 +84,7 @@ railway init
 Você tem duas opções:
 
 #### Opção A: Via Railway CLI
+
 ```bash
 # Conectar ao database
 railway connect postgres
@@ -93,6 +94,7 @@ railway connect postgres
 ```
 
 #### Opção B: Via GUI (TablePlus, pgAdmin, etc)
+
 1. Copie a connection string do Railway
 2. Conecte com TablePlus/pgAdmin
 3. Execute o arquivo `DATABASE_SCHEMA.sql`
@@ -171,9 +173,9 @@ Após deploy bem-sucedido:
 1. Clique no serviço `etp-express-backend`
 2. Vá em **"Settings"** → **"Domains"**
 3. Clique **"Generate Domain"**
-4. Anote a URL: `https://etp-express-backend.up.railway.app`
-5. Teste: `https://etp-express-backend.up.railway.app/api`
-6. Acesse Swagger: `https://etp-express-backend.up.railway.app/api/docs`
+4. Anote a URL: `https://etp-express-backend-production.up.railway.app`
+5. Teste: `https://etp-express-backend-production.up.railway.app/api`
+6. Acesse Swagger: `https://etp-express-backend-production.up.railway.app/api/docs`
 
 ---
 
@@ -195,7 +197,7 @@ No serviço `etp-express-frontend`, adicione:
 
 ```bash
 # API URL (usar a URL do backend gerada no passo anterior)
-VITE_API_URL=https://etp-express-backend.up.railway.app/api
+VITE_API_URL=https://etp-express-backend-production.up.railway.app/api
 
 # App Config
 VITE_APP_NAME=ETP Express
@@ -231,6 +233,7 @@ VITE_APP_NAME=ETP Express
 Acesse: `https://etp-express-frontend.up.railway.app`
 
 Você deve ver:
+
 - Página de login do ETP Express
 - WarningBanner no topo
 - Interface responsiva
@@ -262,9 +265,9 @@ Clique no serviço → Aba "Logs"
 
 ### 5.3 Healthchecks
 
-- Backend: `https://etp-express-backend.up.railway.app/api`
-- Backend Info: `https://etp-express-backend.up.railway.app/api/info`
-- Swagger: `https://etp-express-backend.up.railway.app/api/docs`
+- Backend: `https://etp-express-backend-production.up.railway.app/api`
+- Backend Info: `https://etp-express-backend-production.up.railway.app/api/info`
+- Swagger: `https://etp-express-backend-production.up.railway.app/api/docs`
 - Frontend: `https://etp-express-frontend.up.railway.app`
 
 ### 5.4 Timeout Configuration
@@ -276,6 +279,7 @@ Clique no serviço → Aba "Logs"
 **Razao:** Cold start do NestJS + TypeORM pode levar ate 60s em primeira inicializacao.
 
 **Configuracao via `railway.toml`:**
+
 ```toml
 [deploy]
 healthcheckPath = "/api/health"
@@ -292,6 +296,7 @@ requestTimeout = 120
 ```
 
 **Monitoramento:**
+
 - Railway Logs: Verificar ocorrencias de "TIMEOUT" ou "504 Gateway Timeout"
 - Se timeouts persistirem, considerar implementacao de fila assincrona (Issue #186 - ASYNC-02)
 
@@ -311,6 +316,7 @@ Se você tem um domínio próprio:
 ### 6.2 Variáveis Sensíveis
 
 **NUNCA** commite no Git:
+
 - `OPENAI_API_KEY`
 - `PERPLEXITY_API_KEY`
 - `JWT_SECRET`
@@ -321,11 +327,13 @@ Sempre configure via Railway Dashboard → Variables.
 ### 6.3 Monitoramento
 
 Railway oferece:
+
 - Metrics automáticos (CPU, RAM, Network)
 - Logs em tempo real
 - Alertas de crash
 
 Configure alertas:
+
 1. Settings → Notifications
 2. Adicione email ou webhook
 
@@ -350,6 +358,7 @@ Configure alertas:
 ### 7.2 Métricas de Uso
 
 Railway Dashboard mostra:
+
 - Requests/min
 - Response time
 - Error rate
@@ -358,6 +367,7 @@ Railway Dashboard mostra:
 ### 7.3 Custos
 
 **Railway Hobby Plan ($5/mês)**:
+
 - 3 serviços (PostgreSQL, Backend, Frontend)
 - $5 de créditos inclusos
 - PostgreSQL: ~$3/mês
@@ -367,6 +377,7 @@ Railway Dashboard mostra:
 **Total estimado**: $7-10/mês
 
 Para ambientes de produção maiores, considere:
+
 - Railway Pro ($20/mês + usage)
 - [FUTURE] Multi-cloud migration (AWS/Azure/GCP) only if scaling beyond Railway capacity
 
@@ -377,6 +388,7 @@ Para ambientes de produção maiores, considere:
 ### Problema: Backend não inicia
 
 **Solução**:
+
 ```bash
 # Verificar logs
 railway logs --service=etp-express-backend
@@ -391,6 +403,7 @@ railway logs --service=etp-express-backend
 ### Problema: Frontend não conecta ao backend
 
 **Solução**:
+
 1. Verificar `VITE_API_URL` no frontend
 2. Verificar `CORS_ORIGINS` no backend
 3. Testar backend direto: `https://backend-url.railway.app/api`
@@ -398,6 +411,7 @@ railway logs --service=etp-express-backend
 ### Problema: Migrations falham
 
 **Solução**:
+
 ```bash
 # Conectar ao database
 railway connect postgres
@@ -412,6 +426,7 @@ railway connect postgres
 ### Problema: Custo alto
 
 **Solução**:
+
 1. Verificar uso de recursos no Dashboard
 2. Desativar logs verbosos (`LOG_LEVEL=warn`)
 3. Reduzir `OPENAI_MAX_TOKENS`
@@ -422,11 +437,13 @@ railway connect postgres
 ## 📚 RECURSOS ADICIONAIS
 
 ### Documentação Railway
+
 - Docs oficiais: https://docs.railway.app
 - Discord: https://discord.gg/railway
 - Status: https://status.railway.app
 
 ### Railway CLI
+
 ```bash
 # Login
 railway login
@@ -531,6 +548,7 @@ Antes de considerar o deploy completo, verifique:
 **⚠️ LEMBRETE IMPORTANTE**
 
 O ETP Express é um **sistema assistivo**. Não substitui:
+
 - Responsabilidade administrativa
 - Análise jurídica especializada
 - Decisões técnicas de servidores
