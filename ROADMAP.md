@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-04 23:50 UTC | **Auditoria:** Issues #400 + #402 RESOLVIDAS - Backend estável
+**Última Atualização:** 2025-12-05 00:40 UTC | **Auditoria:** Issues #400 + #402 + #403 RESOLVIDAS - Backend production OPERACIONAL
 
 ## 📊 Status Atual
 
-**Progresso Global:** 183/210 issues concluídas (87.1%)
-**Velocidade:** 8.0 issues/dia (últimos 7 dias: 56 issues)
-**ETA Conclusão:** ~2025-12-08 (4 dias - quality-first approach)
-**✅ Deploy Status:** Backend production estável - crashes resolvidos (#400 + #402)
+**Progresso Global:** 184/210 issues concluídas (87.6%)
+**Velocidade:** 8.2 issues/dia (últimos 7 dias: 57 issues)
+**ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
+**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403)
 
 ## 🚨 Railway Deploy Status
 
@@ -45,15 +45,23 @@
   - **Commit:** f75ea52
   - **Resultado:** Backend estável, startup limpo sem retries
   - **Impacto:** Eliminados crash loops e startup delays (~6-10s reduzidos a <2s)
+- ✅ #403 - [P0][HOTFIX] Fix AddOrganizationToEtps migration + InitialSchema naming → **RESOLVIDO** (2025-12-05 00:40 UTC)
+  - **Problema 1:** Migration AddOrganizationToEtps não idempotente (column organizationId already exists)
+  - **Problema 2:** InitialSchema criou `createdById` (camelCase) mas entidade espera `created_by` (snake_case)
+  - **Solução 1:** Migration idempotente (check-before-create pattern) - Commit 07ed572
+  - **Solução 2:** InitialSchema preventive fix (bbaa804) + Migration RenameEtpsCreatedByIdColumn (f063a9b)
+  - **Resultado:** Backend production OPERACIONAL, zero crash loops, migrations executando corretamente
+  - **Impacto:** Backend 100% funcional, health endpoint 200 OK, CI/CD green
 
-**Novas Issues Criadas (2025-12-04):**
+**Novas Issues Criadas (2025-12-04/05):**
 
-- #390 - [P1] Validação End-to-End Deploy Railway (DESBLOQUEADA - #400 + #402 resolvidos)
+- #390 - [P1] Validação End-to-End Deploy Railway (DESBLOQUEADA - #400 + #402 + #403 resolvidos)
 - #391 - [P2] Implementar API de Status de Jobs Assíncronos
 - #392 - [P3] Documentar processo de deploy Railway completo
 - ~~#400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable~~ (✅ RESOLVIDO)
 - #401 - [P2] Investigar discrepância Health endpoint JSON vs text/plain
 - ~~#402 - [P0][HOTFIX] Fix AddOrganizationToUsers migration idempotency~~ (✅ RESOLVIDO)
+- ~~#403 - [P0][HOTFIX] Fix AddOrganizationToEtps migration + InitialSchema naming~~ (✅ RESOLVIDO)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
