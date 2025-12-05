@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 13:00 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +6 issues resolvidas (#390, #405, #406, #407, #409, #411), +1 nova (#413)
+**Última Atualização:** 2025-12-05 13:30 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +6 issues resolvidas (#390, #405, #406, #407, #409, #411), #413 em review (PR #415)
 
 ## 📊 Status Atual
 
 **Progresso Global:** 193/220 issues concluídas (87.7%)
 **Velocidade:** 8.7 issues/dia (últimos 7 dias: 61 issues)
 **ETA Conclusão:** ~2025-12-07 (2 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED | Resolvidos: #390, #400, #402-#407, #409, #411 | Pendente: #413 (security)
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED | Resolvidos: #390, #400, #402-#407, #409, #411 | Em Review: #413 (security - PR #415)
 
 ## 🚨 Railway Deploy Status
 
@@ -96,6 +96,17 @@
   - **Impacto:** PR #412 merged successfully (commit c1c0058), backend production OPERATIONAL, zero data loss
   - **Automated merge:** /review-pr command executed full validation + merge + post-merge validation
   - **Security Note:** Discovered pre-existing jws vulnerability (HIGH) during review → Issue #413 created
+- 🔄 #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) → **EM REVIEW** (PR #415 - 2025-12-05 13:30 UTC)
+  - **Problema:** jws@3.2.2 with improper HMAC signature verification (GHSA-869p-cjfg-cm3x)
+  - **Solução Principal:** npm audit fix (jws 3.2.2→3.2.3, nodemailer 7.0.10→7.0.11)
+  - **Solução Adicional:** Added npm overrides (jws@^4.0.0) in root package.json
+  - **Documentação:** Updated DEPLOY_RAILWAY.md with new domain (etp-express-backend-production.up.railway.app)
+  - **Validação:**
+    - ✅ npm audit --omit=dev: 0 vulnerabilities
+    - ✅ All 882 backend tests passing
+    - ✅ Zero breaking changes (JWT authentication unchanged)
+  - **Impacto:** Eliminated HIGH severity security vulnerability (CWE-347)
+  - **Status:** PR #415 created, awaiting manual merge
 
 **Novas Issues Criadas (2025-12-04/05):**
 
@@ -112,7 +123,7 @@
 - ~~#407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency~~ (✅ RESOLVIDO)
 - ~~#409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency~~ (✅ RESOLVIDO via PR #410)
 - ~~#411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency~~ (✅ RESOLVIDO via PR #412)
-- #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) (CRIADA 2025-12-05 12:40 UTC)
+- 🔄 #413 - [P1][Security] Fix HIGH severity jws vulnerability (CVE 7.5) → **EM REVIEW** (PR #415 - 2025-12-05 13:30 UTC)
 
 **Repriorizações (2025-12-05 - Auditoria Completa):**
 
