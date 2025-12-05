@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 01:10 UTC | **Auditoria Completa:** 32 issues auditadas, 6 repriorizadas, #404 RESOLVIDA
+**Última Atualização:** 2025-12-05 03:45 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), +9 orphans, M6 +13 issues
 
 ## 📊 Status Atual
 
-**Progresso Global:** 185/211 issues concluídas (87.7%)
-**Velocidade:** 8.3 issues/dia (últimos 7 dias: 58 issues)
-**ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
+**Progresso Global:** 187/220 issues concluídas (85.0%)
+**Velocidade:** 7.9 issues/dia (últimos 7 dias: 55 issues)
+**ETA Conclusão:** ~2025-12-09 (4 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403 + #404)
 
 ## 🚨 Railway Deploy Status
@@ -81,12 +81,12 @@
 - #40: P2 → P3 (zero vulnerabilidades HIGH, não urgente)
 
 ```
-M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
+M1: ████████████████████ 36/36  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
-M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ███████░░░░░░░░░░░░░  9/25  (36%)  📚 E2E Testing & Documentation
-M6: ██████████░░░░░░░░░░ 11/21  (52%)  🔄 Maintenance
+M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
+M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
+M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
+M6: ███████████░░░░░░░░░ 19/34  (55.9%) 🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -94,7 +94,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Milestones
 
-### ✅ M1: Foundation - Testes (35/35) - 100%
+### ✅ M1: Foundation - Testes (36/36) - 100%
 
 **Finalizado:** 2025-11-20
 
@@ -119,7 +119,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### ✅ M3: Quality & Security (57/57) - 100%
+### ✅ M3: Quality & Security (58/58) - 100%
 
 **Finalizado:** 2025-11-28
 
@@ -144,7 +144,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### ✅ M4: Refactoring & Performance (44/44) - 100%
+### ✅ M4: Refactoring & Performance (45/45) - 100%
 
 **Finalizado:** 2025-12-01
 
@@ -186,7 +186,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (9/25) - 36%
+### 📚 M5: E2E Testing & Documentation (9/26) - 34.6%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
@@ -225,11 +225,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (11/21) - 52%
+### 🔄 M6: Maintenance (19/34) - 55.9%
 
 **Status:** RECORRENTE
 
-#### Concluídas (11):
+#### Concluídas (19):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -245,21 +245,25 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #378 - Fix TypeORM explicit types entidades restantes (PR #385 - 2025-12-04)
 - ✅ #379 - Migrar LLMs: GPT-4.1 nano + Perplexity sonar (~30% redução custos)
 - ✅ #396 - Railway: Database schema vazio - migrations falhando (PR #399 + hotfix 0fbb813)
+- ✅ #393 - [P0] Railway build failing: nest command error (RESOLVIDO 2025-12-04 12:30 UTC)
+- ✅ #394 - [P0] Railway crash: PostgreSQL SSL connection error (RESOLVIDO 2025-12-04 13:45 UTC)
+- ✅ #397 - [P2] Railway: Corrigir healthcheckPath no railway.toml (RESOLVIDO 2025-12-04 22:16 UTC)
 
-#### Concluídas Recentes (3):
+#### Concluídas Recentes (2):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
-- ✅ #396 - [P0] Railway: Database schema vazio - migrations falhando (RESOLVIDO 2025-12-04 22:41 UTC)
-  - **Solução:** Migration inicial `1000000000000-InitialSchema.ts` criada
-  - **Impacto:** 11 tabelas base criadas, backend production funcional
-  - **PR:** #399 + hotfix commit 0fbb813
 
-#### Pendentes (13):
+#### Pendentes (15):
 
 **P0 - Critical:**
 
-- [ ] #387 - [P0] Migrar PostgreSQL para versão com suporte a pgvector **[EM PROGRESSO]**
+- [ ] #404 - [P0][HOTFIX] Fix column naming mismatch (etp_sections/etp_versions: etpId→etp_id) **[NOVA - 2025-12-05]**
+  - **Bloqueio:** AddPerformanceIndexes migration falhando (`column "etp_id" does not exist`)
+  - **Root Cause:** InitialSchema criou `etpId` (camelCase), mas migration esperava `etp_id` (snake_case)
+  - **Solução:** Migration 1733360000000-RenameEtpIdColumns.ts + preventive fix InitialSchema
+  - **Status:** Issue criada 2025-12-05 01:09 UTC
+- [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
   - **Solução:** Deploy template pgvector + pg_backup/restore (~6-8h)
@@ -268,7 +272,10 @@ M7: ████████████████████  6/6   (100%) �
 
 **P1 - High:**
 
-- [ ] #40 - Atualizar dependências desatualizadas
+- [ ] #186 - Implementar processamento assíncrono de seções (BullMQ) **[REPRIORITIZADA P3→P1]**
+  - **Motivação:** Evitar timeouts em gerações longas (>30s), melhor UX
+  - **Dependência:** #391 (Job Status API)
+- [ ] #40 - Atualizar dependências desatualizadas **[REPRIORITIZADA P2→P3]**
 - [ ] #390 - [P1] Validação End-to-End Deploy Railway **[NOVA - 2025-12-04]**
   - Checklist completo pós-resolução #387 e #388
 - [ ] #391 - [P2] Implementar API de Status de Jobs Assíncronos **[NOVA - 2025-12-04]**
