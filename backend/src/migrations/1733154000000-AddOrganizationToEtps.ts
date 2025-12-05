@@ -17,31 +17,51 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  */
 export class AddOrganizationToEtps1733154000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Step 1: Add organizationId column (UUID, NOT NULL)
-    await queryRunner.query(`
-      ALTER TABLE "etps"
-      ADD COLUMN "organizationId" UUID NOT NULL
-    `);
+    // Check if column and constraints already exist (idempotency)
+    const table = await queryRunner.getTable('etps');
+    const hasOrganizationIdColumn = table?.columns.some(
+      (col) => col.name === 'organizationId',
+    );
 
-    // Step 2: Create foreign key to organizations table (ON DELETE RESTRICT)
-    await queryRunner.query(`
-      ALTER TABLE "etps"
-      ADD CONSTRAINT "FK_etps_organization"
-      FOREIGN KEY ("organizationId")
-      REFERENCES "organizations"("id")
-      ON DELETE RESTRICT
-    `);
+    // Step 1: Add organizationId column (UUID, NOT NULL) - only if not exists
+    if (!hasOrganizationIdColumn) {
+      await queryRunner.query(`
+        ALTER TABLE "etps"
+        ADD COLUMN "organizationId" UUID NOT NULL
+      `);
+    }
 
-    // Step 3: Create compound index (organizationId, createdAt) for optimized queries
+    // Step 2: Create foreign key to organizations table (ON DELETE RESTRICT) - idempotent
+    const hasForeignKey = table?.foreignKeys.some(
+      (fk) => fk.name === 'FK_etps_organization',
+    );
+
+    if (!hasForeignKey) {
+      await queryRunner.query(`
+        ALTER TABLE "etps"
+        ADD CONSTRAINT "FK_etps_organization"
+        FOREIGN KEY ("organizationId")
+        REFERENCES "organizations"("id")
+        ON DELETE RESTRICT
+      `);
+    }
+
+    // Step 3: Create compound index (organizationId, createdAt) - idempotent
     // Supports common query patterns:
     // - SELECT * FROM etps WHERE organizationId = ? ORDER BY createdAt DESC
     // - Paginated ETP listing scoped by organization
-    await queryRunner.query(`
-      CREATE INDEX "IDX_etps_organization_createdAt"
-      ON "etps" ("organizationId", "createdAt")
-    `);
+    const hasIndex = table?.indices.some(
+      (idx) => idx.name === 'IDX_etps_organization_createdAt',
+    );
 
-    // Step 4: Remove metadata.orgao field using JSONB operations
+    if (!hasIndex) {
+      await queryRunner.query(`
+        CREATE INDEX "IDX_etps_organization_createdAt"
+        ON "etps" ("organizationId", "createdAt")
+      `);
+    }
+
+    // Step 4: Remove metadata.orgao field using JSONB operations (always safe - idempotent)
     // This is a data transformation - removes 'orgao' key from JSONB metadata column
     await queryRunner.query(`
       UPDATE "etps"
