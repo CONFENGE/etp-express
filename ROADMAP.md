@@ -1,19 +1,25 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 11:40 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +3 issues resolvidas (#405, #406, #407)
+**Última Atualização:** 2025-12-05 12:10 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +4 issues resolvidas (#405, #406, #407, #409), +1 nova (#411)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 190/220 issues concluídas (86.4%)
-**Velocidade:** 8.2 issues/dia (últimos 7 dias: 58 issues)
+**Progresso Global:** 191/220 issues concluídas (86.8%)
+**Velocidade:** 8.3 issues/dia (últimos 7 dias: 59 issues)
 **ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERACIONAL - todos crash loops resolvidos (#400 + #402 + #403 + #404 + #405 + #406 + #407)
+**⚠️ Deploy Status:** Backend production CRASHING - AddDeletedAtToUsers migration não-idempotente (#411 BLOCKER) | Resolvidos: #400, #402-#407, #409
 
 ## 🚨 Railway Deploy Status
 
 **Bloqueadores Ativos:**
 
-**NENHUM** - Todos bloqueadores P0/P1 resolvidos! ✅
+**#411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency**
+
+- **Problema:** Backend crashing com `column "deletedAt" already exists` (PostgreSQL 42701)
+- **Impacto:** 100% backend functionality unavailable
+- **Descoberto:** Durante validação post-merge PR #410
+- **Solução:** Aplicar check-before-create pattern (mesmo padrão #402-#410)
+- **Status:** Issue criada 2025-12-05 12:10 UTC, aguardando hotfix
 
 **Prioridades Atualizadas (2025-12-05):**
 
@@ -75,6 +81,13 @@
   - **Solução:** Added column existence checks (information_schema) - Commit 9bbe285
   - **Resultado:** Migration idempotente, safe to re-run multiple times
   - **Impacto:** Backend production OPERACIONAL, crash loop resolvido, zero data loss
+- ✅ #409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency → **RESOLVIDO** (2025-12-05 12:06 UTC)
+  - **Problema:** Migration falhando com `column "internationalTransferConsentAt" already exists` (PostgreSQL 42701)
+  - **Root Cause:** Migration completamente não-idempotente (up/down sem checks)
+  - **Solução:** Applied check-before-create pattern (information_schema) - PR #410
+  - **Resultado:** Migration idempotente, 100/100 validation score, CI 6/6 passing
+  - **Impacto:** PR #410 merged successfully (commit 265f61f), zero data loss, automated merge via /review-pr
+  - **Post-merge:** Descobriu #411 (AddDeletedAtToUsers) durante validação Layer 3
 
 **Novas Issues Criadas (2025-12-04/05):**
 
@@ -89,6 +102,8 @@
 - ~~#405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent~~ (✅ RESOLVIDO)
 - ~~#406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations~~ (✅ RESOLVIDO)
 - ~~#407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency~~ (✅ RESOLVIDO)
+- ~~#409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency~~ (✅ RESOLVIDO via PR #410)
+- #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (CRIADA 2025-12-05 12:10 UTC)
 
 **Repriorizações (2025-12-05 - Auditoria Completa):**
 
@@ -105,7 +120,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
 M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: █████████████░░░░░░░ 22/34  (64.7%) 🔄 Maintenance
+M6: ██████████████░░░░░░ 23/34  (67.6%) 🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -244,7 +259,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (22/34) - 64.7%
+### 🔄 M6: Maintenance (23/34) - 67.6%
 
 **Status:** RECORRENTE
 
@@ -268,7 +283,7 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #394 - [P0] Railway crash: PostgreSQL SSL connection error (RESOLVIDO 2025-12-04 13:45 UTC)
 - ✅ #397 - [P2] Railway: Corrigir healthcheckPath no railway.toml (RESOLVIDO 2025-12-04 22:16 UTC)
 
-#### Concluídas Recentes (5):
+#### Concluídas Recentes (6):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
@@ -276,11 +291,18 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent (Commit 9452594)
 - ✅ #406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations (Commit 3333fd3)
 - ✅ #407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency (PR #408 - MERGED 2025-12-05)
+- ✅ #409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency (PR #410 - MERGED 2025-12-05 via /review-pr)
 
-#### Pendentes (12):
+#### Pendentes (11):
 
 **P0 - Critical:**
 
+- [ ] #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency **[NOVA - 2025-12-05 12:10 UTC]**
+  - **Bloqueio:** Backend crashing com `column "deletedAt" already exists` (PostgreSQL 42701)
+  - **Impacto:** 100% backend functionality unavailable
+  - **Solução:** Aplicar check-before-create pattern (mesmo padrão #402-#410)
+  - **Descoberto:** Durante validação post-merge PR #410
+  - **Urgência:** IMEDIATA - backend production down
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
