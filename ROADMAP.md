@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 12:40 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +5 issues resolvidas (#405, #406, #407, #409, #411), +1 nova (#413)
+**Última Atualização:** 2025-12-05 13:00 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +6 issues resolvidas (#390, #405, #406, #407, #409, #411), +1 nova (#413)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 192/220 issues concluídas (87.3%)
-**Velocidade:** 8.5 issues/dia (últimos 7 dias: 60 issues)
-**ETA Conclusão:** ~2025-12-08 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL | Resolvidos: #400, #402-#407, #409, #411 | Pendente: #413 (security)
+**Progresso Global:** 193/220 issues concluídas (87.7%)
+**Velocidade:** 8.7 issues/dia (últimos 7 dias: 61 issues)
+**ETA Conclusão:** ~2025-12-07 (2 dias - quality-first approach)
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED | Resolvidos: #390, #400, #402-#407, #409, #411 | Pendente: #413 (security)
 
 ## 🚨 Railway Deploy Status
 
@@ -18,9 +18,11 @@
 **Prioridades Atualizadas (2025-12-05):**
 
 - ✅ #404 - [P0][HOTFIX] Column naming mismatch → **RESOLVIDO** (commits 74a576d + 92c97cb)
-- 🟢 #390 - [P1] Validação End-to-End Deploy Railway → **PRONTA PARA EXECUÇÃO**
-  - Desbloqueada após resolução #404
-  - Próximo passo: Executar validação completa após deploy completar
+- ✅ #390 - [P1] Validação End-to-End Deploy Railway → **RESOLVIDO** (2025-12-05 13:00 UTC)
+  - **Validação Completa:** 8/9 checks passing (88.9% - PRODUCTION READY)
+  - **Documento:** `scripts/validation-results-390-railway-e2e.md`
+  - **Descobertas:** Novo domínio `etp-express-backend-production.up.railway.app` funcional
+  - **Resultado:** Backend production OPERATIONAL & VALIDATED
 - 🔄 #387 - pgvector migration → **REPRIORITIZADA: P0 → P2**
   - Razão: Workaround estável, RAG não-crítico (10/11 módulos funcionais = 90.9%)
   - Backend operacional sem RAG
@@ -97,7 +99,7 @@
 
 **Novas Issues Criadas (2025-12-04/05):**
 
-- #390 - [P1] Validação End-to-End Deploy Railway (PRONTA - #400 + #402 + #403 + #404 resolvidos)
+- ~~#390 - [P1] Validação End-to-End Deploy Railway~~ (✅ RESOLVIDO - validation-results-390-railway-e2e.md)
 - #391 - [P2] Implementar API de Status de Jobs Assíncronos
 - #392 - [P3] Documentar processo de deploy Railway completo
 - ~~#400 - [P0][HOTFIX] Desabilitar migration CreateLegislationTable~~ (✅ RESOLVIDO)
@@ -127,7 +129,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
 M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 24/34  (70.6%) 🔄 Maintenance
+M6: ██████████████░░░░░░ 24/34  (70.6%) 🔄 Maintenance (Validação E2E ✅)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -266,11 +268,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (23/34) - 67.6%
+### 🔄 M6: Maintenance (24/34) - 70.6%
 
 **Status:** RECORRENTE
 
-#### Concluídas (19):
+#### Concluídas (20):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -290,17 +292,22 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #394 - [P0] Railway crash: PostgreSQL SSL connection error (RESOLVIDO 2025-12-04 13:45 UTC)
 - ✅ #397 - [P2] Railway: Corrigir healthcheckPath no railway.toml (RESOLVIDO 2025-12-04 22:16 UTC)
 
-#### Concluídas Recentes (6):
+#### Concluídas Recentes (7):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
+- ✅ #390 - [P1] Validação End-to-End Deploy Railway (RESOLVIDO 2025-12-05 13:00 UTC)
+  - **Validação Completa:** 8/9 checks passing (88.9% - PRODUCTION READY)
+  - **Documento:** scripts/validation-results-390-railway-e2e.md
+  - **Score:** Health ✅, Database ✅, Redis ✅, Auth ✅, Response Time ✅ (<1s)
+  - **Descoberta:** Novo domínio production funcionando corretamente
 - ✅ #404 - [P0][HOTFIX] Column naming mismatch (etpId→etp_id) (PR #408 - MERGED 2025-12-05)
 - ✅ #405 - [P0][HOTFIX] Make CreateSecretAccessLogs migration idempotent (Commit 9452594)
 - ✅ #406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations (Commit 3333fd3)
 - ✅ #407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency (PR #408 - MERGED 2025-12-05)
 - ✅ #409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency (PR #410 - MERGED 2025-12-05 via /review-pr)
 
-#### Pendentes (11):
+#### Pendentes (10):
 
 **P0 - Critical:**
 
@@ -323,8 +330,6 @@ M7: ████████████████████  6/6   (100%) �
   - **Motivação:** Evitar timeouts em gerações longas (>30s), melhor UX
   - **Dependência:** #391 (Job Status API)
 - [ ] #40 - Atualizar dependências desatualizadas **[REPRIORITIZADA P2→P3]**
-- [ ] #390 - [P1] Validação End-to-End Deploy Railway **[NOVA - 2025-12-04]**
-  - Checklist completo pós-resolução #387 e #388
 - [ ] #391 - [P2] Implementar API de Status de Jobs Assíncronos **[NOVA - 2025-12-04]**
   - Endpoint REST para consulta status BullMQ jobs
   - Bloqueador de #222 (Frontend async UX)
