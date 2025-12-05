@@ -74,7 +74,8 @@ Railway Stack:
 ├── Service: etp-express-backend (NestJS)
 ├── Service: etp-express-frontend (React/Vite)
 ├── Database: PostgreSQL 15
-└── Env Variables: API_KEYS, JWT_SECRET, DATABASE_URL
+├── Redis: Job Queue (BullMQ)
+└── Env Variables: API_KEYS, JWT_SECRET, DATABASE_URL, REDIS_URL
 ```
 
 ### 2.5 Database Configuration & Performance
@@ -118,7 +119,112 @@ TypeOrmModule.forRootAsync({
 - Connection pool metrics available via health checks
 - Railway database metrics dashboard
 
-### 2.6 Health Checks
+### 2.6 Job Queue & Async Processing (#186, #220, #391)
+
+O ETP Express implementa processamento assíncrono para operações de longa duração usando **BullMQ** com backend Redis.
+
+**Arquitetura:**
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                 ASYNC SECTION GENERATION                    │
+├────────────────────────────────────────────────────────────┤
+│                                                              │
+│  HTTP Request → Queue Job (jobId) → Return Immediately      │
+│       ↓               ↓                    ↓                │
+│  Client Polling → Worker Process → Update Progress         │
+│       ↓               ↓                    ↓                │
+│  Poll Status → AI Generation → Save to DB → Notify         │
+│                                                              │
+└────────────────────────────────────────────────────────────┘
+```
+
+**Tecnologias:**
+
+- **BullMQ**: Redis-backed job queue com retry e scheduling
+- **Redis**: Railway Redis service para job storage
+- **@nestjs/bullmq**: Integração NestJS com decorators
+
+**Características:**
+
+- **Retry Logic**: 3 tentativas com exponential backoff (5s, 10s, 20s)
+- **Timeout**: 5 minutos por job (configurable)
+- **Progress Tracking**: Updates em tempo real (0-100%)
+- **Job Cleanup**: 100 completed jobs retained, 1000 failed jobs
+- **Escalabilidade**: Múltiplos workers podem processar jobs em paralelo
+
+**Endpoints:**
+
+```typescript
+// Queue a section generation job
+POST /sections/etp/:etpId/generate
+Response: { jobId: string, status: 'waiting', ... }
+
+// Poll job status
+GET /sections/jobs/:jobId
+Response: {
+  jobId: string,
+  status: 'waiting' | 'active' | 'completed' | 'failed',
+  progress: number, // 0-100
+  result?: SectionDTO, // Available when completed
+  error?: string, // Available when failed
+  createdAt: Date,
+  completedAt?: Date
+}
+```
+
+**Fluxo de Geração:**
+
+1. Client envia `POST /sections/etp/:etpId/generate`
+2. Backend cria section entity com status `GENERATING`
+3. Job enfileirado no BullMQ com jobId retornado
+4. Client faz polling de `GET /sections/jobs/:jobId` a cada 2-3s
+5. Worker processa job em background:
+   - 10%: Valida section exists
+   - 10-90%: OrchestratorService gera conteúdo via LLM
+   - 90%: Salva conteúdo no database
+   - 95%: Atualiza ETP completion percentage
+   - 100%: Job completo
+6. Client detecta `status: 'completed'` e busca section atualizada
+
+**Configuração (backend/src/app.module.ts):**
+
+```typescript
+BullModule.forRootAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => {
+    const redisConf = configService.get('redis');
+    return {
+      connection: {
+        host: redisConf.host,
+        port: redisConf.port,
+        password: redisConf.password,
+        db: 0,
+        maxRetriesPerRequest: null, // Required for BullMQ
+        enableReadyCheck: false,
+      },
+    };
+  },
+}),
+```
+
+**Redis Configuration (backend/src/config/redis.config.ts):**
+
+- Parseia `REDIS_URL` do Railway (formato: `redis://:password@host:port`)
+- Fallback para localhost em desenvolvimento
+- maxRetriesPerRequest: null (required by BullMQ)
+- enableReadyCheck: false (recommended by BullMQ)
+
+**Benefits:**
+
+- ✅ Evita timeouts HTTP (gerações de 30-60s)
+- ✅ Melhor UX (feedback de progresso em tempo real)
+- ✅ Retry automático em falhas transientes
+- ✅ Escalabilidade horizontal (add more workers)
+- ✅ Job monitoring e debugging (retained failed jobs)
+
+### 2.7 Health Checks
 
 O ETP Express implementa dois tipos de health checks para garantir zero-downtime deployment (#181):
 
