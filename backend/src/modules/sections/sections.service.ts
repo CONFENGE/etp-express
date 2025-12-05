@@ -190,6 +190,128 @@ export class SectionsService {
   }
 
   /**
+   * Retrieves the status of an async section generation job.
+   *
+   * @remarks
+   * This method queries BullMQ to get real-time status of a section generation job.
+   * It provides progress tracking, completion status, and error information.
+   *
+   * Status flow:
+   * - waiting: Job is queued but not yet processing
+   * - active: Job is currently being processed
+   * - completed: Job finished successfully
+   * - failed: Job failed after all retry attempts
+   * - delayed: Job is delayed (rate limiting or backoff)
+   * - unknown: Job not found or expired
+   *
+   * @param jobId - BullMQ job identifier (returned from generateSection)
+   * @returns Job status with progress, result, and metadata
+   * @throws {NotFoundException} If job not found in queue
+   * @see #186 - Async queue processing
+   * @see #391 - Job Status API
+   */
+  async getJobStatus(jobId: string): Promise<{
+    jobId: string;
+    status:
+      | 'waiting'
+      | 'active'
+      | 'completed'
+      | 'failed'
+      | 'delayed'
+      | 'unknown';
+    progress: number;
+    result?: any;
+    error?: string;
+    createdAt: Date;
+    completedAt?: Date;
+    processedOn?: Date;
+    failedReason?: string;
+    attemptsMade?: number;
+    attemptsMax?: number;
+  }> {
+    this.logger.log(`Fetching status for job ${jobId}`);
+
+    try {
+      const job = await this.sectionsQueue.getJob(jobId);
+
+      if (!job) {
+        this.logger.warn(`Job ${jobId} not found in queue`);
+        throw new NotFoundException(
+          `Job ${jobId} não encontrado ou já expirou`,
+        );
+      }
+
+      const state = await job.getState();
+      const progress = job.progress as number;
+
+      // Build response based on job state
+      const response: any = {
+        jobId: job.id,
+        status: this.mapJobState(state),
+        progress: typeof progress === 'number' ? progress : 0,
+        createdAt: new Date(job.timestamp),
+        attemptsMade: job.attemptsMade,
+        attemptsMax: job.opts?.attempts || 3,
+      };
+
+      // Add processedOn if job started processing
+      if (job.processedOn) {
+        response.processedOn = new Date(job.processedOn);
+      }
+
+      // Add completion data for completed jobs
+      if (state === 'completed') {
+        response.completedAt = job.finishedOn
+          ? new Date(job.finishedOn)
+          : undefined;
+        response.result = job.returnvalue;
+        response.progress = 100;
+      }
+
+      // Add error data for failed jobs
+      if (state === 'failed') {
+        response.completedAt = job.finishedOn
+          ? new Date(job.finishedOn)
+          : undefined;
+        response.failedReason = job.failedReason;
+        response.error = job.failedReason || 'Erro desconhecido';
+      }
+
+      this.logger.log(`Job ${jobId} status: ${state} (${progress}% complete)`);
+
+      return response;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      this.logger.error(
+        `Error fetching job status for ${jobId}: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Maps BullMQ job state to our API status format
+   */
+  private mapJobState(
+    state: string,
+  ): 'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | 'unknown' {
+    const stateMap: Record<string, any> = {
+      waiting: 'waiting',
+      'waiting-children': 'waiting',
+      active: 'active',
+      completed: 'completed',
+      failed: 'failed',
+      delayed: 'delayed',
+      paused: 'waiting',
+    };
+
+    return stateMap[state] || 'unknown';
+  }
+
+  /**
    * Retrieves all sections for a specific ETP ordered by their sequence.
    *
    * @param etpId - Parent ETP unique identifier
