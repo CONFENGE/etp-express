@@ -272,11 +272,20 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #353 - Configure Puppeteer for E2E Testing
 - ✅ #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property (PR #370)
 
-#### Pendentes (16):
+#### Em Progresso (1):
+
+- 🔄 #24 - E2E Accessibility tests (Axe-core) → **PR #418 CRIADO** (2025-12-05)
+  - **Implementação:** Testes WCAG 2.1 AA usando @axe-core/playwright
+  - **Cobertura:** 5 páginas (Login, Register, Dashboard, ETPs List, New ETP)
+  - **Funcionalidades:** 6 testes específicos (keyboard nav, labels, contrast, alt text, headings, ARIA)
+  - **CI/CD:** Workflow Playwright atualizado (path filter inclui e2e/\*_/_)
+  - **Compliance:** LBI Lei 13.146/2015 (Lei Brasileira de Inclusão)
+  - **Status:** Aguardando merge
+
+#### Pendentes (15):
 
 **Testes E2E:**
 
-- [ ] #24 - E2E Accessibility tests (Axe-core)
 - [ ] #82-#84 - Testes integração adicionais
 - [ ] #92-#95 - UAT scenarios
 
