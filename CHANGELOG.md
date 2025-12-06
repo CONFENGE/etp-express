@@ -26,6 +26,20 @@ Trabalho em progresso para alcançar qualidade de produção:
 
 #### ⚡ Async Processing & Performance (2025-12-04 to 2025-12-05)
 
+- ✅ #221 - Unit Tests for Job Status Polling API (PR #417)
+  - **Test Coverage Completion** para endpoint `GET /sections/jobs/:jobId` implementado em PR #416
+  - 6 novos testes unitários cobrindo todos os estados de job:
+    - ✅ Job completed com result (200 OK)
+    - ✅ Job waiting na fila (200 OK)
+    - ✅ Job active com progress (200 OK)
+    - ✅ Job failed com error message (200 OK)
+    - ✅ Job not found (404 NOT FOUND)
+    - ✅ Retry attempts metadata validation
+  - TypeScript type safety aprimorado com `as const` para status literals
+  - Test coverage: **37/37 tests passing** (+6 tests, +19.4% para sections.controller.spec.ts)
+  - Overall coverage mantido: 77.83% statements, 77.88% lines ✅
+  - Closes #221
+
 - ✅ #186 - Job Status Polling API for Async Section Generation (PR #416)
   - **Endpoint final** para completar funcionalidade async queue processing (#220)
   - Novo endpoint `GET /sections/jobs/:jobId` para polling de status em tempo real
