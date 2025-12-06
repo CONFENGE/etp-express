@@ -345,13 +345,13 @@ M7: ████████████████████  6/6   (100%) �
 
 **P0 - Critical:**
 
-- [ ] #419 - [P0] Wrap authentication pages content in <main> landmark for WCAG compliance **[NOVA - 2025-12-06 03:00 UTC]**
-  - **Bloqueio:** PR #418 (WCAG 2.1 AA accessibility tests) falhando - teste "should have proper ARIA landmarks"
-  - **Violação:** Axe-core rule `region` (moderate) - conteúdo não contido em landmarks semânticos
-  - **Impacto:** Bloqueia merge de testes de acessibilidade, violação WCAG 2.1 Level A (1.3.1)
-  - **Solução:** Adicionar `<main>` landmark em Login.tsx e Register.tsx (2 linhas cada)
-  - **Estimativa:** 15 minutos (atômico)
-  - **Urgência:** ALTA - bloqueia PR #418 (testes E2E accessibility)
+- 🔄 #419 - [P0] Wrap authentication pages content in <main> landmark for WCAG compliance → **PR #420 CRIADO** (2025-12-06 14:30 UTC)
+  - **Problema:** Axe-core rule `region` (moderate) - conteúdo não contido em landmarks semânticos
+  - **Solução:** `<main>` landmark adicionado em Login.tsx e Register.tsx
+  - **PR:** #420 - feat/419-wcag-main-landmark (commit 91d24d7)
+  - **Impacto:** Desbloqueia PR #418 (WCAG 2.1 AA accessibility tests)
+  - **Testes:** Frontend 71/71 passing, Prettier validated
+  - **Status:** Aguardando merge (conforme solicitação do usuário)
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
