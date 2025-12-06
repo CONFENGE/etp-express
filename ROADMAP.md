@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-05 23:45 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +9 issues resolvidas (#186, #390, #391, #405, #406, #407, #409, #411, #413)
+**Última Atualização:** 2025-12-06 01:53 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +10 issues resolvidas (#186, #221, #390, #391, #405, #406, #407, #409, #411, #413)
 
 ## 📊 Status Atual
 
 **Progresso Global:** 196/220 issues concluídas (89.1%)
 **Velocidade:** 9.0 issues/dia (últimos 7 dias: 63 issues)
 **ETA Conclusão:** ~2025-12-07 (2 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API) - zero vulnerabilities
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API) - zero vulnerabilities
 
 ## 🚨 Railway Deploy Status
 
@@ -471,7 +471,7 @@ M7: ████████████████████  6/6   (100%) �
 
 1. **#387 - PostgreSQL pgvector migration** - PRIORITÁRIO (bloqueia deploy)
 2. **E2E Tests (#24)** - Accessibility tests (Axe-core)
-3. **Async Job Queue (#221-#222)** - ✅ #220 BullMQ merged, API + UX pending
+3. **Async Job Queue (#221-#222)** - ✅ #220 BullMQ merged, ✅ #221 test coverage merged (PR #417), #222 UX pending
 4. UAT scenarios (#92-#95)
 
 ### P2 - Próxima Sprint:
@@ -496,7 +496,7 @@ M7: ████████████████████  6/6   (100%) �
 - **Coverage:** Backend 70%+, Frontend 60%+
 - **Build:** ✅ Zero erros TypeScript
 - **Security:** ✅ Zero vulnerabilidades HIGH
-- **Tests:** ✅ 873+ testes passando
+- **Tests:** ✅ 895+ testes passando
 
 ### Performance Gains:
 
