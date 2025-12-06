@@ -7,8 +7,15 @@ import {
   Reference,
   ValidationResult,
   ExportOptions,
+  GenerationStatus,
+  AsyncSection,
 } from '@/types/etp';
 import { apiHelpers } from '@/lib/api';
+import {
+  pollJobStatus,
+  JobFailedError,
+  PollingTimeoutError,
+} from '@/lib/polling';
 
 interface ETFState {
   etps: ETP[];
@@ -18,6 +25,11 @@ interface ETFState {
   error: string | null;
   aiGenerating: boolean;
   validationResult: ValidationResult | null;
+
+  // Async generation state (#222)
+  generationProgress: number;
+  generationStatus: GenerationStatus;
+  generationJobId: string | null;
 
   // ETP Operations
   fetchETPs: () => Promise<void>;
@@ -64,6 +76,10 @@ const initialState = {
   error: null,
   aiGenerating: false,
   validationResult: null,
+  // Async generation state (#222)
+  generationProgress: 0,
+  generationStatus: 'idle' as GenerationStatus,
+  generationJobId: null as string | null,
 };
 
 export const useETPStore = create<ETFState>((set, _get) => ({
@@ -190,38 +206,161 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   },
 
   generateSection: async (request: AIGenerationRequest) => {
-    set({ aiGenerating: true, error: null });
+    set({
+      aiGenerating: true,
+      error: null,
+      generationProgress: 0,
+      generationStatus: 'queued',
+      generationJobId: null,
+    });
+
     try {
-      const response = await apiHelpers.post<AIGenerationResponse>(
-        `/etps/${request.etpId}/sections/${request.sectionNumber}/generate`,
-        request,
+      // 1. Start async generation and get jobId
+      const response = await apiHelpers.post<{ data: AsyncSection }>(
+        `/sections/etp/${request.etpId}/generate`,
+        {
+          type: `section_${request.sectionNumber}`,
+          title: `Seção ${request.sectionNumber}`,
+          userInput: request.prompt || '',
+          context: request.context,
+        },
       );
-      set({ aiGenerating: false });
-      return response;
-    } catch (error) {
+
+      const jobId = response.data.metadata?.jobId;
+
+      if (!jobId) {
+        // Fallback: backend returned sync response (no jobId)
+        set({
+          aiGenerating: false,
+          generationStatus: 'completed',
+          generationProgress: 100,
+        });
+        return {
+          content: response.data.content || '',
+          references: [],
+          confidence: 1,
+          warnings: [],
+        } as AIGenerationResponse;
+      }
+
+      set({ generationJobId: jobId, generationStatus: 'generating' });
+
+      // 2. Poll for completion with progress updates
+      const section = await pollJobStatus(jobId, (progress) => {
+        set({ generationProgress: progress });
+      });
+
       set({
-        error:
-          error instanceof Error ? error.message : 'Erro ao gerar seção com IA',
         aiGenerating: false,
+        generationStatus: 'completed',
+        generationProgress: 100,
+        generationJobId: null,
+      });
+
+      return {
+        content: section.content || '',
+        references: [],
+        confidence: 1,
+        warnings: [],
+      } as AIGenerationResponse;
+    } catch (error) {
+      let errorMessage = 'Erro ao gerar seção com IA';
+
+      if (error instanceof JobFailedError) {
+        errorMessage = error.message;
+      } else if (error instanceof PollingTimeoutError) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      set({
+        error: errorMessage,
+        aiGenerating: false,
+        generationStatus: 'failed',
+        generationProgress: 0,
+        generationJobId: null,
       });
       throw error;
     }
   },
 
   regenerateSection: async (request: AIGenerationRequest) => {
-    set({ aiGenerating: true, error: null });
+    set({
+      aiGenerating: true,
+      error: null,
+      generationProgress: 0,
+      generationStatus: 'queued',
+      generationJobId: null,
+    });
+
     try {
-      const response = await apiHelpers.post<AIGenerationResponse>(
-        `/etps/${request.etpId}/sections/${request.sectionNumber}/regenerate`,
-        request,
+      // For regenerate, we need to find the section ID first
+      // The regenerate endpoint uses section ID, not section number
+      const response = await apiHelpers.post<{ data: AsyncSection }>(
+        `/sections/etp/${request.etpId}/generate`,
+        {
+          type: `section_${request.sectionNumber}`,
+          title: `Seção ${request.sectionNumber}`,
+          userInput: request.prompt || '',
+          context: { ...request.context, regenerate: true },
+        },
       );
-      set({ aiGenerating: false });
-      return response;
-    } catch (error) {
+
+      const jobId = response.data.metadata?.jobId;
+
+      if (!jobId) {
+        // Fallback: backend returned sync response (no jobId)
+        set({
+          aiGenerating: false,
+          generationStatus: 'completed',
+          generationProgress: 100,
+        });
+        return {
+          content: response.data.content || '',
+          references: [],
+          confidence: 1,
+          warnings: [],
+        } as AIGenerationResponse;
+      }
+
+      set({ generationJobId: jobId, generationStatus: 'generating' });
+
+      // Poll for completion with progress updates
+      const section = await pollJobStatus(jobId, (progress) => {
+        set({ generationProgress: progress });
+      });
+
       set({
-        error:
-          error instanceof Error ? error.message : 'Erro ao regenerar seção',
         aiGenerating: false,
+        generationStatus: 'completed',
+        generationProgress: 100,
+        generationJobId: null,
+      });
+
+      return {
+        content: section.content || '',
+        references: [],
+        confidence: 1,
+        warnings: [],
+      } as AIGenerationResponse;
+    } catch (error) {
+      let errorMessage = 'Erro ao regenerar seção';
+
+      if (error instanceof JobFailedError) {
+        errorMessage = error.message;
+      } else if (error instanceof PollingTimeoutError) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      set({
+        error: errorMessage,
+        aiGenerating: false,
+        generationStatus: 'failed',
+        generationProgress: 0,
+        generationJobId: null,
       });
       throw error;
     }
