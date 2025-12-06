@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 06:15 UTC | **Auditoria ROADMAP:** 227 issues validadas (198 closed, 29 open), drift 3.2% (7 orphans discovered), M1-M7 progress synced with GitHub, zero phantom issues ✅
+**Última Atualização:** 2025-12-06 17:35 UTC | **Auditoria ROADMAP:** 228 issues validadas (199 closed, 29 open), drift 3.1% (7 orphans discovered), M1-M7 progress synced with GitHub, zero phantom issues ✅
 
 ## 📊 Status Atual
 
-**Progresso Global:** 198/227 issues concluídas (87.2%)
-**Velocidade:** 9.0 issues/dia (últimos 7 dias: 63 issues)
-**ETA Conclusão:** ~2025-12-09 (4 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API) - zero vulnerabilities
+**Progresso Global:** 199/228 issues concluídas (87.3%)
+**Velocidade:** 9.5 issues/dia (últimos 7 dias: 64 issues)
+**ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419 (WCAG landmark) - zero vulnerabilities
 
 ## 🚨 Railway Deploy Status
 
@@ -274,10 +274,13 @@ M7: ████████████████████  6/6   (100%) �
 
 #### Em Progresso (1):
 
-- 🔄 #24 - E2E Accessibility tests (Axe-core) → **PR #418 CRIADO** (2025-12-05)
+- 🔄 #24 - E2E Accessibility tests (Axe-core) → **PR #418 BLOCKED** (2025-12-06)
   - **Implementação:** Testes WCAG 2.1 AA usando @axe-core/playwright
   - **Cobertura:** 5 páginas (Login, Register, Dashboard, ETPs List, New ETP)
   - **Funcionalidades:** 6 testes específicos (keyboard nav, labels, contrast, alt text, headings, ARIA)
+  - **Status:** PR #418 rebased com master (include fix #419), 7/8 checks passing
+  - **Bloqueio:** Issue #421 (WCAG link-in-text-block violation) - 15 testes falhando
+  - **Next:** Resolver #421 para desbloquear merge
   - **CI/CD:** Workflow Playwright atualizado (path filter inclui e2e/\*_/_)
   - **Compliance:** LBI Lei 13.146/2015 (Lei Brasileira de Inclusão)
   - **Status:** Aguardando merge
@@ -340,18 +343,27 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency (PR #410 - MERGED 2025-12-05 via /review-pr)
 - ✅ #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (PR #412 - MERGED 2025-12-05 12:35 UTC via /review-pr)
 - ✅ #416 - [P1] Implementar API de Status de Jobs Assíncronos (PR #416 - MERGED 2025-12-05 23:40 UTC)
+- ✅ #419 - [P0] Wrap authentication pages content in <main> landmark for WCAG compliance (PR #420 - MERGED 2025-12-06 17:24 UTC)
+  - **Problema:** Axe-core rule `region` (moderate) - conteúdo não contido em landmarks semânticos
+  - **Solução:** `<main>` landmark adicionado em Login.tsx e Register.tsx (6 linhas total)
+  - **Impacto:** Desbloqueou PR #418 para continuar validação WCAG 2.1 AA
+  - **Compliance:** WCAG 2.1 Criterion 1.3.1 (Info and Relationships - Level A)
+  - **Merge:** Manual após validação (CI issue - apenas Secret Scanning rodou)
+  - **Post-merge:** Rebased PR #418, descobriu violação #421 (link-in-text-block)
 
 #### Pendentes (11):
 
 **P0 - Critical:**
 
-- 🔄 #419 - [P0] Wrap authentication pages content in <main> landmark for WCAG compliance → **PR #420 CRIADO** (2025-12-06 14:30 UTC)
-  - **Problema:** Axe-core rule `region` (moderate) - conteúdo não contido em landmarks semânticos
-  - **Solução:** `<main>` landmark adicionado em Login.tsx e Register.tsx
-  - **PR:** #420 - feat/419-wcag-main-landmark (commit 91d24d7)
-  - **Impacto:** Desbloqueia PR #418 (WCAG 2.1 AA accessibility tests)
-  - **Testes:** Frontend 71/71 passing, Prettier validated
-  - **Status:** Aguardando merge (conforme solicitação do usuário)
+- 🔄 #421 - [P0] Fix WCAG 2.1 link-in-text-block violation - inline links lack visual distinction → **NOVA** (2025-12-06 17:35 UTC)
+  - **Problema:** Axe-core rule `link-in-text-block` (serious) - links inline não distinguíveis do texto ao redor
+  - **Impacto:** 15 testes Playwright falhando em PR #418 (WCAG 2.1 Level AA bloqueado)
+  - **Elementos afetados:** Login/Register/Dashboard/ETPs List/New ETP (classe `text-primary hover:underline`)
+  - **Root Cause:** Contraste de cor insuficiente (1.08:1, mínimo WCAG: 3:1) + underline apenas no hover
+  - **Solução:** Aplicar `underline` permanente (remover `hover:`) em todos os links inline
+  - **Compliance:** WCAG 2.1 Criterion 1.4.1 (Use of Color - Level A), LBI Lei 13.146/2015
+  - **Estimativa:** 30 minutos (atômico - mudança CSS em ~10 linhas)
+  - **Bloqueia:** PR #418 merge
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
@@ -386,7 +398,7 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #381 - Replace console statements with structured logging (4 warnings)
 - [ ] #382 - Replace 'any' types in OrchestratorService (14 warnings)
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382, #387
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382, #387, #421
 
 ---
 
