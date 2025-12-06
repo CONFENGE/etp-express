@@ -117,7 +117,7 @@ export function Login() {
               </Button>
               <p className="text-sm text-center text-muted-foreground">
                 Não tem uma conta?{' '}
-                <Link to="/register" className="text-primary hover:underline">
+                <Link to="/register" className="text-primary underline">
                   Cadastre-se
                 </Link>
               </p>

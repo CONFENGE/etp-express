@@ -103,7 +103,7 @@ export function TermsOfService() {
                 <li>Leu, compreendeu e concorda com estes Termos de Uso</li>
                 <li>
                   Leu e compreendeu a{' '}
-                  <Link to="/privacy" className="text-primary hover:underline">
+                  <Link to="/privacy" className="text-primary underline">
                     Política de Privacidade
                   </Link>
                 </li>
@@ -386,7 +386,7 @@ export function TermsOfService() {
                 O tratamento de seus dados pessoais é regido por nossa{' '}
                 <Link
                   to="/privacy"
-                  className="text-primary hover:underline font-semibold"
+                  className="text-primary underline font-semibold"
                 >
                   Política de Privacidade
                 </Link>

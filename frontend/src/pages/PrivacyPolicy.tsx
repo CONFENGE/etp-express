@@ -464,7 +464,7 @@ export function PrivacyPolicy() {
                   href="https://www.gov.br/anpd"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-primary hover:underline text-sm"
+                  className="flex items-center gap-1 text-primary underline text-sm"
                 >
                   www.gov.br/anpd
                   <ExternalLink className="h-3 w-3" />

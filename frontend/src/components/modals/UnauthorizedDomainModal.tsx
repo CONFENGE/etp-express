@@ -56,7 +56,7 @@ export function UnauthorizedDomainModal({
           </p>
           <a
             href="mailto:contato@etpexpress.com.br?subject=Solicitação de Cadastro de Organização"
-            className="text-sm text-primary hover:underline block"
+            className="text-sm text-primary underline block"
           >
             contato@etpexpress.com.br
           </a>
