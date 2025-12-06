@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 01:53 UTC | **Auditoria ROADMAP:** 220 issues validadas (95.7% accuracy), M6: +10 issues resolvidas (#186, #221, #390, #391, #405, #406, #407, #409, #411, #413)
+**Última Atualização:** 2025-12-06 03:00 UTC | **Auditoria ROADMAP:** 221 issues validadas, M6: +11 issues resolvidas (#186, #221, #390, #391, #405, #406, #407, #409, #411, #413, #416), Nova: #419 (P0 accessibility)
 
 ## 📊 Status Atual
 
@@ -152,7 +152,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
 M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
 M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 24/34  (70.6%) 🔄 Maintenance (Validação E2E ✅)
+M6: ██████████████░░░░░░ 25/35  (71.4%) 🔄 Maintenance (Validação E2E ✅)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -300,7 +300,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (24/34) - 70.6%
+### 🔄 M6: Maintenance (25/35) - 71.4%
 
 **Status:** RECORRENTE
 
@@ -324,7 +324,7 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #394 - [P0] Railway crash: PostgreSQL SSL connection error (RESOLVIDO 2025-12-04 13:45 UTC)
 - ✅ #397 - [P2] Railway: Corrigir healthcheckPath no railway.toml (RESOLVIDO 2025-12-04 22:16 UTC)
 
-#### Concluídas Recentes (7):
+#### Concluídas Recentes (9):
 
 - ✅ #388 - [P0] Railway crash: NODE_ENV variable not set (RESOLVIDO 2025-12-04 12:15 UTC)
 - ✅ #389 - [P0] Railway build failing: husky prepare script (RESOLVIDO commit a5ec173)
@@ -338,17 +338,20 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #406 - [P0][HOTFIX] Disable ALL secret_access_logs migrations (Commit 3333fd3)
 - ✅ #407 - [P0][HOTFIX] Fix AddLgpdConsentFields migration idempotency (PR #408 - MERGED 2025-12-05)
 - ✅ #409 - [P0][HOTFIX] AddInternationalTransferConsent migration idempotency (PR #410 - MERGED 2025-12-05 via /review-pr)
+- ✅ #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (PR #412 - MERGED 2025-12-05 12:35 UTC via /review-pr)
+- ✅ #416 - [P1] Implementar API de Status de Jobs Assíncronos (PR #416 - MERGED 2025-12-05 23:40 UTC)
 
 #### Pendentes (10):
 
 **P0 - Critical:**
 
-- [ ] #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency **[NOVA - 2025-12-05 12:10 UTC]**
-  - **Bloqueio:** Backend crashing com `column "deletedAt" already exists` (PostgreSQL 42701)
-  - **Impacto:** 100% backend functionality unavailable
-  - **Solução:** Aplicar check-before-create pattern (mesmo padrão #402-#410)
-  - **Descoberto:** Durante validação post-merge PR #410
-  - **Urgência:** IMEDIATA - backend production down
+- [ ] #419 - [P0] Wrap authentication pages content in <main> landmark for WCAG compliance **[NOVA - 2025-12-06 03:00 UTC]**
+  - **Bloqueio:** PR #418 (WCAG 2.1 AA accessibility tests) falhando - teste "should have proper ARIA landmarks"
+  - **Violação:** Axe-core rule `region` (moderate) - conteúdo não contido em landmarks semânticos
+  - **Impacto:** Bloqueia merge de testes de acessibilidade, violação WCAG 2.1 Level A (1.3.1)
+  - **Solução:** Adicionar `<main>` landmark em Login.tsx e Register.tsx (2 linhas cada)
+  - **Estimativa:** 15 minutos (atômico)
+  - **Urgência:** ALTA - bloqueia PR #418 (testes E2E accessibility)
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
