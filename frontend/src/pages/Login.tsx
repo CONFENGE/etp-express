@@ -117,12 +117,12 @@ export function Login() {
               </Button>
               <p className="text-sm text-center text-muted-foreground">
                 Não tem uma conta?{' '}
-                <Link to="/register" className="text-primary hover:underline">
+                <Link to="/register" className="text-primary underline">
                   Cadastre-se
                 </Link>
               </p>
               <p className="text-xs text-center text-muted-foreground">
-                <Link to="/privacy" className="hover:underline">
+                <Link to="/privacy" className="underline">
                   Política de Privacidade
                 </Link>
               </p>
