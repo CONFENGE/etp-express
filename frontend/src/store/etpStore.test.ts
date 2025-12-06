@@ -8,7 +8,7 @@ import type {
   Reference,
   ValidationResult,
   AIGenerationRequest,
-  AIGenerationResponse,
+  AIGenerationResponse, // Used in return type assertions
 } from '@/types/etp';
 
 // Mock do módulo apiHelpers
@@ -18,6 +18,23 @@ vi.mock('@/lib/api', () => ({
     post: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
+  },
+}));
+
+// Mock polling module for async generation tests (#222)
+vi.mock('@/lib/polling', () => ({
+  pollJobStatus: vi.fn(),
+  JobFailedError: class JobFailedError extends Error {
+    constructor(jobId: string, reason?: string) {
+      super(reason || `Job ${jobId} failed`);
+      this.name = 'JobFailedError';
+    }
+  },
+  PollingTimeoutError: class PollingTimeoutError extends Error {
+    constructor(jobId: string) {
+      super(`Timeout for job ${jobId}`);
+      this.name = 'PollingTimeoutError';
+    }
   },
 }));
 
@@ -91,21 +108,8 @@ describe('etpStore', () => {
     context: {},
   };
 
-  const mockAIGenerationResponse: AIGenerationResponse = {
-    content: 'Conteúdo gerado por IA',
-    references: [
-      {
-        id: 'ref-1',
-        title: 'Referência 1',
-        source: 'Fonte 1',
-        url: 'https://example.com',
-        relevance: 0.9,
-        excerpt: 'Excerto da referência',
-      },
-    ],
-    confidence: 0.85,
-    warnings: [],
-  };
+  // Note: mockAIGenerationResponse removed as tests now use async flow (#222)
+  // The async flow returns Section from polling, not AIGenerationResponse directly
 
   beforeEach(() => {
     // Limpar todos os mocks
@@ -120,6 +124,10 @@ describe('etpStore', () => {
       error: null,
       aiGenerating: false,
       validationResult: null,
+      // Async generation state (#222)
+      generationProgress: 0,
+      generationStatus: 'idle',
+      generationJobId: null,
     });
   });
 
@@ -474,8 +482,36 @@ describe('etpStore', () => {
       expect(result.current.validationResult).toEqual(mockValidationResult);
     });
 
-    it('should regenerate section with AI', async () => {
-      vi.mocked(apiHelpers.post).mockResolvedValue(mockAIGenerationResponse);
+    it('should regenerate section with AI (async flow #222)', async () => {
+      // Import the mocked pollJobStatus
+      const { pollJobStatus } = await import('@/lib/polling');
+
+      // Mock async response from POST - returns section with jobId
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-123', queuedAt: new Date().toISOString() },
+        },
+      };
+
+      // Mock final result from polling
+      const mockPollingResult = {
+        id: 'section-1',
+        etpId: 'etp-1',
+        sectionNumber: 1,
+        title: 'Seção Regenerada',
+        content: 'Conteúdo regenerado por IA',
+        isRequired: true,
+        isCompleted: true,
+        aiGenerated: true,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-02T00:00:00Z',
+      };
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+      vi.mocked(pollJobStatus).mockResolvedValue(mockPollingResult);
 
       const { result } = renderHook(() => useETPStore());
 
@@ -488,13 +524,25 @@ describe('etpStore', () => {
 
       await waitFor(() => {
         expect(result.current.aiGenerating).toBe(false);
+        expect(result.current.generationStatus).toBe('completed');
       });
 
+      // Verify the POST call for async generation
       expect(apiHelpers.post).toHaveBeenCalledWith(
-        '/etps/etp-1/sections/1/regenerate',
-        mockAIGenerationRequest,
+        `/sections/etp/${mockAIGenerationRequest.etpId}/generate`,
+        expect.objectContaining({
+          type: `section_${mockAIGenerationRequest.sectionNumber}`,
+        }),
       );
-      expect(response).toEqual(mockAIGenerationResponse);
+
+      // Verify polling was called with jobId
+      expect(pollJobStatus).toHaveBeenCalledWith(
+        'job-123',
+        expect.any(Function),
+      );
+
+      // Verify response format
+      expect(response?.content).toBe('Conteúdo regenerado por IA');
     });
 
     it('should export ETP to JSON', async () => {

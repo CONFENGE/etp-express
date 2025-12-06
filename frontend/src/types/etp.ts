@@ -102,4 +102,71 @@ export interface ExportOptions {
   includeReferences: boolean;
 }
 
+/**
+ * Job status types for async section generation
+ * @see #186 - BullMQ async processing
+ * @see #222 - Frontend async UX
+ */
+export type JobStatus =
+  | 'waiting'
+  | 'active'
+  | 'completed'
+  | 'failed'
+  | 'delayed'
+  | 'unknown';
+
+/**
+ * Generation status for frontend UI state
+ */
+export type GenerationStatus =
+  | 'idle'
+  | 'queued'
+  | 'generating'
+  | 'completed'
+  | 'failed';
+
+/**
+ * Job status data from backend polling endpoint
+ */
+export interface JobStatusData {
+  jobId: string;
+  status: JobStatus;
+  progress: number;
+  result?: Section;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+  processedOn?: string;
+  failedReason?: string;
+  attemptsMade?: number;
+  attemptsMax?: number;
+}
+
+/**
+ * Response from GET /sections/jobs/:jobId
+ */
+export interface JobStatusResponse {
+  data: JobStatusData;
+  disclaimer: string;
+}
+
+/**
+ * Section with async generation metadata
+ */
+export interface AsyncSection extends Section {
+  metadata: {
+    jobId: string;
+    queuedAt: string;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Response from POST /sections/etp/:id/generate (async)
+ */
+export interface AsyncGenerationResponse {
+  data: AsyncSection;
+  disclaimer: string;
+}
+
 export const REQUIRED_SECTIONS = [1, 4, 6, 8, 13];
