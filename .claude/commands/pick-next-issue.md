@@ -1,13 +1,13 @@
 # Pick Next Issue - Engenheiro-Executor ETP Express
 
 Você é o **Engenheiro-Executor** do projeto ETP Express.
-Seu trabalho é escolher **uma única issue** do backlog e tratá-la integralmente até o fechamento.
+Seu trabalho é escolher **uma única issue** do backlog e tratá-la até a criação da PR. O merge e fechamento são feitos via `/review-pr`.
 
 ---
 
 ## 🎯 OBJETIVO GERAL
 
-Selecionar e resolver a próxima issue **executável** do repositório ETP Express, obedecendo integralmente as regras de governança e atomicidade definidas no projeto.
+Selecionar e implementar a próxima issue **executável** do repositório ETP Express, criando uma PR pronta para review. O merge e fechamento são responsabilidade do `/review-pr`.
 
 **IMPORTANTE:** Antes de começar, consulte `ROADMAP.md` para entender:
 - Estado atual dos milestones (M1-M6)
@@ -409,73 +409,59 @@ EOF
 
 **Referência:** Ver `.github/SLASH_COMMANDS.md` para detalhes de uso otimizado
 
----
+### 4.4 PARADA - Aguardar Review
 
-## 5️⃣ FECHAMENTO (Execution Note)
+**PARE AQUI**
 
-### Após Merge Bem-Sucedido
+A PR foi criada e está aguardando review. O merge será realizado pelo comando `/review-pr`, que possui:
+- Validação rigorosa em 8 categorias (100% score requerido)
+- Auto-fixes para issues de formatação
+- Validação pós-merge em 3 camadas
+- Rollback automático em caso de falha
 
-Adicionar comentário final na issue:
+**Próximo passo:** Execute `/review-pr` para validar e mergear a PR.
 
-```bash
-gh issue comment <número> --body "$(cat <<EOF
-## ✅ Execution Note - Issue Completamente Tratada
-
-### Mudanças Aplicadas
-- <Resumo das mudanças implementadas>
-
-### Delta de Cobertura
-- Antes: X%
-- Depois: Y%
-- Delta: +Z p.p.
-
-### Artefatos Gerados
-- PR #<número>
-- Branch: feat/<issue-id>-<slug>
-- Commits: <hash-principal>
-
-### Impacto Técnico
-- <Impacto positivo na arquitetura/segurança/performance>
-
-### Próximos Passos
-- <Issues desbloqueadas ou trabalho futuro relacionado>
-
-### Validação
-- [x] Testes passando
-- [x] Documentação atualizada
-- [x] Code review aprovado (se aplicável)
-
----
-✅ ISSUE #<número> COMPLETAMENTE TRATADA E FECHADA
-EOF
-)"
-
-gh issue close <número>
+**Output esperado:**
 ```
-
-### Declaração Final
-
-```
-✅ ISSUE #<número> COMPLETAMENTE TRATADA.
+PR #<número> CRIADA E PRONTA PARA REVIEW
 
 Resumo:
+- Issue: #<issue-id> - <título>
 - Branch: feat/<issue-id>-<slug>
-- PR: #<pr-número> (merged)
-- Coverage delta: +X%
-- Status: Fechada e documentada
+- PR: #<pr-número>
+- Status: Aguardando /review-pr
 
-Aguardando comando humano para próxima issue.
+Próximo comando: /review-pr
 ```
+
+---
+
+## 5️⃣ RESPONSABILIDADE DO /review-pr
+
+**Esta fase é executada pelo comando `/review-pr`**
+
+O fechamento da issue (Execution Note + `gh issue close`) é responsabilidade do `/review-pr` após:
+1. Validação em 8 categorias (100% score)
+2. Merge bem-sucedido
+3. Validação pós-merge (3 camadas)
+
+**NÃO execute merge ou fechamento de issue manualmente.** Use `/review-pr`.
 
 ---
 
 ## 6️⃣ PARADA E ESPERA
 
-🛑 **FINALIZE O CICLO AQUI**
+**FINALIZE O CICLO AQUI**
 
+Após criar a PR, o ciclo do `/pick-next-issue` está **COMPLETO**.
+
+- **NÃO** execute merge da PR
+- **NÃO** feche a issue manualmente
 - **NÃO** selecione outra issue automaticamente
 - **NÃO** abra múltiplas issues em paralelo
-- **AGUARDE** comando explícito do usuário para continuar
+- **AGUARDE** comando explícito do usuário
+
+**Próximo passo sugerido:** `/review-pr` para validar, mergear e fechar a issue.
 
 ---
 
@@ -489,11 +475,10 @@ Aguardando comando humano para próxima issue.
 - [ ] Testes adicionados e passando
 - [ ] Coverage aumentou ≥ +5 p.p. (quando aplicável)
 - [ ] Validações específicas executadas
-- [ ] PR criado com template completo
-- [ ] Merge realizado
-- [ ] Execution Note adicionada
-- [ ] Issue fechada
-- [ ] Ciclo finalizado
+- [ ] PR criada com template completo
+- [ ] CI/CD passando (checks verdes)
+
+**Próximo passo:** `/review-pr` para validação, merge e fechamento.
 
 ---
 
@@ -564,11 +549,13 @@ gh issue list --state open --json number,title,labels,milestone
 
 ## ⚠️ AVISOS IMPORTANTES
 
-1. **NÃO pule a validação de atomicidade** - Issues grandes causam atrasos e PRs rejeitados
-2. **SEMPRE respeite ordem de prioridades** - P0 antes de P1, P1 antes de P2, etc.
-3. **NÃO ignore dependências** - Verificar "Blocked by" antes de iniciar
-4. **NÃO reescreva issues sem criar sub-issues** - Se > 8h, desmembrar é obrigatório
-5. **CONSULTE ROADMAP.md** - Documento autoritativo do estado atual do projeto
+1. **NÃO execute merge de PR** - O merge é responsabilidade exclusiva do `/review-pr`
+2. **NÃO feche issues manualmente** - O fechamento é feito pelo `/review-pr` após merge
+3. **NÃO pule a validação de atomicidade** - Issues grandes causam atrasos e PRs rejeitados
+4. **SEMPRE respeite ordem de prioridades** - P0 antes de P1, P1 antes de P2, etc.
+5. **NÃO ignore dependências** - Verificar "Blocked by" antes de iniciar
+6. **NÃO reescreva issues sem criar sub-issues** - Se > 8h, desmembrar é obrigatório
+7. **CONSULTE ROADMAP.md** - Documento autoritativo do estado atual do projeto
 
 ---
 
