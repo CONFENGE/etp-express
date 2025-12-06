@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 03:00 UTC | **Auditoria ROADMAP:** 221 issues validadas, M6: +11 issues resolvidas (#186, #221, #390, #391, #405, #406, #407, #409, #411, #413, #416), Nova: #419 (P0 accessibility)
+**Última Atualização:** 2025-12-06 06:15 UTC | **Auditoria ROADMAP:** 227 issues validadas (198 closed, 29 open), drift 3.2% (7 orphans discovered), M1-M7 progress synced with GitHub, zero phantom issues ✅
 
 ## 📊 Status Atual
 
-**Progresso Global:** 196/220 issues concluídas (89.1%)
+**Progresso Global:** 198/227 issues concluídas (87.2%)
 **Velocidade:** 9.0 issues/dia (últimos 7 dias: 63 issues)
-**ETA Conclusão:** ~2025-12-07 (2 dias - quality-first approach)
+**ETA Conclusão:** ~2025-12-09 (4 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API) - zero vulnerabilities
 
 ## 🚨 Railway Deploy Status
@@ -147,12 +147,12 @@
 - #40: P2 → P3 (zero vulnerabilidades HIGH, não urgente)
 
 ```
-M1: ████████████████████ 36/36  (100%) ✅ Foundation - Testes
+M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
-M3: ████████████████████ 58/58  (100%) ✅ Quality & Security
-M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
-M5: ███████░░░░░░░░░░░░░  9/26  (34.6%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 25/35  (71.4%) 🔄 Maintenance (Validação E2E ✅)
+M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
+M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
+M5: ██████░░░░░░░░░░░░░░  8/25  (32.0%) 📚 E2E Testing & Documentation
+M6: ██████████████░░░░░░ 27/38  (71.1%) 🔄 Maintenance (Validação E2E ✅)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -160,7 +160,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Milestones
 
-### ✅ M1: Foundation - Testes (36/36) - 100%
+### ✅ M1: Foundation - Testes (35/35) - 100%
 
 **Finalizado:** 2025-11-20
 
@@ -185,7 +185,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### ✅ M3: Quality & Security (58/58) - 100%
+### ✅ M3: Quality & Security (57/57) - 100%
 
 **Finalizado:** 2025-11-28
 
@@ -210,7 +210,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### ✅ M4: Refactoring & Performance (45/45) - 100%
+### ✅ M4: Refactoring & Performance (44/44) - 100%
 
 **Finalizado:** 2025-12-01
 
@@ -252,11 +252,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (9/26) - 34.6%
+### 📚 M5: E2E Testing & Documentation (8/25) - 32.0%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-05
 
-#### Concluídas (9):
+#### Concluídas (8):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #23 - E2E Test - Critical Flow Complete (PR #372 - 2025-12-03)
@@ -300,7 +300,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (25/35) - 71.4%
+### 🔄 M6: Maintenance (27/38) - 71.1%
 
 **Status:** RECORRENTE
 
@@ -341,7 +341,7 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (PR #412 - MERGED 2025-12-05 12:35 UTC via /review-pr)
 - ✅ #416 - [P1] Implementar API de Status de Jobs Assíncronos (PR #416 - MERGED 2025-12-05 23:40 UTC)
 
-#### Pendentes (10):
+#### Pendentes (11):
 
 **P0 - Critical:**
 
