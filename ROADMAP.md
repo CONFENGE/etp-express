@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 21:30 UTC | **Auditoria ROADMAP:** 234 issues validadas (203 closed, 31 open), M1-M7 progress synced with GitHub, #428 PR #437 em review ✅
+**Última Atualização:** 2025-12-06 21:40 UTC | **Auditoria ROADMAP:** 235 issues validadas (204 closed, 31 open), M1-M7 progress synced with GitHub, #428 ✅ MERGED via /review-pr
 
 ## 📊 Status Atual
 
 **Progresso Global:** 202/233 issues concluídas (86.7%)
 **Velocidade:** 9.4 issues/dia (últimos 7 dias: 66 issues)
 **ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend DEPLOYING (#428, #429 in progress) | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #24 (accessibility tests) - zero vulnerabilities
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend DEPLOYING (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json) - zero vulnerabilities
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -15,11 +15,11 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████████░░░░░░░░░░░░ 10/26  (38.5%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#428 PR #437 em review)
+M6: ██████████████░░░░░░ 29/41  (70.7%) 🔄 Maintenance (#428 ✅ MERGED)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
-**Bloqueadores:** #428 (frontend healthcheck) - PR #437 em review
+**Bloqueadores:** Nenhum P0 crítico - aguardando Railway redeploy frontend
 
 ---
 
@@ -208,10 +208,10 @@ M7: ████████████████████  6/6   (100%) �
 
 **P0 - Critical:**
 
-- 🔄 #428 - [P0][HOTFIX] Frontend healthcheck failing - serve not starting correctly → **PR #437** (2025-12-06 21:30 UTC)
+- ✅ #428 - [P0][HOTFIX] Frontend healthcheck failing - serve not starting correctly → **PR #437 MERGED** (2025-12-06 21:40 UTC via /review-pr)
   - **Root Cause:** `nixpacks.toml` na raiz sobrescrevia config do frontend
-  - **Fix:** Remover nixpacks.toml da raiz - cada serviço usa seu próprio
-  - **Status:** PR #437 em review
+  - **Fix:** Removido nixpacks.toml da raiz - cada serviço usa sua própria config
+  - **Post-Merge:** Layer 1 validation passed (Build + 966 tests)
 - ✅ #429 - [P0][HOTFIX] Remover conflito entre railway.json e frontend/railway.toml → **RESOLVIDO** (2025-12-06)
   - **Status:** Fechada
 - [ ] #424 - [P0] Validate frontend build artifacts and dist directory structure
@@ -300,18 +300,18 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### 🔴 P0 - CRITICAL (FRONTEND DEPLOY BLOQUEADO):
+### ✅ P0 - CRITICAL (FRONTEND DEPLOY RESOLVIDO):
 
-1. **#428 - [HOTFIX] Frontend healthcheck failing** - PR #437 EM REVIEW
-   - **Status:** PR #437 criada (2025-12-06 21:30 UTC)
+1. ~~**#428 - [HOTFIX] Frontend healthcheck failing**~~ - ✅ PR #437 MERGED
+   - **Status:** RESOLVIDO via /review-pr (2025-12-06 21:40 UTC)
    - **Root Cause:** nixpacks.toml raiz sobrescrevia frontend config
-   - **Fix:** Remover nixpacks.toml da raiz
-   - **Impacto:** Frontend production inacessível até merge
+   - **Fix:** Removido nixpacks.toml - cada serviço usa config própria
+   - **Post-Merge:** Layer 1 passed (Build + 966 tests)
 
 2. ~~**#429 - [HOTFIX] Conflito railway.json**~~ - ✅ RESOLVIDO
 
-3. **#424 - Validate frontend build artifacts** - Após #428
-   - **Prazo:** Após bloqueadores resolvidos
+3. **#424 - Validate frontend build artifacts** - PRÓXIMO PASSO
+   - **Prazo:** Aguarda Railway redeploy
    - **Estimativa:** 30 min
 
 ### ✅ P0 - CRITICAL COMPLETADAS (2025-12-04 a 2025-12-06):
@@ -333,7 +333,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P1 - Esta Semana (2025-12-06 a 2025-12-09):
 
-1. **Frontend Deploy** - Resolver #428, #429, #424
+1. **Frontend Deploy** - ✅ #428/#429 resolvidos, #424 pendente
 2. **E2E Tests (#82-#84)** - Testes integração adicionais
 3. **UAT scenarios (#92-#95)** - Recrutamento + sessões
 
@@ -367,4 +367,4 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-**Status:** 🟡 Frontend bloqueado (#428 PR #437 em review) | Backend ✅ | **Risco:** Médio
+**Status:** 🟢 Frontend desbloqueado (#428/#429 ✅ MERGED) | Backend ✅ | **Risco:** Baixo - aguardando Railway redeploy
