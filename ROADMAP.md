@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 18:05 UTC | **Auditoria ROADMAP:** 228 issues validadas (200 closed, 28 open), drift 2.7% (6 orphans discovered), M1-M7 progress synced with GitHub, zero phantom issues ✅
+**Última Atualização:** 2025-12-06 18:00 UTC | **Auditoria ROADMAP:** 230 issues validadas (200 closed, 30 open), drift 0.87% (2 orphans: #423-#424), M1-M7 progress synced with GitHub, zero phantom issues ✅
 
 ## 📊 Status Atual
 
-**Progresso Global:** 200/228 issues concluídas (87.7%)
-**Velocidade:** 9.5 issues/dia (últimos 7 dias: 65 issues)
-**ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419 (WCAG landmark), #421 (WCAG links) - zero vulnerabilities
+**Progresso Global:** 200/230 issues concluídas (87.0%)
+**Velocidade:** 7.4 issues/dia (últimos 7 dias: 52 issues)
+**ETA Conclusão:** ~2025-12-10 (4 dias - quality-first approach)
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419 (WCAG landmark) - zero vulnerabilities
 
 ## 🚨 Railway Deploy Status
 
@@ -152,7 +152,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ██████░░░░░░░░░░░░░░  8/25  (32.0%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 27/38  (71.1%) 🔄 Maintenance (Validação E2E ✅)
+M6: █████████████░░░░░░░ 27/40  (67.5%) 🔄 Maintenance (Validação E2E ✅)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -254,7 +254,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ### 📚 M5: E2E Testing & Documentation (8/25) - 32.0%
 
-**Status:** EM PROGRESSO | **ETA:** 2025-12-05
+**Status:** EM PROGRESSO | **ETA:** 2025-12-08
 
 #### Concluídas (8):
 
@@ -283,6 +283,7 @@ M7: ████████████████████  6/6   (100%) �
   - **Next:** Resolver #421 para desbloquear merge
   - **CI/CD:** Workflow Playwright atualizado (path filter inclui e2e/\*_/_)
   - **Compliance:** LBI Lei 13.146/2015 (Lei Brasileira de Inclusão)
+  - **Status:** Aguardando merge
 
 #### Pendentes (15):
 
@@ -302,7 +303,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (27/38) - 71.1%
+### 🔄 M6: Maintenance (27/40) - 67.5%
 
 **Status:** RECORRENTE
 
@@ -349,19 +350,22 @@ M7: ████████████████████  6/6   (100%) �
   - **Compliance:** WCAG 2.1 Criterion 1.3.1 (Info and Relationships - Level A)
   - **Merge:** Manual após validação (CI issue - apenas Secret Scanning rodou)
   - **Post-merge:** Rebased PR #418, descobriu violação #421 (link-in-text-block)
-- ✅ #421 - [P0] Fix WCAG 2.1 link-in-text-block violation (PR #422 - 2025-12-06 18:00 UTC)
-  - **Problema:** Axe-core rule `link-in-text-block` (serious) - links inline não distinguíveis do texto ao redor
-  - **Root Cause:** Contraste de cor insuficiente (1.08:1, mínimo WCAG: 3:1) + underline apenas no hover
-  - **Solução:** Aplicar `underline` permanente em todos os links inline (12 ocorrências, 8 arquivos)
-  - **Arquivos:** Login.tsx, Register.tsx, TermsOfService.tsx, PrivacyPolicy.tsx, ReferenceCard, SimilarContractsPanel, modals
-  - **Impacto:** Desbloqueia PR #418 merge (WCAG 2.1 AA compliance)
-  - **Compliance:** WCAG 2.1 Criterion 1.4.1 (Use of Color - Level A), LBI Lei 13.146/2015
-  - **Execução:** 20 minutos (planejado 30 min) - fix CSS-only atômico
 
-#### Pendentes (10):
+#### Pendentes (13):
 
 **P0 - Critical:**
 
+- 🔄 #421 - [P0] Fix WCAG 2.1 link-in-text-block violation - inline links lack visual distinction → **NOVA** (2025-12-06 17:35 UTC)
+- [ ] #423 - [P0][HOTFIX] Configure frontend startCommand in railway.json to fix crash loop → **NOVA** (2025-12-06 18:20 UTC)
+- [ ] #424 - [P0] Validate frontend build artifacts and dist directory structure → **NOVA** (2025-12-06 18:20 UTC)
+  - **Problema:** Axe-core rule `link-in-text-block` (serious) - links inline não distinguíveis do texto ao redor
+  - **Impacto:** 15 testes Playwright falhando em PR #418 (WCAG 2.1 Level AA bloqueado)
+  - **Elementos afetados:** Login/Register/Dashboard/ETPs List/New ETP (classe `text-primary hover:underline`)
+  - **Root Cause:** Contraste de cor insuficiente (1.08:1, mínimo WCAG: 3:1) + underline apenas no hover
+  - **Solução:** Aplicar `underline` permanente (remover `hover:`) em todos os links inline
+  - **Compliance:** WCAG 2.1 Criterion 1.4.1 (Use of Color - Level A), LBI Lei 13.146/2015
+  - **Estimativa:** 30 minutos (atômico - mudança CSS em ~10 linhas)
+  - **Bloqueia:** PR #418 merge
 - [ ] #387 - [P2] Migrar PostgreSQL para versão com suporte a pgvector **[REPRIORITIZADA P0→P2]**
   - **Bloqueio:** Deploy Railway crashando (pgvector extension não disponível)
   - **Impacto:** RAG Module não funcional, deploy bloqueado
@@ -396,7 +400,7 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #381 - Replace console statements with structured logging (4 warnings)
 - [ ] #382 - Replace 'any' types in OrchestratorService (14 warnings)
 
-**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382, #387, #421
+**Issues:** #21, #40, #181, #186, #219-#224, #248, #321, #374-#382, #387, #421, #423-#424
 
 ---
 

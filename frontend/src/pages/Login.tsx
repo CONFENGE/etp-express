@@ -122,7 +122,7 @@ export function Login() {
                 </Link>
               </p>
               <p className="text-xs text-center text-muted-foreground">
-                <Link to="/privacy" className="hover:underline">
+                <Link to="/privacy" className="underline">
                   Política de Privacidade
                 </Link>
               </p>

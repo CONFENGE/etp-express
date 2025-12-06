@@ -10,6 +10,7 @@
     "test:e2e": "cd e2e && npx tsx run-tests.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.56.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
