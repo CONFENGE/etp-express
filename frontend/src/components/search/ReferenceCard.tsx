@@ -34,7 +34,7 @@ export function ReferenceCard({ reference }: ReferenceCardProps) {
             href={reference.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-primary hover:underline"
+            className="flex items-center gap-1 text-xs text-primary underline"
           >
             <ExternalLink className="h-3 w-3" />
             Acessar fonte
