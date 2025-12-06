@@ -1,19 +1,26 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 18:00 UTC | **Auditoria ROADMAP:** 230 issues validadas (200 closed, 30 open), drift 0.87% (2 orphans: #423-#424), M1-M7 progress synced with GitHub, zero phantom issues ✅
+**Última Atualização:** 2025-12-06 19:50 UTC | **Auditoria ROADMAP:** 231 issues validadas (201 closed, 30 open), M1-M7 progress synced with GitHub, zero phantom issues ✅
 
 ## 📊 Status Atual
 
 **Progresso Global:** 200/230 issues concluídas (87.0%)
 **Velocidade:** 7.4 issues/dia (últimos 7 dias: 52 issues)
 **ETA Conclusão:** ~2025-12-10 (4 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419 (WCAG landmark) - zero vulnerabilities
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend production DEPLOYING (fix #423 applied) | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423 (frontend startCommand) - zero vulnerabilities
 
 ## 🚨 Railway Deploy Status
 
 **Bloqueadores Ativos:** NENHUM ✅
 
 **Backend Production:** OPERATIONAL (all migrations idempotent, zero crash loops)
+
+**Frontend Production:** DEPLOYING (2025-12-06 19:50 UTC)
+
+- ✅ #423 - [P0][HOTFIX] Frontend startCommand → **RESOLVIDO** (PR #425 merged)
+  - **Problema:** Railway executava comando backend no frontend (crash loop)
+  - **Solução:** `startCommand: "npx serve -s dist -l 3000"` em railway.json
+  - **Deploy ID:** 517b9913-24b1-42b3-adb7-3d4d26d43a55 (BUILDING)
 
 **Prioridades Atualizadas (2025-12-05):**
 
