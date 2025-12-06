@@ -57,7 +57,7 @@ export function OrganizationSuspendedModal({
           </p>
           <a
             href="mailto:suporte@etpexpress.com.br?subject=Organização Suspensa - Solicitação de Esclarecimento"
-            className="text-sm text-primary hover:underline block"
+            className="text-sm text-primary underline block"
           >
             suporte@etpexpress.com.br
           </a>

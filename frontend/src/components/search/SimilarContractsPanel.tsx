@@ -61,7 +61,7 @@ export function SimilarContractsPanel({
                     )}
                   </div>
 
-                  <button className="flex items-center gap-1 text-xs text-primary hover:underline mt-2">
+                  <button className="flex items-center gap-1 text-xs text-primary underline mt-2">
                     <ExternalLink className="h-3 w-3" />
                     Ver detalhes
                   </button>

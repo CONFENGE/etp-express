@@ -224,14 +224,11 @@ export function Register() {
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     Aceito os{' '}
-                    <Link to="/terms" className="text-primary hover:underline">
+                    <Link to="/terms" className="text-primary underline">
                       termos de uso
                     </Link>{' '}
                     e{' '}
-                    <Link
-                      to="/privacy"
-                      className="text-primary hover:underline"
-                    >
+                    <Link to="/privacy" className="text-primary underline">
                       política de privacidade
                     </Link>
                   </Label>
@@ -280,7 +277,7 @@ export function Register() {
                     <button
                       type="button"
                       onClick={() => setShowTransferModal(true)}
-                      className="text-primary hover:underline"
+                      className="text-primary underline"
                     >
                       Saiba mais
                     </button>
@@ -306,7 +303,7 @@ export function Register() {
               </Button>
               <p className="text-sm text-center text-muted-foreground">
                 Já tem uma conta?{' '}
-                <Link to="/login" className="text-primary hover:underline">
+                <Link to="/login" className="text-primary underline">
                   Entre
                 </Link>
               </p>
