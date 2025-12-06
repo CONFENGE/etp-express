@@ -99,6 +99,16 @@ describe('SectionsController (Integration)', () => {
    */
   const createMockSectionsService = () => ({
     generateSection: jest.fn().mockResolvedValue(mockGeneratedSection),
+    getJobStatus: jest.fn().mockResolvedValue({
+      jobId: 'job-123',
+      status: 'completed',
+      progress: 100,
+      result: mockSection,
+      createdAt: new Date(),
+      completedAt: new Date(),
+      attemptsMade: 0,
+      attemptsMax: 3,
+    }),
     findAll: jest.fn().mockResolvedValue([mockSection]),
     findOne: jest.fn().mockResolvedValue(mockSection),
     update: jest.fn().mockResolvedValue(mockSection),
@@ -338,6 +348,163 @@ describe('SectionsController (Integration)', () => {
       expect(response.body.data.validationResults).toBeDefined();
       expect(response.body.data.validationResults.legalCompliance).toBe(true);
       expect(response.body.data.validationResults.clarityScore).toBe(85);
+    });
+  });
+
+  /**
+   * Tests for GET /sections/jobs/:jobId
+   * Validates job status polling endpoint for async section generation
+   */
+  describe('GET /sections/jobs/:jobId', () => {
+    const mockJobId = 'job-123';
+
+    it('deve retornar 200 e o status de um job completed com sucesso', async () => {
+      const mockJobStatus = {
+        jobId: mockJobId,
+        status: 'completed' as const,
+        progress: 100,
+        result: mockSection,
+        createdAt: new Date('2025-12-05T10:00:00Z'),
+        completedAt: new Date('2025-12-05T10:01:30Z'),
+        processedOn: new Date('2025-12-05T10:00:05Z'),
+        attemptsMade: 0,
+        attemptsMax: 3,
+      };
+
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockResolvedValue(mockJobStatus);
+
+      const response = await request(app.getHttpServer())
+        .get(`/sections/jobs/${mockJobId}`)
+        .expect(200);
+
+      expect(response.body).toBeDefined();
+      expect(response.body.data).toBeDefined();
+      expect(response.body.data.jobId).toBe(mockJobId);
+      expect(response.body.data.status).toBe('completed');
+      expect(response.body.data.progress).toBe(100);
+      expect(response.body.data.result).toBeDefined();
+      expect(response.body.data.completedAt).toBeDefined();
+      expect(response.body.disclaimer).toBeDefined();
+
+      expect(sectionsService.getJobStatus).toHaveBeenCalledWith(mockJobId);
+    });
+
+    it('deve retornar 200 e status waiting para job na fila', async () => {
+      const mockJobStatus = {
+        jobId: mockJobId,
+        status: 'waiting' as const,
+        progress: 0,
+        createdAt: new Date('2025-12-05T10:00:00Z'),
+        attemptsMade: 0,
+        attemptsMax: 3,
+      };
+
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockResolvedValue(mockJobStatus);
+
+      const response = await request(app.getHttpServer())
+        .get(`/sections/jobs/${mockJobId}`)
+        .expect(200);
+
+      expect(response.body.data.status).toBe('waiting');
+      expect(response.body.data.progress).toBe(0);
+      expect(response.body.data.result).toBeUndefined();
+      expect(response.body.data.completedAt).toBeUndefined();
+    });
+
+    it('deve retornar 200 e status active com progresso para job em processamento', async () => {
+      const mockJobStatus = {
+        jobId: mockJobId,
+        status: 'active' as const,
+        progress: 45,
+        createdAt: new Date('2025-12-05T10:00:00Z'),
+        processedOn: new Date('2025-12-05T10:00:05Z'),
+        attemptsMade: 0,
+        attemptsMax: 3,
+      };
+
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockResolvedValue(mockJobStatus);
+
+      const response = await request(app.getHttpServer())
+        .get(`/sections/jobs/${mockJobId}`)
+        .expect(200);
+
+      expect(response.body.data.status).toBe('active');
+      expect(response.body.data.progress).toBe(45);
+      expect(response.body.data.processedOn).toBeDefined();
+      expect(response.body.data.result).toBeUndefined();
+    });
+
+    it('deve retornar 200 e status failed com erro para job que falhou', async () => {
+      const mockJobStatus = {
+        jobId: mockJobId,
+        status: 'failed' as const,
+        progress: 30,
+        error: 'OpenAI API timeout after 60s',
+        failedReason: 'OpenAI API timeout after 60s',
+        createdAt: new Date('2025-12-05T10:00:00Z'),
+        completedAt: new Date('2025-12-05T10:01:00Z'),
+        processedOn: new Date('2025-12-05T10:00:05Z'),
+        attemptsMade: 3,
+        attemptsMax: 3,
+      };
+
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockResolvedValue(mockJobStatus);
+
+      const response = await request(app.getHttpServer())
+        .get(`/sections/jobs/${mockJobId}`)
+        .expect(200);
+
+      expect(response.body.data.status).toBe('failed');
+      expect(response.body.data.error).toBeDefined();
+      expect(response.body.data.error).toContain('OpenAI API timeout');
+      expect(response.body.data.failedReason).toBeDefined();
+      expect(response.body.data.attemptsMade).toBe(3);
+      expect(response.body.data.result).toBeUndefined();
+    });
+
+    it('deve retornar 404 quando job não for encontrado', async () => {
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockRejectedValue(
+          new NotFoundException('Job job-999 não encontrado ou já expirou'),
+        );
+
+      await request(app.getHttpServer())
+        .get('/sections/jobs/job-999')
+        .expect(404);
+    });
+
+    it('deve incluir metadata de retry attempts em todos os status', async () => {
+      const mockJobStatus = {
+        jobId: mockJobId,
+        status: 'active' as const,
+        progress: 60,
+        createdAt: new Date('2025-12-05T10:00:00Z'),
+        processedOn: new Date('2025-12-05T10:00:05Z'),
+        attemptsMade: 1,
+        attemptsMax: 3,
+      };
+
+      jest
+        .spyOn(sectionsService, 'getJobStatus')
+        .mockResolvedValue(mockJobStatus);
+
+      const response = await request(app.getHttpServer())
+        .get(`/sections/jobs/${mockJobId}`)
+        .expect(200);
+
+      expect(response.body.data.attemptsMade).toBeDefined();
+      expect(response.body.data.attemptsMax).toBeDefined();
+      expect(response.body.data.attemptsMade).toBe(1);
+      expect(response.body.data.attemptsMax).toBe(3);
     });
   });
 
