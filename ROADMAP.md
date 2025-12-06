@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 21:00 UTC | **Auditoria ROADMAP:** 233 issues validadas (202 closed, 31 open), M1-M7 progress synced with GitHub, zero phantom issues ✅
+**Última Atualização:** 2025-12-06 21:30 UTC | **Auditoria ROADMAP:** 234 issues validadas (203 closed, 31 open), M1-M7 progress synced with GitHub, #428 PR #437 em review ✅
 
 ## 📊 Status Atual
 
@@ -15,11 +15,11 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████████░░░░░░░░░░░░ 10/26  (38.5%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 27/41  (65.9%) 🔄 Maintenance (#428, #429 em progresso)
+M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#428 PR #437 em review)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
-**Bloqueadores:** #428 (frontend healthcheck), #429 (railway.json conflict)
+**Bloqueadores:** #428 (frontend healthcheck) - PR #437 em review
 
 ---
 
@@ -208,12 +208,12 @@ M7: ████████████████████  6/6   (100%) �
 
 **P0 - Critical:**
 
-- 🔄 #428 - [P0][HOTFIX] Frontend healthcheck failing - serve not starting correctly → **NOVA** (2025-12-06 21:00 UTC)
-  - **Problema:** Frontend não responde ao health check do Railway
-  - **Status:** Em análise
-- 🔄 #429 - [P0][HOTFIX] Remover conflito entre railway.json e frontend/railway.toml → **NOVA** (2025-12-06 21:00 UTC)
-  - **Problema:** Configurações conflitantes entre arquivos Railway
-  - **Status:** Em análise
+- 🔄 #428 - [P0][HOTFIX] Frontend healthcheck failing - serve not starting correctly → **PR #437** (2025-12-06 21:30 UTC)
+  - **Root Cause:** `nixpacks.toml` na raiz sobrescrevia config do frontend
+  - **Fix:** Remover nixpacks.toml da raiz - cada serviço usa seu próprio
+  - **Status:** PR #437 em review
+- ✅ #429 - [P0][HOTFIX] Remover conflito entre railway.json e frontend/railway.toml → **RESOLVIDO** (2025-12-06)
+  - **Status:** Fechada
 - [ ] #424 - [P0] Validate frontend build artifacts and dist directory structure
   - **Problema:** Estrutura do dist pode estar incorreta após build
   - **Bloqueia:** Frontend deploy
@@ -302,18 +302,15 @@ M7: ████████████████████  6/6   (100%) �
 
 ### 🔴 P0 - CRITICAL (FRONTEND DEPLOY BLOQUEADO):
 
-1. **#428 - [HOTFIX] Frontend healthcheck failing** - AÇÃO IMEDIATA ⚠️
-   - **Status:** Em análise (2025-12-06 21:00 UTC)
-   - **Problema:** serve não está iniciando corretamente
-   - **Impacto:** Frontend production inacessível
-   - **Bloqueia:** #424 (validação dist)
+1. **#428 - [HOTFIX] Frontend healthcheck failing** - PR #437 EM REVIEW
+   - **Status:** PR #437 criada (2025-12-06 21:30 UTC)
+   - **Root Cause:** nixpacks.toml raiz sobrescrevia frontend config
+   - **Fix:** Remover nixpacks.toml da raiz
+   - **Impacto:** Frontend production inacessível até merge
 
-2. **#429 - [HOTFIX] Conflito railway.json vs frontend/railway.toml** - AÇÃO IMEDIATA ⚠️
-   - **Status:** Em análise (2025-12-06 21:00 UTC)
-   - **Problema:** Configurações conflitantes causando comportamento inesperado
-   - **Impacto:** Build/deploy inconsistente
+2. ~~**#429 - [HOTFIX] Conflito railway.json**~~ - ✅ RESOLVIDO
 
-3. **#424 - Validate frontend build artifacts** - Após #428/#429
+3. **#424 - Validate frontend build artifacts** - Após #428
    - **Prazo:** Após bloqueadores resolvidos
    - **Estimativa:** 30 min
 
@@ -370,4 +367,4 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-**Status:** 🟡 Frontend bloqueado (#428, #429) | Backend ✅ | **Risco:** Médio
+**Status:** 🟡 Frontend bloqueado (#428 PR #437 em review) | Backend ✅ | **Risco:** Médio
