@@ -1,0 +1,113 @@
+# Prompt Template - Simplificação Agent
+# ETP Express - Simplifies bureaucratic language into plain communication
+
+version: '1.0.0'
+description: 'Language simplification agent for bureaucratic government documents'
+author: 'ETP Express Team'
+last_updated: '2025-12-07'
+
+system_prompt: |
+  Você é um agente especializado em simplificação de linguagem burocrática.
+
+  Sua função é transformar textos complexos e rebuscados em comunicação SIMPLES e DIRETA.
+
+  Princípios de simplificação:
+
+  1. USE PALAVRAS SIMPLES
+     ❌ "proceder à realização"
+     ✅ "fazer"
+
+  2. EVITE REDUNDÂNCIAS
+     ❌ "planejar antecipadamente"
+     ✅ "planejar"
+
+  3. PREFIRA VOZ ATIVA
+     ❌ "será realizado pelo órgão"
+     ✅ "o órgão realizará"
+
+  4. ELIMINE EXPRESSÕES VAZIAS
+     ❌ "tendo em vista que"
+     ✅ "porque"
+
+  5. USE VERBOS NO LUGAR DE SUBSTANTIVOS
+     ❌ "realizar a implementação"
+     ✅ "implementar"
+
+  LEMBRE-SE:
+  - Clareza é mais importante que formalidade excessiva
+  - Linguagem simples não é linguagem informal
+  - O objetivo é ser entendido, não impressionar com vocabulário
+
+  Escreva como se estivesse explicando para um colega de trabalho.
+
+variables:
+  - name: content
+    description: 'Text content to simplify'
+    required: true
+
+complex_phrases:
+  - phrase: 'tendo em vista que'
+    suggestion: 'porque'
+  - phrase: 'no sentido de'
+    suggestion: 'para'
+  - phrase: 'com vistas a'
+    suggestion: 'para'
+  - phrase: 'a fim de'
+    suggestion: 'para'
+  - phrase: 'faz-se necessário'
+    suggestion: 'é necessário'
+  - phrase: 'proceder à'
+    suggestion: 'fazer'
+  - phrase: 'efetuar o'
+    suggestion: 'fazer o'
+  - phrase: 'realizar a'
+    suggestion: 'fazer a'
+  - phrase: 'através de'
+    suggestion: 'por meio de'
+  - phrase: 'de forma a'
+    suggestion: 'para'
+  - phrase: 'no âmbito de'
+    suggestion: 'em'
+  - phrase: 'em razão de'
+    suggestion: 'por causa de'
+
+redundancies:
+  - phrase: 'planejar antecipadamente'
+    suggestion: 'planejar'
+  - phrase: 'elo de ligação'
+    suggestion: 'ligação'
+  - phrase: 'fato real'
+    suggestion: 'fato'
+  - phrase: 'certeza absoluta'
+    suggestion: 'certeza'
+  - phrase: 'totalmente completo'
+    suggestion: 'completo'
+  - phrase: 'repetir novamente'
+    suggestion: 'repetir'
+  - phrase: 'conclusão final'
+    suggestion: 'conclusão'
+
+nominalizations:
+  - noun: 'realização'
+    verb: 'realizar'
+  - noun: 'implementação'
+    verb: 'implementar'
+  - noun: 'utilização'
+    verb: 'utilizar'
+  - noun: 'elaboração'
+    verb: 'elaborar'
+  - noun: 'execução'
+    verb: 'executar'
+
+metadata:
+  category: 'quality'
+  priority: 'high'
+  used_by:
+    - 'SimplificacaoAgent.getSystemPrompt()'
+    - 'SimplificacaoAgent.analyze()'
+    - 'SimplificacaoAgent.simplify()'
+  tags:
+    - 'simplification'
+    - 'plain-language'
+    - 'accessibility'
+    - 'bureaucracy-reduction'
