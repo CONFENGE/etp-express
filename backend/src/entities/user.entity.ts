@@ -13,10 +13,24 @@ import { Etp } from './etp.entity';
 import { AuditLog } from './audit-log.entity';
 import { Organization } from './organization.entity';
 
+/**
+ * User roles for hierarchical access control (M8: Gestão de Domínios Institucionais).
+ *
+ * Hierarchy:
+ * - SYSTEM_ADMIN: Global master administrator (can manage all domains)
+ * - DOMAIN_MANAGER: Local domain manager (can manage up to 10 users in their domain)
+ * - ADMIN: Organization admin (existing role)
+ * - USER: Regular user (existing role)
+ * - VIEWER: Read-only user (existing role)
+ * - DEMO: Demonstration user (isolated data, daily reset)
+ */
 export enum UserRole {
+  SYSTEM_ADMIN = 'system_admin',
+  DOMAIN_MANAGER = 'domain_manager',
   ADMIN = 'admin',
   USER = 'user',
   VIEWER = 'viewer',
+  DEMO = 'demo',
 }
 
 @Entity('users')
@@ -62,6 +76,14 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  /**
+   * Flag indicating user must change password on next login.
+   * Required for M8: Domain management - new users created by Domain Managers
+   * must change their initial password.
+   */
+  @Column({ default: false })
+  mustChangePassword: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
   lastLoginAt: Date | null;
