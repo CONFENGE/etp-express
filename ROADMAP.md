@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-07 | **Progresso:** 223/255 (87.5%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-07 | **Progresso:** 224/255 (87.8%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -10,7 +10,7 @@ M2: ████████████████████ 18/18  (100%) C
 M3: ████████████████████ 61/61  (100%) Quality & Security
 M4: ████████████████████ 45/45  (100%) Refactoring & Performance
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
-M6: ████████████░░░░░░░░ 40/61  (66%)  Maintenance
+M6: ████████████░░░░░░░░ 41/61  (67%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
 ```
 
@@ -57,21 +57,21 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ---
 
-## M6: Maintenance (66%)
+## M6: Maintenance (67%)
 
-**Concluídos (40):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447, #448)
+**Concluídos (41):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447, #448, #451)
 
 **P0 CRÍTICOS (0):** ✅ Nenhum bloqueio
 
 - [x] #447 - Backend deploy failing (railway.toml conflict) ✅ **RESOLVED via PR #462**
 - [x] #448 - Frontend deploy failing (snapshot error) ✅ **RESOLVED via PORT variable fix**
 
-**P1 Segurança (4):**
+**P1 Segurança (3):**
 
 - [ ] #426 - Perplexity timeout (logs confirmam) **[P3→P1]**
 - [ ] #449 - JWT localStorage XSS vulnerability **[NEW]**
 - [ ] #450 - TypeScript noImplicitAny disabled **[NEW]**
-- [ ] #451 - LGPD hard delete scheduler **[NEW]**
+- [x] #451 - LGPD hard delete scheduler ✅ **RESOLVED via PR #463**
 
 **P2 Qualidade (10):**
 
