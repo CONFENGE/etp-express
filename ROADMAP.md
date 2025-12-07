@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-07 02:55 UTC | **Auditoria ROADMAP:** 238 issues validadas (207 closed, 30 open), M1-M7 progress synced with GitHub, #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
+**Última Atualização:** 2025-12-07 03:00 UTC | **Auditoria ROADMAP:** 236 issues validadas (210 closed, 26 open), M1-M7 progress synced with GitHub, #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 205/233 issues concluídas (88.0%)
-**Velocidade:** 9.4 issues/dia (últimos 7 dias: 66 issues)
-**ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
+**Progresso Global:** 210/236 issues concluídas (89.0%)
+**Velocidade:** 10.6 issues/dia (últimos 7 dias: 74 issues)
+**ETA Conclusão:** ~2025-12-09 (2-3 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
 
 ```
@@ -356,14 +356,14 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 📈 Métricas
 
-| Métrica    | Valor                         |
-| ---------- | ----------------------------- |
-| Velocidade | 9.4 issues/dia (66 em 7 dias) |
-| Coverage   | Backend 78%, Frontend 60%+    |
-| Tests      | 920+ passando                 |
-| Security   | Zero vulnerabilidades HIGH    |
-| Latência   | -42% (60s → 35s avg)          |
-| CI/CD      | -68% minutos/mês              |
+| Métrica    | Valor                          |
+| ---------- | ------------------------------ |
+| Velocidade | 10.6 issues/dia (74 em 7 dias) |
+| Coverage   | Backend 78%, Frontend 60%+     |
+| Tests      | 920+ passando                  |
+| Security   | Zero vulnerabilidades HIGH     |
+| Latência   | -42% (60s → 35s avg)           |
+| CI/CD      | -68% minutos/mês               |
 
 ---
 
