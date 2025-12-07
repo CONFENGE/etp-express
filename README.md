@@ -10,7 +10,7 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 [![CI Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml)
 [![E2E Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml)
 [![Secret Scan](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml)
-[![License: MIT](https://img.shields.io/github/license/tjsasakifln/etp-express)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Zero%20Errors-blue)]()
 [![Coverage](https://img.shields.io/badge/coverage-backend%2078%25%20%7C%20frontend%2060%25-yellow)]()
 [![LGPD](https://img.shields.io/badge/LGPD-100%25%20Compliant-green)]()
