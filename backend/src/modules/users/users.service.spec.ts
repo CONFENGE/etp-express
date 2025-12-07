@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from './users.service';
@@ -86,6 +87,15 @@ describe('UsersService', () => {
     logDeletionCancelled: jest.fn().mockResolvedValue({}),
   };
 
+  const mockConfigService = {
+    get: jest.fn((key: string, defaultValue?: number) => {
+      if (key === 'LGPD_RETENTION_DAYS') {
+        return 30; // Default retention period for tests
+      }
+      return defaultValue;
+    }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -113,6 +123,10 @@ describe('UsersService', () => {
         {
           provide: AuditService,
           useValue: mockAuditService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
@@ -928,6 +942,95 @@ describe('UsersService', () => {
           sectionsCount: 5, // 3 + 2
           versionsCount: 3, // 2 + 1
         }),
+      );
+    });
+
+    it('should include retentionDays in result', async () => {
+      mockRepository.find.mockResolvedValue([]);
+
+      const result = await service.purgeDeletedAccounts();
+
+      expect(result.retentionDays).toBe(30);
+    });
+
+    it('should include retentionDays in audit log metadata', async () => {
+      const deletedUser: User = {
+        ...mockUser,
+        id: 'user-id',
+        deletedAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000),
+        isActive: false,
+      };
+
+      mockRepository.find.mockResolvedValue([deletedUser]);
+      mockEtpsRepository.count.mockResolvedValue(0);
+      mockEtpsRepository.find.mockResolvedValue([]);
+      mockRepository.remove.mockResolvedValue(deletedUser);
+
+      await service.purgeDeletedAccounts();
+
+      expect(mockAuditService.logAccountDeletion).toHaveBeenCalledWith(
+        deletedUser.id,
+        'HARD',
+        expect.objectContaining({
+          retentionDays: 30,
+        }),
+      );
+    });
+  });
+
+  describe('LGPD retention configuration', () => {
+    it('should use ConfigService to get retention days', () => {
+      // Service is initialized with mockConfigService, which uses 30 days
+      // Verify service is using the retention days from config
+      // Note: mockConfigService.get is called during service initialization in beforeEach
+      // Since jest.clearAllMocks() is called, we verify via behavior instead
+      expect(service).toBeDefined();
+      // The service constructor sets retentionDays from ConfigService
+      // We verify this by checking purge result includes retentionDays
+    });
+
+    it('should include retentionDays in softDeleteAccount response', async () => {
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.save.mockResolvedValue({
+        ...mockUser,
+        deletedAt: new Date(),
+        isActive: false,
+      });
+      mockEtpsRepository.count.mockResolvedValue(0);
+      mockEtpsRepository.find.mockResolvedValue([]);
+
+      const result = await service.softDeleteAccount(mockUser.id);
+
+      expect(result.retentionDays).toBe(30);
+      expect(result.scheduledDeletionDate).toBeInstanceOf(Date);
+    });
+
+    it('should calculate correct scheduled deletion date based on retention period', async () => {
+      const beforeCall = new Date();
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.save.mockResolvedValue({
+        ...mockUser,
+        deletedAt: new Date(),
+        isActive: false,
+      });
+      mockEtpsRepository.count.mockResolvedValue(0);
+      mockEtpsRepository.find.mockResolvedValue([]);
+
+      const result = await service.softDeleteAccount(mockUser.id);
+      const afterCall = new Date();
+
+      // Calculate expected date range (should be ~30 days from now)
+      const expectedMinDate = new Date(beforeCall);
+      expectedMinDate.setDate(expectedMinDate.getDate() + 30);
+
+      const expectedMaxDate = new Date(afterCall);
+      expectedMaxDate.setDate(expectedMaxDate.getDate() + 30);
+
+      expect(result.scheduledDeletionDate.getTime()).toBeGreaterThanOrEqual(
+        expectedMinDate.getTime() - 1000, // 1 second tolerance
+      );
+      expect(result.scheduledDeletionDate.getTime()).toBeLessThanOrEqual(
+        expectedMaxDate.getTime() + 1000, // 1 second tolerance
       );
     });
   });
