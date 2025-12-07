@@ -4,6 +4,7 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -17,9 +18,16 @@ import { EmailService } from '../email/email.service';
 import { AuditService } from '../audit/audit.service';
 import { subDays } from 'date-fns';
 
+/**
+ * Default LGPD retention period in days before hard deletion.
+ * Can be overridden via LGPD_RETENTION_DAYS environment variable.
+ */
+const DEFAULT_LGPD_RETENTION_DAYS = 30;
+
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
+  private readonly retentionDays: number;
 
   constructor(
     @InjectRepository(User)
@@ -32,7 +40,16 @@ export class UsersService {
     private auditLogsRepository: Repository<AuditLog>,
     private emailService: EmailService,
     private auditService: AuditService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.retentionDays = this.configService.get<number>(
+      'LGPD_RETENTION_DAYS',
+      DEFAULT_LGPD_RETENTION_DAYS,
+    );
+    this.logger.log(
+      `LGPD retention period configured: ${this.retentionDays} days`,
+    );
+  }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
@@ -200,19 +217,19 @@ export class UsersService {
    * - Setting deletedAt timestamp
    * - Deactivating account (isActive = false)
    * - Creating audit log entry
-   * - Account will be hard deleted after 30 days by scheduled job
+   * - Account will be hard deleted after retention period (configurable via LGPD_RETENTION_DAYS)
    *
    * This method fulfills LGPD right to deletion with grace period for reversal.
    *
    * @param userId - User unique identifier (UUID)
    * @param reason - Optional reason for account deletion
-   * @returns Deletion scheduled date (30 days from now)
+   * @returns Deletion scheduled date (retention period from now)
    * @throws {NotFoundException} If user not found
    */
   async softDeleteAccount(
     userId: string,
     reason?: string,
-  ): Promise<{ scheduledDeletionDate: Date }> {
+  ): Promise<{ scheduledDeletionDate: Date; retentionDays: number }> {
     const user = await this.findOne(userId);
 
     // Soft delete: mark for deletion without removing data
@@ -221,9 +238,11 @@ export class UsersService {
 
     await this.usersRepository.save(user);
 
-    // Calculate scheduled hard deletion date (30 days from now)
+    // Calculate scheduled hard deletion date (retention period from now)
     const scheduledDeletionDate = new Date();
-    scheduledDeletionDate.setDate(scheduledDeletionDate.getDate() + 30);
+    scheduledDeletionDate.setDate(
+      scheduledDeletionDate.getDate() + this.retentionDays,
+    );
 
     // Count ETPs and related data for audit log
     const etpsCount = await this.etpsRepository.count({
@@ -266,10 +285,10 @@ export class UsersService {
     }
 
     this.logger.log(
-      `User soft deleted: ${user.email} (scheduled hard deletion: ${scheduledDeletionDate.toISOString()})`,
+      `User soft deleted: ${user.email} (scheduled hard deletion: ${scheduledDeletionDate.toISOString()}, retention: ${this.retentionDays} days)`,
     );
 
-    return { scheduledDeletionDate };
+    return { scheduledDeletionDate, retentionDays: this.retentionDays };
   }
 
   /**
@@ -281,7 +300,7 @@ export class UsersService {
    * - Reactivating account (isActive = true)
    * - Creating audit log entry
    *
-   * This allows users to cancel deletion within 30-day grace period.
+   * This allows users to cancel deletion within the configured grace period (LGPD_RETENTION_DAYS).
    *
    * @param userId - User unique identifier (UUID)
    * @throws {NotFoundException} If user not found
@@ -313,30 +332,36 @@ export class UsersService {
   }
 
   /**
-   * Purges (hard deletes) user accounts that have been soft-deleted for more than 30 days.
+   * Purges (hard deletes) user accounts that have been soft-deleted for more than
+   * the configured retention period (LGPD_RETENTION_DAYS, default 30 days).
    * Runs daily at 2 AM via cron job.
    *
    * @remarks
    * This method fulfills LGPD data retention policy by:
-   * - Permanently deleting user data after 30-day grace period
+   * - Permanently deleting user data after configured grace period
    * - Cascading deletion to related ETPs, sections, analytics, and audit logs
    * - Creating audit trail for each purge
    * - Logging purge operations for compliance reporting
    *
    * Scheduled to run: Every day at 2:00 AM
    *
-   * @returns Object with purge statistics (count and timestamp)
+   * @returns Object with purge statistics (count, timestamp, and retention days)
    */
   @Cron(CronExpression.EVERY_DAY_AT_2AM)
   async purgeDeletedAccounts(): Promise<{
     purgedCount: number;
     purgedAt: Date;
     purgedUserIds: string[];
+    retentionDays: number;
   }> {
-    // Calculate cutoff date (30 days ago)
-    const cutoffDate = subDays(new Date(), 30);
+    // Calculate cutoff date based on configured retention period
+    const cutoffDate = subDays(new Date(), this.retentionDays);
 
-    // Find all users soft-deleted more than 30 days ago
+    this.logger.log(
+      `Starting LGPD purge job (retention: ${this.retentionDays} days, cutoff: ${cutoffDate.toISOString()})`,
+    );
+
+    // Find all users soft-deleted more than retention period ago
     const deletedUsers = await this.usersRepository.find({
       where: {
         deletedAt: LessThan(cutoffDate),
@@ -369,10 +394,11 @@ export class UsersService {
 
         // Create audit log BEFORE deletion (using AuditService)
         await this.auditService.logAccountDeletion(user.id, 'HARD', {
-          reason: `Hard delete after 30-day retention period (originally deleted: ${user.deletedAt?.toISOString() || 'N/A'})`,
+          reason: `Hard delete after ${this.retentionDays}-day retention period (originally deleted: ${user.deletedAt?.toISOString() || 'N/A'})`,
           etpsCount,
           sectionsCount,
           versionsCount,
+          retentionDays: this.retentionDays,
         });
 
         // Hard delete user (cascade will remove ETPs, sections, versions due to onDelete: 'CASCADE')
@@ -381,7 +407,7 @@ export class UsersService {
         purgedUserIds.push(user.id);
 
         this.logger.log(
-          `Hard deleted user ${user.id} (${user.email}) after 30-day retention period. ` +
+          `Hard deleted user ${user.id} (${user.email}) after ${this.retentionDays}-day retention period. ` +
             `Related data: ${etpsCount} ETPs, ${sectionsCount} sections, ${versionsCount} versions`,
         );
       } catch (error) {
@@ -397,14 +423,17 @@ export class UsersService {
       purgedCount: purgedUserIds.length,
       purgedAt: new Date(),
       purgedUserIds,
+      retentionDays: this.retentionDays,
     };
 
     if (purgedUserIds.length > 0) {
       this.logger.log(
-        `Purge job completed: ${purgedUserIds.length} user(s) permanently deleted`,
+        `Purge job completed: ${purgedUserIds.length} user(s) permanently deleted (retention: ${this.retentionDays} days)`,
       );
     } else {
-      this.logger.log('Purge job completed: No users to purge');
+      this.logger.log(
+        `Purge job completed: No users to purge (retention: ${this.retentionDays} days)`,
+      );
     }
 
     return result;
