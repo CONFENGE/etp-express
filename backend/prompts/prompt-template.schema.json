@@ -1,0 +1,310 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://etp-express.com/schemas/prompt-template.schema.json",
+  "title": "ETP Express Prompt Template",
+  "description": "JSON Schema for validating YAML prompt template files in ETP Express",
+  "type": "object",
+  "required": ["version", "description", "system_prompt", "metadata"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the prompt template",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "examples": ["1.0.0", "1.1.0", "2.0.0"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the prompt's purpose",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "author": {
+      "type": "string",
+      "description": "Author or team responsible for this prompt",
+      "default": "ETP Express Team"
+    },
+    "last_updated": {
+      "type": "string",
+      "description": "Date of last update in YYYY-MM-DD format",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "system_prompt": {
+      "type": "string",
+      "description": "Main system prompt text with optional template variables ({{variable_name}})",
+      "minLength": 50
+    },
+    "safety_prompt": {
+      "type": "string",
+      "description": "Additional safety prompt for anti-hallucination agents"
+    },
+    "enrichment_prompt": {
+      "type": "string",
+      "description": "Prompt to enrich user input with additional context"
+    },
+    "base_query": {
+      "type": "string",
+      "description": "Base query template for external API enrichment"
+    },
+    "section_contexts": {
+      "type": "object",
+      "description": "Section-specific context prompts (for legal agent)",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "section_queries": {
+      "type": "object",
+      "description": "Section-specific queries for external enrichment (for Perplexity)",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "query_suffix": {
+      "type": "string",
+      "description": "Suffix to append to all enrichment queries"
+    },
+    "variables": {
+      "type": "array",
+      "description": "Template variables that can be substituted in prompts",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Variable name (used as {{name}} in prompts)",
+            "pattern": "^[a-z_][a-z0-9_]*$"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what this variable represents"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this variable must be provided",
+            "default": false
+          },
+          "default": {
+            "type": "string",
+            "description": "Default value if not provided"
+          }
+        }
+      }
+    },
+    "prohibited_claims": {
+      "type": "array",
+      "description": "List of phrases that should trigger warnings (anti-hallucination)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "legal_references": {
+      "type": "array",
+      "description": "List of legal references for validation (legal agent)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "complex_phrases": {
+      "type": "array",
+      "description": "Complex phrases to be simplified (simplification agent)",
+      "items": {
+        "type": "object",
+        "required": ["phrase", "suggestion"],
+        "properties": {
+          "phrase": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "redundancies": {
+      "type": "array",
+      "description": "Redundant phrases to be removed (simplification agent)",
+      "items": {
+        "type": "object",
+        "required": ["phrase", "suggestion"],
+        "properties": {
+          "phrase": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "nominalizations": {
+      "type": "array",
+      "description": "Noun-to-verb conversions (simplification agent)",
+      "items": {
+        "type": "object",
+        "required": ["noun", "verb"],
+        "properties": {
+          "noun": {
+            "type": "string"
+          },
+          "verb": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "required_elements": {
+      "type": "object",
+      "description": "Required elements with keywords and weights (fundamentacao agent)",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "readability_thresholds": {
+      "type": "object",
+      "description": "Readability thresholds for clarity analysis",
+      "properties": {
+        "max_sentence_length": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 50
+        },
+        "max_complex_word_percentage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "max_passive_voice_percentage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "max_jargon_percentage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "min_readability_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "quality_thresholds": {
+      "type": "object",
+      "description": "Quality thresholds for fundamentacao analysis",
+      "properties": {
+        "min_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "min_word_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requires_quantitative_data": {
+          "type": "boolean"
+        }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "description": "Metrics definitions for analysis",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "penalty_threshold": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "applicable_sections": {
+      "type": "array",
+      "description": "List of ETP sections this prompt applies to",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about the prompt template",
+      "required": ["category", "priority", "tags"],
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "Category of the prompt",
+          "enum": [
+            "orchestration",
+            "validation",
+            "compliance",
+            "quality",
+            "enrichment"
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "description": "Priority level of this prompt",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "used_by": {
+          "type": "array",
+          "description": "List of methods/services that use this prompt",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applicable_sections": {
+          "type": "array",
+          "description": "List of ETP sections this prompt applies to",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_service": {
+          "type": "string",
+          "description": "External service this prompt integrates with"
+        },
+        "fallback_behavior": {
+          "type": "string",
+          "description": "Behavior when external service fails",
+          "enum": ["graceful_degradation", "error", "skip"]
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags for categorization and search",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
