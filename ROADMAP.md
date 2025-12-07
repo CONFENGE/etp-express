@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-07 | **Progresso:** 224/267 (83.9%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-07 | **Progresso:** 225/267 (84.3%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -12,7 +12,7 @@ M4: ████████████████████ 45/45  (100%) R
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
 M6: ████████████░░░░░░░░ 41/61  (67%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
-M8: ░░░░░░░░░░░░░░░░░░░░  0/12  (0%)   Gestão de Domínios Institucionais [NEW]
+M8: ██░░░░░░░░░░░░░░░░░░  1/12  (8%)   Gestão de Domínios Institucionais [IN PROGRESS]
 ```
 
 **Deploy:** ✅ Backend + Frontend operacionais (12/07) | **12 P0 CRÍTICOS (M8)**
@@ -64,7 +64,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ### Issues P0 - Backend (7)
 
-- [ ] #464 - Estender UserRole enum (SYSTEM_ADMIN, DOMAIN_MANAGER, DEMO)
+- [x] #464 - Estender UserRole enum (SYSTEM_ADMIN, DOMAIN_MANAGER, DEMO) **[PR #476]**
 - [ ] #465 - Criar entidade AuthorizedDomain
 - [ ] #466 - Criar módulo SystemAdmin (CRUD domínios)
 - [ ] #467 - Criar módulo DomainManager (CRUD usuários + quota 10)
