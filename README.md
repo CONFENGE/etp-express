@@ -6,9 +6,13 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 
 ---
 
-[![Tests](https://img.shields.io/badge/tests-800%2B%20passing-brightgreen)]()
+[![CI Lint](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-lint.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-lint.yml)
+[![CI Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml)
+[![E2E Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml)
+[![Secret Scan](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml)
+[![License: MIT](https://img.shields.io/github/license/tjsasakifln/etp-express)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Zero%20Errors-blue)]()
-[![Coverage](https://img.shields.io/badge/coverage-backend%2070%25%20%7C%20frontend%2060%25-yellow)]()
+[![Coverage](https://img.shields.io/badge/coverage-backend%2078%25%20%7C%20frontend%2060%25-yellow)]()
 [![LGPD](https://img.shields.io/badge/LGPD-100%25%20Compliant-green)]()
 [![Production Ready](https://img.shields.io/badge/status-Production%20Ready-brightgreen)]()
 
@@ -1075,22 +1079,95 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 
 Este é um projeto assistivo para benefício público. Contribuições são bem-vindas!
 
-### Como Contribuir
+Para guia completo, consulte: **[CONTRIBUTING.md](./CONTRIBUTING.md)**
 
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Add: Minha feature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
+### Quick Start para Contribuidores
 
-### Áreas que precisam de ajuda
+```bash
+# 1. Fork e clone
+git clone https://github.com/SEU-USUARIO/etp-express.git
+cd "ETP Express"
 
-- [ ] Testes unitários e E2E
-- [ ] Melhorias de UX
-- [ ] Otimização de prompts de IA
-- [ ] Integração com sistemas oficiais (COMPRASNET, PNCP)
+# 2. Instale dependências
+npm install
+cd backend && npm install && cd ..
+cd frontend && npm install && cd ..
+
+# 3. Crie uma branch (seguir padrão)
+git checkout -b feat/123-minha-feature   # Para features
+git checkout -b fix/456-corrigir-bug     # Para bugfixes
+git checkout -b docs/789-atualizar-docs  # Para docs
+
+# 4. Rode os testes antes de commitar
+npm run test:all
+```
+
+### Conventional Commits (Obrigatório)
+
+Usamos [Conventional Commits](https://www.conventionalcommits.org/) para histórico padronizado:
+
+| Tipo       | Descrição                                   |
+| ---------- | ------------------------------------------- |
+| `feat`     | Nova funcionalidade                         |
+| `fix`      | Correção de bug                             |
+| `docs`     | Apenas documentação                         |
+| `test`     | Adição/correção de testes                   |
+| `refactor` | Refatoração (sem mudança de funcionalidade) |
+| `perf`     | Melhoria de performance                     |
+| `chore`    | Tarefas de manutenção (deps, configs)       |
+| `security` | Correção de vulnerabilidade                 |
+
+**Formato:** `tipo(escopo): descrição (#issue)`
+
+**Exemplos:**
+
+```bash
+git commit -m "feat(backend): add rate limiting to auth endpoints (#42)"
+git commit -m "fix(frontend): resolve memory leak in ETP editor (#156)"
+git commit -m "docs: update README badges and contributing guide (#36)"
+```
+
+### Checklist de PR (Obrigatório)
+
+Antes de abrir um PR, verifique:
+
+- [ ] Branch nomeada corretamente (`feat/`, `fix/`, `docs/`)
+- [ ] Commit messages seguem Conventional Commits
+- [ ] Testes passando (`npm run test:all`)
+- [ ] Lint passando (`npm run lint`)
+- [ ] Coverage não diminuiu
+- [ ] PR descreve contexto, mudanças e riscos
+- [ ] Issue relacionada linkada (`Closes #XX`)
+
+### Rodando Testes
+
+```bash
+# Testes Backend (NestJS + Jest)
+cd backend
+npm test              # Unitários
+npm run test:e2e      # Integração
+npm run test:cov      # Com coverage (meta: 78%+)
+
+# Testes Frontend (React + Vitest)
+cd frontend
+npm test              # Unitários
+npm run test:coverage # Com coverage (meta: 60%+)
+
+# Testes E2E (Playwright)
+cd e2e
+npm test              # Requer frontend rodando em localhost:5173
+
+# Todos os testes
+npm run test:all      # Na raiz do projeto
+```
+
+### Áreas que Precisam de Ajuda
+
+- [ ] Testes de integração para seções 5-13 (#83, #84)
+- [ ] UAT sessions com servidores públicos (#92-#95)
+- [ ] Prompt externalization para YAML (#215-#218)
 - [ ] Templates por órgão/setor
-- [ ] Documentação de uso
+- [ ] Integração com sistemas oficiais (COMPRASNET, PNCP)
 - [ ] Traduções (i18n)
 
 ---
@@ -1129,53 +1206,51 @@ Pode ser usado, modificado e distribuído livremente, inclusive para fins comerc
 
 ## 🎯 ROADMAP
 
-**Última Atualização**: 2025-11-30 | [ROADMAP.md completo](./ROADMAP.md)
+**Ultima Atualizacao**: 2025-12-07 | [ROADMAP.md completo](./ROADMAP.md)
 
-### Progresso Global: 84% (158/188 issues)
+### Progresso Global: 89% (210/236 issues)
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████████ 43/44  (98%)  ⚡ Refactoring & Performance
-M5: ██░░░░░░░░░░░░░░░░░░  2/22  (9%)   📚 E2E Testing & Documentation
-M6: ██░░░░░░░░░░░░░░░░░░  2/11  (18%)  🔄 Maintenance
+M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
+M5: ████████░░░░░░░░░░░░ 11/26  (42%)  📚 E2E Testing & Documentation
+M6: ██████████████░░░░░░ 28/41  (68%)  🔄 Maintenance
+M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
-### ✅ M1: Foundation - Testes (100%)
+### ✅ M1-M4: Foundation, CI/CD, Quality, Performance (100%)
 
-- ✅ Cobertura: Backend 70%+, Frontend 60%+
-- ✅ Zero erros TypeScript (96 → 0)
-- ✅ 800+ testes passando
+- ✅ 920+ testes passando (Jest + Vitest + Playwright)
+- ✅ Coverage: Backend 78%, Frontend 60%+
+- ✅ Zero erros TypeScript
+- ✅ OWASP Top 10 + LGPD 100%
+- ✅ Cache LLM (80% economia)
+- ✅ Paralelizacao 4-5x speedup
 
-### ✅ M2: CI/CD Pipeline (100%)
+### 📚 M5: E2E Testing & Documentation (42%)
 
-- ✅ GitHub Actions: lint + tests + coverage
-- ✅ Deploy Railway: zero-downtime
-- ✅ Otimização CI/CD: -68% minutos
+- ✅ E2E critical flow tests (Playwright)
+- ✅ Accessibility tests (WCAG 2.1 AA)
+- ✅ Frontend logging service (Sentry)
+- [ ] Testes integracao secoes 5-13
+- [ ] UAT sessions
 
-### ✅ M3: Quality & Security (100%)
+### 🔄 M6: Maintenance (68%)
 
-- ✅ OWASP Top 10 (0 HIGH vulnerabilities)
-- ✅ LGPD 100% Exemplar
-- ✅ Secret scanning automatizado
+- ✅ Redis + BullMQ async processing
+- ✅ Async UX polling frontend
+- ✅ Migration idempotency fixes
+- [ ] pgvector migration (#387)
+- [ ] Secrets rotation automation
 
-### ⚡ M4: Refactoring & Performance (98%)
+### ✅ M7: Multi-Tenancy B2G (100%)
 
-- ✅ Cache LLM (OpenAI + Perplexity) - 80% economia
-- ✅ Paralelização: 4-5x speedup
-- ✅ RAG + pgvector
-- ✅ Circuit Breaker
-- ✅ Auditorias: Orchestrator (95%), User (92%)
-
-### 📚 M5: E2E + Docs (9%)
-
-- [ ] E2E test suite
-- [ ] API Documentation
-
-### 🔄 M6: Maintenance (18%)
-
-- [ ] Dependências + Dependabot
+- ✅ Column-based isolation (organizationId)
+- ✅ TenantGuard + RolesGuard
+- ✅ Domain whitelist registration
+- ✅ Kill switch para organizacoes
 
 📊 [ROADMAP.md](./ROADMAP.md) para detalhes completos
 
@@ -1226,7 +1301,7 @@ A responsabilidade final é sempre do servidor/agente público responsável.
 
 ---
 
-**Última atualização**: 2025-11-30
-**Versão**: 1.0.0 (Production Ready)
-**Progresso**: 84% (158/188 issues concluídas)
-**Milestones**: M1 ✅ (100%) | M2 ✅ (100%) | M3 ✅ (100%) | M4 ⚡ (98%)
+**Ultima atualizacao**: 2025-12-07
+**Versao**: 1.0.0 (Production Ready)
+**Progresso**: 89% (210/236 issues concluidas)
+**Milestones**: M1-M4 ✅ | M5 📚 (42%) | M6 🔄 (68%) | M7 ✅
