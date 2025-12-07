@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-07 02:30 UTC | **Auditoria ROADMAP:** 237 issues validadas (206 closed, 30 open), M1-M7 progress synced with GitHub, #424 ✅ VALIDATED (build artifacts confirmed)
+**Última Atualização:** 2025-12-07 02:55 UTC | **Auditoria ROADMAP:** 238 issues validadas (207 closed, 30 open), M1-M7 progress synced with GitHub, #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 204/233 issues concluídas (87.6%)
+**Progresso Global:** 205/233 issues concluídas (88.0%)
 **Velocidade:** 9.4 issues/dia (últimos 7 dias: 66 issues)
 **ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
@@ -14,7 +14,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ████████░░░░░░░░░░░░ 10/26  (38.5%) 📚 E2E Testing & Documentation
+M5: ████████░░░░░░░░░░░░ 11/26  (42.3%) 📚 E2E Testing & Documentation
 M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#438 ✅ MERGED - async UX)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -117,11 +117,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (10/26) - 38.5%
+### 📚 M5: E2E Testing & Documentation (11/26) - 42.3%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-08
 
-#### Concluídas (10):
+#### Concluídas (11):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #23 - E2E Test - Critical Flow Complete (PR #372 - 2025-12-03)
@@ -141,8 +141,13 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #97 - Documentation sync & JSDoc
 - ✅ #353 - Configure Puppeteer for E2E Testing
 - ✅ #369 - Fix auth.controller.spec.ts - Organization mock missing 'etps' property (PR #370)
+- ✅ #35 - Frontend logging service with Sentry integration (PR #439 - 2025-12-07)
+  - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 100%)
+  - **Implementação:** Logger service (logger.ts) com 4 níveis (debug, info, warn, error)
+  - **Sentry:** captureException + breadcrumbs + setUser/setContext
+  - **Cobertura:** 26 testes, 238 linhas de teste, 5 console.error substituídos
 
-#### Pendentes (16):
+#### Pendentes (15):
 
 **Testes E2E:**
 
@@ -151,7 +156,7 @@ M7: ████████████████████  6/6   (100%) �
 
 **Documentação:**
 
-- [ ] #35-#37 - Docs técnicas (frontend logging, README badges, arquitetura)
+- [ ] #36-#37 - Docs técnicas (README badges, arquitetura)
 - [ ] #110 - Staged Rollout Strategy & Feature Flags
 - [ ] #111 - Production Support SLA & Training
 - [ ] #215-#218 - Prompt externalization (YAML, service, hot-reload)
