@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-07 | **Progresso:** 222/255 (87.1%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-07 | **Progresso:** 223/255 (87.5%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -10,11 +10,11 @@ M2: ████████████████████ 18/18  (100%) C
 M3: ████████████████████ 61/61  (100%) Quality & Security
 M4: ████████████████████ 45/45  (100%) Refactoring & Performance
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
-M6: ████████████░░░░░░░░ 39/61  (64%)  Maintenance
+M6: ████████████░░░░░░░░ 40/61  (66%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
 ```
 
-**Deploy:** Backend config fix merged (12/07) | Frontend rodando (06/12) | **1 P0 CRÍTICO** (#448)
+**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **0 P0 CRÍTICOS**
 
 ---
 
@@ -57,14 +57,14 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ---
 
-## M6: Maintenance (62%)
+## M6: Maintenance (66%)
 
-**Concluídos (39):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447)
+**Concluídos (40):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447, #448)
 
-**P0 CRÍTICOS (1):** ⚠️ Bloqueia novos releases
+**P0 CRÍTICOS (0):** ✅ Nenhum bloqueio
 
 - [x] #447 - Backend deploy failing (railway.toml conflict) ✅ **RESOLVED via PR #462**
-- [ ] #448 - Frontend deploy failing (snapshot error) **[NEW P0]**
+- [x] #448 - Frontend deploy failing (snapshot error) ✅ **RESOLVED via PORT variable fix**
 
 **P1 Segurança (4):**
 
@@ -113,7 +113,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ### Próximos Passos (Ordem de Prioridade)
 
-1. **Sprint 1 (2-3 dias):** Fix deploy (#448 - frontend) + Perplexity (#426) - #447 ✅ DONE
+1. **Sprint 1:** ✅ COMPLETO - #447 + #448 DONE - Próximo: Perplexity (#426)
 2. **Sprint 2 (1 semana):** Security P1 (#449, #450, #451)
 3. **Sprint 3 (2 semanas):** Quality P2 (#452-#458)
 4. **Backlog:** P3 + UAT + Documentation
