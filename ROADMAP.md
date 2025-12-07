@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 21:40 UTC | **Auditoria ROADMAP:** 235 issues validadas (204 closed, 31 open), M1-M7 progress synced with GitHub, #428 ✅ MERGED via /review-pr
+**Última Atualização:** 2025-12-06 23:22 UTC | **Auditoria ROADMAP:** 236 issues validadas (205 closed, 31 open), M1-M7 progress synced with GitHub, #438 ✅ MERGED via /review-pr
 
 ## 📊 Status Atual
 
-**Progresso Global:** 202/233 issues concluídas (86.7%)
+**Progresso Global:** 203/233 issues concluídas (87.1%)
 **Velocidade:** 9.4 issues/dia (últimos 7 dias: 66 issues)
 **ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend DEPLOYING (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json) - zero vulnerabilities
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend DEPLOYING (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -15,7 +15,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████████░░░░░░░░░░░░ 10/26  (38.5%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 29/41  (70.7%) 🔄 Maintenance (#428 ✅ MERGED)
+M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#438 ✅ MERGED - async UX)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -160,11 +160,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (27/41) - 65.9%
+### 🔄 M6: Maintenance (28/41) - 68.3%
 
 **Status:** RECORRENTE
 
-#### Concluídas (27):
+#### Concluídas (28):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -203,8 +203,12 @@ M7: ████████████████████  6/6   (100%) �
 - ✅ #411 - [P0][HOTFIX] Fix AddDeletedAtToUsers migration idempotency (PR #412 - MERGED 2025-12-05 12:35 UTC via /review-pr)
 - ✅ #419 - [P0] Wrap authentication pages in <main> landmark for WCAG (PR #420 - MERGED 2025-12-06 17:24 UTC)
 - ✅ #421 - [P0] Fix WCAG link-in-text-block violation (PR #422 - MERGED 2025-12-06 18:02 UTC)
+- ✅ #222 - [P2] Frontend async UX - section generation progress tracking (PR #438 - MERGED 2025-12-06 23:20 UTC via /review-pr)
+  - **Implementação:** Polling utilities, progress tracking, status messages
+  - **Novos arquivos:** polling.ts, polling.test.ts (17 tests)
+  - **Qualidade:** JSDoc completo, error handling robusto, 88 tests passing
 
-#### Pendentes (14):
+#### Pendentes (13):
 
 **P0 - Critical:**
 
@@ -224,7 +228,6 @@ M7: ████████████████████  6/6   (100%) �
   - **Bloqueio:** pgvector extension não disponível (RAG disabled como workaround)
   - **Impacto:** RAG Module não funcional
   - **Status:** Workaround estável aplicado
-- [ ] #222 - Frontend async UX (depende de #186 - RESOLVIDO)
 - [ ] #223-#224 - Rotação secrets automática
 - [ ] #248 - Processo: limite tamanho PRs
 - [ ] #40 - Atualizar dependências desatualizadas
@@ -339,7 +342,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ### P2 - Próxima Sprint:
 
-1. Frontend async UX (#222) - Job status polling UI
+1. ~~Frontend async UX (#222)~~ - ✅ MERGED via PR #438 (2025-12-06)
 2. Prompt externalization (#215-#218)
 3. Staged rollout strategy (#110)
 4. pgvector migration (#387) - quando houver janela
@@ -352,7 +355,7 @@ M7: ████████████████████  6/6   (100%) �
 | ---------- | ----------------------------- |
 | Velocidade | 9.4 issues/dia (66 em 7 dias) |
 | Coverage   | Backend 78%, Frontend 60%+    |
-| Tests      | 900+ passando                 |
+| Tests      | 920+ passando                 |
 | Security   | Zero vulnerabilidades HIGH    |
 | Latência   | -42% (60s → 35s avg)          |
 | CI/CD      | -68% minutos/mês              |
@@ -367,4 +370,4 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-**Status:** 🟢 Frontend desbloqueado (#428/#429 ✅ MERGED) | Backend ✅ | **Risco:** Baixo - aguardando Railway redeploy
+**Status:** 🟢 Frontend async UX (#222/#438 ✅ MERGED) | Backend ✅ | **Risco:** Baixo - aguardando Railway redeploy
