@@ -1,5 +1,8 @@
+import { Logger } from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
+
+const logger = new Logger('SentryConfig');
 
 /**
  * Inicializa configuração do Sentry para monitoramento de erros em produção
@@ -16,9 +19,7 @@ export const initSentry = () => {
   const dsn = process.env.SENTRY_DSN;
 
   if (!dsn) {
-    console.warn(
-      '[Sentry] SENTRY_DSN not configured. Error tracking disabled.',
-    );
+    logger.warn('SENTRY_DSN not configured. Error tracking disabled.');
     return;
   }
 
@@ -74,7 +75,7 @@ export const initSentry = () => {
     ],
   });
 
-  console.log(
-    `[Sentry] Initialized for environment: ${process.env.NODE_ENV || 'development'}`,
+  logger.log(
+    `Initialized for environment: ${process.env.NODE_ENV || 'development'}`,
   );
 };

@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
@@ -9,6 +9,8 @@ import { SentryExceptionFilter } from './common/filters/sentry-exception.filter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { initSentry } from './config/sentry.config';
 import { DISCLAIMER } from './common/constants/messages';
+
+const logger = new Logger('Bootstrap');
 
 async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
@@ -104,18 +106,18 @@ async function bootstrap() {
         operationsSorter: 'alpha',
       },
     });
-    console.log(
+    logger.log(
       `📚 Swagger documentation available at http://localhost:${configService.get('PORT') || 3001}/api/docs`,
     );
   } else {
-    console.log('🔒 Swagger documentation disabled in production for security');
+    logger.log('🔒 Swagger documentation disabled in production for security');
   }
 
   const port = configService.get('PORT') || 3001;
 
   await app.listen(port);
 
-  console.log(`
+  logger.log(`
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                             ║
     ║   🚀 ETP EXPRESS BACKEND                                   ║
