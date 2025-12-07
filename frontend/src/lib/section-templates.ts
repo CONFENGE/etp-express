@@ -1,4 +1,5 @@
 import type { SectionTemplate } from '../types/etp';
+import { logger } from './logger';
 
 let cachedTemplates: SectionTemplate[] | null = null;
 
@@ -24,7 +25,7 @@ export async function loadSectionTemplates(): Promise<SectionTemplate[]> {
     cachedTemplates = templates;
     return cachedTemplates;
   } catch (error) {
-    console.error('Error loading section templates:', error);
+    logger.error('Error loading section templates', error);
     throw error;
   }
 }
