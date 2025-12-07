@@ -13,6 +13,7 @@ import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
+import { useETPStore } from '@/store/etpStore';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,14 @@ export function ETPEditor() {
   );
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Async generation state from store (#222)
+  const {
+    aiGenerating,
+    generationProgress,
+    generationStatus,
+    generateSection: storeGenerateSection,
+  } = useETPStore();
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -77,17 +85,29 @@ export function ETPEditor() {
   };
 
   const handleGenerateAll = async () => {
-    setIsGenerating(true);
-    // Placeholder - funcionalidade futura
-    setTimeout(() => {
-      setIsGenerating(false);
-      success('Funcionalidade em desenvolvimento');
-    }, 1000);
+    // Generate all sections sequentially
+    // For MVP, show message that this is still in development
+    success('Funcionalidade em desenvolvimento');
   };
 
   const handleGenerateSection = async (sectionNumber: number) => {
-    // Placeholder - funcionalidade futura
-    success(`Gerar seção ${sectionNumber} - funcionalidade em desenvolvimento`);
+    if (!id) return;
+
+    try {
+      const result = await storeGenerateSection({
+        etpId: id,
+        sectionNumber,
+      });
+
+      if (result?.content) {
+        setContent(result.content);
+        success('Seção gerada com sucesso!');
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao gerar seção';
+      error(message);
+    }
   };
 
   if (isLoading || !currentETP || templatesLoading) {
@@ -151,6 +171,9 @@ export function ETPEditor() {
                   currentContent={content}
                   onContentChange={setContent}
                   onGenerateSection={handleGenerateSection}
+                  isGenerating={aiGenerating}
+                  generationProgress={generationProgress}
+                  generationStatus={generationStatus}
                 />
               </Tabs>
             </CardContent>
@@ -160,7 +183,7 @@ export function ETPEditor() {
             <ETPEditorSidebar
               sections={sectionsForSidebar}
               onGenerateAll={handleGenerateAll}
-              isGenerating={isGenerating}
+              isGenerating={aiGenerating}
             />
 
             <Card>

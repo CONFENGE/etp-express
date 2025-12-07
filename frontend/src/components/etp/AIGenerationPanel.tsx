@@ -2,11 +2,16 @@ import { AlertTriangle, Sparkles, RefreshCw, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { AI_WARNING_MESSAGE } from '@/lib/constants';
 import { LoadingState } from '@/components/common/LoadingState';
+import { GenerationStatus } from '@/types/etp';
+import { getStatusMessage } from '@/lib/polling';
 
 interface AIGenerationPanelProps {
   isGenerating: boolean;
+  progress?: number;
+  status?: GenerationStatus;
   content?: string;
   onGenerate: () => void;
   onRegenerate: () => void;
@@ -15,6 +20,8 @@ interface AIGenerationPanelProps {
 
 export function AIGenerationPanel({
   isGenerating,
+  progress = 0,
+  status = 'idle',
   content,
   onGenerate,
   onRegenerate,
@@ -38,7 +45,16 @@ export function AIGenerationPanel({
       </CardHeader>
       <CardContent className="space-y-4">
         {isGenerating ? (
-          <LoadingState size="sm" message="Gerando conteúdo..." />
+          <div className="space-y-4">
+            <LoadingState
+              size="sm"
+              message={getStatusMessage(status, progress)}
+            />
+            <Progress value={progress} className="w-full h-2" />
+            <p className="text-xs text-muted-foreground text-center">
+              {progress}% concluído
+            </p>
+          </div>
         ) : content ? (
           <>
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
