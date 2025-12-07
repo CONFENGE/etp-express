@@ -10,7 +10,7 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 [![CI Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml)
 [![E2E Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml)
 [![Secret Scan](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
+[![Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Zero%20Errors-blue)]()
 [![Coverage](https://img.shields.io/badge/coverage-backend%2078%25%20%7C%20frontend%2060%25-yellow)]()
 [![LGPD](https://img.shields.io/badge/LGPD-100%25%20Compliant-green)]()
@@ -1174,11 +1174,14 @@ npm run test:all      # Na raiz do projeto
 
 ## 📝 LICENÇA
 
-Este projeto é open-source sob licença **MIT**.
+**LICENÇA PROPRIETÁRIA**
 
-Pode ser usado, modificado e distribuído livremente, inclusive para fins comerciais, desde que mantida a atribuição aos autores originais.
+Copyright (c) 2025 CONFENGE AVALIAÇÕES E INTELIGÊNCIA ARTIFICIAL LTDA.
+TODOS OS DIREITOS RESERVADOS.
 
-**⚠️ DISCLAIMER**: O uso deste sistema é por conta e risco do usuário. Os autores não se responsabilizam por decisões administrativas baseadas nas saídas do sistema.
+Este software é propriedade exclusiva da CONFENGE. É expressamente proibido copiar, modificar, distribuir ou utilizar este software sem autorização prévia e por escrito.
+
+**⚠️ DISCLAIMER**: O uso deste sistema é por conta e risco do usuário. A CONFENGE não se responsabiliza por decisões administrativas baseadas nas saídas do sistema.
 
 ---
 

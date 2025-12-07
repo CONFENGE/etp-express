@@ -148,7 +148,7 @@ M7: ████████████████████  6/6   (100%) �
   - **Cobertura:** 26 testes, 238 linhas de teste, 5 console.error substituídos
 - ✅ #36 - Dynamic CI badges + CONTRIBUTING.md (PR #440 - 2025-12-07)
   - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 100% - docs-only)
-  - **Badges:** CI Lint, CI Tests, E2E Tests, Secret Scan, Coverage (78%), License (MIT)
+  - **Badges:** CI Lint, CI Tests, E2E Tests, Secret Scan, Coverage (78%), License (Proprietary)
   - **CONTRIBUTING.md:** Setup, Conventional Commits, Branch naming, PR checklist, Test commands
 
 #### Pendentes (14):
