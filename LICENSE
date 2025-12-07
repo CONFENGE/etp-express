@@ -1,30 +1,33 @@
-MIT License
+LICENÇA PROPRIETÁRIA
 
-Copyright (c) 2025 ETP Express Contributors
+Copyright (c) 2025 CONFENGE AVALIAÇÕES E INTELIGÊNCIA ARTIFICIAL LTDA.
+TODOS OS DIREITOS RESERVADOS.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Este software e a documentação associada ("Software") são propriedade exclusiva
+da CONFENGE AVALIAÇÕES E INTELIGÊNCIA ARTIFICIAL LTDA. ("CONFENGE").
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+É EXPRESSAMENTE PROIBIDO, sem autorização prévia e por escrito da CONFENGE:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Copiar, reproduzir, modificar ou criar obras derivadas do Software;
+2. Distribuir, sublicenciar, vender, alugar ou transferir o Software;
+3. Realizar engenharia reversa, descompilar ou desmontar o Software;
+4. Remover ou alterar avisos de direitos autorais ou propriedade;
+5. Usar o Software para fins comerciais sem licenciamento adequado;
+6. Disponibilizar o Software a terceiros de qualquer forma.
+
+O uso não autorizado deste Software constitui violação de direitos autorais
+e propriedade intelectual, sujeitando o infrator às penalidades previstas na
+Lei 9.610/1998 (Lei de Direitos Autorais) e demais legislações aplicáveis.
+
+O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU
+IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO,
+ADEQUAÇÃO A UM FIM ESPECÍFICO E NÃO VIOLAÇÃO.
 
 ---
 
 DISCLAIMER:
 
-⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as
+O ETP Express pode cometer erros. Lembre-se de verificar todas as
 informações antes de realizar qualquer encaminhamento.
 
 Este sistema é assistivo e NÃO substitui:
@@ -33,9 +36,14 @@ Este sistema é assistivo e NÃO substitui:
 - Decisões técnicas de servidores públicos
 - Validação humana obrigatória
 
-O uso deste software é por conta e risco do usuário. Os autores e
-contribuidores não se responsabilizam por decisões administrativas,
-contratações ou quaisquer consequências baseadas nas saídas deste sistema.
+O uso deste software é por conta e risco do usuário. A CONFENGE não se
+responsabiliza por decisões administrativas, contratações ou quaisquer
+consequências baseadas nas saídas deste sistema.
 
 Toda geração de conteúdo por IA deve ser criticamente revisada por
 profissional qualificado antes de uso em documentos oficiais.
+
+---
+
+Para informações sobre licenciamento comercial, entre em contato:
+CONFENGE AVALIAÇÕES E INTELIGÊNCIA ARTIFICIAL LTDA.
