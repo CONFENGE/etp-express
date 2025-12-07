@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-07 18:02 UTC | **Auditoria ROADMAP:** 239 issues validadas (216 closed, 23 open), M1-M7 progress synced with GitHub, #381 ✅ MERGED (NestJS Logger - PR #445), #84 ✅ MERGED (E2E tests sections 9-13 - PR #444), #83 ✅ MERGED (E2E tests sections 5-8 - PR #443), #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
+**Última Atualização:** 2025-12-07 18:20 UTC | **Auditoria ROADMAP:** 240 issues validadas (217 closed, 23 open), M1-M7 progress synced with GitHub, #215 ✅ MERGED (Extract prompts to YAML - PR #446), #381 ✅ MERGED (NestJS Logger - PR #445), #84 ✅ MERGED (E2E tests sections 9-13 - PR #444), #83 ✅ MERGED (E2E tests sections 5-8 - PR #443), #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 216/239 issues concluídas (90.4%)
+**Progresso Global:** 217/240 issues concluídas (90.4%)
 **Velocidade:** 10.6 issues/dia (últimos 7 dias: 74 issues)
 **ETA Conclusão:** ~2025-12-09 (2-3 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
@@ -14,7 +14,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ████████████░░░░░░░░ 16/26  (61.5%) 📚 E2E Testing & Documentation
+M5: █████████████░░░░░░░ 17/26  (65.4%) 📚 E2E Testing & Documentation
 M6: ██████████████░░░░░░ 29/41  (70.7%) 🔄 Maintenance (#381 ✅ MERGED - NestJS Logger)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -117,11 +117,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (16/26) - 61.5%
+### 📚 M5: E2E Testing & Documentation (17/26) - 65.4%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-08
 
-#### Concluídas (16):
+#### Concluídas (17):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #23 - E2E Test - Critical Flow Complete (PR #372 - 2025-12-03)
@@ -169,8 +169,13 @@ M7: ████████████████████  6/6   (100%) �
   - **Test Suite:** 734 linhas (39 testes × 3 browsers)
   - **Cobertura:** Seções 9-13 (Cronograma, Indicadores, Riscos, Sustentabilidade, Anexos)
   - **Qualidade:** JSDoc completo, content validation (dates, severity, periods), graceful skip
+- ✅ #215 - Extract system prompts to YAML files (PR #446 - 2025-12-07)
+  - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 100%)
+  - **Arquivos:** 7 YAML templates (orchestrator, anti-hallucination, legal, clareza, simplificacao, fundamentacao, perplexity)
+  - **Benefícios:** Prompts versionados separadamente, suporte a variáveis template, schema validation
+  - **Qualidade:** 895 tests passing, 0 vulnerabilities, aditivo (não modifica código existente)
 
-#### Pendentes (10):
+#### Pendentes (9):
 
 **Testes E2E:**
 
@@ -180,9 +185,9 @@ M7: ████████████████████  6/6   (100%) �
 
 - [ ] #110 - Staged Rollout Strategy & Feature Flags
 - [ ] #111 - Production Support SLA & Training
-- [ ] #215-#218 - Prompt externalization (YAML, service, hot-reload)
+- [ ] #216-#218 - Prompt externalization (PromptTemplateService, temperature config, hot-reload)
 
-**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353, #367-#369 (M5: #82 ✅, #83 ✅, #84 ✅)
+**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353, #367-#369 (M5: #82 ✅, #83 ✅, #84 ✅, #215 ✅)
 
 ---
 
