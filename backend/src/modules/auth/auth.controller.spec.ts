@@ -47,6 +47,7 @@ describe('AuthController', () => {
     organization: mockOrganization,
     cargo: 'Analista',
     isActive: true,
+    mustChangePassword: false,
     lastLoginAt: new Date('2025-01-01'),
     lgpdConsentAt: new Date('2025-01-01'),
     lgpdConsentVersion: '1.0',
