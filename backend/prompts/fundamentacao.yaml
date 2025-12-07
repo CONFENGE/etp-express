@@ -1,0 +1,118 @@
+# Prompt Template - Fundamentação Agent
+# ETP Express - Strengthens argumentation quality in ETP sections
+
+version: '1.0.0'
+description: 'Argumentation quality agent for ETP justification sections'
+author: 'ETP Express Team'
+last_updated: '2025-12-07'
+
+system_prompt: |
+  Você é um agente especializado em fundamentação de contratações públicas.
+
+  Sua função é garantir que a fundamentação seja COMPLETA, CLARA e CONVINCENTE.
+
+  Uma boa fundamentação deve conter:
+
+  1. NECESSIDADE: Por que esta contratação é necessária?
+     - Qual problema será resolvido?
+     - Qual demanda será atendida?
+     - Qual carência será suprida?
+
+  2. INTERESSE PÚBLICO: Como isso beneficia a sociedade?
+     - Quem será beneficiado?
+     - Qual o impacto na prestação do serviço público?
+     - Como se alinha com políticas públicas?
+
+  3. BENEFÍCIOS: Quais são os ganhos esperados?
+     - Melhoria de processos
+     - Economia de recursos
+     - Aumento de eficiência
+     - Qualidade do serviço
+
+  4. RISCOS: O que acontece se não contratar?
+     - Impactos negativos
+     - Prejuízos potenciais
+     - Comprometimento de atividades
+
+  SEMPRE inclua dados quantitativos quando possível (números, percentuais, prazos).
+
+  EVITE:
+  - Fundamentações genéricas
+  - Justificativas circulares
+  - Falta de conexão com a realidade do órgão
+
+enrichment_prompt: |
+  Ao elaborar a fundamentação, garanta que ficará claro:
+  - POR QUÊ a contratação é necessária (problema/demanda)
+  - PARA QUEM é importante (interesse público)
+  - O QUE será ganho (benefícios esperados)
+  - O QUE SE PERDE se não contratar (riscos)
+
+  Use dados concretos sempre que possível.
+
+variables:
+  - name: content
+    description: 'Content to analyze for argumentation quality'
+    required: true
+  - name: section_type
+    description: 'Type of section (justificativa, introducao, descricao_solucao)'
+    required: false
+
+required_elements:
+  necessidade:
+    keywords:
+      - 'necessário'
+      - 'necessidade'
+      - 'demanda'
+      - 'carência'
+      - 'deficiência'
+    weight: 25
+
+  interesse_publico:
+    keywords:
+      - 'interesse público'
+      - 'benefício público'
+      - 'sociedade'
+      - 'cidadão'
+      - 'comunidade'
+    weight: 25
+
+  beneficios:
+    keywords:
+      - 'benefício'
+      - 'vantagem'
+      - 'ganho'
+      - 'melhoria'
+      - 'aprimoramento'
+    weight: 25
+
+  riscos:
+    keywords:
+      - 'risco'
+      - 'problema'
+      - 'consequência'
+      - 'impacto negativo'
+      - 'não contratar'
+    weight: 25
+
+quality_thresholds:
+  min_score: 70
+  min_word_count: 100
+  requires_quantitative_data: true
+
+metadata:
+  category: 'quality'
+  priority: 'high'
+  used_by:
+    - 'FundamentacaoAgent.getSystemPrompt()'
+    - 'FundamentacaoAgent.enrich()'
+    - 'FundamentacaoAgent.analyze()'
+  applicable_sections:
+    - 'justificativa'
+    - 'introducao'
+    - 'descricao_solucao'
+  tags:
+    - 'argumentation'
+    - 'justification'
+    - 'art-18'
+    - 'lei-14133'
