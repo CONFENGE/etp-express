@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-07 | **Progresso:** 224/255 (87.8%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-07 | **Progresso:** 224/267 (83.9%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -12,9 +12,10 @@ M4: ████████████████████ 45/45  (100%) R
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
 M6: ████████████░░░░░░░░ 41/61  (67%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
+M8: ░░░░░░░░░░░░░░░░░░░░  0/12  (0%)   Gestão de Domínios Institucionais [NEW]
 ```
 
-**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **0 P0 CRÍTICOS**
+**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **12 P0 CRÍTICOS (M8)**
 
 ---
 
@@ -39,6 +40,53 @@ Finalizado: 2025-12-01 | Cache LLM -80% custos, Circuit Breaker, RAG PoC
 ### M7: Multi-Tenancy B2G (100%)
 
 Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
+
+---
+
+## M8: Gestão de Domínios Institucionais (0%) [NEW]
+
+**Objetivo:** Sistema de controle de acesso hierárquico para domínios institucionais
+
+### Arquitetura de Acesso
+
+| Role           | Descrição                             | Permissões                                      |
+| -------------- | ------------------------------------- | ----------------------------------------------- |
+| SYSTEM_ADMIN   | Gestor Master (tiago@confenge.com.br) | Gestão global de domínios                       |
+| DOMAIN_MANAGER | Gestor Local (por domínio)            | Gerenciar até 10 usuários + criar ETPs próprios |
+| DEMO           | Usuário Demonstração                  | Acesso completo, dados isolados, reset diário   |
+
+### Usuários Iniciais
+
+| Email                   | Senha     | Role         |
+| ----------------------- | --------- | ------------ |
+| tiago@confenge.com.br   | Crj70011! | SYSTEM_ADMIN |
+| demoetp@confenge.com.br | teste2026 | DEMO         |
+
+### Issues P0 - Backend (7)
+
+- [ ] #464 - Estender UserRole enum (SYSTEM_ADMIN, DOMAIN_MANAGER, DEMO)
+- [ ] #465 - Criar entidade AuthorizedDomain
+- [ ] #466 - Criar módulo SystemAdmin (CRUD domínios)
+- [ ] #467 - Criar módulo DomainManager (CRUD usuários + quota 10)
+- [ ] #468 - Implementar fluxo troca obrigatória de senha
+- [ ] #469 - Criar seed script (master admin + demo user)
+- [ ] #474 - Implementar isolamento e reset dados demo
+
+### Issues P0 - Frontend (5)
+
+- [ ] #470 - Dashboard gestão de domínios (System Admin)
+- [ ] #471 - Dashboard gestão de usuários (Domain Manager)
+- [ ] #472 - Modal troca obrigatória de senha
+- [ ] #473 - Modernizar UI/UX (Apple HIG)
+- [ ] #475 - CTA conversão WhatsApp para usuário demo
+
+### Design (Apple HIG)
+
+- Tipografia Inter/SF Pro
+- Cores neutras, sombras sutis
+- Transições 200-300ms ease-out
+- Dark mode harmônico
+- WCAG 2.1 AA
 
 ---
 
