@@ -317,10 +317,14 @@ export class AuditService {
       etpsCount?: number;
       sectionsCount?: number;
       versionsCount?: number;
+      retentionDays?: number;
     },
   ): Promise<AuditLog> {
+    const retentionDays = metadata.retentionDays || 30;
     const scheduledFor =
-      type === 'SOFT' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
+      type === 'SOFT'
+        ? new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000)
+        : null;
 
     const log = this.auditLogRepository.create({
       action:
@@ -339,6 +343,7 @@ export class AuditService {
           confirmation: metadata.confirmation || null,
           reason: metadata.reason || null,
           scheduledFor: scheduledFor ? scheduledFor.toISOString() : null,
+          retentionDays,
           cascadeDeleted: {
             etps: metadata.etpsCount || 0,
             sections: metadata.sectionsCount || 0,
