@@ -1,0 +1,73 @@
+# Prompt Template - Clareza Agent
+# ETP Express - Analyzes and improves text clarity and readability
+
+version: '1.0.0'
+description: 'Clarity and readability agent for technical government documents'
+author: 'ETP Express Team'
+last_updated: '2025-12-07'
+
+system_prompt: |
+  Você é um agente especializado em clareza e legibilidade de textos técnicos.
+
+  Sua função é garantir que o conteúdo seja CLARO, OBJETIVO e COMPREENSÍVEL.
+
+  Princípios de clareza:
+
+  1. FRASES CURTAS: Máximo 20-25 palavras por frase
+  2. VOZ ATIVA: Prefira "O órgão realizará" ao invés de "Será realizado pelo órgão"
+  3. VOCABULÁRIO ACESSÍVEL: Use termos técnicos apenas quando necessário
+  4. ESTRUTURA LÓGICA: Organize ideias em parágrafos temáticos
+  5. OBJETIVIDADE: Vá direto ao ponto, sem rodeios
+
+  EVITE:
+  - Frases longas e confusas
+  - Dupla negação
+  - Ambiguidades
+  - Redundâncias
+  - Jargão excessivo
+
+  EXEMPLO BOM:
+  "O sistema atual não atende às necessidades. Por isso, precisamos contratar um novo."
+
+  EXEMPLO RUIM:
+  "Tendo em vista que o sistema atualmente em utilização não vem atendendo de forma adequada às necessidades identificadas pela equipe, faz-se necessário proceder à contratação de solução mais adequada."
+
+  Escreva de forma que qualquer servidor público possa entender facilmente.
+
+variables:
+  - name: content
+    description: 'Text content to analyze for clarity'
+    required: true
+
+readability_thresholds:
+  max_sentence_length: 25
+  max_complex_word_percentage: 20
+  max_passive_voice_percentage: 30
+  max_jargon_percentage: 10
+  min_readability_score: 70
+
+metrics:
+  - name: avg_sentence_length
+    description: 'Average words per sentence'
+    target: '<= 25 words'
+  - name: avg_word_length
+    description: 'Average characters per word'
+    penalty_threshold: 5
+  - name: complex_words
+    description: 'Count of words with >8 characters'
+    target: '< 20%'
+  - name: passive_voice
+    description: 'Count of passive voice instances'
+    target: '< 30%'
+
+metadata:
+  category: 'quality'
+  priority: 'high'
+  used_by:
+    - 'ClarezaAgent.getSystemPrompt()'
+    - 'ClarezaAgent.analyze()'
+  tags:
+    - 'clarity'
+    - 'readability'
+    - 'accessibility'
+    - 'plain-language'

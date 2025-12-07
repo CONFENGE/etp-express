@@ -1,0 +1,83 @@
+# Prompt Template - Perplexity Market Enrichment
+# ETP Express - External market data enrichment via Perplexity API
+
+version: '1.0.0'
+description: 'Market enrichment queries for Perplexity API integration'
+author: 'ETP Express Team'
+last_updated: '2025-12-07'
+
+base_query: |
+  Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+
+section_queries:
+  justificativa: |
+    Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+    Inclua:
+    - Exemplos de justificativas de órgãos públicos
+    - Benefícios observados em contratações similares
+    - Dados quantitativos sobre impacto e eficiência
+    - Referências a casos de sucesso
+
+  contextualizacao: |
+    Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+    Inclua:
+    - Contexto de mercado atual
+    - Tendências em contratações públicas do setor
+    - Desafios e oportunidades identificados
+    - Casos relevantes de outros órgãos
+
+  orcamento: |
+    Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+    Inclua:
+    - Valores praticados em contratações similares
+    - Faixas de preço de mercado
+    - Referências de preços de órgãos públicos
+    - Links para processos licitatórios relacionados
+
+  pesquisa_mercado: |
+    Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+    Inclua:
+    - Fornecedores principais no mercado
+    - Valores de referência
+    - Condições comerciais típicas
+    - Análise de mercado do setor
+
+  especificacao_tecnica: |
+    Busque informações sobre contratações públicas brasileiras similares a: "{{objeto}}".
+    Inclua:
+    - Especificações técnicas de referência
+    - Padrões de mercado adotados
+    - Requisitos técnicos comuns em contratações similares
+    - Normas e certificações aplicáveis
+
+query_suffix: |
+  Foque em dados oficiais e cite as fontes. Priorize informações de órgãos públicos brasileiros.
+
+variables:
+  - name: objeto
+    description: "Object/item being contracted (e.g., 'Aquisição de 50 Notebooks Dell')"
+    required: true
+  - name: section_type
+    description: 'Type of section for context-aware enrichment'
+    required: true
+
+applicable_sections:
+  - 'justificativa'
+  - 'contextualizacao'
+  - 'orcamento'
+  - 'pesquisa_mercado'
+  - 'especificacao_tecnica'
+
+metadata:
+  category: 'enrichment'
+  priority: 'medium'
+  used_by:
+    - 'OrchestratorService.buildEnrichmentQuery()'
+    - 'OrchestratorService.needsMarketEnrichment()'
+  external_service: 'Perplexity API'
+  fallback_behavior: 'graceful_degradation'
+  tags:
+    - 'market-research'
+    - 'enrichment'
+    - 'perplexity'
+    - 'external-api'
