@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-07 04:00 UTC | **Auditoria ROADMAP:** 237 issues validadas (213 closed, 24 open), M1-M7 progress synced with GitHub, #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
+**Última Atualização:** 2025-12-07 14:00 UTC | **Auditoria ROADMAP:** 237 issues validadas (214 closed, 23 open), M1-M7 progress synced with GitHub, #83 ✅ MERGED (E2E tests sections 5-8 - PR #443), #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 213/237 issues concluídas (89.9%)
+**Progresso Global:** 214/237 issues concluídas (90.3%)
 **Velocidade:** 10.6 issues/dia (últimos 7 dias: 74 issues)
 **ETA Conclusão:** ~2025-12-09 (2-3 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
@@ -14,7 +14,7 @@ M1: ████████████████████ 35/35  (100%) �
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ██████████░░░░░░░░░░ 14/26  (53.8%) 📚 E2E Testing & Documentation
+M5: ███████████░░░░░░░░░ 15/26  (57.7%) 📚 E2E Testing & Documentation
 M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#438 ✅ MERGED - async UX)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
@@ -117,11 +117,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 📚 M5: E2E Testing & Documentation (14/26) - 53.8%
+### 📚 M5: E2E Testing & Documentation (15/26) - 57.7%
 
 **Status:** EM PROGRESSO | **ETA:** 2025-12-08
 
-#### Concluídas (14):
+#### Concluídas (15):
 
 - ✅ #22 - Configurar Puppeteer para testes E2E (PR #353)
 - ✅ #23 - E2E Test - Critical Flow Complete (PR #372 - 2025-12-03)
@@ -159,12 +159,17 @@ M7: ████████████████████  6/6   (100%) �
   - **Test Suite:** 563 linhas (10 testes × 3 browsers = 30 total)
   - **Cobertura:** Seções 1-4, timeout, API errors (500/429), rate limiting, async polling
   - **Qualidade:** JSDoc completo, API mocking, graceful skip quando backend indisponível
+- ✅ #83 - E2E Tests - Section Generation Sections 5-8 (PR #443 - 2025-12-07)
+  - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 100%)
+  - **Test Suite:** 684 linhas (36 testes × 3 browsers)
+  - **Cobertura:** Seções 5-8 (Justificativa, Beneficiários, Orçamento, Metodologia)
+  - **Qualidade:** JSDoc completo, budget/methodology variations, async polling, graceful skip
 
-#### Pendentes (12):
+#### Pendentes (11):
 
 **Testes E2E:**
 
-- [ ] #83-#84 - Testes integração adicionais (seções 5-8 e 9-13)
+- [ ] #84 - Testes integração adicionais (seções 9-13)
 - [ ] #92-#95 - UAT scenarios
 
 **Documentação:**
@@ -173,7 +178,7 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #111 - Production Support SLA & Training
 - [ ] #215-#218 - Prompt externalization (YAML, service, hot-reload)
 
-**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353, #367-#369 (M5: #82 ✅)
+**Issues:** #22-#24, #34-#37, #48, #82-#84, #92-#95, #97, #110-#111, #215-#218, #353, #367-#369 (M5: #82 ✅, #83 ✅)
 
 ---
 
@@ -355,8 +360,9 @@ M7: ████████████████████  6/6   (100%) �
 
 1. **Frontend Deploy** - ✅ #428/#429/#424 TODOS RESOLVIDOS - aguardando Railway redeploy
 2. ~~**E2E Tests (#82)**~~ - ✅ MERGED via PR #442 (2025-12-07) - 30 testes seções 1-4
-3. **E2E Tests (#83-#84)** - Testes integração adicionais (seções 5-8 e 9-13)
-4. **UAT scenarios (#92-#95)** - Recrutamento + sessões
+3. ~~**E2E Tests (#83)**~~ - ✅ MERGED via PR #443 (2025-12-07) - 36 testes seções 5-8
+4. **E2E Tests (#84)** - Testes integração adicionais (seções 9-13)
+5. **UAT scenarios (#92-#95)** - Recrutamento + sessões
 
 ### P2 - Próxima Sprint:
 
@@ -373,7 +379,7 @@ M7: ████████████████████  6/6   (100%) �
 | ---------- | ------------------------------ |
 | Velocidade | 10.6 issues/dia (74 em 7 dias) |
 | Coverage   | Backend 78%, Frontend 60%+     |
-| Tests      | 920+ passando                  |
+| Tests      | 1000+ passando                 |
 | Security   | Zero vulnerabilidades HIGH     |
 | Latência   | -42% (60s → 35s avg)           |
 | CI/CD      | -68% minutos/mês               |
