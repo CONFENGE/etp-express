@@ -1,10 +1,10 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-07 17:45 UTC | **Auditoria ROADMAP:** 238 issues validadas (215 closed, 23 open), M1-M7 progress synced with GitHub, #84 ✅ MERGED (E2E tests sections 9-13 - PR #444), #83 ✅ MERGED (E2E tests sections 5-8 - PR #443), #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
+**Última Atualização:** 2025-12-07 18:02 UTC | **Auditoria ROADMAP:** 239 issues validadas (216 closed, 23 open), M1-M7 progress synced with GitHub, #381 ✅ MERGED (NestJS Logger - PR #445), #84 ✅ MERGED (E2E tests sections 9-13 - PR #444), #83 ✅ MERGED (E2E tests sections 5-8 - PR #443), #82 ✅ MERGED (E2E tests sections 1-4 - PR #442), #37 ✅ MERGED (testing strategy docs - PR #441), #36 ✅ MERGED (dynamic badges + CONTRIBUTING.md - PR #440), #35 ✅ MERGED (frontend logging service), #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 215/238 issues concluídas (90.3%)
+**Progresso Global:** 216/239 issues concluídas (90.4%)
 **Velocidade:** 10.6 issues/dia (últimos 7 dias: 74 issues)
 **ETA Conclusão:** ~2025-12-09 (2-3 dias - quality-first approach)
 **✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
@@ -15,7 +15,7 @@ M2: ████████████████████ 18/18  (100%) �
 M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
 M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
 M5: ████████████░░░░░░░░ 16/26  (61.5%) 📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 28/41  (68.3%) 🔄 Maintenance (#438 ✅ MERGED - async UX)
+M6: ██████████████░░░░░░ 29/41  (70.7%) 🔄 Maintenance (#381 ✅ MERGED - NestJS Logger)
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
@@ -186,11 +186,11 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-### 🔄 M6: Maintenance (28/41) - 68.3%
+### 🔄 M6: Maintenance (29/41) - 70.7%
 
 **Status:** RECORRENTE
 
-#### Concluídas (28):
+#### Concluídas (29):
 
 - ✅ #21 - Configurar Dependabot
 - ✅ #181 - Migration-aware readiness probe
@@ -263,7 +263,10 @@ M7: ████████████████████  6/6   (100%) �
 - [ ] #392 - [P3] Documentar processo de deploy Railway completo
   - DEPLOYMENT.md com troubleshooting (#388, #387, #389)
 - [ ] #379 - Migrar modelos LLM obsoletos para GPT-4.1 nano e Perplexity sonar
-- [ ] #381 - Replace console statements with structured logging (4 warnings)
+- [x] #381 - Replace console statements with NestJS Logger (PR #445 - 2025-12-07)
+  - **Merge Automatizado:** `/review-pr` (8/8 categorias validadas, score 100%)
+  - **Impacto:** Substituiu console.warn/log em sentry.config.ts e main.ts
+  - **Benefício:** Structured logging com contexto (SentryConfig, Bootstrap)
 - [ ] #382 - Replace 'any' types in OrchestratorService (14 warnings)
 - [ ] #401 - Investigar discrepância Health endpoint JSON vs text/plain
 - [ ] #426 - [P3][Backend] Aumentar timeout Perplexity e melhorar resiliência
