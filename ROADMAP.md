@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-07 | **Progresso:** 221/255 (86.7%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-07 | **Progresso:** 222/255 (87.1%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -10,11 +10,11 @@ M2: ████████████████████ 18/18  (100%) C
 M3: ████████████████████ 61/61  (100%) Quality & Security
 M4: ████████████████████ 45/45  (100%) Refactoring & Performance
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
-M6: ████████████░░░░░░░░ 38/61  (62%)  Maintenance
+M6: ████████████░░░░░░░░ 39/61  (64%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
 ```
 
-**Deploy:** Backend rodando (06/12) | Frontend rodando (06/12) | **2 P0 CRÍTICOS** (#447, #448)
+**Deploy:** Backend config fix merged (12/07) | Frontend rodando (06/12) | **1 P0 CRÍTICO** (#448)
 
 ---
 
@@ -59,11 +59,11 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ## M6: Maintenance (62%)
 
-**Concluídos (38):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434)
+**Concluídos (39):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447)
 
-**P0 CRÍTICOS (2):** ⚠️ Bloqueia novos releases
+**P0 CRÍTICOS (1):** ⚠️ Bloqueia novos releases
 
-- [ ] #447 - Backend deploy failing (railway.toml conflict) **[NEW P0]**
+- [x] #447 - Backend deploy failing (railway.toml conflict) ✅ **RESOLVED via PR #462**
 - [ ] #448 - Frontend deploy failing (snapshot error) **[NEW P0]**
 
 **P1 Segurança (4):**
@@ -113,7 +113,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ### Próximos Passos (Ordem de Prioridade)
 
-1. **Sprint 1 (2-3 dias):** Fix deploy (#447, #448) + Perplexity (#426)
+1. **Sprint 1 (2-3 dias):** Fix deploy (#448 - frontend) + Perplexity (#426) - #447 ✅ DONE
 2. **Sprint 2 (1 semana):** Security P1 (#449, #450, #451)
 3. **Sprint 3 (2 semanas):** Quality P2 (#452-#458)
 4. **Backlog:** P3 + UAT + Documentation
