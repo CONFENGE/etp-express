@@ -6,6 +6,16 @@ import {
 } from './section-templates';
 import type { SectionTemplate } from '../types/etp';
 
+// Mock logger to prevent actual Sentry calls
+vi.mock('./logger', () => ({
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 describe('section-templates', () => {
   const mockTemplates: SectionTemplate[] = [
     {
@@ -87,18 +97,14 @@ describe('section-templates', () => {
       const errorMessage = 'Network error';
       mockFetch.mockRejectedValueOnce(new Error(errorMessage));
 
-      // Mock console.error to avoid polluting test output
-      const consoleSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
+      // Import mocked logger
+      const { logger } = await import('./logger');
 
       await expect(loadSectionTemplates()).rejects.toThrow(errorMessage);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error loading section templates:',
+      expect(logger.error).toHaveBeenCalledWith(
+        'Error loading section templates',
         expect.any(Error),
       );
-
-      consoleSpy.mockRestore();
     });
 
     it('should throw error when response is not ok', async () => {
@@ -107,15 +113,9 @@ describe('section-templates', () => {
         statusText: 'Not Found',
       });
 
-      const consoleSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
       await expect(loadSectionTemplates()).rejects.toThrow(
         'Failed to load section templates: Not Found',
       );
-
-      consoleSpy.mockRestore();
     });
   });
 

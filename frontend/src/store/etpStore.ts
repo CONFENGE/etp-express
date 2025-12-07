@@ -16,6 +16,7 @@ import {
   JobFailedError,
   PollingTimeoutError,
 } from '@/lib/polling';
+import { logger } from '@/lib/logger';
 
 interface ETFState {
   etps: ETP[];
@@ -423,7 +424,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       );
       set({ references });
     } catch (error) {
-      console.error('Erro ao carregar referências:', error);
+      logger.error('Erro ao carregar referências', error, { etpId });
     }
   },
 
