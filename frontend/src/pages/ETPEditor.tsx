@@ -14,6 +14,7 @@ import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
 import { useETPStore } from '@/store/etpStore';
+import { logger } from '@/lib/logger';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +43,7 @@ export function ETPEditor() {
         setSectionTemplates(templates);
       } catch (err) {
         error('Erro ao carregar templates de seções');
-        console.error('Failed to load section templates:', err);
+        logger.error('Failed to load section templates', err);
       } finally {
         setTemplatesLoading(false);
       }

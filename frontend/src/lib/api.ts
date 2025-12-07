@@ -5,6 +5,7 @@ import axios, {
 } from 'axios';
 import { API_URL } from './constants';
 import { getNavigate } from './navigation';
+import { logger } from './logger';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -42,7 +43,7 @@ api.interceptors.response.use(
 
     // Handle network errors
     if (!error.response) {
-      console.error('Network error:', error.message);
+      logger.error('Network error', error, { url: error.config?.url });
       return Promise.reject({
         message: 'Erro de conexão. Verifique sua internet e tente novamente.',
       });
