@@ -870,22 +870,687 @@ For full strategy: See `docs/SECRETS_MANAGEMENT_EVALUATION.md`
 
 ## 12. TESTES
 
-```typescript
-// Estrutura de testes
-src/
-├── modules/
-│   └── etp/
-│       ├── etp.service.spec.ts           # Unit tests
-│       ├── etp.controller.spec.ts        # Integration tests
-│       └── e2e/
-│           └── etp.e2e-spec.ts           # End-to-end tests
+O ETP Express implementa uma estratégia de testes em múltiplas camadas, garantindo qualidade de código e funcionalidade através de testes automatizados e integração contínua.
+
+### 12.1 Pirâmide de Testes
+
+```
+                    ╭───────────╮
+                   /             \
+                  /   E2E Tests   \     ← Playwright + Puppeteer
+                 /    (11 tests)   \       (Fluxos críticos)
+                ╰─────────────────╯
+              ╭─────────────────────╮
+             /   Integration Tests   \   ← Jest + Supertest
+            /       (150+ tests)      \     (Controllers, APIs)
+           ╰─────────────────────────╯
+         ╭─────────────────────────────╮
+        /        Unit Tests             \  ← Jest + Vitest
+       /         (800+ tests)            \    (Services, Components)
+      ╰─────────────────────────────────╯
 ```
 
-### 12.1 Cobertura Mínima
+**Cobertura Atual:**
 
-- **Unit**: 80%+ (services, agents)
-- **Integration**: 70%+ (controllers, endpoints)
-- **E2E**: Fluxos críticos (create ETP → generate section → export PDF)
+- **Backend**: 78%+ (statements), meta 80%
+- **Frontend**: 58%+ (statements), meta 65%
+- **Total de Testes**: 920+ testes passando
+
+### 12.2 Estrutura de Testes
+
+```
+ETP Express/
+├── backend/
+│   ├── src/
+│   │   ├── modules/
+│   │   │   ├── auth/
+│   │   │   │   ├── auth.service.spec.ts       # Unit tests
+│   │   │   │   ├── auth.controller.spec.ts    # Integration tests
+│   │   │   │   └── strategies/
+│   │   │   │       ├── jwt.strategy.spec.ts
+│   │   │   │       └── local.strategy.spec.ts
+│   │   │   ├── etps/
+│   │   │   │   ├── etps.service.spec.ts
+│   │   │   │   ├── etps.controller.spec.ts
+│   │   │   │   └── cascade-delete.spec.ts
+│   │   │   ├── orchestrator/
+│   │   │   │   ├── orchestrator.service.spec.ts
+│   │   │   │   └── agents/
+│   │   │   │       ├── legal.agent.spec.ts
+│   │   │   │       ├── clareza.agent.spec.ts
+│   │   │   │       ├── fundamentacao.agent.spec.ts
+│   │   │   │       ├── simplificacao.agent.spec.ts
+│   │   │   │       └── anti-hallucination.agent.spec.ts
+│   │   │   └── sections/
+│   │   │       ├── sections.service.spec.ts
+│   │   │       ├── sections.controller.spec.ts
+│   │   │       └── sections.processor.spec.ts
+│   │   └── common/
+│   │       ├── guards/
+│   │       │   ├── tenant.guard.spec.ts
+│   │       │   └── user-throttler.guard.spec.ts
+│   │       └── utils/
+│   │           └── retry.spec.ts
+│   ├── test/
+│   │   └── lgpd-compliance.e2e-spec.ts        # E2E Tests (NestJS)
+│   └── jest.config.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── **/*.test.tsx                  # Component tests
+│   │   ├── hooks/
+│   │   │   └── **/*.test.ts                   # Hook tests
+│   │   ├── services/
+│   │   │   └── **/*.test.ts                   # Service tests
+│   │   └── test/
+│   │       └── setup.ts                       # Vitest setup
+│   └── vitest.config.ts
+├── e2e/
+│   └── accessibility.spec.ts                  # Playwright Accessibility
+├── puppeteer-tests/
+│   ├── critical-flow.spec.ts                  # Fluxo crítico completo
+│   ├── login.spec.ts
+│   └── utils/
+│       └── setup.ts
+└── playwright.config.ts
+```
+
+### 12.3 Testes Unitários
+
+#### Backend (Jest + NestJS Testing)
+
+**Framework**: Jest v29 + ts-jest + @nestjs/testing
+
+**Configuração** (`backend/jest.config.js`):
+
+```javascript
+module.exports = {
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: 'src',
+  testRegex: '.*\\.spec\\.ts$',
+  transform: { '^.+\\.(t|j)s$': 'ts-jest' },
+  collectCoverageFrom: ['**/*.(t|j)s', '!**/*.module.ts', '!main.ts'],
+  coverageDirectory: '../coverage',
+  testEnvironment: 'node',
+  moduleNameMapper: { '^src/(.*)$': '<rootDir>/$1' },
+};
+```
+
+**Padrões de Teste**:
+
+```typescript
+// Exemplo: backend/src/modules/auth/auth.service.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+
+describe('AuthService', () => {
+  let service: AuthService;
+  let usersService: UsersService;
+
+  const mockUsersService = {
+    findByEmail: jest.fn(),
+    create: jest.fn(),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        { provide: UsersService, useValue: mockUsersService },
+      ],
+    }).compile();
+
+    service = module.get<AuthService>(AuthService);
+    jest.clearAllMocks();
+  });
+
+  describe('validateUser', () => {
+    it('should return user without password when credentials are valid', async () => {
+      // Arrange
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      // Act
+      const result = await service.validateUser('test@example.com', 'password');
+      // Assert
+      expect(result).toBeDefined();
+      expect(result?.password).toBeUndefined();
+    });
+  });
+});
+```
+
+#### Frontend (Vitest + React Testing Library)
+
+**Framework**: Vitest v4 + @testing-library/react + jsdom
+
+**Configuração** (`frontend/vitest.config.ts`):
+
+```typescript
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
+    },
+  },
+});
+```
+
+**Padrões de Teste**:
+
+```typescript
+// Exemplo: frontend/src/components/Button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from './Button';
+
+describe('Button', () => {
+  it('should render with correct text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button')).toHaveTextContent('Click me');
+  });
+
+  it('should call onClick when clicked', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>Click</Button>);
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+### 12.4 Testes de Integração
+
+#### Backend (Supertest + NestJS)
+
+**Controller Tests**:
+
+```typescript
+// Testes de integração validam endpoints HTTP reais
+import * as request from 'supertest';
+import { Test } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+
+describe('AuthController (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = module.createNestApplication();
+    await app.init();
+  });
+
+  it('/auth/login (POST) should return JWT token', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@example.com', password: 'password123' })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('accessToken');
+      });
+  });
+});
+```
+
+### 12.5 Testes E2E
+
+O ETP Express utiliza duas ferramentas de E2E complementares:
+
+#### Playwright (Acessibilidade + Multi-browser)
+
+**Framework**: Playwright v1.40+ com @axe-core/playwright
+
+**Configuração** (`playwright.config.ts`):
+
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+  webServer: {
+    command: 'cd frontend && npm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+
+**Testes de Acessibilidade** (WCAG 2.1 AA):
+
+```typescript
+// e2e/accessibility.spec.ts
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test.describe('WCAG 2.1 AA Compliance', () => {
+  const pages = [
+    { path: '/login', name: 'Login' },
+    { path: '/register', name: 'Register' },
+    { path: '/dashboard', name: 'Dashboard' },
+  ];
+
+  for (const page of pages) {
+    test(`${page.name} should be WCAG 2.1 AA compliant`, async ({
+      page: p,
+    }) => {
+      await p.goto(page.path);
+      await p.waitForLoadState('networkidle');
+
+      const results = await new AxeBuilder({ page: p })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+
+      expect(results.violations).toEqual([]);
+    });
+  }
+});
+```
+
+#### Puppeteer (Critical Flow)
+
+**Framework**: Puppeteer v24 para testes de fluxo crítico com mocking de APIs
+
+**Fluxo Crítico Testado**:
+
+1. Login → Dashboard
+2. Criar novo ETP (modal)
+3. Abrir ETP no editor
+4. Gerar seção com IA (mockado)
+5. Salvar seção
+6. Exportar PDF
+
+```typescript
+// puppeteer-tests/critical-flow.spec.ts
+describe('Critical Flow E2E', () => {
+  beforeEach(async () => {
+    const setup = await setupBrowser();
+    browser = setup.browser;
+    page = setup.page;
+
+    // Mock API calls (evita custos OpenAI)
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+      if (
+        request.url().includes('/api/sections/') &&
+        request.url().includes('/generate')
+      ) {
+        request.respond({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            content: '# Seção Gerada (Mock)',
+            status: 'completed',
+          }),
+        });
+      } else {
+        request.continue();
+      }
+    });
+  });
+
+  test('deve completar fluxo crítico', async () => {
+    await login(page, testUser.email, testUser.password);
+    expect(page.url()).toContain('/dashboard');
+    // ... resto do fluxo
+  }, 90000);
+});
+```
+
+### 12.6 CI/CD Pipeline de Testes
+
+O ETP Express utiliza GitHub Actions para CI/CD com otimizações de cache.
+
+#### Workflows de Testes
+
+**1. ci-tests.yml** - Testes Unitários + Cobertura:
+
+```yaml
+name: CI - Tests
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/**/*.ts'
+      - 'frontend/**/*.{ts,tsx}'
+      - '.github/workflows/ci-tests.yml'
+  pull_request:
+    branches: [master]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:cov
+        working-directory: backend
+      - name: Check coverage threshold (70%)
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+            exit 1
+          fi
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:coverage
+        working-directory: frontend
+```
+
+**2. ci-lint.yml** - ESLint + TypeScript:
+
+```yaml
+name: CI - Lint
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run lint
+        working-directory: backend
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run lint
+        working-directory: frontend
+```
+
+**3. playwright.yml** - Testes E2E:
+
+```yaml
+name: Playwright Tests
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'e2e/**/*'
+      - 'playwright.config.ts'
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+```
+
+#### Otimizações CI/CD
+
+| Otimização          | Economia                         |
+| ------------------- | -------------------------------- |
+| Cache NPM           | ~60% tempo de build              |
+| Cache Playwright    | ~3-4 min por run                 |
+| Path Filters        | Commits docs-only não acionam CI |
+| Codecov Integration | Tracking automático de coverage  |
+
+### 12.7 Rodando Testes Localmente
+
+#### Backend
+
+```bash
+cd backend
+
+# Testes unitários
+npm test
+
+# Testes com watch mode
+npm run test:watch
+
+# Testes com cobertura
+npm run test:cov
+
+# Testes E2E (requer banco de dados)
+npm run test:e2e
+
+# Debug de testes (Node Inspector)
+npm run test:debug
+```
+
+#### Frontend
+
+```bash
+cd frontend
+
+# Testes unitários (watch mode por padrão)
+npm test
+
+# Testes com UI interativa
+npm run test:ui
+
+# Testes com cobertura
+npm run test:coverage
+```
+
+#### E2E (Playwright)
+
+```bash
+# Na raiz do projeto
+
+# Instalar browsers (primeira vez)
+npx playwright install
+
+# Rodar todos os testes E2E
+npx playwright test
+
+# Rodar em um browser específico
+npx playwright test --project=chromium
+
+# Modo UI (interativo)
+npx playwright test --ui
+
+# Gerar relatório HTML
+npx playwright show-report
+```
+
+#### E2E (Puppeteer - Critical Flow)
+
+```bash
+cd puppeteer-tests
+
+# Rodar testes de fluxo crítico
+npm test
+
+# Com debug visual (headful)
+PUPPETEER_HEADLESS=false npm test
+```
+
+### 12.8 Debugging de Testes
+
+#### VS Code Launch Configurations
+
+```json
+// .vscode/launch.json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Jest Backend",
+      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "args": ["--runInBand", "--watchAll=false"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Vitest Frontend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vitest", "--no-coverage"],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal"
+    }
+  ]
+}
+```
+
+#### Dicas de Debug
+
+**Jest (Backend)**:
+
+```bash
+# Rodar apenas um arquivo
+npm test -- auth.service.spec.ts
+
+# Rodar apenas um teste específico
+npm test -- -t "should return user without password"
+
+# Debug com Node Inspector
+node --inspect-brk node_modules/.bin/jest --runInBand
+```
+
+**Vitest (Frontend)**:
+
+```bash
+# Rodar apenas um arquivo
+npx vitest Button.test.tsx
+
+# Rodar com filtro de nome
+npx vitest -t "should render"
+
+# Modo UI para debug visual
+npx vitest --ui
+```
+
+**Playwright (E2E)**:
+
+```bash
+# Debug visual com pause
+npx playwright test --debug
+
+# Gerar screenshots em cada step
+npx playwright test --trace on
+
+# Codegen para gerar testes
+npx playwright codegen localhost:5173
+```
+
+### 12.9 Convenções de Teste
+
+#### Nomenclatura
+
+| Tipo            | Padrão                         | Exemplo                   |
+| --------------- | ------------------------------ | ------------------------- |
+| Unit (Backend)  | `*.spec.ts`                    | `auth.service.spec.ts`    |
+| Unit (Frontend) | `*.test.tsx`                   | `Button.test.tsx`         |
+| Integration     | `*.spec.ts`                    | `auth.controller.spec.ts` |
+| E2E             | `*.e2e-spec.ts` ou `*.spec.ts` | `critical-flow.spec.ts`   |
+
+#### Estrutura AAA (Arrange-Act-Assert)
+
+```typescript
+it('should do something', async () => {
+  // Arrange - Setup inicial
+  const mockData = { id: 1, name: 'Test' };
+  mockService.findOne.mockResolvedValue(mockData);
+
+  // Act - Executar ação
+  const result = await service.getById(1);
+
+  // Assert - Verificar resultado
+  expect(result).toEqual(mockData);
+  expect(mockService.findOne).toHaveBeenCalledWith(1);
+});
+```
+
+#### Mocking de Dependências
+
+**Backend (NestJS)**:
+
+```typescript
+// Mock de serviço injetado
+const mockUsersService = {
+  findByEmail: jest.fn(),
+  create: jest.fn(),
+};
+
+// Uso no módulo de teste
+const module = await Test.createTestingModule({
+  providers: [
+    AuthService,
+    { provide: UsersService, useValue: mockUsersService },
+  ],
+}).compile();
+```
+
+**Frontend (MSW - Mock Service Worker)**:
+
+```typescript
+// frontend/src/test/handlers.ts
+import { rest } from 'msw';
+
+export const handlers = [
+  rest.post('/api/auth/login', (req, res, ctx) => {
+    return res(
+      ctx.json({
+        accessToken: 'mock-token',
+        user: { id: 1, email: 'test@example.com' },
+      }),
+    );
+  }),
+];
+```
 
 ---
 
@@ -917,5 +1582,5 @@ this.logger.log({
 
 **Documento vivo**: Este arquivo será atualizado conforme o desenvolvimento avança.
 
-**Última atualização**: 2025-11-12
-**Versão**: 0.1.0 (Core MVP)
+**Última atualização**: 2025-12-07
+**Versão**: 0.2.0 (Testing Strategy)
