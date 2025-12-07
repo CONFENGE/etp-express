@@ -1,13 +1,13 @@
 # 🗺️ ROADMAP - ETP Express
 
-**Última Atualização:** 2025-12-06 23:22 UTC | **Auditoria ROADMAP:** 236 issues validadas (205 closed, 31 open), M1-M7 progress synced with GitHub, #438 ✅ MERGED via /review-pr
+**Última Atualização:** 2025-12-07 02:30 UTC | **Auditoria ROADMAP:** 237 issues validadas (206 closed, 30 open), M1-M7 progress synced with GitHub, #424 ✅ VALIDATED (build artifacts confirmed)
 
 ## 📊 Status Atual
 
-**Progresso Global:** 203/233 issues concluídas (87.1%)
+**Progresso Global:** 204/233 issues concluídas (87.6%)
 **Velocidade:** 9.4 issues/dia (últimos 7 dias: 66 issues)
 **ETA Conclusão:** ~2025-12-09 (3 dias - quality-first approach)
-**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend DEPLOYING (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
+**✅ Deploy Status:** Backend production OPERATIONAL & VALIDATED & SECURE | Frontend BUILD VALIDATED (aguardando Railway redeploy) | Resolvidos: #186 (async queue), #221 (test coverage job status), #222 (async UX), #390, #391 (duplicated), #400, #402-#407, #409, #411, #413 (security fix), #416 (job status API), #419, #421, #423, #424 (build artifacts validated), #24 (accessibility tests), #428 (nixpacks conflict), #429 (railway.json), #438 (frontend async UX) - zero vulnerabilities
 
 ```
 M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
@@ -19,7 +19,7 @@ M6: ██████████████░░░░░░ 28/41  (68.3%) 
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
 ```
 
-**Bloqueadores:** Nenhum P0 crítico - aguardando Railway redeploy frontend
+**Bloqueadores:** Nenhum P0 crítico - #424 validada, todos build artifacts confirmados, aguardando Railway redeploy frontend
 
 ---
 
@@ -208,7 +208,7 @@ M7: ████████████████████  6/6   (100%) �
   - **Novos arquivos:** polling.ts, polling.test.ts (17 tests)
   - **Qualidade:** JSDoc completo, error handling robusto, 88 tests passing
 
-#### Pendentes (13):
+#### Pendentes (12):
 
 **P0 - Critical:**
 
@@ -218,9 +218,9 @@ M7: ████████████████████  6/6   (100%) �
   - **Post-Merge:** Layer 1 validation passed (Build + 966 tests)
 - ✅ #429 - [P0][HOTFIX] Remover conflito entre railway.json e frontend/railway.toml → **RESOLVIDO** (2025-12-06)
   - **Status:** Fechada
-- [ ] #424 - [P0] Validate frontend build artifacts and dist directory structure
-  - **Problema:** Estrutura do dist pode estar incorreta após build
-  - **Bloqueia:** Frontend deploy
+- ✅ #424 - [P0] Validate frontend build artifacts and dist directory structure → **VALIDADO** (2025-12-07 02:30 UTC)
+  - **Resultados:** Build local ✅, dist/index.html ✅, assets JS/CSS ✅, serve test ✅
+  - **Status:** Todos 5 critérios de aceitação passaram - nenhuma correção necessária
 
 **P2 - Medium:**
 
@@ -303,7 +303,7 @@ M7: ████████████████████  6/6   (100%) �
 
 ## 🎯 Próximos Passos
 
-### ✅ P0 - CRITICAL (FRONTEND DEPLOY RESOLVIDO):
+### ✅ P0 - CRITICAL (FRONTEND DEPLOY - TODOS RESOLVIDOS):
 
 1. ~~**#428 - [HOTFIX] Frontend healthcheck failing**~~ - ✅ PR #437 MERGED
    - **Status:** RESOLVIDO via /review-pr (2025-12-06 21:40 UTC)
@@ -313,9 +313,9 @@ M7: ████████████████████  6/6   (100%) �
 
 2. ~~**#429 - [HOTFIX] Conflito railway.json**~~ - ✅ RESOLVIDO
 
-3. **#424 - Validate frontend build artifacts** - PRÓXIMO PASSO
-   - **Prazo:** Aguarda Railway redeploy
-   - **Estimativa:** 30 min
+3. ~~**#424 - Validate frontend build artifacts**~~ - ✅ VALIDADO (2025-12-07 02:30 UTC)
+   - **Resultados:** Build local ✅, dist/ ✅, assets ✅, serve test ✅
+   - **Conclusão:** Todos 5 critérios passaram - nenhuma correção necessária
 
 ### ✅ P0 - CRITICAL COMPLETADAS (2025-12-04 a 2025-12-06):
 
@@ -334,9 +334,9 @@ M7: ████████████████████  6/6   (100%) �
    - ✅ #391 - Job Status API (merged com #186)
    - **Resultado:** Polling API funcional, zero timeouts
 
-### P1 - Esta Semana (2025-12-06 a 2025-12-09):
+### P1 - Esta Semana (2025-12-07 a 2025-12-09):
 
-1. **Frontend Deploy** - ✅ #428/#429 resolvidos, #424 pendente
+1. **Frontend Deploy** - ✅ #428/#429/#424 TODOS RESOLVIDOS - aguardando Railway redeploy
 2. **E2E Tests (#82-#84)** - Testes integração adicionais
 3. **UAT scenarios (#92-#95)** - Recrutamento + sessões
 
@@ -370,4 +370,4 @@ M7: ████████████████████  6/6   (100%) �
 
 ---
 
-**Status:** 🟢 Frontend async UX (#222/#438 ✅ MERGED) | Backend ✅ | **Risco:** Baixo - aguardando Railway redeploy
+**Status:** 🟢 Frontend build VALIDATED (#424 ✅) | Backend ✅ | **Risco:** Baixo - aguardando Railway redeploy (zero P0 abertos)
