@@ -57,6 +57,8 @@ describe('AuthController', () => {
     updatedAt: new Date('2025-01-01'),
     etps: [],
     auditLogs: [],
+    authorizedDomainId: null,
+    authorizedDomain: null,
   };
 
   const mockAuthResponse = {
