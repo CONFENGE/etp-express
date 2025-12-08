@@ -170,23 +170,23 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ## Dependabot Review (2025-12-08)
 
-**Status:** 11 PRs analisados | 1 merged | 4 fechados | 6 aguardando CI
+**Status:** 11 PRs analisados | 3 merged | 4 fechados | 4 aguardando CI
 
 ### PRs Processados
 
-| PR   | Pacote                         | Ação               | Status                   |
-| ---- | ------------------------------ | ------------------ | ------------------------ |
-| #481 | github-actions (3 updates)     | ✅ Merged          | DONE                     |
-| #482 | frontend dev-deps (5 updates)  | 🔄 Lockfile fixado | CI Running               |
-| #483 | frontend prod-deps (3 updates) | 🔄 Lockfile fixado | CI Running               |
-| #484 | eslint 8→9                     | ❌ Fechado         | Requer migração (#492)   |
-| #485 | @typescript-eslint/parser 7→8  | ❌ Fechado         | Depende #484             |
-| #486 | react-router-dom 6→7           | ❌ Fechado         | Requer migração (#493)   |
-| #487 | @nestjs/typeorm 10→11          | 🔄 Lockfile fixado | CI Running               |
-| #488 | eslint-config-prettier 9→10    | 🔄 Lockfile fixado | CI Running               |
-| #489 | jest 29→30                     | ❌ Fechado         | Major version alto risco |
-| #490 | @nestjs/config 3→4             | 🔄 Lockfile fixado | CI Running               |
-| #491 | bcrypt 5→6                     | 🔄 Lockfile fixado | CI Running               |
+| PR   | Pacote                         | Ação               | Status                    |
+| ---- | ------------------------------ | ------------------ | ------------------------- |
+| #481 | github-actions (3 updates)     | ✅ Merged          | DONE                      |
+| #482 | frontend dev-deps (5 updates)  | ✅ Merged          | DONE (12/08 - auto-merge) |
+| #483 | frontend prod-deps (3 updates) | ✅ Merged          | DONE (12/08 - auto-merge) |
+| #484 | eslint 8→9                     | ❌ Fechado         | Requer migração (#492)    |
+| #485 | @typescript-eslint/parser 7→8  | ❌ Fechado         | Depende #484              |
+| #486 | react-router-dom 6→7           | ❌ Fechado         | Requer migração (#493)    |
+| #487 | @nestjs/typeorm 10→11          | 🔄 Lockfile fixado | CI Running                |
+| #488 | eslint-config-prettier 9→10    | 🔄 Lockfile fixado | CI Running                |
+| #489 | jest 29→30                     | ❌ Fechado         | Major version alto risco  |
+| #490 | @nestjs/config 3→4             | 🔄 Lockfile fixado | CI Running                |
+| #491 | bcrypt 5→6                     | 🔄 Lockfile fixado | CI Running                |
 
 ### Issues de Migração Criadas
 
