@@ -52,6 +52,8 @@ describe('UsersService', () => {
     updatedAt: new Date('2024-01-01'),
     etps: [],
     auditLogs: [],
+    authorizedDomainId: null,
+    authorizedDomain: null,
   };
 
   const mockRepository = {
