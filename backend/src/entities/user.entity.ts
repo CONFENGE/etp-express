@@ -12,6 +12,7 @@ import { Exclude } from 'class-transformer';
 import { Etp } from './etp.entity';
 import { AuditLog } from './audit-log.entity';
 import { Organization } from './organization.entity';
+import { AuthorizedDomain } from './authorized-domain.entity';
 
 /**
  * User roles for hierarchical access control (M8: Gestão de Domínios Institucionais).
@@ -128,4 +129,17 @@ export class User {
 
   @OneToMany(() => AuditLog, (log) => log.user)
   auditLogs: AuditLog[];
+
+  /**
+   * Authorized Domain this user belongs to (M8: Gestão de Domínios Institucionais).
+   * Users are assigned to domains for quota management and local administration.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  authorizedDomainId: string | null;
+
+  @ManyToOne(() => AuthorizedDomain, (domain) => domain.users, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'authorizedDomainId' })
+  authorizedDomain: AuthorizedDomain | null;
 }
