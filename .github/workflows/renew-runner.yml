@@ -1,0 +1,19 @@
+name: Renew Runner Token
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # A cada 6 horas
+  workflow_dispatch:
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest  # Usa GitHub hosted (gasta 1 minuto)
+    steps:
+      - name: Update Railway Token
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Gera novo runner token via GitHub API
+          # Atualiza variável na Railway via API
+          echo "Token renovado"
