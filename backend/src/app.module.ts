@@ -24,6 +24,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { RAGModule } from './modules/rag/rag.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { SystemAdminModule } from './modules/system-admin/system-admin.module';
+import { DomainManagerModule } from './modules/domain-manager/domain-manager.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -185,6 +186,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     RAGModule,
     OrganizationsModule,
     SystemAdminModule,
+    DomainManagerModule,
     HealthModule,
   ],
   controllers: [AppController],
