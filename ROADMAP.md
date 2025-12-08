@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-08 | **Progresso:** 228/267 (85.4%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-08 | **Progresso:** 229/267 (85.8%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -12,10 +12,10 @@ M4: ████████████████████ 45/45  (100%) R
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
 M6: ████████████░░░░░░░░ 41/61  (67%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
-M8: ██████░░░░░░░░░░░░░░  4/12  (33%)  Gestão de Domínios Institucionais [IN PROGRESS]
+M8: ████████░░░░░░░░░░░░  5/12  (42%)  Gestão de Domínios Institucionais [IN PROGRESS]
 ```
 
-**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **8 P0 CRÍTICOS (M8)**
+**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **7 P0 CRÍTICOS (M8)**
 
 ---
 
@@ -69,7 +69,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 - [x] #466 - Criar módulo SystemAdmin (CRUD domínios) **[PR #478]**
 - [x] #467 - Criar módulo DomainManager (CRUD usuários + quota 10) **[PR #479]**
 - [ ] #468 - Implementar fluxo troca obrigatória de senha
-- [ ] #469 - Criar seed script (master admin + demo user)
+- [x] #469 - Criar seed script (master admin + demo user) **[PR #480]**
 - [ ] #474 - Implementar isolamento e reset dados demo
 
 ### Issues P0 - Frontend (5)
