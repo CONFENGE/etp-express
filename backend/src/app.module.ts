@@ -23,6 +23,7 @@ import { OrchestratorModule } from './modules/orchestrator/orchestrator.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { RAGModule } from './modules/rag/rag.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -183,6 +184,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     AuditModule,
     RAGModule,
     OrganizationsModule,
+    SystemAdminModule,
     HealthModule,
   ],
   controllers: [AppController],
