@@ -42,6 +42,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
     name: mockUser.name,
     role: mockUser.role,
     organizationId: mockUser.organizationId,
+    mustChangePassword: false,
   };
 
   const mockUsersService = {
