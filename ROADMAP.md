@@ -22,7 +22,7 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 |---|-------|------|--------|
 | ~~#503~~ | ~~Gitleaks false positive allowlist~~ | ~~1h~~ | ✅ DONE |
 | #500 | Gitleaks license for orgs | 2h | |
-| #501 | Rollup optional dependency | 1h | |
+| ~~#501~~ | ~~Rollup optional dependency~~ | ~~1h~~ | ✅ DONE |
 
 **~~JWT XSS (#449) - Decomposta - COMPLETO~~ ✅**
 | # | Issue | Est. | Status |
