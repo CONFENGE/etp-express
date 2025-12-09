@@ -102,6 +102,40 @@ export class UsersService {
   }
 
   /**
+   * Updates user password.
+   *
+   * @remarks
+   * Used by AuthService for password change functionality.
+   * Expects the password to already be hashed.
+   *
+   * @param id - User ID
+   * @param hashedPassword - Already hashed new password
+   */
+  async updatePassword(id: string, hashedPassword: string): Promise<void> {
+    await this.usersRepository.update(id, {
+      password: hashedPassword,
+    });
+    this.logger.log(`Password updated for user: ${id}`);
+  }
+
+  /**
+   * Sets the mustChangePassword flag for a user.
+   *
+   * @remarks
+   * Used for M8: Domain Management - new users created by Domain Managers
+   * must change their initial password on first login.
+   *
+   * @param id - User ID
+   * @param mustChange - Whether user must change password
+   */
+  async setMustChangePassword(id: string, mustChange: boolean): Promise<void> {
+    await this.usersRepository.update(id, {
+      mustChangePassword: mustChange,
+    });
+    this.logger.log(`mustChangePassword set to ${mustChange} for user: ${id}`);
+  }
+
+  /**
    * Exports all user data for LGPD compliance (Art. 18, II and V).
    *
    * @remarks

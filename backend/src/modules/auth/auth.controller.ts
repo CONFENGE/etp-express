@@ -19,6 +19,7 @@ import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -138,5 +139,56 @@ export class AuthController {
       valid: true,
       user,
     };
+  }
+
+  /**
+   * Changes authenticated user's password.
+   *
+   * @remarks
+   * Used for both voluntary password changes and mandatory first-login password changes.
+   * After successful change, returns a new JWT token with updated claims.
+   *
+   * Rate limited to 3 attempts per minute per IP to prevent brute force attacks.
+   *
+   * @param user - Current authenticated user (extracted from JWT token)
+   * @param changePasswordDto - Old and new password
+   * @param ip - Client IP address for audit logging
+   * @param req - Request object for user agent extraction
+   * @returns Success message with new JWT token
+   * @throws {UnauthorizedException} 401 - If old password is incorrect
+   * @throws {BadRequestException} 400 - If new password doesn't meet requirements
+   * @throws {ThrottlerException} 429 - Too many password change attempts
+   */
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 attempts per 60 seconds
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(AuditInterceptor)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Alterar senha do usuário',
+    description:
+      'Permite que o usuário autenticado altere sua senha. Obrigatório para usuários com mustChangePassword=true.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Senha alterada com sucesso. Retorna novo token JWT.',
+  })
+  @ApiResponse({ status: 400, description: 'Nova senha não atende requisitos' })
+  @ApiResponse({ status: 401, description: 'Senha atual incorreta' })
+  @ApiResponse({
+    status: 429,
+    description: 'Muitas tentativas. Tente novamente em 1 minuto.',
+  })
+  async changePassword(
+    @CurrentUser() user: UserWithoutPassword,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Ip() ip: string,
+    @Req() req: Request,
+  ) {
+    const userAgent = req.headers['user-agent'];
+    return this.authService.changePassword(user.id, changePasswordDto, {
+      ip,
+      userAgent,
+    });
   }
 }
