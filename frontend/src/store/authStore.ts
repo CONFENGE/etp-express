@@ -8,29 +8,46 @@ import {
 } from '@/types/user';
 import { apiHelpers } from '@/lib/api';
 
+/**
+ * Authentication state store using httpOnly cookie strategy.
+ *
+ * @security
+ * JWT tokens are stored in httpOnly cookies (set by backend) and are NOT
+ * accessible via JavaScript. This eliminates XSS token theft vulnerability.
+ *
+ * The frontend only stores:
+ * - user: Non-sensitive user profile data (for UI rendering)
+ * - isAuthenticated: Derived from successful login/cookie validation
+ *
+ * Token storage is handled entirely by the browser via httpOnly cookies.
+ */
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
 
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   clearError: () => void;
   setUser: (user: User) => void;
+  checkAuth: () => Promise<boolean>;
+  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
-      token: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
 
+      /**
+       * Authenticates user with credentials.
+       * Backend sets httpOnly cookie with JWT token.
+       */
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
         try {
@@ -39,9 +56,9 @@ export const useAuthStore = create<AuthState>()(
             credentials,
           );
 
+          // Token is set in httpOnly cookie by backend - we only store user data
           set({
             user: response.user,
-            token: response.token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -58,6 +75,10 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      /**
+       * Registers new user account.
+       * Backend sets httpOnly cookie with JWT token.
+       */
       register: async (data: RegisterData) => {
         set({ isLoading: true, error: null });
         try {
@@ -66,9 +87,9 @@ export const useAuthStore = create<AuthState>()(
             data,
           );
 
+          // Token is set in httpOnly cookie by backend - we only store user data
           set({
             user: response.user,
-            token: response.token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -85,10 +106,28 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
+      /**
+       * Logs out user by calling backend logout endpoint.
+       * Backend clears the httpOnly cookie.
+       */
+      logout: async () => {
+        try {
+          // Call backend to clear httpOnly cookie
+          await apiHelpers.post('/auth/logout');
+        } catch {
+          // Ignore logout errors - clear state anyway
+        } finally {
+          get().clearAuth();
+        }
+      },
+
+      /**
+       * Clears local auth state without calling backend.
+       * Used by API interceptor on 401 responses.
+       */
+      clearAuth: () => {
         set({
           user: null,
-          token: null,
           isAuthenticated: false,
           error: null,
         });
@@ -97,12 +136,33 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => set({ error: null }),
 
       setUser: (user: User) => set({ user }),
+
+      /**
+       * Validates authentication by checking if the cookie-based token is valid.
+       * Makes a request to /auth/me which will succeed if cookie is valid.
+       *
+       * @returns true if authenticated, false otherwise
+       */
+      checkAuth: async (): Promise<boolean> => {
+        if (!get().isAuthenticated) {
+          return false;
+        }
+
+        try {
+          const response = await apiHelpers.get<{ user: User }>('/auth/me');
+          set({ user: response.user, isAuthenticated: true });
+          return true;
+        } catch {
+          get().clearAuth();
+          return false;
+        }
+      },
     }),
     {
       name: 'auth-storage',
+      // Only persist non-sensitive user data for UI - token is in httpOnly cookie
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
     },
