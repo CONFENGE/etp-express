@@ -20,7 +20,7 @@ on:
 
 jobs:
   validate-lockfile:
-    runs-on: [self-hosted, linux, x64, railway]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code

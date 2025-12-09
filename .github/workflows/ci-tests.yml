@@ -25,7 +25,7 @@ on:
 jobs:
   test-backend:
     name: Test Backend (NestJS)
-    runs-on: [self-hosted, linux, x64, railway]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -74,7 +74,7 @@ jobs:
 
   test-frontend:
     name: Test Frontend (React)
-    runs-on: [self-hosted, linux, x64, railway]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code

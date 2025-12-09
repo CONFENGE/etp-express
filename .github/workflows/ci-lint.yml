@@ -23,7 +23,7 @@ on:
 jobs:
   lint-backend:
     name: Lint Backend (NestJS)
-    runs-on: [self-hosted, linux, x64, railway]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -44,7 +44,7 @@ jobs:
 
   lint-frontend:
     name: Lint Frontend (React)
-    runs-on: [self-hosted, linux, x64, railway]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
