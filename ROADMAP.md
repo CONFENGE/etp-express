@@ -32,12 +32,12 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 | #506 | Atualizar guards e interceptors | 2h |
 
 **TypeScript Strictness (#450) - Decomposta:**
-| # | Issue | Est. |
-|---|-------|------|
-| #507 | Habilitar noImplicitAny | 1h |
-| #508 | Fix 'any' em OrchestratorService | 3h |
-| #509 | Fix 'any' em DTOs e interfaces | 3h |
-| #510 | Fix 'any' restantes + CI validation | 3h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#507~~ | ~~Habilitar noImplicitAny~~ | ~~1h~~ | ✅ DONE |
+| #508 | Fix 'any' em OrchestratorService | 3h | |
+| #509 | Fix 'any' em DTOs e interfaces | 3h | |
+| #510 | Fix 'any' restantes + CI validation | 3h | |
 
 ---
 
