@@ -13,6 +13,7 @@ import { AuditService } from '../audit/audit.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword, JwtPayload } from './types/user.types';
 
@@ -127,6 +128,7 @@ export class AuthService {
       name: user.name,
       role: user.role,
       organizationId: user.organizationId,
+      mustChangePassword: user.mustChangePassword,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -149,6 +151,7 @@ export class AuthService {
         role: user.role,
         cargo: user.cargo,
         organizationId: user.organizationId,
+        mustChangePassword: user.mustChangePassword,
       },
       disclaimer: DISCLAIMER,
     };
@@ -251,12 +254,14 @@ export class AuthService {
     );
 
     // MT-03: Include organizationId in JWT payload
+    // M8: Include mustChangePassword for domain management
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
       organizationId: user.organizationId,
+      mustChangePassword: user.mustChangePassword,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -270,6 +275,7 @@ export class AuthService {
         role: user.role,
         cargo: user.cargo,
         organizationId: user.organizationId,
+        mustChangePassword: user.mustChangePassword,
       },
       disclaimer: DISCLAIMER,
     };
@@ -327,5 +333,118 @@ export class AuthService {
       }
       throw new UnauthorizedException('Token inválido ou expirado');
     }
+  }
+
+  /**
+   * Changes user password with validation.
+   *
+   * @remarks
+   * Used for both voluntary password changes and mandatory first-login password changes.
+   * Validates old password before setting new one.
+   * Updates mustChangePassword flag to false after successful change.
+   * Logs the password change for LGPD compliance.
+   *
+   * @param userId - ID of the user changing password
+   * @param changePasswordDto - Old and new password
+   * @param metadata - Request metadata for audit logging
+   * @returns Success message and new JWT token with updated claims
+   * @throws {UnauthorizedException} If old password is incorrect
+   * @throws {BadRequestException} If new password doesn't meet requirements
+   *
+   * @example
+   * ```ts
+   * const result = await authService.changePassword(
+   *   'user-uuid',
+   *   { oldPassword: 'OldPass123!', newPassword: 'NewPass456!' },
+   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * );
+   * ```
+   */
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+    metadata?: { ip?: string; userAgent?: string },
+  ) {
+    // Find user with password field
+    const user = await this.usersService.findOne(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('Usuário não encontrado');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Usuário inativo');
+    }
+
+    // Validate old password
+    const isOldPasswordValid = await bcrypt.compare(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isOldPasswordValid) {
+      this.logger.warn(
+        `Failed password change attempt for user: ${user.email}`,
+      );
+      throw new UnauthorizedException('Senha atual incorreta');
+    }
+
+    // Ensure new password is different from old
+    const isSamePassword = await bcrypt.compare(
+      changePasswordDto.newPassword,
+      user.password,
+    );
+
+    if (isSamePassword) {
+      throw new BadRequestException(
+        'Nova senha não pode ser igual à senha atual',
+      );
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      10,
+    );
+
+    // Update password and set mustChangePassword to false
+    await this.usersService.updatePassword(userId, hashedNewPassword);
+    await this.usersService.setMustChangePassword(userId, false);
+
+    // Log password change for LGPD compliance
+    await this.auditService.logPasswordChange(userId, {
+      ip: metadata?.ip,
+      userAgent: metadata?.userAgent,
+      wasMandatory: user.mustChangePassword,
+    });
+
+    this.logger.log(
+      `Password changed successfully for user: ${user.email}${user.mustChangePassword ? ' (mandatory first login)' : ''}`,
+    );
+
+    // Generate new JWT token with updated mustChangePassword claim
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      organizationId: user.organizationId,
+      mustChangePassword: false, // Now false after password change
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      message: 'Senha alterada com sucesso',
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        organizationId: user.organizationId,
+        mustChangePassword: false,
+      },
+    };
   }
 }
