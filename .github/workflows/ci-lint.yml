@@ -36,7 +36,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies (workspace root)
-        run: npm install --force
+        run: npm install --include=optional --force
 
       - name: Run ESLint
         working-directory: backend
@@ -64,7 +64,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies (workspace root)
-        run: npm install --force
+        run: npm install --include=optional --force
 
       - name: Run ESLint
         working-directory: frontend
