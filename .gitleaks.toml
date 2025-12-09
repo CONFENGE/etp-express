@@ -33,6 +33,10 @@ tags = ["secret", "database"]
     '''username:password''',
     '''PLACEHOLDER''',
     '''postgresql://USER:PASSWORD@HOST:PORT/DATABASE''',
+    '''postgres(ql)?://USER:PASSWORD@HOST''',
+  ]
+  paths = [
+    '''scripts/rotate-secret\.sh''',
   ]
 
 # Custom rules for ETP Express specific patterns
