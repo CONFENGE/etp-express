@@ -1,86 +1,99 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DomainTable } from '@/components/admin/DomainTable';
+import { CreateDomainDialog } from '@/components/admin/CreateDomainDialog';
 import { useAdminStore } from '@/store/adminStore';
+import { useToast } from '@/hooks/useToast';
 
 /**
- * Domain Management page placeholder.
- * Will be fully implemented in sub-issue #525.
+ * Domain Management page for System Admin.
+ * Provides CRUD operations for authorized domains.
+ *
+ * Design: Apple Human Interface Guidelines
+ * - Generous spacing
+ * - Apple-style shadows
+ * - Minimal, focused UI
  *
  * @security Only accessible to users with role: system_admin
  */
 export function DomainManagement() {
-  const { domains, loading, fetchDomains } = useAdminStore();
+  const { domains, loading, error, fetchDomains, createDomain, deleteDomain } =
+    useAdminStore();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const { success, error: showError } = useToast();
 
   useEffect(() => {
     fetchDomains();
   }, [fetchDomains]);
 
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error, showError]);
+
+  const handleCreateDomain = async (data: {
+    domain: string;
+    maxUsers: number;
+  }) => {
+    try {
+      await createDomain(data);
+      success('Domain created successfully');
+    } catch {
+      showError('Failed to create domain');
+      throw new Error('Failed to create domain');
+    }
+  };
+
+  const handleDeleteDomain = async (id: string) => {
+    try {
+      await deleteDomain(id);
+      success('Domain deleted successfully');
+    } catch {
+      showError('Failed to delete domain');
+      throw new Error('Failed to delete domain');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 space-y-6">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link
-              to="/admin"
-              className="rounded-lg p-2 hover:bg-gray-100"
-              aria-label="Back to admin dashboard"
-            >
-              <ArrowLeft className="h-5 w-5 text-gray-600" />
-            </Link>
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/admin" aria-label="Back to admin dashboard">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                Domains
-              </h1>
-              <p className="mt-1 text-gray-600">
+              <h1 className="text-3xl font-bold tracking-tight">Domains</h1>
+              <p className="text-muted-foreground">
                 Manage authorized institutional domains
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4" />
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
             Add Domain
-          </button>
+          </Button>
         </div>
 
-        {/* Domain List Placeholder */}
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-          <div className="p-6">
-            {loading ? (
-              <p className="text-center text-gray-500">Loading domains...</p>
-            ) : domains.length === 0 ? (
-              <p className="text-center text-gray-500">No domains found</p>
-            ) : (
-              <div className="space-y-4">
-                {domains.map((domain) => (
-                  <div
-                    key={domain.id}
-                    className="flex items-center justify-between rounded-lg border border-gray-100 p-4"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {domain.domain}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Max users: {domain.maxUsers}
-                      </p>
-                    </div>
-                    <Link
-                      to={`/admin/domains/${domain.id}`}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Domain Table */}
+        <DomainTable
+          domains={domains}
+          loading={loading}
+          onDelete={handleDeleteDomain}
+        />
+
+        {/* Create Domain Dialog */}
+        <CreateDomainDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onSubmit={handleCreateDomain}
+        />
       </div>
     </div>
   );
