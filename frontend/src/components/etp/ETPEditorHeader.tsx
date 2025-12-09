@@ -5,6 +5,7 @@ interface ETPEditorHeaderProps {
   etpTitle: string;
   etpDescription?: string;
   onSave: () => void;
+  onExportPDF?: () => void;
   isSaving?: boolean;
 }
 
@@ -12,6 +13,7 @@ export function ETPEditorHeader({
   etpTitle,
   etpDescription,
   onSave,
+  onExportPDF,
   isSaving = false,
 }: ETPEditorHeaderProps) {
   return (
@@ -27,7 +29,7 @@ export function ETPEditorHeader({
           <Eye className="mr-2 h-4 w-4" />
           Visualizar
         </Button>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={onExportPDF}>
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>
