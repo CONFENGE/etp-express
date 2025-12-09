@@ -1324,19 +1324,36 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: true,
         score: 85,
+        issues: [],
         recommendations: [],
+        references: ['Lei 14.133/2021'],
       };
       const fundamentacaoValidation = {
         score: 80,
+        hasNecessidade: true,
+        hasInteressePublico: true,
+        hasBeneficios: true,
+        hasRiscos: true,
         suggestions: [],
       };
       const clarezaValidation = {
         score: 90,
+        readabilityIndex: 85,
+        issues: [],
         suggestions: [],
+        metrics: {
+          avgSentenceLength: 15,
+          avgWordLength: 5,
+          complexWords: 3,
+          passiveVoice: 1,
+        },
       };
       const hallucinationCheck = {
+        score: 100,
+        confidence: 95,
         verified: true,
         warnings: [],
+        suspiciousElements: [],
       };
 
       const result = await service['runValidations'](
@@ -1355,16 +1372,29 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: false,
         score: 60,
+        issues: ['Falta referência explícita à Lei 14.133/2021'],
         recommendations: ['Adicione referência à Lei 14.133/2021'],
+        references: [],
       };
       const fundamentacaoValidation = null;
       const clarezaValidation = {
         score: 90,
+        readabilityIndex: 85,
+        issues: [],
         suggestions: [],
+        metrics: {
+          avgSentenceLength: 15,
+          avgWordLength: 5,
+          complexWords: 3,
+          passiveVoice: 1,
+        },
       };
       const hallucinationCheck = {
+        score: 100,
+        confidence: 95,
         verified: true,
         warnings: [],
+        suspiciousElements: [],
       };
 
       const result = await service['runValidations'](
@@ -1384,19 +1414,36 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: true,
         score: 85,
+        issues: [],
         recommendations: [],
+        references: ['Lei 14.133/2021'],
       };
       const fundamentacaoValidation = {
         score: 65,
+        hasNecessidade: false,
+        hasInteressePublico: true,
+        hasBeneficios: true,
+        hasRiscos: true,
         suggestions: ['Melhore a fundamentação da necessidade'],
       };
       const clarezaValidation = {
         score: 90,
+        readabilityIndex: 85,
+        issues: [],
         suggestions: [],
+        metrics: {
+          avgSentenceLength: 15,
+          avgWordLength: 5,
+          complexWords: 3,
+          passiveVoice: 1,
+        },
       };
       const hallucinationCheck = {
+        score: 100,
+        confidence: 95,
         verified: true,
         warnings: [],
+        suspiciousElements: [],
       };
 
       const result = await service['runValidations'](
@@ -1416,16 +1463,29 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: true,
         score: 85,
+        issues: [],
         recommendations: [],
+        references: ['Lei 14.133/2021'],
       };
       const fundamentacaoValidation = null;
       const clarezaValidation = {
         score: 65,
+        readabilityIndex: 60,
+        issues: ['Frases muito longas detectadas'],
         suggestions: ['Melhore a clareza do texto'],
+        metrics: {
+          avgSentenceLength: 30,
+          avgWordLength: 7,
+          complexWords: 10,
+          passiveVoice: 5,
+        },
       };
       const hallucinationCheck = {
+        score: 100,
+        confidence: 95,
         verified: true,
         warnings: [],
+        suspiciousElements: [],
       };
 
       const result = await service['runValidations'](
@@ -1443,16 +1503,35 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: true,
         score: 85,
+        issues: [],
         recommendations: [],
+        references: ['Lei 14.133/2021'],
       };
       const fundamentacaoValidation = null;
       const clarezaValidation = {
         score: 90,
+        readabilityIndex: 85,
+        issues: [],
         suggestions: [],
+        metrics: {
+          avgSentenceLength: 15,
+          avgWordLength: 5,
+          complexWords: 3,
+          passiveVoice: 1,
+        },
       };
       const hallucinationCheck = {
+        score: 50,
+        confidence: 60,
         verified: false,
         warnings: ['Detectada referência suspeita à Lei'],
+        suspiciousElements: [
+          {
+            element: 'Lei 99.999/2099',
+            reason: 'Referência legal não verificada',
+            severity: 'high' as const,
+          },
+        ],
       };
 
       const result = await service['runValidations'](
@@ -1470,19 +1549,42 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: false,
         score: 60,
+        issues: ['Falta fundamentação legal'],
         recommendations: ['Warning legal 1', 'Warning legal 2'],
+        references: [],
       };
       const fundamentacaoValidation = {
         score: 65,
+        hasNecessidade: false,
+        hasInteressePublico: true,
+        hasBeneficios: true,
+        hasRiscos: true,
         suggestions: ['Warning fundamentacao'],
       };
       const clarezaValidation = {
         score: 65,
+        readabilityIndex: 60,
+        issues: ['Texto complexo'],
         suggestions: ['Warning clareza'],
+        metrics: {
+          avgSentenceLength: 30,
+          avgWordLength: 7,
+          complexWords: 10,
+          passiveVoice: 5,
+        },
       };
       const hallucinationCheck = {
+        score: 40,
+        confidence: 50,
         verified: false,
         warnings: ['Warning hallucination'],
+        suspiciousElements: [
+          {
+            element: 'Referência suspeita',
+            reason: 'Não verificada',
+            severity: 'high' as const,
+          },
+        ],
       };
 
       const result = await service['runValidations'](
@@ -1505,16 +1607,29 @@ describe('OrchestratorService', () => {
       const legalValidation = {
         isCompliant: true,
         score: 85,
+        issues: [],
         recommendations: [],
+        references: ['Lei 14.133/2021'],
       };
       const fundamentacaoValidation = null;
       const clarezaValidation = {
         score: 90,
+        readabilityIndex: 85,
+        issues: [],
         suggestions: [],
+        metrics: {
+          avgSentenceLength: 15,
+          avgWordLength: 5,
+          complexWords: 3,
+          passiveVoice: 1,
+        },
       };
       const hallucinationCheck = {
+        score: 100,
+        confidence: 95,
         verified: true,
         warnings: [],
+        suspiciousElements: [],
       };
 
       const result = await service['runValidations'](
