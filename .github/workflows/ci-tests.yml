@@ -38,7 +38,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies (workspace root)
-        run: npm ci
+        run: npm install
 
       - name: Run tests with coverage
         working-directory: backend
@@ -87,7 +87,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies (workspace root)
-        run: npm ci
+        run: npm install
 
       - name: Run tests with coverage
         working-directory: frontend
