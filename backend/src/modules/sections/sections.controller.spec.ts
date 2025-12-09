@@ -787,14 +787,14 @@ describe('SectionsController (Integration)', () => {
     });
 
     it('deve incluir disclaimer em todas as respostas de sucesso', async () => {
-      const endpoints = [
+      const endpoints: Array<{ method: 'get'; path: string }> = [
         { method: 'get', path: `/sections/etp/${mockEtpId}` },
         { method: 'get', path: `/sections/${mockSectionId}` },
       ];
 
       for (const endpoint of endpoints) {
         const response = await request(app.getHttpServer())
-          [endpoint.method](endpoint.path)
+          .get(endpoint.path)
           .expect(200);
 
         expect(response.body.disclaimer).toBeDefined();
