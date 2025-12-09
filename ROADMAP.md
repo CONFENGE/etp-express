@@ -36,7 +36,7 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 |---|-------|------|--------|
 | ~~#507~~ | ~~Habilitar noImplicitAny~~ | ~~1h~~ | ✅ DONE |
 | ~~#508~~ | ~~Fix 'any' em OrchestratorService~~ | ~~3h~~ | ✅ DONE |
-| #509 | Fix 'any' em DTOs e interfaces | 3h | |
+| ~~#509~~ | ~~Fix 'any' em DTOs e interfaces~~ | ~~3h~~ | ✅ DONE |
 | #510 | Fix 'any' restantes + CI validation | 3h | |
 
 ---
