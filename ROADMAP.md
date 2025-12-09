@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 256/279 (91.8%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 257/279 (92.1%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -8,21 +8,20 @@
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ████████████████░░░░  80%  Maintenance (57/71)
-M8:        █████████████░░░░░░░  67%  Domínios (8/12)
+M8:        ██████████████████░░  75%  Domínios (9/12)
 ```
 
 ---
 
 ## Próximas Ações
 
-### M8 - Gestão de Domínios (4 issues)
+### M8 - Gestão de Domínios (3 issues)
 
 | #    | Issue                    | Est. |
 | ---- | ------------------------ | ---- |
 | #470 | System Admin dashboard   | 12h  |
 | #471 | Domain Manager dashboard | 12h  |
 | #473 | UI/UX Apple HIG          | 16h  |
-| #474 | Demo data isolation      | 8h   |
 
 ### Security (3 issues)
 
