@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 229/267 (85.8%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-08 | **Progresso:** 228/269 (84.8%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -10,9 +10,9 @@ M2: ████████████████████ 18/18  (100%) C
 M3: ████████████████████ 61/61  (100%) Quality & Security
 M4: ████████████████████ 45/45  (100%) Refactoring & Performance
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
-M6: ████████████░░░░░░░░ 41/61  (67%)  Maintenance
+M6: ████████████░░░░░░░░ 41/64  (64%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
-M8: ████████░░░░░░░░░░░░  5/12  (42%)  Gestão de Domínios Institucionais [IN PROGRESS]
+M8: ████████░░░░░░░░░░░░  5/12  (42%)  Gestão de Domínios Institucionais
 ```
 
 **Deploy:** ✅ Backend + Frontend operacionais (12/07) | **7 P0 CRÍTICOS (M8)**
@@ -45,7 +45,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ---
 
-## M8: Gestão de Domínios Institucionais (0%) [NEW]
+## M8: Gestão de Domínios Institucionais (42%) [IN PROGRESS]
 
 **Objetivo:** Sistema de controle de acesso hierárquico para domínios institucionais
 
@@ -107,12 +107,13 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ---
 
-## M6: Maintenance (67%)
+## M6: Maintenance (64%)
 
 **Concluídos (41):** Redis/BullMQ, TypeORM fixes, migrations idempotentes, WCAG fixes, async UX, Railway deploy fixes (#404, #411, #423, #424, #428, #429, #431, #433, #434, #447, #448, #451)
 
-**P0 CRÍTICOS (0):** ✅ Nenhum bloqueio
+**P0 CRÍTICOS (1):** 🔴 Requer ação imediata
 
+- [ ] #498 - 🔴 Secret detectado no repositório pelo Gitleaks **[NEW - CRITICAL]**
 - [x] #447 - Backend deploy failing (railway.toml conflict) ✅ **RESOLVED via PR #462**
 - [x] #448 - Frontend deploy failing (snapshot error) ✅ **RESOLVED via PORT variable fix**
 
@@ -136,7 +137,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 - [ ] #455 - Cache memory leak risk **[NEW]**
 - [ ] #457 - Missing useCallback/useMemo **[NEW]**
 
-**P3 Otimizações (6):**
+**P3 Otimizações (8):**
 
 - [ ] #248 - Limite tamanho PRs
 - [ ] #379 - Migrar LLMs obsoletos
@@ -144,6 +145,8 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 - [ ] #459 - Eager loading optimization **[NEW]**
 - [ ] #460 - Migration timestamp fix **[NEW]**
 - [ ] #461 - Bundle lazy loading **[NEW]**
+- [ ] #492 - Migrar ESLint 9 (flat config) **[NEW - Dependabot]**
+- [ ] #493 - Migrar React Router v7 **[NEW - Dependabot]**
 
 ---
 
