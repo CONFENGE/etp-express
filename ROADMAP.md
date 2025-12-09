@@ -1,32 +1,39 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 261/284 (91.9%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 262/293 (89.4%) | **Deploy:** Operacional
 
 ## Milestones
 
 ```
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
-M6:        ████████████████░░░░  81%  Maintenance (58/72)
-M8:        ██████████████░░░░░░  71%  Domínios (12/17)
+M6:        ███████████████░░░░░  76%  Maintenance (58/76)
+M8:        █████████████░░░░░░░  65%  Domínios (15/23)
 ```
 
 ---
 
 ## Próximas Ações
 
-### M8 - Gestão de Domínios (7 issues)
+### M8 - Gestão de Domínios (12 issues)
 
-| #    | Issue                           | Est. |
-| ---- | ------------------------------- | ---- |
-| #470 | System Admin dashboard (parent) | -    |
-| #523 | └─ Setup adminStore + rotas     | ✅   |
-| #524 | └─ AdminDashboard estatísticas  | ✅   |
-| #525 | └─ DomainManagement CRUD        | ✅   |
-| #526 | └─ DomainDetail + AssignManager | 4h   |
-| #527 | └─ Testes e responsividade      | 4h   |
-| #471 | Domain Manager dashboard        | 12h  |
-| #473 | UI/UX Apple HIG                 | 16h  |
+| #    | Issue                             | Est. |
+| ---- | --------------------------------- | ---- |
+| #470 | System Admin dashboard (parent)   | -    |
+| #523 | └─ Setup adminStore + rotas       | ✅   |
+| #524 | └─ AdminDashboard estatísticas    | ✅   |
+| #525 | └─ DomainManagement CRUD          | ✅   |
+| #526 | └─ DomainDetail + AssignManager   | 4h   |
+| #527 | └─ Testes e responsividade        | 4h   |
+| #471 | Domain Manager dashboard (parent) | -    |
+| #537 | └─ Setup managerStore + rotas     | 4h   |
+| #538 | └─ ManagerDashboard estatísticas  | 4h   |
+| #539 | └─ UserManagement CRUD            | 4h   |
+| #473 | UI/UX Apple HIG (parent)          | -    |
+| #540 | └─ Setup design tokens            | 4h   |
+| #541 | └─ Componentes base estilizados   | 4h   |
+| #542 | └─ Dark mode                      | 4h   |
+| #543 | └─ Acessibilidade + responsivo    | 4h   |
 
 ### Security (2 issues)
 
@@ -46,11 +53,12 @@ M8:        ██████████████░░░░░░  71%  Do
 
 ---
 
-## Backlog (12 issues)
+## Backlog (16 issues)
 
 **Performance:** #426, #454, #455, #457, #459, #461
 **Maintenance:** #379, #387, #460, #492, #493
 **Operations:** #223
+**Tests (P0/P1):** #533, #534, #535, #536
 
 ---
 
