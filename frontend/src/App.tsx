@@ -8,6 +8,7 @@ import {
 import { useEffect } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
+import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
 import { useAuth } from '@/hooks/useAuth';
 import { setNavigate } from '@/lib/navigation';
 
@@ -123,6 +124,7 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <AppRoutes />
+        <PasswordChangeModal />
         <Toaster />
       </BrowserRouter>
     </ErrorBoundary>
