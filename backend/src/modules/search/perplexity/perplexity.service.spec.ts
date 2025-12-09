@@ -10,8 +10,8 @@ describe('PerplexityService', () => {
   let service: PerplexityService;
 
   const mockConfigService = {
-    get: jest.fn((key: string, defaultValue?: any) => {
-      const config = {
+    get: jest.fn((key: string, defaultValue?: unknown) => {
+      const config: Record<string, string> = {
         PERPLEXITY_API_KEY: 'test-api-key',
         PERPLEXITY_MODEL: 'sonar',
         PERPLEXITY_MODEL_SIMPLE: 'sonar',
