@@ -33,7 +33,7 @@ jobs:
           node-version: lts/*
           cache: 'npm'
       - name: Install dependencies
-        run: npm install --force
+        run: npm install --include=optional --force
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
