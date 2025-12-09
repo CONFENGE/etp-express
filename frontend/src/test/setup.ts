@@ -79,6 +79,35 @@ const localStorageMock = {
 
 global.localStorage = localStorageMock as Storage;
 
+// =============================================================================
+// Utility: createDeferredPromise - para testar loading states sem causar timeouts
+// Use isto ao invés de `new Promise(() => {})` que nunca resolve e causa
+// problemas com timers internos do Radix UI no CI.
+//
+// Exemplo de uso:
+//   const { promise, resolve } = createDeferredPromise<User[]>();
+//   vi.mocked(api.get).mockReturnValue(promise);
+//   render(<Component />);
+//   expect(screen.getByText('Loading...')).toBeInTheDocument();
+//   resolve(mockData); // Resolve para permitir cleanup
+//   await waitFor(() => expect(screen.getByText('Done')).toBeInTheDocument());
+// =============================================================================
+export function createDeferredPromise<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
+} {
+  let resolve: (value: T) => void;
+  let reject: (reason?: unknown) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return { promise, resolve: resolve!, reject: reject! };
+}
+
 // Mock de fetch para APIs (alternativa ao MSW para casos simples)
 global.fetch = vi.fn();
 
