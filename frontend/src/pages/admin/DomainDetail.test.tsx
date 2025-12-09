@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { DomainDetail } from './DomainDetail';
 import { apiHelpers } from '@/lib/api';
@@ -75,35 +81,33 @@ function renderWithRouter(domainId: string = 'domain-1') {
 }
 
 describe('DomainDetail', () => {
-  // Store pending promise resolvers for cleanup to prevent test hangs
-  let pendingResolvers: Array<(value: unknown) => void> = [];
-
   beforeEach(() => {
     vi.clearAllMocks();
-    pendingResolvers = [];
+    vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
-  afterEach(() => {
-    // Resolve any pending promises to prevent test runner hangs
-    pendingResolvers.forEach((resolve) => resolve(mockDomain));
-    pendingResolvers = [];
+  afterEach(async () => {
+    // Run all pending timers to clean up Radix UI animations
+    await act(async () => {
+      vi.runAllTimers();
+    });
+    vi.useRealTimers();
   });
 
   describe('Loading State', () => {
     it('should show loading skeleton initially', async () => {
-      // Use pending promise with cleanup in afterEach to prevent test hangs
       vi.mocked(apiHelpers.get).mockImplementation(
-        () =>
-          new Promise((resolve) => {
-            pendingResolvers.push(resolve);
-          }),
+        () => new Promise(() => {}), // Never resolves - we check synchronously
       );
 
       renderWithRouter();
 
       // Skeleton should be visible during loading
       expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
-      // Promise cleanup happens in afterEach
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
     });
   });
 
@@ -120,6 +124,10 @@ describe('DomainDetail', () => {
     it('should display domain information', async () => {
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('example.com')).toBeInTheDocument();
       });
@@ -130,6 +138,10 @@ describe('DomainDetail', () => {
 
     it('should display domain users', async () => {
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -142,6 +154,10 @@ describe('DomainDetail', () => {
     it('should display manager name when assigned', async () => {
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('example.com')).toBeInTheDocument();
       });
@@ -152,6 +168,10 @@ describe('DomainDetail', () => {
 
     it('should show "Change Manager" button when manager is assigned', async () => {
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Change Manager')).toBeInTheDocument();
@@ -168,6 +188,10 @@ describe('DomainDetail', () => {
 
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('Assign Manager')).toBeInTheDocument();
       });
@@ -175,6 +199,10 @@ describe('DomainDetail', () => {
 
     it('should have back button linking to domains list', async () => {
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(screen.getByText('example.com')).toBeInTheDocument();
@@ -187,6 +215,10 @@ describe('DomainDetail', () => {
     it('should display user count correctly', async () => {
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('3 / 100')).toBeInTheDocument();
       });
@@ -194,6 +226,10 @@ describe('DomainDetail', () => {
 
     it('should show user roles with badges', async () => {
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Manager')).toBeInTheDocument();
@@ -212,6 +248,10 @@ describe('DomainDetail', () => {
 
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(
           screen.getByText('No users in this domain yet.'),
@@ -226,6 +266,10 @@ describe('DomainDetail', () => {
 
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('Domain Not Found')).toBeInTheDocument();
       });
@@ -235,6 +279,10 @@ describe('DomainDetail', () => {
       vi.mocked(apiHelpers.get).mockRejectedValue(new Error('Not found'));
 
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -257,11 +305,19 @@ describe('DomainDetail', () => {
     it('should open assign manager dialog on button click', async () => {
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('Assign Manager')).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getByText('Assign Manager'));
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -281,6 +337,10 @@ describe('DomainDetail', () => {
 
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getAllByText('Inactive')).toHaveLength(2); // Header and info card
       });
@@ -297,6 +357,10 @@ describe('DomainDetail', () => {
       });
 
       renderWithRouter('domain-1');
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(apiHelpers.get).toHaveBeenCalledWith(
@@ -322,6 +386,10 @@ describe('DomainDetail', () => {
     it('should have accessible heading', async () => {
       renderWithRouter();
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(
           screen.getByRole('heading', { level: 1, name: 'example.com' }),
@@ -331,6 +399,10 @@ describe('DomainDetail', () => {
 
     it('should have aria-label on back button', async () => {
       renderWithRouter();
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(

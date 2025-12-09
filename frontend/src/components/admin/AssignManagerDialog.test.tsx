@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AssignManagerDialog } from './AssignManagerDialog';
 import { apiHelpers } from '@/lib/api';
@@ -43,21 +49,20 @@ describe('AssignManagerDialog', () => {
   const mockOnOpenChange = vi.fn();
   const mockOnSuccess = vi.fn();
 
-  // Store pending promise resolvers for cleanup to prevent test hangs
-  let pendingResolvers: Array<(value: unknown) => void> = [];
-
   beforeEach(() => {
     vi.clearAllMocks();
-    pendingResolvers = [];
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.mocked(useAdminStore).mockReturnValue({
       assignManager: mockAssignManager,
     } as ReturnType<typeof useAdminStore>);
   });
 
-  afterEach(() => {
-    // Resolve any pending promises to prevent test runner hangs
-    pendingResolvers.forEach((resolve) => resolve(undefined));
-    pendingResolvers = [];
+  afterEach(async () => {
+    // Run all pending timers to clean up Radix UI animations
+    await act(async () => {
+      vi.runAllTimers();
+    });
+    vi.useRealTimers();
   });
 
   describe('Rendering', () => {
@@ -72,12 +77,16 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Assign Domain Manager')).toBeInTheDocument();
       expect(screen.getByText('Select Manager')).toBeInTheDocument();
     });
 
-    it('should not render dialog when closed', () => {
+    it('should not render dialog when closed', async () => {
       render(
         <AssignManagerDialog
           open={false}
@@ -86,16 +95,16 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('should show loading skeleton while fetching users', async () => {
-      // Use pending promise with cleanup in afterEach to prevent test hangs
       vi.mocked(apiHelpers.get).mockImplementation(
-        () =>
-          new Promise((resolve) => {
-            pendingResolvers.push(resolve as (value: unknown) => void);
-          }),
+        () => new Promise(() => {}), // Never resolves - we check synchronously
       );
 
       render(
@@ -106,8 +115,12 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      // Check immediately - skeleton should be visible during loading
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      // Promise cleanup happens in afterEach
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
     });
 
     it('should show message when no users in domain', async () => {
@@ -120,6 +133,10 @@ describe('AssignManagerDialog', () => {
           domainId="domain-1"
         />,
       );
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -141,6 +158,10 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(apiHelpers.get).toHaveBeenCalledWith(
           '/system-admin/domains/domain-1/users',
@@ -160,13 +181,19 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(apiHelpers.get).toHaveBeenCalled();
       });
     });
 
     it('should display users in select dropdown', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
 
       render(
@@ -177,12 +204,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -197,7 +232,9 @@ describe('AssignManagerDialog', () => {
 
   describe('Submission', () => {
     it('should call assignManager with selected user', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
       mockAssignManager.mockResolvedValue(undefined);
 
@@ -210,12 +247,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -226,10 +271,18 @@ describe('AssignManagerDialog', () => {
       const userOption = screen.getByText('John Doe (john@example.com)');
       await user.click(userOption);
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       const submitButton = screen.getByRole('button', {
         name: 'Assign Manager',
       });
       fireEvent.click(submitButton);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(mockAssignManager).toHaveBeenCalledWith('domain-1', 'user-1');
@@ -237,7 +290,9 @@ describe('AssignManagerDialog', () => {
     });
 
     it('should close dialog after successful submission', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
       mockAssignManager.mockResolvedValue(undefined);
 
@@ -249,12 +304,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -264,10 +327,18 @@ describe('AssignManagerDialog', () => {
 
       await user.click(screen.getByText('John Doe (john@example.com)'));
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       const submitButton = screen.getByRole('button', {
         name: 'Assign Manager',
       });
       fireEvent.click(submitButton);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalledWith(false);
@@ -275,7 +346,9 @@ describe('AssignManagerDialog', () => {
     });
 
     it('should call onSuccess callback after successful assignment', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
       mockAssignManager.mockResolvedValue(undefined);
 
@@ -288,12 +361,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -303,10 +384,18 @@ describe('AssignManagerDialog', () => {
 
       await user.click(screen.getByText('John Doe (john@example.com)'));
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       const submitButton = screen.getByRole('button', {
         name: 'Assign Manager',
       });
       fireEvent.click(submitButton);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(mockOnSuccess).toHaveBeenCalled();
@@ -324,6 +413,10 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
@@ -335,15 +428,12 @@ describe('AssignManagerDialog', () => {
     });
 
     it('should show loading state while assigning', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
-      // Use pending promise with cleanup in afterEach to prevent test hangs
-      mockAssignManager.mockImplementation(
-        () =>
-          new Promise((resolve) => {
-            pendingResolvers.push(resolve as (value: unknown) => void);
-          }),
-      );
+      // Never-resolving promise to keep loading state visible
+      mockAssignManager.mockImplementation(() => new Promise(() => {}));
 
       render(
         <AssignManagerDialog
@@ -353,12 +443,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -368,15 +466,22 @@ describe('AssignManagerDialog', () => {
 
       await user.click(screen.getByText('John Doe (john@example.com)'));
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       const submitButton = screen.getByRole('button', {
         name: 'Assign Manager',
       });
       fireEvent.click(submitButton);
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByText('Assigning...')).toBeInTheDocument();
       });
-      // Promise cleanup happens in afterEach
     });
   });
 
@@ -391,6 +496,10 @@ describe('AssignManagerDialog', () => {
           domainId="domain-1"
         />,
       );
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       fireEvent.click(cancelButton);
@@ -411,6 +520,10 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(
           screen.getByText('No users found in this domain.'),
@@ -419,7 +532,9 @@ describe('AssignManagerDialog', () => {
     });
 
     it('should handle error when assigning manager fails', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({
+        advanceTimers: vi.advanceTimersByTime,
+      });
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
       mockAssignManager.mockRejectedValue(new Error('Assignment failed'));
 
@@ -431,12 +546,20 @@ describe('AssignManagerDialog', () => {
         />,
       );
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       await waitFor(() => {
         expect(screen.getByRole('combobox')).toBeInTheDocument();
       });
 
       const selectTrigger = screen.getByRole('combobox');
       await user.click(selectTrigger);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(
@@ -446,10 +569,18 @@ describe('AssignManagerDialog', () => {
 
       await user.click(screen.getByText('John Doe (john@example.com)'));
 
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
       const submitButton = screen.getByRole('button', {
         name: 'Assign Manager',
       });
       fireEvent.click(submitButton);
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
       await waitFor(() => {
         expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
