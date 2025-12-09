@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-08 | **Progresso:** 228/269 (84.8%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-09 | **Progresso:** 229/269 (85.1%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -12,10 +12,10 @@ M4: ████████████████████ 45/45  (100%) R
 M5: ██████████░░░░░░░░░░ 17/28  (61%)  E2E Testing & Documentation
 M6: ████████████░░░░░░░░ 41/64  (64%)  Maintenance
 M7: ████████████████████  6/6   (100%) Multi-Tenancy B2G
-M8: ████████░░░░░░░░░░░░  5/12  (42%)  Gestão de Domínios Institucionais
+M8: █████████░░░░░░░░░░░  6/12  (50%)  Gestão de Domínios Institucionais
 ```
 
-**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **7 P0 CRÍTICOS (M8)**
+**Deploy:** ✅ Backend + Frontend operacionais (12/07) | **6 P0 CRÍTICOS (M8)**
 
 ---
 
@@ -64,13 +64,13 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 | tiago@confenge.com.br   | Crj70011! | SYSTEM_ADMIN |
 | demoetp@confenge.com.br | teste2026 | DEMO         |
 
-### Issues P0 - Backend (7)
+### Issues P0 - Backend (6 done, 1 pending)
 
 - [x] #464 - Estender UserRole enum (SYSTEM_ADMIN, DOMAIN_MANAGER, DEMO) **[PR #476]**
 - [x] #465 - Criar entidade AuthorizedDomain **[PR #477]**
 - [x] #466 - Criar módulo SystemAdmin (CRUD domínios) **[PR #478]**
 - [x] #467 - Criar módulo DomainManager (CRUD usuários + quota 10) **[PR #479]**
-- [ ] #468 - Implementar fluxo troca obrigatória de senha
+- [x] #468 - Implementar fluxo troca obrigatória de senha **[PR #502]**
 - [x] #469 - Criar seed script (master admin + demo user) **[PR #480]**
 - [ ] #474 - Implementar isolamento e reset dados demo
 
