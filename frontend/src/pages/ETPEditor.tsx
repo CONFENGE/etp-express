@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs } from '@/components/ui/tabs';
@@ -15,6 +15,8 @@ import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
+import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
+import { useDemoConversion } from '@/hooks/useDemoConversion';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +37,13 @@ export function ETPEditor() {
     generationStatus,
     generateSection: storeGenerateSection,
   } = useETPStore();
+
+  // Demo user conversion banner (#475)
+  const { showBanner, triggerBanner, dismissBanner, isDemoUser } =
+    useDemoConversion();
+
+  // Track previous progress to detect ETP completion
+  const previousProgressRef = useRef<number | null>(null);
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -66,6 +75,25 @@ export function ETPEditor() {
       setContent(section?.content || '');
     }
   }, [currentETP, activeSection]);
+
+  // Trigger demo conversion banner when ETP reaches 100% completion (#475)
+  useEffect(() => {
+    if (!currentETP || !isDemoUser) return;
+
+    const currentProgress = currentETP.progress;
+    const previousProgress = previousProgressRef.current;
+
+    // Detect when progress reaches 100% (completion)
+    if (
+      previousProgress !== null &&
+      previousProgress < 100 &&
+      currentProgress === 100
+    ) {
+      triggerBanner('etp_completion');
+    }
+
+    previousProgressRef.current = currentProgress;
+  }, [currentETP?.progress, isDemoUser, triggerBanner, currentETP]);
 
   const handleSave = async () => {
     if (!currentETP || !id) return;
@@ -103,6 +131,9 @@ export function ETPEditor() {
       if (result?.content) {
         setContent(result.content);
         success('Seção gerada com sucesso!');
+
+        // Trigger demo conversion banner after successful AI generation (#475)
+        triggerBanner('ai_generation');
       }
     } catch (err) {
       const message =
@@ -144,6 +175,35 @@ export function ETPEditor() {
     completed: false, // TODO: calcular baseado em currentETP.sections
   }));
 
+  // Handle PDF export with demo conversion trigger (#475)
+  const handleExportPDF = async () => {
+    if (!id) return;
+
+    try {
+      const { exportPDF } = useETPStore.getState();
+      const blob = await exportPDF(id);
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${currentETP.title || 'ETP'}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      success('PDF exportado com sucesso!');
+
+      // Trigger demo conversion banner after PDF export (#475)
+      triggerBanner('pdf_export');
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao exportar PDF';
+      error(message);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -151,6 +211,7 @@ export function ETPEditor() {
           etpTitle={currentETP.title}
           etpDescription={currentETP.description}
           onSave={handleSave}
+          onExportPDF={handleExportPDF}
           isSaving={isSaving}
         />
 
@@ -202,6 +263,9 @@ export function ETPEditor() {
           </div>
         </div>
       </div>
+
+      {/* Demo conversion CTA banner (#475) */}
+      {showBanner && <DemoConversionBanner onClose={dismissBanner} />}
     </MainLayout>
   );
 }
