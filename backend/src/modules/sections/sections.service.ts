@@ -12,10 +12,21 @@ import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
 import { Etp } from '../../entities/etp.entity';
 import { GenerateSectionDto } from './dto/generate-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
-import { OrchestratorService } from '../orchestrator/orchestrator.service';
+import {
+  OrchestratorService,
+  GenerationResult,
+} from '../orchestrator/orchestrator.service';
 import { EtpsService } from '../etps/etps.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { GenerateSectionJobData } from './sections.processor';
+
+/**
+ * Type alias for validation results from OrchestratorService.
+ * Extracted from GenerationResult.validationResults for type safety.
+ *
+ * @see #510 - Fix 'any' types remaining in codebase
+ */
+type OrchestratorValidationResults = GenerationResult['validationResults'];
 
 /**
  * Interface for job status response.
@@ -588,31 +599,33 @@ export class SectionsService {
    * @param validationResults - Raw validation results from OrchestratorService
    * @returns Simplified validation results object with normalized structure
    */
-  private convertValidationResults(validationResults: unknown) {
+  private convertValidationResults(
+    validationResults: OrchestratorValidationResults | unknown,
+  ) {
     if (!validationResults || typeof validationResults !== 'object') {
       return {
         legalCompliance: true,
         clarityScore: 0,
         hallucinationCheck: true,
-        warnings: [],
-        suggestions: [],
+        warnings: [] as string[],
+        suggestions: [] as string[],
       };
     }
 
-    // Type assertion after runtime validation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const results = validationResults as any;
+    // Type assertion after runtime validation - using proper interface type
+    // @see #510 - Fix 'any' types remaining in codebase
+    const results = validationResults as OrchestratorValidationResults;
 
     return {
       legalCompliance: results.legal?.isCompliant ?? true,
       clarityScore: results.clareza?.score ?? 0,
-      hallucinationCheck: results.antiHallucination?.isPassing ?? true,
+      hallucinationCheck: results.antiHallucination?.verified ?? true,
       warnings: [
         ...(results.legal?.issues || []),
         ...(results.clareza?.issues || []),
-        ...(results.simplificacao?.suggestions || []),
+        ...(results.simplificacao?.simplifiedSuggestions || []),
       ],
-      suggestions: results.antiHallucination?.recommendations || [],
+      suggestions: results.antiHallucination?.suggestions || [],
     };
   }
 }

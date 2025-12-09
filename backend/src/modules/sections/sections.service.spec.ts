@@ -110,15 +110,15 @@ describe('SectionsService', () => {
     validationResults: {
       legal: { isCompliant: true, score: 90, issues: [], recommendations: [] },
       clareza: { score: 85, issues: [], suggestions: [] },
-      antiHallucination: { isPassing: true, recommendations: [] },
+      antiHallucination: { verified: true, suggestions: [] },
     },
   };
 
   const mockValidationResults = {
     legal: { isCompliant: true, score: 90, issues: [], recommendations: [] },
     clareza: { score: 85, issues: [], suggestions: [] },
-    simplificacao: { suggestions: ['Simplifique a linguagem'] },
-    antiHallucination: { isPassing: true, recommendations: [] },
+    simplificacao: { simplifiedSuggestions: ['Simplifique a linguagem'] },
+    antiHallucination: { verified: true, suggestions: [] },
   };
 
   /**
