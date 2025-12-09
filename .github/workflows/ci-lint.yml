@@ -42,6 +42,13 @@ jobs:
         working-directory: backend
         run: npm run lint
 
+      - name: TypeScript strict type checking
+        working-directory: backend
+        run: |
+          echo "🔍 Running TypeScript type check with noImplicitAny..."
+          npx tsc --noEmit
+          echo "✅ TypeScript type check passed (noImplicitAny enabled)"
+
   lint-frontend:
     name: Lint Frontend (React)
     runs-on: ubuntu-latest
