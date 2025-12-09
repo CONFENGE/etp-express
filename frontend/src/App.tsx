@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
+import { AdminProtectedRoute } from '@/components/auth/AdminProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { setNavigate } from '@/lib/navigation';
 
@@ -21,6 +22,7 @@ import { ETPEditor } from '@/pages/ETPEditor';
 import { NotFound } from '@/pages/NotFound';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { TermsOfService } from '@/pages/TermsOfService';
+import { AdminDashboard, DomainManagement, DomainDetail } from '@/pages/admin';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -112,6 +114,13 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* Admin Routes (System Admin only) */}
+      <Route path="/admin" element={<AdminProtectedRoute />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="domains" element={<DomainManagement />} />
+        <Route path="domains/:id" element={<DomainDetail />} />
+      </Route>
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
