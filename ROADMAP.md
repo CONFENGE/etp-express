@@ -29,7 +29,7 @@ Finalizado: 2025-11-20 | Cobertura: Backend 70%+, Frontend 60%+, Jest + Vitest
 
 Finalizado: 2025-11-21 | GitHub Actions + Railway deploy + -68% CI/CD minutos
 
-**Atualização 2025-12-08:** Self-hosted runners configurados no Railway (6 workflows migrados)
+**Atualização 2025-12-09:** Self-hosted runners descontinuados (#495, #494 fechadas) - voltando para GitHub-hosted runners
 
 ### M3: Quality & Security (100%)
 
