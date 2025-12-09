@@ -6,6 +6,7 @@ import {
   UseGuards,
   UseInterceptors,
   Req,
+  Res,
   Ip,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
@@ -15,7 +16,8 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -26,6 +28,12 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword } from './types/user.types';
 import { AuditInterceptor } from '../../common/interceptors/audit.interceptor';
+
+/**
+ * Cookie name for JWT authentication token.
+ * @security httpOnly cookie eliminates XSS token theft vulnerability
+ */
+export const AUTH_COOKIE_NAME = 'jwt';
 
 /**
  * Controller handling authentication HTTP endpoints.
@@ -47,13 +55,52 @@ import { AuditInterceptor } from '../../common/interceptors/audit.interceptor';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  /**
+   * Sets JWT token in httpOnly cookie.
+   *
+   * @security
+   * - httpOnly: true - prevents JavaScript access (XSS protection)
+   * - secure: true in production - HTTPS only
+   * - sameSite: 'lax' - CSRF protection for cross-site requests
+   * - maxAge: 24 hours - matches JWT expiration
+   */
+  private setAuthCookie(res: Response, token: string): void {
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+
+    res.cookie(AUTH_COOKIE_NAME, token, {
+      httpOnly: true, // Prevents XSS access
+      secure: isProduction, // HTTPS only in production
+      sameSite: 'lax', // CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+      path: '/', // Available for all routes
+    });
+  }
+
+  /**
+   * Clears JWT authentication cookie.
+   */
+  private clearAuthCookie(res: Response): void {
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+
+    res.clearCookie(AUTH_COOKIE_NAME, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+    });
+  }
 
   /**
    * Registers a new user account.
    *
    * @param registerDto - User registration data (name, email, password)
-   * @returns Authentication response with JWT token and user data
+   * @param res - Express response to set httpOnly cookie
+   * @returns Authentication response with user data (token in httpOnly cookie)
    * @throws {ConflictException} 409 - If email is already registered
    * @throws {BadRequestException} 400 - If validation fails
    */
@@ -62,8 +109,18 @@ export class AuthController {
   @ApiOperation({ summary: 'Registrar novo usuário' })
   @ApiResponse({ status: 201, description: 'Usuário registrado com sucesso' })
   @ApiResponse({ status: 409, description: 'Email já cadastrado' })
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.register(registerDto);
+
+    // Set JWT in httpOnly cookie instead of returning in response
+    this.setAuthCookie(res, result.accessToken);
+
+    // Return user data without exposing token in response body
+    const { accessToken: _token, ...responseWithoutToken } = result;
+    return responseWithoutToken;
   }
 
   /**
@@ -71,9 +128,11 @@ export class AuthController {
    *
    * @remarks
    * Rate limited to 5 attempts per minute per IP to prevent brute force attacks.
+   * JWT token is set in httpOnly cookie for XSS protection.
    *
    * @param loginDto - User credentials (email and password)
-   * @returns Authentication response with JWT token and user data
+   * @param res - Express response to set httpOnly cookie
+   * @returns Authentication response with user data (token in httpOnly cookie)
    * @throws {UnauthorizedException} 401 - If credentials are invalid
    * @throws {ThrottlerException} 429 - Too many login attempts
    */
@@ -91,9 +150,17 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
     @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const userAgent = req.headers['user-agent'];
-    return this.authService.login(loginDto, { ip, userAgent });
+    const result = await this.authService.login(loginDto, { ip, userAgent });
+
+    // Set JWT in httpOnly cookie instead of returning in response
+    this.setAuthCookie(res, result.accessToken);
+
+    // Return user data without exposing token in response body
+    const { accessToken: _token, ...responseWithoutToken } = result;
+    return responseWithoutToken;
   }
 
   /**
@@ -142,11 +209,35 @@ export class AuthController {
   }
 
   /**
+   * Logs out user by clearing the httpOnly JWT cookie.
+   *
+   * @remarks
+   * This endpoint clears the authentication cookie, effectively logging out the user.
+   * No server-side session invalidation needed since JWT is stateless.
+   *
+   * @param res - Express response to clear cookie
+   * @returns Success message
+   */
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Logout do usuário',
+    description: 'Limpa o cookie de autenticação httpOnly.',
+  })
+  @ApiResponse({ status: 200, description: 'Logout realizado com sucesso' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  async logout(@Res({ passthrough: true }) res: Response) {
+    this.clearAuthCookie(res);
+    return { message: 'Logout realizado com sucesso' };
+  }
+
+  /**
    * Changes authenticated user's password.
    *
    * @remarks
    * Used for both voluntary password changes and mandatory first-login password changes.
-   * After successful change, returns a new JWT token with updated claims.
+   * After successful change, sets a new JWT token in httpOnly cookie with updated claims.
    *
    * Rate limited to 3 attempts per minute per IP to prevent brute force attacks.
    *
@@ -154,7 +245,8 @@ export class AuthController {
    * @param changePasswordDto - Old and new password
    * @param ip - Client IP address for audit logging
    * @param req - Request object for user agent extraction
-   * @returns Success message with new JWT token
+   * @param res - Express response to update httpOnly cookie
+   * @returns Success message with updated user data (token in httpOnly cookie)
    * @throws {UnauthorizedException} 401 - If old password is incorrect
    * @throws {BadRequestException} 400 - If new password doesn't meet requirements
    * @throws {ThrottlerException} 429 - Too many password change attempts
@@ -171,7 +263,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Senha alterada com sucesso. Retorna novo token JWT.',
+    description: 'Senha alterada com sucesso. Novo token definido em cookie.',
   })
   @ApiResponse({ status: 400, description: 'Nova senha não atende requisitos' })
   @ApiResponse({ status: 401, description: 'Senha atual incorreta' })
@@ -184,11 +276,23 @@ export class AuthController {
     @Body() changePasswordDto: ChangePasswordDto,
     @Ip() ip: string,
     @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const userAgent = req.headers['user-agent'];
-    return this.authService.changePassword(user.id, changePasswordDto, {
-      ip,
-      userAgent,
-    });
+    const result = await this.authService.changePassword(
+      user.id,
+      changePasswordDto,
+      {
+        ip,
+        userAgent,
+      },
+    );
+
+    // Set new JWT in httpOnly cookie
+    this.setAuthCookie(res, result.accessToken);
+
+    // Return user data without exposing token in response body
+    const { accessToken: _token, ...responseWithoutToken } = result;
+    return responseWithoutToken;
   }
 }
