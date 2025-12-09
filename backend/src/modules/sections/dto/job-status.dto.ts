@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EtpSection } from '../../../entities/etp-section.entity';
 
 /**
  * Job Status DTO
@@ -8,6 +9,7 @@ import { ApiProperty } from '@nestjs/swagger';
  *
  * @see #186 - Async queue processing
  * @see #391 - Job Status API
+ * @see #509 - Fix 'any' types in DTOs and interfaces
  */
 export class JobStatusDto {
   @ApiProperty({
@@ -35,8 +37,9 @@ export class JobStatusDto {
     description: 'Section data (available when completed)',
     required: false,
     nullable: true,
+    type: () => EtpSection,
   })
-  result?: any;
+  result?: EtpSection;
 
   @ApiProperty({
     description: 'Error message (available when failed)',
