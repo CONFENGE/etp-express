@@ -18,6 +18,25 @@ import { DISCLAIMER } from '../../common/constants/messages';
 import { GenerateSectionJobData } from './sections.processor';
 
 /**
+ * Interface for job status response.
+ *
+ * @see #509 - Fix 'any' types in DTOs and interfaces
+ */
+export interface JobStatusResponse {
+  jobId: string;
+  status: 'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | 'unknown';
+  progress: number;
+  result?: EtpSection;
+  error?: string;
+  createdAt: Date;
+  completedAt?: Date;
+  processedOn?: Date;
+  failedReason?: string;
+  attemptsMade?: number;
+  attemptsMax?: number;
+}
+
+/**
  * Service responsible for managing ETP sections and coordinating AI-powered content generation.
  *
  * @remarks
@@ -210,25 +229,7 @@ export class SectionsService {
    * @see #186 - Async queue processing
    * @see #391 - Job Status API
    */
-  async getJobStatus(jobId: string): Promise<{
-    jobId: string;
-    status:
-      | 'waiting'
-      | 'active'
-      | 'completed'
-      | 'failed'
-      | 'delayed'
-      | 'unknown';
-    progress: number;
-    result?: any;
-    error?: string;
-    createdAt: Date;
-    completedAt?: Date;
-    processedOn?: Date;
-    failedReason?: string;
-    attemptsMade?: number;
-    attemptsMax?: number;
-  }> {
+  async getJobStatus(jobId: string): Promise<JobStatusResponse> {
     this.logger.log(`Fetching status for job ${jobId}`);
 
     try {
@@ -244,9 +245,9 @@ export class SectionsService {
       const state = await job.getState();
       const progress = job.progress as number;
 
-      // Build response based on job state
-      const response: any = {
-        jobId: job.id,
+      // Build base response
+      const response: JobStatusResponse = {
+        jobId: job.id ?? jobId,
         status: this.mapJobState(state),
         progress: typeof progress === 'number' ? progress : 0,
         createdAt: new Date(job.timestamp),
@@ -264,7 +265,7 @@ export class SectionsService {
         response.completedAt = job.finishedOn
           ? new Date(job.finishedOn)
           : undefined;
-        response.result = job.returnvalue;
+        response.result = job.returnvalue as EtpSection;
         response.progress = 100;
       }
 
@@ -298,7 +299,7 @@ export class SectionsService {
   private mapJobState(
     state: string,
   ): 'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | 'unknown' {
-    const stateMap: Record<string, any> = {
+    const stateMap: Record<string, JobStatusResponse['status']> = {
       waiting: 'waiting',
       'waiting-children': 'waiting',
       active: 'active',
