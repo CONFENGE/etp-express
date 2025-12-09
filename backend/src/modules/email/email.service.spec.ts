@@ -9,8 +9,8 @@ describe('EmailService', () => {
   let jwtService: JwtService;
 
   const mockConfigService = {
-    get: jest.fn((key: string, defaultValue?: any) => {
-      const config = {
+    get: jest.fn((key: string, defaultValue?: unknown) => {
+      const config: Record<string, string | undefined> = {
         SMTP_HOST: undefined, // Test with no SMTP config
         SMTP_PORT: undefined,
         SMTP_USER: undefined,

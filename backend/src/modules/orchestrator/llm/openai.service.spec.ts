@@ -19,8 +19,8 @@ describe('OpenAIService', () => {
   };
 
   const mockConfigService = {
-    get: jest.fn((key: string, defaultValue?: any) => {
-      const config = {
+    get: jest.fn((key: string, defaultValue?: unknown) => {
+      const config: Record<string, string | number> = {
         OPENAI_API_KEY: 'test-api-key',
         OPENAI_TEMPERATURE: 0.7,
         OPENAI_MAX_TOKENS: 4000,
