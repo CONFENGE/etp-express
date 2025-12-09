@@ -9,6 +9,14 @@ import {
 import { apiHelpers } from '@/lib/api';
 
 /**
+ * DTO for password change request.
+ */
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
+}
+
+/**
  * Authentication state store using httpOnly cookie strategy.
  *
  * @security
@@ -34,6 +42,7 @@ interface AuthState {
   setUser: (user: User) => void;
   checkAuth: () => Promise<boolean>;
   clearAuth: () => void;
+  changePassword: (data: ChangePasswordData) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -155,6 +164,39 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           get().clearAuth();
           return false;
+        }
+      },
+
+      /**
+       * Changes user password.
+       * Backend validates old password and updates to new one.
+       * Sets mustChangePassword to false on the returned user.
+       */
+      changePassword: async (data: ChangePasswordData) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await apiHelpers.post<{
+            user: User;
+            message: string;
+          }>('/auth/change-password', data);
+
+          // Update user with mustChangePassword: false
+          set({
+            user: response.user,
+            isLoading: false,
+            error: null,
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : (error as { message?: string })?.message ||
+                'Erro ao alterar senha';
+          set({
+            error: errorMessage,
+            isLoading: false,
+          });
+          throw error;
         }
       },
     }),
