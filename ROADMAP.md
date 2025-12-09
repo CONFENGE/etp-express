@@ -25,11 +25,11 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 | #501 | Rollup optional dependency | 1h | |
 
 **JWT XSS (#449) - Decomposta:**
-| # | Issue | Est. |
-|---|-------|------|
-| #504 | Criar authStore com httpOnly cookies | 3h |
-| #505 | Refatorar AuthService para cookies | 3h |
-| #506 | Atualizar guards e interceptors | 2h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#504~~ | ~~Criar authStore com httpOnly cookies~~ | ~~3h~~ | ✅ DONE |
+| #505 | Refatorar AuthService para cookies | 3h | |
+| #506 | Atualizar guards e interceptors | 2h | |
 
 **~~TypeScript Strictness (#450) - COMPLETO~~ ✅**
 | # | Issue | Est. | Status |
