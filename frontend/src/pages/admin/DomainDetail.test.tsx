@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { DomainDetail } from './DomainDetail';
@@ -75,21 +75,35 @@ function renderWithRouter(domainId: string = 'domain-1') {
 }
 
 describe('DomainDetail', () => {
+  // Store pending promise resolvers for cleanup to prevent test hangs
+  let pendingResolvers: Array<(value: unknown) => void> = [];
+
   beforeEach(() => {
     vi.clearAllMocks();
+    pendingResolvers = [];
+  });
+
+  afterEach(() => {
+    // Resolve any pending promises to prevent test runner hangs
+    pendingResolvers.forEach((resolve) => resolve(mockDomain));
+    pendingResolvers = [];
   });
 
   describe('Loading State', () => {
     it('should show loading skeleton initially', async () => {
+      // Use pending promise with cleanup in afterEach to prevent test hangs
       vi.mocked(apiHelpers.get).mockImplementation(
         () =>
-          new Promise((resolve) => setTimeout(() => resolve(mockDomain), 1000)),
+          new Promise((resolve) => {
+            pendingResolvers.push(resolve);
+          }),
       );
 
       renderWithRouter();
 
       // Skeleton should be visible during loading
       expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
+      // Promise cleanup happens in afterEach
     });
   });
 

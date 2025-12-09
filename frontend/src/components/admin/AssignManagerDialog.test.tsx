@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AssignManagerDialog } from './AssignManagerDialog';
@@ -43,11 +43,21 @@ describe('AssignManagerDialog', () => {
   const mockOnOpenChange = vi.fn();
   const mockOnSuccess = vi.fn();
 
+  // Store pending promise resolvers for cleanup to prevent test hangs
+  let pendingResolvers: Array<(value: unknown) => void> = [];
+
   beforeEach(() => {
     vi.clearAllMocks();
+    pendingResolvers = [];
     vi.mocked(useAdminStore).mockReturnValue({
       assignManager: mockAssignManager,
     } as ReturnType<typeof useAdminStore>);
+  });
+
+  afterEach(() => {
+    // Resolve any pending promises to prevent test runner hangs
+    pendingResolvers.forEach((resolve) => resolve(undefined));
+    pendingResolvers = [];
   });
 
   describe('Rendering', () => {
@@ -80,9 +90,12 @@ describe('AssignManagerDialog', () => {
     });
 
     it('should show loading skeleton while fetching users', async () => {
+      // Use pending promise with cleanup in afterEach to prevent test hangs
       vi.mocked(apiHelpers.get).mockImplementation(
         () =>
-          new Promise((resolve) => setTimeout(() => resolve(mockUsers), 1000)),
+          new Promise((resolve) => {
+            pendingResolvers.push(resolve as (value: unknown) => void);
+          }),
       );
 
       render(
@@ -94,6 +107,7 @@ describe('AssignManagerDialog', () => {
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
+      // Promise cleanup happens in afterEach
     });
 
     it('should show message when no users in domain', async () => {
@@ -323,8 +337,12 @@ describe('AssignManagerDialog', () => {
     it('should show loading state while assigning', async () => {
       const user = userEvent.setup();
       vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
+      // Use pending promise with cleanup in afterEach to prevent test hangs
       mockAssignManager.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 1000)),
+        () =>
+          new Promise((resolve) => {
+            pendingResolvers.push(resolve as (value: unknown) => void);
+          }),
       );
 
       render(
@@ -358,6 +376,7 @@ describe('AssignManagerDialog', () => {
       await waitFor(() => {
         expect(screen.getByText('Assigning...')).toBeInTheDocument();
       });
+      // Promise cleanup happens in afterEach
     });
   });
 
