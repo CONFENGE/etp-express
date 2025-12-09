@@ -24,7 +24,17 @@ export interface RegisterData {
   internationalTransferConsent: boolean;
 }
 
+/**
+ * Auth response from login/register endpoints.
+ *
+ * @security
+ * With httpOnly cookie strategy:
+ * - token: Present in response but stored in httpOnly cookie by backend (not accessible via JS)
+ * - user: Non-sensitive user data for UI rendering
+ *
+ * The token field will be deprecated after backend migration to cookie-only auth (#505).
+ */
 export interface AuthResponse {
-  token: string;
+  token?: string; // Optional - will be removed after #505 backend migration
   user: User;
 }

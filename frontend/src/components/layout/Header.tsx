@@ -19,8 +19,8 @@ export function Header() {
   const { user, logout } = useAuthStore();
   const { toggleSidebar } = useUIStore();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
