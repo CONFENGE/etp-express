@@ -1,14 +1,32 @@
+/**
+ * User roles for hierarchical access control (M8: Gestão de Domínios Institucionais).
+ */
+export type UserRole =
+  | 'system_admin'
+  | 'domain_manager'
+  | 'admin'
+  | 'user'
+  | 'viewer'
+  | 'demo';
+
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user';
-  organization: {
+  role: UserRole;
+  organization?: {
     id: string;
     name: string;
   };
-  createdAt: string;
-  updatedAt: string;
+  organizationId?: string;
+  /**
+   * Flag indicating user must change password on next login.
+   * Required for M8: Domain management - new users created by Domain Managers
+   * must change their initial password.
+   */
+  mustChangePassword?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LoginCredentials {

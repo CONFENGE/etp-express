@@ -364,6 +364,123 @@ describe('authStore', () => {
     });
   });
 
+  describe('changePassword', () => {
+    const changePasswordData = {
+      oldPassword: 'OldPassword123!',
+      newPassword: 'NewPassword456!',
+    };
+
+    const userWithMustChange: User = {
+      ...mockUser,
+      mustChangePassword: true,
+    };
+
+    const userAfterPasswordChange: User = {
+      ...mockUser,
+      mustChangePassword: false,
+    };
+
+    it('should change password and update user state', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue({
+        user: userAfterPasswordChange,
+        message: 'Senha alterada com sucesso',
+      });
+
+      const { result } = renderHook(() => useAuthStore());
+
+      // Setup: authenticate with mustChangePassword
+      act(() => {
+        useAuthStore.setState({
+          user: userWithMustChange,
+          isAuthenticated: true,
+        });
+      });
+
+      await act(async () => {
+        await result.current.changePassword(changePasswordData);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(apiHelpers.post).toHaveBeenCalledWith(
+        '/auth/change-password',
+        changePasswordData,
+      );
+      expect(result.current.user?.mustChangePassword).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should set loading state during password change', async () => {
+      let resolveChange: (value: unknown) => void;
+      const changePromise = new Promise((resolve) => {
+        resolveChange = resolve;
+      });
+      vi.mocked(apiHelpers.post).mockReturnValue(changePromise as never);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      // Setup
+      act(() => {
+        useAuthStore.setState({
+          user: userWithMustChange,
+          isAuthenticated: true,
+        });
+      });
+
+      // Start password change but don't await
+      act(() => {
+        result.current.changePassword(changePasswordData);
+      });
+
+      // Loading should be true during request
+      expect(result.current.isLoading).toBe(true);
+
+      // Resolve the change
+      await act(async () => {
+        resolveChange!({
+          user: userAfterPasswordChange,
+          message: 'Senha alterada com sucesso',
+        });
+        await changePromise.catch(() => {});
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    });
+
+    it('should set error on password change failure', async () => {
+      const errorMessage = 'Senha atual incorreta';
+      vi.mocked(apiHelpers.post).mockRejectedValue({ message: errorMessage });
+
+      // Setup: authenticate
+      act(() => {
+        useAuthStore.setState({
+          user: userWithMustChange,
+          isAuthenticated: true,
+        });
+      });
+
+      // Use try-catch since the error is re-thrown
+      try {
+        await act(async () => {
+          await useAuthStore.getState().changePassword(changePasswordData);
+        });
+      } catch {
+        // Expected to throw
+      }
+
+      // Directly check store state
+      const state = useAuthStore.getState();
+      expect(state.error).toBe(errorMessage);
+      expect(state.isLoading).toBe(false);
+      // User should NOT be updated on failure
+      expect(state.user?.mustChangePassword).toBe(true);
+    });
+  });
+
   describe('Security - No token in state', () => {
     it('should NOT store token in state after login', async () => {
       const responseWithToken = {
