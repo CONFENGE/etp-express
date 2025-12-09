@@ -1,13 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenAIService, LLMRequest } from './llm/openai.service';
-import { LegalAgent } from './agents/legal.agent';
-import { FundamentacaoAgent } from './agents/fundamentacao.agent';
-import { ClarezaAgent } from './agents/clareza.agent';
-import { SimplificacaoAgent } from './agents/simplificacao.agent';
-import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { LegalAgent, LegalValidationResult } from './agents/legal.agent';
+import {
+  FundamentacaoAgent,
+  FundamentacaoResult,
+} from './agents/fundamentacao.agent';
+import { ClarezaAgent, ClarezaResult } from './agents/clareza.agent';
+import {
+  SimplificacaoAgent,
+  SimplificacaoResult,
+} from './agents/simplificacao.agent';
+import {
+  AntiHallucinationAgent,
+  HallucinationCheckResult,
+} from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { PerplexityService } from '../search/perplexity/perplexity.service';
 import { DISCLAIMER } from '../../common/constants/messages';
+import {
+  ParallelValidationResults,
+  LLMResponse,
+  ValidationSummary,
+} from './interfaces';
 
 /**
  * Request structure for ETP section content generation.
@@ -39,11 +53,16 @@ export interface GenerationResult {
     agentsUsed: string[];
   };
   validationResults: {
-    legal?: unknown;
-    fundamentacao?: unknown;
-    clareza?: unknown;
-    simplificacao?: unknown;
-    antiHallucination?: unknown;
+    /** Legal compliance validation result */
+    legal?: LegalValidationResult;
+    /** Argumentation quality validation result (for applicable sections) */
+    fundamentacao?: FundamentacaoResult | null;
+    /** Clarity and readability validation result */
+    clareza?: ClarezaResult;
+    /** Simplification analysis result */
+    simplificacao?: SimplificacaoResult;
+    /** Anti-hallucination check result */
+    antiHallucination?: HallucinationCheckResult;
   };
   warnings: string[];
   disclaimer: string;
@@ -509,7 +528,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     rawContent: string,
     warnings: string[],
     agentsUsed: string[],
-  ): Promise<{ content: string; simplificationResult: any }> {
+  ): Promise<{ content: string; simplificationResult: SimplificacaoResult }> {
     const simplificationResult =
       await this.simplificacaoAgent.analyze(rawContent);
     agentsUsed.push('simplification-analysis');
@@ -549,12 +568,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     content: string,
     request: GenerationRequest,
     agentsUsed: string[],
-  ): Promise<{
-    legalValidation: any;
-    fundamentacaoValidation: any;
-    clarezaValidation: any;
-    hallucinationCheck: any;
-  }> {
+  ): Promise<ParallelValidationResults> {
     const startTime = Date.now();
     this.logger.debug(
       '[Parallel Validations] Starting all agents concurrently',
@@ -611,11 +625,11 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @private
    */
   private async runValidations(
-    legalValidation: any,
-    fundamentacaoValidation: any,
-    clarezaValidation: any,
-    hallucinationCheck: any,
-  ): Promise<{ isValid: boolean; warnings: string[]; errors: string[] }> {
+    legalValidation: LegalValidationResult,
+    fundamentacaoValidation: FundamentacaoResult | null,
+    clarezaValidation: ClarezaResult,
+    hallucinationCheck: HallucinationCheckResult,
+  ): Promise<ValidationSummary> {
     const warnings: string[] = [];
     const errors: string[] = [];
 
@@ -669,14 +683,9 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    */
   private buildFinalResult(
     content: string,
-    llmResponse: { content: string; tokens: number; model: string },
-    simplificationResult: any,
-    validationResults: {
-      legalValidation: any;
-      fundamentacaoValidation: any;
-      clarezaValidation: any;
-      hallucinationCheck: any;
-    },
+    llmResponse: LLMResponse,
+    simplificationResult: SimplificacaoResult,
+    validationResults: ParallelValidationResults,
     warnings: string[],
     agentsUsed: string[],
     hasEnrichmentWarning: boolean,
