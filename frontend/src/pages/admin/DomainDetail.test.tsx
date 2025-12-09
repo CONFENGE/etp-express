@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { DomainDetail } from './DomainDetail';
 import { apiHelpers } from '@/lib/api';
+import { createDeferredPromise } from '@/test/setup';
 
 // Mock apiHelpers
 vi.mock('@/lib/api', () => ({
@@ -78,13 +79,33 @@ describe('DomainDetail', () => {
 
   describe('Loading State', () => {
     it('should show loading skeleton initially', async () => {
-      // Use a promise that never resolves to keep loading state
-      vi.mocked(apiHelpers.get).mockImplementation(() => new Promise(() => {}));
+      // Use deferred promises that resolve after we check the loading state
+      // This avoids hanging timers from Radix UI components that cause CI timeouts
+      // See: createDeferredPromise utility in test/setup.ts
+      const domainDeferred = createDeferredPromise<typeof mockDomain>();
+      const usersDeferred = createDeferredPromise<typeof mockUsers>();
+
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return usersDeferred.promise;
+        }
+        return domainDeferred.promise;
+      });
 
       renderWithRouter();
 
       // Should show skeleton elements
       expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
+
+      // Resolve the promises and wait for state updates to complete
+      // This prevents Radix UI timer leaks and act() warnings
+      domainDeferred.resolve(mockDomain);
+      usersDeferred.resolve(mockUsers);
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: 'example.com' }),
+        ).toBeInTheDocument();
+      });
     });
   });
 
