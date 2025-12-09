@@ -4,21 +4,23 @@ Este diretório contém a auditoria completa do backlog de issues do projeto ETP
 
 ## 📁 Arquivos Gerados
 
-| Arquivo | Propósito | Audiência |
-|---------|-----------|-----------|
-| `RAILWAY_ROADMAP.md` | 🎯 **COMEÇAR AQUI** - Caminho crítico para produção | Product Owner, Tech Lead |
-| `COMPLIANCE_REPORT.md` | Relatório de conformidade detalhado | Tech Lead, QA |
-| `RECOMMENDATIONS.md` | Ações específicas de correção | Desenvolvedores |
-| `DASHBOARD.md` | Visão executiva com métricas | Management, Stakeholders |
-| `DEPENDENCY_MATRIX.md` | Grafo de dependências entre issues | Tech Lead, Arquiteto |
-| `audit_results.json` | Dados estruturados (análise programática) | CI/CD, Dashboards |
+| Arquivo                | Propósito                                           | Audiência                |
+| ---------------------- | --------------------------------------------------- | ------------------------ |
+| `RAILWAY_ROADMAP.md`   | 🎯 **COMEÇAR AQUI** - Caminho crítico para produção | Product Owner, Tech Lead |
+| `COMPLIANCE_REPORT.md` | Relatório de conformidade detalhado                 | Tech Lead, QA            |
+| `RECOMMENDATIONS.md`   | Ações específicas de correção                       | Desenvolvedores          |
+| `DASHBOARD.md`         | Visão executiva com métricas                        | Management, Stakeholders |
+| `DEPENDENCY_MATRIX.md` | Grafo de dependências entre issues                  | Tech Lead, Arquiteto     |
+| `audit_results.json`   | Dados estruturados (análise programática)           | CI/CD, Dashboards        |
 
 ## 🎯 Critérios de Auditoria
 
 Cada issue foi avaliada contra 5 critérios (score 0-100%):
 
 ### 1. Atomicidade (20% do score)
+
 **Meta:** Issues executáveis em 2-8h
+
 - ✅ **100pts:** Estimativa explícita de 2-8h
 - 🟡 **80pts:** Estimativa inferida de 2-8h
 - 🟡 **60pts:** 8-12h (sugerir decomposição)
@@ -26,7 +28,9 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 - 🔴 **0pts:** Escopo indefinido
 
 ### 2. Priorização (20% do score)
+
 **Meta:** Criticidade clara com dependências mapeadas
+
 - ✅ **100pts:** Priority label + deps + justificativa
 - 🟡 **80pts:** Priority label + deps
 - 🟡 **60pts:** Priority label apenas
@@ -34,7 +38,9 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 - 🔴 **0pts:** Sem priorização
 
 ### 3. Completude (25% do score)
+
 **Meta:** Contexto completo para execução
+
 - ✅ **100pts:** Contexto + objetivos + AC + specs técnicas
 - 🟡 **80pts:** Objetivos + AC + specs básicas
 - 🟡 **60pts:** AC + specs básicas
@@ -42,7 +48,9 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 - 🔴 **20pts:** Descrição mínima
 
 ### 4. Executabilidade (20% do score)
+
 **Meta:** Cold-start ready (dev novo pode executar sem perguntas)
+
 - ✅ **100pts:** File paths + código + steps detalhados
 - 🟡 **80pts:** File paths + (código OU steps)
 - 🟡 **60pts:** File paths OU steps
@@ -50,7 +58,9 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 - 🔴 **0pts:** Impossível executar
 
 ### 5. Rastreabilidade (15% do score)
+
 **Meta:** Roadmap claro com dependências
+
 - ✅ **100pts:** Milestone + deps + roadmap link + labels
 - 🟡 **80pts:** Milestone + deps + labels
 - 🟡 **60pts:** Milestone + labels
@@ -58,9 +68,11 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 - 🔴 **0pts:** Sem rastreabilidade
 
 ### Score Final
+
 **Fórmula:** `(Atomicidade × 0.20) + (Priorização × 0.20) + (Completude × 0.25) + (Executabilidade × 0.20) + (Rastreabilidade × 0.15)`
 
 **Classificação:**
+
 - 🟢 **80-100%:** Issue conforme - pronta para execução
 - 🟡 **60-79%:** Issue parcial - pequenos ajustes necessários
 - 🔴 **0-59%:** Issue não conforme - requer revisão substancial
@@ -83,24 +95,26 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 ```
 
 ### Breakdown por Critério
-| Critério | Score | Status |
-|----------|-------|--------|
-| Atomicidade | 74.0% | 🟡 Regular |
-| Priorização | 72.3% | 🟡 Regular |
-| **Completude** | **36.3%** | 🔴 **CRÍTICO** |
-| Executabilidade | 53.7% | 🔴 Crítico |
-| Rastreabilidade | 65.3% | 🟡 Regular |
+
+| Critério        | Score     | Status         |
+| --------------- | --------- | -------------- |
+| Atomicidade     | 74.0%     | 🟡 Regular     |
+| Priorização     | 72.3%     | 🟡 Regular     |
+| **Completude**  | **36.3%** | 🔴 **CRÍTICO** |
+| Executabilidade | 53.7%     | 🔴 Crítico     |
+| Rastreabilidade | 65.3%     | 🟡 Regular     |
 
 ### Status por Milestone
-| Milestone | Issues | Score | Horas | Status |
-|-----------|--------|-------|-------|--------|
-| M1: Foundation - Testes | 24 | 67.8% | 152.1h | 🟡 Atenção |
-| M2: CI/CD Pipeline | 5 | 51.6% | 26.0h | 🔴 Crítico |
-| M3: Quality & Security | 7 | 55.6% | 51.0h | 🔴 Crítico |
-| M4: Refactoring & Performance | 10 | 49.0% | 82.0h | 🔴 Crítico |
-| M5: E2E Testing & Documentation | 8 | 53.4% | 64.0h | 🔴 Crítico |
-| M6: Maintenance | 2 | 44.0% | 18.0h | 🔴 Crítico |
-| Sem Milestone | 4 | 63.8% | 43.0h | 🟡 Atenção |
+
+| Milestone                       | Issues | Score | Horas  | Status     |
+| ------------------------------- | ------ | ----- | ------ | ---------- |
+| M1: Foundation - Testes         | 24     | 67.8% | 152.1h | 🟡 Atenção |
+| M2: CI/CD Pipeline              | 5      | 51.6% | 26.0h  | 🔴 Crítico |
+| M3: Quality & Security          | 7      | 55.6% | 51.0h  | 🔴 Crítico |
+| M4: Refactoring & Performance   | 10     | 49.0% | 82.0h  | 🔴 Crítico |
+| M5: E2E Testing & Documentation | 8      | 53.4% | 64.0h  | 🔴 Crítico |
+| M6: Maintenance                 | 2      | 44.0% | 18.0h  | 🔴 Crítico |
+| Sem Milestone                   | 4      | 63.8% | 43.0h  | 🟡 Atenção |
 
 **Total:** 436.1h de trabalho estimado (~11 semanas com 1 dev)
 
@@ -123,6 +137,7 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 ### Para Desenvolvedores
 
 1. **Antes de iniciar uma issue:**
+
    ```bash
    # Verificar score da issue
    cat audit_results.json | jq '.issues[] | select(.number == 51)'
@@ -147,23 +162,29 @@ Cada issue foi avaliada contra 5 critérios (score 0-100%):
 ## 🔧 Scripts Disponíveis
 
 ### Executar Auditoria
+
 ```bash
 cd ops/issue-audit
 python audit_backlog.py
 ```
+
 **Output:** `audit_results.json`
 
 ### Gerar Relatórios
+
 ```bash
 python generate_reports.py
 ```
+
 **Output:**
+
 - `COMPLIANCE_REPORT.md`
 - `RECOMMENDATIONS.md`
 - `DASHBOARD.md`
 - `DEPENDENCY_MATRIX.md`
 
 ### Automatizar Correções (TBD)
+
 ```bash
 # Fechar duplicatas de alta confiança
 python apply_fixes.py --close-duplicates
@@ -198,26 +219,34 @@ cat audit_results.json | jq '.summary'
 ## 🎯 Roadmap de Conformidade
 
 ### Fase 1: Limpeza (Semana 1)
+
 **Meta:** Eliminar duplicatas e normalizar estrutura
+
 - [ ] Fechar 22 duplicatas de alta confiança
 - [ ] Atribuir milestones às 4 issues órfãs
 - [ ] Score médio: 58.9% → 62%
 
 ### Fase 2: Enriquecimento M1 (Semana 1-2)
+
 **Meta:** M1 100% conforme
+
 - [ ] Adicionar estimativas explícitas (top 20)
 - [ ] Adicionar detalhes técnicos (file paths, code examples)
 - [ ] Mapear dependências críticas
 - [ ] Score M1: 67.8% → 85%+
 
 ### Fase 3: Enriquecimento M2-M6 (Semana 3)
+
 **Meta:** Todos milestones ≥70%
+
 - [ ] Template padrão de melhoria para cada issue
 - [ ] Validação de dependências
 - [ ] Score geral: 62% → 75%+
 
 ### Fase 4: Execução (Semana 4-6)
+
 **Meta:** Deploy na Railway
+
 - [ ] Executar M1 → M2 → M3 → M4 → M5
 - [ ] Monitorar conformidade durante execução
 - [ ] Re-auditar a cada milestone completo
@@ -225,18 +254,21 @@ cat audit_results.json | jq '.summary'
 ## 🚦 Critérios de Sucesso
 
 ### Antes de Iniciar M1
+
 - [ ] M1 score médio ≥ 80%
 - [ ] Todas issues M1 com estimativas explícitas
 - [ ] Dependências M1 mapeadas
 - [ ] 0 duplicatas no M1
 
 ### Antes de Deploy Railway
+
 - [ ] M1-M3 completos e passing
 - [ ] Issue #44 (Railway) score = 100%
 - [ ] 0 HIGH/CRITICAL security vulns
 - [ ] Test coverage ≥ 70%
 
 ### Pós-Deploy
+
 - [ ] Aplicação acessível publicamente
 - [ ] Healthcheck passing
 - [ ] Uptime ≥ 99% nos primeiros 7 dias
@@ -250,12 +282,14 @@ cat audit_results.json | jq '.summary'
 ## 🔄 Manutenção da Auditoria
 
 **Frequência recomendada:**
+
 - **Após melhorias:** Re-auditar imediatamente
 - **Durante sprints:** Semanal (sexta-feira)
 - **Pré-milestone:** Antes de iniciar cada milestone
 - **Pós-milestone:** Validar conformidade do completado
 
 **Comando rápido:**
+
 ```bash
 cd ops/issue-audit && python audit_backlog.py && python generate_reports.py && echo "✅ Auditoria atualizada!"
 ```
@@ -263,6 +297,7 @@ cd ops/issue-audit && python audit_backlog.py && python generate_reports.py && e
 ## 🆘 Troubleshooting
 
 ### Score não melhora após editar issue
+
 ```bash
 # GitHub API pode ter cache. Force refresh:
 gh issue view <numero> --json body > /dev/null
@@ -272,16 +307,21 @@ python audit_backlog.py
 ```
 
 ### Duplicata não detectada
+
 Threshold de similaridade é 75%. Para ajustar:
+
 ```python
 # audit_backlog.py, linha ~300
 duplicates = detect_duplicates(issues, threshold=0.70)  # Mais sensível
 ```
 
 ### Estimativa inferida incorreta
+
 Adicione estimativa explícita no corpo da issue:
+
 ```markdown
 ## Estimativa
+
 **Duração:** 6h (4-8h)
 ```
 
