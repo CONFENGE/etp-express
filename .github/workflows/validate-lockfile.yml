@@ -34,8 +34,8 @@ jobs:
 
       - name: Validate package-lock.json consistency
         run: |
-          # Install dependencies from lockfile
-          npm install
+          # Install dependencies from lockfile (--force for cross-platform optional deps)
+          npm install --force
 
           # Check if lockfile is up-to-date with package.json
           npm install --package-lock-only
