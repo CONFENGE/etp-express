@@ -32,6 +32,7 @@ tags = ["secret", "database"]
     '''<USER>:<PASSWORD>''',
     '''username:password''',
     '''PLACEHOLDER''',
+    '''postgresql://USER:PASSWORD@HOST:PORT/DATABASE''',
   ]
 
 # Custom rules for ETP Express specific patterns
