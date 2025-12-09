@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 260/284 (91.5%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 261/284 (91.9%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -8,7 +8,7 @@
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ████████████████░░░░  81%  Maintenance (58/72)
-M8:        █████████████░░░░░░░  65%  Domínios (11/17)
+M8:        ██████████████░░░░░░  71%  Domínios (12/17)
 ```
 
 ---
@@ -22,7 +22,7 @@ M8:        █████████████░░░░░░░  65%  Do
 | #470 | System Admin dashboard (parent) | -    |
 | #523 | └─ Setup adminStore + rotas     | ✅   |
 | #524 | └─ AdminDashboard estatísticas  | ✅   |
-| #525 | └─ DomainManagement CRUD        | 4h   |
+| #525 | └─ DomainManagement CRUD        | ✅   |
 | #526 | └─ DomainDetail + AssignManager | 4h   |
 | #527 | └─ Testes e responsividade      | 4h   |
 | #471 | Domain Manager dashboard        | 12h  |
@@ -60,8 +60,8 @@ M8:        █████████████░░░░░░░  65%  Do
 | ----------------- | -------- |
 | Velocidade        | 10.6/dia |
 | Backend Coverage  | 78%      |
-| Frontend Coverage | 41%      |
-| Testes            | 1269     |
+| Frontend Coverage | 71%      |
+| Testes            | 1310     |
 
 ---
 
