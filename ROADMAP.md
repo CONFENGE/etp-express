@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-08 | **Progresso:** 229/267 (85.8%) | **Auditoria:** Completa + Sync
+**Atualizado:** 2025-12-09 | **Progresso:** 229/267 (85.8%) | **Auditoria:** Completa + Sync
 
 ## Status
 
@@ -170,9 +170,9 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 
 ---
 
-## Dependabot Review (2025-12-08)
+## Dependabot Review (2025-12-09)
 
-**Status:** 11 PRs analisados | 3 merged | 4 fechados | 4 aguardando CI
+**Status:** 11 PRs analisados | 4 merged | 5 fechados | 3 aguardando CI
 
 ### PRs Processados
 
@@ -184,16 +184,20 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 | #484 | eslint 8→9                     | ❌ Fechado         | Requer migração (#492)    |
 | #485 | @typescript-eslint/parser 7→8  | ❌ Fechado         | Depende #484              |
 | #486 | react-router-dom 6→7           | ❌ Fechado         | Requer migração (#493)    |
-| #487 | @nestjs/typeorm 10→11          | 🔄 Lockfile fixado | CI Running                |
+| #487 | @nestjs/typeorm 10→11          | ✅ Merged          | DONE (12/09 - /review-pr) |
 | #488 | eslint-config-prettier 9→10    | 🔄 Lockfile fixado | CI Running                |
 | #489 | jest 29→30                     | ❌ Fechado         | Major version alto risco  |
 | #490 | @nestjs/config 3→4             | 🔄 Lockfile fixado | CI Running                |
-| #491 | bcrypt 5→6                     | 🔄 Lockfile fixado | CI Running                |
+| #491 | bcrypt 5→6                     | 🔄 Lockfile fixado | CI Failing (rollup issue) |
 
 ### Issues de Migração Criadas
 
 - **#492** - Migração ESLint 9 (flat config)
 - **#493** - Migração React Router v7
+
+### Issues P0 Identificadas
+
+- **#498** - 🔴 Secret detectado no repositório pelo Gitleaks (pre-existente)
 
 ---
 
