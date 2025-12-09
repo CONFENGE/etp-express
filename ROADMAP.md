@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 262/293 (89.4%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 263/293 (89.8%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -8,7 +8,7 @@
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ███████████████░░░░░  76%  Maintenance (58/76)
-M8:        █████████████░░░░░░░  65%  Domínios (15/23)
+M8:        ██████████████░░░░░░  71%  Domínios (16/23)
 ```
 
 ---
@@ -23,7 +23,7 @@ M8:        █████████████░░░░░░░  65%  Do
 | #523 | └─ Setup adminStore + rotas       | ✅   |
 | #524 | └─ AdminDashboard estatísticas    | ✅   |
 | #525 | └─ DomainManagement CRUD          | ✅   |
-| #526 | └─ DomainDetail + AssignManager   | 4h   |
+| #526 | └─ DomainDetail + AssignManager   | ✅   |
 | #527 | └─ Testes e responsividade        | 4h   |
 | #471 | Domain Manager dashboard (parent) | -    |
 | #537 | └─ Setup managerStore + rotas     | 4h   |
