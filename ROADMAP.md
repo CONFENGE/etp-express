@@ -28,7 +28,7 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 | # | Issue | Est. | Status |
 |---|-------|------|--------|
 | ~~#504~~ | ~~Criar authStore com httpOnly cookies~~ | ~~3h~~ | ✅ DONE |
-| #505 | Refatorar AuthService para cookies | 3h | |
+| ~~#505~~ | ~~Refatorar AuthService para cookies~~ | ~~3h~~ | ✅ DONE |
 | #506 | Atualizar guards e interceptors | 2h | |
 
 **~~TypeScript Strictness (#450) - COMPLETO~~ ✅**
@@ -100,7 +100,7 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 | Velocidade        | 10.6 issues/dia  |
 | Coverage Backend  | 78%              |
 | Coverage Frontend | 41% → 70% (meta) |
-| Testes            | 1000+ passando   |
+| Testes            | 1160 passando    |
 | Latência          | -42% (60s→35s)   |
 
 ---
