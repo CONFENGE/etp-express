@@ -1,11 +1,43 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { JwtPayload } from '../types/user.types';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
+
+/**
+ * Cookie name for JWT authentication token.
+ * Must match AUTH_COOKIE_NAME in auth.controller.ts
+ */
+export const JWT_COOKIE_NAME = 'jwt';
+
+/**
+ * Custom JWT extractor that reads from httpOnly cookie.
+ *
+ * @security
+ * - Extracts JWT from httpOnly cookie (not accessible via JavaScript)
+ * - Eliminates XSS token theft vulnerability
+ * - Fallback to Authorization header for API compatibility
+ *
+ * @param req - Express request object
+ * @returns JWT token string or null if not found
+ */
+const cookieExtractor = (req: Request): string | null => {
+  // Primary: Extract from httpOnly cookie
+  if (req?.cookies?.[JWT_COOKIE_NAME]) {
+    return req.cookies[JWT_COOKIE_NAME];
+  }
+
+  // Fallback: Extract from Authorization header (for Swagger/API testing)
+  const authHeader = req?.headers?.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+
+  return null;
+};
 
 /**
  * JWT authentication strategy with dual-key support for zero-downtime secret rotation.
@@ -16,6 +48,10 @@ import { Request } from 'express';
  * - JWT_SECRET_OLD (secondary/old secret, temporary during rotation)
  *
  * This allows seamless rotation without invalidating active user sessions.
+ *
+ * @security
+ * - JWT extracted from httpOnly cookie (XSS protection)
+ * - Fallback to Bearer token for API compatibility
  *
  * @see docs/SECRET_ROTATION_PROCEDURES.md for rotation procedures
  */
@@ -42,11 +78,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     // Use secretOrKeyProvider for dynamic secret validation
+    // Extract JWT from httpOnly cookie (primary) or Authorization header (fallback)
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
+      passReqToCallback: true,
       secretOrKeyProvider: (
-        request: Request,
+        _request: Request,
         rawJwtToken: string,
         done: (err: Error | null, secret?: string) => void,
       ) => {
@@ -68,6 +106,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     this.secrets = secrets;
 
+    // Log auth mode on startup
+    this.logger.log(
+      'JWT Strategy initialized: using httpOnly cookie extraction (with Bearer fallback)',
+    );
+
     // Log dual-key status on startup
     if (oldSecret) {
       this.logger.warn(
@@ -76,7 +119,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
   }
 
-  async validate(payload: JwtPayload) {
+  /**
+   * Validates JWT payload and returns user data.
+   *
+   * @remarks
+   * When passReqToCallback is true, validate receives (req, payload).
+   * The request object is available for additional context if needed.
+   *
+   * @param _req - Express request object (unused, but required by passport)
+   * @param payload - Decoded JWT payload
+   * @returns User data for request context
+   * @throws {UnauthorizedException} If user is invalid or inactive
+   */
+  async validate(_req: Request, payload: JwtPayload) {
     const user = await this.usersService.findOne(payload.sub);
 
     if (!user || !user.isActive) {
