@@ -31,13 +31,13 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 | #505 | Refatorar AuthService para cookies | 3h |
 | #506 | Atualizar guards e interceptors | 2h |
 
-**TypeScript Strictness (#450) - Decomposta:**
+**~~TypeScript Strictness (#450) - COMPLETO~~ ✅**
 | # | Issue | Est. | Status |
 |---|-------|------|--------|
 | ~~#507~~ | ~~Habilitar noImplicitAny~~ | ~~1h~~ | ✅ DONE |
 | ~~#508~~ | ~~Fix 'any' em OrchestratorService~~ | ~~3h~~ | ✅ DONE |
 | ~~#509~~ | ~~Fix 'any' em DTOs e interfaces~~ | ~~3h~~ | ✅ DONE |
-| #510 | Fix 'any' restantes + CI validation | 3h | |
+| ~~#510~~ | ~~Fix 'any' restantes + CI validation~~ | ~~3h~~ | ✅ DONE |
 
 ---
 
