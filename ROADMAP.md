@@ -29,6 +29,8 @@ Finalizado: 2025-11-20 | Cobertura: Backend 70%+, Frontend 60%+, Jest + Vitest
 
 Finalizado: 2025-11-21 | GitHub Actions + Railway deploy + -68% CI/CD minutos
 
+**Atualização 2025-12-08:** Self-hosted runners configurados no Railway (6 workflows migrados)
+
 ### M3: Quality & Security (100%)
 
 Finalizado: 2025-11-28 | OWASP audit + LGPD compliance + Rate limiting + WCAG fixes (#419, #421) + CVE fix (#413)
