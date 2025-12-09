@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 242/282 (85.8%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 243/282 (86.2%) | **Deploy:** Operacional
 
 ## Status dos Milestones
 
@@ -44,14 +44,14 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 ### CURTO PRAZO - M8 Frontend + Compliance (Semanas 2-3)
 
 **M8 Frontend:**
-| # | Issue | Est. |
-|---|-------|------|
-| #474 | Demo data isolation and reset | 8h |
-| #470 | System Admin dashboard | 12h |
-| #471 | Domain Manager dashboard | 12h |
-| #472 | Password change modal | 4h |
-| #473 | Modernize UI/UX (Apple HIG) | 16h |
-| #475 | WhatsApp CTA for demo user | 4h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| #474 | Demo data isolation and reset | 8h | |
+| #470 | System Admin dashboard | 12h | |
+| #471 | Domain Manager dashboard | 12h | |
+| ~~#472~~ | ~~Password change modal~~ | ~~4h~~ | ✅ DONE |
+| #473 | Modernize UI/UX (Apple HIG) | 16h | |
+| #475 | WhatsApp CTA for demo user | 4h | |
 
 **Security Headers:**
 | # | Issue | Est. |
