@@ -201,6 +201,7 @@ Finalizado: 2025-12-02 | Column-based isolation, TenantGuard, domain whitelist
 ### Issues P0 Identificadas
 
 - **#498** - 🔴 Secret detectado no repositório pelo Gitleaks (pre-existente)
+- **#503** - 🔴 Falso positivo Gitleaks em `rotate-secret.sh` (placeholder postgresql://)
 
 ---
 
