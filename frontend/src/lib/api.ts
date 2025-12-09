@@ -1,33 +1,28 @@
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { API_URL } from './constants';
 import { getNavigate } from './navigation';
 import { logger } from './logger';
 
+/**
+ * Axios instance configured for httpOnly cookie-based authentication.
+ *
+ * @security
+ * - withCredentials: true - enables browser to send/receive httpOnly cookies
+ * - NO Authorization header - token is handled via cookies
+ * - NO localStorage access - eliminates XSS token theft vulnerability
+ *
+ * The JWT token is stored in an httpOnly cookie by the backend and is
+ * automatically sent with every request by the browser.
+ */
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000,
+  // Enable cookies to be sent with cross-origin requests
+  withCredentials: true,
 });
-
-// Request interceptor - Add JWT token to requests
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  },
-);
 
 // Response interceptor - Handle errors globally
 api.interceptors.response.use(
@@ -35,8 +30,10 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // Import dynamically to avoid circular dependency
+      import('../store/authStore').then(({ useAuthStore }) => {
+        useAuthStore.getState().clearAuth();
+      });
       const navigate = getNavigate();
       navigate('/login', { replace: true });
     }
