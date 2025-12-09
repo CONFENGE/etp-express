@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../../users/users.service';
@@ -49,6 +50,17 @@ describe('JwtStrategy - Dual-Key Support', () => {
     findOne: jest.fn(),
   };
 
+  /**
+   * Creates a mock Express Request object for testing.
+   */
+  const createMockRequest = (): Request =>
+    ({
+      cookies: {},
+      headers: {},
+    }) as unknown as Request;
+
+  const mockRequest = createMockRequest();
+
   describe('with dual-key mode enabled (JWT_SECRET_OLD configured)', () => {
     const mockConfigService = {
       get: jest.fn((key: string) => {
@@ -84,7 +96,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
       // Strategy's secretOrKeyProvider will validate the token
       // For validate(), we just need to verify it returns correct user data
-      const result = await strategy.validate(mockPayload);
+      const result = await strategy.validate(mockRequest, mockPayload);
 
       expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
       expect(result).toEqual({
@@ -105,7 +117,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
       expect(decoded).toHaveProperty('sub', mockPayload.sub);
 
       // Validate returns user data
-      const result = await strategy.validate(mockPayload);
+      const result = await strategy.validate(mockRequest, mockPayload);
       expect(result).toEqual({
         id: mockUser.id,
         email: mockUser.email,
@@ -175,7 +187,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
       expect(decoded).toHaveProperty('sub', mockPayload.sub);
 
-      const result = await strategy.validate(mockPayload);
+      const result = await strategy.validate(mockRequest, mockPayload);
       expect(result.id).toBe(mockUser.id);
     });
 
@@ -258,10 +270,10 @@ describe('JwtStrategy - Dual-Key Support', () => {
     it('should throw UnauthorizedException when user is not found', async () => {
       mockUsersService.findOne.mockResolvedValue(null);
 
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         UnauthorizedException,
       );
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         'Usuário inválido ou inativo',
       );
     });
@@ -270,10 +282,10 @@ describe('JwtStrategy - Dual-Key Support', () => {
       const inactiveUser = { ...mockUser, isActive: false };
       mockUsersService.findOne.mockResolvedValue(inactiveUser);
 
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         UnauthorizedException,
       );
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         'Usuário inválido ou inativo',
       );
     });
