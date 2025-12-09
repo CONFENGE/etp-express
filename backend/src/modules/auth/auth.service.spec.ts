@@ -43,6 +43,7 @@ describe('AuthService', () => {
     organization: mockOrganization,
     cargo: 'Analista',
     isActive: true,
+    mustChangePassword: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -52,6 +53,8 @@ describe('AuthService', () => {
     create: jest.fn(),
     updateLastLogin: jest.fn(),
     findOne: jest.fn(),
+    updatePassword: jest.fn(),
+    setMustChangePassword: jest.fn(),
   };
 
   const mockJwtService = {
@@ -69,6 +72,7 @@ describe('AuthService', () => {
     logLoginFailed: jest.fn(),
     logProfileAccess: jest.fn(),
     logDataAccess: jest.fn(),
+    logPasswordChange: jest.fn(),
   };
 
   const mockOrganizationsService = {
@@ -214,6 +218,7 @@ describe('AuthService', () => {
         name: mockUser.name,
         role: mockUser.role,
         organizationId: mockUser.organizationId,
+        mustChangePassword: mockUser.mustChangePassword,
       });
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result).toHaveProperty('user');
@@ -224,6 +229,7 @@ describe('AuthService', () => {
         role: mockUser.role,
         cargo: mockUser.cargo,
         organizationId: mockUser.organizationId,
+        mustChangePassword: mockUser.mustChangePassword,
       });
       expect(result).toHaveProperty('disclaimer');
     });
@@ -704,6 +710,195 @@ describe('AuthService', () => {
         expect(mockJwtService.verify).toHaveBeenCalledTimes(1);
         expect(mockConfigService.get).toHaveBeenCalledWith('JWT_SECRET_OLD');
       });
+    });
+  });
+
+  describe('changePassword (M8: Domain Management)', () => {
+    const changePasswordDto = {
+      oldPassword: 'OldPassword123!',
+      newPassword: 'NewPassword456!',
+    };
+
+    const mockMetadata = {
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0 Test',
+    };
+
+    it('should change password successfully and return new JWT token', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock)
+        .mockResolvedValueOnce(true) // Old password valid
+        .mockResolvedValueOnce(false); // New password different
+      (bcrypt.hash as jest.Mock).mockResolvedValue('$2b$10$newHashedPassword');
+      mockUsersService.updatePassword.mockResolvedValue(undefined);
+      mockUsersService.setMustChangePassword.mockResolvedValue(undefined);
+      mockAuditService.logPasswordChange.mockResolvedValue({});
+      mockJwtService.sign.mockReturnValue('new-jwt-token');
+
+      // Act
+      const result = await service.changePassword(
+        mockUser.id,
+        changePasswordDto,
+        mockMetadata,
+      );
+
+      // Assert
+      expect(mockUsersService.findOne).toHaveBeenCalledWith(mockUser.id);
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        changePasswordDto.oldPassword,
+        mockUser.password,
+      );
+      expect(bcrypt.hash).toHaveBeenCalledWith(
+        changePasswordDto.newPassword,
+        10,
+      );
+      expect(mockUsersService.updatePassword).toHaveBeenCalledWith(
+        mockUser.id,
+        '$2b$10$newHashedPassword',
+      );
+      expect(mockUsersService.setMustChangePassword).toHaveBeenCalledWith(
+        mockUser.id,
+        false,
+      );
+      expect(mockAuditService.logPasswordChange).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.objectContaining({
+          ip: mockMetadata.ip,
+          userAgent: mockMetadata.userAgent,
+          wasMandatory: false,
+        }),
+      );
+      expect(result).toHaveProperty('message', 'Senha alterada com sucesso');
+      expect(result).toHaveProperty('accessToken', 'new-jwt-token');
+      expect(result.user.mustChangePassword).toBe(false);
+    });
+
+    it('should throw UnauthorizedException when user is not found', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow('Usuário não encontrado');
+    });
+
+    it('should throw UnauthorizedException when user is inactive', async () => {
+      // Arrange
+      const inactiveUser = { ...mockUser, isActive: false };
+      mockUsersService.findOne.mockResolvedValue(inactiveUser);
+
+      // Act & Assert
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow('Usuário inativo');
+    });
+
+    it('should throw UnauthorizedException when old password is incorrect', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      // Act & Assert
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow('Senha atual incorreta');
+      expect(mockUsersService.updatePassword).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when new password equals old password', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock)
+        .mockResolvedValueOnce(true) // First call: Old password valid
+        .mockResolvedValueOnce(true); // Second call: New password same as old
+
+      // Act & Assert
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow(BadRequestException);
+
+      // Reset mock for second assertion
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock)
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(true);
+
+      await expect(
+        service.changePassword(mockUser.id, changePasswordDto, mockMetadata),
+      ).rejects.toThrow('Nova senha não pode ser igual à senha atual');
+      expect(mockUsersService.updatePassword).not.toHaveBeenCalled();
+    });
+
+    it('should log mandatory password change when mustChangePassword is true', async () => {
+      // Arrange
+      const userWithMandatoryChange = { ...mockUser, mustChangePassword: true };
+      mockUsersService.findOne.mockResolvedValue(userWithMandatoryChange);
+      (bcrypt.compare as jest.Mock)
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(false);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('$2b$10$newHashedPassword');
+      mockUsersService.updatePassword.mockResolvedValue(undefined);
+      mockUsersService.setMustChangePassword.mockResolvedValue(undefined);
+      mockAuditService.logPasswordChange.mockResolvedValue({});
+      mockJwtService.sign.mockReturnValue('new-jwt-token');
+
+      // Act
+      await service.changePassword(
+        mockUser.id,
+        changePasswordDto,
+        mockMetadata,
+      );
+
+      // Assert
+      expect(mockAuditService.logPasswordChange).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.objectContaining({
+          wasMandatory: true,
+        }),
+      );
+    });
+
+    it('should include mustChangePassword=false in new JWT token', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock)
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(false);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('$2b$10$newHashedPassword');
+      mockUsersService.updatePassword.mockResolvedValue(undefined);
+      mockUsersService.setMustChangePassword.mockResolvedValue(undefined);
+      mockAuditService.logPasswordChange.mockResolvedValue({});
+      mockJwtService.sign.mockReturnValue('new-jwt-token');
+
+      // Act
+      await service.changePassword(
+        mockUser.id,
+        changePasswordDto,
+        mockMetadata,
+      );
+
+      // Assert
+      expect(mockJwtService.sign).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sub: mockUser.id,
+          email: mockUser.email,
+          name: mockUser.name,
+          role: mockUser.role,
+          organizationId: mockUser.organizationId,
+          mustChangePassword: false,
+        }),
+      );
     });
   });
 });
