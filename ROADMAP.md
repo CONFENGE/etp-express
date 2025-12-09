@@ -1,35 +1,39 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 257/279 (92.1%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 258/284 (90.8%) | **Deploy:** Operacional
 
 ## Milestones
 
 ```
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
-M6:        ████████████████░░░░  80%  Maintenance (57/71)
-M8:        ██████████████████░░  75%  Domínios (9/12)
+M6:        ████████████████░░░░  81%  Maintenance (58/72)
+M8:        ██████████░░░░░░░░░░  53%  Domínios (9/17)
 ```
 
 ---
 
 ## Próximas Ações
 
-### M8 - Gestão de Domínios (3 issues)
+### M8 - Gestão de Domínios (8 issues)
 
-| #    | Issue                    | Est. |
-| ---- | ------------------------ | ---- |
-| #470 | System Admin dashboard   | 12h  |
-| #471 | Domain Manager dashboard | 12h  |
-| #473 | UI/UX Apple HIG          | 16h  |
+| #    | Issue                           | Est. |
+| ---- | ------------------------------- | ---- |
+| #470 | System Admin dashboard (parent) | -    |
+| #523 | └─ Setup adminStore + rotas     | 4h   |
+| #524 | └─ AdminDashboard estatísticas  | 4h   |
+| #525 | └─ DomainManagement CRUD        | 4h   |
+| #526 | └─ DomainDetail + AssignManager | 4h   |
+| #527 | └─ Testes e responsividade      | 4h   |
+| #471 | Domain Manager dashboard        | 12h  |
+| #473 | UI/UX Apple HIG                 | 16h  |
 
-### Security (3 issues)
+### Security (2 issues)
 
-| #    | Issue            | Est. |
-| ---- | ---------------- | ---- |
-| #452 | CSRF protection  | 6h   |
-| #453 | CSP headers      | 4h   |
-| #500 | Gitleaks license | 2h   |
+| #    | Issue           | Est. |
+| ---- | --------------- | ---- |
+| #452 | CSRF protection | 6h   |
+| #453 | CSP headers     | 4h   |
 
 ### M5 - Quality (4 issues)
 
