@@ -18,11 +18,11 @@ M8:        █████████░░░░░░░░░░░  50%  Ge
 ### IMEDIATO - Segurança (Semana 1)
 
 **CI/CD Fixes:**
-| # | Issue | Est. |
-|---|-------|------|
-| #503 | Gitleaks false positive allowlist | 1h |
-| #500 | Gitleaks license for orgs | 2h |
-| #501 | Rollup optional dependency | 1h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#503~~ | ~~Gitleaks false positive allowlist~~ | ~~1h~~ | ✅ DONE |
+| #500 | Gitleaks license for orgs | 2h | |
+| #501 | Rollup optional dependency | 1h | |
 
 **JWT XSS (#449) - Decomposta:**
 | # | Issue | Est. |
