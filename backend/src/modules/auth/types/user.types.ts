@@ -36,6 +36,7 @@ export type UserWithoutPassword = Omit<User, 'password'>;
  *
  * @remarks
  * Includes organizationId for Multi-Tenancy B2G (MT-03).
+ * Includes mustChangePassword for M8: Domain Management - forces password change on first login.
  * Used to enforce data isolation and organization-scoped access control.
  *
  * @see JwtStrategy - Validates and extracts this payload
@@ -47,7 +48,8 @@ export type UserWithoutPassword = Omit<User, 'password'>;
  *   email: 'user@lages.sc.gov.br',
  *   name: 'João Silva',
  *   role: 'user',
- *   organizationId: 'org-uuid'
+ *   organizationId: 'org-uuid',
+ *   mustChangePassword: false
  * };
  * ```
  */
@@ -57,4 +59,9 @@ export interface JwtPayload {
   name: string;
   role: string;
   organizationId: string;
+  /**
+   * Indicates if user must change password on next action.
+   * True for new users created by Domain Managers (M8: Gestão de Domínios).
+   */
+  mustChangePassword: boolean;
 }

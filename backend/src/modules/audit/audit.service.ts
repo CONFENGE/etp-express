@@ -735,4 +735,44 @@ export class AuditService {
 
     return savedLog;
   }
+
+  /**
+   * Log password change (LGPD Art. 37 compliance + M8: Domain Management)
+   * @param userId User ID who changed password
+   * @param metadata Password change metadata (IP, userAgent, wasMandatory)
+   */
+  async logPasswordChange(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      wasMandatory?: boolean;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.PASSWORD_CHANGE,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: metadata.wasMandatory
+        ? 'Mandatory password change on first login (M8: Domain Management)'
+        : 'User password change (LGPD Art. 37 - registro das operações)',
+      changes: {
+        metadata: {
+          changedAt: new Date().toISOString(),
+          wasMandatory: metadata.wasMandatory || false,
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    this.logger.log(
+      `Password change logged: User ${userId}${metadata.wasMandatory ? ' (mandatory first login)' : ''}`,
+    );
+
+    return savedLog;
+  }
 }

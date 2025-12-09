@@ -71,6 +71,7 @@ describe('JwtStrategy', () => {
       name: 'Test User',
       role: 'servidor',
       organizationId: 'org-123',
+      mustChangePassword: false,
     };
 
     it('should return user data when token payload is valid', async () => {
