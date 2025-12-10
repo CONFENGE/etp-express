@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-10 | **Progresso:** 275/312 (88.1%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 278/312 (89.1%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -10,9 +10,9 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         ████████████████░░░░ 67/82   82%
+M6: Maintenance         █████████████████░░░ 68/82   83%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
-M8: Domínios Instit.    ██████████████████░░ 22/24   92%
+M8: Domínios Instit.    ████████████████████ 24/24  100%
 M9: Export/Import       ░░░░░░░░░░░░░░░░░░░░  0/16    0%
 ```
 
@@ -20,15 +20,11 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### M8 - Gestão de Domínios (2 open)
-
-| #    | Issue                           | Status |
-| ---- | ------------------------------- | ------ |
-| #470 | System Admin dashboard (parent) | OPEN   |
-| #543 | Acessibilidade WCAG 2.1 AA      | OPEN   |
+### M8 - Gestão de Domínios ✅ COMPLETE (24/24)
 
 **Concluídas recentemente:**
 
+- [x] #543 Acessibilidade WCAG 2.1 AA (PR #571)
 - [x] #539 UserManagement CRUD completo (PR #570)
 - [x] #523 Setup adminStore + rotas
 - [x] #524 AdminDashboard estatísticas
@@ -40,6 +36,7 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 - [x] #540 Setup design tokens Apple HIG
 - [x] #541 Componentes base estilizados
 - [x] #542 Dark mode
+- [x] #470 System Admin dashboard (parent)
 
 ### M5 - Quality (4 open)
 
@@ -50,13 +47,14 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (15 open)
+### M6 - Maintenance (13 open)
 
 **Security:**
 | # | Issue | Priority |
 | ---- | --------------- | -------- |
 | #452 | CSRF protection | P2 |
-| #453 | CSP headers | P2 |
+
+✅ #453 CSP headers (PR #572) - MERGED
 
 **Performance:**
 | # | Issue | Priority |
@@ -140,13 +138,13 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 312      |
-| Issues Abertas    | 38       |
-| Issues Fechadas   | 274      |
-| Progresso         | 87.8%    |
-| Velocidade        | 10.6/dia |
+| Issues Abertas    | 34       |
+| Issues Fechadas   | 278      |
+| Progresso         | 89.1%    |
+| Velocidade        | 10.7/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
-| Testes            | 1355     |
+| Testes            | 1381     |
 
 ---
 
