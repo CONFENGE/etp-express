@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 263/309 (85.1%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 264/309 (85.4%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -8,7 +8,7 @@
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ███████████████░░░░░  76%  Maintenance (58/76)
-M8:        ██████████████░░░░░░  71%  Domínios (16/23)
+M8:        ███████████████░░░░░  74%  Domínios (17/23)
 M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Export/Import (0/16)
 ```
 
@@ -27,11 +27,11 @@ M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Ex
 | #526 | └─ DomainDetail + AssignManager   | ✅   |
 | #527 | └─ Testes e responsividade        | 4h   |
 | #471 | Domain Manager dashboard (parent) | -    |
-| #537 | └─ Setup managerStore + rotas     | 4h   |
-| #538 | └─ ManagerDashboard estatísticas  | 4h   |
+| #537 | └─ Setup managerStore + rotas     | ✅   |
+| #538 | └─ ManagerDashboard estatísticas  | ✅   |
 | #539 | └─ UserManagement CRUD            | 4h   |
 | #473 | UI/UX Apple HIG (parent)          | -    |
-| #540 | └─ Setup design tokens            | 4h   |
+| #540 | └─ Setup design tokens            | ✅   |
 | #541 | └─ Componentes base estilizados   | 4h   |
 | #542 | └─ Dark mode                      | 4h   |
 | #543 | └─ Acessibilidade + responsivo    | 4h   |
@@ -95,8 +95,8 @@ M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Ex
 | ----------------- | -------- |
 | Velocidade        | 10.6/dia |
 | Backend Coverage  | 78%      |
-| Frontend Coverage | 71%      |
-| Testes            | 1310     |
+| Frontend Coverage | 76%      |
+| Testes            | 1355     |
 
 ---
 
