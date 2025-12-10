@@ -12,6 +12,7 @@ describe('ExportController', () => {
     exportToPDF: jest.fn(),
     exportToJSON: jest.fn(),
     exportToXML: jest.fn(),
+    exportToDocx: jest.fn(),
   };
 
   const mockResponse = () => {
@@ -154,6 +155,41 @@ describe('ExportController', () => {
     });
   });
 
+  describe('exportDOCX', () => {
+    it('should export ETP to DOCX successfully', async () => {
+      const etpId = 'test-etp-id';
+      const mockDOCXBuffer = Buffer.from('mock-docx-data');
+      const res = mockResponse();
+
+      mockExportService.exportToDocx.mockResolvedValue(mockDOCXBuffer);
+
+      await controller.exportDOCX(etpId, res);
+
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+      expect(res.set).toHaveBeenCalledWith({
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Content-Disposition': `attachment; filename="ETP-${etpId}.docx"`,
+        'Content-Length': mockDOCXBuffer.length,
+      });
+      expect(res.send).toHaveBeenCalledWith(mockDOCXBuffer);
+    });
+
+    it('should throw NotFoundException when ETP not found', async () => {
+      const etpId = 'non-existent-id';
+      const res = mockResponse();
+
+      mockExportService.exportToDocx.mockRejectedValue(
+        new NotFoundException(`ETP ${etpId} não encontrado`),
+      );
+
+      await expect(controller.exportDOCX(etpId, res)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+    });
+  });
+
   describe('exportETP', () => {
     it('should export ETP to PDF by default', async () => {
       const etpId = 'test-etp-id';
@@ -190,6 +226,18 @@ describe('ExportController', () => {
       await controller.exportETP(etpId, 'xml' as any, res);
 
       expect(exportService.exportToXML).toHaveBeenCalledWith(etpId);
+    });
+
+    it('should export ETP to DOCX when format=docx', async () => {
+      const etpId = 'test-etp-id';
+      const mockDOCXBuffer = Buffer.from('mock-docx');
+      const res = mockResponse();
+
+      mockExportService.exportToDocx.mockResolvedValue(mockDOCXBuffer);
+
+      await controller.exportETP(etpId, 'docx' as any, res);
+
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
     });
   });
 });
