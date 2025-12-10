@@ -322,4 +322,68 @@ describe('DomainDetail', () => {
       });
     });
   });
+
+  describe('Responsiveness', () => {
+    it('should have responsive grid for content cards', async () => {
+      const { container } = renderWithRouter();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: 'example.com' }),
+        ).toBeInTheDocument();
+      });
+
+      // Grid should be responsive
+      const grid = container.querySelector('.grid.gap-6');
+      expect(grid).toBeInTheDocument();
+      expect(grid).toHaveClass('lg:grid-cols-2');
+    });
+
+    it('should have responsive typography', async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        const h1 = screen.getByRole('heading', { level: 1 });
+        expect(h1).toHaveClass('text-2xl', 'sm:text-3xl');
+      });
+    });
+
+    it('should have truncate on long domain names', async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        const h1 = screen.getByRole('heading', { level: 1 });
+        expect(h1).toHaveClass('truncate');
+      });
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper heading hierarchy', async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        const h1 = screen.getByRole('heading', { level: 1 });
+        expect(h1).toHaveTextContent('example.com');
+      });
+    });
+
+    it('should have back link with aria-label', async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        const backLink = screen.getByRole('link', { name: /back to domains/i });
+        expect(backLink).toHaveAttribute('aria-label', 'Back to domains');
+      });
+    });
+
+    it('should have icon with descriptive text in cards', async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByText('Domain Information')).toBeInTheDocument();
+        expect(screen.getByText('Domain Users')).toBeInTheDocument();
+      });
+    });
+  });
 });

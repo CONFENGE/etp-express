@@ -40,14 +40,16 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">System Admin</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              System Admin
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
               Manage domains and users across the platform
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/admin/domains">
               Manage Domains
               <ArrowRight className="ml-2 h-4 w-4" />
