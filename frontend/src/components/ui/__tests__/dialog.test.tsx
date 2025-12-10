@@ -56,7 +56,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent data-testid="dialog-content">Content</DialogContent>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -71,7 +74,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent data-testid="dialog-content">Content</DialogContent>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -86,7 +92,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent data-testid="dialog-content">Content</DialogContent>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -101,7 +110,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent data-testid="dialog-content">Content</DialogContent>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -118,7 +130,10 @@ describe('Dialog', () => {
       const { container } = render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent>Content</DialogContent>
+          <DialogContent>
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -170,6 +185,7 @@ describe('Dialog', () => {
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>
+            <DialogTitle>Title</DialogTitle>
             <DialogDescription data-testid="description">
               Description
             </DialogDescription>
@@ -191,7 +207,10 @@ describe('Dialog', () => {
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>
-            <DialogHeader data-testid="header">Header content</DialogHeader>
+            <DialogHeader data-testid="header">
+              <DialogTitle>Title</DialogTitle>
+              Header content
+            </DialogHeader>
           </DialogContent>
         </Dialog>,
       );
@@ -209,6 +228,7 @@ describe('Dialog', () => {
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>
+            <DialogTitle>Title</DialogTitle>
             <DialogFooter data-testid="footer">Footer content</DialogFooter>
           </DialogContent>
         </Dialog>,
@@ -226,7 +246,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent>Content</DialogContent>
+          <DialogContent>
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -242,7 +265,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent>Content</DialogContent>
+          <DialogContent>
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -256,7 +282,10 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
-          <DialogContent>Content</DialogContent>
+          <DialogContent>
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
         </Dialog>,
       );
 
@@ -303,6 +332,7 @@ describe('Dialog', () => {
         <Dialog>
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent className="custom-content" data-testid="content">
+            <DialogTitle>Title</DialogTitle>
             Content
           </DialogContent>
         </Dialog>,
