@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AssignManagerDialog } from './AssignManagerDialog';
 import { apiHelpers } from '@/lib/api';
+import { createDeferredPromise } from '@/test/setup';
 
 // Mock apiHelpers
 vi.mock('@/lib/api', () => ({
@@ -236,10 +237,216 @@ describe('AssignManagerDialog', () => {
     });
   });
 
-  // Note: Tests that interact with Radix UI Select are skipped until #533 (PointerEvent mocks) is resolved
-  // The following tests would require PointerEvent mocks:
-  // - should call onAssign with selected user id
-  // - should close dialog after successful assignment
-  // - should show loading state while assigning
-  // - should pre-select current manager if provided
+  describe('Loading States', () => {
+    it('should show loading skeleton while fetching users', async () => {
+      // Use deferred promise to control when the API resolves
+      const { promise, resolve } = createDeferredPromise<typeof mockUsers>();
+      vi.mocked(apiHelpers.get).mockReturnValue(promise);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for skeleton to appear (Radix renders in portal, use document.body)
+      await waitFor(() => {
+        const skeleton = document.body.querySelector('.animate-pulse');
+        expect(skeleton).toBeInTheDocument();
+      });
+
+      // Resolve to allow cleanup and avoid timeout
+      resolve(mockUsers);
+
+      // After resolution, skeleton should disappear and select should appear
+      await waitFor(() => {
+        expect(
+          document.body.querySelector('.animate-pulse'),
+        ).not.toBeInTheDocument();
+      });
+
+      // Verify select is now visible
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
+    });
+
+    it('should show loading state while assigning', async () => {
+      const user = userEvent.setup();
+      const { promise, resolve } = createDeferredPromise<void>();
+      const slowOnAssign = vi.fn().mockReturnValue(promise);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={slowOnAssign}
+        />,
+      );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
+
+      // Open select and choose a user
+      const selectTrigger = screen.getByRole('combobox');
+      await user.click(selectTrigger);
+
+      const option = screen.getByRole('option', { name: /John Doe/i });
+      await user.click(option);
+
+      // Click assign button
+      const assignButton = screen.getByRole('button', {
+        name: 'Assign Manager',
+      });
+      await user.click(assignButton);
+
+      // Should show loading text
+      expect(
+        screen.getByRole('button', { name: 'Assigning...' }),
+      ).toBeInTheDocument();
+
+      // Resolve to complete and cleanup
+      resolve();
+
+      await waitFor(() => {
+        expect(slowOnAssign).toHaveBeenCalledWith('1');
+      });
+    });
+  });
+
+  describe('User Selection and Assignment', () => {
+    it('should call onAssign with selected user id', async () => {
+      const user = userEvent.setup();
+      mockOnAssign.mockResolvedValue(undefined);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
+
+      // Open select and choose a user
+      const selectTrigger = screen.getByRole('combobox');
+      await user.click(selectTrigger);
+
+      const option = screen.getByRole('option', { name: /Jane Smith/i });
+      await user.click(option);
+
+      // Assign button should now be enabled
+      const assignButton = screen.getByRole('button', {
+        name: 'Assign Manager',
+      });
+      expect(assignButton).not.toBeDisabled();
+
+      await user.click(assignButton);
+
+      // Should call onAssign with selected user id
+      expect(mockOnAssign).toHaveBeenCalledWith('2');
+    });
+
+    it('should close dialog after successful assignment', async () => {
+      const user = userEvent.setup();
+      mockOnAssign.mockResolvedValue(undefined);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
+
+      // Select a user
+      const selectTrigger = screen.getByRole('combobox');
+      await user.click(selectTrigger);
+
+      const option = screen.getByRole('option', { name: /John Doe/i });
+      await user.click(option);
+
+      // Click assign
+      const assignButton = screen.getByRole('button', {
+        name: 'Assign Manager',
+      });
+      await user.click(assignButton);
+
+      // Should close dialog after successful assignment
+      await waitFor(() => {
+        expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+      });
+    });
+
+    it('should pre-select current manager if provided', async () => {
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          currentManagerId="2"
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
+
+      // The select should show the current manager's name
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toHaveTextContent(/Jane Smith/i);
+      });
+    });
+
+    it('should enable assign button when user is selected', async () => {
+      const user = userEvent.setup();
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
+
+      // Initially disabled
+      const assignButton = screen.getByRole('button', {
+        name: 'Assign Manager',
+      });
+      expect(assignButton).toBeDisabled();
+
+      // Select a user
+      const selectTrigger = screen.getByRole('combobox');
+      await user.click(selectTrigger);
+
+      const option = screen.getByRole('option', { name: /Bob Wilson/i });
+      await user.click(option);
+
+      // Now enabled
+      expect(assignButton).not.toBeDisabled();
+    });
+  });
 });
