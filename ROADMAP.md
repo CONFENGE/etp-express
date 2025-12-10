@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-10 | **Progresso:** 274/312 (87.8%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 275/312 (88.1%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -12,7 +12,7 @@ M4: Refactoring & Perf  ██████████████████�
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
 M6: Maintenance         ████████████████░░░░ 67/82   82%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
-M8: Domínios Instit.    █████████████████░░░ 21/24   88%
+M8: Domínios Instit.    ██████████████████░░ 22/24   92%
 M9: Export/Import       ░░░░░░░░░░░░░░░░░░░░  0/16    0%
 ```
 
@@ -20,16 +20,16 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### M8 - Gestão de Domínios (3 open)
+### M8 - Gestão de Domínios (2 open)
 
 | #    | Issue                           | Status |
 | ---- | ------------------------------- | ------ |
 | #470 | System Admin dashboard (parent) | OPEN   |
-| #539 | UserManagement CRUD completo    | OPEN   |
 | #543 | Acessibilidade WCAG 2.1 AA      | OPEN   |
 
 **Concluídas recentemente:**
 
+- [x] #539 UserManagement CRUD completo (PR #570)
 - [x] #523 Setup adminStore + rotas
 - [x] #524 AdminDashboard estatísticas
 - [x] #525 DomainManagement CRUD
