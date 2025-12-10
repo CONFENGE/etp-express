@@ -23,9 +23,7 @@ on:
 jobs:
   lint-backend:
     name: Lint Backend (NestJS)
-    runs-on:
-      group: confenge-runners
-      labels: ubuntu-16core
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -53,9 +51,7 @@ jobs:
 
   lint-frontend:
     name: Lint Frontend (React)
-    runs-on:
-      group: confenge-runners
-      labels: ubuntu-16core
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code

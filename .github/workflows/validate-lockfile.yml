@@ -20,9 +20,7 @@ on:
 
 jobs:
   validate-lockfile:
-    runs-on:
-      group: confenge-runners
-      labels: ubuntu-16core
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
