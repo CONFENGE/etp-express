@@ -72,10 +72,31 @@ export class ExportController {
     res.send(xmlData);
   }
 
+  @Get('etp/:id/docx')
+  @ApiOperation({
+    summary: 'Exportar ETP para DOCX',
+    description:
+      'Gera um documento Word (.docx) completo do ETP com todas as seções',
+  })
+  @ApiResponse({ status: 200, description: 'DOCX gerado com sucesso' })
+  @ApiResponse({ status: 404, description: 'ETP não encontrado' })
+  async exportDOCX(@Param('id') id: string, @Res() res: Response) {
+    const docxBuffer = await this.exportService.exportToDocx(id);
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'Content-Disposition': `attachment; filename="ETP-${id}.docx"`,
+      'Content-Length': docxBuffer.length,
+    });
+
+    res.send(docxBuffer);
+  }
+
   @Get('etp/:id')
   @ApiOperation({
     summary: 'Exportar ETP em formato especificado',
-    description: 'Exporta o ETP no formato escolhido (pdf, json, xml)',
+    description: 'Exporta o ETP no formato escolhido (pdf, json, xml, docx)',
   })
   @ApiQuery({
     name: 'format',
@@ -95,6 +116,8 @@ export class ExportController {
         return this.exportJSON(id, res);
       case ExportFormat.XML:
         return this.exportXML(id, res);
+      case ExportFormat.DOCX:
+        return this.exportDOCX(id, res);
       case ExportFormat.PDF:
       default:
         return this.exportPDF(id, res);
