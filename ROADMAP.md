@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-10 | **Progresso:** 278/312 (89.1%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 280/312 (89.7%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -10,17 +10,22 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 68/82   83%
+M6: Maintenance         █████████████████░░░ 69/82   84%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
-M8: Domínios Instit.    ████████████████████ 24/24  100%
-M9: Export/Import       ░░░░░░░░░░░░░░░░░░░░  0/16    0%
+M8: Domínios Instit.    ███████████████████░ 23/24   96%
+M9: Export/Import       ██░░░░░░░░░░░░░░░░░░  2/16   13%
 ```
 
 ---
 
 ## Próximas Ações Prioritárias
 
-### M8 - Gestão de Domínios ✅ COMPLETE (24/24)
+### M8 - Gestão de Domínios ⚠️ 96% (23/24)
+
+**Pendente:**
+| # | Issue | Status |
+| ---- | --------------------- | ------ |
+| #470 | System Admin dashboard (parent) | OPEN |
 
 **Concluídas recentemente:**
 
@@ -36,7 +41,6 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 - [x] #540 Setup design tokens Apple HIG
 - [x] #541 Componentes base estilizados
 - [x] #542 Dark mode
-- [x] #470 System Admin dashboard (parent)
 
 ### M5 - Quality (4 open)
 
@@ -74,23 +78,23 @@ M9: Export/Import       ░░░░░░░░░░░░░░░░░░�
 | #460 | Migration timestamp | P3 |
 | #492 | ESLint 9 flat config | P2 |
 | #493 | React Router v7 | P2 |
-| #536 | DomainDetail test fix | P1 |
+| ~~#536~~ | ~~DomainDetail test fix~~ | ✅ DONE |
 
 **Operations:**
 | # | Issue | Priority |
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis (16 open)
+### M9 - Export DOCX & Import Analysis (14 open, 2 done)
 
-**Feature 1: Export DOCX** (~9h)
-| # | Issue | Dep. |
-| ---- | ---------------------------------- | ----- |
-| #548 | Setup biblioteca docx | - |
-| #549 | Implementar exportToDocx | #548 |
-| #550 | Endpoint GET /export/etp/:id/docx | #549 |
-| #551 | Frontend botão Export DOCX | #550 |
-| #552 | Testes E2E Export DOCX | #551 |
+**Feature 1: Export DOCX** (~6h remaining)
+| # | Issue | Status |
+| ---- | ---------------------------------- | ------ |
+| ~~#548~~ | ~~Setup biblioteca docx~~ | ✅ PR #573 |
+| ~~#549~~ | ~~Implementar exportToDocx~~ | ✅ PR #574 |
+| #550 | Endpoint GET /export/etp/:id/docx | OPEN |
+| #551 | Frontend botão Export DOCX | OPEN |
+| #552 | Testes E2E Export DOCX | OPEN |
 
 **Feature 2: Import & Analysis** (~27h)
 | # | Issue | Dep. |
@@ -144,10 +148,10 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 312      |
-| Issues Abertas    | 34       |
-| Issues Fechadas   | 278      |
-| Progresso         | 89.1%    |
-| Velocidade        | 10.7/dia |
+| Issues Abertas    | 32       |
+| Issues Fechadas   | 280      |
+| Progresso         | 89.7%    |
+| Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1381     |
