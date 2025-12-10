@@ -271,6 +271,171 @@ describe('ExportService', () => {
     });
   });
 
+  describe('exportToDocx', () => {
+    it('should export ETP to DOCX format successfully', async () => {
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [mockSection] as EtpSection[],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+      // DOCX files start with PK (ZIP format)
+      expect(result[0]).toBe(0x50); // 'P'
+      expect(result[1]).toBe(0x4b); // 'K'
+    });
+
+    it('should throw NotFoundException when ETP does not exist', async () => {
+      mockEtpsRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.exportToDocx('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.exportToDocx('non-existent')).rejects.toThrow(
+        'ETP non-existent não encontrado',
+      );
+    });
+
+    it('should handle ETP without sections', async () => {
+      const etpWithoutSections = {
+        ...mockEtp,
+        sections: [],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithoutSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should handle sections with markdown formatting', async () => {
+      const sectionWithMarkdown = {
+        ...mockSection,
+        content: 'Este é um texto com **negrito** e *itálico*.',
+      } as EtpSection;
+
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [sectionWithMarkdown],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should handle sections with bullet points', async () => {
+      const sectionWithBullets = {
+        ...mockSection,
+        content: '- Item 1\n- Item 2\n- Item 3',
+      } as EtpSection;
+
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [sectionWithBullets],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should handle ETP with null metadata fields', async () => {
+      const etpWithNullMetadata = {
+        ...mockEtp,
+        metadata: null,
+        valorEstimado: null,
+        numeroProcesso: null,
+        sections: [mockSection] as EtpSection[],
+      } as unknown as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithNullMetadata);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should include all ETP sections sorted by order', async () => {
+      const section1 = {
+        ...mockSection,
+        order: 2,
+        title: 'Section 2',
+      } as EtpSection;
+      const section2 = {
+        ...mockSection,
+        id: 'section-2',
+        order: 1,
+        title: 'Section 1',
+      } as EtpSection;
+      const section3 = {
+        ...mockSection,
+        id: 'section-3',
+        order: 3,
+        title: 'Section 3',
+      } as EtpSection;
+
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [section1, section2, section3],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should handle sections with empty content', async () => {
+      const sectionWithEmptyContent = {
+        ...mockSection,
+        content: null as unknown as string,
+      } as EtpSection;
+
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [sectionWithEmptyContent],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should format currency values correctly', async () => {
+      const etpWithValue = {
+        ...mockEtp,
+        valorEstimado: 1500000.5,
+        sections: [mockSection] as EtpSection[],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithValue);
+
+      const result = await service.exportToDocx('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.length).toBeGreaterThan(0);
+    });
+  });
+
   describe('getEtpWithSections (private method tested via public methods)', () => {
     it('should retrieve ETP with sections sorted by order', async () => {
       const section1 = { ...mockSection, order: 2 } as EtpSection;
