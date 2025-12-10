@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-09 | **Progresso:** 263/293 (89.8%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-09 | **Progresso:** 263/309 (85.1%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -9,6 +9,7 @@ M1-M4, M7: ████████████████████ 100%  Co
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ███████████████░░░░░  76%  Maintenance (58/76)
 M8:        ██████████████░░░░░░  71%  Domínios (16/23)
+M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Export/Import (0/16)
 ```
 
 ---
@@ -50,6 +51,32 @@ M8:        ██████████████░░░░░░  71%  Do
 | #111 | Production SLA        | 4h   |
 | #456 | Frontend coverage 70% | 20h  |
 | #458 | WCAG 2.1 gaps         | 12h  |
+
+### M9 - Export DOCX & Import Analysis (16 issues)
+
+**Feature 1: Export DOCX** (~9h)
+| # | Issue | Est. | Dep. |
+| ---- | ---------------------------------- | ---- | ----- |
+| #548 | Setup biblioteca docx | 1h | - |
+| #549 | Implementar exportToDocx | 3h | #548 |
+| #550 | Endpoint GET /export/etp/:id/docx | 1h | #549 |
+| #551 | Frontend botão Export DOCX | 2h | #550 |
+| #552 | Testes E2E Export DOCX | 2h | #551 |
+
+**Feature 2: Import & Analysis** (~27h)
+| # | Issue | Est. | Dep. |
+| ---- | ---------------------------------- | ---- | ---------- |
+| #553 | Setup infraestrutura upload | 2h | - |
+| #554 | Extração texto DOCX | 2h | #553 |
+| #555 | Extração texto PDF | 2h | #553 |
+| #556 | ETPAnalysisService (agents) | 3h | #554, #555 |
+| #557 | Geração relatório melhorias | 3h | #556 |
+| #558 | Conversão documento para ETP | 3h | #556 |
+| #559 | Endpoints análise e conversão | 2h | #557, #558 |
+| #560 | Frontend página Import & Analysis | 3h | #559 |
+| #561 | Frontend exibição resultados | 3h | #560 |
+| #562 | Frontend store análise | 2h | #559 |
+| #563 | Testes E2E Import e Analysis | 2h | #561, #562 |
 
 ---
 
