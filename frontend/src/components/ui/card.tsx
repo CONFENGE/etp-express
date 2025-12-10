@@ -1,14 +1,29 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Card component with Apple HIG design tokens.
+ *
+ * Features:
+ * - Background surface-primary
+ * - Apple-style shadow (shadow-apple)
+ * - Border radius apple-lg
+ * - Hover: shadow apple-lg (for interactive cards)
+ * - Smooth transitions
+ */
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean }
+>(({ className, interactive, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      'rounded-lg border bg-card text-card-foreground shadow-sm',
+      // Base styles with Apple HIG tokens
+      'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
+      // Apple-style transition
+      'transition-all duration-apple ease-apple',
+      // Interactive card hover effect
+      interactive && 'hover:shadow-apple-lg hover:scale-[1.01] cursor-pointer',
       className,
     )}
     {...props}
@@ -35,7 +50,8 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      'text-2xl font-semibold leading-none tracking-tight',
+      // Apple HIG typography
+      'text-apple-xl font-semibold leading-none tracking-tight text-text-apple-primary',
       className,
     )}
     {...props}
@@ -49,7 +65,11 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn(
+      // Apple HIG secondary text
+      'text-apple-sm text-text-apple-secondary',
+      className,
+    )}
     {...props}
   />
 ));

@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-10 | **Progresso:** 264/309 (85.4%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 265/309 (85.8%) | **Deploy:** Operacional
 
 ## Milestones
 
@@ -8,7 +8,7 @@
 M1-M4, M7: ████████████████████ 100%  Completos
 M5:        █████████████████░░░  86%  E2E & Docs (24/28)
 M6:        ███████████████░░░░░  76%  Maintenance (58/76)
-M8:        ███████████████░░░░░  74%  Domínios (17/23)
+M8:        ████████████████░░░░  78%  Domínios (18/23)
 M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Export/Import (0/16)
 ```
 
@@ -32,7 +32,7 @@ M9:        ░░░░░░░░░░░░░░░░░░░░   0%  Ex
 | #539 | └─ UserManagement CRUD            | 4h   |
 | #473 | UI/UX Apple HIG (parent)          | -    |
 | #540 | └─ Setup design tokens            | ✅   |
-| #541 | └─ Componentes base estilizados   | 4h   |
+| #541 | └─ Componentes base estilizados   | ✅   |
 | #542 | └─ Dark mode                      | 4h   |
 | #543 | └─ Acessibilidade + responsivo    | 4h   |
 
