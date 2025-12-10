@@ -25,7 +25,9 @@ on:
 jobs:
   test-backend:
     name: Test Backend (NestJS)
-    runs-on: ubuntu-latest
+    runs-on:
+      group: confenge-runners
+      labels: ubuntu-16core
 
     steps:
       - name: Checkout code
@@ -74,7 +76,9 @@ jobs:
 
   test-frontend:
     name: Test Frontend (React)
-    runs-on: ubuntu-latest
+    runs-on:
+      group: confenge-runners
+      labels: ubuntu-16core
 
     steps:
       - name: Checkout code

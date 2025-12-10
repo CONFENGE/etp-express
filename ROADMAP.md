@@ -119,6 +119,12 @@ Issues #1-#20, #41-#48, #77-#87
 
 Issues #88-#105
 
+**Infraestrutura:**
+
+- ✅ Large Runners GitHub Enterprise configurados (16-core, 64GB RAM)
+- Runner group: `confenge-runners`
+- Todos os 7 workflows migrados para runners de alto desempenho
+
 ### M3: Quality & Security (61/61)
 
 Issues #106-#145, #153-#158, #172-#186
