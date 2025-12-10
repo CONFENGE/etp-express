@@ -232,19 +232,19 @@ export function DomainDetail() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/admin/domains" aria-label="Back to domains">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {domain.domain}
-              </h1>
-              <p className="text-muted-foreground">Domain details and users</p>
-            </div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/admin/domains" aria-label="Back to domains">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+              {domain.domain}
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              Domain details and users
+            </p>
           </div>
         </div>
 

@@ -176,4 +176,58 @@ describe('DomainManagement', () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe('Responsiveness', () => {
+    it('should have responsive header layout', () => {
+      const { container } = renderWithRouter(<DomainManagement />);
+
+      // Header should use flex-col for mobile-first layout
+      const header = container.querySelector('.flex.flex-col');
+      expect(header).toBeInTheDocument();
+    });
+
+    it('should have responsive Add Domain button', () => {
+      renderWithRouter(<DomainManagement />);
+
+      const addButton = screen.getByRole('button', { name: /add domain/i });
+      expect(addButton).toHaveClass('w-full', 'sm:w-auto');
+    });
+
+    it('should have container with proper spacing', () => {
+      const { container } = renderWithRouter(<DomainManagement />);
+
+      const contentContainer = container.querySelector('.container');
+      expect(contentContainer).toBeInTheDocument();
+      expect(contentContainer).toHaveClass('mx-auto');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper heading hierarchy', () => {
+      renderWithRouter(<DomainManagement />);
+
+      const h1 = screen.getByRole('heading', { level: 1 });
+      expect(h1).toHaveTextContent('Domains');
+    });
+
+    it('should have back link with aria-label', () => {
+      renderWithRouter(<DomainManagement />);
+
+      const backLink = screen.getByRole('link', {
+        name: /back to admin dashboard/i,
+      });
+      expect(backLink).toBeInTheDocument();
+      expect(backLink).toHaveAttribute('aria-label', 'Back to admin dashboard');
+    });
+
+    it('should have descriptive table headers', () => {
+      renderWithRouter(<DomainManagement />);
+
+      expect(screen.getByText('Domain')).toBeInTheDocument();
+      expect(screen.getByText('Users')).toBeInTheDocument();
+      expect(screen.getByText('Manager')).toBeInTheDocument();
+      expect(screen.getByText('Status')).toBeInTheDocument();
+      expect(screen.getByText('Actions')).toBeInTheDocument();
+    });
+  });
 });

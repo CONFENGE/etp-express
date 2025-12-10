@@ -278,5 +278,88 @@ describe('AdminDashboard', () => {
       const contentContainer = container.querySelector('.container');
       expect(contentContainer).toBeInTheDocument();
     });
+
+    it('should have responsive header with flex-col on mobile', () => {
+      vi.mocked(useAdminStore).mockReturnValue({
+        statistics: mockStatistics,
+        loading: false,
+        fetchStatistics: mockFetchStatistics,
+        fetchDomains: mockFetchDomains,
+        domains: mockDomains,
+      });
+
+      const { container } = renderWithRouter(<AdminDashboard />);
+
+      // Header should use flex-col for mobile-first layout
+      const header = container.querySelector('.flex.flex-col');
+      expect(header).toBeInTheDocument();
+    });
+
+    it('should have responsive button that is full-width on mobile', () => {
+      vi.mocked(useAdminStore).mockReturnValue({
+        statistics: mockStatistics,
+        loading: false,
+        fetchStatistics: mockFetchStatistics,
+        fetchDomains: mockFetchDomains,
+        domains: mockDomains,
+      });
+
+      renderWithRouter(<AdminDashboard />);
+
+      const manageButton = screen.getByRole('link', {
+        name: /manage domains/i,
+      });
+      // Button should have responsive width classes
+      expect(manageButton).toHaveClass('w-full', 'sm:w-auto');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper heading hierarchy', () => {
+      vi.mocked(useAdminStore).mockReturnValue({
+        statistics: mockStatistics,
+        loading: false,
+        fetchStatistics: mockFetchStatistics,
+        fetchDomains: mockFetchDomains,
+        domains: mockDomains,
+      });
+
+      renderWithRouter(<AdminDashboard />);
+
+      const h1 = screen.getByRole('heading', { level: 1 });
+      expect(h1).toHaveTextContent('System Admin');
+    });
+
+    it('should have accessible links with proper text', () => {
+      vi.mocked(useAdminStore).mockReturnValue({
+        statistics: mockStatistics,
+        loading: false,
+        fetchStatistics: mockFetchStatistics,
+        fetchDomains: mockFetchDomains,
+        domains: mockDomains,
+      });
+
+      renderWithRouter(<AdminDashboard />);
+
+      // All domain links should be accessible
+      const links = screen.getAllByRole('link');
+      expect(links.length).toBeGreaterThan(0);
+    });
+
+    it('should provide descriptive text for screen readers', () => {
+      vi.mocked(useAdminStore).mockReturnValue({
+        statistics: mockStatistics,
+        loading: false,
+        fetchStatistics: mockFetchStatistics,
+        fetchDomains: mockFetchDomains,
+        domains: mockDomains,
+      });
+
+      renderWithRouter(<AdminDashboard />);
+
+      // Card descriptions should be present
+      expect(screen.getByText('Registered domains')).toBeInTheDocument();
+      expect(screen.getByText('Currently active')).toBeInTheDocument();
+    });
   });
 });
