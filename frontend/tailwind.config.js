@@ -8,6 +8,15 @@ export default {
     './src/**/*.{ts,tsx}',
   ],
   theme: {
+    // Responsive breakpoints (mobile-first)
+    screens: {
+      xs: '375px', // iPhone SE and small phones
+      sm: '640px', // Large phones and small tablets
+      md: '768px', // Tablets portrait
+      lg: '1024px', // Tablets landscape and small desktops
+      xl: '1280px', // Desktops
+      '2xl': '1536px', // Large desktops and wide screens
+    },
     extend: {
       fontFamily: {
         sans: [
@@ -128,6 +137,14 @@ export default {
         'apple-10': 'var(--space-10)',
         'apple-12': 'var(--space-12)',
         'apple-16': 'var(--space-16)',
+        // WCAG 2.5.5 Touch Target Size (44x44px minimum)
+        touch: '44px',
+      },
+      minWidth: {
+        touch: '44px',
+      },
+      minHeight: {
+        touch: '44px',
       },
       fontSize: {
         // Apple HIG Typography Scale
