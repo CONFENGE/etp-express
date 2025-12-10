@@ -168,6 +168,24 @@
 }
 
 /* ========================================
+ * Theme Transition
+ * Smooth transition when switching themes
+ * ======================================== */
+html {
+  transition:
+    background-color var(--duration-apple-slow) var(--ease-apple),
+    color var(--duration-apple-slow) var(--ease-apple);
+}
+
+html.light {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* ========================================
  * Dark Mode Tokens
  * ======================================== */
 .dark {
