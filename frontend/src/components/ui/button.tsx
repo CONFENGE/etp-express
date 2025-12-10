@@ -3,25 +3,44 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
+/**
+ * Button component with Apple HIG design tokens.
+ *
+ * Features:
+ * - Apple-style transitions (200ms ease-apple)
+ * - Apple-style shadows on hover
+ * - Apple-style border radius
+ * - States: default, hover, active, focus, disabled
+ * - Variants: primary (accent), secondary, ghost, destructive, outline, link
+ */
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  // Base styles with Apple HIG tokens
+  'inline-flex items-center justify-center whitespace-nowrap rounded-apple text-sm font-medium ring-offset-background transition-all duration-apple ease-apple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        // Primary: Apple accent color with shadow on hover
+        default:
+          'bg-apple-accent text-white hover:bg-apple-accent-hover hover:shadow-apple-sm active:bg-apple-accent-active',
+        // Destructive: Apple red with subtle hover
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+          'bg-apple-red text-white hover:bg-apple-red/90 hover:shadow-apple-sm active:bg-apple-red/80',
+        // Outline: Subtle border with surface background
         outline:
-          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+          'border border-[var(--border-primary)] bg-surface-primary hover:bg-surface-secondary hover:shadow-apple-sm active:bg-surface-tertiary',
+        // Secondary: Muted background with subtle hover
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-surface-secondary text-text-apple-primary hover:bg-surface-tertiary hover:shadow-apple-sm active:bg-surface-tertiary/80',
+        // Ghost: Transparent with subtle hover
+        ghost:
+          'hover:bg-apple-accent-light hover:text-apple-accent active:bg-apple-accent-light/80',
+        // Link: Text only with underline on hover
+        link: 'text-apple-accent underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
+        sm: 'h-9 rounded-apple px-3 text-apple-sm',
+        lg: 'h-11 rounded-apple-lg px-8 text-apple-base',
         icon: 'h-10 w-10',
       },
     },

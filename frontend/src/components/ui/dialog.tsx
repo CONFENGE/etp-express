@@ -3,6 +3,15 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Dialog component with Apple HIG design tokens.
+ *
+ * Features:
+ * - Backdrop blur (backdrop-blur-sm)
+ * - Apple-style shadow (shadow-apple-lg)
+ * - Apple-style border radius (rounded-apple-lg)
+ * - Smooth scale + opacity animation
+ */
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
@@ -15,7 +24,10 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      // Apple HIG backdrop with blur
+      'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm',
+      // Animation
+      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className,
     )}
     {...props}
@@ -32,14 +44,33 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg',
+        // Position and layout
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+        // Apple HIG styles
+        'border border-[var(--border-secondary)] bg-surface-primary p-6 shadow-apple-lg rounded-apple-lg',
+        // Animation with Apple-style duration and easing
+        'duration-apple data-[state=open]:animate-in data-[state=closed]:animate-out',
+        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+        'data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
+        'data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
         className,
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <X className="h-4 w-4" />
+      <DialogPrimitive.Close
+        className={cn(
+          'absolute right-4 top-4 rounded-apple p-1 opacity-70',
+          // Apple-style transition
+          'transition-all duration-apple ease-apple',
+          // Hover and focus states
+          'hover:opacity-100 hover:bg-surface-secondary',
+          'focus:outline-none focus:ring-2 focus:ring-apple-accent focus:ring-offset-2',
+          'disabled:pointer-events-none',
+        )}
+      >
+        <X className="h-4 w-4 text-text-apple-secondary" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -82,7 +113,8 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
+      // Apple HIG typography
+      'text-apple-lg font-semibold leading-none tracking-tight text-text-apple-primary',
       className,
     )}
     {...props}
@@ -96,7 +128,11 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn(
+      // Apple HIG secondary text
+      'text-apple-sm text-text-apple-secondary',
+      className,
+    )}
     {...props}
   />
 ));
