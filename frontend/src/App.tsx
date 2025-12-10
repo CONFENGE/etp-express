@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
 import { AdminProtectedRoute } from '@/components/auth/AdminProtectedRoute';
+import { ManagerProtectedRoute } from '@/components/auth/ManagerProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { setNavigate } from '@/lib/navigation';
 
@@ -23,6 +24,7 @@ import { NotFound } from '@/pages/NotFound';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { TermsOfService } from '@/pages/TermsOfService';
 import { AdminDashboard, DomainManagement, DomainDetail } from '@/pages/admin';
+import { ManagerDashboard, UserManagement } from '@/pages/manager';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -120,6 +122,12 @@ function AppRoutes() {
         <Route index element={<AdminDashboard />} />
         <Route path="domains" element={<DomainManagement />} />
         <Route path="domains/:id" element={<DomainDetail />} />
+      </Route>
+
+      {/* Manager Routes (Domain Manager only) */}
+      <Route path="/manager" element={<ManagerProtectedRoute />}>
+        <Route index element={<ManagerDashboard />} />
+        <Route path="users" element={<UserManagement />} />
       </Route>
 
       {/* 404 */}
