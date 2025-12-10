@@ -26,37 +26,47 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-4">
+    <header
+      role="banner"
+      className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
+      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Menu button with touch target size */}
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
             aria-label="Toggle sidebar"
+            aria-expanded={false}
+            className="min-w-touch min-h-touch"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </Button>
 
+          {/* Logo/Home button with touch target */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity min-h-touch px-2 rounded-apple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2"
+            aria-label={`${APP_NAME} - Go to home`}
           >
-            <FileText className="h-6 w-6 text-primary" />
-            <span>{APP_NAME}</span>
+            <FileText className="h-6 w-6 text-primary" aria-hidden="true" />
+            <span className="hidden xs:inline">{APP_NAME}</span>
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-9 w-9 rounded-full"
+                  className="relative min-w-touch min-h-touch rounded-full p-0"
+                  aria-label={`User menu for ${user.name}`}
+                  aria-haspopup="menu"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     {getInitials(user.name)}
                   </div>
                 </Button>
@@ -78,13 +88,19 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                  <User className="mr-2 h-4 w-4" />
+                <DropdownMenuItem
+                  onClick={() => navigate('/dashboard')}
+                  className="min-h-touch cursor-pointer"
+                >
+                  <User className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Dashboard</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="min-h-touch cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
