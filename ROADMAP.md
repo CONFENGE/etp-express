@@ -127,7 +127,10 @@ Issues #88-#105
 
 - ✅ Large Runners GitHub Enterprise configurados (16-core, 64GB RAM)
 - Runner group: `confenge-runners`
-- Todos os 7 workflows migrados para runners de alto desempenho
+- Estratégia híbrida de runners (PR #575):
+  - **16-core (CPU-intensive):** ci.yml, ci-tests.yml, playwright.yml
+  - **2-core (ubuntu-latest):** validate-lockfile, secret-scan, ci-lint, backup-validation
+  - Economia estimada: ~40% dos minutos CI por PR
 
 ### M3: Quality & Security (61/61)
 
