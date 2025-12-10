@@ -8,7 +8,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: confenge-runners
+      labels: ubuntu-16core
 
     steps:
       - uses: actions/checkout@v4
