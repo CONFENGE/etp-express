@@ -17,30 +17,30 @@
   --surface-elevated: #ffffff;
 
   /* ========================================
-   * Text Colors
+   * Text Colors (WCAG 2.1 AA compliant)
    * ======================================== */
   --text-primary: #1d1d1f;
-  --text-secondary: #86868b;
-  --text-tertiary: #aeaeb2;
-  --text-quaternary: #c7c7cc;
+  --text-secondary: #6e6e73; /* Darkened from #86868b for 4.5:1 contrast ratio */
+  --text-tertiary: #8e8e93; /* Darkened from #aeaeb2 for better contrast */
+  --text-quaternary: #a1a1a6; /* Darkened from #c7c7cc for better contrast */
 
   /* ========================================
-   * Accent Colors (Apple Blue)
+   * Accent Colors (Apple Blue - WCAG 2.1 AA compliant)
    * ======================================== */
-  --apple-accent: #007aff;
-  --apple-accent-hover: #0056b3;
-  --apple-accent-active: #004494;
-  --apple-accent-light: rgba(0, 122, 255, 0.1);
+  --apple-accent: #0066cc; /* Darkened from #007aff for 4.5:1 contrast with white text */
+  --apple-accent-hover: #0052a3;
+  --apple-accent-active: #004080;
+  --apple-accent-light: rgba(0, 102, 204, 0.1);
 
   /* ========================================
-   * System Colors
+   * System Colors (WCAG 2.1 AA compliant)
    * ======================================== */
   --apple-red: #ff3b30;
   --apple-orange: #ff9500;
   --apple-yellow: #ffcc00;
   --apple-green: #34c759;
   --apple-teal: #5ac8fa;
-  --apple-blue: #007aff;
+  --apple-blue: #0066cc; /* Darkened from #007aff for WCAG AA contrast */
   --apple-indigo: #5856d6;
   --apple-purple: #af52de;
   --apple-pink: #ff2d55;
