@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 287/347 (82.7%) | **Deploy:** Operacional | **P0 Security:** 10 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 288/347 (83.0%) | **Deploy:** Operacional | **P0 Security:** 9 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -20,7 +20,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (12 issues restantes)
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (11 issues restantes)
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
@@ -33,10 +33,10 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#601~~ | ~~Browser cleanup PDF pode falhar~~ | ✅ PR #618 |
 | ~~#602~~ | ~~Admin authorization não implementada~~ | ✅ PR #613 (OWASP A01:2021) |
 
-**Épico 2: Bugs Frontend (4 issues)**
+**Épico 2: Bugs Frontend (3 issues)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
-| #603 | Memory leak em export operations | Performance |
+| ~~#603~~ | ~~Memory leak em export operations~~ | ✅ PR #619 |
 | #604 | Race condition managerStore loading | UI travada |
 | #605 | Dynamic import sem error handling | Auth loop |
 | #606 | ProtectedRoute antes de auth check | Flash login |
@@ -234,14 +234,14 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 347      |
-| Issues Abertas    | 61       |
-| Issues Fechadas   | 286      |
-| Progresso         | 82.4%    |
+| Issues Abertas    | 60       |
+| Issues Fechadas   | 287      |
+| Progresso         | 82.7%    |
 | Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
-| Testes            | 1090     |
-| P0 Security       | 11       |
+| Testes            | 1095     |
+| P0 Security       | 10       |
 | P0 Enterprise     | 20       |
 
 ---
