@@ -1,0 +1,290 @@
+# BMAD Method Configuration - ETP Express
+# Build More, Architect Dreams™ v6.0.0-alpha
+# Customizado para contexto B2G (Government-to-Business) e Lei 14.133/2021
+
+project:
+  name: 'ETP Express'
+  version: '1.0.0'
+  type: 'B2G SaaS'
+  domain: 'Public Procurement (Lei 14.133/2021)'
+  description: 'Sistema assistivo para elaboração de Estudos Técnicos Preliminares conforme Nova Lei de Licitações'
+
+scale:
+  defaultTrack: 'BMad Method' # <15min planning for most tasks
+  enterpriseMode: true # Enable for P0 issues
+  quickFlowThreshold: 'trivial' # typos, simple docs updates
+  enterpriseThreshold: 'P0' # Security, Enterprise Launch issues
+
+compliance:
+  lgpd: true # Brazilian GDPR (Lei 13.709/2018)
+  security: 'OWASP Top 10'
+  accessibility: 'WCAG 2.1 AA'
+  publicProcurement: 'Lei 14.133/2021'
+
+development:
+  pipeline:
+    maxConcurrentPRs: 3 # Preserve existing pipeline capacity
+    branchNaming: 'feat|fix|docs|chore|security/*'
+    requiresReview: true
+    prTemplate: '.github/PULL_REQUEST_TEMPLATE.md'
+
+  codebase:
+    type: 'monorepo'
+    workspaces:
+      - 'backend'
+      - 'frontend'
+      - 'e2e'
+    backend:
+      framework: 'NestJS'
+      language: 'TypeScript'
+      orm: 'TypeORM'
+      database: 'PostgreSQL + pgvector'
+      testing: 'Jest'
+      coverage: 78 # target percentage
+    frontend:
+      framework: 'React + Vite'
+      language: 'TypeScript'
+      styling: 'Tailwind CSS + shadcn/ui'
+      stateManagement: 'Zustand'
+      testing: 'Vitest'
+      coverage: 76 # target percentage
+    infrastructure:
+      platform: 'Railway'
+      deployment: 'Blue-green with health checks'
+      monitoring: 'Sentry'
+
+agents:
+  customPersonalities: true # Adapt to government context
+  language: 'pt-BR' # Portuguese for documentation
+  style: 'concise, technical, professional'
+
+  # Agent configurations
+  businessAnalyst:
+    expertise:
+      - 'Lei 14.133/2021 (Nova Lei de Licitações)'
+      - 'Estudos Técnicos Preliminares (ETP)'
+      - 'Public procurement best practices'
+      - 'B2G user research'
+    deliverables:
+      - 'Product Brief'
+      - 'User Stories'
+      - 'Market Analysis'
+
+  productManager:
+    expertise:
+      - 'LGPD compliance requirements'
+      - 'WCAG 2.1 AA accessibility'
+      - 'OWASP security priorities'
+      - 'Multi-tenant B2G architecture'
+    deliverables:
+      - 'Product Requirements Document (PRD)'
+      - 'Feature specifications'
+      - 'Acceptance criteria'
+
+  systemArchitect:
+    expertise:
+      - 'NestJS + TypeORM patterns'
+      - 'React + Tailwind architecture'
+      - 'Railway deployment strategies'
+      - 'Multi-tenancy with organizationId'
+      - 'PostgreSQL optimization'
+    deliverables:
+      - 'Technical Specification'
+      - 'Architecture Decision Records (ADR)'
+      - 'API contracts'
+      - 'Database migrations'
+
+  scrumMaster:
+    expertise:
+      - 'Story decomposition'
+      - 'Sprint planning'
+      - 'Pipeline management (max 3 PRs)'
+      - 'Velocity tracking'
+    deliverables:
+      - 'Hyper-contextualized stories'
+      - 'Implementation roadmaps'
+      - 'Definition of Done checklists'
+
+  developer:
+    expertise:
+      - 'NestJS controllers, services, repositories'
+      - 'React hooks, components, stores'
+      - 'Test-Driven Development (TDD)'
+      - 'TypeScript best practices'
+    deliverables:
+      - 'Production-ready code'
+      - 'Unit + integration tests'
+      - 'Documentation updates'
+
+  testArchitect:
+    expertise:
+      - 'Test coverage analysis'
+      - 'E2E test design (Playwright)'
+      - 'Performance testing'
+      - 'Accessibility testing (axe-core)'
+    deliverables:
+      - 'Test strategy'
+      - 'Coverage reports'
+      - 'QA sign-off'
+
+  uxDesigner:
+    expertise:
+      - 'WCAG 2.1 AA compliance'
+      - 'Government UX patterns'
+      - 'Accessibility for public servants'
+      - 'Design systems (Apple HIG, shadcn/ui)'
+    deliverables:
+      - 'UI/UX specifications'
+      - 'Accessibility audit'
+      - 'Design tokens'
+
+workflows:
+  # Four-Phase BMAD Workflow
+  phases:
+    - name: 'Analysis'
+      optional: true
+      triggers:
+        - 'Ambiguous requirements'
+        - 'New feature domain'
+        - 'Complex technical decisions'
+      deliverables:
+        - 'Product Brief'
+        - 'Research findings'
+        - 'Solution alternatives'
+
+    - name: 'Planning'
+      required: true # For all P0 issues
+      triggers:
+        - 'P0 Security issues'
+        - 'P0 Enterprise Launch issues'
+        - 'Complex features'
+      deliverables:
+        - 'Product Requirements Document (PRD)'
+        - 'Technical Specification'
+
+    - name: 'Solutioning'
+      required: true
+      deliverables:
+        - 'Architecture Decision Records (ADR)'
+        - 'UI/UX mockups (if applicable)'
+        - 'Database schema changes'
+
+    - name: 'Implementation'
+      required: true
+      deliverables:
+        - 'Code changes'
+        - 'Tests (unit + integration + E2E)'
+        - 'Documentation updates'
+        - 'ROADMAP.md updates'
+
+  # Custom workflows for ETP Express
+  customWorkflows:
+    - name: 'P0 Security Workflow'
+      phases: ['Planning', 'Solutioning', 'Implementation']
+      requirements:
+        - 'Security threat modeling'
+        - 'OWASP compliance validation'
+        - 'Penetration testing plan'
+
+    - name: 'P0 Enterprise Launch Workflow'
+      phases: ['Analysis', 'Planning', 'Solutioning', 'Implementation']
+      requirements:
+        - 'User experience validation'
+        - 'WCAG 2.1 AA compliance'
+        - 'Performance benchmarks'
+        - 'Wow factor assessment'
+
+    - name: 'Quick Fix Workflow'
+      phases: ['Implementation']
+      triggers:
+        - 'Typos'
+        - 'Documentation updates'
+        - 'Simple bug fixes (<30 min)'
+
+tokenOptimization:
+  enabled: true
+  documentSharding: true
+  helperPattern: true
+  functionalDesign: true
+
+  # Documents to shard
+  shardTargets:
+    - source: 'ROADMAP.md'
+      destination: '.bmad/helpers/roadmap/'
+      sections:
+        - 'milestones.md'
+        - 'p0-issues.md'
+        - 'metrics.md'
+        - 'changelog.md'
+
+    - source: 'ARCHITECTURE.md'
+      destination: '.bmad/helpers/architecture/'
+      sections:
+        - 'backend-stack.md'
+        - 'frontend-stack.md'
+        - 'database-schema.md'
+        - 'deployment.md'
+
+metrics:
+  development:
+    velocityTarget: '3-5 P0 issues/week'
+    qualityTarget: 'Zero regressions in BMAD-driven PRs'
+    coverageTarget:
+      backend: 78
+      frontend: 76
+
+  processes:
+    planningTimeQuickFlow: '< 5 min'
+    planningTimeBMadMethod: '< 15 min'
+    planningTimeEnterprise: '< 30 min'
+    documentationCoverage: '100% for P0 issues'
+
+  quality:
+    bugRate: '< 5% in BMAD-driven PRs'
+    reviewTime: '< 24h for PRs with complete stories'
+    rollbackRate: '< 2%'
+
+templates:
+  prd: '.bmad/templates/prd-template.md'
+  techSpec: '.bmad/templates/tech-spec-template.md'
+  story: '.bmad/templates/story-template.md'
+  adr: '.bmad/templates/adr-template.md'
+
+integration:
+  ci:
+    provider: 'GitHub Actions'
+    qualityChecks:
+      - 'PRD existence for P0 issues'
+      - 'Tech Spec completeness'
+      - 'Story Definition of Done'
+      - 'Test coverage targets'
+
+  deployment:
+    provider: 'Railway'
+    strategy: 'Blue-green with health checks'
+    rollbackPlan: 'git revert + redeploy'
+
+documentation:
+  root: 'docs/'
+  prds: 'docs/prds/'
+  techSpecs: 'docs/tech-specs/'
+  adrs: 'docs/architecture/'
+  stories: 'docs/stories/'
+
+# Preserved existing commands
+existingCommands:
+  - '/audit-roadmap'
+  - '/pick-next-issue'
+  - '/review-pr'
+
+# New BMAD commands
+bmadCommands:
+  - '/product-brief-etp'
+  - '/prd-etp'
+  - '/tech-spec-etp'
+  - '/story-etp'
+  - '/implement-etp'
+  - '/review-quality'
+
+version: '6.0.0-alpha.16'
+customized: '2025-12-11'
