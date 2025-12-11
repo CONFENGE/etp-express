@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 295/347 (85.0%) | **Deploy:** 🔴 CRASHED | **P0 Security:** 2 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 296/347 (85.3%) | **Deploy:** 🔴 CRASHED | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
 
 ## 🚨 ALERTA: Deploy Backend Railway CRASHED
 
@@ -63,11 +63,11 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 |
 | ~~#609~~ | ~~npm audit ausente no CI~~ | ✅ PR #622 |
 
-**Épico 4: UX Crítico (2 issues)**
+**Épico 4: UX Crítico (1 issue)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | ~~#610~~ | ~~Unsaved changes warning ausente~~ | ✅ PR #625 |
-| #611 | Polling AI continua após unmount | React warnings |
+| ~~#611~~ | ~~Polling AI continua após unmount~~ | ✅ PR #626 |
 | #612 | Export sem progress/cancel | UX ruim |
 
 **Labels:** `priority/P0`, `security`, `bug`
