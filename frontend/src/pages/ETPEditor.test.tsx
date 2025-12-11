@@ -11,6 +11,13 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useParams: vi.fn(),
+    // Mock useBlocker to avoid "must be used within a data router" error (#610)
+    useBlocker: vi.fn(() => ({
+      state: 'unblocked',
+      proceed: vi.fn(),
+      reset: vi.fn(),
+      location: undefined,
+    })),
   };
 });
 
