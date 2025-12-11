@@ -1,0 +1,201 @@
+name: Security - Dependency Audit
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/security-audit.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/security-audit.yml'
+  schedule:
+    # Run daily at 6 AM UTC to catch newly published CVEs
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      audit_level:
+        description: 'Minimum severity level to fail on'
+        required: false
+        default: 'moderate'
+        type: choice
+        options:
+          - low
+          - moderate
+          - high
+          - critical
+
+env:
+  AUDIT_LEVEL: ${{ inputs.audit_level || 'moderate' }}
+
+jobs:
+  audit-backend:
+    name: Audit Backend Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run npm audit (Backend)
+        id: audit-backend
+        working-directory: backend
+        continue-on-error: true
+        run: |
+          echo "## Backend Security Audit" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run audit and capture output
+          AUDIT_OUTPUT=$(npm audit --audit-level=${{ env.AUDIT_LEVEL }} 2>&1) || true
+          AUDIT_EXIT_CODE=$?
+
+          # Check for vulnerabilities
+          if echo "$AUDIT_OUTPUT" | grep -q "found 0 vulnerabilities"; then
+            echo "✅ **No vulnerabilities found**" >> $GITHUB_STEP_SUMMARY
+            echo "audit_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ **Vulnerabilities detected:**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "$AUDIT_OUTPUT" | tail -50 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "audit_status=failure" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate audit JSON report
+        if: always()
+        working-directory: backend
+        run: |
+          npm audit --json > audit-report.json 2>/dev/null || true
+
+      - name: Upload backend audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-audit-report
+          path: backend/audit-report.json
+          retention-days: 30
+
+  audit-frontend:
+    name: Audit Frontend Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run npm audit (Frontend)
+        id: audit-frontend
+        working-directory: frontend
+        continue-on-error: true
+        run: |
+          echo "## Frontend Security Audit" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run audit and capture output
+          AUDIT_OUTPUT=$(npm audit --audit-level=${{ env.AUDIT_LEVEL }} 2>&1) || true
+          AUDIT_EXIT_CODE=$?
+
+          # Check for vulnerabilities
+          if echo "$AUDIT_OUTPUT" | grep -q "found 0 vulnerabilities"; then
+            echo "✅ **No vulnerabilities found**" >> $GITHUB_STEP_SUMMARY
+            echo "audit_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ **Vulnerabilities detected:**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "$AUDIT_OUTPUT" | tail -50 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "audit_status=failure" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate audit JSON report
+        if: always()
+        working-directory: frontend
+        run: |
+          npm audit --json > audit-report.json 2>/dev/null || true
+
+      - name: Upload frontend audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-audit-report
+          path: frontend/audit-report.json
+          retention-days: 30
+
+  audit-summary:
+    name: Security Audit Summary
+    runs-on: ubuntu-latest
+    needs: [audit-backend, audit-frontend]
+    if: always()
+
+    steps:
+      - name: Check audit results
+        run: |
+          echo "## Security Audit Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.audit-backend.result }}" == "success" ]; then
+            echo "| Backend | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Backend | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.audit-frontend.result }}" == "success" ]; then
+            echo "| Frontend | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Frontend | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Audit Level:** ${{ env.AUDIT_LEVEL }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See individual job artifacts for detailed reports." >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if any audit failed
+        if: needs.audit-backend.result == 'failure' || needs.audit-frontend.result == 'failure'
+        run: |
+          echo "❌ Security audit failed - vulnerabilities detected above ${{ env.AUDIT_LEVEL }} severity"
+          echo ""
+          echo "To fix:"
+          echo "  1. Run 'npm audit' locally to see details"
+          echo "  2. Run 'npm audit fix' to auto-fix where possible"
+          echo "  3. For breaking changes: 'npm audit fix --force' (review carefully)"
+          echo "  4. Manual updates may be required for some packages"
+          echo ""
+          echo "To temporarily allow specific vulnerabilities, add them to .nsprc"
+          exit 1
