@@ -29,10 +29,29 @@ async function bootstrap() {
   // Cookie parser for httpOnly JWT cookie authentication
   app.use(cookieParser());
 
-  // CORS
-  const corsOrigins = configService.get('CORS_ORIGINS')?.split(',') || [
-    'http://localhost:5173',
-  ];
+  // CORS - Defense in depth validation (#599)
+  // Joi schema already enforces CORS_ORIGINS in production, but we add explicit check here
+  const nodeEnv = configService.get('NODE_ENV');
+  const corsOriginsRaw = configService.get('CORS_ORIGINS');
+
+  if (nodeEnv === 'production' && !corsOriginsRaw) {
+    logger.error(
+      '❌ CORS_ORIGINS must be defined in production environment. ' +
+        'Set CORS_ORIGINS=https://your-frontend-url.railway.app in Railway variables.',
+    );
+    throw new Error(
+      'CORS_ORIGINS environment variable is required in production',
+    );
+  }
+
+  const corsOrigins = corsOriginsRaw?.split(',') || ['http://localhost:5173'];
+
+  if (nodeEnv !== 'production') {
+    logger.log(`🔧 CORS configured for development: ${corsOrigins.join(', ')}`);
+  } else {
+    logger.log(`🔒 CORS configured for production: ${corsOrigins.join(', ')}`);
+  }
+
   app.enableCors({
     origin: corsOrigins,
     credentials: true,
@@ -98,7 +117,6 @@ async function bootstrap() {
     .build();
 
   // Only expose Swagger in non-production environments for security
-  const nodeEnv = configService.get('NODE_ENV');
   if (nodeEnv !== 'production') {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document, {

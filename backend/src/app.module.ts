@@ -62,7 +62,15 @@ import { RolesGuard } from './common/guards/roles.guard';
         PERPLEXITY_MODEL_SIMPLE: Joi.string().default('sonar'),
         PERPLEXITY_MODEL_DEEP: Joi.string().default('sonar-deep-research'),
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
-        CORS_ORIGINS: Joi.string().default('http://localhost:5173'),
+        // CORS_ORIGINS is required in production to prevent silent fallback to localhost (#599)
+        CORS_ORIGINS: Joi.when('NODE_ENV', {
+          is: 'production',
+          then: Joi.string().required().messages({
+            'any.required':
+              'CORS_ORIGINS must be defined in production. Example: CORS_ORIGINS=https://your-frontend.railway.app',
+          }),
+          otherwise: Joi.string().default('http://localhost:5173'),
+        }),
 
         // Database connection pooling (#108, #343)
         // Railway Postgres Starter: max 20 connections
