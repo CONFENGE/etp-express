@@ -246,6 +246,31 @@ Issues #261-#269, #298-#301
 
 ---
 
+## Changelog Recente
+
+### 2025-12-11
+
+**PR #625 - Unsaved Changes Warning (Issue #610)** ✅
+
+- **Feature:** Aviso ao usuário quando há alterações não salvas no ETPEditor
+- **Componentes criados:**
+  - `useUnsavedChangesWarning` - Hook para bloqueio de navegação (React Router + beforeunload)
+  - `UnsavedChangesDialog` - Diálogo de confirmação com AlertDialog
+- **Melhorias no ETPEditor:**
+  - Tracking de dirty state comparando conteúdo atual vs último salvo
+  - Indicador visual (\*) no título quando há alterações pendentes
+  - Reset do dirty state após save bem-sucedido
+- **Testes:** +29 novos testes (15 hook + 14 componente)
+- **Validação `/review-pr`:** Score 100/100 (8 categorias)
+- **Post-merge:** 3 layers de validação passaram (build, tests, CI pipeline)
+
+**PR #624 - ProtectedRoute Auth Check (Issue #606)** ✅
+
+- Corrigido flash da tela de login durante refresh de página
+- Auth check agora aguarda carregamento antes de renderizar
+
+---
+
 ## Infraestrutura de Commands
 
 | Command            | Última Atualização | Status                                                            |
