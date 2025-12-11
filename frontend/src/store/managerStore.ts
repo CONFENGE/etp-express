@@ -115,8 +115,10 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create user';
-      set({ error: errorMessage, loading: false });
+      set({ error: errorMessage });
       throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -132,8 +134,10 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to update user';
-      set({ error: errorMessage, loading: false });
+      set({ error: errorMessage });
       throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -149,8 +153,10 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to delete user';
-      set({ error: errorMessage, loading: false });
+      set({ error: errorMessage });
       throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -166,8 +172,10 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to reset password';
-      set({ error: errorMessage, loading: false });
+      set({ error: errorMessage });
       throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
