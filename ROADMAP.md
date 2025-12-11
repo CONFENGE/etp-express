@@ -20,7 +20,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (9 issues restantes)
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (5 issues restantes)
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
@@ -41,11 +41,11 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #605 | Dynamic import sem error handling | Auth loop |
 | #606 | ProtectedRoute antes de auth check | Flash login |
 
-**Épico 3: Infraestrutura (1 issue)**
+**Épico 3: Infraestrutura (0 issues - ✅ COMPLETO)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
-| #607 | Graceful shutdown handler ausente | Requests perdidos |
-| ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 (OWASP Logging) |
+| ~~#607~~ | ~~Graceful shutdown handler ausente~~ | ✅ PR #617 |
+| ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 |
 | ~~#609~~ | ~~npm audit ausente no CI~~ | ✅ PR #622 |
 
 **Épico 4: UX Crítico (3 issues)**
