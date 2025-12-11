@@ -8,6 +8,18 @@ afterEach(() => {
 });
 
 // =============================================================================
+// Mock do ResizeObserver (usado por Radix UI para componentes como Checkbox)
+// jsdom não implementa nativamente
+// =============================================================================
+class MockResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+
+// =============================================================================
 // Mock do PointerEvent para Radix UI (jsdom não implementa nativamente)
 // Necessário para componentes como Dialog, Select, Popover, etc.
 // Herda de MouseEvent para compatibilidade com @testing-library/user-event
