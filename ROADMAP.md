@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 286/347 (82.4%) | **Deploy:** Operacional | **P0 Security:** 11 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 287/347 (82.7%) | **Deploy:** Operacional | **P0 Security:** 10 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -20,17 +20,17 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (13 issues restantes)
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (12 issues restantes)
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
-**Épico 1: Security Backend (1 issue restante)**
+**Épico 1: Security Backend (0 issues - ✅ COMPLETO)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | ~~#598~~ | ~~SSL Certificate Validation desabilitado~~ | ✅ PR #614 (OWASP A03:2021) |
 | ~~#599~~ | ~~CORS fallback para localhost~~ | ✅ PR #615 |
 | ~~#600~~ | ~~Complexidade senha ausente no registro~~ | ✅ PR #616 (OWASP A07:2021) |
-| #601 | Browser cleanup PDF pode falhar | Resource leak |
+| ~~#601~~ | ~~Browser cleanup PDF pode falhar~~ | ✅ PR #618 |
 | ~~#602~~ | ~~Admin authorization não implementada~~ | ✅ PR #613 (OWASP A01:2021) |
 
 **Épico 2: Bugs Frontend (4 issues)**
