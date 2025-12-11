@@ -9,6 +9,7 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 [![CI Lint](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-lint.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-lint.yml)
 [![CI Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/ci-tests.yml)
 [![E2E Tests](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/playwright.yml)
+[![Security Audit](https://github.com/tjsasakifln/etp-express/actions/workflows/security-audit.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/security-audit.yml)
 [![Secret Scan](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml)
 [![Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Zero%20Errors-blue)]()
