@@ -269,6 +269,61 @@ describe('ExportService', () => {
       // Browser should not be launched if ETP doesn't exist
       expect(puppeteer.launch).not.toHaveBeenCalled();
     });
+
+    it('should handle browser close failure gracefully and still return PDF', async () => {
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [mockSection] as EtpSection[],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockBrowser.close.mockRejectedValue(
+        new Error('Browser process already closed'),
+      );
+
+      // Should NOT throw - browser close error is logged but not propagated
+      const result = await service.exportToPDF('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(mockBrowser.close).toHaveBeenCalled();
+    });
+
+    it('should handle browser close failure after PDF generation failure', async () => {
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [mockSection] as EtpSection[],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
+      mockBrowser.close.mockRejectedValue(
+        new Error('Browser process already closed'),
+      );
+
+      // Should throw the original PDF error, not the close error
+      await expect(service.exportToPDF('etp-123')).rejects.toThrow(
+        'PDF generation failed',
+      );
+
+      // Browser close should still be attempted
+      expect(mockBrowser.close).toHaveBeenCalled();
+    });
+
+    it('should handle non-Error objects thrown by browser.close()', async () => {
+      const etpWithSections = {
+        ...mockEtp,
+        sections: [mockSection] as EtpSection[],
+      } as Etp;
+
+      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockBrowser.close.mockRejectedValue('String error message');
+
+      // Should NOT throw - browser close error is logged but not propagated
+      const result = await service.exportToPDF('etp-123');
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(mockBrowser.close).toHaveBeenCalled();
+    });
   });
 
   describe('exportToDocx', () => {
