@@ -26,6 +26,17 @@ export class PollingTimeoutError extends Error {
 }
 
 /**
+ * Error thrown when polling is aborted
+ * @see #611 - Abort polling on component unmount
+ */
+export class PollingAbortedError extends Error {
+  constructor(jobId: string) {
+    super(`Polling cancelado para o job ${jobId}`);
+    this.name = 'PollingAbortedError';
+  }
+}
+
+/**
  * Error thrown when job fails
  */
 export class JobFailedError extends Error {
@@ -40,16 +51,21 @@ export class JobFailedError extends Error {
  *
  * @param jobId - The BullMQ job ID to poll
  * @param onProgress - Callback called with progress percentage (0-100)
- * @param options - Polling options (interval, max attempts)
+ * @param options - Polling options (interval, max attempts, abort signal)
  * @returns The generated section when job completes
  * @throws {PollingTimeoutError} If max attempts reached
  * @throws {JobFailedError} If job fails
+ * @throws {PollingAbortedError} If polling is aborted via signal
  *
  * @example
  * ```ts
+ * const controller = new AbortController();
  * const section = await pollJobStatus(jobId, (progress) => {
  *   console.log(`Progress: ${progress}%`);
- * });
+ * }, { signal: controller.signal });
+ *
+ * // To abort:
+ * controller.abort();
  * ```
  */
 export async function pollJobStatus(
@@ -58,23 +74,37 @@ export async function pollJobStatus(
   options?: {
     intervalMs?: number;
     maxAttempts?: number;
+    signal?: AbortSignal;
   },
 ): Promise<Section> {
   const intervalMs = options?.intervalMs ?? POLL_INTERVAL_MS;
   const maxAttempts = options?.maxAttempts ?? MAX_POLL_ATTEMPTS;
+  const signal = options?.signal;
 
   let attempts = 0;
 
   while (attempts < maxAttempts) {
+    // Check if aborted before each poll (#611)
+    if (signal?.aborted) {
+      throw new PollingAbortedError(jobId);
+    }
+
     try {
       const response = await apiHelpers.get<{ data: JobStatusData }>(
         `/sections/jobs/${jobId}`,
       );
 
+      // Check if aborted after API call (#611)
+      if (signal?.aborted) {
+        throw new PollingAbortedError(jobId);
+      }
+
       const { status, progress, result, failedReason, error } = response.data;
 
-      // Report progress
-      onProgress?.(progress);
+      // Report progress only if not aborted (#611)
+      if (!signal?.aborted) {
+        onProgress?.(progress);
+      }
 
       // Handle completion
       if (status === 'completed' && result) {
@@ -94,13 +124,22 @@ export async function pollJobStatus(
         );
       }
 
-      // Wait before next poll
-      await sleep(intervalMs);
+      // Wait before next poll, with abort support (#611)
+      await sleepWithAbort(intervalMs, signal);
       attempts++;
     } catch (err) {
       // Re-throw our custom errors
-      if (err instanceof PollingTimeoutError || err instanceof JobFailedError) {
+      if (
+        err instanceof PollingTimeoutError ||
+        err instanceof JobFailedError ||
+        err instanceof PollingAbortedError
+      ) {
         throw err;
+      }
+
+      // Handle AbortError from sleepWithAbort (#611)
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new PollingAbortedError(jobId);
       }
 
       // Handle API errors (404, 500, etc.)
@@ -115,10 +154,28 @@ export async function pollJobStatus(
 }
 
 /**
- * Sleep utility for polling intervals
+ * Sleep utility with abort support (#611)
+ * Resolves after ms or rejects if signal is aborted
  */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function sleepWithAbort(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      reject(new DOMException('Aborted', 'AbortError'));
+    };
+
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
 }
 
 /**

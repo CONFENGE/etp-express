@@ -9,6 +9,7 @@ import {
   getStatusMessage,
   PollingTimeoutError,
   JobFailedError,
+  PollingAbortedError,
 } from './polling';
 import { apiHelpers } from './api';
 
@@ -197,6 +198,74 @@ describe('polling utilities', () => {
 
       await expect(pollJobStatus('job-123')).rejects.toThrow(JobFailedError);
       await expect(pollJobStatus('job-123')).rejects.toThrow('Network error');
+    });
+
+    /**
+     * Abort/Cancel tests (#611)
+     * Tests for AbortController support in polling
+     */
+    describe('abort support (#611)', () => {
+      it('should throw PollingAbortedError when signal is already aborted', async () => {
+        const controller = new AbortController();
+        controller.abort();
+
+        await expect(
+          pollJobStatus('job-123', undefined, { signal: controller.signal }),
+        ).rejects.toThrow(PollingAbortedError);
+      });
+
+      it('should check abort signal before API call', async () => {
+        const controller = new AbortController();
+
+        // Mock that would return completed if called
+        vi.mocked(apiHelpers.get).mockResolvedValue({
+          data: {
+            jobId: 'job-123',
+            status: 'completed',
+            progress: 100,
+            result: { id: 'section-1', content: 'content' },
+          },
+        });
+
+        // Abort before starting
+        controller.abort();
+
+        await expect(
+          pollJobStatus('job-123', undefined, {
+            signal: controller.signal,
+          }),
+        ).rejects.toThrow(PollingAbortedError);
+
+        // API should not have been called
+        expect(apiHelpers.get).not.toHaveBeenCalled();
+      });
+
+      it('should check abort signal after API call', async () => {
+        const controller = new AbortController();
+        let callCount = 0;
+
+        // Mock API that aborts after first call
+        vi.mocked(apiHelpers.get).mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            // Abort after first API call completes
+            controller.abort();
+          }
+          return Promise.resolve({
+            data: { jobId: 'job-123', status: 'active', progress: 50 },
+          });
+        });
+
+        await expect(
+          pollJobStatus('job-123', undefined, {
+            signal: controller.signal,
+            intervalMs: 100,
+          }),
+        ).rejects.toThrow(PollingAbortedError);
+
+        // API should have been called once before abort was detected
+        expect(callCount).toBe(1);
+      });
     });
   });
 
