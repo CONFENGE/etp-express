@@ -9,6 +9,15 @@
     "security:scan:staged": "gitleaks protect --verbose --staged --config .gitleaks.toml",
     "test:e2e": "cd e2e && npx tsx run-tests.ts"
   },
+  "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^4.17.21",
+    "@types/nodemailer": "^7.0.4",
+    "@types/opossum": "^8.1.9",
+    "@types/passport-jwt": "^4.0.0",
+    "@types/passport-local": "^1.0.38"
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.56.1",
