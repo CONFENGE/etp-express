@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs } from '@/components/ui/tabs';
@@ -17,6 +17,8 @@ import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
 import { useDemoConversion } from '@/hooks/useDemoConversion';
+import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
+import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +32,11 @@ export function ETPEditor() {
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Unsaved changes tracking (#610)
+  const [lastSavedContent, setLastSavedContent] = useState<string>('');
+  const isDirty = content !== lastSavedContent;
+  const { isBlocking, proceed, reset } = useUnsavedChangesWarning({ isDirty });
 
   // Async generation state from store (#222)
   const {
@@ -85,7 +92,10 @@ export function ETPEditor() {
       const section = currentETP.sections.find(
         (s) => s.sectionNumber === activeSection,
       );
-      setContent(section?.content || '');
+      const sectionContent = section?.content || '';
+      setContent(sectionContent);
+      // Reset dirty state when loading new content (#610)
+      setLastSavedContent(sectionContent);
     }
   }, [currentETP, activeSection]);
 
@@ -108,7 +118,7 @@ export function ETPEditor() {
     previousProgressRef.current = currentProgress;
   }, [currentETP?.progress, isDemoUser, triggerBanner, currentETP]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!currentETP || !id) return;
 
     setIsSaving(true);
@@ -118,13 +128,15 @@ export function ETPEditor() {
           s.sectionNumber === activeSection ? { ...s, content } : s,
         ),
       });
+      // Reset dirty state after successful save (#610)
+      setLastSavedContent(content);
       success('Seção salva com sucesso!');
     } catch {
       error('Erro ao salvar seção');
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [currentETP, id, updateETP, activeSection, content, success, error]);
 
   const handleGenerateAll = async () => {
     // Generate all sections sequentially
@@ -301,6 +313,7 @@ export function ETPEditor() {
           onExportDocx={handleExportDocx}
           isSaving={isSaving}
           isExporting={isExporting}
+          isDirty={isDirty}
         />
 
         <ETPEditorProgress progress={currentETP.progress} />
@@ -354,6 +367,13 @@ export function ETPEditor() {
 
       {/* Demo conversion CTA banner (#475) */}
       {showBanner && <DemoConversionBanner onClose={dismissBanner} />}
+
+      {/* Unsaved changes warning dialog (#610) */}
+      <UnsavedChangesDialog
+        open={isBlocking}
+        onConfirm={proceed}
+        onCancel={reset}
+      />
     </MainLayout>
   );
 }
