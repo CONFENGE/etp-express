@@ -95,12 +95,14 @@ export class ExportService {
     const etp = await this.getEtpWithSections(etpId);
     const html = this.generateHTML(etp);
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    let browser: puppeteer.Browser | null = null;
 
     try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'networkidle0' });
 
@@ -118,7 +120,17 @@ export class ExportService {
       this.logger.log('PDF generated successfully');
       return Buffer.from(pdfBuffer);
     } finally {
-      await browser.close();
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          this.logger.error(
+            `Failed to close browser after PDF export: ${closeError instanceof Error ? closeError.message : 'Unknown error'}`,
+            closeError instanceof Error ? closeError.stack : undefined,
+          );
+          // Don't re-throw - only log the cleanup error
+        }
+      }
     }
   }
 
