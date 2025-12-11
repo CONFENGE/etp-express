@@ -11,12 +11,14 @@ import {
   UseInterceptors,
   BadRequestException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
@@ -25,7 +27,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { CancelDeletionDto } from './dto/cancel-deletion.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../entities/user.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -36,7 +41,7 @@ import { DISCLAIMER } from '../../common/constants/messages';
  * ClassSerializerInterceptor automatically excludes password field from responses.
  *
  * Authorization:
- * - POST /users and DELETE /users/:id are admin-only (not enforced yet)
+ * - POST /users, DELETE /users/:id, and POST /users/admin/purge-deleted require SYSTEM_ADMIN role
  * - Other endpoints accessible to authenticated users
  *
  * Standard HTTP status codes:
@@ -44,37 +49,52 @@ import { DISCLAIMER } from '../../common/constants/messages';
  * - 201: Created
  * - 400: Validation error
  * - 401: Unauthorized (missing or invalid JWT)
+ * - 403: Forbidden (insufficient role permissions)
  * - 404: User not found
  */
 @ApiTags('users')
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
   /**
-   * Creates a new user (admin only).
+   * Creates a new user (SYSTEM_ADMIN only).
    *
    * @remarks
-   * Admin authorization is not yet enforced. This endpoint should be
-   * protected with an admin guard in the future.
+   * This endpoint is protected by RolesGuard and requires SYSTEM_ADMIN role.
+   * Unauthorized access attempts are logged for security audit.
    *
    * @param createUserDto - User creation data (name, email, password)
+   * @param currentUser - Current authenticated user (for audit logging)
    * @returns Created user entity (password excluded) with disclaimer message
    * @throws {ConflictException} 409 - If email already exists
    * @throws {BadRequestException} 400 - If validation fails
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If user does not have SYSTEM_ADMIN role
    */
   @Post()
-  @ApiOperation({ summary: 'Criar novo usuário (admin only)' })
+  @Roles(UserRole.SYSTEM_ADMIN)
+  @ApiOperation({ summary: 'Criar novo usuário (SYSTEM_ADMIN only)' })
   @ApiResponse({ status: 201, description: 'Usuário criado com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
-  async create(@Body() createUserDto: CreateUserDto) {
+  @ApiForbiddenResponse({
+    description: 'Acesso negado - requer role SYSTEM_ADMIN',
+  })
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() currentUser: { id: string; email: string; role: UserRole },
+  ) {
+    this.logger.log(
+      `[ADMIN] User ${currentUser.email} (${currentUser.id}) creating new user with email: ${createUserDto.email}`,
+    );
     const user = await this.usersService.create(createUserDto);
     return {
       data: user,
@@ -344,22 +364,34 @@ export class UsersController {
   }
 
   /**
-   * Deletes a user (admin only).
+   * Deletes a user (SYSTEM_ADMIN only).
    *
    * @remarks
-   * Admin authorization is not yet enforced. This endpoint should be
-   * protected with an admin guard in the future.
+   * This endpoint is protected by RolesGuard and requires SYSTEM_ADMIN role.
+   * Unauthorized access attempts are logged for security audit.
    *
    * @param id - User unique identifier (UUID)
+   * @param currentUser - Current authenticated user (for audit logging)
    * @returns Success message with disclaimer
    * @throws {NotFoundException} 404 - If user not found
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If user does not have SYSTEM_ADMIN role
    */
   @Delete(':id')
-  @ApiOperation({ summary: 'Deletar usuário (admin only)' })
+  @Roles(UserRole.SYSTEM_ADMIN)
+  @ApiOperation({ summary: 'Deletar usuário (SYSTEM_ADMIN only)' })
   @ApiResponse({ status: 200, description: 'Usuário deletado com sucesso' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async remove(@Param('id') id: string) {
+  @ApiForbiddenResponse({
+    description: 'Acesso negado - requer role SYSTEM_ADMIN',
+  })
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: { id: string; email: string; role: UserRole },
+  ) {
+    this.logger.warn(
+      `[ADMIN] User ${currentUser.email} (${currentUser.id}) deleting user with ID: ${id}`,
+    );
     await this.usersService.remove(id);
     return {
       message: 'Usuário deletado com sucesso',
@@ -368,22 +400,24 @@ export class UsersController {
   }
 
   /**
-   * Manually triggers hard delete purge of accounts soft-deleted for >30 days (admin only).
+   * Manually triggers hard delete purge of accounts soft-deleted for >30 days (SYSTEM_ADMIN only).
    *
    * @remarks
-   * Admin authorization is not yet enforced. This endpoint should be
-   * protected with an admin guard in the future.
+   * This endpoint is protected by RolesGuard and requires SYSTEM_ADMIN role.
+   * Unauthorized access attempts are logged for security audit.
    *
    * This endpoint allows manual triggering of the automated daily purge job.
    * Useful for testing or immediate cleanup without waiting for scheduled cron.
    *
+   * @param currentUser - Current authenticated user (for audit logging)
    * @returns Purge statistics (count, timestamp, purged user IDs)
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If user does not have SYSTEM_ADMIN role
    */
   @Post('admin/purge-deleted')
+  @Roles(UserRole.SYSTEM_ADMIN)
   @ApiOperation({
-    summary:
-      'Purge manual de contas deletadas há >30 dias (admin only - testing)',
+    summary: 'Purge manual de contas deletadas há >30 dias (SYSTEM_ADMIN only)',
   })
   @ApiResponse({
     status: 200,
@@ -399,7 +433,15 @@ export class UsersController {
       },
     },
   })
-  async adminPurgeDeleted() {
+  @ApiForbiddenResponse({
+    description: 'Acesso negado - requer role SYSTEM_ADMIN',
+  })
+  async adminPurgeDeleted(
+    @CurrentUser() currentUser: { id: string; email: string; role: UserRole },
+  ) {
+    this.logger.warn(
+      `[ADMIN] User ${currentUser.email} (${currentUser.id}) executing manual purge of deleted accounts`,
+    );
     const result = await this.usersService.purgeDeletedAccounts();
     return {
       message: 'Purge de contas deletadas executado com sucesso',

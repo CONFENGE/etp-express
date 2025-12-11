@@ -5,14 +5,18 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { CancelDeletionDto } from './dto/cancel-deletion.dto';
+import { UserRole } from '../../entities/user.entity';
+import { ROLES_KEY } from '../../common/decorators/roles.decorator';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -45,6 +49,20 @@ describe('UsersController', () => {
     updatedAt: new Date(),
   };
 
+  // Mock admin user for testing admin-only endpoints
+  const mockAdminUser = {
+    id: 'admin-123',
+    email: 'admin@example.com',
+    role: UserRole.SYSTEM_ADMIN,
+  };
+
+  // Mock regular user for testing authorization
+  const mockRegularUser = {
+    id: 'regular-123',
+    email: 'regular@example.com',
+    role: UserRole.USER,
+  };
+
   const mockUsersService = {
     create: jest.fn(),
     findAll: jest.fn(),
@@ -54,6 +72,7 @@ describe('UsersController', () => {
     exportUserData: jest.fn(),
     softDeleteAccount: jest.fn(),
     cancelDeletion: jest.fn(),
+    purgeDeletedAccounts: jest.fn(),
   };
 
   const mockJwtService = {
@@ -99,13 +118,13 @@ describe('UsersController', () => {
       cargo: 'Analista',
     };
 
-    it('should create a new user', async () => {
+    it('should create a new user when called by SYSTEM_ADMIN', async () => {
       // Arrange
       const newUser = { ...mockUser, ...createUserDto };
       mockUsersService.create.mockResolvedValue(newUser);
 
       // Act
-      const result = await controller.create(createUserDto);
+      const result = await controller.create(createUserDto, mockAdminUser);
 
       // Assert
       expect(service.create).toHaveBeenCalledWith(createUserDto);
@@ -123,12 +142,12 @@ describe('UsersController', () => {
       );
 
       // Act & Assert
-      await expect(controller.create(createUserDto)).rejects.toThrow(
-        ConflictException,
-      );
-      await expect(controller.create(createUserDto)).rejects.toThrow(
-        'Email já cadastrado',
-      );
+      await expect(
+        controller.create(createUserDto, mockAdminUser),
+      ).rejects.toThrow(ConflictException);
+      await expect(
+        controller.create(createUserDto, mockAdminUser),
+      ).rejects.toThrow('Email já cadastrado');
     });
 
     it('should include disclaimer in response', async () => {
@@ -136,13 +155,20 @@ describe('UsersController', () => {
       mockUsersService.create.mockResolvedValue(mockUser);
 
       // Act
-      const result = await controller.create(createUserDto);
+      const result = await controller.create(createUserDto, mockAdminUser);
 
       // Assert
       expect(result).toHaveProperty('disclaimer');
       expect(result.disclaimer).toContain(
         'Lembre-se de verificar todas as informações',
       );
+    });
+
+    it('should have @Roles(SYSTEM_ADMIN) decorator', () => {
+      // Verify that the create method has the Roles decorator with SYSTEM_ADMIN
+      const metadata = Reflect.getMetadata(ROLES_KEY, controller.create);
+      expect(metadata).toBeDefined();
+      expect(metadata).toContain(UserRole.SYSTEM_ADMIN);
     });
   });
 
@@ -334,12 +360,12 @@ describe('UsersController', () => {
   });
 
   describe('remove', () => {
-    it('should delete a user', async () => {
+    it('should delete a user when called by SYSTEM_ADMIN', async () => {
       // Arrange
       mockUsersService.remove.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.remove(mockUserId);
+      const result = await controller.remove(mockUserId, mockAdminUser);
 
       // Assert
       expect(service.remove).toHaveBeenCalledWith(mockUserId);
@@ -355,9 +381,9 @@ describe('UsersController', () => {
       );
 
       // Act & Assert
-      await expect(controller.remove('invalid-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        controller.remove('invalid-id', mockAdminUser),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should include disclaimer in delete response', async () => {
@@ -365,11 +391,18 @@ describe('UsersController', () => {
       mockUsersService.remove.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.remove(mockUserId);
+      const result = await controller.remove(mockUserId, mockAdminUser);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    it('should have @Roles(SYSTEM_ADMIN) decorator', () => {
+      // Verify that the remove method has the Roles decorator with SYSTEM_ADMIN
+      const metadata = Reflect.getMetadata(ROLES_KEY, controller.remove);
+      expect(metadata).toBeDefined();
+      expect(metadata).toContain(UserRole.SYSTEM_ADMIN);
     });
   });
 
@@ -857,6 +890,132 @@ describe('UsersController', () => {
 
       // Assert - verify service called with extracted userId
       expect(service.cancelDeletion).toHaveBeenCalledWith(testUserId);
+    });
+  });
+
+  describe('adminPurgeDeleted', () => {
+    const mockPurgeResult = {
+      purgedCount: 3,
+      purgedAt: new Date(),
+      purgedUserIds: ['user-1', 'user-2', 'user-3'],
+    };
+
+    it('should purge deleted accounts when called by SYSTEM_ADMIN', async () => {
+      // Arrange
+      mockUsersService.purgeDeletedAccounts.mockResolvedValue(mockPurgeResult);
+
+      // Act
+      const result = await controller.adminPurgeDeleted(mockAdminUser);
+
+      // Assert
+      expect(service.purgeDeletedAccounts).toHaveBeenCalled();
+      expect(service.purgeDeletedAccounts).toHaveBeenCalledTimes(1);
+      expect(result.message).toBe(
+        'Purge de contas deletadas executado com sucesso',
+      );
+      expect(result.purgedCount).toBe(3);
+      expect(result.purgedUserIds).toEqual(['user-1', 'user-2', 'user-3']);
+      expect(result.disclaimer).toBeDefined();
+    });
+
+    it('should return zero count when no accounts to purge', async () => {
+      // Arrange
+      mockUsersService.purgeDeletedAccounts.mockResolvedValue({
+        purgedCount: 0,
+        purgedAt: new Date(),
+        purgedUserIds: [],
+      });
+
+      // Act
+      const result = await controller.adminPurgeDeleted(mockAdminUser);
+
+      // Assert
+      expect(result.purgedCount).toBe(0);
+      expect(result.purgedUserIds).toEqual([]);
+    });
+
+    it('should include comprehensive disclaimer in response', async () => {
+      // Arrange
+      mockUsersService.purgeDeletedAccounts.mockResolvedValue(mockPurgeResult);
+
+      // Act
+      const result = await controller.adminPurgeDeleted(mockAdminUser);
+
+      // Assert
+      expect(result.disclaimer).toContain('permanentemente');
+      expect(result.disclaimer).toContain('irreversível');
+      expect(result.disclaimer).toContain('30 dias');
+    });
+
+    it('should have @Roles(SYSTEM_ADMIN) decorator', () => {
+      // Verify that the adminPurgeDeleted method has the Roles decorator with SYSTEM_ADMIN
+      const metadata = Reflect.getMetadata(
+        ROLES_KEY,
+        controller.adminPurgeDeleted,
+      );
+      expect(metadata).toBeDefined();
+      expect(metadata).toContain(UserRole.SYSTEM_ADMIN);
+    });
+  });
+
+  describe('Role-based authorization decorators', () => {
+    it('should have RolesGuard applied to controller class', () => {
+      // Verify that the controller uses RolesGuard
+      const guards = Reflect.getMetadata('__guards__', UsersController);
+      expect(guards).toBeDefined();
+      expect(guards.length).toBeGreaterThan(0);
+      // Should have at least JwtAuthGuard and RolesGuard
+      const guardNames = guards.map((guard: any) => guard.name);
+      expect(guardNames).toContain('JwtAuthGuard');
+      expect(guardNames).toContain('RolesGuard');
+    });
+
+    it('should require SYSTEM_ADMIN for create endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.create);
+      expect(roles).toContain(UserRole.SYSTEM_ADMIN);
+    });
+
+    it('should require SYSTEM_ADMIN for remove endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.remove);
+      expect(roles).toContain(UserRole.SYSTEM_ADMIN);
+    });
+
+    it('should require SYSTEM_ADMIN for adminPurgeDeleted endpoint', () => {
+      const roles = Reflect.getMetadata(
+        ROLES_KEY,
+        controller.adminPurgeDeleted,
+      );
+      expect(roles).toContain(UserRole.SYSTEM_ADMIN);
+    });
+
+    it('should NOT require SYSTEM_ADMIN for findAll endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.findAll);
+      expect(roles).toBeUndefined();
+    });
+
+    it('should NOT require SYSTEM_ADMIN for findOne endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.findOne);
+      expect(roles).toBeUndefined();
+    });
+
+    it('should NOT require SYSTEM_ADMIN for getProfile endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.getProfile);
+      expect(roles).toBeUndefined();
+    });
+
+    it('should NOT require SYSTEM_ADMIN for update endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.update);
+      expect(roles).toBeUndefined();
+    });
+
+    it('should NOT require SYSTEM_ADMIN for deleteMyAccount endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.deleteMyAccount);
+      expect(roles).toBeUndefined();
+    });
+
+    it('should NOT require SYSTEM_ADMIN for exportUserData endpoint', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.exportUserData);
+      expect(roles).toBeUndefined();
     });
   });
 });
