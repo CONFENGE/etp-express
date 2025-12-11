@@ -29,7 +29,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ---- | ----------------------------------------- | ------- |
 | ~~#598~~ | ~~SSL Certificate Validation desabilitado~~ | ✅ PR #614 (OWASP A03:2021) |
 | ~~#599~~ | ~~CORS fallback para localhost~~ | ✅ PR #615 |
-| ~~#600~~ | ~~Complexidade senha ausente no registro~~ | ✅ PR #615 (implementado anteriormente) |
+| ~~#600~~ | ~~Complexidade senha ausente no registro~~ | ✅ PR #616 (OWASP A07:2021) |
 | #601 | Browser cleanup PDF pode falhar | Resource leak |
 | ~~#602~~ | ~~Admin authorization não implementada~~ | ✅ PR #613 (OWASP A01:2021) |
 
