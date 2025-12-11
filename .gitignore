@@ -117,8 +117,10 @@ secrets/
 docs/.vitepress/dist
 docs/.vitepress/cache
 
-# Claude Code
-.claude/
+# Claude Code (allow commands/skills, ignore local settings)
+.claude/settings.local.json
+.claude/history/
+.claude/*.log
 
 # Lock files (opcional - descomente se quiser versionar)
 # package-lock.json
