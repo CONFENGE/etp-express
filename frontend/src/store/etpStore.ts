@@ -16,6 +16,7 @@ import {
   pollJobStatus,
   JobFailedError,
   PollingTimeoutError,
+  PollingAbortedError,
 } from '@/lib/polling';
 import { logger } from '@/lib/logger';
 
@@ -72,6 +73,9 @@ interface ETFState {
   // Utility
   clearError: () => void;
   resetStore: () => void;
+
+  // Abort/Cancel (#611)
+  cancelGeneration: () => void;
 }
 
 const initialState = {
@@ -87,6 +91,12 @@ const initialState = {
   generationStatus: 'idle' as GenerationStatus,
   generationJobId: null as string | null,
 };
+
+/**
+ * AbortController for current polling operation (#611)
+ * Stored outside the store to avoid triggering re-renders
+ */
+let currentPollingController: AbortController | null = null;
 
 export const useETPStore = create<ETFState>((set, _get) => ({
   ...initialState,
@@ -212,6 +222,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   },
 
   generateSection: async (request: AIGenerationRequest) => {
+    // Cancel any existing polling before starting new one (#611)
+    if (currentPollingController) {
+      currentPollingController.abort();
+    }
+    currentPollingController = new AbortController();
+    const { signal } = currentPollingController;
+
     set({
       aiGenerating: true,
       error: null,
@@ -232,15 +249,22 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         },
       );
 
+      // Check if aborted before continuing (#611)
+      if (signal.aborted) {
+        return null as unknown as AIGenerationResponse;
+      }
+
       const jobId = response.data.metadata?.jobId;
 
       if (!jobId) {
         // Fallback: backend returned sync response (no jobId)
-        set({
-          aiGenerating: false,
-          generationStatus: 'completed',
-          generationProgress: 100,
-        });
+        if (!signal.aborted) {
+          set({
+            aiGenerating: false,
+            generationStatus: 'completed',
+            generationProgress: 100,
+          });
+        }
         return {
           content: response.data.content || '',
           references: [],
@@ -251,17 +275,25 @@ export const useETPStore = create<ETFState>((set, _get) => ({
 
       set({ generationJobId: jobId, generationStatus: 'generating' });
 
-      // 2. Poll for completion with progress updates
-      const section = await pollJobStatus(jobId, (progress) => {
-        set({ generationProgress: progress });
-      });
+      // 2. Poll for completion with progress updates and abort support (#611)
+      const section = await pollJobStatus(
+        jobId,
+        (progress) => {
+          if (!signal.aborted) {
+            set({ generationProgress: progress });
+          }
+        },
+        { signal },
+      );
 
-      set({
-        aiGenerating: false,
-        generationStatus: 'completed',
-        generationProgress: 100,
-        generationJobId: null,
-      });
+      if (!signal.aborted) {
+        set({
+          aiGenerating: false,
+          generationStatus: 'completed',
+          generationProgress: 100,
+          generationJobId: null,
+        });
+      }
 
       return {
         content: section.content || '',
@@ -270,6 +302,11 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         warnings: [],
       } as AIGenerationResponse;
     } catch (error) {
+      // Silently handle aborted requests (#611)
+      if (error instanceof PollingAbortedError || signal.aborted) {
+        return null as unknown as AIGenerationResponse;
+      }
+
       let errorMessage = 'Erro ao gerar seção com IA';
 
       if (error instanceof JobFailedError) {
@@ -288,10 +325,22 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         generationJobId: null,
       });
       throw error;
+    } finally {
+      // Clean up controller reference (#611)
+      if (currentPollingController?.signal === signal) {
+        currentPollingController = null;
+      }
     }
   },
 
   regenerateSection: async (request: AIGenerationRequest) => {
+    // Cancel any existing polling before starting new one (#611)
+    if (currentPollingController) {
+      currentPollingController.abort();
+    }
+    currentPollingController = new AbortController();
+    const { signal } = currentPollingController;
+
     set({
       aiGenerating: true,
       error: null,
@@ -313,15 +362,22 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         },
       );
 
+      // Check if aborted before continuing (#611)
+      if (signal.aborted) {
+        return null as unknown as AIGenerationResponse;
+      }
+
       const jobId = response.data.metadata?.jobId;
 
       if (!jobId) {
         // Fallback: backend returned sync response (no jobId)
-        set({
-          aiGenerating: false,
-          generationStatus: 'completed',
-          generationProgress: 100,
-        });
+        if (!signal.aborted) {
+          set({
+            aiGenerating: false,
+            generationStatus: 'completed',
+            generationProgress: 100,
+          });
+        }
         return {
           content: response.data.content || '',
           references: [],
@@ -332,17 +388,25 @@ export const useETPStore = create<ETFState>((set, _get) => ({
 
       set({ generationJobId: jobId, generationStatus: 'generating' });
 
-      // Poll for completion with progress updates
-      const section = await pollJobStatus(jobId, (progress) => {
-        set({ generationProgress: progress });
-      });
+      // Poll for completion with progress updates and abort support (#611)
+      const section = await pollJobStatus(
+        jobId,
+        (progress) => {
+          if (!signal.aborted) {
+            set({ generationProgress: progress });
+          }
+        },
+        { signal },
+      );
 
-      set({
-        aiGenerating: false,
-        generationStatus: 'completed',
-        generationProgress: 100,
-        generationJobId: null,
-      });
+      if (!signal.aborted) {
+        set({
+          aiGenerating: false,
+          generationStatus: 'completed',
+          generationProgress: 100,
+          generationJobId: null,
+        });
+      }
 
       return {
         content: section.content || '',
@@ -351,6 +415,11 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         warnings: [],
       } as AIGenerationResponse;
     } catch (error) {
+      // Silently handle aborted requests (#611)
+      if (error instanceof PollingAbortedError || signal.aborted) {
+        return null as unknown as AIGenerationResponse;
+      }
+
       let errorMessage = 'Erro ao regenerar seção';
 
       if (error instanceof JobFailedError) {
@@ -369,6 +438,11 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         generationJobId: null,
       });
       throw error;
+    } finally {
+      // Clean up controller reference (#611)
+      if (currentPollingController?.signal === signal) {
+        currentPollingController = null;
+      }
     }
   },
 
@@ -474,4 +548,22 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   clearError: () => set({ error: null }),
 
   resetStore: () => set(initialState),
+
+  /**
+   * Cancel any ongoing AI generation polling (#611)
+   * Call this from component cleanup (useEffect return)
+   * to prevent state updates on unmounted components
+   */
+  cancelGeneration: () => {
+    if (currentPollingController) {
+      currentPollingController.abort();
+      currentPollingController = null;
+      set({
+        aiGenerating: false,
+        generationProgress: 0,
+        generationStatus: 'idle',
+        generationJobId: null,
+      });
+    }
+  },
 }));
