@@ -61,6 +61,7 @@ describe('authStore', () => {
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isAuthInitialized: false,
       error: null,
     });
   });
@@ -76,6 +77,7 @@ describe('authStore', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.isLoading).toBe(false);
+      expect(result.current.isAuthInitialized).toBe(false);
       expect(result.current.error).toBeNull();
     });
   });
@@ -253,6 +255,7 @@ describe('authStore', () => {
         useAuthStore.setState({
           user: mockUser,
           isAuthenticated: true,
+          isAuthInitialized: true,
           error: 'some error',
         });
       });
@@ -264,13 +267,15 @@ describe('authStore', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.error).toBeNull();
+      // isAuthInitialized should remain true to prevent flash after logout
+      expect(result.current.isAuthInitialized).toBe(true);
       // API should NOT be called
       expect(apiHelpers.post).not.toHaveBeenCalled();
     });
   });
 
   describe('checkAuth', () => {
-    it('should return false when not authenticated', async () => {
+    it('should return false and set isAuthInitialized when not authenticated', async () => {
       const { result } = renderHook(() => useAuthStore());
 
       let isValid: boolean;
@@ -279,6 +284,7 @@ describe('authStore', () => {
       });
 
       expect(isValid!).toBe(false);
+      expect(result.current.isAuthInitialized).toBe(true);
       // API should not be called if already not authenticated
       expect(apiHelpers.get).not.toHaveBeenCalled();
     });
@@ -305,9 +311,10 @@ describe('authStore', () => {
       expect(apiHelpers.get).toHaveBeenCalledWith('/auth/me');
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.isAuthInitialized).toBe(true);
     });
 
-    it('should clear auth on validation failure', async () => {
+    it('should clear auth and set isAuthInitialized on validation failure', async () => {
       vi.mocked(apiHelpers.get).mockRejectedValue(new Error('Token expired'));
 
       const { result } = renderHook(() => useAuthStore());
@@ -328,6 +335,7 @@ describe('authStore', () => {
       expect(isValid!).toBe(false);
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.isAuthInitialized).toBe(true);
     });
   });
 

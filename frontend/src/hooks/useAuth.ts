@@ -8,12 +8,23 @@ import { useAuthStore } from '@/store/authStore';
  * This hook only exposes non-sensitive user data and auth actions.
  */
 export function useAuth() {
-  const { user, isAuthenticated, login, register, logout, checkAuth } =
-    useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    isAuthInitialized,
+    login,
+    register,
+    logout,
+    checkAuth,
+  } = useAuthStore();
 
   return {
     user,
     isAuthenticated,
+    isLoading,
+    /** True after initial auth validation completes (prevents flash on refresh) */
+    isAuthInitialized,
     login,
     register,
     logout,

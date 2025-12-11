@@ -6,9 +6,12 @@ import App from './App';
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     isAuthenticated: false,
+    isAuthInitialized: true, // Simulate auth check completed
+    isLoading: false,
     user: null,
     login: vi.fn(),
     logout: vi.fn(),
+    checkAuth: vi.fn(),
   }),
 }));
 
@@ -68,5 +71,30 @@ describe('App Component', () => {
   it('has Toaster component', () => {
     render(<App />);
     expect(screen.getByText('Toaster')).toBeInTheDocument();
+  });
+});
+
+describe('App Component - Auth Initialization', () => {
+  it('shows loading state while auth is not initialized', async () => {
+    // Override mock to simulate auth check in progress
+    vi.doMock('@/hooks/useAuth', () => ({
+      useAuth: () => ({
+        isAuthenticated: false,
+        isAuthInitialized: false, // Auth check not completed yet
+        isLoading: false,
+        user: null,
+        login: vi.fn(),
+        logout: vi.fn(),
+        checkAuth: vi.fn(),
+      }),
+    }));
+
+    // Re-import App with new mock
+    vi.resetModules();
+    const { default: AppWithLoading } = await import('./App');
+    render(<AppWithLoading />);
+
+    // Should show loading state instead of login page
+    expect(screen.getByText('Verificando autenticação...')).toBeInTheDocument();
   });
 });
