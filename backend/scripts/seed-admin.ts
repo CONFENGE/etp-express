@@ -75,10 +75,8 @@ async function seedAdmin(): Promise<void> {
     entities: [User, Organization, AuthorizedDomain],
     synchronize: false,
     logging: false,
-    ssl:
-      process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: false }
-        : false,
+    // SSL Configuration (#598) - Use ssl: true for proper certificate validation
+    ssl: process.env.NODE_ENV === 'production' ? true : false,
   });
 
   try {

@@ -13,6 +13,7 @@
 Todas as verificações de criptografia foram realizadas e o sistema **ETP Express** está em conformidade com os requisitos de segurança estabelecidos pela LGPD Art. 46.
 
 **Pontos-chave:**
+
 - ✅ Dados em trânsito protegidos por HTTPS/TLS com HSTS
 - ✅ Dados em repouso criptografados (bcrypt para senhas, AES-256 para banco)
 - ✅ Backups criptografados pela plataforma Railway
@@ -27,12 +28,14 @@ Todas as verificações de criptografia foram realizadas e o sistema **ETP Expre
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - Railway fornece **HTTPS automático** com certificado SSL válido para todos os serviços
 - URL de produção: `https://etp-express.up.railway.app`
 - Certificado gerenciado automaticamente pela plataforma Railway
 - TLS 1.2+ habilitado
 
 **Evidências:**
+
 - Railway Networking: https://docs.railway.app/reference/networking#https
 - Configuração: `railway.json` (linhas 1-11)
 - Deployment automático com HTTPS
@@ -42,6 +45,7 @@ Todas as verificações de criptografia foram realizadas e o sistema **ETP Expre
 **Status:** CONFORME ✅
 
 **Detalhes:**
+
 - Railway gerencia certificados SSL automaticamente
 - Renovação automática (Let's Encrypt)
 - Nenhuma ação manual necessária
@@ -52,17 +56,20 @@ Todas as verificações de criptografia foram realizadas e o sistema **ETP Expre
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - `helmet` v7.2.0 habilitado em `backend/src/main.ts:24`
 - Configuração padrão do Helmet inclui HSTS
 - Headers de segurança adicionais habilitados automaticamente
 
 **Evidências:**
+
 ```typescript
 // backend/src/main.ts:24
 app.use(helmet());
 ```
 
 **Helmet Default Security Headers:**
+
 - `Strict-Transport-Security: max-age=15552000; includeSubDomains`
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: SAMEORIGIN`
@@ -73,11 +80,13 @@ app.use(helmet());
 **Status:** CONFORME ✅
 
 **Validação:**
+
 - Todos os recursos carregados via HTTPS
 - CORS configurado corretamente (main.ts:30-35)
 - Nenhum HTTP em produção
 
 **CORS Origins Permitidas:**
+
 ```typescript
 // backend/src/main.ts:27-35
 const corsOrigins = configService.get('CORS_ORIGINS')?.split(',') || [
@@ -100,16 +109,19 @@ app.enableCors({
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - **bcrypt** com **cost factor 10** (padrão seguro para 2025)
 - Hashing implementado em `backend/src/modules/auth/auth.service.ts:166`
 
 **Evidências:**
+
 ```typescript
 // backend/src/modules/auth/auth.service.ts:166
 const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 ```
 
 **Cost Factor 10:**
+
 - Tempo médio de hash: ~100ms (seguro contra brute-force)
 - Conformidade com OWASP Password Storage Cheat Sheet
 - Atualizado automaticamente pelo bcrypt conforme hardware evolui
@@ -119,21 +131,23 @@ const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - SSL/TLS habilitado em **produção** (NODE_ENV=production)
 - Configuração em `backend/src/config/typeorm.config.ts:16-19` e `backend/src/app.module.ts:71-74`
 
 **Evidências:**
+
 ```typescript
-// backend/src/config/typeorm.config.ts:16-19
-ssl:
-  configService.get('NODE_ENV') === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+// backend/src/config/typeorm.config.ts:16-19 (#598)
+// SSL Configuration - Railway PostgreSQL supports SSL with managed certificates
+ssl: configService.get('NODE_ENV') === 'production' ? true : false,
 ```
 
 **Railway PostgreSQL SSL:**
+
 - TLS 1.2+ obrigatório
 - Certificado gerenciado pela plataforma
+- Validação completa de certificado (proteção contra MITM)
 - Conexão criptografada end-to-end
 
 ### ✅ Backups Criptografados
@@ -141,17 +155,20 @@ ssl:
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - **Railway PostgreSQL Automated Backups** com **AES-256**
 - Point-in-Time Recovery (PITR) habilitado
 - Backups incrementais diários
 - Retenção: 7 dias (Railway Free Plan) ou 30 dias (Railway Pro)
 
 **Evidências:**
+
 - Railway PostgreSQL Documentation: https://docs.railway.app/databases/postgresql
 - Criptografia at-rest nativa (AES-256)
 - Backups manuais via `scripts/backup-db.sh` (comprimidos com gzip, armazenados no Railway com AES-256)
 
 **Backup Manual:**
+
 ```bash
 # scripts/backup-db.sh
 pg_dump "$DATABASE_URL" > "$BACKUP_DIR/etp_express_$DATE.sql"
@@ -165,11 +182,13 @@ gzip "$BACKUP_DIR/etp_express_$DATE.sql"
 **Status:** CONFORME ✅
 
 **Validação:**
+
 - Todos os logs usam `Logger` do NestJS (estruturado e seguro)
 - Nenhum `console.log` com dados sensíveis
 - Verificado: password, token, secret, jwt, bearer
 
 **Evidências:**
+
 ```bash
 # Verificação realizada
 grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secret\|jwt\|bearer"
@@ -177,6 +196,7 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 ```
 
 **Logger do NestJS:**
+
 - Estruturado e controlável via níveis (error, warn, log, debug, verbose)
 - Não expõe dados sensíveis
 - Integrado com Sentry para error tracking (sem dados sensíveis)
@@ -190,6 +210,7 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - Secrets gerenciados via **Railway Environment Variables**
 - Variáveis sensíveis:
   - `DATABASE_URL` (PostgreSQL connection string)
@@ -205,6 +226,7 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 **Status:** CONFORME ✅
 
 **Implementação:**
+
 - Audit trail para acesso a secrets (Issue #158)
 - Entidade `SecretAccessLog` rastreando:
   - `secretName` (nome do secret acessado)
@@ -214,6 +236,7 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
   - `userAgent` (navegador/cliente)
 
 **Evidências:**
+
 - `backend/src/entities/secret-access-log.entity.ts`
 - `backend/src/modules/audit/audit.service.ts`
 - Migration: `1763400000000-CreateSecretAccessLogs.ts`
@@ -260,6 +283,7 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 **Conformidade:**
 
 ✅ **Medidas de segurança técnicas implementadas:**
+
 - Criptografia em trânsito (HTTPS/TLS + HSTS)
 - Criptografia em repouso (bcrypt + AES-256)
 - Proteção contra acesso não autorizado (JWT + Guards)
@@ -267,12 +291,14 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 - Rate limiting para proteção de APIs (Issue #38)
 
 ✅ **Proteção contra situações acidentais ou ilícitas:**
+
 - Backups automáticos criptografados (Point-in-Time Recovery)
 - Validação de inputs (ValidationPipe + DTOs)
 - Error handling estruturado (Sentry + custom filters)
 - Logs seguros (sem dados sensíveis)
 
 ✅ **Gestão de secrets:**
+
 - Railway Environment Variables (não versionados)
 - Rotação de secrets documentada (Issue #156)
 - Dual-key strategy para JWT (Issue #157)
@@ -308,18 +334,18 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 ## 7️⃣ Checklist Final de Conformidade
 
-| Critério LGPD | Status | Evidência |
-|---------------|--------|-----------|
-| Dados em trânsito criptografados (HTTPS) | ✅ CONFORME | Railway HTTPS automático + Helmet HSTS |
-| Certificado SSL válido | ✅ CONFORME | Railway Let's Encrypt (auto-renovação) |
-| HSTS habilitado | ✅ CONFORME | `helmet()` v7.2.0 (main.ts:24) |
-| Sem mixed content | ✅ CONFORME | CORS + Railway HTTPS only |
-| Senhas com hash seguro (bcrypt) | ✅ CONFORME | bcrypt cost factor 10 (auth.service.ts:166) |
-| Database SSL habilitado | ✅ CONFORME | TLS 1.2+ em produção (typeorm.config.ts:16-19) |
-| Backups criptografados | ✅ CONFORME | Railway PostgreSQL AES-256 at-rest |
-| Nenhum dado sensível em logs | ✅ CONFORME | Logger do NestJS (verificado) |
-| Secrets management | ✅ CONFORME | Railway Environment Variables (Issue #109) |
-| Audit trail de acessos | ✅ CONFORME | SecretAccessLog (Issue #158) |
+| Critério LGPD                            | Status      | Evidência                                      |
+| ---------------------------------------- | ----------- | ---------------------------------------------- |
+| Dados em trânsito criptografados (HTTPS) | ✅ CONFORME | Railway HTTPS automático + Helmet HSTS         |
+| Certificado SSL válido                   | ✅ CONFORME | Railway Let's Encrypt (auto-renovação)         |
+| HSTS habilitado                          | ✅ CONFORME | `helmet()` v7.2.0 (main.ts:24)                 |
+| Sem mixed content                        | ✅ CONFORME | CORS + Railway HTTPS only                      |
+| Senhas com hash seguro (bcrypt)          | ✅ CONFORME | bcrypt cost factor 10 (auth.service.ts:166)    |
+| Database SSL habilitado                  | ✅ CONFORME | TLS 1.2+ em produção (typeorm.config.ts:16-19) |
+| Backups criptografados                   | ✅ CONFORME | Railway PostgreSQL AES-256 at-rest             |
+| Nenhum dado sensível em logs             | ✅ CONFORME | Logger do NestJS (verificado)                  |
+| Secrets management                       | ✅ CONFORME | Railway Environment Variables (Issue #109)     |
+| Audit trail de acessos                   | ✅ CONFORME | SecretAccessLog (Issue #158)                   |
 
 ---
 

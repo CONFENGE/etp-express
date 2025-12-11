@@ -13,8 +13,8 @@ export default new DataSource({
   migrations: ['src/migrations/*{.ts,.js}'],
   synchronize: false,
   logging: configService.get('DB_LOGGING', false),
-  ssl:
-    configService.get('NODE_ENV') === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+  // SSL Configuration (#598)
+  // Railway PostgreSQL supports SSL with managed certificates
+  // Use ssl: true to enable SSL with certificate validation
+  ssl: configService.get('NODE_ENV') === 'production' ? true : false,
 });
