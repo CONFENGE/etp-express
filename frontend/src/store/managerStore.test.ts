@@ -458,5 +458,127 @@ describe('managerStore', () => {
         expect(result.current.loading).toBe(false);
       });
     });
+
+    it('should manage loading state during updateUser', async () => {
+      let resolveUpdate: (value: unknown) => void;
+      const updatePromise = new Promise((resolve) => {
+        resolveUpdate = resolve;
+      });
+      vi.mocked(apiHelpers.patch).mockReturnValue(updatePromise as never);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      // Start update but don't await
+      act(() => {
+        result.current.updateUser('user-1', mockUpdateUserDto);
+      });
+
+      expect(result.current.loading).toBe(true);
+
+      // Resolve and setup fetchUsers mock
+      vi.mocked(apiHelpers.get).mockResolvedValueOnce(mockUsers);
+
+      await act(async () => {
+        resolveUpdate!({});
+        await updatePromise.catch(() => {});
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+    });
+
+    it('should manage loading state during resetUserPassword', async () => {
+      let resolveReset: (value: unknown) => void;
+      const resetPromise = new Promise((resolve) => {
+        resolveReset = resolve;
+      });
+      vi.mocked(apiHelpers.post).mockReturnValue(resetPromise as never);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      // Start reset but don't await
+      act(() => {
+        result.current.resetUserPassword('user-1');
+      });
+
+      expect(result.current.loading).toBe(true);
+
+      // Resolve and setup fetchUsers mock
+      vi.mocked(apiHelpers.get).mockResolvedValueOnce(mockUsers);
+
+      await act(async () => {
+        resolveReset!({});
+        await resetPromise.catch(() => {});
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+    });
+
+    it('should reset loading state on createUser success path', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue({});
+      vi.mocked(apiHelpers.get)
+        .mockResolvedValueOnce(mockUsers)
+        .mockResolvedValueOnce(mockQuota);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      await act(async () => {
+        await result.current.createUser(mockCreateUserDto);
+      });
+
+      // Verify loading is false after successful operation
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should reset loading state on updateUser success path', async () => {
+      vi.mocked(apiHelpers.patch).mockResolvedValue({});
+      vi.mocked(apiHelpers.get).mockResolvedValueOnce(mockUsers);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      await act(async () => {
+        await result.current.updateUser('user-1', mockUpdateUserDto);
+      });
+
+      // Verify loading is false after successful operation
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should reset loading state on deleteUser success path', async () => {
+      vi.mocked(apiHelpers.delete).mockResolvedValue({});
+      vi.mocked(apiHelpers.get)
+        .mockResolvedValueOnce(mockUsers)
+        .mockResolvedValueOnce(mockQuota);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      await act(async () => {
+        await result.current.deleteUser('user-1');
+      });
+
+      // Verify loading is false after successful operation
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should reset loading state on resetUserPassword success path', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue({});
+      vi.mocked(apiHelpers.get).mockResolvedValueOnce(mockUsers);
+
+      const { result } = renderHook(() => useManagerStore());
+
+      await act(async () => {
+        await result.current.resetUserPassword('user-1');
+      });
+
+      // Verify loading is false after successful operation
+      expect(result.current.loading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
   });
 });
