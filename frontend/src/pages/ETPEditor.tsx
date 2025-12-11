@@ -29,6 +29,7 @@ export function ETPEditor() {
   );
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Async generation state from store (#222)
   const {
@@ -179,6 +180,7 @@ export function ETPEditor() {
   const handleExportPDF = async () => {
     if (!id) return;
 
+    setIsExporting(true);
     try {
       const { exportPDF } = useETPStore.getState();
       const blob = await exportPDF(id);
@@ -201,6 +203,40 @@ export function ETPEditor() {
       const message =
         err instanceof Error ? err.message : 'Erro ao exportar PDF';
       error(message);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Handle DOCX export (#551)
+  const handleExportDocx = async () => {
+    if (!id) return;
+
+    setIsExporting(true);
+    try {
+      const { exportDocx } = useETPStore.getState();
+      const blob = await exportDocx(id);
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${currentETP.title || 'ETP'}.docx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      success('DOCX exportado com sucesso!');
+
+      // Trigger demo conversion banner after export
+      triggerBanner('pdf_export');
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao exportar DOCX';
+      error(message);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -212,7 +248,9 @@ export function ETPEditor() {
           etpDescription={currentETP.description}
           onSave={handleSave}
           onExportPDF={handleExportPDF}
+          onExportDocx={handleExportDocx}
           isSaving={isSaving}
+          isExporting={isExporting}
         />
 
         <ETPEditorProgress progress={currentETP.progress} />
