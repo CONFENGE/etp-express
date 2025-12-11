@@ -60,6 +60,13 @@ vi.mock('@/lib/polling', () => ({
       this.name = 'PollingTimeoutError';
     }
   },
+  // Add PollingAbortedError (#611)
+  PollingAbortedError: class PollingAbortedError extends Error {
+    constructor(jobId: string) {
+      super(`Polling aborted for job ${jobId}`);
+      this.name = 'PollingAbortedError';
+    }
+  },
 }));
 
 describe('etpStore', () => {
@@ -559,10 +566,11 @@ describe('etpStore', () => {
         }),
       );
 
-      // Verify polling was called with jobId
+      // Verify polling was called with jobId and options (including signal #611)
       expect(pollJobStatus).toHaveBeenCalledWith(
         'job-123',
         expect.any(Function),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
       );
 
       // Verify response format
@@ -765,6 +773,169 @@ describe('etpStore', () => {
       });
 
       expect(result.current.error).toBe(errorMessage);
+    });
+  });
+
+  describe('cancelGeneration (#611)', () => {
+    it('should do nothing when no polling controller is active', () => {
+      const { result } = renderHook(() => useETPStore());
+
+      // Set up generation in progress state (but no real controller)
+      act(() => {
+        useETPStore.setState({
+          aiGenerating: true,
+          generationProgress: 50,
+          generationStatus: 'generating',
+          generationJobId: 'job-123',
+        });
+      });
+
+      expect(result.current.aiGenerating).toBe(true);
+      expect(result.current.generationProgress).toBe(50);
+
+      // Call cancelGeneration - should not change state because
+      // there's no actual polling controller to abort
+      act(() => {
+        result.current.cancelGeneration();
+      });
+
+      // State should remain unchanged since cancelGeneration
+      // only acts when there's an active controller
+      expect(result.current.aiGenerating).toBe(true);
+      expect(result.current.generationProgress).toBe(50);
+      expect(result.current.generationStatus).toBe('generating');
+      expect(result.current.generationJobId).toBe('job-123');
+    });
+
+    it('should do nothing when no generation is in progress', () => {
+      const { result } = renderHook(() => useETPStore());
+
+      // Ensure initial state
+      expect(result.current.aiGenerating).toBe(false);
+      expect(result.current.generationProgress).toBe(0);
+
+      // Call cancelGeneration - should not throw or change state
+      act(() => {
+        result.current.cancelGeneration();
+      });
+
+      expect(result.current.aiGenerating).toBe(false);
+      expect(result.current.generationProgress).toBe(0);
+    });
+
+    it('should pass signal to pollJobStatus during generateSection', async () => {
+      const { pollJobStatus } = await import('@/lib/polling');
+
+      // Mock async response from POST
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-123' },
+        },
+      };
+
+      // Mock polling result
+      const mockPollingResult = {
+        id: 'section-1',
+        content: 'Generated content',
+      };
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+      vi.mocked(pollJobStatus).mockResolvedValue(mockPollingResult);
+
+      const { result } = renderHook(() => useETPStore());
+
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Verify pollJobStatus was called with signal option
+      expect(pollJobStatus).toHaveBeenCalledWith(
+        'job-123',
+        expect.any(Function),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+        }),
+      );
+    });
+
+    it('should silently handle PollingAbortedError in generateSection', async () => {
+      const { pollJobStatus, PollingAbortedError } =
+        await import('@/lib/polling');
+
+      // Mock async response from POST
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-123' },
+        },
+      };
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+      vi.mocked(pollJobStatus).mockRejectedValue(
+        new PollingAbortedError('job-123'),
+      );
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Should not throw
+      let response: AIGenerationResponse | null | undefined;
+      await act(async () => {
+        response = await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Should return null for aborted request
+      expect(response).toBeNull();
+
+      // Error state should NOT be set for aborted requests
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should silently handle PollingAbortedError in regenerateSection', async () => {
+      const { pollJobStatus, PollingAbortedError } =
+        await import('@/lib/polling');
+
+      // Mock async response from POST
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-123' },
+        },
+      };
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+      vi.mocked(pollJobStatus).mockRejectedValue(
+        new PollingAbortedError('job-123'),
+      );
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Should not throw
+      let response: AIGenerationResponse | null | undefined;
+      await act(async () => {
+        response = await result.current.regenerateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Should return null for aborted request
+      expect(response).toBeNull();
+
+      // Error state should NOT be set for aborted requests
+      expect(result.current.error).toBeNull();
     });
   });
 });
