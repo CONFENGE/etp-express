@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 284/347 (81.8%) | **Deploy:** Operacional | **P0 Security:** 13 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 286/347 (82.4%) | **Deploy:** Operacional | **P0 Security:** 11 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -20,16 +20,16 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (15 issues) - NOVO
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (13 issues restantes)
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
-**Épico 1: Security Backend (3 issues restantes)**
+**Épico 1: Security Backend (1 issue restante)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | ~~#598~~ | ~~SSL Certificate Validation desabilitado~~ | ✅ PR #614 (OWASP A03:2021) |
-| #599 | CORS fallback para localhost | Config incorreta |
-| #600 | Complexidade senha ausente no registro | Senhas fracas |
+| ~~#599~~ | ~~CORS fallback para localhost~~ | ✅ PR #615 |
+| ~~#600~~ | ~~Complexidade senha ausente no registro~~ | ✅ PR #615 (implementado anteriormente) |
 | #601 | Browser cleanup PDF pode falhar | Resource leak |
 | ~~#602~~ | ~~Admin authorization não implementada~~ | ✅ PR #613 (OWASP A01:2021) |
 
@@ -208,12 +208,12 @@ Issues #88-#105
 
 **Infraestrutura:**
 
-- ✅ Large Runners GitHub Enterprise configurados (16-core, 64GB RAM)
-- Runner group: `confenge-runners`
-- Estratégia híbrida de runners (PR #575):
-  - **16-core (CPU-intensive):** ci.yml, ci-tests.yml, playwright.yml
-  - **2-core (ubuntu-latest):** validate-lockfile, secret-scan, ci-lint, backup-validation
-  - Economia estimada: ~40% dos minutos CI por PR
+- ✅ Migração para Standard Runners (2025-12-11)
+  - **Motivo:** Larger Runners não podem usar os 50,000 min/mês incluídos no Enterprise
+  - **Antes:** `ubuntu-16core` (cobrado $0.064/min, não usa cota gratuita)
+  - **Depois:** `ubuntu-latest` (usa cota gratuita de 50,000 min/mês)
+  - **Workflows alterados:** ci.yml, ci-tests.yml, playwright.yml
+  - **Trade-off:** Builds mais lentos (2 cores vs 16) mas custo zero dentro da cota
 
 ### M3: Quality & Security (61/61)
 
@@ -234,14 +234,14 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 347      |
-| Issues Abertas    | 63       |
-| Issues Fechadas   | 284      |
-| Progresso         | 81.8%    |
+| Issues Abertas    | 61       |
+| Issues Fechadas   | 286      |
+| Progresso         | 82.4%    |
 | Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
-| Testes            | 1688     |
-| P0 Security       | 13       |
+| Testes            | 1090     |
+| P0 Security       | 11       |
 | P0 Enterprise     | 20       |
 
 ---
