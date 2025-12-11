@@ -26,6 +26,7 @@ interface ChangePasswordData {
  * The frontend only stores:
  * - user: Non-sensitive user profile data (for UI rendering)
  * - isAuthenticated: Derived from successful login/cookie validation
+ * - isAuthInitialized: Indicates if initial auth check has completed
  *
  * Token storage is handled entirely by the browser via httpOnly cookies.
  */
@@ -33,6 +34,8 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  /** Indicates if the initial auth check has completed (prevents flash on refresh) */
+  isAuthInitialized: boolean;
   error: string | null;
 
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -51,6 +54,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isAuthInitialized: false,
       error: null,
 
       /**
@@ -133,12 +137,15 @@ export const useAuthStore = create<AuthState>()(
       /**
        * Clears local auth state without calling backend.
        * Used by API interceptor on 401 responses.
+       * Preserves isAuthInitialized to avoid re-triggering auth check.
        */
       clearAuth: () => {
         set({
           user: null,
           isAuthenticated: false,
           error: null,
+          // Keep isAuthInitialized true to prevent flash after logout
+          isAuthInitialized: true,
         });
       },
 
@@ -150,19 +157,30 @@ export const useAuthStore = create<AuthState>()(
        * Validates authentication by checking if the cookie-based token is valid.
        * Makes a request to /auth/me which will succeed if cookie is valid.
        *
+       * On app startup, this validates persisted auth state against the backend.
+       * This prevents the "flash of login" issue where ProtectedRoute renders
+       * before we know if the user is actually authenticated.
+       *
        * @returns true if authenticated, false otherwise
        */
       checkAuth: async (): Promise<boolean> => {
-        if (!get().isAuthenticated) {
+        // Skip if no persisted auth state (user never logged in)
+        if (!get().isAuthenticated && !get().user) {
+          set({ isAuthInitialized: true });
           return false;
         }
 
         try {
           const response = await apiHelpers.get<{ user: User }>('/auth/me');
-          set({ user: response.user, isAuthenticated: true });
+          set({
+            user: response.user,
+            isAuthenticated: true,
+            isAuthInitialized: true,
+          });
           return true;
         } catch {
           get().clearAuth();
+          set({ isAuthInitialized: true });
           return false;
         }
       },
