@@ -1,6 +1,21 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 295/347 (85.0%) | **Deploy:** Operacional | **P0 Security:** 2 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 295/347 (85.0%) | **Deploy:** 🔴 CRASHED | **P0 Security:** 2 issues | **P0 Enterprise:** 20 issues
+
+## 🚨 ALERTA: Deploy Backend Railway CRASHED
+
+**Issues:** #627, #628
+
+**Problemas Identificados:**
+
+1. ✅ CORS_ORIGINS não definida → Variável configurada no Railway
+2. ✅ @types/\* em devDependencies → Movidos para dependencies (commit 9f0138f)
+3. ✅ startCommand incorreto → Corrigido no railway.toml (commit 707074a)
+4. ❌ **Cache Railway impedindo instalação** → Issue #628 BLOQUEADOR
+
+**Ação Necessária:** Limpar cache de build no Railway Dashboard e fazer redeploy manual.
+
+---
 
 ## Milestones
 
