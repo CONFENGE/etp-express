@@ -15,6 +15,7 @@
 O sistema ETP Express implementa corretamente criptografia de dados sensíveis em **trânsito** e em **repouso**, atendendo aos requisitos da LGPD Art. 46 (segurança de dados) e boas práticas de segurança da informação.
 
 **Principais Conformidades:**
+
 - ✅ HTTPS/TLS forçado em produção (Railway)
 - ✅ SSL habilitado para conexão PostgreSQL
 - ✅ Senhas hasheadas com bcrypt (cost factor 10)
@@ -30,17 +31,21 @@ O sistema ETP Express implementa corretamente criptografia de dados sensíveis e
 **Status:** ✅ **CONFORME**
 
 **Evidência:**
+
 - Plataforma Railway **força HTTPS** automaticamente para todas as aplicações
 - Certificado SSL/TLS gerenciado automaticamente
 - HTTP redirects para HTTPS (comportamento padrão)
 
 **Referência Railway:**
+
 > "All Railway deployments are served over HTTPS by default with automatic TLS certificate provisioning."
 
 **Arquivo de Configuração:**
+
 - `railway.json:3-5` - Builder Nixpacks (HTTPS por padrão)
 
 **Verificação:**
+
 ```bash
 # Produção (Railway):
 # https://etp-express-backend.railway.app
@@ -59,27 +64,26 @@ O TypeORM está configurado para **exigir SSL** quando em produção.
 **Arquivo:** `backend/src/app.module.ts:72-75`
 
 ```typescript
-ssl:
-  configService.get('NODE_ENV') === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+// SSL Configuration (#598)
+// Railway PostgreSQL supports SSL with managed certificates
+ssl: configService.get('NODE_ENV') === 'production' ? true : false,
 ```
 
 **Nota Técnica:**
-- `rejectUnauthorized: false` é necessário para Railway PostgreSQL (certificados auto-assinados)
-- Conexão **ainda usa SSL/TLS** (criptografia ativa)
-- Apenas **não valida** a CA root (comum em managed databases)
+
+- `ssl: true` habilita SSL com validação completa de certificado
+- Railway PostgreSQL gerencia certificados automaticamente
+- Conexão usa SSL/TLS com validação de certificado (proteção contra MITM)
 
 **Arquivo:** `backend/src/config/typeorm.config.ts:16-19`
 
 ```typescript
-ssl:
-  configService.get('NODE_ENV') === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+// SSL Configuration (#598)
+ssl: configService.get('NODE_ENV') === 'production' ? true : false,
 ```
 
 **Verificação:**
+
 ```bash
 # Railway PostgreSQL:
 # - SSL Mode: require (padrão Railway)
@@ -105,6 +109,7 @@ app.use(helmet());
 ```
 
 **Headers Protegidos:**
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `Strict-Transport-Security` (HSTS)
@@ -128,6 +133,7 @@ const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 ```
 
 **Parâmetros:**
+
 - **Algoritmo:** bcrypt
 - **Cost Factor:** 10 (recomendado OWASP)
 - **Salt:** Gerado automaticamente por round
@@ -140,6 +146,7 @@ const isPasswordValid = await bcrypt.compare(password, user.password);
 ```
 
 **Referência OWASP:**
+
 > "Bcrypt with cost factor 10 provides adequate protection against brute-force attacks."
 
 **Referência LGPD:** Art. 46, I - "utilização de criptografia"
@@ -160,12 +167,14 @@ secret: configService.get<string>('JWT_SECRET'),
 ```
 
 **Configuração:**
+
 - Secret armazenado em **Railway Secrets** (não versionado)
 - Expiração configurável (padrão: 7 dias)
 - Algoritmo: HS256 (HMAC-SHA256)
 
 **Dual-Key Strategy (#157):**
 Implementado suporte para rotação de secrets sem downtime:
+
 - Primary key (JWT_SECRET)
 - Secondary key (JWT_SECRET_SECONDARY) para transição
 
@@ -181,9 +190,11 @@ Implementado suporte para rotação de secrets sem downtime:
 Railway PostgreSQL **criptografa dados em repouso** por padrão.
 
 **Referência Railway:**
+
 > "All Railway PostgreSQL databases use encrypted storage volumes (AES-256)."
 
 **Especificações:**
+
 - Algoritmo: **AES-256** (Advanced Encryption Standard)
 - Gerenciado pela infraestrutura Railway
 - Backups também criptografados
@@ -212,11 +223,13 @@ this.openai = new OpenAI({
 ```
 
 **Verificação:**
+
 - Base URL: `https://api.openai.com` (TLS 1.3)
 - API Key transmitida via header `Authorization: Bearer <key>`
 - Requests **nunca** em plaintext
 
 **Referência OpenAI:**
+
 > "All API requests are served over HTTPS with TLS 1.3."
 
 ---
@@ -235,6 +248,7 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 ```
 
 **Verificação:**
+
 - Protocol: HTTPS (não permite HTTP)
 - API Key via header `Authorization: Bearer <key>`
 - Axios respeita SSL/TLS padrão do Node.js
@@ -245,14 +259,14 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
 ### 4.1 Checklist LGPD Art. 46
 
-| Requisito | Status | Evidência |
-|-----------|--------|-----------|
-| Criptografia de dados em trânsito | ✅ | HTTPS forçado (Railway) |
-| SSL na comunicação com banco de dados | ✅ | TypeORM ssl: true em produção |
-| Criptografia de dados em repouso | ✅ | Railway PostgreSQL AES-256 |
-| Hash de senhas | ✅ | bcrypt cost factor 10 |
-| Proteção de secrets (JWT) | ✅ | Railway Secrets + rotação |
-| APIs externas via TLS | ✅ | OpenAI e Perplexity HTTPS |
+| Requisito                             | Status | Evidência                     |
+| ------------------------------------- | ------ | ----------------------------- |
+| Criptografia de dados em trânsito     | ✅     | HTTPS forçado (Railway)       |
+| SSL na comunicação com banco de dados | ✅     | TypeORM ssl: true em produção |
+| Criptografia de dados em repouso      | ✅     | Railway PostgreSQL AES-256    |
+| Hash de senhas                        | ✅     | bcrypt cost factor 10         |
+| Proteção de secrets (JWT)             | ✅     | Railway Secrets + rotação     |
+| APIs externas via TLS                 | ✅     | OpenAI e Perplexity HTTPS     |
 
 **Score:** **6/6** ✅
 
@@ -260,14 +274,14 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
 ### 4.2 Boas Práticas (OWASP)
 
-| Prática | Status | Implementação |
-|---------|--------|---------------|
-| Password hashing (bcrypt) | ✅ | Cost factor 10 |
-| TLS/SSL forçado | ✅ | Railway + TypeORM |
-| Secrets em variáveis de ambiente | ✅ | Railway Secrets |
-| Headers de segurança (Helmet) | ✅ | Helmet.js |
-| Token expiration | ✅ | JWT 7 dias |
-| Certificados válidos | ✅ | Railway auto-renew |
+| Prática                          | Status | Implementação      |
+| -------------------------------- | ------ | ------------------ |
+| Password hashing (bcrypt)        | ✅     | Cost factor 10     |
+| TLS/SSL forçado                  | ✅     | Railway + TypeORM  |
+| Secrets em variáveis de ambiente | ✅     | Railway Secrets    |
+| Headers de segurança (Helmet)    | ✅     | Helmet.js          |
+| Token expiration                 | ✅     | JWT 7 dias         |
+| Certificados válidos             | ✅     | Railway auto-renew |
 
 **Score:** **6/6** ✅
 
@@ -277,11 +291,11 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
 ### 5.1 Riscos Baixos (Mitigados)
 
-| Risco | Severidade | Mitigação | Status |
-|-------|------------|-----------|--------|
-| `rejectUnauthorized: false` no SSL | 🟡 Baixa | Railway usa certificados auto-assinados (padrão managed DB) | ✅ Aceito |
-| JWT expiration 7 dias | 🟡 Baixa | Trade-off UX vs Segurança (configurável) | ✅ Aceito |
-| Secrets em logs (potencial) | 🟡 Baixa | Sentry configurado para não capturar headers Auth | ✅ Mitigado |
+| Risco                                  | Severidade   | Mitigação                                                     | Status       |
+| -------------------------------------- | ------------ | ------------------------------------------------------------- | ------------ |
+| ~~`rejectUnauthorized: false` no SSL~~ | ✅ Resolvido | Corrigido em #598 - SSL com validação completa de certificado | ✅ Corrigido |
+| JWT expiration 7 dias                  | 🟡 Baixa     | Trade-off UX vs Segurança (configurável)                      | ✅ Aceito    |
+| Secrets em logs (potencial)            | 🟡 Baixa     | Sentry configurado para não capturar headers Auth             | ✅ Mitigado  |
 
 **Nenhum risco ALTO ou MÉDIO identificado.**
 
@@ -344,18 +358,18 @@ O sistema ETP Express implementa corretamente todos os requisitos de **criptogra
 
 ## 📊 Metadados da Auditoria
 
-| Campo | Valor |
-|-------|-------|
-| **Data:** | 2025-11-21 |
-| **Auditor:** | Sistema Automatizado |
-| **Issue:** | #263 |
-| **Parent:** | #86 |
-| **Milestone:** | M3: Quality & Security |
-| **Score:** | 100% (6/6 controles) |
-| **Riscos Altos:** | 0 |
-| **Riscos Médios:** | 0 |
-| **Riscos Baixos:** | 3 (mitigados) |
-| **Conformidade LGPD:** | ✅ Art. 46 |
+| Campo                  | Valor                  |
+| ---------------------- | ---------------------- |
+| **Data:**              | 2025-11-21             |
+| **Auditor:**           | Sistema Automatizado   |
+| **Issue:**             | #263                   |
+| **Parent:**            | #86                    |
+| **Milestone:**         | M3: Quality & Security |
+| **Score:**             | 100% (6/6 controles)   |
+| **Riscos Altos:**      | 0                      |
+| **Riscos Médios:**     | 0                      |
+| **Riscos Baixos:**     | 3 (mitigados)          |
+| **Conformidade LGPD:** | ✅ Art. 46             |
 
 ---
 
