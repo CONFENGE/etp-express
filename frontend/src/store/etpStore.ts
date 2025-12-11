@@ -10,7 +10,7 @@ import {
   GenerationStatus,
   AsyncSection,
 } from '@/types/etp';
-import { apiHelpers } from '@/lib/api';
+import api, { apiHelpers } from '@/lib/api';
 import {
   pollJobStatus,
   JobFailedError,
@@ -58,6 +58,7 @@ interface ETFState {
 
   // Export
   exportPDF: (id: string, options?: ExportOptions) => Promise<Blob>;
+  exportDocx: (id: string) => Promise<Blob>;
   exportJSON: (id: string) => Promise<string>;
 
   // References
@@ -396,6 +397,23 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Erro ao exportar PDF',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  exportDocx: async (id: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get(`/export/etp/${id}/docx`, {
+        responseType: 'blob',
+      });
+      set({ isLoading: false });
+      return response.data as Blob;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Erro ao exportar DOCX',
         isLoading: false,
       });
       throw error;

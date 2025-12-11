@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useETPStore } from './etpStore';
-import { apiHelpers } from '@/lib/api';
+import api, { apiHelpers } from '@/lib/api';
 import type {
   ETP,
   Section,
@@ -11,8 +11,14 @@ import type {
   AIGenerationResponse, // Used in return type assertions
 } from '@/types/etp';
 
-// Mock do módulo apiHelpers
+// Mock do módulo apiHelpers e api default
 vi.mock('@/lib/api', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
   apiHelpers: {
     get: vi.fn(),
     post: vi.fn(),
@@ -562,6 +568,52 @@ describe('etpStore', () => {
 
       expect(apiHelpers.get).toHaveBeenCalledWith('/etps/etp-1/export/json');
       expect(jsonString).toBe(mockJSON);
+    });
+
+    it('should export ETP to DOCX (#551)', async () => {
+      const mockBlob = new Blob(['mock docx content'], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+      vi.mocked(api.get).mockResolvedValue({ data: mockBlob });
+
+      const { result } = renderHook(() => useETPStore());
+
+      let blob: Blob | undefined;
+      await act(async () => {
+        blob = await result.current.exportDocx('etp-1');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(api.get).toHaveBeenCalledWith('/export/etp/etp-1/docx', {
+        responseType: 'blob',
+      });
+      expect(blob).toEqual(mockBlob);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should set error state on DOCX export failure (#551)', async () => {
+      const errorMessage = 'Erro ao exportar DOCX';
+      vi.mocked(api.get).mockRejectedValue(new Error(errorMessage));
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Use try/catch to handle the thrown error while testing state
+      await act(async () => {
+        try {
+          await result.current.exportDocx('etp-1');
+        } catch {
+          // Expected to throw
+        }
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.error).toBe(errorMessage);
     });
   });
 });
