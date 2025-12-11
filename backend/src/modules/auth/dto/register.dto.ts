@@ -2,6 +2,8 @@ import {
   IsEmail,
   IsString,
   MinLength,
+  MaxLength,
+  Matches,
   IsOptional,
   IsBoolean,
   IsNotEmpty,
@@ -13,9 +15,23 @@ export class RegisterDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'SenhaSegura123!', minLength: 8 })
+  @ApiProperty({
+    example: 'SenhaSegura123!',
+    description:
+      'Senha com requisitos de complexidade: mín 8 chars, maiúscula, minúscula, número, caractere especial',
+    minLength: 8,
+    maxLength: 128,
+  })
   @IsString()
-  @MinLength(8)
+  @MinLength(8, { message: 'Senha deve ter no mínimo 8 caracteres' })
+  @MaxLength(128, { message: 'Senha deve ter no máximo 128 caracteres' })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+    {
+      message:
+        'Senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
+    },
+  )
   password: string;
 
   @ApiProperty({ example: 'João da Silva' })
