@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 290/347 (83.6%) | **Deploy:** Operacional | **P0 Security:** 7 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 292/347 (84.1%) | **Deploy:** Operacional | **P0 Security:** 5 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -10,7 +10,7 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 69/97   71%
+M6: Maintenance         █████████████████░░░ 69/82   84%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
 M9: Export/Import       ████░░░░░░░░░░░░░░░░  4/16   25%
@@ -231,18 +231,18 @@ Issues #261-#269, #298-#301
 
 ## Métricas
 
-| Métrica           | Valor    |
-| ----------------- | -------- |
-| Issues Totais     | 347      |
-| Issues Abertas    | 57       |
-| Issues Fechadas   | 290      |
-| Progresso         | 83.6%    |
-| Velocidade        | 12.1/dia |
-| Backend Coverage  | 78%      |
-| Frontend Coverage | 76%      |
-| Testes            | 1126     |
-| P0 Security       | 7        |
-| P0 Enterprise     | 20       |
+| Métrica           | Valor  |
+| ----------------- | ------ |
+| Issues Totais     | 347    |
+| Issues Abertas    | 55     |
+| Issues Fechadas   | 292    |
+| Progresso         | 84.1%  |
+| Velocidade        | 17/dia |
+| Backend Coverage  | 78%    |
+| Frontend Coverage | 76%    |
+| Testes            | 1126   |
+| P0 Security       | 5      |
+| P0 Enterprise     | 20     |
 
 ---
 
