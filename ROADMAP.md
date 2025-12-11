@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 283/347 (81.6%) | **Deploy:** Operacional | **P0 Security:** 14 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 284/347 (81.8%) | **Deploy:** Operacional | **P0 Security:** 13 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -24,10 +24,10 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
-**Épico 1: Security Backend (4 issues restantes)**
+**Épico 1: Security Backend (3 issues restantes)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
-| #598 | SSL Certificate Validation desabilitado | MITM attacks |
+| ~~#598~~ | ~~SSL Certificate Validation desabilitado~~ | ✅ PR #614 (OWASP A03:2021) |
 | #599 | CORS fallback para localhost | Config incorreta |
 | #600 | Complexidade senha ausente no registro | Senhas fracas |
 | #601 | Browser cleanup PDF pode falhar | Resource leak |
@@ -234,14 +234,14 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 347      |
-| Issues Abertas    | 64       |
-| Issues Fechadas   | 283      |
-| Progresso         | 81.6%    |
+| Issues Abertas    | 63       |
+| Issues Fechadas   | 284      |
+| Progresso         | 81.8%    |
 | Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
-| Testes            | 1091     |
-| P0 Security       | 14       |
+| Testes            | 1688     |
+| P0 Security       | 13       |
 | P0 Enterprise     | 20       |
 
 ---
