@@ -15,6 +15,10 @@ interface ETPEditorHeaderProps {
   onExportDocx?: () => void;
   isSaving?: boolean;
   isExporting?: boolean;
+  /**
+   * Whether there are unsaved changes (#610)
+   */
+  isDirty?: boolean;
 }
 
 export function ETPEditorHeader({
@@ -25,11 +29,23 @@ export function ETPEditorHeader({
   onExportDocx,
   isSaving = false,
   isExporting = false,
+  isDirty = false,
 }: ETPEditorHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold">{etpTitle}</h1>
+        <h1 className="text-3xl font-bold">
+          {etpTitle}
+          {isDirty && (
+            <span
+              className="ml-2 text-amber-500"
+              title="Alterações não salvas"
+              aria-label="Alterações não salvas"
+            >
+              *
+            </span>
+          )}
+        </h1>
         {etpDescription && (
           <p className="text-muted-foreground">{etpDescription}</p>
         )}
