@@ -44,6 +44,7 @@ export function ETPEditor() {
     generationProgress,
     generationStatus,
     generateSection: storeGenerateSection,
+    cancelGeneration,
   } = useETPStore();
 
   // Demo user conversion banner (#475)
@@ -64,6 +65,13 @@ export function ETPEditor() {
       }
     };
   }, []);
+
+  // Cleanup: cancel AI generation polling on unmount (#611)
+  useEffect(() => {
+    return () => {
+      cancelGeneration();
+    };
+  }, [cancelGeneration]);
 
   useEffect(() => {
     const loadTemplates = async () => {
