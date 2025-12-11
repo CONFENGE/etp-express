@@ -79,4 +79,82 @@ describe('ETPEditorHeader', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /salvar/i })).toBeInTheDocument();
   });
+
+  it('should show export dropdown with PDF and DOCX options when clicked', async () => {
+    const user = userEvent.setup();
+    render(<ETPEditorHeader etpTitle="Test Title" onSave={() => {}} />);
+
+    const exportButton = screen.getByRole('button', { name: /exportar/i });
+    await user.click(exportButton);
+
+    expect(screen.getByText('PDF (.pdf)')).toBeInTheDocument();
+    expect(screen.getByText('Word (.docx)')).toBeInTheDocument();
+  });
+
+  it('should call onExportPDF when PDF option is clicked', async () => {
+    const user = userEvent.setup();
+    const onExportPDF = vi.fn();
+
+    render(
+      <ETPEditorHeader
+        etpTitle="Test Title"
+        onSave={() => {}}
+        onExportPDF={onExportPDF}
+      />,
+    );
+
+    const exportButton = screen.getByRole('button', { name: /exportar/i });
+    await user.click(exportButton);
+
+    const pdfOption = screen.getByText('PDF (.pdf)');
+    await user.click(pdfOption);
+
+    expect(onExportPDF).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call onExportDocx when DOCX option is clicked', async () => {
+    const user = userEvent.setup();
+    const onExportDocx = vi.fn();
+
+    render(
+      <ETPEditorHeader
+        etpTitle="Test Title"
+        onSave={() => {}}
+        onExportDocx={onExportDocx}
+      />,
+    );
+
+    const exportButton = screen.getByRole('button', { name: /exportar/i });
+    await user.click(exportButton);
+
+    const docxOption = screen.getByText('Word (.docx)');
+    await user.click(docxOption);
+
+    expect(onExportDocx).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show "Exportando..." text when isExporting is true', () => {
+    render(
+      <ETPEditorHeader
+        etpTitle="Test Title"
+        onSave={() => {}}
+        isExporting={true}
+      />,
+    );
+
+    expect(screen.getByText('Exportando...')).toBeInTheDocument();
+  });
+
+  it('should disable Export button when isExporting is true', () => {
+    render(
+      <ETPEditorHeader
+        etpTitle="Test Title"
+        onSave={() => {}}
+        isExporting={true}
+      />,
+    );
+
+    const exportButton = screen.getByRole('button', { name: /exportando/i });
+    expect(exportButton).toBeDisabled();
+  });
 });
