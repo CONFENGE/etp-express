@@ -1,6 +1,9 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { Legislation, LegislationType } from '../src/entities/legislation.entity';
+import {
+  Legislation,
+  LegislationType,
+} from '../src/entities/legislation.entity';
 import { RAGService } from '../src/modules/rag/rag.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -21,7 +24,8 @@ const LEI_14133_DATA = {
   year: 2021,
   title:
     'Lei de Licitações e Contratos Administrativos - Nova Lei de Licitações',
-  sourceUrl: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/L14133.htm',
+  sourceUrl:
+    'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/L14133.htm',
   content: `
 Lei nº 14.133, de 1º de abril de 2021
 
@@ -136,10 +140,8 @@ async function seedLegislation() {
     entities: [Legislation],
     synchronize: false,
     logging: false,
-    ssl:
-      process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: false }
-        : false,
+    // SSL Configuration (#598) - Use ssl: true for proper certificate validation
+    ssl: process.env.NODE_ENV === 'production' ? true : false,
   });
 
   try {
