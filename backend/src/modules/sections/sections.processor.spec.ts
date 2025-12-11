@@ -295,4 +295,43 @@ describe('SectionsProcessor', () => {
       });
     });
   });
+
+  describe('onApplicationShutdown (#607)', () => {
+    it('should implement OnApplicationShutdown interface', () => {
+      // Assert that processor has the required method
+      expect(typeof processor.onApplicationShutdown).toBe('function');
+    });
+
+    it('should handle shutdown when worker is not initialized', async () => {
+      // WorkerHost.worker getter returns undefined when not connected
+      // Act & Assert - should not throw
+      await expect(
+        processor.onApplicationShutdown('SIGINT'),
+      ).resolves.not.toThrow();
+    });
+
+    it('should log the signal that triggered shutdown', async () => {
+      // Arrange
+      const logSpy = jest.spyOn(processor['logger'], 'log');
+
+      // Act
+      await processor.onApplicationShutdown('SIGTERM');
+
+      // Assert
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('SIGTERM'));
+    });
+
+    it('should handle unknown signal gracefully', async () => {
+      // Arrange
+      const logSpy = jest.spyOn(processor['logger'], 'log');
+
+      // Act
+      await processor.onApplicationShutdown(undefined);
+
+      // Assert
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringContaining('unknown signal'),
+      );
+    });
+  });
 });
