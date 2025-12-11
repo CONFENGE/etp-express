@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 288/347 (83.0%) | **Deploy:** Operacional | **P0 Security:** 9 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 289/347 (83.3%) | **Deploy:** Operacional | **P0 Security:** 8 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -20,7 +20,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Próximas Ações Prioritárias
 
-### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (11 issues restantes)
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (9 issues restantes)
 
 **Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
 
@@ -41,12 +41,12 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #605 | Dynamic import sem error handling | Auth loop |
 | #606 | ProtectedRoute antes de auth check | Flash login |
 
-**Épico 3: Infraestrutura (3 issues)**
+**Épico 3: Infraestrutura (1 issue)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | #607 | Graceful shutdown handler ausente | Requests perdidos |
-| #608 | Logs verbose em produção | Data leak |
-| #609 | npm audit ausente no CI | CVEs |
+| ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 (OWASP Logging) |
+| ~~#609~~ | ~~npm audit ausente no CI~~ | ✅ PR #622 |
 
 **Épico 4: UX Crítico (3 issues)**
 | # | Issue | Impacto |
@@ -234,14 +234,14 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 347      |
-| Issues Abertas    | 60       |
-| Issues Fechadas   | 287      |
-| Progresso         | 82.7%    |
+| Issues Abertas    | 58       |
+| Issues Fechadas   | 289      |
+| Progresso         | 83.3%    |
 | Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
-| Testes            | 1095     |
-| P0 Security       | 10       |
+| Testes            | 1126     |
+| P0 Security       | 8        |
 | P0 Enterprise     | 20       |
 
 ---
