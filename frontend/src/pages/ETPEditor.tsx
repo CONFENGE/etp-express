@@ -46,6 +46,18 @@ export function ETPEditor() {
   // Track previous progress to detect ETP completion
   const previousProgressRef = useRef<number | null>(null);
 
+  // AbortController for export operations (#603)
+  const exportAbortControllerRef = useRef<AbortController | null>(null);
+
+  // Cleanup: abort export operations on unmount (#603)
+  useEffect(() => {
+    return () => {
+      if (exportAbortControllerRef.current) {
+        exportAbortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const loadTemplates = async () => {
       try {
@@ -176,14 +188,25 @@ export function ETPEditor() {
     completed: false, // TODO: calcular baseado em currentETP.sections
   }));
 
-  // Handle PDF export with demo conversion trigger (#475)
+  // Handle PDF export with demo conversion trigger (#475) and AbortController (#603)
   const handleExportPDF = async () => {
     if (!id) return;
+
+    // Cancel any previous export operation
+    if (exportAbortControllerRef.current) {
+      exportAbortControllerRef.current.abort();
+    }
+
+    exportAbortControllerRef.current = new AbortController();
+    const { signal } = exportAbortControllerRef.current;
 
     setIsExporting(true);
     try {
       const { exportPDF } = useETPStore.getState();
-      const blob = await exportPDF(id);
+      const blob = await exportPDF(id, { signal });
+
+      // Check if request was aborted before proceeding
+      if (signal.aborted) return;
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -200,22 +223,41 @@ export function ETPEditor() {
       // Trigger demo conversion banner after PDF export (#475)
       triggerBanner('pdf_export');
     } catch (err) {
+      // Silently handle aborted requests (#603)
+      if (
+        err instanceof Error &&
+        (err.name === 'AbortError' || err.name === 'CanceledError')
+      ) {
+        return;
+      }
       const message =
         err instanceof Error ? err.message : 'Erro ao exportar PDF';
       error(message);
     } finally {
       setIsExporting(false);
+      exportAbortControllerRef.current = null;
     }
   };
 
-  // Handle DOCX export (#551)
+  // Handle DOCX export (#551) with AbortController (#603)
   const handleExportDocx = async () => {
     if (!id) return;
+
+    // Cancel any previous export operation
+    if (exportAbortControllerRef.current) {
+      exportAbortControllerRef.current.abort();
+    }
+
+    exportAbortControllerRef.current = new AbortController();
+    const { signal } = exportAbortControllerRef.current;
 
     setIsExporting(true);
     try {
       const { exportDocx } = useETPStore.getState();
-      const blob = await exportDocx(id);
+      const blob = await exportDocx(id, { signal });
+
+      // Check if request was aborted before proceeding
+      if (signal.aborted) return;
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -232,11 +274,19 @@ export function ETPEditor() {
       // Trigger demo conversion banner after export
       triggerBanner('pdf_export');
     } catch (err) {
+      // Silently handle aborted requests (#603)
+      if (
+        err instanceof Error &&
+        (err.name === 'AbortError' || err.name === 'CanceledError')
+      ) {
+        return;
+      }
       const message =
         err instanceof Error ? err.message : 'Erro ao exportar DOCX';
       error(message);
     } finally {
       setIsExporting(false);
+      exportAbortControllerRef.current = null;
     }
   };
 

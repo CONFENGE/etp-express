@@ -10,6 +10,7 @@ import {
   GenerationStatus,
   AsyncSection,
 } from '@/types/etp';
+import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
 import {
   pollJobStatus,
@@ -57,8 +58,11 @@ interface ETFState {
   validateETP: (id: string) => Promise<ValidationResult>;
 
   // Export
-  exportPDF: (id: string, options?: ExportOptions) => Promise<Blob>;
-  exportDocx: (id: string) => Promise<Blob>;
+  exportPDF: (
+    id: string,
+    options?: Partial<ExportOptions> & { signal?: AbortSignal },
+  ) => Promise<Blob>;
+  exportDocx: (id: string, options?: { signal?: AbortSignal }) => Promise<Blob>;
   exportJSON: (id: string) => Promise<string>;
 
   // References
@@ -385,16 +389,25 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     }
   },
 
-  exportPDF: async (id: string, options?: ExportOptions) => {
+  exportPDF: async (
+    id: string,
+    options?: Partial<ExportOptions> & { signal?: AbortSignal },
+  ) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiHelpers.post<Blob>(
-        `/etps/${id}/export/pdf`,
-        options,
-      );
+      const { signal, ...exportOptions } = options || {};
+      const response = await api.post(`/etps/${id}/export/pdf`, exportOptions, {
+        responseType: 'blob',
+        signal,
+      });
       set({ isLoading: false });
-      return response;
+      return response.data as Blob;
     } catch (error) {
+      // Don't set error state for aborted requests
+      if (axios.isCancel(error) || (error as Error).name === 'CanceledError') {
+        set({ isLoading: false });
+        throw error;
+      }
       set({
         error: error instanceof Error ? error.message : 'Erro ao exportar PDF',
         isLoading: false,
@@ -403,15 +416,21 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     }
   },
 
-  exportDocx: async (id: string) => {
+  exportDocx: async (id: string, options?: { signal?: AbortSignal }) => {
     set({ isLoading: true, error: null });
     try {
       const response = await api.get(`/export/etp/${id}/docx`, {
         responseType: 'blob',
+        signal: options?.signal,
       });
       set({ isLoading: false });
       return response.data as Blob;
     } catch (error) {
+      // Don't set error state for aborted requests
+      if (axios.isCancel(error) || (error as Error).name === 'CanceledError') {
+        set({ isLoading: false });
+        throw error;
+      }
       set({
         error: error instanceof Error ? error.message : 'Erro ao exportar DOCX',
         isLoading: false,
