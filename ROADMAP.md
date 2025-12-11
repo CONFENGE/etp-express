@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-10 | **Progresso:** 280/312 (89.7%) | **Deploy:** Operacional
+**Atualizado:** 2025-12-10 | **Progresso:** 282/347 (81.3%) | **Deploy:** Operacional | **P0 Security:** 15 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -10,15 +10,98 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 69/82   84%
+M6: Maintenance         █████████████████░░░ 69/97   71%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
-M9: Export/Import       ██░░░░░░░░░░░░░░░░░░  2/16   13%
+M9: Export/Import       ████░░░░░░░░░░░░░░░░  4/16   25%
 ```
 
 ---
 
 ## Próximas Ações Prioritárias
+
+### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (15 issues) - NOVO
+
+**Objetivo:** Resolver vulnerabilidades críticas e fragilidades que afetam happy paths de usuários em produção.
+
+**Épico 1: Security Backend (5 issues)**
+| # | Issue | Impacto |
+| ---- | ----------------------------------------- | ------- |
+| #598 | SSL Certificate Validation desabilitado | MITM attacks |
+| #599 | CORS fallback para localhost | Config incorreta |
+| #600 | Complexidade senha ausente no registro | Senhas fracas |
+| #601 | Browser cleanup PDF pode falhar | Resource leak |
+| #602 | Admin authorization não implementada | **CRÍTICO** |
+
+**Épico 2: Bugs Frontend (4 issues)**
+| # | Issue | Impacto |
+| ---- | ----------------------------------------- | ------- |
+| #603 | Memory leak em export operations | Performance |
+| #604 | Race condition managerStore loading | UI travada |
+| #605 | Dynamic import sem error handling | Auth loop |
+| #606 | ProtectedRoute antes de auth check | Flash login |
+
+**Épico 3: Infraestrutura (3 issues)**
+| # | Issue | Impacto |
+| ---- | ----------------------------------------- | ------- |
+| #607 | Graceful shutdown handler ausente | Requests perdidos |
+| #608 | Logs verbose em produção | Data leak |
+| #609 | npm audit ausente no CI | CVEs |
+
+**Épico 4: UX Crítico (3 issues)**
+| # | Issue | Impacto |
+| ---- | ----------------------------------------- | ------- |
+| #610 | Unsaved changes warning ausente | Perda de trabalho |
+| #611 | Polling AI continua após unmount | React warnings |
+| #612 | Export sem progress/cancel | UX ruim |
+
+**Labels:** `priority/P0`, `security`, `bug`
+
+---
+
+### 🚨 ÉPICO P0 - Lançamento Enterprise (20 issues)
+
+**Objetivo:** Garantir login funcional + wow factors para demonstrações enterprise.
+
+**Épico 1: Autenticação Funcional (Blocker)**
+| # | Issue | Esforço |
+| ---- | ----------------------------------------- | ------- |
+| #578 | Executar seed:admin em produção | 15min |
+| #579 | Validação organização no login | 2h |
+| #580 | Melhorar mensagens erro autenticação | 3h |
+
+**Épico 2: Login UX/UI Enterprise (Wow Factors)**
+| # | Issue | Esforço |
+| ---- | ----------------------------------------- | ------- |
+| #581 | Toggle visibilidade senha | 1h |
+| #582 | Validação tempo real campos | 2h |
+| #583 | Ícone placeholder login | 1h |
+| #584 | Spinner elegante autenticação | 1h |
+| #585 | Animações entrada login | 2h |
+| #586 | Indicadores campo obrigatório | 1h |
+| #587 | Funcionalidade "Esqueceu senha" | 8h |
+
+**Épico 3: Polish Visual Global**
+| # | Issue | Esforço |
+| ---- | ----------------------------------------- | ------- |
+| #588 | Componente ErrorState padronizado | 2h |
+| #589 | Ilustrações empty states | 4h |
+| #590 | Toast com undo ações destrutivas | 3h |
+| #591 | Touch targets 44x44px | 4h |
+| #592 | Micro-interações cards/botões | 3h |
+
+**Épico 4: Feedback & Estados (Enterprise Grade)**
+| # | Issue | Esforço |
+| ---- | ----------------------------------------- | ------- |
+| #593 | Página 404 com ilustração | 2h |
+| #594 | Breadcrumb navigation | 3h |
+| #595 | Indicador online/offline | 2h |
+| #596 | Skeleton loading completo | 4h |
+| #597 | Confetti ETP 100% concluído | 2h |
+
+**Esforço Total:** ~52h | **Labels:** `priority/P0`, `wow-factor`
+
+---
 
 ### M8 - Gestão de Domínios ⚠️ 96% (23/24)
 
@@ -85,15 +168,15 @@ M9: Export/Import       ██░░░░░░░░░░░░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis (14 open, 2 done)
+### M9 - Export DOCX & Import Analysis (12 open, 4 done)
 
-**Feature 1: Export DOCX** (~6h remaining)
+**Feature 1: Export DOCX** ✅ COMPLETE
 | # | Issue | Status |
 | ---- | ---------------------------------- | ------ |
 | ~~#548~~ | ~~Setup biblioteca docx~~ | ✅ PR #573 |
 | ~~#549~~ | ~~Implementar exportToDocx~~ | ✅ PR #574 |
-| #550 | Endpoint GET /export/etp/:id/docx | OPEN |
-| #551 | Frontend botão Export DOCX | OPEN |
+| ~~#550~~ | ~~Endpoint GET /export/etp/:id/docx~~ | ✅ PR #576 |
+| ~~#551~~ | ~~Frontend botão Export DOCX~~ | ✅ PR #577 |
 | #552 | Testes E2E Export DOCX | OPEN |
 
 **Feature 2: Import & Analysis** (~27h)
@@ -150,14 +233,42 @@ Issues #261-#269, #298-#301
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 312      |
-| Issues Abertas    | 32       |
-| Issues Fechadas   | 280      |
-| Progresso         | 89.7%    |
+| Issues Totais     | 347      |
+| Issues Abertas    | 65       |
+| Issues Fechadas   | 282      |
+| Progresso         | 81.3%    |
 | Velocidade        | 12.1/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1381     |
+| P0 Security       | 15 novas |
+| P0 Enterprise     | 20       |
+
+---
+
+## Infraestrutura de Commands
+
+| Command            | Última Atualização | Status                                                            |
+| ------------------ | ------------------ | ----------------------------------------------------------------- |
+| `/audit-roadmap`   | 2025-12-10         | ✅ Sincronizado com M1-M9                                         |
+| `/pick-next-issue` | 2025-12-10         | ✅ **Pipeline Mode** - Suporta até 3 PRs simultâneas              |
+| `/review-pr`       | 2025-12-10         | ✅ **Pipeline Mode** - Prioriza PRs do pipeline, Coverage 78%/76% |
+
+### Pipeline de Desenvolvimento
+
+**Capacidade:** Máximo 3 PRs simultâneas no pipeline
+
+**Tracking:** Label `status/pr-pending` no GitHub
+
+**Fluxo:**
+
+1. `/pick-next-issue` verifica capacidade do pipeline (máx 3)
+2. Implementa issue e cria PR
+3. Adiciona label `status/pr-pending` à issue
+4. Se pipeline < 3: pode continuar com `/pick-next-issue`
+5. Se pipeline = 3: obrigatório `/review-pr`
+6. `/review-pr` prioriza PRs com label (+20 pontos no scoring)
+7. Após merge: remove label e atualiza status
 
 ---
 
