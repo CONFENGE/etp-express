@@ -1,5 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  Logger,
+  ValidationPipe,
+  VersioningType,
+  INestApplication,
+} from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
@@ -13,13 +18,21 @@ import { DISCLAIMER } from './common/constants/messages';
 
 const logger = new Logger('Bootstrap');
 
+// Track application instance for graceful shutdown
+let app: INestApplication;
+
 async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
   initSentry();
 
-  const app = await NestFactory.create(AppModule, {
+  app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+
+  // Enable graceful shutdown hooks (#607)
+  // This ensures NestJS lifecycle hooks (OnApplicationShutdown) are called
+  // when the process receives SIGTERM/SIGINT signals
+  app.enableShutdownHooks();
 
   const configService = app.get(ConfigService);
 
@@ -156,5 +169,61 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+// Graceful Shutdown Handlers (#607)
+// These handlers ensure clean shutdown when Railway or other orchestrators
+// send termination signals during deploys or scaling events
+
+const gracefulShutdown = async (signal: string) => {
+  logger.log(`${signal} received, initiating graceful shutdown...`);
+
+  // Give active requests time to complete (Railway default: 10s)
+  const shutdownTimeout = parseInt(process.env.SHUTDOWN_TIMEOUT || '10000', 10);
+
+  const timeoutHandle = setTimeout(() => {
+    logger.warn(
+      `Graceful shutdown timeout (${shutdownTimeout}ms) exceeded, forcing exit`,
+    );
+    process.exit(1);
+  }, shutdownTimeout);
+
+  try {
+    if (app) {
+      // NestJS app.close() triggers OnApplicationShutdown in all providers
+      await app.close();
+      logger.log('Application closed gracefully');
+    }
+    clearTimeout(timeoutHandle);
+    process.exit(0);
+  } catch (error) {
+    logger.error('Error during graceful shutdown:', error);
+    clearTimeout(timeoutHandle);
+    process.exit(1);
+  }
+};
+
+// SIGTERM: Sent by Railway/Docker/Kubernetes for graceful shutdown
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+
+// SIGINT: Sent by Ctrl+C in terminal (development)
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle unhandled promise rejections (#607)
+// Prevents silent failures and ensures proper logging
+process.on(
+  'unhandledRejection',
+  (reason: unknown, promise: Promise<unknown>) => {
+    logger.error('Unhandled Promise Rejection at:', promise, 'reason:', reason);
+    // Note: Not exiting process here to allow recovery, but logging for debugging
+  },
+);
+
+// Handle uncaught exceptions (#607)
+// Last resort - log and exit to prevent undefined state
+process.on('uncaughtException', (error: Error) => {
+  logger.error('Uncaught Exception:', error.message, error.stack);
+  // Give time for logs to flush before exit
+  setTimeout(() => process.exit(1), 1000);
+});
 
 // Trigger Railway auto-deploy after husky prepare script removal (#389)

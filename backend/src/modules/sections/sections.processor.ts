@@ -1,5 +1,5 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common';
+import { Logger, OnApplicationShutdown } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { OrchestratorService } from '../orchestrator/orchestrator.service';
 import { EtpsService } from '../etps/etps.service';
@@ -57,7 +57,10 @@ export interface GeneratedSectionResult {
  * @see EtpsService - Manages ETP completion tracking
  */
 @Processor('sections')
-export class SectionsProcessor extends WorkerHost {
+export class SectionsProcessor
+  extends WorkerHost
+  implements OnApplicationShutdown
+{
   private readonly logger = new Logger(SectionsProcessor.name);
 
   constructor(
@@ -67,6 +70,36 @@ export class SectionsProcessor extends WorkerHost {
     private etpsService: EtpsService,
   ) {
     super();
+  }
+
+  /**
+   * Graceful shutdown handler for BullMQ worker (#607)
+   *
+   * Called automatically by NestJS when the application receives shutdown signal.
+   * Ensures currently processing jobs complete before the worker terminates.
+   *
+   * @param signal - The signal that triggered shutdown (SIGTERM, SIGINT)
+   */
+  async onApplicationShutdown(signal?: string): Promise<void> {
+    this.logger.log(
+      `SectionsProcessor shutting down (${signal || 'unknown signal'})...`,
+    );
+
+    try {
+      // WorkerHost from @nestjs/bullmq provides access to the underlying worker
+      const worker = this.worker;
+
+      if (worker) {
+        // Close the worker gracefully - this waits for active jobs to complete
+        // Force: false means wait for current job to finish
+        await worker.close(false);
+        this.logger.log('BullMQ worker closed gracefully');
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error closing BullMQ worker: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   /**
