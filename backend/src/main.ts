@@ -14,6 +14,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { initSentry } from './config/sentry.config';
+import { getLogLevels } from './config/logger.config';
 import { DISCLAIMER } from './common/constants/messages';
 
 const logger = new Logger('Bootstrap');
@@ -25,9 +26,14 @@ async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
   initSentry();
 
+  const logLevels = getLogLevels();
   app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    logger: logLevels,
   });
+
+  logger.log(
+    `📋 Log levels configured: ${logLevels.join(', ')} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
+  );
 
   // Enable graceful shutdown hooks (#607)
   // This ensures NestJS lifecycle hooks (OnApplicationShutdown) are called
