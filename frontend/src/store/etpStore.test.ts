@@ -11,6 +11,24 @@ import type {
   AIGenerationResponse, // Used in return type assertions
 } from '@/types/etp';
 
+// Mock axios for isCancel check (#603)
+vi.mock('axios', () => ({
+  default: {
+    isCancel: vi.fn((error: unknown) => {
+      return (
+        error instanceof Error &&
+        (error.name === 'CanceledError' || error.name === 'AbortError')
+      );
+    }),
+  },
+  isCancel: vi.fn((error: unknown) => {
+    return (
+      error instanceof Error &&
+      (error.name === 'CanceledError' || error.name === 'AbortError')
+    );
+  }),
+}));
+
 // Mock do módulo apiHelpers e api default
 vi.mock('@/lib/api', () => ({
   default: {
@@ -604,6 +622,139 @@ describe('etpStore', () => {
       await act(async () => {
         try {
           await result.current.exportDocx('etp-1');
+        } catch {
+          // Expected to throw
+        }
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.error).toBe(errorMessage);
+    });
+  });
+
+  describe('AbortController support (#603)', () => {
+    it('should pass signal to exportPDF API call', async () => {
+      const mockBlob = new Blob(['mock pdf content'], {
+        type: 'application/pdf',
+      });
+      vi.mocked(api.post).mockResolvedValue({ data: mockBlob });
+
+      const { result } = renderHook(() => useETPStore());
+      const abortController = new AbortController();
+
+      await act(async () => {
+        await result.current.exportPDF('etp-1', {
+          signal: abortController.signal,
+        });
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(api.post).toHaveBeenCalledWith(
+        '/etps/etp-1/export/pdf',
+        {},
+        expect.objectContaining({
+          responseType: 'blob',
+          signal: abortController.signal,
+        }),
+      );
+    });
+
+    it('should pass signal to exportDocx API call', async () => {
+      const mockBlob = new Blob(['mock docx content'], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+      vi.mocked(api.get).mockResolvedValue({ data: mockBlob });
+
+      const { result } = renderHook(() => useETPStore());
+      const abortController = new AbortController();
+
+      await act(async () => {
+        await result.current.exportDocx('etp-1', {
+          signal: abortController.signal,
+        });
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(api.get).toHaveBeenCalledWith('/export/etp/etp-1/docx', {
+        responseType: 'blob',
+        signal: abortController.signal,
+      });
+    });
+
+    it('should not set error state when PDF export is aborted (#603)', async () => {
+      // Create a CanceledError that simulates axios abort
+      const canceledError = new Error('Request aborted');
+      canceledError.name = 'CanceledError';
+      vi.mocked(api.post).mockRejectedValue(canceledError);
+
+      const { result } = renderHook(() => useETPStore());
+      const abortController = new AbortController();
+
+      // Start export and abort immediately
+      await act(async () => {
+        try {
+          await result.current.exportPDF('etp-1', {
+            signal: abortController.signal,
+          });
+        } catch {
+          // Expected to throw CanceledError
+        }
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Error state should NOT be set for aborted requests
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should not set error state when DOCX export is aborted (#603)', async () => {
+      // Create a CanceledError that simulates axios abort
+      const canceledError = new Error('Request aborted');
+      canceledError.name = 'CanceledError';
+      vi.mocked(api.get).mockRejectedValue(canceledError);
+
+      const { result } = renderHook(() => useETPStore());
+      const abortController = new AbortController();
+
+      // Start export and abort immediately
+      await act(async () => {
+        try {
+          await result.current.exportDocx('etp-1', {
+            signal: abortController.signal,
+          });
+        } catch {
+          // Expected to throw CanceledError
+        }
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Error state should NOT be set for aborted requests
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should still set error for non-abort errors in exportPDF', async () => {
+      const errorMessage = 'Network error';
+      vi.mocked(api.post).mockRejectedValue(new Error(errorMessage));
+
+      const { result } = renderHook(() => useETPStore());
+
+      await act(async () => {
+        try {
+          await result.current.exportPDF('etp-1');
         } catch {
           // Expected to throw
         }
