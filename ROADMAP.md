@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 293/347 (84.4%) | **Deploy:** Operacional | **P0 Security:** 4 issues | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 295/347 (85.0%) | **Deploy:** Operacional | **P0 Security:** 2 issues | **P0 Enterprise:** 20 issues
 
 ## Milestones
 
@@ -33,13 +33,13 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#601~~ | ~~Browser cleanup PDF pode falhar~~ | ✅ PR #618 |
 | ~~#602~~ | ~~Admin authorization não implementada~~ | ✅ PR #613 (OWASP A01:2021) |
 
-**Épico 2: Bugs Frontend (1 issue)**
+**Épico 2: Bugs Frontend (0 issues - ✅ COMPLETO)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | ~~#603~~ | ~~Memory leak em export operations~~ | ✅ PR #619 |
 | ~~#604~~ | ~~Race condition managerStore loading~~ | ✅ PR #621 |
 | ~~#605~~ | ~~Dynamic import sem error handling~~ | ✅ PR #623 |
-| #606 | ProtectedRoute antes de auth check | Flash login |
+| ~~#606~~ | ~~ProtectedRoute antes de auth check~~ | ✅ PR #624 | |
 
 **Épico 3: Infraestrutura (0 issues - ✅ COMPLETO)**
 | # | Issue | Impacto |
@@ -48,10 +48,10 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 |
 | ~~#609~~ | ~~npm audit ausente no CI~~ | ✅ PR #622 |
 
-**Épico 4: UX Crítico (3 issues)**
+**Épico 4: UX Crítico (2 issues)**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
-| #610 | Unsaved changes warning ausente | Perda de trabalho |
+| ~~#610~~ | ~~Unsaved changes warning ausente~~ | ✅ PR #625 |
 | #611 | Polling AI continua após unmount | React warnings |
 | #612 | Export sem progress/cancel | UX ruim |
 
@@ -234,14 +234,14 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor  |
 | ----------------- | ------ |
 | Issues Totais     | 347    |
-| Issues Abertas    | 54     |
-| Issues Fechadas   | 293    |
-| Progresso         | 84.4%  |
+| Issues Abertas    | 52     |
+| Issues Fechadas   | 295    |
+| Progresso         | 85.0%  |
 | Velocidade        | 17/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
-| Testes            | 1754   |
-| P0 Security       | 4      |
+| Testes            | 1784   |
+| P0 Security       | 2      |
 | P0 Enterprise     | 20     |
 
 ---
