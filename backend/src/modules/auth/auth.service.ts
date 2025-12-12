@@ -18,6 +18,36 @@ import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword, JwtPayload } from './types/user.types';
 
 /**
+ * Error codes for authentication failures.
+ * These codes are sent to the frontend for contextual error handling.
+ *
+ * @security Some codes should NOT reveal sensitive information in production.
+ * The frontend maps these to user-friendly messages while maintaining security.
+ */
+export enum AuthErrorCode {
+  /** Generic invalid credentials (used for USER_NOT_FOUND and INVALID_PASSWORD in production) */
+  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
+  /** User account is deactivated */
+  USER_INACTIVE = 'USER_INACTIVE',
+  /** User has no organization assigned */
+  NO_ORGANIZATION = 'NO_ORGANIZATION',
+  /** User's organization is suspended */
+  ORG_INACTIVE = 'ORG_INACTIVE',
+  /** User's organization does not exist */
+  ORG_NOT_FOUND = 'ORG_NOT_FOUND',
+  /** Too many login attempts */
+  ACCOUNT_LOCKED = 'ACCOUNT_LOCKED',
+}
+
+/**
+ * Structured error response for authentication failures.
+ */
+export interface AuthError {
+  code: AuthErrorCode;
+  message: string;
+}
+
+/**
  * Service responsible for user authentication and authorization.
  *
  * @remarks
@@ -46,6 +76,21 @@ export class AuthService {
   ) {}
 
   /**
+   * Creates a structured UnauthorizedException with error code.
+   *
+   * @param code - Authentication error code
+   * @param message - Human-readable error message
+   * @returns UnauthorizedException with structured response
+   */
+  private createAuthError(
+    code: AuthErrorCode,
+    message: string,
+  ): UnauthorizedException {
+    const error: AuthError = { code, message };
+    return new UnauthorizedException(error);
+  }
+
+  /**
    * Validates user credentials and returns user data without password.
    *
    * @remarks
@@ -61,10 +106,10 @@ export class AuthService {
    * @param email - User email address
    * @param password - Plain text password to validate
    * @returns User object without password field, or null if validation fails
-   * @throws {UnauthorizedException} If user account is inactive
-   * @throws {UnauthorizedException} If user has no organization assigned
-   * @throws {UnauthorizedException} If user's organization is suspended
-   * @throws {UnauthorizedException} If user's organization does not exist
+   * @throws {UnauthorizedException} If user account is inactive (USER_INACTIVE)
+   * @throws {UnauthorizedException} If user has no organization assigned (NO_ORGANIZATION)
+   * @throws {UnauthorizedException} If user's organization is suspended (ORG_INACTIVE)
+   * @throws {UnauthorizedException} If user's organization does not exist (ORG_NOT_FOUND)
    */
   async validateUser(
     email: string,
@@ -83,7 +128,11 @@ export class AuthService {
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Usuário inativo');
+      this.logger.warn(`Inactive user attempted login: ${user.email}`);
+      throw this.createAuthError(
+        AuthErrorCode.USER_INACTIVE,
+        'Sua conta está desativada. Entre em contato com o administrador.',
+      );
     }
 
     // Validate user has an organization assigned
@@ -91,8 +140,9 @@ export class AuthService {
       this.logger.warn(
         `User ${user.email} attempted login without organization assigned`,
       );
-      throw new UnauthorizedException(
-        'Usuário sem organização associada. Contate o administrador.',
+      throw this.createAuthError(
+        AuthErrorCode.NO_ORGANIZATION,
+        'Usuário sem organização associada. Entre em contato com o administrador.',
       );
     }
 
@@ -106,20 +156,22 @@ export class AuthService {
         this.logger.warn(
           `User ${user.email} attempted login with suspended organization: ${organization.name}`,
         );
-        throw new UnauthorizedException(
-          'Organização suspensa. Contate o administrador.',
+        throw this.createAuthError(
+          AuthErrorCode.ORG_INACTIVE,
+          'Sua organização está suspensa. Entre em contato com o suporte.',
         );
       }
     } catch (error) {
-      // If organization not found (NotFoundException), reject login
+      // Re-throw our structured errors
       if (error instanceof UnauthorizedException) {
         throw error;
       }
       this.logger.error(
         `User ${user.email} has invalid organizationId: ${user.organizationId}`,
       );
-      throw new UnauthorizedException(
-        'Organização não encontrada. Contate o administrador.',
+      throw this.createAuthError(
+        AuthErrorCode.ORG_NOT_FOUND,
+        'Organização não encontrada. Entre em contato com o administrador.',
       );
     }
 
@@ -165,7 +217,10 @@ export class AuthService {
         userAgent: metadata?.userAgent,
         reason: 'Invalid credentials',
       });
-      throw new UnauthorizedException('Email ou senha incorretos');
+      throw this.createAuthError(
+        AuthErrorCode.INVALID_CREDENTIALS,
+        'Email ou senha incorretos. Verifique suas credenciais e tente novamente.',
+      );
     }
 
     const payload: JwtPayload = {
