@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "npm run migration:run --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
+startCommand = "npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
