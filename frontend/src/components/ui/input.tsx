@@ -22,7 +22,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         className={cn(
           // Base styles with Apple HIG tokens
-          'flex h-10 w-full rounded-apple border border-[var(--border-primary)] bg-surface-primary px-3 py-2 text-sm text-text-apple-primary',
+          // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
+          'flex h-10 min-h-touch w-full rounded-apple border border-[var(--border-primary)] bg-surface-primary px-3 py-2 text-sm text-text-apple-primary',
           // File input styles
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',
           // Placeholder with secondary text color
