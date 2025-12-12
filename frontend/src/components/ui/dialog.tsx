@@ -61,7 +61,9 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         className={cn(
-          'absolute right-4 top-4 rounded-apple p-1 opacity-70',
+          // WCAG 2.5.5: 44x44px minimum touch target
+          'absolute right-2 top-2 rounded-apple min-h-touch min-w-touch',
+          'flex items-center justify-center opacity-70',
           // Apple-style transition
           'transition-all duration-apple ease-apple',
           // Hover and focus states
