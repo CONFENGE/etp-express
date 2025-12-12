@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useETPs } from '@/hooks/useETPs';
-import { SkeletonList } from '@/components/common/LoadingState';
+import { SkeletonETPGrid } from '@/components/common/LoadingState';
 import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { useUndoToast } from '@/hooks/useUndoToast';
@@ -125,7 +125,7 @@ export function ETPs() {
         </div>
 
         {isLoading ? (
-          <SkeletonList count={3} />
+          <SkeletonETPGrid count={6} />
         ) : filteredETPs.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
