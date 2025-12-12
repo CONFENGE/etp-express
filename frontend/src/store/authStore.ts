@@ -7,6 +7,7 @@ import {
   AuthResponse,
 } from '@/types/user';
 import { apiHelpers } from '@/lib/api';
+import { getAuthErrorMessage } from '@/lib/constants';
 
 /**
  * DTO for password change request.
@@ -77,8 +78,8 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
         } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Erro ao fazer login';
+          // Use structured error message extraction
+          const errorMessage = getAuthErrorMessage(error);
           set({
             error: errorMessage,
             isLoading: false,

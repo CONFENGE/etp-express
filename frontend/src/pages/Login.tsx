@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, getAuthErrorMessage } from '@/lib/constants';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -48,11 +48,7 @@ export function Login() {
       success('Login realizado com sucesso!');
       navigate('/dashboard');
     } catch (error) {
-      showError(
-        error instanceof Error
-          ? error.message
-          : 'Erro ao fazer login. Verifique suas credenciais.',
-      );
+      showError(getAuthErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
