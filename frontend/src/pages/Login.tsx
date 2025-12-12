@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,9 +6,11 @@ import { z } from 'zod';
 import { ClipboardList, LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
+import { useRealtimeValidation } from '@/hooks/useRealtimeValidation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FormField } from '@/components/ui/form-field';
+import { ValidationIcon } from '@/components/ui/validation-icon';
 import {
   Card,
   CardContent,
@@ -18,6 +20,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { APP_NAME, getAuthErrorMessage } from '@/lib/constants';
+import { cn, isValidEmail } from '@/lib/utils';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -32,6 +35,24 @@ export function Login() {
   const { error: showError, success } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Real-time validation hooks
+  const emailValidator = useCallback(
+    (value: string) => isValidEmail(value),
+    [],
+  );
+  const passwordValidator = useCallback(
+    (value: string) => value.length >= 6,
+    [],
+  );
+  const emailValidation = useRealtimeValidation(emailValidator, {
+    delay: 500,
+    minLength: 1,
+  });
+  const passwordValidation = useRealtimeValidation(passwordValidator, {
+    delay: 500,
+    minLength: 1,
+  });
 
   const {
     register,
@@ -96,13 +117,29 @@ export function Login() {
                 hint="Use seu email institucional"
                 error={errors.email?.message}
               >
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  {...register('email')}
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                />
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    {...register('email', {
+                      onChange: (e) => emailValidation.validate(e.target.value),
+                    })}
+                    aria-invalid={errors.email ? 'true' : 'false'}
+                    aria-describedby={
+                      errors.email ? 'email-error' : 'email-hint'
+                    }
+                    className={cn(
+                      'pr-10 transition-colors duration-200',
+                      emailValidation.state === 'valid' &&
+                        !errors.email &&
+                        'border-apple-green focus-visible:ring-apple-green',
+                      emailValidation.state === 'invalid' &&
+                        'border-apple-red focus-visible:ring-apple-red',
+                    )}
+                  />
+                  <ValidationIcon state={emailValidation.state} />
+                </div>
               </FormField>
 
               <FormField
@@ -117,9 +154,23 @@ export function Login() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    {...register('password')}
+                    {...register('password', {
+                      onChange: (e) =>
+                        passwordValidation.validate(e.target.value),
+                    })}
                     aria-invalid={errors.password ? 'true' : 'false'}
-                    className="pr-10"
+                    className={cn(
+                      'pr-16 transition-colors duration-200',
+                      passwordValidation.state === 'valid' &&
+                        !errors.password &&
+                        'border-apple-green focus-visible:ring-apple-green',
+                      passwordValidation.state === 'invalid' &&
+                        'border-apple-red focus-visible:ring-apple-red',
+                    )}
+                  />
+                  <ValidationIcon
+                    state={passwordValidation.state}
+                    className="right-10"
                   />
                   <button
                     type="button"
