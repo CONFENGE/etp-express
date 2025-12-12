@@ -1,24 +1,21 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 296/347 (85.3%) | **Deploy:** 🟡 DEPLOYING | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 297/348 (85.3%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
 
-## 🔧 Deploy Backend Railway - Fix em Progresso
+## ✅ Deploy Backend Railway - RESOLVIDO
 
-**Issues:** #627, #628
+**Issue:** #631 (CLOSED)
 
-**Problemas Identificados e Resolvidos:**
+**Problemas Identificados e Corrigidos:**
 
-1. ✅ CORS_ORIGINS não definida → Variável configurada no Railway
-2. ✅ @types/\* em devDependencies → Movidos para dependencies (commit 9f0138f)
-3. ✅ startCommand incorreto → Corrigido no railway.toml (commit 707074a)
-4. ✅ **Build timeout** → Imagem Docker muito grande (~2GB) por Puppeteer/Chromium duplicado
-   - Configurado `puppeteer.skipDownload: true` em backend/package.json
-   - Criado `.npmrc` com PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-   - Atualizado `nixpacks.toml` com configurações otimizadas
-   - Configurado `executablePath` para usar Chromium do sistema
-   - Variáveis Railway: PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+1. ✅ Build timeout → Puppeteer skipDownload + system Chromium
+2. ✅ SSL Connection Error → PGSSLMODE=disable em typeorm.config.ts
+3. ✅ TypeScript enum error → \_\_dirname-based paths para entities/migrations
+4. ✅ ts-node not found → migration:run:prod script
+5. ✅ Template HBS não copiado → nest-cli.json assets config
+6. ✅ Workspace incorreto → NIXPACKS_START_CMD corrigido
 
-**Status:** Aguardando redeploy para validação.
+**Status:** Backend operacional. Migrations executadas. NestJS rodando.
 
 ---
 
