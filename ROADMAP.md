@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 310/350 (88.6%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 9 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 310/360 (86.1%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 9 issues | **Hardening:** 10 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -16,6 +16,47 @@
 6. ✅ Workspace incorreto → NIXPACKS_START_CMD corrigido
 
 **Status:** Backend operacional. Migrations executadas. NestJS rodando.
+
+---
+
+## 🛡️ Hardening & Refactoring (10 issues)
+
+**Origem:** Análise de segurança externa (dez/2024)
+**Validação:** Codebase auditado, 2 pontos já implementados, 10 issues criadas
+
+### ✅ Pontos Validados e Já Implementados
+
+| Ponto                      | Status | Implementação                                                                         |
+| -------------------------- | ------ | ------------------------------------------------------------------------------------- |
+| **Assincronismo (BullMQ)** | ✅ OK  | `sections.processor.ts`, `app.module.ts` - Workers em background, retry exponencial   |
+| **Circuit Breakers**       | ✅ OK  | `openai.service.ts`, `perplexity.service.ts` - Opossum com 60s timeout, 50% threshold |
+| **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                   |
+| **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                      |
+
+### 🔴 P1 - Segurança Multi-Tenancy (4 issues)
+
+| #    | Issue                                               | Risco                         |
+| ---- | --------------------------------------------------- | ----------------------------- |
+| #648 | AnalyticsService - Filtragem por organizationId     | Vazamento de dados analytics  |
+| #649 | SearchService - Isolamento de cache por organização | Resultados cross-tenant       |
+| #650 | SimilarContract - Adicionar campo organizationId    | Pré-requisito para isolamento |
+| #651 | Prompt Injection - Melhorar sanitização input       | Bypass via Unicode/variações  |
+
+### 🟡 P2 - Observabilidade (4 issues)
+
+| #    | Issue                             | Impacto                        |
+| ---- | --------------------------------- | ------------------------------ |
+| #652 | Logging estruturado em JSON       | Análise de logs facilitada     |
+| #653 | Request ID/Trace ID em logs       | Correlação de requisições      |
+| #654 | OpenTelemetry distributed tracing | Visibilidade por componente    |
+| #655 | Métricas de negócio Prometheus    | KPIs: tokens, latência, falhas |
+
+### 🟢 P3 - Melhorias (2 issues)
+
+| #    | Issue                            | Benefício                         |
+| ---- | -------------------------------- | --------------------------------- |
+| #656 | Validação estruturada saída LLM  | Detectar outputs maliciosos       |
+| #657 | Documentar PgBouncer para escala | Preparação para escala horizontal |
 
 ---
 
@@ -250,22 +291,35 @@ Issues #261-#269, #298-#301
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 350    |
-| Issues Abertas    | 44     |
+| Issues Totais     | 360    |
+| Issues Abertas    | 54     |
 | Issues Fechadas   | 306    |
-| Progresso         | 87.4%  |
+| Progresso         | 85.0%  |
 | Velocidade        | 17/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
 | P0 Security       | 1      |
-| P0 Enterprise     | 12     |
+| P0 Enterprise     | 9      |
+| Hardening P1      | 4      |
+| Hardening P2      | 4      |
+| Hardening P3      | 2      |
 
 ---
 
 ## Changelog Recente
 
 ### 2025-12-12
+
+**Hardening & Refactoring - 10 Issues Criadas** ✅
+
+- **Origem:** Análise de segurança externa validada contra codebase
+- **Já implementados:** BullMQ async, Circuit Breakers, Connection Pool, Graceful Shutdown
+- **Issues P1 (Segurança):** #648, #649, #650, #651 - Multi-tenancy e prompt injection
+- **Issues P2 (Observabilidade):** #652, #653, #654, #655 - Logs JSON, Request ID, OpenTelemetry, Prometheus
+- **Issues P3 (Melhorias):** #656, #657 - Validação output LLM, documentação PgBouncer
+
+---
 
 **PR #640 - Real-time Validation Login (Issue #582)** ✅
 
@@ -319,6 +373,32 @@ Issues #261-#269, #298-#301
 
 - Corrigido flash da tela de login durante refresh de página
 - Auth check agora aguarda carregamento antes de renderizar
+
+---
+
+## MCP Servers Configurados
+
+**Atualizado:** 2025-12-12
+
+| MCP Server              | Função                                   | Relevância                    |
+| ----------------------- | ---------------------------------------- | ----------------------------- |
+| **context7**            | Documentação atualizada de bibliotecas   | ⭐⭐⭐ NestJS, React, TypeORM |
+| **exa**                 | Busca web com AI (alternativa ao Google) | ⭐⭐⭐ Pesquisa técnica       |
+| **playwright**          | Automação browser, testes E2E            | ⭐⭐⭐ E2E testing            |
+| **puppeteer**           | Automação browser, PDF generation        | ⭐⭐⭐ PDF export feature     |
+| **sequential-thinking** | Raciocínio multi-step complexo           | ⭐⭐⭐ Arquitetura, debugging |
+| **memory**              | Memória persistente entre sessões        | ⭐⭐ Contexto de projeto      |
+| **github**              | Issues, PRs, Actions, Releases           | ⭐⭐⭐ CI/CD, gestão projeto  |
+| **Railway**             | Deploy, logs, variáveis ambiente         | ⭐⭐⭐ Infraestrutura prod    |
+| **semgrep**             | Análise estática de segurança            | ⭐⭐ SAST scanning            |
+
+**Comandos úteis:**
+
+```bash
+claude mcp list              # Listar MCPs ativos
+claude mcp get <name>        # Detalhes de um MCP
+/mcp                         # Status dentro do Claude Code
+```
 
 ---
 
