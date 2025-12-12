@@ -226,7 +226,13 @@ describe('ExportService', () => {
       expect(result).toBeInstanceOf(Buffer);
       expect(puppeteer.launch).toHaveBeenCalledWith({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: undefined,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
       });
       expect(mockBrowser.newPage).toHaveBeenCalled();
       expect(mockPage.setContent).toHaveBeenCalled();
