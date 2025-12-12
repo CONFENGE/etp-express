@@ -78,11 +78,13 @@ describe('DomainManagement', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render back link', () => {
+    it('should render breadcrumb navigation', () => {
       renderWithRouter(<DomainManagement />);
 
+      // Breadcrumb should have home and admin links
+      expect(screen.getByRole('link', { name: 'Início' })).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: /back to admin dashboard/i }),
+        screen.getByRole('link', { name: 'Administração' }),
       ).toBeInTheDocument();
     });
 
@@ -210,14 +212,16 @@ describe('DomainManagement', () => {
       expect(h1).toHaveTextContent('Domains');
     });
 
-    it('should have back link with aria-label', () => {
+    it('should have breadcrumb navigation with proper links', () => {
       renderWithRouter(<DomainManagement />);
 
-      const backLink = screen.getByRole('link', {
-        name: /back to admin dashboard/i,
-      });
-      expect(backLink).toBeInTheDocument();
-      expect(backLink).toHaveAttribute('aria-label', 'Back to admin dashboard');
+      // Home link should go to dashboard
+      const homeLink = screen.getByRole('link', { name: 'Início' });
+      expect(homeLink).toHaveAttribute('href', '/dashboard');
+
+      // Admin link should go to admin dashboard
+      const adminLink = screen.getByRole('link', { name: 'Administração' });
+      expect(adminLink).toHaveAttribute('href', '/admin');
     });
 
     it('should have descriptive table headers', () => {
