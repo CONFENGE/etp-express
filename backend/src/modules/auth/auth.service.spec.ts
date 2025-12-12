@@ -117,6 +117,7 @@ describe('AuthService', () => {
       // Arrange
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
       mockUsersService.updateLastLogin.mockResolvedValue(undefined);
 
       // Act
@@ -132,6 +133,9 @@ describe('AuthService', () => {
       expect(bcrypt.compare).toHaveBeenCalledWith(
         'password123',
         mockUser.password,
+      );
+      expect(mockOrganizationsService.findOne).toHaveBeenCalledWith(
+        mockUser.organizationId,
       );
       expect(mockUsersService.updateLastLogin).toHaveBeenCalledWith(
         mockUser.id,
@@ -193,6 +197,56 @@ describe('AuthService', () => {
         service.validateUser('test@example.com', 'password123'),
       ).rejects.toThrow('Usuário inativo');
     });
+
+    it('should throw UnauthorizedException when user has no organizationId', async () => {
+      // Arrange
+      const userWithoutOrg = { ...mockUser, organizationId: null };
+      mockUsersService.findByEmail.mockResolvedValue(userWithoutOrg);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Act & Assert
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow(
+        'Usuário sem organização associada. Contate o administrador.',
+      );
+    });
+
+    it('should throw UnauthorizedException when organization is suspended', async () => {
+      // Arrange
+      const suspendedOrganization = { ...mockOrganization, isActive: false };
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockOrganizationsService.findOne.mockResolvedValue(suspendedOrganization);
+
+      // Act & Assert
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow('Organização suspensa. Contate o administrador.');
+    });
+
+    it('should throw UnauthorizedException when organization does not exist', async () => {
+      // Arrange
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockOrganizationsService.findOne.mockRejectedValue(
+        new Error('Organization not found'),
+      );
+
+      // Act & Assert
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.validateUser('test@example.com', 'password123'),
+      ).rejects.toThrow('Organização não encontrada. Contate o administrador.');
+    });
   });
 
   describe('login', () => {
@@ -205,6 +259,7 @@ describe('AuthService', () => {
       // Arrange
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
       mockUsersService.updateLastLogin.mockResolvedValue(undefined);
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
 
