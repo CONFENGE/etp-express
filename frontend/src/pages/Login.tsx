@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { FormField } from '@/components/ui/form-field';
 import {
   Card,
   CardContent,
@@ -89,8 +89,13 @@ export function Login() {
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+              <FormField
+                id="email"
+                label="Email"
+                required
+                hint="Use seu email institucional"
+                error={errors.email?.message}
+              >
                 <Input
                   id="email"
                   type="email"
@@ -98,15 +103,15 @@ export function Login() {
                   {...register('email')}
                   aria-invalid={errors.email ? 'true' : 'false'}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive" role="alert">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+              <FormField
+                id="password"
+                label="Senha"
+                required
+                hint="Minimo 6 caracteres"
+                error={errors.password?.message}
+              >
                 <div className="relative">
                   <Input
                     id="password"
@@ -132,12 +137,7 @@ export function Login() {
                     )}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-destructive" role="alert">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
+              </FormField>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
