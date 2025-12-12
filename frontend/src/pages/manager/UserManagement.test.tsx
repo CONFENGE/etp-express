@@ -110,13 +110,15 @@ describe('UserManagement', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render back button linking to dashboard', () => {
+    it('should render breadcrumb navigation', () => {
       renderWithRouter(<UserManagement />);
 
-      const backButton = screen.getByRole('link', {
-        name: 'Back to Dashboard',
-      });
-      expect(backButton).toHaveAttribute('href', '/manager');
+      // Breadcrumb should have home link and manager link
+      const homeLink = screen.getByRole('link', { name: 'Início' });
+      expect(homeLink).toHaveAttribute('href', '/dashboard');
+
+      const managerLink = screen.getByRole('link', { name: 'Gerenciamento' });
+      expect(managerLink).toHaveAttribute('href', '/manager');
     });
 
     it('should render new user button', () => {

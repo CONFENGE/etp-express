@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Tabs } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useETPs } from '@/hooks/useETPs';
@@ -335,6 +336,14 @@ export function ETPEditor() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb
+          items={[
+            { label: 'ETPs', href: '/etps' },
+            { label: currentETP.title || 'Editor' },
+          ]}
+        />
+
         <ETPEditorHeader
           etpTitle={currentETP.title}
           etpDescription={currentETP.description}
