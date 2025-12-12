@@ -43,7 +43,7 @@ describe('Login', () => {
     it('should render password input with type="password" by default', () => {
       renderLogin();
 
-      const passwordInput = screen.getByLabelText('Senha');
+      const passwordInput = screen.getByLabelText(/Senha/);
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
 
@@ -60,7 +60,7 @@ describe('Login', () => {
       const user = userEvent.setup();
       renderLogin();
 
-      const passwordInput = screen.getByLabelText('Senha');
+      const passwordInput = screen.getByLabelText(/Senha/);
       const toggleButton = screen.getByRole('button', {
         name: 'Mostrar senha',
       });
@@ -134,8 +134,8 @@ describe('Login', () => {
     it('should render email and password fields', () => {
       renderLogin();
 
-      expect(screen.getByLabelText('Email')).toBeInTheDocument();
-      expect(screen.getByLabelText('Senha')).toBeInTheDocument();
+      expect(screen.getByLabelText(/Email/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Senha/)).toBeInTheDocument();
     });
 
     it('should render login button', () => {
@@ -153,6 +153,72 @@ describe('Login', () => {
     });
   });
 
+  describe('Required Field Indicators', () => {
+    it('should show asterisks for required fields', () => {
+      renderLogin();
+
+      // Both email and password should have required indicators (asterisks)
+      const asterisks = screen.getAllByText('*');
+      expect(asterisks).toHaveLength(2);
+    });
+
+    it('should have red asterisks with aria-hidden', () => {
+      renderLogin();
+
+      const asterisks = screen.getAllByText('*');
+      asterisks.forEach((asterisk) => {
+        expect(asterisk).toHaveClass('text-destructive');
+        expect(asterisk).toHaveAttribute('aria-hidden', 'true');
+      });
+    });
+
+    it('should show helper text for email field', () => {
+      renderLogin();
+
+      expect(
+        screen.getByText('Use seu email institucional'),
+      ).toBeInTheDocument();
+    });
+
+    it('should show helper text for password field', () => {
+      renderLogin();
+
+      expect(screen.getByText('Minimo 6 caracteres')).toBeInTheDocument();
+    });
+
+    it('should have hint text with proper styling', () => {
+      renderLogin();
+
+      const emailHint = screen.getByText('Use seu email institucional');
+      expect(emailHint).toHaveClass('text-xs');
+      expect(emailHint).toHaveClass('text-muted-foreground');
+
+      const passwordHint = screen.getByText('Minimo 6 caracteres');
+      expect(passwordHint).toHaveClass('text-xs');
+      expect(passwordHint).toHaveClass('text-muted-foreground');
+    });
+
+    it('should have proper aria-describedby on email input', () => {
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      expect(emailInput).toHaveAttribute('aria-describedby', 'email-hint');
+    });
+
+    it('should hide hint and show error when validation fails', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      // Submit empty form to trigger validation
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      // Wait for validation errors
+      await waitFor(() => {
+        expect(screen.getByText('Email inválido')).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Loading State with Spinner', () => {
     it('should show loading overlay with spinner when form is submitted', async () => {
       const user = userEvent.setup();
@@ -163,8 +229,8 @@ describe('Login', () => {
       renderLogin();
 
       // Fill in valid credentials
-      await user.type(screen.getByLabelText('Email'), 'test@example.com');
-      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
 
       // Submit the form
       await user.click(screen.getByRole('button', { name: /entrar/i }));
@@ -187,8 +253,8 @@ describe('Login', () => {
       );
       renderLogin();
 
-      await user.type(screen.getByLabelText('Email'), 'test@example.com');
-      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
 
       const submitButton = screen.getByRole('button', { name: /entrar/i });
       await user.click(submitButton);
@@ -203,8 +269,8 @@ describe('Login', () => {
       mockLogin.mockResolvedValueOnce({});
       renderLogin();
 
-      await user.type(screen.getByLabelText('Email'), 'test@example.com');
-      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
       await user.click(screen.getByRole('button', { name: /entrar/i }));
 
       // Wait for loading to finish
@@ -218,8 +284,8 @@ describe('Login', () => {
       mockLogin.mockRejectedValueOnce(new Error('Login failed'));
       renderLogin();
 
-      await user.type(screen.getByLabelText('Email'), 'test@example.com');
-      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
       await user.click(screen.getByRole('button', { name: /entrar/i }));
 
       // Wait for loading to finish
