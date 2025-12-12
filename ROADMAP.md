@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 311/360 (86.4%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 8 issues | **Hardening:** 10 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 312/360 (86.7%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 7 issues | **Hardening:** 10 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -154,7 +154,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#593~~ | ~~Página 404 com ilustração~~ | ✅ PR #642 |
 | ~~#594~~ | ~~Breadcrumb navigation~~ | ✅ PR #646 |
 | ~~#595~~ | ~~Indicador online/offline~~ | ✅ PR #643 |
-| #596 | Skeleton loading completo | 4h |
+| ~~#596~~ | ~~Skeleton loading completo~~ | ✅ PR #658 |
 | ~~#597~~ | ~~Confetti ETP 100% concluído~~ | ✅ PR #644 |
 
 **Esforço Total:** ~38h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
