@@ -40,10 +40,11 @@ const buttonVariants = cva(
         link: 'text-apple-accent underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-apple px-3 text-apple-sm',
-        lg: 'h-11 rounded-apple-lg px-8 text-apple-base',
-        icon: 'h-10 w-10',
+        // WCAG 2.5.5: All sizes ensure minimum 44px touch target
+        default: 'h-10 min-h-touch px-4 py-2',
+        sm: 'h-9 min-h-touch rounded-apple px-3 text-apple-sm',
+        lg: 'h-11 min-h-touch rounded-apple-lg px-8 text-apple-base',
+        icon: 'h-11 w-11 min-h-touch min-w-touch',
       },
     },
     defaultVariants: {

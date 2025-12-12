@@ -86,11 +86,14 @@ describe('Button', () => {
       expect(button).toHaveClass('px-8');
     });
 
-    it('should apply icon size', () => {
+    it('should apply icon size with WCAG 2.5.5 touch target', () => {
       render(<Button size="icon">Icon</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-10');
-      expect(button).toHaveClass('w-10');
+      // WCAG 2.5.5: 44x44px minimum touch target (h-11 = 44px)
+      expect(button).toHaveClass('h-11');
+      expect(button).toHaveClass('w-11');
+      expect(button).toHaveClass('min-h-touch');
+      expect(button).toHaveClass('min-w-touch');
     });
   });
 

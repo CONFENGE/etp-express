@@ -48,7 +48,7 @@ export function ThemeToggle() {
           variant="ghost"
           size="icon"
           className={cn(
-            'h-9 w-9',
+            // WCAG 2.5.5: 44x44px minimum touch target (handled by size="icon")
             'transition-all duration-apple ease-apple',
             'hover:bg-surface-secondary',
             'focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
