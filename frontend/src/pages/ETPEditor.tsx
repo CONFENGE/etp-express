@@ -9,7 +9,11 @@ import { useToast } from '@/hooks/useToast';
 import { LoadingState } from '@/components/common/LoadingState';
 import { type SectionTemplate } from '@/types/etp';
 import { loadSectionTemplates } from '@/lib/section-templates';
-import { ETPEditorHeader } from '@/components/etp/ETPEditorHeader';
+import {
+  ETPEditorHeader,
+  type ExportState,
+  initialExportState,
+} from '@/components/etp/ETPEditorHeader';
 import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
@@ -33,7 +37,9 @@ export function ETPEditor() {
   );
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+  // Export state with progress tracking (#612)
+  const [exportState, setExportState] =
+    useState<ExportState>(initialExportState);
 
   // Unsaved changes tracking (#610)
   const [lastSavedContent, setLastSavedContent] = useState<string>('');
@@ -198,6 +204,15 @@ export function ETPEditor() {
     }
   };
 
+  // Handle cancel export (#612) - must be before early return
+  const handleCancelExport = useCallback(() => {
+    if (exportAbortControllerRef.current) {
+      exportAbortControllerRef.current.abort();
+      setExportState(initialExportState);
+      success('Exportação cancelada');
+    }
+  }, [success]);
+
   if (isLoading || !currentETP || templatesLoading) {
     return (
       <MainLayout>
@@ -231,7 +246,7 @@ export function ETPEditor() {
     completed: false, // TODO: calcular baseado em currentETP.sections
   }));
 
-  // Handle PDF export with demo conversion trigger (#475) and AbortController (#603)
+  // Handle PDF export with demo conversion trigger (#475), AbortController (#603), and progress (#612)
   const handleExportPDF = async () => {
     if (!id) return;
 
@@ -243,13 +258,39 @@ export function ETPEditor() {
     exportAbortControllerRef.current = new AbortController();
     const { signal } = exportAbortControllerRef.current;
 
-    setIsExporting(true);
+    // Start export with progress tracking (#612)
+    setExportState({
+      isExporting: true,
+      progress: 0,
+      stage: 'preparing',
+      format: 'pdf',
+    });
+
     try {
+      // Update progress: preparing (0-10%)
+      setExportState((s) => ({ ...s, progress: 10, stage: 'generating' }));
+
       const { exportPDF } = useETPStore.getState();
+
+      // Simulate progress during generation (10-80%)
+      const progressInterval = setInterval(() => {
+        setExportState((s) => {
+          if (s.progress < 80 && s.stage === 'generating') {
+            return { ...s, progress: Math.min(s.progress + 10, 80) };
+          }
+          return s;
+        });
+      }, 500);
+
       const blob = await exportPDF(id, { signal });
+
+      clearInterval(progressInterval);
 
       // Check if request was aborted before proceeding
       if (signal.aborted) return;
+
+      // Update progress: downloading (80-100%)
+      setExportState((s) => ({ ...s, progress: 90, stage: 'downloading' }));
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -260,6 +301,8 @@ export function ETPEditor() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+
+      setExportState((s) => ({ ...s, progress: 100 }));
 
       success('PDF exportado com sucesso!');
 
@@ -277,12 +320,12 @@ export function ETPEditor() {
         err instanceof Error ? err.message : 'Erro ao exportar PDF';
       error(message);
     } finally {
-      setIsExporting(false);
+      setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
   };
 
-  // Handle DOCX export (#551) with AbortController (#603)
+  // Handle DOCX export (#551) with AbortController (#603) and progress (#612)
   const handleExportDocx = async () => {
     if (!id) return;
 
@@ -294,13 +337,39 @@ export function ETPEditor() {
     exportAbortControllerRef.current = new AbortController();
     const { signal } = exportAbortControllerRef.current;
 
-    setIsExporting(true);
+    // Start export with progress tracking (#612)
+    setExportState({
+      isExporting: true,
+      progress: 0,
+      stage: 'preparing',
+      format: 'docx',
+    });
+
     try {
+      // Update progress: preparing (0-10%)
+      setExportState((s) => ({ ...s, progress: 10, stage: 'generating' }));
+
       const { exportDocx } = useETPStore.getState();
+
+      // Simulate progress during generation (10-80%)
+      const progressInterval = setInterval(() => {
+        setExportState((s) => {
+          if (s.progress < 80 && s.stage === 'generating') {
+            return { ...s, progress: Math.min(s.progress + 10, 80) };
+          }
+          return s;
+        });
+      }, 500);
+
       const blob = await exportDocx(id, { signal });
+
+      clearInterval(progressInterval);
 
       // Check if request was aborted before proceeding
       if (signal.aborted) return;
+
+      // Update progress: downloading (80-100%)
+      setExportState((s) => ({ ...s, progress: 90, stage: 'downloading' }));
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -311,6 +380,8 @@ export function ETPEditor() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+
+      setExportState((s) => ({ ...s, progress: 100 }));
 
       success('DOCX exportado com sucesso!');
 
@@ -328,7 +399,7 @@ export function ETPEditor() {
         err instanceof Error ? err.message : 'Erro ao exportar DOCX';
       error(message);
     } finally {
-      setIsExporting(false);
+      setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
   };
@@ -350,8 +421,9 @@ export function ETPEditor() {
           onSave={handleSave}
           onExportPDF={handleExportPDF}
           onExportDocx={handleExportDocx}
+          onCancelExport={handleCancelExport}
           isSaving={isSaving}
-          isExporting={isExporting}
+          exportState={exportState}
           isDirty={isDirty}
         />
 
