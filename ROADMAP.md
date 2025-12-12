@@ -94,7 +94,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#582~~ | ~~Validação tempo real campos~~ | ✅ PR #640 |
 | ~~#583~~ | ~~Ícone placeholder login~~ | ✅ PR #636 |
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
-| #585 | Animações entrada login | 2h |
+| ~~#585~~ | ~~Animações entrada login~~ | ✅ PR #641 |
 | ~~#586~~ | ~~Indicadores campo obrigatório~~ | ✅ PR #638 |
 | #587 | Funcionalidade "Esqueceu senha" | 8h |
 
