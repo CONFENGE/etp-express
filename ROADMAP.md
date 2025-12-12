@@ -112,7 +112,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ---- | ----------------------------------------- | ------- |
 | ~~#593~~ | ~~Página 404 com ilustração~~ | ✅ PR #642 |
 | #594 | Breadcrumb navigation | 3h |
-| #595 | Indicador online/offline | 2h |
+| ~~#595~~ | ~~Indicador online/offline~~ | ✅ PR #643 |
 | #596 | Skeleton loading completo | 4h |
 | #597 | Confetti ETP 100% concluído | 2h |
 
