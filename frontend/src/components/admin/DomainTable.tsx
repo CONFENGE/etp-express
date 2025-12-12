@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,44 +9,31 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DeleteDomainDialog } from './DeleteDomainDialog';
 import { AuthorizedDomain } from '@/store/adminStore';
 
 interface DomainTableProps {
   domains: AuthorizedDomain[];
   loading: boolean;
-  onDelete: (id: string) => Promise<void>;
+  /** Handler for domain deletion. Receives the full domain object for undo capability. */
+  onDelete: (domain: AuthorizedDomain) => void;
 }
 
 /**
  * Domain table component with actions for System Admin.
  * Displays authorized domains with sorting by domain name.
  *
+ * Uses undo toast pattern for delete operations instead of confirmation dialog.
+ * This provides a better UX by allowing immediate action with undo capability.
+ *
  * @security Only accessible to users with role: system_admin
  */
 export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [domainToDelete, setDomainToDelete] = useState<AuthorizedDomain | null>(
-    null,
-  );
-  const [isDeleting, setIsDeleting] = useState(false);
-
+  /**
+   * Handle delete click - directly triggers onDelete which shows undo toast.
+   * No confirmation dialog needed since undo toast provides safety net.
+   */
   const handleDeleteClick = (domain: AuthorizedDomain) => {
-    setDomainToDelete(domain);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!domainToDelete) return;
-
-    setIsDeleting(true);
-    try {
-      await onDelete(domainToDelete.id);
-      setDeleteDialogOpen(false);
-      setDomainToDelete(null);
-    } finally {
-      setIsDeleting(false);
-    }
+    onDelete(domain);
   };
 
   if (loading) {
@@ -66,99 +52,89 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
   }
 
   return (
-    <>
-      <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Domain
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Users
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Manager
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
-                  Actions
-                </th>
+    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b bg-muted/50">
+              <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                Domain
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                Users
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                Manager
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
+                Status
+              </th>
+              <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {domains.map((domain) => (
+              <tr
+                key={domain.id}
+                className="transition-colors hover:bg-muted/50"
+              >
+                <td className="px-6 py-4">
+                  <span className="font-medium">{domain.domain}</span>
+                </td>
+                <td className="px-6 py-4 text-muted-foreground">
+                  {domain.currentUsers ?? 0} / {domain.maxUsers}
+                </td>
+                <td className="px-6 py-4 text-muted-foreground">
+                  {domain.managerName || (
+                    <span className="italic text-muted-foreground/60">
+                      Not assigned
+                    </span>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant={domain.isActive ? 'success' : 'secondary'}>
+                    {domain.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Actions for ${domain.domain}`}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to={`/admin/domains/${domain.id}`}
+                          className="flex items-center"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          View Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => handleDeleteClick(domain)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y">
-              {domains.map((domain) => (
-                <tr
-                  key={domain.id}
-                  className="transition-colors hover:bg-muted/50"
-                >
-                  <td className="px-6 py-4">
-                    <span className="font-medium">{domain.domain}</span>
-                  </td>
-                  <td className="px-6 py-4 text-muted-foreground">
-                    {domain.currentUsers ?? 0} / {domain.maxUsers}
-                  </td>
-                  <td className="px-6 py-4 text-muted-foreground">
-                    {domain.managerName || (
-                      <span className="italic text-muted-foreground/60">
-                        Not assigned
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant={domain.isActive ? 'success' : 'secondary'}>
-                      {domain.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Actions for ${domain.domain}`}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link
-                            to={`/admin/domains/${domain.id}`}
-                            className="flex items-center"
-                          >
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => handleDeleteClick(domain)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      <DeleteDomainDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        domain={domainToDelete}
-        onConfirm={handleDeleteConfirm}
-        isDeleting={isDeleting}
-      />
-    </>
+    </div>
   );
 }
 
