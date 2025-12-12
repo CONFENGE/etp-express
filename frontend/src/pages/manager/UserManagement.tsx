@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,8 @@ import {
 } from '@/store/managerStore';
 import { useAuthStore } from '@/store/authStore';
 import { useToast } from '@/hooks/useToast';
+import { useUndoToast } from '@/hooks/useUndoToast';
+import { UndoToastContainer } from '@/components/ui/undo-toast';
 
 /**
  * User Management page for Domain Managers.
@@ -66,6 +68,11 @@ export function UserManagement() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState<DomainUser | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  // Store hidden user IDs for optimistic UI updates
+  const [hiddenUserIds, setHiddenUserIds] = useState<Set<string>>(new Set());
+  // Undo toast hook
+  const { showUndoToast, handleUndo, dismiss, activeToasts, isProcessing } =
+    useUndoToast();
 
   // Extract domain from current user's email
   const domainSuffix = useMemo(() => {
@@ -90,18 +97,20 @@ export function UserManagement() {
     }
   }, [error, toast, clearError]);
 
-  // Filter users based on search query
+  // Filter users based on search query and hidden state
   const filteredUsers = useMemo(() => {
-    if (!searchQuery.trim()) return users;
-
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
     return users.filter(
       (user) =>
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        (user.cargo && user.cargo.toLowerCase().includes(query)),
+        // Filter out hidden users (optimistic delete)
+        !hiddenUserIds.has(user.id) &&
+        // Apply search filter if query exists
+        (!query ||
+          user.name.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query) ||
+          (user.cargo && user.cargo.toLowerCase().includes(query))),
     );
-  }, [users, searchQuery]);
+  }, [users, searchQuery, hiddenUserIds]);
 
   const handleCreateUser = async (data: CreateDomainUserDto) => {
     try {
@@ -133,17 +142,50 @@ export function UserManagement() {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    try {
-      await deleteUser(id);
-      toast({
-        title: 'Success',
-        description: 'User deleted successfully.',
+  /**
+   * Handle user deletion with undo capability.
+   * Implements optimistic UI: hides user immediately, actual delete happens after timeout.
+   */
+  const handleDeleteUser = useCallback(
+    (user: DomainUser) => {
+      // Optimistic: hide user from list immediately
+      setHiddenUserIds((prev) => new Set(prev).add(user.id));
+
+      showUndoToast({
+        message: `"${user.name}" excluído`,
+        undoAction: () => {
+          // Restore user in the list
+          setHiddenUserIds((prev) => {
+            const next = new Set(prev);
+            next.delete(user.id);
+            return next;
+          });
+        },
+        onConfirm: async () => {
+          try {
+            // Actually delete the user
+            await deleteUser(user.id);
+            // Clean up hidden state
+            setHiddenUserIds((prev) => {
+              const next = new Set(prev);
+              next.delete(user.id);
+              return next;
+            });
+          } catch {
+            // On error, restore the user
+            setHiddenUserIds((prev) => {
+              const next = new Set(prev);
+              next.delete(user.id);
+              return next;
+            });
+            // Error already handled by store
+          }
+        },
+        duration: 5000,
       });
-    } catch {
-      // Error already handled by store
-    }
-  };
+    },
+    [showUndoToast, deleteUser],
+  );
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     try {
@@ -278,6 +320,14 @@ export function UserManagement() {
           onOpenChange={setEditDialogOpen}
           user={userToEdit}
           onSubmit={handleUpdateUser}
+        />
+
+        {/* Undo Toast Container */}
+        <UndoToastContainer
+          toasts={activeToasts}
+          onUndo={handleUndo}
+          onDismiss={dismiss}
+          isProcessing={isProcessing}
         />
       </div>
     </div>
