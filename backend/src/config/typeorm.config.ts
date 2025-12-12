@@ -14,7 +14,10 @@ export default new DataSource({
   synchronize: false,
   logging: configService.get('DB_LOGGING', false),
   // SSL Configuration (#598)
-  // Railway PostgreSQL supports SSL with managed certificates
-  // Use ssl: true to enable SSL with certificate validation
-  ssl: configService.get('NODE_ENV') === 'production' ? true : false,
+  // Railway internal PostgreSQL doesn't require SSL (pgvector.railway.internal)
+  // PGSSLMODE=disable is set in Railway environment variables
+  ssl:
+    configService.get('PGSSLMODE') === 'disable'
+      ? false
+      : configService.get('NODE_ENV') === 'production',
 });
