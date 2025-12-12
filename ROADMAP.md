@@ -95,7 +95,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#583~~ | ~~Ícone placeholder login~~ | ✅ PR #636 |
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
 | #585 | Animações entrada login | 2h |
-| #586 | Indicadores campo obrigatório | 1h |
+| ~~#586~~ | ~~Indicadores campo obrigatório~~ | ✅ PR #638 |
 | #587 | Funcionalidade "Esqueceu senha" | 8h |
 
 **Épico 3: Polish Visual Global**
