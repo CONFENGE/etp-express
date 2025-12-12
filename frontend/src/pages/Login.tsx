@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { FileText, LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ClipboardList, LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
@@ -79,7 +79,12 @@ export function Login() {
           )}
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              <FileText className="h-12 w-12 text-primary" />
+              <div className="p-3 bg-primary/10 rounded-full">
+                <ClipboardList
+                  className="h-10 w-10 text-primary"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
             <CardTitle className="text-2xl text-center">{APP_NAME}</CardTitle>
             <CardDescription className="text-center">
