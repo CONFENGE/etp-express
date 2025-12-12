@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 301/348 (86.5%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 16 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 305/350 (87.1%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 14 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -22,11 +22,11 @@
 ## Milestones
 
 ```
-M1: Foundation          ████████████████████ 36/36  100%
+M1: Foundation          ████████████████████ 35/35  100%
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
-M3: Quality & Security  ████████████████████ 61/61  100%
-M4: Refactoring & Perf  ████████████████████ 45/45  100%
-M5: E2E & Docs          █████████████████░░░ 24/28   86%
+M3: Quality & Security  ████████████████████ 60/60  100%
+M4: Refactoring & Perf  ████████████████████ 44/44  100%
+M5: E2E & Docs          █████████████████░░░ 23/27   85%
 M6: Maintenance         █████████████████░░░ 69/82   84%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
@@ -76,21 +76,21 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ---
 
-### 🚨 ÉPICO P0 - Lançamento Enterprise (20 issues)
+### 🚨 ÉPICO P0 - Lançamento Enterprise (14 issues restantes)
 
 **Objetivo:** Garantir login funcional + wow factors para demonstrações enterprise.
 
-**Épico 1: Autenticação Funcional (Blocker)**
+**Épico 1: Autenticação Funcional (Blocker) - ✅ COMPLETO**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
-| #578 | Executar seed:admin em produção | 15min |
+| ~~#578~~ | ~~Executar seed:admin em produção~~ | ✅ PR #637 |
 | ~~#579~~ | ~~Validação organização no login~~ | ✅ PR #633 |
 | ~~#580~~ | ~~Melhorar mensagens erro autenticação~~ | ✅ PR #635 |
 
 **Épico 2: Login UX/UI Enterprise (Wow Factors)**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
-| #581 | Toggle visibilidade senha | 1h |
+| ~~#581~~ | ~~Toggle visibilidade senha~~ | ✅ CLOSED |
 | #582 | Validação tempo real campos | 2h |
 | ~~#583~~ | ~~Ícone placeholder login~~ | ✅ PR #636 |
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
@@ -116,7 +116,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #596 | Skeleton loading completo | 4h |
 | #597 | Confetti ETP 100% concluído | 2h |
 
-**Esforço Total:** ~52h | **Labels:** `priority/P0`, `wow-factor`
+**Esforço Total:** ~43h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
 
 ---
 
@@ -142,7 +142,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 - [x] #541 Componentes base estilizados
 - [x] #542 Dark mode
 
-### M5 - Quality (4 open)
+### M5 - E2E & Docs - 85% (23/27, 4 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -215,9 +215,9 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Milestones Completos
 
-### M1: Foundation - Testes (36/36)
+### M1: Foundation - Testes (35/35)
 
-Issues #1-#20, #41-#48, #77-#87
+Issues #1-#20, #41-#48, #77-#87 (alguns números são gaps no GitHub)
 
 ### M2: CI/CD Pipeline (18/18)
 
@@ -232,13 +232,13 @@ Issues #88-#105
   - **Workflows alterados:** ci.yml, ci-tests.yml, playwright.yml
   - **Trade-off:** Builds mais lentos (2 cores vs 16) mas custo zero dentro da cota
 
-### M3: Quality & Security (61/61)
+### M3: Quality & Security (60/60)
 
-Issues #106-#145, #153-#158, #172-#186
+Issues #106-#145, #153-#158, #172-#186 (alguns números são gaps no GitHub)
 
-### M4: Refactoring & Performance (45/45)
+### M4: Refactoring & Performance (44/44)
 
-Issues #191-#222, #224-#257
+Issues #191-#222, #224-#257 (alguns números são gaps no GitHub)
 
 ### M7: Multi-Tenancy B2G (6/6)
 
@@ -250,16 +250,16 @@ Issues #261-#269, #298-#301
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 348    |
-| Issues Abertas    | 47     |
-| Issues Fechadas   | 301    |
-| Progresso         | 86.5%  |
+| Issues Totais     | 350    |
+| Issues Abertas    | 45     |
+| Issues Fechadas   | 305    |
+| Progresso         | 87.1%  |
 | Velocidade        | 17/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1846   |
 | P0 Security       | 1      |
-| P0 Enterprise     | 16     |
+| P0 Enterprise     | 14     |
 
 ---
 
