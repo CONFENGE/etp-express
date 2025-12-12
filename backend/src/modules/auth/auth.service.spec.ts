@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { AuthService } from './auth.service';
+import { AuthService, AuthErrorCode } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationsService } from '../organizations/organizations.service';
@@ -183,7 +183,7 @@ describe('AuthService', () => {
       expect(mockUsersService.updateLastLogin).not.toHaveBeenCalled();
     });
 
-    it('should throw UnauthorizedException when user is inactive', async () => {
+    it('should throw UnauthorizedException with USER_INACTIVE code when user is inactive', async () => {
       // Arrange
       const inactiveUser = { ...mockUser, isActive: false };
       mockUsersService.findByEmail.mockResolvedValue(inactiveUser);
@@ -193,12 +193,22 @@ describe('AuthService', () => {
       await expect(
         service.validateUser('test@example.com', 'password123'),
       ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        service.validateUser('test@example.com', 'password123'),
-      ).rejects.toThrow('Usuário inativo');
+
+      // Verify structured error response
+      try {
+        await service.validateUser('test@example.com', 'password123');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = (error as UnauthorizedException).getResponse();
+        expect(response).toEqual({
+          code: AuthErrorCode.USER_INACTIVE,
+          message:
+            'Sua conta está desativada. Entre em contato com o administrador.',
+        });
+      }
     });
 
-    it('should throw UnauthorizedException when user has no organizationId', async () => {
+    it('should throw UnauthorizedException with NO_ORGANIZATION code when user has no organizationId', async () => {
       // Arrange
       const userWithoutOrg = { ...mockUser, organizationId: null };
       mockUsersService.findByEmail.mockResolvedValue(userWithoutOrg);
@@ -208,14 +218,22 @@ describe('AuthService', () => {
       await expect(
         service.validateUser('test@example.com', 'password123'),
       ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        service.validateUser('test@example.com', 'password123'),
-      ).rejects.toThrow(
-        'Usuário sem organização associada. Contate o administrador.',
-      );
+
+      // Verify structured error response
+      try {
+        await service.validateUser('test@example.com', 'password123');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = (error as UnauthorizedException).getResponse();
+        expect(response).toEqual({
+          code: AuthErrorCode.NO_ORGANIZATION,
+          message:
+            'Usuário sem organização associada. Entre em contato com o administrador.',
+        });
+      }
     });
 
-    it('should throw UnauthorizedException when organization is suspended', async () => {
+    it('should throw UnauthorizedException with ORG_INACTIVE code when organization is suspended', async () => {
       // Arrange
       const suspendedOrganization = { ...mockOrganization, isActive: false };
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
@@ -226,12 +244,22 @@ describe('AuthService', () => {
       await expect(
         service.validateUser('test@example.com', 'password123'),
       ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        service.validateUser('test@example.com', 'password123'),
-      ).rejects.toThrow('Organização suspensa. Contate o administrador.');
+
+      // Verify structured error response
+      try {
+        await service.validateUser('test@example.com', 'password123');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = (error as UnauthorizedException).getResponse();
+        expect(response).toEqual({
+          code: AuthErrorCode.ORG_INACTIVE,
+          message:
+            'Sua organização está suspensa. Entre em contato com o suporte.',
+        });
+      }
     });
 
-    it('should throw UnauthorizedException when organization does not exist', async () => {
+    it('should throw UnauthorizedException with ORG_NOT_FOUND code when organization does not exist', async () => {
       // Arrange
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
@@ -243,9 +271,19 @@ describe('AuthService', () => {
       await expect(
         service.validateUser('test@example.com', 'password123'),
       ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        service.validateUser('test@example.com', 'password123'),
-      ).rejects.toThrow('Organização não encontrada. Contate o administrador.');
+
+      // Verify structured error response
+      try {
+        await service.validateUser('test@example.com', 'password123');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = (error as UnauthorizedException).getResponse();
+        expect(response).toEqual({
+          code: AuthErrorCode.ORG_NOT_FOUND,
+          message:
+            'Organização não encontrada. Entre em contato com o administrador.',
+        });
+      }
     });
   });
 
@@ -289,7 +327,7 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('disclaimer');
     });
 
-    it('should throw UnauthorizedException when credentials are invalid', async () => {
+    it('should throw UnauthorizedException with INVALID_CREDENTIALS code when credentials are invalid', async () => {
       // Arrange
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
@@ -298,9 +336,19 @@ describe('AuthService', () => {
       await expect(service.login(loginDto)).rejects.toThrow(
         UnauthorizedException,
       );
-      await expect(service.login(loginDto)).rejects.toThrow(
-        'Email ou senha incorretos',
-      );
+
+      // Verify structured error response
+      try {
+        await service.login(loginDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = (error as UnauthorizedException).getResponse();
+        expect(response).toEqual({
+          code: AuthErrorCode.INVALID_CREDENTIALS,
+          message:
+            'Email ou senha incorretos. Verifique suas credenciais e tente novamente.',
+        });
+      }
     });
   });
 
