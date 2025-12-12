@@ -180,7 +180,7 @@ describe('WCAG 2.5.5 Touch Target Size', () => {
 
   describe('DropdownMenu component', () => {
     it('should have min-h-touch for menu items', async () => {
-      const { container } = render(
+      render(
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger asChild>
             <Button>Open Menu</Button>
