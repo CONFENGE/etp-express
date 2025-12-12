@@ -426,4 +426,63 @@ describe('Login', () => {
       expect(mockError).toHaveBeenCalledWith('Login failed');
     });
   });
+
+  describe('Entrance Animations', () => {
+    it('should apply background fade-in animation class', () => {
+      renderLogin();
+
+      // Background container should have fade-in animation
+      const container = document.querySelector('.animate-fade-in');
+      expect(container).toBeInTheDocument();
+    });
+
+    it('should apply fade-in-up animation to card with delay', () => {
+      renderLogin();
+
+      // Card should have fade-in-up animation
+      const card = document.querySelector('.animate-fade-in-up');
+      expect(card).toBeInTheDocument();
+      expect(card).toHaveClass('opacity-0');
+    });
+
+    it('should apply scale-fade-in animation to logo icon', () => {
+      renderLogin();
+
+      // Icon container should have scale-fade-in animation
+      const iconContainer = document.querySelector('.animate-scale-fade-in');
+      expect(iconContainer).toBeInTheDocument();
+      expect(iconContainer).toHaveClass('opacity-0');
+    });
+
+    it('should apply staggered animations to form elements', () => {
+      renderLogin();
+
+      // Multiple elements should have fade-in-up animation
+      const animatedElements = document.querySelectorAll('.animate-fade-in-up');
+      expect(animatedElements.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('should have animation delay on card', () => {
+      renderLogin();
+
+      // Card should have animation delay style
+      const card = document.querySelector(
+        '.animate-fade-in-up.\\[animation-delay\\:200ms\\]',
+      );
+      expect(card).toBeInTheDocument();
+    });
+
+    it('should have staggered animation delays on form fields', () => {
+      renderLogin();
+
+      // Check for different animation delays
+      const delay700 = document.querySelector('.\\[animation-delay\\:700ms\\]');
+      const delay800 = document.querySelector('.\\[animation-delay\\:800ms\\]');
+      const delay900 = document.querySelector('.\\[animation-delay\\:900ms\\]');
+
+      expect(delay700).toBeInTheDocument();
+      expect(delay800).toBeInTheDocument();
+      expect(delay900).toBeInTheDocument();
+    });
+  });
 });
