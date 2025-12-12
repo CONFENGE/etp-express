@@ -4,6 +4,15 @@ import * as bcrypt from 'bcrypt';
 import { User, UserRole } from '../src/entities/user.entity';
 import { Organization } from '../src/entities/organization.entity';
 import { AuthorizedDomain } from '../src/entities/authorized-domain.entity';
+import { Etp } from '../src/entities/etp.entity';
+import { EtpSection } from '../src/entities/etp-section.entity';
+import { EtpVersion } from '../src/entities/etp-version.entity';
+import { AuditLog } from '../src/entities/audit-log.entity';
+import { AnalyticsEvent } from '../src/entities/analytics-event.entity';
+import { Legislation } from '../src/entities/legislation.entity';
+import { SectionTemplate } from '../src/entities/section-template.entity';
+import { SecretAccessLog } from '../src/entities/secret-access-log.entity';
+import { SimilarContract } from '../src/entities/similar-contract.entity';
 
 config();
 
@@ -72,7 +81,20 @@ async function seedAdmin(): Promise<void> {
   const dataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [User, Organization, AuthorizedDomain],
+    entities: [
+      User,
+      Organization,
+      AuthorizedDomain,
+      Etp,
+      EtpSection,
+      EtpVersion,
+      AuditLog,
+      AnalyticsEvent,
+      Legislation,
+      SectionTemplate,
+      SecretAccessLog,
+      SimilarContract,
+    ],
     synchronize: false,
     logging: false,
     // SSL Configuration (#598) - Use ssl: true for proper certificate validation
