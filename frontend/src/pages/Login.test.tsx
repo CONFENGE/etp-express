@@ -219,6 +219,135 @@ describe('Login', () => {
     });
   });
 
+  describe('Real-time Validation', () => {
+    it('should show check icon for valid email after debounce', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      await user.type(emailInput, 'test@example.com');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('validation-check')).toBeInTheDocument();
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should show alert icon for invalid email after debounce', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      await user.type(emailInput, 'invalid-email');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('validation-alert')).toBeInTheDocument();
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should show check icon for valid password (6+ chars) after debounce', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const passwordInput = screen.getByLabelText(/Senha/);
+      await user.type(passwordInput, 'password123');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('validation-check')).toBeInTheDocument();
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should show alert icon for short password after debounce', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const passwordInput = screen.getByLabelText(/Senha/);
+      await user.type(passwordInput, '12345');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('validation-alert')).toBeInTheDocument();
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should apply green border class for valid email', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      await user.type(emailInput, 'test@example.com');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(emailInput).toHaveClass('border-apple-green');
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should apply red border class for invalid email', async () => {
+      const user = userEvent.setup();
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      await user.type(emailInput, 'invalid');
+
+      // Wait for debounce
+      await waitFor(
+        () => {
+          expect(emailInput).toHaveClass('border-apple-red');
+        },
+        { timeout: 1000 },
+      );
+    });
+
+    it('should not interfere with form submission when validation is valid', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockResolvedValueOnce({});
+      renderLogin();
+
+      const emailInput = screen.getByLabelText(/Email/);
+      const passwordInput = screen.getByLabelText(/Senha/);
+
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+
+      // Wait for debounce to show validation
+      await waitFor(
+        () => {
+          expect(screen.getAllByTestId('validation-check')).toHaveLength(2);
+        },
+        { timeout: 1000 },
+      );
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /entrar/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockLogin).toHaveBeenCalledWith({
+          email: 'test@example.com',
+          password: 'password123',
+        });
+      });
+    });
+  });
+
   describe('Loading State with Spinner', () => {
     it('should show loading overlay with spinner when form is submitted', async () => {
       const user = userEvent.setup();
