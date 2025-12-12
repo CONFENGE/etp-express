@@ -43,14 +43,20 @@ describe('Register', () => {
     it('should render password input with type="password" by default', () => {
       renderRegister();
 
-      const passwordInput = screen.getByLabelText('Senha');
+      // Password inputs don't have textbox role, use direct id selector
+      // since FormField uses wrapper divs that break getByLabelText
+      const passwordInput = document.getElementById(
+        'password',
+      ) as HTMLInputElement;
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
 
     it('should render confirm password input with type="password" by default', () => {
       renderRegister();
 
-      const confirmPasswordInput = screen.getByLabelText('Confirmar Senha');
+      const confirmPasswordInput = document.getElementById(
+        'confirmPassword',
+      ) as HTMLInputElement;
       expect(confirmPasswordInput).toHaveAttribute('type', 'password');
     });
 
@@ -67,8 +73,12 @@ describe('Register', () => {
       const user = userEvent.setup();
       renderRegister();
 
-      const passwordInput = screen.getByLabelText('Senha');
-      const confirmPasswordInput = screen.getByLabelText('Confirmar Senha');
+      const passwordInput = document.getElementById(
+        'password',
+      ) as HTMLInputElement;
+      const confirmPasswordInput = document.getElementById(
+        'confirmPassword',
+      ) as HTMLInputElement;
       const toggleButtons = screen.getAllByRole('button', {
         name: 'Mostrar senha',
       });
@@ -153,10 +163,11 @@ describe('Register', () => {
     it('should render all required fields', () => {
       renderRegister();
 
-      expect(screen.getByLabelText('Nome')).toBeInTheDocument();
-      expect(screen.getByLabelText('Email')).toBeInTheDocument();
-      expect(screen.getByLabelText('Senha')).toBeInTheDocument();
-      expect(screen.getByLabelText('Confirmar Senha')).toBeInTheDocument();
+      // Use getElementById since FormField uses wrapper divs that break getByLabelText
+      expect(document.getElementById('name')).toBeInTheDocument();
+      expect(document.getElementById('email')).toBeInTheDocument();
+      expect(document.getElementById('password')).toBeInTheDocument();
+      expect(document.getElementById('confirmPassword')).toBeInTheDocument();
     });
 
     it('should render register button', () => {
@@ -193,11 +204,20 @@ describe('Register', () => {
     const fillFormAndSubmit = async (
       user: ReturnType<typeof userEvent.setup>,
     ) => {
-      // Fill in valid credentials
-      await user.type(screen.getByLabelText('Nome'), 'Test User');
-      await user.type(screen.getByLabelText('Email'), 'test@example.com');
-      await user.type(screen.getByLabelText('Senha'), 'password123');
-      await user.type(screen.getByLabelText('Confirmar Senha'), 'password123');
+      // Fill in valid credentials using getElementById since FormField uses wrapper divs
+      const nameInput = document.getElementById('name') as HTMLInputElement;
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      const passwordInput = document.getElementById(
+        'password',
+      ) as HTMLInputElement;
+      const confirmPasswordInput = document.getElementById(
+        'confirmPassword',
+      ) as HTMLInputElement;
+
+      await user.type(nameInput, 'Test User');
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'password123');
 
       // Accept LGPD consent
       const lgpdCheckbox = screen.getByRole('checkbox', {
