@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 307/350 (87.7%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 12 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 308/350 (88.0%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 11 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -110,7 +110,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 **Épico 4: Feedback & Estados (Enterprise Grade)**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
-| #593 | Página 404 com ilustração | 2h |
+| ~~#593~~ | ~~Página 404 com ilustração~~ | ✅ PR #642 |
 | #594 | Breadcrumb navigation | 3h |
 | #595 | Indicador online/offline | 2h |
 | #596 | Skeleton loading completo | 4h |
