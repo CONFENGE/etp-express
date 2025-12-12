@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 297/348 (85.3%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 298/348 (85.6%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 19 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -93,7 +93,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #581 | Toggle visibilidade senha | 1h |
 | #582 | Validação tempo real campos | 2h |
 | #583 | Ícone placeholder login | 1h |
-| #584 | Spinner elegante autenticação | 1h |
+| ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
 | #585 | Animações entrada login | 2h |
 | #586 | Indicadores campo obrigatório | 1h |
 | #587 | Funcionalidade "Esqueceu senha" | 8h |
