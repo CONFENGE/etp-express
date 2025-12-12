@@ -106,12 +106,12 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#608~~ | ~~Logs verbose em produção~~ | ✅ PR #620 |
 | ~~#609~~ | ~~npm audit ausente no CI~~ | ✅ PR #622 |
 
-**Épico 4: UX Crítico (1 issue)**
+**Épico 4: UX Crítico - ✅ COMPLETO**
 | # | Issue | Impacto |
 | ---- | ----------------------------------------- | ------- |
 | ~~#610~~ | ~~Unsaved changes warning ausente~~ | ✅ PR #625 |
 | ~~#611~~ | ~~Polling AI continua após unmount~~ | ✅ PR #626 |
-| #612 | Export sem progress/cancel | UX ruim |
+| ~~#612~~ | ~~Export sem progress/cancel~~ | ✅ PR #660 |
 
 **Labels:** `priority/P0`, `security`, `bug`
 
