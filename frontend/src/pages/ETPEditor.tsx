@@ -19,6 +19,7 @@ import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
 import { useDemoConversion } from '@/hooks/useDemoConversion';
 import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
 import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
+import { useConfetti } from '@/hooks/useConfetti';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -50,6 +51,9 @@ export function ETPEditor() {
   // Demo user conversion banner (#475)
   const { showBanner, triggerBanner, dismissBanner, isDemoUser } =
     useDemoConversion();
+
+  // Confetti celebration for ETP completion (#597)
+  const { celebrate, resetCooldown } = useConfetti();
 
   // Track previous progress to detect ETP completion
   const previousProgressRef = useRef<number | null>(null);
@@ -92,8 +96,10 @@ export function ETPEditor() {
   useEffect(() => {
     if (id) {
       fetchETP(id);
+      // Reset confetti cooldown when loading new ETP (#597)
+      resetCooldown();
     }
-  }, [id, fetchETP]);
+  }, [id, fetchETP, resetCooldown]);
 
   useEffect(() => {
     if (currentETP) {
@@ -107,9 +113,9 @@ export function ETPEditor() {
     }
   }, [currentETP, activeSection]);
 
-  // Trigger demo conversion banner when ETP reaches 100% completion (#475)
+  // Trigger celebration and demo conversion banner when ETP reaches 100% completion (#475, #597)
   useEffect(() => {
-    if (!currentETP || !isDemoUser) return;
+    if (!currentETP) return;
 
     const currentProgress = currentETP.progress;
     const previousProgress = previousProgressRef.current;
@@ -120,11 +126,27 @@ export function ETPEditor() {
       previousProgress < 100 &&
       currentProgress === 100
     ) {
-      triggerBanner('etp_completion');
+      // Confetti celebration for all users (#597)
+      celebrate();
+
+      // Success toast
+      success('Parabéns! Seu ETP está 100% completo! 🎉');
+
+      // Demo user conversion banner (#475)
+      if (isDemoUser) {
+        triggerBanner('etp_completion');
+      }
     }
 
     previousProgressRef.current = currentProgress;
-  }, [currentETP?.progress, isDemoUser, triggerBanner, currentETP]);
+  }, [
+    currentETP?.progress,
+    isDemoUser,
+    triggerBanner,
+    currentETP,
+    celebrate,
+    success,
+  ]);
 
   const handleSave = useCallback(async () => {
     if (!currentETP || !id) return;
