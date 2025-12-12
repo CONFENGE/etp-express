@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 300/348 (86.2%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 17 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 301/348 (86.5%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 16 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -92,7 +92,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ---- | ----------------------------------------- | ------- |
 | #581 | Toggle visibilidade senha | 1h |
 | #582 | Validação tempo real campos | 2h |
-| #583 | Ícone placeholder login | 1h |
+| ~~#583~~ | ~~Ícone placeholder login~~ | ✅ PR #636 |
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
 | #585 | Animações entrada login | 2h |
 | #586 | Indicadores campo obrigatório | 1h |
@@ -250,20 +250,35 @@ Issues #261-#269, #298-#301
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 347    |
-| Issues Abertas    | 52     |
-| Issues Fechadas   | 295    |
-| Progresso         | 85.0%  |
+| Issues Totais     | 348    |
+| Issues Abertas    | 47     |
+| Issues Fechadas   | 301    |
+| Progresso         | 86.5%  |
 | Velocidade        | 17/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
-| Testes            | 1784   |
-| P0 Security       | 2      |
-| P0 Enterprise     | 20     |
+| Testes            | 1846   |
+| P0 Security       | 1      |
+| P0 Enterprise     | 16     |
 
 ---
 
 ## Changelog Recente
+
+### 2025-12-12
+
+**PR #636 - Ícone Login/Register (Issue #583)** ✅
+
+- **Feature:** Substituído ícone FileText por ClipboardList (mais representativo para documentos estruturados)
+- **Mudanças:**
+  - Novo ícone ClipboardList do lucide-react em Login.tsx e Register.tsx
+  - Container circular com background sutil (`bg-primary/10 rounded-full p-3`)
+  - `aria-hidden="true"` para acessibilidade
+- **Testes:** +36 linhas (2 novos testes para verificação do ícone)
+- **Validação `/review-pr`:** Score 100/100 (8 categorias)
+- **Post-merge:** 3 layers de validação passaram (build, tests, CI pipeline)
+
+---
 
 ### 2025-12-11
 
