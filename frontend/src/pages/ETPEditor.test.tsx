@@ -116,6 +116,13 @@ vi.mock('@/components/etp/ETPEditorHeader', () => ({
       </button>
     </div>
   ),
+  // Export initialExportState for #612
+  initialExportState: {
+    isExporting: false,
+    progress: 0,
+    stage: 'idle',
+    format: null,
+  },
 }));
 
 vi.mock('@/components/etp/ETPEditorProgress', () => ({
