@@ -215,6 +215,15 @@ export default {
           from: { transform: 'scale(0.95)', opacity: '0' },
           to: { transform: 'scale(1)', opacity: '1' },
         },
+        // Login page entrance animations (more dramatic)
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'scale-fade-in': {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -227,6 +236,11 @@ export default {
         'slide-in-down':
           'slide-in-down var(--duration-apple-slow) var(--ease-apple-spring)',
         'scale-in': 'scale-in var(--duration-apple) var(--ease-apple-spring)',
+        // Login page entrance animations
+        'fade-in-up':
+          'fade-in-up 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+        'scale-fade-in':
+          'scale-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
       },
     },
   },
