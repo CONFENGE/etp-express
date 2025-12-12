@@ -10,9 +10,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
-import { LoadingState } from '@/components/common/LoadingState';
+import { SkeletonRecentItems } from '@/components/common/LoadingState';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -59,10 +60,19 @@ export function Dashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-muted-foreground">
-                Criados no sistema
-              </p>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-24 mt-2" />
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{stats.total}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Criados no sistema
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -74,10 +84,19 @@ export function Dashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.inProgress}</div>
-              <p className="text-xs text-muted-foreground">
-                Aguardando conclusão
-              </p>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-28 mt-2" />
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{stats.inProgress}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Aguardando conclusão
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -87,8 +106,19 @@ export function Dashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completed}</div>
-              <p className="text-xs text-muted-foreground">Prontos para uso</p>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-20 mt-2" />
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{stats.completed}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Prontos para uso
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -110,7 +140,7 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <LoadingState message="Carregando ETPs..." />
+              <SkeletonRecentItems count={5} />
             ) : recentETPs.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
