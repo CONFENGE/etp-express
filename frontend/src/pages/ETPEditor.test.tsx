@@ -85,6 +85,10 @@ vi.mock('@/components/layout/MainLayout', () => ({
   ),
 }));
 
+vi.mock('@/components/ui/breadcrumb', () => ({
+  Breadcrumb: () => <nav aria-label="Breadcrumb" data-testid="breadcrumb" />,
+}));
+
 vi.mock('@/components/common/LoadingState', () => ({
   LoadingState: ({ message }: { message: string }) => (
     <div data-testid="loading-state">{message}</div>

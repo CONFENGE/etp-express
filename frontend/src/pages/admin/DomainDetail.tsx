@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Settings, UserCircle } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Users, Settings, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import {
   Card,
   CardContent,
@@ -231,13 +232,17 @@ export function DomainDetail() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-6">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb
+          items={[
+            { label: 'Administração', href: '/admin' },
+            { label: 'Domínios', href: '/admin/domains' },
+            { label: domain.domain },
+          ]}
+        />
+
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/admin/domains" aria-label="Back to domains">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
               {domain.domain}
