@@ -131,6 +131,24 @@ describe('Register', () => {
     });
   });
 
+  describe('Brand Icon', () => {
+    it('should render ClipboardList icon with circular container', () => {
+      renderRegister();
+
+      // Find the icon container (rounded-full with bg-primary/10)
+      const iconContainer = document.querySelector(
+        '.bg-primary\\/10.rounded-full',
+      );
+      expect(iconContainer).toBeInTheDocument();
+      expect(iconContainer).toHaveClass('p-3');
+
+      // Find the icon inside the container
+      const icon = iconContainer?.querySelector('svg');
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+    });
+  });
+
   describe('Form Rendering', () => {
     it('should render all required fields', () => {
       renderRegister();
