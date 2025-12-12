@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 298/348 (85.6%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 19 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 300/348 (86.2%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 17 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -84,8 +84,8 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
 | #578 | Executar seed:admin em produção | 15min |
-| #579 | Validação organização no login | 2h |
-| #580 | Melhorar mensagens erro autenticação | 3h |
+| ~~#579~~ | ~~Validação organização no login~~ | ✅ PR #633 |
+| ~~#580~~ | ~~Melhorar mensagens erro autenticação~~ | ✅ PR #635 |
 
 **Épico 2: Login UX/UI Enterprise (Wow Factors)**
 | # | Issue | Esforço |
