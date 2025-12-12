@@ -1,16 +1,27 @@
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
+import { join } from 'path';
 
 config();
 
 const configService = new ConfigService();
 
+// In production, __dirname points to dist/config, so we use relative paths from there
+// In development with ts-node, __dirname points to src/config
+const isCompiled = __dirname.includes('dist');
+const entitiesPath = isCompiled
+  ? join(__dirname, '..', '**', '*.entity.js')
+  : join(__dirname, '..', '**', '*.entity.ts');
+const migrationsPath = isCompiled
+  ? join(__dirname, '..', 'migrations', '*.js')
+  : join(__dirname, '..', 'migrations', '*.ts');
+
 export default new DataSource({
   type: 'postgres',
   url: configService.get('DATABASE_URL'),
-  entities: ['src/**/*.entity{.ts,.js}'],
-  migrations: ['src/migrations/*{.ts,.js}'],
+  entities: [entitiesPath],
+  migrations: [migrationsPath],
   synchronize: false,
   logging: configService.get('DB_LOGGING', false),
   // SSL Configuration (#598)
