@@ -145,7 +145,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#588~~ | ~~Componente ErrorState padronizado~~ | ✅ PR #639 |
 | #589 | Ilustrações empty states | 4h |
 | ~~#590~~ | ~~Toast com undo ações destrutivas~~ | ✅ PR #645 |
-| #591 | Touch targets 44x44px | 4h |
+| ~~#591~~ | ~~Touch targets 44x44px~~ | ✅ PR #659 |
 | ~~#592~~ | ~~Micro-interações cards/botões~~ | ✅ PR #647 |
 
 **Épico 4: Feedback & Estados (Enterprise Grade)**
