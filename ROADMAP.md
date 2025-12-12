@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 306/350 (87.4%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 13 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 307/350 (87.7%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 12 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -91,7 +91,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
 | ~~#581~~ | ~~Toggle visibilidade senha~~ | ✅ CLOSED |
-| #582 | Validação tempo real campos | 2h |
+| ~~#582~~ | ~~Validação tempo real campos~~ | ✅ PR #640 |
 | ~~#583~~ | ~~Ícone placeholder login~~ | ✅ PR #636 |
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
 | #585 | Animações entrada login | 2h |
@@ -116,7 +116,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #596 | Skeleton loading completo | 4h |
 | #597 | Confetti ETP 100% concluído | 2h |
 
-**Esforço Total:** ~43h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
+**Esforço Total:** ~41h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
 
 ---
 
@@ -251,21 +251,40 @@ Issues #261-#269, #298-#301
 | Métrica           | Valor  |
 | ----------------- | ------ |
 | Issues Totais     | 350    |
-| Issues Abertas    | 45     |
-| Issues Fechadas   | 305    |
-| Progresso         | 87.1%  |
+| Issues Abertas    | 44     |
+| Issues Fechadas   | 306    |
+| Progresso         | 87.4%  |
 | Velocidade        | 17/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
-| Testes            | 1846   |
+| Testes            | 1879   |
 | P0 Security       | 1      |
-| P0 Enterprise     | 14     |
+| P0 Enterprise     | 12     |
 
 ---
 
 ## Changelog Recente
 
 ### 2025-12-12
+
+**PR #640 - Real-time Validation Login (Issue #582)** ✅
+
+- **Feature:** Validação em tempo real nos campos email e senha do login
+- **Componentes criados:**
+  - `useRealtimeValidation` - Hook com debounce configurável (500ms default)
+  - `ValidationIcon` - Ícone animado check/alert com Apple colors
+- **Mudanças no Login.tsx:**
+  - Validação visual após 500ms de inatividade
+  - Border verde + check para válido
+  - Border vermelho + alert para inválido
+  - Email: regex de validação
+  - Senha: mínimo 6 caracteres
+- **Testes:** +524 linhas (14 hook + 11 icon + 7 Login tests)
+- **Test-to-code ratio:** 2.71 (excelente)
+- **Validação `/review-pr`:** Score 100/100 (8 categorias)
+- **Post-merge:** Build + 801 testes passando
+
+---
 
 **PR #636 - Ícone Login/Register (Issue #583)** ✅
 
