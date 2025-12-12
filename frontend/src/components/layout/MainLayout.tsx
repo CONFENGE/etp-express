@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { WarningBanner } from '@/components/common/WarningBanner';
 import { SkipLink } from '@/components/common/SkipLink';
+import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,8 @@ export function MainLayout({ children }: MainLayoutProps) {
       <SkipLink />
       <WarningBanner />
       <Header />
+      {/* Floating offline banner */}
+      <ConnectionStatus variant="banner" />
       <div className="flex flex-1">
         <Sidebar />
         <main

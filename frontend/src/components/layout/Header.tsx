@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { APP_NAME } from '@/lib/constants';
 import { getInitials } from '@/lib/utils';
 
@@ -56,6 +57,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          <ConnectionStatus variant="inline" />
           <ThemeToggle />
           {user && (
             <DropdownMenu>
