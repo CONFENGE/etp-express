@@ -434,6 +434,262 @@ railway connect postgres
 
 ---
 
+## 🚨 PROBLEMAS CONHECIDOS E SOLUÇÕES (Issue #631)
+
+Esta seção documenta problemas críticos de deploy identificados em dezembro/2025 e suas soluções definitivas.
+
+### 1. Build Timeout por Puppeteer/Chromium Duplicado
+
+**Sintoma**: Build falha com `DeadlineExceeded: context deadline exceeded` durante exportação da imagem Docker.
+
+**Causa Raiz**: Nixpacks instala Chromium do sistema (~400MB), mas Puppeteer também baixa seu próprio Chromium bundled (~400MB), resultando em imagem de ~2GB que excede timeout.
+
+**Solução**:
+
+1. **Configurar skip download em `backend/package.json`**:
+
+```json
+{
+  "puppeteer": {
+    "skipDownload": true
+  }
+}
+```
+
+2. **Criar `.npmrc` na raiz do monorepo**:
+
+```
+puppeteer_skip_chromium_download=true
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+```
+
+3. **Configurar variáveis no Railway**:
+
+```bash
+railway variables set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+railway variables set PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+```
+
+4. **Usar executablePath no código** (`backend/src/modules/export/export.service.ts`):
+
+```typescript
+browser = await puppeteer.launch({
+  headless: true,
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+  ],
+});
+```
+
+**Verificação**: Build deve completar em < 5 minutos.
+
+---
+
+### 2. SSL Connection Error nas Migrations
+
+**Sintoma**: `Error: The server does not support SSL connections` durante `migration:run:prod`.
+
+**Causa Raiz**: Railway internal PostgreSQL (pgvector.railway.internal) não requer SSL, mas a configuração estava hardcoded para usar SSL em produção.
+
+**Solução**:
+
+1. **Configurar variável no Railway**:
+
+```bash
+railway variables set PGSSLMODE=disable
+```
+
+2. **Verificar `backend/src/config/typeorm.config.ts`**:
+
+```typescript
+ssl:
+  configService.get('PGSSLMODE') === 'disable'
+    ? false
+    : configService.get('NODE_ENV') === 'production',
+```
+
+3. **Verificar `backend/src/app.module.ts`** (mesma lógica):
+
+```typescript
+ssl:
+  configService.get('PGSSLMODE') === 'disable'
+    ? false
+    : configService.get('NODE_ENV') === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
+```
+
+**Importante**: Ambos os arquivos DEVEM ter a mesma lógica de SSL. O `app.module.ts` é usado pelo NestJS em runtime, e o `typeorm.config.ts` é usado pelo CLI de migrations.
+
+---
+
+### 3. TypeScript Enum Not Supported in Strip-Only Mode
+
+**Sintoma**: `SyntaxError: TypeScript enum is not supported in strip-only mode` referenciando arquivos em `src/entities/`.
+
+**Causa Raiz**: O `typeorm.config.ts` usava paths hardcoded (`src/**/*.entity{.ts,.js}`) que funcionam apenas com ts-node em desenvolvimento. Em produção, TypeORM roda do `dist/` e tentava carregar arquivos `.ts`.
+
+**Solução**:
+
+Usar paths dinâmicos baseados em `__dirname` (`backend/src/config/typeorm.config.ts`):
+
+```typescript
+import { join } from 'path';
+
+// Detecta se está rodando de dist/ (compilado) ou src/ (dev)
+const isCompiled = __dirname.includes('dist');
+const entitiesPath = isCompiled
+  ? join(__dirname, '..', '**', '*.entity.js')
+  : join(__dirname, '..', '**', '*.entity.ts');
+const migrationsPath = isCompiled
+  ? join(__dirname, '..', 'migrations', '*.js')
+  : join(__dirname, '..', 'migrations', '*.ts');
+
+export default new DataSource({
+  // ...
+  entities: [entitiesPath],
+  migrations: [migrationsPath],
+  // ...
+});
+```
+
+**Verificação**: Migrations devem rodar sem erros de sintaxe TypeScript.
+
+---
+
+### 4. ts-node MODULE_NOT_FOUND
+
+**Sintoma**: `Cannot find module 'ts-node'` ou `MODULE_NOT_FOUND` durante migrations.
+
+**Causa Raiz**: O script `migration:run` usa `typeorm-ts-node-commonjs` que requer `ts-node` (devDependency não disponível em builds de produção).
+
+**Solução**:
+
+1. **Adicionar script de produção em `backend/package.json`**:
+
+```json
+{
+  "scripts": {
+    "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.config.ts",
+    "migration:run:prod": "typeorm migration:run -d dist/config/typeorm.config.js"
+  }
+}
+```
+
+2. **Atualizar `backend/railway.toml`**:
+
+```toml
+[deploy]
+startCommand = "npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
+```
+
+3. **Atualizar `nixpacks.toml`**:
+
+```toml
+[start]
+cmd = "npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
+```
+
+4. **Atualizar variável Railway**:
+
+```bash
+railway variables set NIXPACKS_START_CMD="npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
+```
+
+**Importante**: Use SEMPRE `--workspace=etp-express-backend` (nome do package.json), NÃO `--workspace=backend` (nome do diretório).
+
+---
+
+### 5. Template HBS Não Copiado para dist
+
+**Sintoma**: `ENOENT: no such file or directory` para arquivos `.hbs` (ex: `etp-template.hbs`).
+
+**Causa Raiz**: NestJS build (tsc) não copia arquivos não-TypeScript por padrão.
+
+**Solução**:
+
+Criar `backend/nest-cli.json`:
+
+```json
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "**/*.hbs",
+        "watchAssets": true
+      }
+    ]
+  }
+}
+```
+
+**Verificação**: Após build, verificar que `dist/**/*.hbs` existe.
+
+---
+
+### 6. Workspace Incorreto no NIXPACKS_START_CMD
+
+**Sintoma**: `404 Not Found` em todas as rotas, ou app não inicia.
+
+**Causa Raiz**: Uso de `--workspace=backend` ao invés do nome correto `--workspace=etp-express-backend`.
+
+**Solução**:
+
+```bash
+# ERRADO
+railway variables set NIXPACKS_START_CMD="npm run start:prod --workspace=backend"
+
+# CORRETO
+railway variables set NIXPACKS_START_CMD="npm run start:prod --workspace=etp-express-backend"
+```
+
+**Regra**: O valor de `--workspace` deve ser o `name` do `package.json`, não o nome do diretório.
+
+---
+
+### Checklist de Variáveis Railway Obrigatórias
+
+```bash
+# Database
+DATABASE_URL=<gerado pelo Railway>
+PGSSLMODE=disable
+
+# Puppeteer
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Start Command
+NIXPACKS_START_CMD=npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend
+
+# Application
+NODE_ENV=production
+CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
+```
+
+---
+
+### Arquivos Críticos de Configuração
+
+| Arquivo                                | Propósito                       | Verificar                             |
+| -------------------------------------- | ------------------------------- | ------------------------------------- |
+| `backend/package.json`                 | puppeteer.skipDownload, scripts | migration:run:prod existe             |
+| `backend/nest-cli.json`                | Assets (.hbs)                   | assets inclui `**/*.hbs`              |
+| `backend/railway.toml`                 | startCommand, healthcheck       | Usa migration:run:prod                |
+| `backend/src/config/typeorm.config.ts` | DB connection, SSL, paths       | \_\_dirname paths, PGSSLMODE check    |
+| `backend/src/app.module.ts`            | DB connection runtime           | SSL igual ao typeorm.config           |
+| `nixpacks.toml`                        | Build e start commands          | Workspaces corretos                   |
+| `.npmrc`                               | Puppeteer skip                  | PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true |
+
+---
+
 ## 📚 RECURSOS ADICIONAIS
 
 ### Documentação Railway
@@ -558,5 +814,5 @@ Todo conteúdo gerado deve ser **revisado criticamente** antes de uso oficial.
 
 ---
 
-**Última atualização**: 2025-11-05
-**Versão do guia**: 1.0.0
+**Última atualização**: 2025-12-12
+**Versão do guia**: 2.0.0
