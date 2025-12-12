@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 308/350 (88.0%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 11 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 309/350 (88.3%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 10 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -76,7 +76,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ---
 
-### 🚨 ÉPICO P0 - Lançamento Enterprise (14 issues restantes)
+### 🚨 ÉPICO P0 - Lançamento Enterprise (10 issues restantes)
 
 **Objetivo:** Garantir login funcional + wow factors para demonstrações enterprise.
 
@@ -114,7 +114,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #594 | Breadcrumb navigation | 3h |
 | ~~#595~~ | ~~Indicador online/offline~~ | ✅ PR #643 |
 | #596 | Skeleton loading completo | 4h |
-| #597 | Confetti ETP 100% concluído | 2h |
+| ~~#597~~ | ~~Confetti ETP 100% concluído~~ | ✅ PR #644 |
 
 **Esforço Total:** ~41h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
 
