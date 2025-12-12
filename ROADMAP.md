@@ -1,19 +1,24 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-11 | **Progresso:** 296/347 (85.3%) | **Deploy:** 🔴 CRASHED | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
+**Atualizado:** 2025-12-11 | **Progresso:** 296/347 (85.3%) | **Deploy:** 🟡 DEPLOYING | **P0 Security:** 1 issue | **P0 Enterprise:** 20 issues
 
-## 🚨 ALERTA: Deploy Backend Railway CRASHED
+## 🔧 Deploy Backend Railway - Fix em Progresso
 
 **Issues:** #627, #628
 
-**Problemas Identificados:**
+**Problemas Identificados e Resolvidos:**
 
 1. ✅ CORS_ORIGINS não definida → Variável configurada no Railway
 2. ✅ @types/\* em devDependencies → Movidos para dependencies (commit 9f0138f)
 3. ✅ startCommand incorreto → Corrigido no railway.toml (commit 707074a)
-4. ❌ **Cache Railway impedindo instalação** → Issue #628 BLOQUEADOR
+4. ✅ **Build timeout** → Imagem Docker muito grande (~2GB) por Puppeteer/Chromium duplicado
+   - Configurado `puppeteer.skipDownload: true` em backend/package.json
+   - Criado `.npmrc` com PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+   - Atualizado `nixpacks.toml` com configurações otimizadas
+   - Configurado `executablePath` para usar Chromium do sistema
+   - Variáveis Railway: PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-**Ação Necessária:** Limpar cache de build no Railway Dashboard e fazer redeploy manual.
+**Status:** Aguardando redeploy para validação.
 
 ---
 
