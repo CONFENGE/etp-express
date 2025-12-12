@@ -37,12 +37,12 @@ describe('Card', () => {
       expect(screen.getByTestId('card')).toHaveClass('text-text-apple-primary');
     });
 
-    it('should use Apple-style transitions', () => {
+    it('should use smooth transitions with GPU acceleration', () => {
       render(<Card data-testid="card">Content</Card>);
       const card = screen.getByTestId('card');
       expect(card).toHaveClass('transition-all');
-      expect(card).toHaveClass('duration-apple');
-      expect(card).toHaveClass('ease-apple');
+      expect(card).toHaveClass('duration-200');
+      expect(card).toHaveClass('ease-out');
     });
   });
 
@@ -55,7 +55,7 @@ describe('Card', () => {
       );
       const card = screen.getByTestId('interactive-card');
       expect(card).toHaveClass('hover:shadow-apple-lg');
-      expect(card).toHaveClass('hover:scale-[1.01]');
+      expect(card).toHaveClass('hover:-translate-y-1');
       expect(card).toHaveClass('cursor-pointer');
     });
 

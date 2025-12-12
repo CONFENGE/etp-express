@@ -5,14 +5,15 @@ import { cn } from '@/lib/utils';
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 /**
- * Input component with Apple HIG design tokens.
+ * Input component with Apple HIG design tokens and micro-interactions.
  *
  * Features:
  * - Subtle border (surface-tertiary)
- * - Focus ring with apple accent
+ * - Focus ring with apple accent and glow effect
  * - Placeholder in text-secondary
  * - Smooth transition on focus
  * - Apple-style border radius
+ * - Respects prefers-reduced-motion
  */
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
@@ -26,14 +27,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',
           // Placeholder with secondary text color
           'placeholder:text-text-apple-secondary',
-          // Apple-style transition
-          'transition-all duration-apple ease-apple',
-          // Focus state with Apple accent
+          // Apple-style transition with GPU acceleration
+          'transition-all duration-200 ease-out',
+          // Focus state with Apple accent and glow effect
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 focus-visible:border-apple-accent',
+          'focus-visible:shadow-[0_0_0_4px_rgba(0,122,255,0.1)]',
           // Disabled state
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary',
           // Hover state
           'hover:border-[var(--border-focus)]',
+          // Respect reduced motion preference
+          'motion-reduce:transition-none',
           className,
         )}
         ref={ref}

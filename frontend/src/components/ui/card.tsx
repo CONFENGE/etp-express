@@ -2,14 +2,16 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Card component with Apple HIG design tokens.
+ * Card component with Apple HIG design tokens and micro-interactions.
  *
  * Features:
  * - Background surface-primary
  * - Apple-style shadow (shadow-apple)
  * - Border radius apple-lg
- * - Hover: shadow apple-lg (for interactive cards)
- * - Smooth transitions
+ * - Hover: lift effect with enhanced shadow (for interactive cards)
+ * - Active: pressed state feedback
+ * - Smooth transitions with GPU acceleration
+ * - Respects prefers-reduced-motion
  */
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -20,10 +22,20 @@ const Card = React.forwardRef<
     className={cn(
       // Base styles with Apple HIG tokens
       'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
-      // Apple-style transition
-      'transition-all duration-apple ease-apple',
-      // Interactive card hover effect
-      interactive && 'hover:shadow-apple-lg hover:scale-[1.01] cursor-pointer',
+      // Apple-style transition with GPU acceleration
+      'transition-all duration-200 ease-out',
+      // Interactive card micro-interactions
+      interactive && [
+        'cursor-pointer',
+        // Hover: lift up with enhanced shadow
+        'hover:shadow-apple-lg hover:-translate-y-1',
+        // Active: pressed state
+        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.99]',
+        // Focus visible for keyboard navigation
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
+      ],
+      // Respect reduced motion preference
+      'motion-reduce:transition-none motion-reduce:hover:transform-none',
       className,
     )}
     {...props}
