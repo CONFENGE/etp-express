@@ -52,10 +52,19 @@ export class AuthService {
    * Used by Passport local strategy for authentication. Updates user's
    * lastLogin timestamp on successful validation.
    *
+   * Security validations performed:
+   * - Password verification with bcrypt
+   * - User active status check
+   * - Organization assignment verification
+   * - Organization active status check
+   *
    * @param email - User email address
    * @param password - Plain text password to validate
    * @returns User object without password field, or null if validation fails
    * @throws {UnauthorizedException} If user account is inactive
+   * @throws {UnauthorizedException} If user has no organization assigned
+   * @throws {UnauthorizedException} If user's organization is suspended
+   * @throws {UnauthorizedException} If user's organization does not exist
    */
   async validateUser(
     email: string,
@@ -75,6 +84,43 @@ export class AuthService {
 
     if (!user.isActive) {
       throw new UnauthorizedException('Usuário inativo');
+    }
+
+    // Validate user has an organization assigned
+    if (!user.organizationId) {
+      this.logger.warn(
+        `User ${user.email} attempted login without organization assigned`,
+      );
+      throw new UnauthorizedException(
+        'Usuário sem organização associada. Contate o administrador.',
+      );
+    }
+
+    // Validate organization exists and is active
+    try {
+      const organization = await this.organizationsService.findOne(
+        user.organizationId,
+      );
+
+      if (!organization.isActive) {
+        this.logger.warn(
+          `User ${user.email} attempted login with suspended organization: ${organization.name}`,
+        );
+        throw new UnauthorizedException(
+          'Organização suspensa. Contate o administrador.',
+        );
+      }
+    } catch (error) {
+      // If organization not found (NotFoundException), reject login
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      this.logger.error(
+        `User ${user.email} has invalid organizationId: ${user.organizationId}`,
+      );
+      throw new UnauthorizedException(
+        'Organização não encontrada. Contate o administrador.',
+      );
     }
 
     // Update last login
