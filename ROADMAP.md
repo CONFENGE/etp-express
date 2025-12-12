@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 305/350 (87.1%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 14 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 306/350 (87.4%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 13 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -101,7 +101,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 **Épico 3: Polish Visual Global**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
-| #588 | Componente ErrorState padronizado | 2h |
+| ~~#588~~ | ~~Componente ErrorState padronizado~~ | ✅ PR #639 |
 | #589 | Ilustrações empty states | 4h |
 | #590 | Toast com undo ações destrutivas | 3h |
 | #591 | Touch targets 44x44px | 4h |
