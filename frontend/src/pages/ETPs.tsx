@@ -1,6 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, PlusCircle, Search } from 'lucide-react';
+import {
+  FileText,
+  PlusCircle,
+  Search,
+  MoreVertical,
+  Edit,
+  Trash2,
+} from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,15 +20,64 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useETPs } from '@/hooks/useETPs';
 import { SkeletonList } from '@/components/common/LoadingState';
 import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
-import { useState } from 'react';
+import { useUndoToast } from '@/hooks/useUndoToast';
+import { UndoToastContainer } from '@/components/ui/undo-toast';
+import { ETP } from '@/types/etp';
 
 export function ETPs() {
-  const { etps, isLoading, fetchETPs } = useETPs();
+  const { etps, isLoading, fetchETPs, deleteETP } = useETPs();
   const [search, setSearch] = useState('');
+  // Store hidden ETP IDs for optimistic UI updates
+  const [hiddenEtpIds, setHiddenEtpIds] = useState<Set<string>>(new Set());
+  // Undo toast hook
+  const { showUndoToast, handleUndo, dismiss, activeToasts, isProcessing } =
+    useUndoToast();
+
+  /**
+   * Handle ETP deletion with undo capability.
+   * Implements optimistic UI: hides ETP immediately, actual delete happens after timeout.
+   */
+  const handleDelete = useCallback(
+    (etp: ETP) => {
+      // Optimistic: hide ETP from list immediately
+      setHiddenEtpIds((prev) => new Set(prev).add(etp.id));
+
+      showUndoToast({
+        message: `"${etp.title}" excluído`,
+        undoAction: () => {
+          // Restore ETP in the list
+          setHiddenEtpIds((prev) => {
+            const next = new Set(prev);
+            next.delete(etp.id);
+            return next;
+          });
+        },
+        onConfirm: async () => {
+          // Actually delete the ETP
+          await deleteETP(etp.id);
+          // Clean up hidden state
+          setHiddenEtpIds((prev) => {
+            const next = new Set(prev);
+            next.delete(etp.id);
+            return next;
+          });
+        },
+        duration: 5000,
+      });
+    },
+    [showUndoToast, deleteETP],
+  );
 
   useEffect(() => {
     fetchETPs();
@@ -31,10 +87,12 @@ export function ETPs() {
     const lowerSearch = search.toLowerCase();
     return etps.filter(
       (etp) =>
-        etp.title.toLowerCase().includes(lowerSearch) ||
-        etp.description?.toLowerCase().includes(lowerSearch),
+        // Filter out hidden ETPs (optimistic delete)
+        !hiddenEtpIds.has(etp.id) &&
+        (etp.title.toLowerCase().includes(lowerSearch) ||
+          etp.description?.toLowerCase().includes(lowerSearch)),
     );
-  }, [etps, search]);
+  }, [etps, search, hiddenEtpIds]);
 
   return (
     <MainLayout>
@@ -96,10 +154,42 @@ export function ETPs() {
               <Card key={etp.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{etp.title}</CardTitle>
-                    <Badge className={ETP_STATUS_COLORS[etp.status]}>
-                      {ETP_STATUS_LABELS[etp.status]}
-                    </Badge>
+                    <CardTitle className="text-lg flex-1 pr-2">
+                      {etp.title}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Badge className={ETP_STATUS_COLORS[etp.status]}>
+                        {ETP_STATUS_LABELS[etp.status]}
+                      </Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            aria-label="Opções do ETP"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link to={`/etps/${etp.id}`}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDelete(etp)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                   {etp.description && (
                     <CardDescription className="line-clamp-2">
@@ -135,6 +225,14 @@ export function ETPs() {
           </div>
         )}
       </div>
+
+      {/* Undo Toast Container */}
+      <UndoToastContainer
+        toasts={activeToasts}
+        onUndo={handleUndo}
+        onDismiss={dismiss}
+        isProcessing={isProcessing}
+      />
     </MainLayout>
   );
 }

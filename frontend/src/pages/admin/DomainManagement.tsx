@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DomainTable } from '@/components/admin/DomainTable';
 import { CreateDomainDialog } from '@/components/admin/CreateDomainDialog';
-import { useAdminStore } from '@/store/adminStore';
+import { useAdminStore, AuthorizedDomain } from '@/store/adminStore';
 import { useToast } from '@/hooks/useToast';
+import { useUndoToast } from '@/hooks/useUndoToast';
+import { UndoToastContainer } from '@/components/ui/undo-toast';
 
 /**
  * Domain Management page for System Admin.
@@ -22,7 +24,13 @@ export function DomainManagement() {
   const { domains, loading, error, fetchDomains, createDomain, deleteDomain } =
     useAdminStore();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  // Store hidden domain IDs for optimistic UI updates
+  const [hiddenDomainIds, setHiddenDomainIds] = useState<Set<string>>(
+    new Set(),
+  );
   const { success, error: showError } = useToast();
+  const { showUndoToast, handleUndo, dismiss, activeToasts, isProcessing } =
+    useUndoToast();
 
   useEffect(() => {
     fetchDomains();
@@ -47,15 +55,53 @@ export function DomainManagement() {
     }
   };
 
-  const handleDeleteDomain = async (id: string) => {
-    try {
-      await deleteDomain(id);
-      success('Domain deleted successfully');
-    } catch {
-      showError('Failed to delete domain');
-      throw new Error('Failed to delete domain');
-    }
-  };
+  /**
+   * Handle domain deletion with undo capability.
+   * Implements optimistic UI: hides domain immediately, actual delete happens after timeout.
+   */
+  const handleDeleteDomain = useCallback(
+    (domain: AuthorizedDomain) => {
+      // Optimistic: hide domain from list immediately
+      setHiddenDomainIds((prev) => new Set(prev).add(domain.id));
+
+      showUndoToast({
+        message: `"${domain.domain}" excluído`,
+        undoAction: () => {
+          // Restore domain in the list
+          setHiddenDomainIds((prev) => {
+            const next = new Set(prev);
+            next.delete(domain.id);
+            return next;
+          });
+        },
+        onConfirm: async () => {
+          try {
+            // Actually delete the domain
+            await deleteDomain(domain.id);
+            // Clean up hidden state
+            setHiddenDomainIds((prev) => {
+              const next = new Set(prev);
+              next.delete(domain.id);
+              return next;
+            });
+          } catch {
+            // On error, restore the domain
+            setHiddenDomainIds((prev) => {
+              const next = new Set(prev);
+              next.delete(domain.id);
+              return next;
+            });
+            showError('Failed to delete domain');
+          }
+        },
+        duration: 5000,
+      });
+    },
+    [showUndoToast, deleteDomain, showError],
+  );
+
+  // Filter out hidden domains for optimistic UI
+  const visibleDomains = domains.filter((d) => !hiddenDomainIds.has(d.id));
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,7 +134,7 @@ export function DomainManagement() {
 
         {/* Domain Table */}
         <DomainTable
-          domains={domains}
+          domains={visibleDomains}
           loading={loading}
           onDelete={handleDeleteDomain}
         />
@@ -98,6 +144,14 @@ export function DomainManagement() {
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
           onSubmit={handleCreateDomain}
+        />
+
+        {/* Undo Toast Container */}
+        <UndoToastContainer
+          toasts={activeToasts}
+          onUndo={handleUndo}
+          onDismiss={dismiss}
+          isProcessing={isProcessing}
         />
       </div>
     </div>

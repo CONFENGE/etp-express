@@ -18,14 +18,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DomainUser } from '@/store/managerStore';
-import { DeleteUserDialog } from './DeleteUserDialog';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 
 interface UserTableProps {
   users: DomainUser[];
   loading: boolean;
   onEdit: (user: DomainUser) => void;
-  onDelete: (id: string) => Promise<void>;
+  /** Handler for user deletion. Receives the full user object for undo capability. */
+  onDelete: (user: DomainUser) => void;
   onToggleActive: (id: string, isActive: boolean) => Promise<void>;
   onResetPassword: (id: string) => Promise<void>;
 }
@@ -33,6 +33,9 @@ interface UserTableProps {
 /**
  * User table component with actions for Domain Manager.
  * Displays domain users with sorting by name.
+ *
+ * Uses undo toast pattern for delete operations instead of confirmation dialog.
+ * This provides a better UX by allowing immediate action with undo capability.
  *
  * Design: Apple Human Interface Guidelines
  * - Clean table layout with generous spacing
@@ -49,33 +52,21 @@ export function UserTable({
   onToggleActive,
   onResetPassword,
 }: UserTableProps) {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<DomainUser | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
+  /**
+   * Handle delete click - directly triggers onDelete which shows undo toast.
+   * No confirmation dialog needed since undo toast provides safety net.
+   */
   const handleDeleteClick = (user: DomainUser) => {
-    setSelectedUser(user);
-    setDeleteDialogOpen(true);
+    onDelete(user);
   };
 
   const handleResetPasswordClick = (user: DomainUser) => {
     setSelectedUser(user);
     setResetPasswordDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!selectedUser) return;
-
-    setIsDeleting(true);
-    try {
-      await onDelete(selectedUser.id);
-      setDeleteDialogOpen(false);
-      setSelectedUser(null);
-    } finally {
-      setIsDeleting(false);
-    }
   };
 
   const handleResetPasswordConfirm = async () => {
@@ -245,14 +236,6 @@ export function UserTable({
           </table>
         </div>
       </div>
-
-      <DeleteUserDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        user={selectedUser}
-        onConfirm={handleDeleteConfirm}
-        isDeleting={isDeleting}
-      />
 
       <ResetPasswordDialog
         open={resetPasswordDialogOpen}
