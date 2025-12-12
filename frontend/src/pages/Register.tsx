@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { FormField } from '@/components/ui/form-field';
 import {
   Card,
   CardContent,
@@ -159,23 +160,28 @@ export function Register() {
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome</Label>
+              <FormField
+                id="name"
+                label="Nome"
+                required
+                hint="Seu nome completo"
+                error={errors.name?.message}
+              >
                 <Input
                   id="name"
                   placeholder="Seu nome completo"
                   {...register('name')}
                   aria-invalid={errors.name ? 'true' : 'false'}
                 />
-                {errors.name && (
-                  <p className="text-sm text-destructive">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+              <FormField
+                id="email"
+                label="Email"
+                required
+                hint="Use seu email institucional. Apenas dominios autorizados podem se cadastrar."
+                error={errors.email?.message}
+              >
                 <Input
                   id="email"
                   type="email"
@@ -183,19 +189,15 @@ export function Register() {
                   {...register('email')}
                   aria-invalid={errors.email ? 'true' : 'false'}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">
-                    {errors.email.message}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Use seu email institucional. Apenas domínios autorizados podem
-                  se cadastrar.
-                </p>
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+              <FormField
+                id="password"
+                label="Senha"
+                required
+                hint="Minimo 6 caracteres"
+                error={errors.password?.message}
+              >
                 <div className="relative">
                   <Input
                     id="password"
@@ -221,15 +223,15 @@ export function Register() {
                     )}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-destructive">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+              <FormField
+                id="confirmPassword"
+                label="Confirmar Senha"
+                required
+                hint="Repita a senha"
+                error={errors.confirmPassword?.message}
+              >
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -255,12 +257,7 @@ export function Register() {
                     )}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
+              </FormField>
 
               <div className="flex items-start space-x-2 pt-2">
                 <Checkbox
