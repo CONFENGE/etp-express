@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 310/360 (86.1%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 9 issues | **Hardening:** 10 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 311/360 (86.4%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 8 issues | **Hardening:** 10 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -146,7 +146,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #589 | Ilustrações empty states | 4h |
 | ~~#590~~ | ~~Toast com undo ações destrutivas~~ | ✅ PR #645 |
 | #591 | Touch targets 44x44px | 4h |
-| #592 | Micro-interações cards/botões | 3h |
+| ~~#592~~ | ~~Micro-interações cards/botões~~ | ✅ PR #647 |
 
 **Épico 4: Feedback & Estados (Enterprise Grade)**
 | # | Issue | Esforço |
