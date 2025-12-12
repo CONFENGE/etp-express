@@ -172,7 +172,7 @@ describe('DomainDetail', () => {
   });
 
   describe('Navigation', () => {
-    it('should have back link to domains list', async () => {
+    it('should have breadcrumb navigation to domains list', async () => {
       renderWithRouter();
 
       await waitFor(() => {
@@ -181,8 +181,9 @@ describe('DomainDetail', () => {
         ).toBeInTheDocument();
       });
 
-      const backLink = screen.getByLabelText('Back to domains');
-      expect(backLink).toHaveAttribute('href', '/admin/domains');
+      // Breadcrumb should have link to domains list
+      const domainsLink = screen.getByRole('link', { name: 'Domínios' });
+      expect(domainsLink).toHaveAttribute('href', '/admin/domains');
     });
   });
 
@@ -368,12 +369,20 @@ describe('DomainDetail', () => {
       });
     });
 
-    it('should have back link with aria-label', async () => {
+    it('should have breadcrumb navigation with proper hierarchy', async () => {
       renderWithRouter();
 
       await waitFor(() => {
-        const backLink = screen.getByRole('link', { name: /back to domains/i });
-        expect(backLink).toHaveAttribute('aria-label', 'Back to domains');
+        // Breadcrumb should have home, admin, and domains links
+        expect(
+          screen.getByRole('link', { name: 'Início' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('link', { name: 'Administração' }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('link', { name: 'Domínios' }),
+        ).toBeInTheDocument();
       });
     });
 
