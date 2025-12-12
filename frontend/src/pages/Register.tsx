@@ -126,9 +126,9 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 animate-fade-in">
       <main>
-        <Card className="w-full max-w-md relative overflow-hidden">
+        <Card className="w-full max-w-md relative overflow-hidden opacity-0 animate-fade-in-up [animation-delay:200ms]">
           {/* Loading overlay */}
           {isLoading && (
             <div
@@ -146,15 +146,17 @@ export function Register() {
           )}
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-primary/10 rounded-full">
+              <div className="p-3 bg-primary/10 rounded-full opacity-0 animate-scale-fade-in [animation-delay:400ms]">
                 <ClipboardList
                   className="h-10 w-10 text-primary"
                   aria-hidden="true"
                 />
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">{APP_NAME}</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-2xl text-center opacity-0 animate-fade-in-up [animation-delay:500ms]">
+              {APP_NAME}
+            </CardTitle>
+            <CardDescription className="text-center opacity-0 animate-fade-in-up [animation-delay:600ms]">
               Crie sua conta para começar
             </CardDescription>
           </CardHeader>
