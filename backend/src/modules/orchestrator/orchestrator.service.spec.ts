@@ -172,6 +172,12 @@ describe('OrchestratorService', () => {
       sources: ['https://example.com'],
       isFallback: false,
     }),
+    searchDeep: jest.fn().mockResolvedValue({
+      results: [],
+      summary: 'Fundamentação de mercado encontrada via searchDeep',
+      sources: ['https://example.com'],
+      isFallback: false,
+    }),
     searchSimilarContracts: jest.fn().mockResolvedValue({
       results: [],
       summary: '',
@@ -1250,6 +1256,9 @@ describe('OrchestratorService', () => {
     it('deve lidar com erro de Perplexity gracefully e adicionar warning', async () => {
       const perplexityService = {
         search: jest.fn().mockRejectedValue(new Error('Perplexity API error')),
+        searchDeep: jest
+          .fn()
+          .mockRejectedValue(new Error('Perplexity API error')),
       };
 
       const moduleRef = await Test.createTestingModule({
