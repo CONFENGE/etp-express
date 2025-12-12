@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 /**
- * Button component with Apple HIG design tokens.
+ * Button component with Apple HIG design tokens and micro-interactions.
  *
  * Features:
  * - Apple-style transitions (200ms ease-apple)
@@ -12,10 +12,12 @@ import { cn } from '@/lib/utils';
  * - Apple-style border radius
  * - States: default, hover, active, focus, disabled
  * - Variants: primary (accent), secondary, ghost, destructive, outline, link
+ * - Micro-interactions: subtle scale on active, smooth hover transitions
+ * - Respects prefers-reduced-motion
  */
 const buttonVariants = cva(
-  // Base styles with Apple HIG tokens
-  'inline-flex items-center justify-center whitespace-nowrap rounded-apple text-sm font-medium ring-offset-background transition-all duration-apple ease-apple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
+  // Base styles with Apple HIG tokens and micro-interactions
+  'inline-flex items-center justify-center whitespace-nowrap rounded-apple text-sm font-medium ring-offset-background transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100',
   {
     variants: {
       variant: {

@@ -57,12 +57,12 @@ describe('Input', () => {
       expect(input).toHaveClass('placeholder:text-text-apple-secondary');
     });
 
-    it('should use Apple-style transitions', () => {
+    it('should use smooth transitions with GPU acceleration', () => {
       render(<Input data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
       expect(input).toHaveClass('transition-all');
-      expect(input).toHaveClass('duration-apple');
-      expect(input).toHaveClass('ease-apple');
+      expect(input).toHaveClass('duration-200');
+      expect(input).toHaveClass('ease-out');
     });
 
     it('should have focus ring with Apple accent', () => {

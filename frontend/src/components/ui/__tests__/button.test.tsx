@@ -101,18 +101,18 @@ describe('Button', () => {
       expect(button).toHaveClass('rounded-apple');
     });
 
-    it('should use Apple-style transitions', () => {
+    it('should use smooth micro-interaction transitions', () => {
       render(<Button>Transition</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('transition-all');
-      expect(button).toHaveClass('duration-apple');
-      expect(button).toHaveClass('ease-apple');
+      expect(button).toHaveClass('duration-150');
+      expect(button).toHaveClass('ease-out');
     });
 
-    it('should have active scale effect', () => {
+    it('should have active scale effect for tactile feedback', () => {
       render(<Button>Scale</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('active:scale-[0.98]');
+      expect(button).toHaveClass('active:scale-[0.97]');
     });
 
     it('should have focus ring with Apple accent', () => {
