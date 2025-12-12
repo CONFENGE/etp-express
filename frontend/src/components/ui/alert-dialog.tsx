@@ -99,7 +99,8 @@ const AlertDialogAction = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants(), className)}
+    // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
+    className={cn(buttonVariants(), 'min-h-touch', className)}
     {...props}
   />
 ));
@@ -113,7 +114,8 @@ const AlertDialogCancel = React.forwardRef<
     ref={ref}
     className={cn(
       buttonVariants({ variant: 'outline' }),
-      'mt-2 sm:mt-0',
+      // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
+      'min-h-touch mt-2 sm:mt-0',
       className,
     )}
     {...props}
