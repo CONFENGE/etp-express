@@ -33,6 +33,8 @@ describe('SearchService', () => {
   const mockTopic = 'lei 14.133/2021';
   const mockContractId = 'contract-123';
 
+  const mockOrganizationId = 'org-123-456-789';
+
   const mockContract: SimilarContract = {
     id: mockContractId,
     searchQuery: mockQuery,
@@ -49,6 +51,9 @@ describe('SearchService', () => {
       modalidade: 'Pregão Eletrônico',
     },
     createdAt: new Date('2025-11-01T10:00:00Z'),
+    // Multi-tenancy fields (Issue #650)
+    organizationId: mockOrganizationId,
+    organization: null,
   };
 
   const mockPerplexityResult: PerplexitySearchResult = {
