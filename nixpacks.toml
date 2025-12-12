@@ -8,7 +8,7 @@ cmds = ["npm ci"]
 cmds = ["npm run build --workspace=etp-express-backend"]
 
 [start]
-cmd = "npm run migration:run --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
+cmd = "npm run migration:run:prod --workspace=etp-express-backend && npm run start:prod --workspace=etp-express-backend"
 
 [variables]
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
