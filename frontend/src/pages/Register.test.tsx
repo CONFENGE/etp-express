@@ -1,20 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { Register } from './Register';
 
+// Create mock functions that can be controlled in tests
+const mockRegister = vi.fn();
+const mockError = vi.fn();
+const mockSuccess = vi.fn();
+
 // Mock the hooks
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
-    register: vi.fn(),
+    register: mockRegister,
   }),
 }));
 
 vi.mock('@/hooks/useToast', () => ({
   useToast: () => ({
-    error: vi.fn(),
-    success: vi.fn(),
+    error: mockError,
+    success: mockSuccess,
   }),
 }));
 
@@ -29,6 +34,9 @@ const renderRegister = () => {
 describe('Register', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRegister.mockReset();
+    mockError.mockReset();
+    mockSuccess.mockReset();
   });
 
   describe('Password Visibility Toggle', () => {
@@ -160,6 +168,105 @@ describe('Register', () => {
       expect(
         screen.getByText(/transferência internacional de dados/),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Loading State with Spinner', () => {
+    const fillFormAndSubmit = async (
+      user: ReturnType<typeof userEvent.setup>,
+    ) => {
+      // Fill in valid credentials
+      await user.type(screen.getByLabelText('Nome'), 'Test User');
+      await user.type(screen.getByLabelText('Email'), 'test@example.com');
+      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.type(screen.getByLabelText('Confirmar Senha'), 'password123');
+
+      // Accept LGPD consent
+      const lgpdCheckbox = screen.getByRole('checkbox', {
+        name: /termos de uso/i,
+      });
+      await user.click(lgpdCheckbox);
+
+      // Accept international transfer - this opens a modal, so we need to handle it
+      const transferCheckbox = screen.getByRole('checkbox', {
+        name: /transferência internacional/i,
+      });
+      await user.click(transferCheckbox);
+
+      // Mark the modal's confirmation checkbox first (required to enable the accept button)
+      const modalConfirmCheckbox = await screen.findByRole('checkbox', {
+        name: /Li e compreendo/i,
+      });
+      await user.click(modalConfirmCheckbox);
+
+      // Now accept the modal - use exact match to avoid matching "Não aceito"
+      const acceptButton = await screen.findByRole('button', {
+        name: /aceito a transferência/i,
+      });
+      await user.click(acceptButton);
+
+      // Submit the form
+      await user.click(screen.getByRole('button', { name: /cadastrar/i }));
+    };
+
+    it('should show loading overlay with spinner when form is submitted', async () => {
+      const user = userEvent.setup();
+      // Make register return a promise that doesn't resolve immediately
+      mockRegister.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 500)),
+      );
+      renderRegister();
+
+      await fillFormAndSubmit(user);
+
+      // Check for loading overlay
+      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getByLabelText('Cadastrando')).toBeInTheDocument();
+      // There are two "Cadastrando..." texts - one in the overlay and one in the button
+      expect(screen.getAllByText('Cadastrando...')).toHaveLength(2);
+    });
+
+    it('should show spinner icon in button during loading', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 500)),
+      );
+      renderRegister();
+
+      await fillFormAndSubmit(user);
+
+      // Button should show loading text and be disabled
+      const submitButton = screen.getByRole('button', { name: /cadastrando/i });
+      expect(submitButton).toBeDisabled();
+    });
+
+    it('should hide loading overlay after registration completes', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockResolvedValueOnce({});
+      renderRegister();
+
+      await fillFormAndSubmit(user);
+
+      // Wait for loading to finish
+      await waitFor(() => {
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should hide loading overlay after registration fails', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockRejectedValueOnce(new Error('Registration failed'));
+      renderRegister();
+
+      await fillFormAndSubmit(user);
+
+      // Wait for loading to finish
+      await waitFor(() => {
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+
+      // Error should have been shown
+      expect(mockError).toHaveBeenCalledWith('Registration failed');
     });
   });
 });

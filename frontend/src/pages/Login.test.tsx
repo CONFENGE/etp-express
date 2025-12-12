@@ -1,20 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { Login } from './Login';
 
+// Create mock functions that can be controlled in tests
+const mockLogin = vi.fn();
+const mockError = vi.fn();
+const mockSuccess = vi.fn();
+
 // Mock the hooks
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
-    login: vi.fn(),
+    login: mockLogin,
   }),
 }));
 
 vi.mock('@/hooks/useToast', () => ({
   useToast: () => ({
-    error: vi.fn(),
-    success: vi.fn(),
+    error: mockError,
+    success: mockSuccess,
   }),
 }));
 
@@ -29,6 +34,9 @@ const renderLogin = () => {
 describe('Login', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockLogin.mockReset();
+    mockError.mockReset();
+    mockSuccess.mockReset();
   });
 
   describe('Password Visibility Toggle', () => {
@@ -124,6 +132,85 @@ describe('Login', () => {
       renderLogin();
 
       expect(screen.getByText('Cadastre-se')).toBeInTheDocument();
+    });
+  });
+
+  describe('Loading State with Spinner', () => {
+    it('should show loading overlay with spinner when form is submitted', async () => {
+      const user = userEvent.setup();
+      // Make login return a promise that doesn't resolve immediately
+      mockLogin.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
+      );
+      renderLogin();
+
+      // Fill in valid credentials
+      await user.type(screen.getByLabelText('Email'), 'test@example.com');
+      await user.type(screen.getByLabelText('Senha'), 'password123');
+
+      // Submit the form
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      // Check for loading overlay
+      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getByLabelText('Autenticando')).toBeInTheDocument();
+      expect(screen.getByText('Autenticando...')).toBeInTheDocument();
+
+      // Wait for the promise to resolve
+      await waitFor(() => {
+        expect(mockLogin).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should show spinner icon in button during loading', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 100)),
+      );
+      renderLogin();
+
+      await user.type(screen.getByLabelText('Email'), 'test@example.com');
+      await user.type(screen.getByLabelText('Senha'), 'password123');
+
+      const submitButton = screen.getByRole('button', { name: /entrar/i });
+      await user.click(submitButton);
+
+      // Button should show loading text and be disabled
+      expect(submitButton).toBeDisabled();
+      expect(screen.getByText('Entrando...')).toBeInTheDocument();
+    });
+
+    it('should hide loading overlay after login completes', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockResolvedValueOnce({});
+      renderLogin();
+
+      await user.type(screen.getByLabelText('Email'), 'test@example.com');
+      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      // Wait for loading to finish
+      await waitFor(() => {
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should hide loading overlay after login fails', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockRejectedValueOnce(new Error('Login failed'));
+      renderLogin();
+
+      await user.type(screen.getByLabelText('Email'), 'test@example.com');
+      await user.type(screen.getByLabelText('Senha'), 'password123');
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      // Wait for loading to finish
+      await waitFor(() => {
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+
+      // Error should have been shown
+      expect(mockError).toHaveBeenCalledWith('Login failed');
     });
   });
 });

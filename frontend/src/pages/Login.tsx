@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { FileText, LogIn, Eye, EyeOff } from 'lucide-react';
+import { FileText, LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
@@ -61,7 +61,22 @@ export function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <main>
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md relative overflow-hidden">
+          {/* Loading overlay */}
+          {isLoading && (
+            <div
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 transition-opacity duration-200"
+              role="status"
+              aria-label="Autenticando"
+            >
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <span className="text-sm font-medium text-muted-foreground">
+                  Autenticando...
+                </span>
+              </div>
+            </div>
+          )}
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
               <FileText className="h-12 w-12 text-primary" />
@@ -126,7 +141,10 @@ export function Login() {
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
-                  <>Entrando...</>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Entrando...
+                  </>
                 ) : (
                   <>
                     <LogIn className="mr-2 h-4 w-4" />
