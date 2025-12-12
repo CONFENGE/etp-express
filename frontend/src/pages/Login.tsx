@@ -55,9 +55,9 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 animate-fade-in">
       <main>
-        <Card className="w-full max-w-md relative overflow-hidden">
+        <Card className="w-full max-w-md relative overflow-hidden opacity-0 animate-fade-in-up [animation-delay:200ms]">
           {/* Loading overlay */}
           {isLoading && (
             <div
@@ -75,91 +75,99 @@ export function Login() {
           )}
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-primary/10 rounded-full">
+              <div className="p-3 bg-primary/10 rounded-full opacity-0 animate-scale-fade-in [animation-delay:400ms]">
                 <ClipboardList
                   className="h-10 w-10 text-primary"
                   aria-hidden="true"
                 />
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">{APP_NAME}</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-2xl text-center opacity-0 animate-fade-in-up [animation-delay:500ms]">
+              {APP_NAME}
+            </CardTitle>
+            <CardDescription className="text-center opacity-0 animate-fade-in-up [animation-delay:600ms]">
               Entre com suas credenciais para acessar o sistema
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              <FormField
-                id="email"
-                label="Email"
-                required
-                hint="Use seu email institucional"
-                error={errors.email?.message}
-              >
-                <Input
+              <div className="opacity-0 animate-fade-in-up [animation-delay:700ms]">
+                <FormField
                   id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  {...register('email')}
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                />
-              </FormField>
-
-              <FormField
-                id="password"
-                label="Senha"
-                required
-                hint="Minimo 6 caracteres"
-                error={errors.password?.message}
-              >
-                <div className="relative">
+                  label="Email"
+                  required
+                  hint="Use seu email institucional"
+                  error={errors.email?.message}
+                >
                   <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    {...register('password')}
-                    aria-invalid={errors.password ? 'true' : 'false'}
-                    className="pr-10"
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    {...register('email')}
+                    aria-invalid={errors.email ? 'true' : 'false'}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
-                    aria-label={
-                      showPassword ? 'Ocultar senha' : 'Mostrar senha'
-                    }
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-5 w-5" aria-hidden="true" />
-                    )}
-                  </button>
-                </div>
-              </FormField>
+                </FormField>
+              </div>
+
+              <div className="opacity-0 animate-fade-in-up [animation-delay:800ms]">
+                <FormField
+                  id="password"
+                  label="Senha"
+                  required
+                  hint="Minimo 6 caracteres"
+                  error={errors.password?.message}
+                >
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      {...register('password')}
+                      aria-invalid={errors.password ? 'true' : 'false'}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      aria-label={
+                        showPassword ? 'Ocultar senha' : 'Mostrar senha'
+                      }
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" aria-hidden="true" />
+                      ) : (
+                        <Eye className="h-5 w-5" aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+                </FormField>
+              </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Entrando...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Entrar
-                  </>
-                )}
-              </Button>
-              <p className="text-sm text-center text-muted-foreground">
+              <div className="w-full opacity-0 animate-fade-in-up [animation-delay:900ms]">
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Entrando...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Entrar
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-sm text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1000ms]">
                 Não tem uma conta?{' '}
                 <Link to="/register" className="text-primary underline">
                   Cadastre-se
                 </Link>
               </p>
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-xs text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1100ms]">
                 <Link to="/privacy" className="underline">
                   Política de Privacidade
                 </Link>
