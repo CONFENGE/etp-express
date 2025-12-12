@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { DomainTable } from '@/components/admin/DomainTable';
 import { CreateDomainDialog } from '@/components/admin/CreateDomainDialog';
 import { useAdminStore, AuthorizedDomain } from '@/store/adminStore';
@@ -106,22 +106,23 @@ export function DomainManagement() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-6">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb
+          items={[
+            { label: 'Administração', href: '/admin' },
+            { label: 'Domínios' },
+          ]}
+        />
+
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/admin" aria-label="Back to admin dashboard">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Domains
-              </h1>
-              <p className="text-sm text-muted-foreground sm:text-base">
-                Manage authorized institutional domains
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Domains
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              Manage authorized institutional domains
+            </p>
           </div>
           <Button
             onClick={() => setCreateDialogOpen(true)}

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Input } from '@/components/ui/input';
 import {
   Card,
@@ -217,22 +217,23 @@ export function UserManagement() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-6">
-        {/* Header with Back Button */}
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb
+          items={[
+            { label: 'Gerenciamento', href: '/manager' },
+            { label: 'Usuários' },
+          ]}
+        />
+
+        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/manager" aria-label="Back to Dashboard">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                User Management
-              </h1>
-              <p className="text-sm text-muted-foreground sm:text-base">
-                Manage users in your domain
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              User Management
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              Manage users in your domain
+            </p>
           </div>
           <Button
             onClick={() => setCreateDialogOpen(true)}
