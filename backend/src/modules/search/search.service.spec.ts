@@ -18,10 +18,16 @@ import {
  * - searchLegalReferences() - Legal reference search via Perplexity
  * - getCachedResults() - Database cache retrieval (30-day TTL)
  * - saveSearchResults() - Cache persistence after API search
- * - getContractById() - Single contract retrieval
- * - getAllContracts() - Batch contract retrieval
+ * - getContractById() - Single contract retrieval with MT isolation
+ * - getAllContracts() - Batch contract retrieval with MT isolation
+ *
+ * Multi-Tenancy (MT) Tests:
+ * - Cross-tenant isolation validation
+ * - organizationId filtering in all queries
  *
  * Coverage objectives: ≥60% service coverage with proper mocking
+ *
+ * @see Issue #649 for multi-tenancy implementation
  */
 describe('SearchService', () => {
   let service: SearchService;
@@ -33,7 +39,9 @@ describe('SearchService', () => {
   const mockTopic = 'lei 14.133/2021';
   const mockContractId = 'contract-123';
 
+  // Multi-Tenancy: Two organizations for cross-tenant isolation tests
   const mockOrganizationId = 'org-123-456-789';
+  const mockOtherOrganizationId = 'org-999-888-777'; // Different tenant
 
   const mockContract: SimilarContract = {
     id: mockContractId,
@@ -143,8 +151,11 @@ describe('SearchService', () => {
       const cachedContracts = [mockContract];
       mockQueryBuilder.getMany.mockResolvedValue(cachedContracts);
 
-      // Act
-      const result = await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+      );
 
       // Assert - Should return cached data
       expect(result.data).toEqual(cachedContracts);
@@ -154,7 +165,11 @@ describe('SearchService', () => {
         'LOWER(contract.searchQuery) = LOWER(:query)',
         { query: mockQuery },
       );
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalled();
+      // MT: Should filter by organizationId
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'contract.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
       expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
         'contract.relevanceScore',
         'DESC',
@@ -173,8 +188,11 @@ describe('SearchService', () => {
 
       mockQueryBuilder.getMany.mockResolvedValue(cachedContracts);
 
-      // Act
-      const result = await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.data).toEqual(cachedContracts);
@@ -190,8 +208,8 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([mockContract]);
 
-      // Act
-      await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
 
       // Assert
       expect(mockQueryBuilder.limit).toHaveBeenCalledWith(10);
@@ -203,8 +221,8 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([mockContract]);
 
-      // Act
-      await service.searchSimilarContracts(upperCaseQuery);
+      // Act - MT: Pass organizationId
+      await service.searchSimilarContracts(upperCaseQuery, mockOrganizationId);
 
       // Assert
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
@@ -229,8 +247,11 @@ describe('SearchService', () => {
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
-      // Act
-      const result = await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+      );
 
       // Assert - Should call Perplexity
       expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
@@ -238,9 +259,10 @@ describe('SearchService', () => {
         undefined,
       );
 
-      // Should save results to database
+      // MT: Should save results with organizationId
       expect(contractsRepository.create).toHaveBeenCalledWith({
         searchQuery: mockQuery,
+        organizationId: mockOrganizationId, // MT: Associate with organization
         title: mockPerplexityResult.title,
         description: mockPerplexityResult.snippet,
         url: mockPerplexityResult.url,
@@ -273,8 +295,12 @@ describe('SearchService', () => {
 
       const filters = { orgao: 'Prefeitura', valorMin: 100000 };
 
-      // Act
-      await service.searchSimilarContracts(mockQuery, filters);
+      // Act - MT: Pass organizationId + filters
+      await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+        filters,
+      );
 
       // Assert
       expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
@@ -309,8 +335,11 @@ describe('SearchService', () => {
         .mockResolvedValueOnce(contract1)
         .mockResolvedValueOnce(contract2);
 
-      // Act
-      const result = await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(contractsRepository.create).toHaveBeenCalledTimes(2);
@@ -318,7 +347,7 @@ describe('SearchService', () => {
       expect(result.data).toHaveLength(2);
     });
 
-    it('should log saved contracts count', async () => {
+    it('should log saved contracts count with organizationId', async () => {
       // Arrange
       const logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
@@ -330,11 +359,13 @@ describe('SearchService', () => {
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
-      // Act
-      await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
 
-      // Assert
-      expect(logSpy).toHaveBeenCalledWith('Saved 1 contracts to database');
+      // Assert - MT: Log should include organizationId
+      expect(logSpy).toHaveBeenCalledWith(
+        `Saved 1 contracts for org=${mockOrganizationId}`,
+      );
     });
   });
 
@@ -415,19 +446,22 @@ describe('SearchService', () => {
   });
 
   /**
-   * Tests for getContractById()
+   * Tests for getContractById() - Multi-Tenancy isolation
    */
   describe('getContractById', () => {
-    it('should return contract by id', async () => {
+    it('should return contract by id filtered by organizationId', async () => {
       // Arrange
       mockContractsRepository.findOne.mockResolvedValue(mockContract);
 
-      // Act
-      const result = await service.getContractById(mockContractId);
+      // Act - MT: Pass organizationId
+      const result = await service.getContractById(
+        mockContractId,
+        mockOrganizationId,
+      );
 
-      // Assert
+      // Assert - MT: Should filter by both id AND organizationId
       expect(contractsRepository.findOne).toHaveBeenCalledWith({
-        where: { id: mockContractId },
+        where: { id: mockContractId, organizationId: mockOrganizationId },
       });
       expect(result).toEqual(mockContract);
     });
@@ -436,28 +470,49 @@ describe('SearchService', () => {
       // Arrange
       mockContractsRepository.findOne.mockResolvedValue(null);
 
-      // Act
-      const result = await service.getContractById('non-existent-id');
+      // Act - MT: Pass organizationId
+      const result = await service.getContractById(
+        'non-existent-id',
+        mockOrganizationId,
+      );
 
       // Assert
+      expect(result).toBeNull();
+    });
+
+    it('should return null when contract belongs to different organization', async () => {
+      // Arrange - MT: Contract exists but belongs to different org
+      mockContractsRepository.findOne.mockResolvedValue(null);
+
+      // Act - MT: Request with different organizationId
+      const result = await service.getContractById(
+        mockContractId,
+        mockOtherOrganizationId, // Different tenant
+      );
+
+      // Assert - MT: Should not return contract from another org
+      expect(contractsRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockContractId, organizationId: mockOtherOrganizationId },
+      });
       expect(result).toBeNull();
     });
   });
 
   /**
-   * Tests for getAllContracts()
+   * Tests for getAllContracts() - Multi-Tenancy isolation
    */
   describe('getAllContracts', () => {
-    it('should return all contracts with default limit of 50', async () => {
+    it('should return all contracts filtered by organizationId with default limit of 50', async () => {
       // Arrange
       const contracts = [mockContract, { ...mockContract, id: 'contract-456' }];
       mockContractsRepository.find.mockResolvedValue(contracts);
 
-      // Act
-      const result = await service.getAllContracts();
+      // Act - MT: Pass organizationId
+      const result = await service.getAllContracts(mockOrganizationId);
 
-      // Assert
+      // Assert - MT: Should filter by organizationId
       expect(contractsRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: mockOrganizationId },
         order: { createdAt: 'DESC', relevanceScore: 'DESC' },
         take: 50,
       });
@@ -469,11 +524,12 @@ describe('SearchService', () => {
       // Arrange
       mockContractsRepository.find.mockResolvedValue([mockContract]);
 
-      // Act
-      const result = await service.getAllContracts(20);
+      // Act - MT: Pass organizationId + limit
+      const result = await service.getAllContracts(mockOrganizationId, 20);
 
-      // Assert
+      // Assert - MT: Should filter by organizationId
       expect(contractsRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: mockOrganizationId },
         order: { createdAt: 'DESC', relevanceScore: 'DESC' },
         take: 20,
       });
@@ -484,26 +540,43 @@ describe('SearchService', () => {
       // Arrange
       mockContractsRepository.find.mockResolvedValue([]);
 
-      // Act
-      await service.getAllContracts(100);
+      // Act - MT: Pass organizationId + limit
+      await service.getAllContracts(mockOrganizationId, 100);
 
       // Assert
       expect(contractsRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: mockOrganizationId },
         order: { createdAt: 'DESC', relevanceScore: 'DESC' },
         take: 100,
       });
     });
 
-    it('should return empty array when no contracts exist', async () => {
+    it('should return empty array when no contracts exist for organization', async () => {
       // Arrange
       mockContractsRepository.find.mockResolvedValue([]);
 
-      // Act
-      const result = await service.getAllContracts();
+      // Act - MT: Pass organizationId
+      const result = await service.getAllContracts(mockOrganizationId);
 
       // Assert
       expect(result).toEqual([]);
       expect(result).toHaveLength(0);
+    });
+
+    it('should not return contracts from other organizations', async () => {
+      // Arrange - MT: Org A has contracts, Org B has none
+      mockContractsRepository.find.mockResolvedValue([]);
+
+      // Act - MT: Request with different organizationId
+      const result = await service.getAllContracts(mockOtherOrganizationId);
+
+      // Assert - MT: Should only query for the specified organization
+      expect(contractsRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: mockOtherOrganizationId },
+        order: { createdAt: 'DESC', relevanceScore: 'DESC' },
+        take: 50,
+      });
+      expect(result).toEqual([]);
     });
   });
 
@@ -516,8 +589,8 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      // Act
-      await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
 
       // Assert
       const thirtyDaysAgo = new Date();
@@ -536,8 +609,12 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       let capturedDate: Date | undefined;
 
-      mockQueryBuilder.andWhere = jest.fn((_, params: any) => {
-        capturedDate = params.date;
+      // Capture the date parameter from the andWhere call
+      const originalAndWhere = mockQueryBuilder.andWhere;
+      mockQueryBuilder.andWhere = jest.fn((condition: string, params?: any) => {
+        if (params?.date) {
+          capturedDate = params.date;
+        }
         return mockQueryBuilder;
       });
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
@@ -545,8 +622,8 @@ describe('SearchService', () => {
       const before = new Date();
       before.setDate(before.getDate() - 30);
 
-      // Act
-      await service.searchSimilarContracts(mockQuery);
+      // Act - MT: Pass organizationId
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
 
       // Assert
       expect(capturedDate).toBeDefined();
@@ -573,10 +650,10 @@ describe('SearchService', () => {
         new Error('Perplexity API timeout'),
       );
 
-      // Act & Assert - Should propagate error to caller
-      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow(
-        'Perplexity API timeout',
-      );
+      // Act & Assert - Should propagate error to caller - MT: Pass organizationId
+      await expect(
+        service.searchSimilarContracts(mockQuery, mockOrganizationId),
+      ).rejects.toThrow('Perplexity API timeout');
     });
 
     it('should handle database save errors', async () => {
@@ -592,10 +669,10 @@ describe('SearchService', () => {
         new Error('Database connection lost'),
       );
 
-      // Act & Assert
-      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow(
-        'Database connection lost',
-      );
+      // Act & Assert - MT: Pass organizationId
+      await expect(
+        service.searchSimilarContracts(mockQuery, mockOrganizationId),
+      ).rejects.toThrow('Database connection lost');
     });
 
     it('should handle malformed Perplexity responses', async () => {
@@ -612,8 +689,10 @@ describe('SearchService', () => {
         malformedResponse,
       );
 
-      // Act & Assert
-      await expect(service.searchSimilarContracts(mockQuery)).rejects.toThrow();
+      // Act & Assert - MT: Pass organizationId
+      await expect(
+        service.searchSimilarContracts(mockQuery, mockOrganizationId),
+      ).rejects.toThrow();
     });
   });
 
@@ -634,16 +713,20 @@ describe('SearchService', () => {
 
       const logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
 
-      // Act
-      const result = await service.searchSimilarContracts(mockQuery, {
-        orgao: 'Prefeitura',
-      });
-
-      // Assert - Full flow executed
-      expect(logSpy).toHaveBeenCalledWith(
-        `Searching similar contracts for: ${mockQuery}`,
+      // Act - MT: Pass organizationId + filters
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+        { orgao: 'Prefeitura' },
       );
-      expect(logSpy).toHaveBeenCalledWith('Saved 1 contracts to database');
+
+      // Assert - Full flow executed - MT: Log includes organizationId
+      expect(logSpy).toHaveBeenCalledWith(
+        `Searching similar contracts for org=${mockOrganizationId}: ${mockQuery}`,
+      );
+      expect(logSpy).toHaveBeenCalledWith(
+        `Saved 1 contracts for org=${mockOrganizationId}`,
+      );
 
       expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
         mockQuery,
@@ -656,7 +739,7 @@ describe('SearchService', () => {
       expect(result.sources).toEqual(mockPerplexityResponse.sources);
     });
 
-    it('should use cache on second identical search', async () => {
+    it('should use cache on second identical search for same organization', async () => {
       // Arrange - First search: cache MISS
       const mockQueryBuilder1 = contractsRepository.createQueryBuilder();
       mockQueryBuilder1.getMany = jest.fn().mockResolvedValue([]);
@@ -667,8 +750,8 @@ describe('SearchService', () => {
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
-      // Act - First search
-      await service.searchSimilarContracts(mockQuery);
+      // Act - First search - MT: Pass organizationId
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
 
       // Arrange - Second search: cache HIT
       const mockQueryBuilder2 = contractsRepository.createQueryBuilder();
@@ -676,12 +759,146 @@ describe('SearchService', () => {
 
       jest.clearAllMocks(); // Clear first search mocks
 
-      // Act - Second search (same query)
-      const result = await service.searchSimilarContracts(mockQuery);
+      // Act - Second search (same query, same org) - MT: Pass organizationId
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOrganizationId,
+      );
 
       // Assert - Should use cache, NOT Perplexity
       expect(result.source).toBe('cache');
       expect(perplexityService.searchSimilarContracts).not.toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * Multi-Tenancy (MT) Isolation Tests - Issue #649
+   *
+   * These tests specifically validate cross-tenant isolation:
+   * - Each organization's data is isolated from others
+   * - Cache is organization-scoped
+   * - No data leakage between tenants
+   */
+  describe('Multi-Tenancy Isolation', () => {
+    it('should not share cache between different organizations', async () => {
+      // Scenario: Org A searches, Org B searches same term
+      // Expected: Org B should NOT get Org A's cached results
+
+      // Arrange - Org A's search populates cache
+      const orgAContract = {
+        ...mockContract,
+        organizationId: mockOrganizationId,
+      };
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
+        mockPerplexityResponse,
+      );
+      mockContractsRepository.create.mockReturnValue(orgAContract);
+      mockContractsRepository.save.mockResolvedValue(orgAContract);
+
+      // Act - Org A searches
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
+
+      // Clear mocks for Org B's search
+      jest.clearAllMocks();
+
+      // Arrange - Org B's cache should be empty (different org)
+      mockQueryBuilder.getMany.mockResolvedValue([]); // No cache for Org B
+      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
+        mockPerplexityResponse,
+      );
+
+      const orgBContract = {
+        ...mockContract,
+        id: 'contract-org-b',
+        organizationId: mockOtherOrganizationId,
+      };
+      mockContractsRepository.create.mockReturnValue(orgBContract);
+      mockContractsRepository.save.mockResolvedValue(orgBContract);
+
+      // Act - Org B searches same term
+      const result = await service.searchSimilarContracts(
+        mockQuery,
+        mockOtherOrganizationId, // Different organization
+      );
+
+      // Assert - MT: Org B should get fresh results, NOT Org A's cache
+      expect(result.source).toBe('perplexity'); // Fresh search, not cache
+      expect(perplexityService.searchSimilarContracts).toHaveBeenCalled();
+
+      // Assert - MT: Cache query should filter by Org B's organizationId
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'contract.organizationId = :organizationId',
+        { organizationId: mockOtherOrganizationId },
+      );
+    });
+
+    it('should save contracts with correct organizationId', async () => {
+      // Arrange
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
+        mockPerplexityResponse,
+      );
+      mockContractsRepository.create.mockReturnValue(mockContract);
+      mockContractsRepository.save.mockResolvedValue(mockContract);
+
+      // Act
+      await service.searchSimilarContracts(mockQuery, mockOrganizationId);
+
+      // Assert - MT: Contract created with organizationId
+      expect(contractsRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          organizationId: mockOrganizationId,
+        }),
+      );
+    });
+
+    it('should prevent cross-tenant contract access via getContractById', async () => {
+      // Scenario: Contract belongs to Org A, Org B tries to access
+      // Expected: Org B should NOT be able to access Org A's contract
+
+      // Arrange - Contract exists for Org A
+      const orgAContract = {
+        ...mockContract,
+        organizationId: mockOrganizationId,
+      };
+
+      // When Org B queries, DB returns null (filtered by organizationId)
+      mockContractsRepository.findOne.mockResolvedValue(null);
+
+      // Act - Org B tries to access Org A's contract
+      const result = await service.getContractById(
+        mockContractId,
+        mockOtherOrganizationId, // Different organization
+      );
+
+      // Assert - MT: Contract should not be returned
+      expect(result).toBeNull();
+      expect(contractsRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: mockContractId,
+          organizationId: mockOtherOrganizationId, // Query includes org filter
+        },
+      });
+    });
+
+    it('should isolate getAllContracts results by organization', async () => {
+      // Scenario: Org A has contracts, Org B queries
+      // Expected: Org B should NOT see Org A's contracts
+
+      // Arrange - Mock returns empty for Org B (data is isolated)
+      mockContractsRepository.find.mockResolvedValue([]);
+
+      // Act - Org B queries contracts
+      const result = await service.getAllContracts(mockOtherOrganizationId);
+
+      // Assert - MT: Query should filter by Org B's organizationId
+      expect(contractsRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: mockOtherOrganizationId },
+        order: { createdAt: 'DESC', relevanceScore: 'DESC' },
+        take: 50,
+      });
+      expect(result).toEqual([]);
     });
   });
 });
