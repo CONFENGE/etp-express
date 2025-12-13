@@ -9,6 +9,7 @@
 ## Instructions
 
 You are acting as a **Business Analyst** specialized in:
+
 - Lei 14.133/2021 (Nova Lei de Licitações)
 - Estudos Técnicos Preliminares (ETP)
 - Public procurement best practices
@@ -23,6 +24,7 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
 ### Process
 
 1. **Fetch Issue Details**
+
    ```bash
    gh issue view <ISSUE_NUMBER> --json number,title,body,labels,assignees
    ```
@@ -55,12 +57,15 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## Problem Statement
 
    ### Current State
+
    <Describe the current situation>
 
    ### Problem Description
+
    <Detailed description of the problem>
 
    ### Impact
+
    - **Users Affected:** [Public servants, managers, etc.]
    - **Frequency:** [How often does this occur?]
    - **Severity:** [Critical, High, Medium, Low]
@@ -78,15 +83,18 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## User Stories
 
    ### Story 1
+
    **As a** [role],
    **I want** [goal],
    **So that** [benefit].
 
    **Acceptance Criteria:**
+
    - [ ] Criterion 1
    - [ ] Criterion 2
 
    ### Story 2 (if applicable)
+
    ...
 
    ---
@@ -94,17 +102,21 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## Solution Alternatives
 
    ### Alternative A: <Name>
+
    **Description:** [Brief description]
    **Pros:**
+
    - Pro 1
    - Pro 2
 
    **Cons:**
+
    - Con 1
 
    **Recommendation:** ✅ Preferred | ⚠️ Consider | ❌ Not Recommended
 
    ### Alternative B: <Name>
+
    ...
 
    ---
@@ -112,11 +124,13 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## Success Metrics
 
    ### Technical KPIs
+
    - [ ] Coverage: ≥78% backend, ≥76% frontend
    - [ ] Performance: [Specify targets]
    - [ ] Accessibility: WCAG 2.1 AA
 
    ### Business KPIs
+
    - [ ] User satisfaction: [Target]
    - [ ] Task completion time: [Reduction target]
    - [ ] Adoption rate: [Target]
@@ -126,9 +140,11 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## Market Research
 
    ### Similar Solutions
+
    <Research similar features in other government systems>
 
    ### Best Practices
+
    <Identify industry best practices>
 
    ---
@@ -136,10 +152,12 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
    ## Risks & Assumptions
 
    ### Risks
+
    1. **Risk 1:** [Description]
       - **Mitigation:** [Plan]
 
    ### Assumptions
+
    1. **Assumption 1:** [Description]
       - **Validation needed:** [How to validate]
 
@@ -182,11 +200,13 @@ The user will provide a GitHub issue number (e.g., `#611`, `#612`).
 ## Example Usage
 
 **User input:**
+
 ```
 /product-brief-etp 611
 ```
 
 **Your actions:**
+
 1. Fetch issue #611 details
 2. Analyze context (ROADMAP.md, related issues)
 3. Create product brief with user stories

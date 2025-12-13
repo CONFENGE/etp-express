@@ -10,6 +10,7 @@ Seu trabalho é escolher **uma única issue** do backlog e tratá-la até a cria
 Selecionar e implementar a próxima issue **executável** do repositório ETP Express, criando uma PR pronta para review. O merge e fechamento são responsabilidade do `/review-pr`.
 
 **IMPORTANTE:** Antes de começar, consulte `ROADMAP.md` para entender:
+
 - Estado atual dos milestones (M1-M6)
 - Prioridades do projeto no momento
 - Contexto de bloqueios ou dependências críticas
@@ -22,6 +23,7 @@ Selecionar e implementar a próxima issue **executável** do repositório ETP Ex
 ### Passo 1: Consultar ROADMAP.md
 
 **OBRIGATÓRIO:** Leia a seção de status atual no ROADMAP.md para entender:
+
 - Quais milestones estão completos
 - Qual milestone está em progresso
 - Prioridades P0/P1/P2/P3 do momento
@@ -115,33 +117,40 @@ A issue **DEVE** conter todos os elementos abaixo:
 
 ```markdown
 ## 🎯 Objetivo
+
 <Objetivo claro e mensurável da issue>
 
 ## 📋 Contexto
+
 <Por que precisamos desta mudança? Qual problema resolve?>
 
 ## 🔧 Solução Técnica
+
 <Passo a passo técnico da implementação>
 
 **Arquivo(s):** <Lista explícita de arquivos com paths absolutos>
 **Linhas:** <Linhas específicas a modificar (se aplicável)>
 
 ## ✅ Critérios de Aceitação
+
 - [ ] Critério 1 (verificável e testável)
 - [ ] Critério 2
 - [ ] Critério 3
-...
+      ...
 
 ## 📊 Estimativa
+
 **Esforço:** <X horas> (1–8h, atômico)
 
 ## 🔗 Dependências
+
 - **Bloqueada por:** #<issue-id> ou Nenhum
 - **Bloqueia:** #<issue-id> ou Nenhum
 - **Relacionada:** #<issue-id> (opcional)
 ```
 
 Atualize a issue no GitHub:
+
 ```bash
 gh issue edit <número> --body "<conteúdo-reescrito>"
 ```
@@ -167,6 +176,7 @@ Uma issue é **ATÔMICA** se atende TODOS os requisitos:
 #### Identificar Necessidade de Desmembramento
 
 **QUEBRAR se:**
+
 - Estimativa > 8h
 - Múltiplos objetivos distintos no mesmo body
 - Scope vago ou amplo demais (ex: "Refatorar módulo X")
@@ -178,11 +188,13 @@ Uma issue é **ATÔMICA** se atende TODOS os requisitos:
 **Passo 1:** Identificar sub-tarefas independentes
 
 Exemplo de issue não-atômica:
+
 ```
 #999 - Secrets Management & API Key Rotation (8-10h)
 ```
 
 Desmembrar em:
+
 ```
 #1000 - [SEC-999a] Avaliar soluções de Secrets Management (2h)
 #1001 - [SEC-999b] Implementar secret scanning (2h)
@@ -319,6 +331,7 @@ npm run test:coverage                      # Cobertura
 ### 3.4 Validações Específicas
 
 **Se tocar em:**
+
 - **Segurança/Auth**: Validar rate limiting, sanitização de inputs
 - **Deploy/Infrastructure**: Validar railway.json, Procfile, variáveis de ambiente
 - **Database**: Testar migrations com TypeORM
@@ -346,6 +359,7 @@ git commit -m "feat(<escopo>): <descrição> (#<issue-número>)"
 Tipos: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `security`
 
 Exemplos:
+
 - `feat(backend): configure jest (#1)`
 - `fix(frontend): fix useEffect memory leak (#14)`
 - `test(backend): add auth service tests (#2)`
@@ -386,22 +400,26 @@ EOF
 ### 4.3 Aguardar CI/CD (Otimizado com Cache + Path Filters)
 
 **ℹ️ Otimizações Ativas:**
+
 - **Cache NPM**: Workflows executam ~60% mais rápido (cache hit)
 - **Cache Playwright**: Browsers não reinstalados (economiza 3-4 min)
 - **Path Filters**: Commits apenas docs **NÃO** acionam workflows
 - **Secret Scanning**: Apenas master/PRs (não em branches de dev)
 
 **Workflows que Serão Acionados** (se PR tocar código TypeScript):
+
 - ✅ ci-lint.yml - ESLint backend + frontend
 - ✅ ci-tests.yml - Jest + Vitest com coverage
 - ✅ playwright.yml - Testes E2E (se tocar tests/)
 - ✅ secret-scan.yml - Gitleaks (scan incremental em PRs)
 
 **Workflows que NÃO Serão Acionados** (se PR apenas docs):
+
 - ⏭️ Commits apenas `.md`, `docs/` não acionam CI/CD
 - ⏭️ Path filters economizam ~2900 min/mês
 
 **Validação:**
+
 - ✅ Todos os checks devem estar verdes
 - ✅ Coverage não pode diminuir
 - ✅ Linting e type checking OK
@@ -414,6 +432,7 @@ EOF
 **PARE AQUI**
 
 A PR foi criada e está aguardando review. O merge será realizado pelo comando `/review-pr`, que possui:
+
 - Validação rigorosa em 8 categorias (100% score requerido)
 - Auto-fixes para issues de formatação
 - Validação pós-merge em 3 camadas
@@ -422,6 +441,7 @@ A PR foi criada e está aguardando review. O merge será realizado pelo comando 
 **Próximo passo:** Execute `/review-pr` para validar e mergear a PR.
 
 **Output esperado:**
+
 ```
 PR #<número> CRIADA E PRONTA PARA REVIEW
 
@@ -441,6 +461,7 @@ Próximo comando: /review-pr
 **Esta fase é executada pelo comando `/review-pr`**
 
 O fechamento da issue (Execution Note + `gh issue close`) é responsabilidade do `/review-pr` após:
+
 1. Validação em 8 categorias (100% score)
 2. Merge bem-sucedido
 3. Validação pós-merge (3 camadas)
@@ -497,6 +518,7 @@ Após criar a PR, o ciclo do `/pick-next-issue` está **COMPLETO**.
 ## 🎓 REFERÊNCIAS DO PROJETO
 
 ### Documentação Estratégica
+
 - **Roadmap:** `ROADMAP.md` - **CONSULTAR SEMPRE** para status atual e prioridades
 - **Audit Report:** `ROADMAP_AUDIT_REPORT.md` - Análises e auditorias
 - **Arquitetura:** `ARCHITECTURE.md` - Padrões técnicos
@@ -529,11 +551,13 @@ gh issue list --state open --json number,title,labels,milestone
 ### Exemplo de Desmembramento
 
 **Issue Parent (não-atômica):**
+
 ```
 #100 - Implementar sistema de autenticação completo (15h)
 ```
 
 **Sub-issues atômicas:**
+
 ```
 #101 - [AUTH-100a] Setup JWT e middleware de autenticação (3h)
 #102 - [AUTH-100b] Implementar endpoint de login (2h)
