@@ -326,7 +326,7 @@ Issues #261-#269, #298-#301
 
 **Arquivo:** `.mcp.json`
 
-### Comandos Slash Disponíveis (16 total)
+### Comandos Slash Disponíveis (19 total)
 
 **Core Workflow (7 existentes):**
 
@@ -350,9 +350,29 @@ Issues #261-#269, #298-#301
 - `/deploy-check` - Validação pré-deploy Railway
 - `/health-check` - Status dos serviços em produção
 
+**Superpowers (3):**
+
+- `/brainstorm` - Design Socrático interativo
+- `/write-plan` - Criar plano de implementação detalhado
+- `/execute-plan` - Executar plano em batches com checkpoints
+
 **Diretório:** `.claude/commands/`
 
-### Skills Customizadas (5)
+### Skills - Superpowers (20) + Customizadas (5)
+
+**Superpowers (20 skills):**
+
+| Categoria     | Skills                                                                                |
+| ------------- | ------------------------------------------------------------------------------------- |
+| Testing       | `test-driven-development`, `testing-anti-patterns`, `condition-based-waiting`         |
+| Debugging     | `systematic-debugging`, `root-cause-tracing`, `defense-in-depth`                      |
+| Verification  | `verification-before-completion`                                                      |
+| Planning      | `brainstorming`, `writing-plans`, `executing-plans`, `writing-skills`                 |
+| Workflow      | `subagent-driven-development`, `dispatching-parallel-agents`, `finishing-development` |
+| Collaboration | `requesting-code-review`, `receiving-code-review`, `sharing-skills`                   |
+| Tools         | `using-git-worktrees`, `using-superpowers`, `testing-skills-with-subagents`           |
+
+**Customizadas (5 skills):**
 
 | Skill             | Ativação                  | Propósito                        |
 | ----------------- | ------------------------- | -------------------------------- |
@@ -369,6 +389,14 @@ Issues #261-#269, #298-#301
 ## Changelog Recente
 
 ### 2025-12-12
+
+**Superpowers Plugin Integrado** ✅
+
+- **Fonte:** [obra/superpowers](https://github.com/obra/superpowers)
+- **Skills:** 20 skills profissionais para TDD, debugging, brainstorming, planejamento
+- **Comandos:** `/brainstorm`, `/write-plan`, `/execute-plan`
+- **Hooks:** session-start.sh, run-hook.cmd, hooks.json
+- **Lib:** skills-core.js para funcionalidades compartilhadas
 
 **Infraestrutura Claude Code - Arsenal Completo** ✅
 
