@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   Index,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Organization } from './organization.entity';
 
 @Entity('analytics_events')
 export class AnalyticsEvent {
@@ -22,6 +25,19 @@ export class AnalyticsEvent {
   @Column({ type: 'varchar', nullable: true })
   @Index()
   userId: string;
+
+  /**
+   * Organization ID for multi-tenancy isolation (Security Hardening - #648).
+   * Ensures analytics events are filtered per organization.
+   * Nullable for backward compatibility with existing records.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  @Index()
+  organizationId: string | null;
+
+  @ManyToOne(() => Organization, { nullable: true })
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   @Column({ type: 'varchar', nullable: true })
   etpId: string;

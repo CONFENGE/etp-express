@@ -6,6 +6,7 @@ import {
   Query,
   UseGuards,
   Req,
+  Param,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -28,6 +30,13 @@ interface TrackEventDto {
   etpId?: string;
 }
 
+/**
+ * AnalyticsController - Multi-tenant analytics endpoints.
+ *
+ * Security Hardening (#648):
+ * All endpoints now require organizationId from JWT for multi-tenancy isolation.
+ * This prevents cross-organization data leakage in analytics.
+ */
 @ApiTags('analytics')
 @Controller('analytics')
 @UseGuards(JwtAuthGuard)
@@ -38,7 +47,7 @@ export class AnalyticsController {
   @Post('track')
   @ApiOperation({
     summary: 'Rastrear evento',
-    description: 'Registra um evento de analytics',
+    description: 'Registra um evento de analytics com isolamento multi-tenant',
   })
   @ApiBody({
     schema: {
@@ -55,6 +64,7 @@ export class AnalyticsController {
   async trackEvent(
     @Body() body: TrackEventDto,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
     @Req() request: Request,
   ) {
     await this.analyticsService.trackEvent(
@@ -64,6 +74,7 @@ export class AnalyticsController {
       userId,
       body.etpId,
       request,
+      organizationId,
     );
 
     return { success: true, message: 'Evento registrado' };
@@ -72,7 +83,8 @@ export class AnalyticsController {
   @Get('dashboard')
   @ApiOperation({
     summary: 'Dashboard de analytics',
-    description: 'Estatísticas gerais de uso do sistema',
+    description:
+      'Estatísticas gerais de uso do sistema (filtrado por organização)',
   })
   @ApiQuery({
     name: 'days',
@@ -84,8 +96,13 @@ export class AnalyticsController {
   async getDashboard(
     @Query('days') days: number = 30,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const stats = await this.analyticsService.getDashboardStats(userId, days);
+    const stats = await this.analyticsService.getDashboardStats(
+      organizationId,
+      userId,
+      days,
+    );
     return {
       data: stats,
       disclaimer: DISCLAIMER,
@@ -95,7 +112,8 @@ export class AnalyticsController {
   @Get('user/activity')
   @ApiOperation({
     summary: 'Atividade do usuário',
-    description: 'Histórico de atividades do usuário atual',
+    description:
+      'Histórico de atividades do usuário atual (filtrado por organização)',
   })
   @ApiQuery({
     name: 'days',
@@ -107,8 +125,13 @@ export class AnalyticsController {
   async getUserActivity(
     @Query('days') days: number = 30,
     @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const activity = await this.analyticsService.getUserActivity(userId, days);
+    const activity = await this.analyticsService.getUserActivity(
+      userId,
+      organizationId,
+      days,
+    );
     return {
       data: activity,
       disclaimer: DISCLAIMER,
@@ -116,17 +139,23 @@ export class AnalyticsController {
   }
 
   @Get('events/type/:type')
-  @ApiOperation({ summary: 'Obter eventos por tipo' })
+  @ApiOperation({
+    summary: 'Obter eventos por tipo',
+    description: 'Lista eventos por tipo (filtrado por organização)',
+  })
+  @ApiParam({ name: 'type', description: 'Tipo de evento', type: String })
   @ApiQuery({ name: 'startDate', required: false, type: String })
   @ApiQuery({ name: 'endDate', required: false, type: String })
   @ApiResponse({ status: 200, description: 'Lista de eventos' })
   async getEventsByType(
-    @Query('type') type: string,
+    @Param('type') type: string,
+    @CurrentUser('organizationId') organizationId: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
     const events = await this.analyticsService.getEventsByType(
       type,
+      organizationId,
       startDate ? new Date(startDate) : undefined,
       endDate ? new Date(endDate) : undefined,
     );
@@ -140,11 +169,12 @@ export class AnalyticsController {
   @Get('health')
   @ApiOperation({
     summary: 'Saúde do sistema',
-    description: 'Métricas de saúde e performance (admin only)',
+    description:
+      'Métricas de saúde e performance (filtrado por organização do usuário)',
   })
   @ApiResponse({ status: 200, description: 'Status de saúde do sistema' })
-  async getSystemHealth() {
-    const health = await this.analyticsService.getSystemHealth();
+  async getSystemHealth(@CurrentUser('organizationId') organizationId: string) {
+    const health = await this.analyticsService.getSystemHealth(organizationId);
     return {
       data: health,
       disclaimer: DISCLAIMER,

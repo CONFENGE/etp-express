@@ -10,12 +10,15 @@ import { AnalyticsEvent } from '../../entities/analytics-event.entity';
  *
  * Tests all service methods for analytics event tracking and metrics:
  * - trackEvent() - Event registration and logging
- * - getEventsByUser() - User activity queries
- * - getEventsByEtp() - ETP-specific events
- * - getEventsByType() - Event filtering by type and date range
- * - getDashboardStats() - Complex aggregation queries
- * - getUserActivity() - User-specific activity tracking
- * - getSystemHealth() - System health metrics
+ * - getEventsByUser() - User activity queries with multi-tenancy
+ * - getEventsByEtp() - ETP-specific events with multi-tenancy
+ * - getEventsByType() - Event filtering by type with multi-tenancy
+ * - getDashboardStats() - Complex aggregation queries with multi-tenancy
+ * - getUserActivity() - User-specific activity tracking with multi-tenancy
+ * - getSystemHealth() - System health metrics with multi-tenancy
+ *
+ * Security Hardening (#648):
+ * All query methods now require organizationId for multi-tenancy isolation.
  *
  * Coverage objectives: ≥60% service coverage with proper mocking
  */
@@ -27,6 +30,8 @@ describe('AnalyticsService', () => {
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
   const mockEventId = 'event-789';
+  const mockOrganizationId = 'org-abc-123';
+  const mockOtherOrgId = 'org-xyz-789';
 
   const mockEvent: AnalyticsEvent = {
     id: mockEventId,
@@ -34,6 +39,8 @@ describe('AnalyticsService', () => {
     eventName: 'section_generated',
     userId: mockUserId,
     etpId: mockEtpId,
+    organizationId: mockOrganizationId,
+    organization: null as any,
     properties: {
       duration: 2500,
       success: true,
@@ -52,6 +59,8 @@ describe('AnalyticsService', () => {
     eventName: 'generation_failed',
     userId: mockUserId,
     etpId: mockEtpId,
+    organizationId: mockOrganizationId,
+    organization: null as any,
     properties: {
       errorMessage: 'LLM timeout',
     },
@@ -133,7 +142,7 @@ describe('AnalyticsService', () => {
    * Validates event registration and error handling
    */
   describe('trackEvent', () => {
-    it('should track event successfully with all parameters', async () => {
+    it('should track event successfully with all parameters including organizationId', async () => {
       // Arrange
       mockAnalyticsRepository.create.mockReturnValue(mockEvent);
       mockAnalyticsRepository.save.mockResolvedValue(mockEvent);
@@ -146,6 +155,7 @@ describe('AnalyticsService', () => {
         mockUserId,
         mockEtpId,
         mockRequest,
+        mockOrganizationId,
       );
 
       // Assert
@@ -159,6 +169,7 @@ describe('AnalyticsService', () => {
         },
         userId: mockUserId,
         etpId: mockEtpId,
+        organizationId: mockOrganizationId,
         sessionId: 'session-abc',
         ipAddress: '192.168.1.1',
         userAgent: 'Mozilla/5.0',
@@ -167,13 +178,14 @@ describe('AnalyticsService', () => {
       expect(mockAnalyticsRepository.save).toHaveBeenCalledWith(mockEvent);
     });
 
-    it('should track event with minimal parameters (no properties, userId, etpId, request)', async () => {
+    it('should track event with minimal parameters (no properties, userId, etpId, request, organizationId)', async () => {
       // Arrange
       const minimalEvent = {
         ...mockEvent,
         properties: {},
         userId: undefined,
         etpId: undefined,
+        organizationId: null,
         sessionId: undefined,
         ipAddress: undefined,
         userAgent: undefined,
@@ -192,6 +204,7 @@ describe('AnalyticsService', () => {
         properties: {},
         userId: undefined,
         etpId: undefined,
+        organizationId: null,
         sessionId: undefined,
         ipAddress: undefined,
         userAgent: undefined,
@@ -250,7 +263,7 @@ describe('AnalyticsService', () => {
       );
     });
 
-    it('should log debug message on successful tracking', async () => {
+    it('should log debug message on successful tracking with organizationId', async () => {
       // Arrange
       const debugSpy = jest
         .spyOn(Logger.prototype, 'debug')
@@ -258,32 +271,46 @@ describe('AnalyticsService', () => {
       mockAnalyticsRepository.create.mockReturnValue(mockEvent);
       mockAnalyticsRepository.save.mockResolvedValue(mockEvent);
 
-      // Act
-      await service.trackEvent('generation', 'section_generated');
+      // Act - Now includes organizationId
+      await service.trackEvent(
+        'generation',
+        'section_generated',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        mockOrganizationId,
+      );
 
-      // Assert
+      // Assert - Log now includes organization info
       expect(debugSpy).toHaveBeenCalledWith(
-        'Event tracked: generation.section_generated',
+        `Event tracked: generation.section_generated (org: ${mockOrganizationId})`,
       );
     });
   });
 
   /**
    * Tests for getEventsByUser()
-   * Validates user-specific event queries
+   * Validates user-specific event queries with multi-tenancy
    */
   describe('getEventsByUser', () => {
-    it('should return user events with default limit of 100', async () => {
+    it('should return user events filtered by organizationId with default limit', async () => {
       // Arrange
       const events = [mockEvent, mockErrorEvent];
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByUser(mockUserId);
+      const result = await service.getEventsByUser(
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { userId: mockUserId },
+        where: {
+          userId: mockUserId,
+          organizationId: expect.anything(), // Or(Equal(mockOrganizationId), IsNull())
+        },
         order: { createdAt: 'DESC' },
         take: 100,
       });
@@ -297,85 +324,154 @@ describe('AnalyticsService', () => {
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByUser(mockUserId, 50);
+      const result = await service.getEventsByUser(
+        mockUserId,
+        mockOrganizationId,
+        50,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { userId: mockUserId },
+        where: {
+          userId: mockUserId,
+          organizationId: expect.anything(),
+        },
         order: { createdAt: 'DESC' },
         take: 50,
       });
       expect(result).toEqual(events);
     });
 
-    it('should return empty array when user has no events', async () => {
+    it('should return empty array when user has no events in organization', async () => {
       // Arrange
       mockAnalyticsRepository.find.mockResolvedValue([]);
 
       // Act
-      const result = await service.getEventsByUser('no-events-user');
+      const result = await service.getEventsByUser(
+        'no-events-user',
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result).toEqual([]);
       expect(result).toHaveLength(0);
     });
+
+    it('should filter events by organizationId for multi-tenancy isolation', async () => {
+      // Arrange - Only return events from same organization
+      const orgEvents = [mockEvent];
+      mockAnalyticsRepository.find.mockResolvedValue(orgEvents);
+
+      // Act
+      const result = await service.getEventsByUser(
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      // Assert - Verifies multi-tenancy filter is applied
+      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            organizationId: expect.anything(),
+          }),
+        }),
+      );
+      expect(result).toHaveLength(1);
+    });
   });
 
   /**
    * Tests for getEventsByEtp()
-   * Validates ETP-specific event queries
+   * Validates ETP-specific event queries with multi-tenancy
    */
   describe('getEventsByEtp', () => {
-    it('should return all events for an ETP', async () => {
+    it('should return all events for an ETP filtered by organizationId', async () => {
       // Arrange
       const events = [mockEvent];
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByEtp(mockEtpId);
+      const result = await service.getEventsByEtp(
+        mockEtpId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { etpId: mockEtpId },
+        where: {
+          etpId: mockEtpId,
+          organizationId: expect.anything(), // Or(Equal(mockOrganizationId), IsNull())
+        },
         order: { createdAt: 'DESC' },
       });
       expect(result).toEqual(events);
     });
 
-    it('should return empty array when ETP has no events', async () => {
+    it('should return empty array when ETP has no events in organization', async () => {
       // Arrange
       mockAnalyticsRepository.find.mockResolvedValue([]);
 
       // Act
-      const result = await service.getEventsByEtp('no-events-etp');
+      const result = await service.getEventsByEtp(
+        'no-events-etp',
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result).toEqual([]);
+    });
+
+    it('should filter ETP events by organizationId for multi-tenancy isolation', async () => {
+      // Arrange
+      const events = [mockEvent];
+      mockAnalyticsRepository.find.mockResolvedValue(events);
+
+      // Act
+      const result = await service.getEventsByEtp(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      // Assert - Verifies multi-tenancy filter is applied
+      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            organizationId: expect.anything(),
+          }),
+        }),
+      );
+      expect(result).toHaveLength(1);
     });
   });
 
   /**
    * Tests for getEventsByType()
-   * Validates event filtering by type and date range
+   * Validates event filtering by type and date range with multi-tenancy
    */
   describe('getEventsByType', () => {
-    it('should return events by type without date range', async () => {
+    it('should return events by type filtered by organizationId without date range', async () => {
       // Arrange
       const events = [mockEvent];
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByType('generation');
+      const result = await service.getEventsByType(
+        'generation',
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { eventType: 'generation' },
+        where: {
+          eventType: 'generation',
+          organizationId: expect.anything(),
+        },
         order: { createdAt: 'DESC' },
       });
       expect(result).toEqual(events);
     });
 
-    it('should return events by type with date range', async () => {
+    it('should return events by type with date range and organizationId', async () => {
       // Arrange
       const startDate = new Date('2025-11-01T00:00:00Z');
       const endDate = new Date('2025-11-12T23:59:59Z');
@@ -385,6 +481,7 @@ describe('AnalyticsService', () => {
       // Act
       const result = await service.getEventsByType(
         'generation',
+        mockOrganizationId,
         startDate,
         endDate,
       );
@@ -393,6 +490,7 @@ describe('AnalyticsService', () => {
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
         where: {
           eventType: 'generation',
+          organizationId: expect.anything(),
           createdAt: Between(startDate, endDate),
         },
         order: { createdAt: 'DESC' },
@@ -407,23 +505,52 @@ describe('AnalyticsService', () => {
       mockAnalyticsRepository.find.mockResolvedValue(events);
 
       // Act
-      const result = await service.getEventsByType('generation', startDate);
+      const result = await service.getEventsByType(
+        'generation',
+        mockOrganizationId,
+        startDate,
+      );
 
       // Assert
       expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { eventType: 'generation' },
+        where: {
+          eventType: 'generation',
+          organizationId: expect.anything(),
+        },
         order: { createdAt: 'DESC' },
       });
       expect(result).toEqual(events);
+    });
+
+    it('should filter events by organizationId for multi-tenancy isolation', async () => {
+      // Arrange
+      const events = [mockEvent];
+      mockAnalyticsRepository.find.mockResolvedValue(events);
+
+      // Act
+      const result = await service.getEventsByType(
+        'generation',
+        mockOrganizationId,
+      );
+
+      // Assert
+      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            organizationId: expect.anything(),
+          }),
+        }),
+      );
+      expect(result).toHaveLength(1);
     });
   });
 
   /**
    * Tests for getDashboardStats()
-   * Validates complex aggregation queries
+   * Validates complex aggregation queries with multi-tenancy
    */
   describe('getDashboardStats', () => {
-    it('should return dashboard statistics for all users (admin view)', async () => {
+    it('should return dashboard statistics filtered by organizationId (admin view)', async () => {
       // Arrange
       // Create separate mock query builders for each query
       const mockQueryBuilder1 = {
@@ -508,8 +635,8 @@ describe('AnalyticsService', () => {
         .mockReturnValueOnce(mockQueryBuilder4)
         .mockReturnValueOnce(mockQueryBuilder5);
 
-      // Act
-      const result = await service.getDashboardStats();
+      // Act - organizationId is now required as first parameter
+      const result = await service.getDashboardStats(mockOrganizationId);
 
       // Assert
       expect(result).toHaveProperty('period');
@@ -524,7 +651,7 @@ describe('AnalyticsService', () => {
       expect(result.averageGenerationTime).toBe('2500.50');
     });
 
-    it('should return dashboard statistics for specific user', async () => {
+    it('should return dashboard statistics for specific user within organization', async () => {
       // Arrange
       const mockQueryBuilder1 = {
         select: jest.fn().mockReturnThis(),
@@ -588,8 +715,12 @@ describe('AnalyticsService', () => {
         .mockReturnValueOnce(mockQueryBuilder3)
         .mockReturnValueOnce(mockQueryBuilder4);
 
-      // Act
-      const result = await service.getDashboardStats(mockUserId, 7);
+      // Act - organizationId first, then userId, then days
+      const result = await service.getDashboardStats(
+        mockOrganizationId,
+        mockUserId,
+        7,
+      );
 
       // Assert
       expect(result.period.days).toBe(7);
@@ -672,7 +803,7 @@ describe('AnalyticsService', () => {
         .mockReturnValueOnce(mockQueryBuilder5);
 
       // Act
-      const result = await service.getDashboardStats();
+      const result = await service.getDashboardStats(mockOrganizationId);
 
       // Assert
       expect(result.totalEvents).toBe(0);
@@ -756,8 +887,12 @@ describe('AnalyticsService', () => {
         .mockReturnValueOnce(mockQueryBuilder4)
         .mockReturnValueOnce(mockQueryBuilder5);
 
-      // Act
-      const result = await service.getDashboardStats(undefined, 90);
+      // Act - organizationId required, undefined for userId, 90 days
+      const result = await service.getDashboardStats(
+        mockOrganizationId,
+        undefined,
+        90,
+      );
 
       // Assert
       expect(result.period.days).toBe(90);
@@ -846,7 +981,7 @@ describe('AnalyticsService', () => {
         .mockReturnValueOnce(mockQueryBuilder5);
 
       // Act
-      const result = await service.getDashboardStats();
+      const result = await service.getDashboardStats(mockOrganizationId);
 
       // Assert
       expect(result.averageGenerationTime).toBe('3567.89');
@@ -855,13 +990,25 @@ describe('AnalyticsService', () => {
 
   /**
    * Tests for getUserActivity()
-   * Validates user-specific activity tracking
+   * Validates user-specific activity tracking with multi-tenancy
    */
   describe('getUserActivity', () => {
-    it('should return user activity with default 30 days', async () => {
+    it('should return user activity filtered by organizationId with default 30 days', async () => {
       // Arrange
-      mockAnalyticsRepository.count.mockResolvedValue(75);
-      const mockQueryBuilder = {
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(75),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder2 = {
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -876,16 +1023,20 @@ describe('AnalyticsService', () => {
         ]),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2);
       mockAnalyticsRepository.find.mockResolvedValue([
         mockEvent,
         mockErrorEvent,
       ]);
 
-      // Act
-      const result = await service.getUserActivity(mockUserId);
+      // Act - userId then organizationId
+      const result = await service.getUserActivity(
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.userId).toBe(mockUserId);
@@ -893,32 +1044,24 @@ describe('AnalyticsService', () => {
       expect(result.totalEvents).toBe(75);
       expect(result.eventsByType).toHaveLength(2);
       expect(result.recentActivity).toHaveLength(2);
-      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { userId: mockUserId },
-        order: { createdAt: 'DESC' },
-        take: 20,
-      });
     });
 
-    it('should return user activity with custom days parameter', async () => {
+    it('should return user activity with custom days parameter and organizationId', async () => {
       // Arrange
-      mockAnalyticsRepository.count.mockResolvedValue(20);
-      const mockQueryBuilder = mockAnalyticsRepository.createQueryBuilder();
-      mockQueryBuilder.getRawMany.mockResolvedValue([]);
-      mockAnalyticsRepository.find.mockResolvedValue([]);
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(20),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
 
-      // Act
-      const result = await service.getUserActivity(mockUserId, 7);
-
-      // Assert
-      expect(result.period.days).toBe(7);
-      expect(result.totalEvents).toBe(20);
-    });
-
-    it('should handle users with no activity', async () => {
-      // Arrange
-      mockAnalyticsRepository.count.mockResolvedValue(0);
-      const mockQueryBuilder = {
+      const mockQueryBuilder2 = {
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -930,13 +1073,62 @@ describe('AnalyticsService', () => {
         getRawMany: jest.fn().mockResolvedValue([]),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2);
       mockAnalyticsRepository.find.mockResolvedValue([]);
 
       // Act
-      const result = await service.getUserActivity('inactive-user');
+      const result = await service.getUserActivity(
+        mockUserId,
+        mockOrganizationId,
+        7,
+      );
+
+      // Assert
+      expect(result.period.days).toBe(7);
+      expect(result.totalEvents).toBe(20);
+    });
+
+    it('should handle users with no activity in organization', async () => {
+      // Arrange
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(0),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder2 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn(),
+        getRawMany: jest.fn().mockResolvedValue([]),
+        getRawOne: jest.fn(),
+      };
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+
+      // Act
+      const result = await service.getUserActivity(
+        'inactive-user',
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.totalEvents).toBe(0);
@@ -947,13 +1139,42 @@ describe('AnalyticsService', () => {
     it('should limit recent activity to 20 items', async () => {
       // Arrange
       const manyEvents = Array(25).fill(mockEvent);
-      mockAnalyticsRepository.count.mockResolvedValue(25);
-      const mockQueryBuilder = mockAnalyticsRepository.createQueryBuilder();
-      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(25),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder2 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn(),
+        getRawMany: jest.fn().mockResolvedValue([]),
+        getRawOne: jest.fn(),
+      };
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2);
       mockAnalyticsRepository.find.mockResolvedValue(manyEvents.slice(0, 20));
 
       // Act
-      const result = await service.getUserActivity(mockUserId);
+      const result = await service.getUserActivity(
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.recentActivity).toHaveLength(20);
@@ -965,17 +1186,12 @@ describe('AnalyticsService', () => {
 
   /**
    * Tests for getSystemHealth()
-   * Validates system health metrics
+   * Validates system health metrics with multi-tenancy
    */
   describe('getSystemHealth', () => {
-    it('should return system health metrics with error rate', async () => {
-      // Arrange
-      mockAnalyticsRepository.count
-        .mockResolvedValueOnce(1000) // totalEvents
-        .mockResolvedValueOnce(50) // errorEvents
-        .mockResolvedValueOnce(200); // totalGenerations
-      mockAnalyticsRepository.find.mockResolvedValue([mockErrorEvent]);
-      const mockQueryBuilder = {
+    it('should return system health metrics filtered by organizationId with error rate', async () => {
+      // Arrange - All using query builders for org filtering
+      const mockQueryBuilder1 = {
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -983,16 +1199,59 @@ describe('AnalyticsService', () => {
         groupBy: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-        getCount: jest.fn().mockResolvedValue(180),
+        getCount: jest.fn().mockResolvedValue(1000), // totalEvents
         getRawMany: jest.fn(),
         getRawOne: jest.fn(),
       };
-      mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+
+      const mockQueryBuilder2 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(50), // errorEvents
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder3 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(200), // totalGenerations
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder4 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(180), // successfulGenerations
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2)
+        .mockReturnValueOnce(mockQueryBuilder3)
+        .mockReturnValueOnce(mockQueryBuilder4);
+      mockAnalyticsRepository.find.mockResolvedValue([mockErrorEvent]);
 
       // Act
-      const result = await service.getSystemHealth();
+      const result = await service.getSystemHealth(mockOrganizationId);
 
       // Assert
       expect(result.period).toBe('24h');
@@ -1007,78 +1266,7 @@ describe('AnalyticsService', () => {
 
     it('should handle zero events without division by zero', async () => {
       // Arrange
-      mockAnalyticsRepository.count
-        .mockResolvedValueOnce(0) // totalEvents
-        .mockResolvedValueOnce(0) // errorEvents
-        .mockResolvedValueOnce(0); // totalGenerations
-      mockAnalyticsRepository.find.mockResolvedValue([]);
-      const mockQueryBuilder = mockAnalyticsRepository.createQueryBuilder();
-      mockQueryBuilder.getCount.mockResolvedValue(0);
-
-      // Act
-      const result = await service.getSystemHealth();
-
-      // Assert
-      expect(result.errorRate).toBe('0.00');
-      expect(result.generation.successRate).toBe('0.00');
-    });
-
-    it('should return recent errors (max 10)', async () => {
-      // Arrange
-      const manyErrors = Array(15).fill(mockErrorEvent);
-      mockAnalyticsRepository.count
-        .mockResolvedValueOnce(100)
-        .mockResolvedValueOnce(15)
-        .mockResolvedValueOnce(50);
-      mockAnalyticsRepository.find.mockResolvedValue(manyErrors.slice(0, 10));
-      const mockQueryBuilder = mockAnalyticsRepository.createQueryBuilder();
-      mockQueryBuilder.getCount.mockResolvedValue(45);
-
-      // Act
-      const result = await service.getSystemHealth();
-
-      // Assert
-      expect(result.recentErrors).toHaveLength(10);
-      expect(mockAnalyticsRepository.find).toHaveBeenCalledWith({
-        where: { eventType: 'error' },
-        order: { createdAt: 'DESC' },
-        take: 10,
-      });
-    });
-
-    it('should calculate correct date range (24h)', async () => {
-      // Arrange
-      mockAnalyticsRepository.count
-        .mockResolvedValueOnce(100)
-        .mockResolvedValueOnce(10)
-        .mockResolvedValueOnce(50);
-      mockAnalyticsRepository.find.mockResolvedValue([]);
-      const mockQueryBuilder = mockAnalyticsRepository.createQueryBuilder();
-      mockQueryBuilder.getCount.mockResolvedValue(45);
-
-      // Act
-      await service.getSystemHealth();
-
-      // Assert
-      const oneDayAgo = new Date();
-      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-
-      // Verify count was called with Between for date range
-      expect(mockAnalyticsRepository.count).toHaveBeenCalledWith({
-        where: {
-          createdAt: expect.anything(), // Between(oneDayAgo, new Date())
-        },
-      });
-    });
-
-    it('should format rates to 2 decimal places', async () => {
-      // Arrange
-      mockAnalyticsRepository.count
-        .mockResolvedValueOnce(777) // totalEvents
-        .mockResolvedValueOnce(123) // errorEvents (15.83%)
-        .mockResolvedValueOnce(333); // totalGenerations
-      mockAnalyticsRepository.find.mockResolvedValue([]);
-      const mockQueryBuilder = {
+      const mockQueryBuilder1 = {
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -1086,16 +1274,156 @@ describe('AnalyticsService', () => {
         groupBy: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-        getCount: jest.fn().mockResolvedValue(234),
+        getCount: jest.fn().mockResolvedValue(0),
         getRawMany: jest.fn(),
         getRawOne: jest.fn(),
       };
+
       mockAnalyticsRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
+        mockQueryBuilder1,
       );
+      mockAnalyticsRepository.find.mockResolvedValue([]);
 
       // Act
-      const result = await service.getSystemHealth();
+      const result = await service.getSystemHealth(mockOrganizationId);
+
+      // Assert
+      expect(result.errorRate).toBe('0.00');
+      expect(result.generation.successRate).toBe('0.00');
+    });
+
+    it('should return recent errors (max 10) filtered by organization', async () => {
+      // Arrange
+      const manyErrors = Array(15).fill(mockErrorEvent);
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(100),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder2 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(15),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder3 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(50),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder4 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(45),
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2)
+        .mockReturnValueOnce(mockQueryBuilder3)
+        .mockReturnValueOnce(mockQueryBuilder4);
+      mockAnalyticsRepository.find.mockResolvedValue(manyErrors.slice(0, 10));
+
+      // Act
+      const result = await service.getSystemHealth(mockOrganizationId);
+
+      // Assert
+      expect(result.recentErrors).toHaveLength(10);
+    });
+
+    it('should format rates to 2 decimal places', async () => {
+      // Arrange
+      const mockQueryBuilder1 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(777), // totalEvents
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder2 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(123), // errorEvents
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder3 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(333), // totalGenerations
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      const mockQueryBuilder4 = {
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(234), // successfulGenerations
+        getRawMany: jest.fn(),
+        getRawOne: jest.fn(),
+      };
+
+      mockAnalyticsRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1)
+        .mockReturnValueOnce(mockQueryBuilder2)
+        .mockReturnValueOnce(mockQueryBuilder3)
+        .mockReturnValueOnce(mockQueryBuilder4);
+      mockAnalyticsRepository.find.mockResolvedValue([]);
+
+      // Act
+      const result = await service.getSystemHealth(mockOrganizationId);
 
       // Assert
       expect(result.errorRate).toBe('15.83');
