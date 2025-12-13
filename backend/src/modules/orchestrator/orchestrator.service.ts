@@ -22,6 +22,12 @@ import {
   LLMResponse,
   ValidationSummary,
 } from './interfaces';
+import {
+  sanitizeInput,
+  wrapWithXmlDelimiters,
+  getXmlDelimiterSystemPrompt,
+  SanitizationResult,
+} from '../../common/utils/sanitizer';
 
 /**
  * Request structure for ETP section content generation.
@@ -122,67 +128,55 @@ export class OrchestratorService {
    * Sanitizes user input to prevent prompt injection attacks.
    *
    * @remarks
-   * Detects and blocks common prompt injection patterns such as:
-   * - Instructions to ignore previous prompts
-   * - Role manipulation attempts (system:, assistant:, etc.)
-   * - Attempts to extract sensitive information
-   * - Command injection patterns
+   * Applies multi-layered protection following OWASP LLM Top 10 guidelines:
+   * - Unicode normalization (NFKC) to prevent homograph attacks
+   * - Zero-width character removal to prevent obfuscation
+   * - Size limits per section type to reduce attack surface
+   * - Enhanced pattern detection for injection attempts
+   * - Detailed logging for security monitoring
    *
    * @param input - User input to sanitize
-   * @returns Sanitized input safe for LLM processing
+   * @param sectionType - Type of section (affects size limit)
+   * @returns Sanitization result with cleaned input and metadata
    * @private
    */
-  private sanitizeUserInput(input: string): string {
-    if (!input || typeof input !== 'string') {
-      return '';
+  private sanitizeUserInputEnhanced(
+    input: string,
+    sectionType: string,
+  ): SanitizationResult {
+    const result = sanitizeInput(input, sectionType);
+
+    // Enhanced logging for security monitoring
+    if (result.injectionDetected) {
+      this.logger.warn('Prompt injection attempt detected', {
+        sectionType,
+        patterns: result.detectedPatterns,
+        inputPreview:
+          input.substring(0, 100) + (input.length > 100 ? '...' : ''),
+        modifications: result.modifications,
+      });
     }
 
-    // Detect malicious patterns (case-insensitive)
-    const maliciousPatterns = [
-      /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/i,
-      /forget\s+(everything|all|previous)/i,
-      /disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/i,
-      /(system|assistant|user)\s*:/i,
-      /you\s+are\s+now\s+(a|an)\s+/i,
-      /reveal\s+(your|the)\s+(prompt|instructions|system)/i,
-      /what\s+(is|are)\s+your\s+(instructions|prompt|rules)/i,
-      /show\s+me\s+your\s+(instructions|prompt|system)/i,
-      /bypass\s+(security|safety|content\s+policy)/i,
-      /<\s*script|javascript:|onerror\s*=/i, // XSS patterns
-    ];
-
-    // Check for malicious patterns
-    const hasMaliciousPattern = maliciousPatterns.some((pattern) =>
-      pattern.test(input),
-    );
-
-    if (hasMaliciousPattern) {
-      this.logger.warn(
-        `Prompt injection attempt detected and blocked: ${input.substring(0, 100)}...`,
-      );
-      // Return sanitized version without the malicious content
-      return input
-        .replace(
-          /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi,
-          '',
-        )
-        .replace(/forget\s+(everything|all|previous)/gi, '')
-        .replace(
-          /disregard\s+(all\s+)?(previous|prior)\s+(instructions?|prompts?)/gi,
-          '',
-        )
-        .replace(/(system|assistant|user)\s*:/gi, '')
-        .replace(/you\s+are\s+now\s+(a|an)\s+/gi, '')
-        .replace(/reveal\s+(your|the)\s+(prompt|instructions|system)/gi, '')
-        .replace(/what\s+(is|are)\s+your\s+(instructions|prompt|rules)/gi, '')
-        .replace(/show\s+me\s+your\s+(instructions|prompt|system)/gi, '')
-        .replace(/bypass\s+(security|safety|content\s+policy)/gi, '')
-        .replace(/<\s*script|javascript:|onerror\s*=/gi, '')
-        .trim();
+    if (result.wasTruncated) {
+      this.logger.warn('Input truncated due to size limit', {
+        sectionType,
+        originalLength: result.originalLength,
+        truncatedTo: result.sanitized.length,
+      });
     }
 
-    // Basic sanitization: trim and normalize whitespace
-    return input.trim().replace(/\s+/g, ' ');
+    if (
+      result.wasModified &&
+      !result.injectionDetected &&
+      !result.wasTruncated
+    ) {
+      this.logger.debug('Input sanitized', {
+        sectionType,
+        modifications: result.modifications,
+      });
+    }
+
+    return result;
   }
 
   /**
@@ -214,12 +208,33 @@ export class OrchestratorService {
     userPrompt: string;
     hasEnrichmentWarning: boolean;
   }> {
-    // 0. Sanitize user input to prevent prompt injection attacks
-    const sanitizedInput = this.sanitizeUserInput(request.userInput);
-    if (sanitizedInput !== request.userInput) {
+    // 0. Sanitize user input with enhanced protection
+    const sanitizationResult = this.sanitizeUserInputEnhanced(
+      request.userInput,
+      request.sectionType,
+    );
+    const sanitizedInput = sanitizationResult.sanitized;
+
+    // Add warnings based on sanitization result
+    if (sanitizationResult.injectionDetected) {
       warnings.push(
-        'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
+        'Input foi sanitizado para prevenir prompt injection. Conteúdo suspeito foi removido.',
       );
+    }
+    if (sanitizationResult.wasTruncated) {
+      warnings.push(
+        `Input foi truncado de ${sanitizationResult.originalLength} para ${sanitizedInput.length} caracteres devido ao limite da seção.`,
+      );
+    }
+    if (
+      sanitizationResult.wasModified &&
+      !sanitizationResult.injectionDetected &&
+      !sanitizationResult.wasTruncated
+    ) {
+      // Only add a generic message for minor modifications (Unicode normalization, etc.)
+      this.logger.debug('Input underwent minor sanitization', {
+        modifications: sanitizationResult.modifications,
+      });
     }
 
     // 1. Build system prompt with all agents
@@ -289,8 +304,11 @@ export class OrchestratorService {
     // 4. Add anti-hallucination safety prompt
     const safetyPrompt =
       await this.antiHallucinationAgent.generateSafetyPrompt();
-    const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}`;
-    agentsUsed.push('anti-hallucination');
+
+    // 4.5. Add XML delimiter security instructions
+    const xmlDelimiterPrompt = getXmlDelimiterSystemPrompt();
+    const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}\n\n---\n${xmlDelimiterPrompt}`;
+    agentsUsed.push('anti-hallucination', 'xml-delimiter-protection');
 
     // 5. Add ETP context if available
     if (request.etpData) {
@@ -311,9 +329,12 @@ export class OrchestratorService {
       );
     }
 
+    // 6. Wrap user prompt with XML delimiters for structured protection
+    const wrappedUserPrompt = wrapWithXmlDelimiters(sanitizedPrompt);
+
     return {
       systemPrompt: finalSystemPrompt,
-      userPrompt: sanitizedPrompt,
+      userPrompt: wrappedUserPrompt,
       hasEnrichmentWarning,
     };
   }
