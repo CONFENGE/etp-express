@@ -1137,7 +1137,7 @@ describe('OrchestratorService', () => {
       await service['buildEnrichedPrompt'](request, agentsUsed, warnings);
 
       expect(warnings).toContain(
-        'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
+        'Input foi sanitizado para prevenir prompt injection. Conteúdo suspeito foi removido.',
       );
     });
 
