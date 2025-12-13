@@ -9,11 +9,11 @@ import { useToast } from '@/hooks/useToast';
 import { LoadingState } from '@/components/common/LoadingState';
 import { type SectionTemplate } from '@/types/etp';
 import { loadSectionTemplates } from '@/lib/section-templates';
+import { ETPEditorHeader } from '@/components/etp/ETPEditorHeader';
 import {
-  ETPEditorHeader,
   type ExportState,
   initialExportState,
-} from '@/components/etp/ETPEditorHeader';
+} from '@/components/etp/export-types';
 import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
