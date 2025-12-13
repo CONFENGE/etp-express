@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { FileText, PlusCircle, TrendingUp } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PlusCircle, TrendingUp, FileText } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -14,10 +14,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeletonRecentItems } from '@/components/common/LoadingState';
+import { EmptyState } from '@/components/common/EmptyState';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
 export function Dashboard() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { etps, isLoading, fetchETPs } = useETPs();
 
@@ -142,21 +144,17 @@ export function Dashboard() {
             {isLoading ? (
               <SkeletonRecentItems count={5} />
             ) : recentETPs.length === 0 ? (
-              <div className="text-center py-8">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">
-                  Nenhum ETP encontrado
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Comece criando seu primeiro Estudo Técnico Preliminar
-                </p>
-                <Button asChild className="mt-4">
-                  <Link to="/etps/new">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Criar ETP
-                  </Link>
-                </Button>
-              </div>
+              <EmptyState
+                type="welcome"
+                title="Bem-vindo ao ETP Express!"
+                description="Comece criando seu primeiro Estudo Técnico Preliminar e simplifique seu trabalho"
+                action={{
+                  label: 'Criar ETP',
+                  onClick: () => navigate('/etps/new'),
+                  icon: PlusCircle,
+                }}
+                size="md"
+              />
             ) : (
               <div className="space-y-4">
                 {recentETPs.map((etp) => (

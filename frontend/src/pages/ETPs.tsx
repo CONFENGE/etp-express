@@ -1,13 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  FileText,
-  PlusCircle,
-  Search,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PlusCircle, Search, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useETPs } from '@/hooks/useETPs';
 import { SkeletonETPGrid } from '@/components/common/LoadingState';
+import { EmptyState } from '@/components/common/EmptyState';
 import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { useUndoToast } from '@/hooks/useUndoToast';
@@ -36,6 +30,7 @@ import { UndoToastContainer } from '@/components/ui/undo-toast';
 import { ETP } from '@/types/etp';
 
 export function ETPs() {
+  const navigate = useNavigate();
   const { etps, isLoading, fetchETPs, deleteETP } = useETPs();
   const [search, setSearch] = useState('');
   // Store hidden ETP IDs for optimistic UI updates
@@ -128,24 +123,30 @@ export function ETPs() {
           <SkeletonETPGrid count={6} />
         ) : filteredETPs.length === 0 ? (
           <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                Nenhum ETP encontrado
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {search
-                  ? 'Tente ajustar sua busca'
-                  : 'Comece criando seu primeiro ETP'}
-              </p>
-              {!search && (
-                <Button asChild>
-                  <Link to="/etps/new">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Criar ETP
-                  </Link>
-                </Button>
-              )}
+            <CardContent>
+              <EmptyState
+                type={search ? 'search' : 'documents'}
+                title={
+                  search
+                    ? 'Nenhum resultado encontrado'
+                    : 'Nenhum ETP encontrado'
+                }
+                description={
+                  search
+                    ? 'Tente ajustar sua busca ou criar um novo ETP'
+                    : 'Comece criando seu primeiro Estudo Técnico Preliminar'
+                }
+                action={
+                  search
+                    ? undefined
+                    : {
+                        label: 'Criar ETP',
+                        onClick: () => navigate('/etps/new'),
+                        icon: PlusCircle,
+                      }
+                }
+                size="md"
+              />
             </CardContent>
           </Card>
         ) : (
