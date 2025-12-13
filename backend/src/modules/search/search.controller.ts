@@ -8,8 +8,17 @@ import {
 } from '@nestjs/swagger';
 import { SearchService } from './search.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
 
+/**
+ * SearchController - API for searching similar contracts and legal references.
+ *
+ * Multi-Tenancy (MT): All endpoints extract organizationId from JWT.
+ * Results are isolated per tenant to prevent cross-tenant data leakage.
+ *
+ * @see Issue #649 for multi-tenancy implementation
+ */
 @ApiTags('search')
 @Controller('search')
 @UseGuards(JwtAuthGuard)
@@ -20,7 +29,8 @@ export class SearchController {
   @Get('similar-contracts')
   @ApiOperation({
     summary: 'Buscar contratações similares',
-    description: 'Busca contratações similares usando Perplexity AI',
+    description:
+      'Busca contratações similares usando Perplexity AI. Resultados isolados por organização.',
   })
   @ApiQuery({
     name: 'q',
@@ -28,8 +38,11 @@ export class SearchController {
     description: 'Query de busca (objeto da contratação)',
   })
   @ApiResponse({ status: 200, description: 'Resultados da busca' })
-  async searchSimilarContracts(@Query('q') query: string) {
-    return this.searchService.searchSimilarContracts(query);
+  async searchSimilarContracts(
+    @Query('q') query: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    return this.searchService.searchSimilarContracts(query, organizationId);
   }
 
   @Get('legal-references')
@@ -48,7 +61,10 @@ export class SearchController {
   }
 
   @Get('contracts')
-  @ApiOperation({ summary: 'Listar todas as contratações salvas' })
+  @ApiOperation({
+    summary: 'Listar todas as contratações salvas',
+    description: 'Lista contratações da organização do usuário autenticado.',
+  })
   @ApiQuery({
     name: 'limit',
     required: false,
@@ -56,8 +72,14 @@ export class SearchController {
     description: 'Limite de resultados',
   })
   @ApiResponse({ status: 200, description: 'Lista de contratações' })
-  async getAllContracts(@Query('limit') limit?: number) {
-    const contracts = await this.searchService.getAllContracts(limit);
+  async getAllContracts(
+    @Query('limit') limit: number | undefined,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    const contracts = await this.searchService.getAllContracts(
+      organizationId,
+      limit,
+    );
     return {
       data: contracts,
       disclaimer: DISCLAIMER,
@@ -65,11 +87,21 @@ export class SearchController {
   }
 
   @Get('contracts/:id')
-  @ApiOperation({ summary: 'Obter contratação por ID' })
+  @ApiOperation({
+    summary: 'Obter contratação por ID',
+    description:
+      'Retorna contratação se pertencer à organização do usuário autenticado.',
+  })
   @ApiResponse({ status: 200, description: 'Dados da contratação' })
   @ApiResponse({ status: 404, description: 'Contratação não encontrada' })
-  async getContract(@Param('id') id: string) {
-    const contract = await this.searchService.getContractById(id);
+  async getContract(
+    @Param('id') id: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    const contract = await this.searchService.getContractById(
+      id,
+      organizationId,
+    );
     return {
       data: contract,
       disclaimer: DISCLAIMER,
