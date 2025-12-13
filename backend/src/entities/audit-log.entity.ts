@@ -29,6 +29,7 @@ export enum AuditAction {
   PROFILE_VIEW = 'profile_view',
   PROFILE_UPDATE = 'profile_update',
   PASSWORD_CHANGE = 'password_change',
+  PASSWORD_RESET_REQUEST = 'password_reset_request',
   DATA_ACCESS = 'data_access',
   // Multi-Tenancy B2G events (MT-04)
   TENANT_BLOCKED = 'tenant_blocked',

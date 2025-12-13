@@ -11,6 +11,9 @@ import { AuthService, AuthErrorCode } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { EmailService } from '../email/email.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { PasswordReset } from '../../entities/password-reset.entity';
 
 // Mock bcrypt
 jest.mock('bcrypt');
@@ -73,6 +76,7 @@ describe('AuthService', () => {
     logProfileAccess: jest.fn(),
     logDataAccess: jest.fn(),
     logPasswordChange: jest.fn(),
+    logPasswordResetRequest: jest.fn(),
   };
 
   const mockOrganizationsService = {
@@ -86,6 +90,18 @@ describe('AuthService', () => {
     reactivate: jest.fn(),
   };
 
+  const mockEmailService = {
+    sendPasswordResetEmail: jest.fn(),
+    sendWelcomeEmail: jest.fn(),
+  };
+
+  const mockPasswordResetRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -95,6 +111,11 @@ describe('AuthService', () => {
         { provide: ConfigService, useValue: mockConfigService },
         { provide: AuditService, useValue: mockAuditService },
         { provide: OrganizationsService, useValue: mockOrganizationsService },
+        { provide: EmailService, useValue: mockEmailService },
+        {
+          provide: getRepositoryToken(PasswordReset),
+          useValue: mockPasswordResetRepository,
+        },
       ],
     }).compile();
 

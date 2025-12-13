@@ -213,15 +213,23 @@ export function Login() {
                   )}
                 </Button>
               </div>
+              <p className="text-sm text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:950ms]">
+                <Link
+                  to="/forgot-password"
+                  className="text-primary hover:underline"
+                >
+                  Esqueceu sua senha?
+                </Link>
+              </p>
               <p className="text-sm text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1000ms]">
-                Não tem uma conta?{' '}
+                Nao tem uma conta?{' '}
                 <Link to="/register" className="text-primary underline">
                   Cadastre-se
                 </Link>
               </p>
               <p className="text-xs text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1100ms]">
                 <Link to="/privacy" className="underline">
-                  Política de Privacidade
+                  Politica de Privacidade
                 </Link>
               </p>
             </CardFooter>
