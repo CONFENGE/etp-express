@@ -9,6 +9,7 @@ describe('AnalyticsController', () => {
   let service: AnalyticsService;
 
   const mockUserId = 'user-123';
+  const mockOrganizationId = 'org-789';
   const mockEtpId = 'etp-456';
 
   const mockRequest = {
@@ -128,6 +129,7 @@ describe('AnalyticsController', () => {
       const result = await controller.trackEvent(
         eventBody,
         mockUserId,
+        mockOrganizationId,
         mockRequest,
       );
 
@@ -139,6 +141,7 @@ describe('AnalyticsController', () => {
         mockUserId,
         eventBody.etpId,
         mockRequest,
+        mockOrganizationId,
       );
       expect(service.trackEvent).toHaveBeenCalledTimes(1);
       expect(result.success).toBe(true);
@@ -154,6 +157,7 @@ describe('AnalyticsController', () => {
       const result = await controller.trackEvent(
         eventWithoutEtp,
         mockUserId,
+        mockOrganizationId,
         mockRequest,
       );
 
@@ -165,6 +169,7 @@ describe('AnalyticsController', () => {
         mockUserId,
         undefined,
         mockRequest,
+        mockOrganizationId,
       );
       expect(result.success).toBe(true);
     });
@@ -174,7 +179,12 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.trackEvent.mockResolvedValue(undefined);
 
       // Act
-      await controller.trackEvent(eventBody, mockUserId, mockRequest);
+      await controller.trackEvent(
+        eventBody,
+        mockUserId,
+        mockOrganizationId,
+        mockRequest,
+      );
 
       // Assert
       expect(service.trackEvent).toHaveBeenCalledWith(
@@ -184,6 +194,7 @@ describe('AnalyticsController', () => {
         mockUserId,
         mockEtpId,
         mockRequest,
+        mockOrganizationId,
       );
     });
   });
@@ -196,10 +207,18 @@ describe('AnalyticsController', () => {
       );
 
       // Act
-      const result = await controller.getDashboard(30, mockUserId);
+      const result = await controller.getDashboard(
+        30,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
-      expect(service.getDashboardStats).toHaveBeenCalledWith(mockUserId, 30);
+      expect(service.getDashboardStats).toHaveBeenCalledWith(
+        mockOrganizationId,
+        mockUserId,
+        30,
+      );
       expect(service.getDashboardStats).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(mockDashboardStats);
       expect(result.data.totalEvents).toBe(150);
@@ -213,10 +232,14 @@ describe('AnalyticsController', () => {
       );
 
       // Act
-      await controller.getDashboard(undefined, mockUserId);
+      await controller.getDashboard(undefined, mockUserId, mockOrganizationId);
 
       // Assert
-      expect(service.getDashboardStats).toHaveBeenCalledWith(mockUserId, 30);
+      expect(service.getDashboardStats).toHaveBeenCalledWith(
+        mockOrganizationId,
+        mockUserId,
+        30,
+      );
     });
 
     it('should include disclaimer in dashboard response', async () => {
@@ -226,7 +249,11 @@ describe('AnalyticsController', () => {
       );
 
       // Act
-      const result = await controller.getDashboard(30, mockUserId);
+      const result = await controller.getDashboard(
+        30,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
@@ -240,10 +267,18 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getUserActivity.mockResolvedValue(mockUserActivity);
 
       // Act
-      const result = await controller.getUserActivity(30, mockUserId);
+      const result = await controller.getUserActivity(
+        30,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
-      expect(service.getUserActivity).toHaveBeenCalledWith(mockUserId, 30);
+      expect(service.getUserActivity).toHaveBeenCalledWith(
+        mockUserId,
+        mockOrganizationId,
+        30,
+      );
       expect(service.getUserActivity).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(mockUserActivity);
       expect(result.data.userId).toBe(mockUserId);
@@ -255,10 +290,18 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getUserActivity.mockResolvedValue(mockUserActivity);
 
       // Act
-      await controller.getUserActivity(undefined, mockUserId);
+      await controller.getUserActivity(
+        undefined,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
-      expect(service.getUserActivity).toHaveBeenCalledWith(mockUserId, 30);
+      expect(service.getUserActivity).toHaveBeenCalledWith(
+        mockUserId,
+        mockOrganizationId,
+        30,
+      );
     });
 
     it('should include recent activity in response', async () => {
@@ -266,7 +309,11 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getUserActivity.mockResolvedValue(mockUserActivity);
 
       // Act
-      const result = await controller.getUserActivity(30, mockUserId);
+      const result = await controller.getUserActivity(
+        30,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.data.recentActivity).toBeDefined();
@@ -278,7 +325,11 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getUserActivity.mockResolvedValue(mockUserActivity);
 
       // Act
-      const result = await controller.getUserActivity(30, mockUserId);
+      const result = await controller.getUserActivity(
+        30,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
@@ -298,6 +349,7 @@ describe('AnalyticsController', () => {
       // Act
       const result = await controller.getEventsByType(
         eventType,
+        mockOrganizationId,
         startDate,
         endDate,
       );
@@ -305,6 +357,7 @@ describe('AnalyticsController', () => {
       // Assert
       expect(service.getEventsByType).toHaveBeenCalledWith(
         eventType,
+        mockOrganizationId,
         new Date(startDate),
         new Date(endDate),
       );
@@ -320,6 +373,7 @@ describe('AnalyticsController', () => {
       // Act
       const result = await controller.getEventsByType(
         eventType,
+        mockOrganizationId,
         undefined,
         undefined,
       );
@@ -327,6 +381,7 @@ describe('AnalyticsController', () => {
       // Assert
       expect(service.getEventsByType).toHaveBeenCalledWith(
         eventType,
+        mockOrganizationId,
         undefined,
         undefined,
       );
@@ -340,6 +395,7 @@ describe('AnalyticsController', () => {
       // Act
       const result = await controller.getEventsByType(
         eventType,
+        mockOrganizationId,
         startDate,
         endDate,
       );
@@ -356,10 +412,10 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getSystemHealth.mockResolvedValue(mockSystemHealth);
 
       // Act
-      const result = await controller.getSystemHealth();
+      const result = await controller.getSystemHealth(mockOrganizationId);
 
       // Assert
-      expect(service.getSystemHealth).toHaveBeenCalled();
+      expect(service.getSystemHealth).toHaveBeenCalledWith(mockOrganizationId);
       expect(service.getSystemHealth).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(mockSystemHealth);
       expect(result.data.period).toBe('24h');
@@ -372,7 +428,7 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getSystemHealth.mockResolvedValue(mockSystemHealth);
 
       // Act
-      const result = await controller.getSystemHealth();
+      const result = await controller.getSystemHealth(mockOrganizationId);
 
       // Assert
       expect(result.data.errorRate).toBeDefined();
@@ -385,7 +441,7 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getSystemHealth.mockResolvedValue(mockSystemHealth);
 
       // Act
-      const result = await controller.getSystemHealth();
+      const result = await controller.getSystemHealth(mockOrganizationId);
 
       // Assert
       expect(result.data.generation).toBeDefined();
@@ -399,7 +455,7 @@ describe('AnalyticsController', () => {
       mockAnalyticsService.getSystemHealth.mockResolvedValue(mockSystemHealth);
 
       // Act
-      const result = await controller.getSystemHealth();
+      const result = await controller.getSystemHealth(mockOrganizationId);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
