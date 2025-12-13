@@ -7,13 +7,20 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { EmailService } from '../email/email.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { PasswordReset } from '../../entities/password-reset.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { UserWithoutPassword, JwtPayload } from './types/user.types';
 
@@ -73,6 +80,9 @@ export class AuthService {
     private configService: ConfigService,
     private auditService: AuditService,
     private organizationsService: OrganizationsService,
+    private emailService: EmailService,
+    @InjectRepository(PasswordReset)
+    private passwordResetRepository: Repository<PasswordReset>,
   ) {}
 
   /**
@@ -546,6 +556,193 @@ export class AuthService {
         organizationId: user.organizationId,
         mustChangePassword: false,
       },
+    };
+  }
+
+  /**
+   * Initiates password reset flow by sending reset email.
+   *
+   * @remarks
+   * For security reasons, this method always returns success even if the email
+   * does not exist in the system. This prevents email enumeration attacks.
+   *
+   * The reset token:
+   * - Is cryptographically secure (32 bytes hex)
+   * - Expires after 1 hour
+   * - Invalidates any previous tokens for the same user
+   *
+   * @param forgotPasswordDto - Contains email address
+   * @param metadata - Request metadata for audit logging
+   * @returns Success message (same whether email exists or not)
+   *
+   * @example
+   * ```ts
+   * await authService.forgotPassword(
+   *   { email: 'user@example.com' },
+   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * );
+   * ```
+   */
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+    metadata?: { ip?: string; userAgent?: string },
+  ) {
+    const email = forgotPasswordDto.email.toLowerCase();
+    const user = await this.usersService.findByEmail(email);
+
+    // Always return success message for security (prevent email enumeration)
+    const successMessage = {
+      message:
+        'Se o email existir em nossa base, você receberá instruções para redefinir sua senha.',
+    };
+
+    if (!user) {
+      this.logger.debug(
+        `Password reset requested for non-existent email: ${email}`,
+      );
+      return successMessage;
+    }
+
+    if (!user.isActive) {
+      this.logger.debug(`Password reset requested for inactive user: ${email}`);
+      return successMessage;
+    }
+
+    // Invalidate any existing tokens for this user
+    await this.passwordResetRepository.update(
+      { userId: user.id, used: false },
+      { used: true },
+    );
+
+    // Generate secure token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Save reset token
+    const passwordReset = this.passwordResetRepository.create({
+      userId: user.id,
+      token,
+      expiresAt,
+    });
+    await this.passwordResetRepository.save(passwordReset);
+
+    // Send email
+    try {
+      await this.emailService.sendPasswordResetEmail(
+        user.email,
+        user.name,
+        token,
+      );
+      this.logger.log(`Password reset email sent to: ${email}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send password reset email to ${email}`,
+        error.stack,
+      );
+      // Don't throw - still return success message for security
+    }
+
+    // Log for audit (LGPD compliance)
+    await this.auditService.logPasswordResetRequest(user.id, {
+      ip: metadata?.ip,
+      userAgent: metadata?.userAgent,
+      email: user.email,
+    });
+
+    return successMessage;
+  }
+
+  /**
+   * Resets user password using a valid reset token.
+   *
+   * @remarks
+   * The token must be:
+   * - Valid (exists in database)
+   * - Not expired (within 1 hour of creation)
+   * - Not already used
+   *
+   * After successful reset:
+   * - Token is marked as used
+   * - Password is hashed and updated
+   * - mustChangePassword is set to false
+   * - User can login with new password immediately
+   *
+   * @param resetPasswordDto - Contains token and new password
+   * @param metadata - Request metadata for audit logging
+   * @returns Success message
+   * @throws {BadRequestException} If token is invalid or expired
+   *
+   * @example
+   * ```ts
+   * await authService.resetPassword(
+   *   { token: 'abc123...', newPassword: 'NewSecure123!' },
+   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * );
+   * ```
+   */
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+    metadata?: { ip?: string; userAgent?: string },
+  ) {
+    const { token, newPassword } = resetPasswordDto;
+
+    // Find valid, non-expired, unused token
+    const passwordReset = await this.passwordResetRepository.findOne({
+      where: {
+        token,
+        used: false,
+        expiresAt: MoreThan(new Date()),
+      },
+    });
+
+    if (!passwordReset) {
+      this.logger.warn(`Invalid or expired password reset token attempted`);
+      throw new BadRequestException(
+        'Token inválido ou expirado. Solicite uma nova redefinição de senha.',
+      );
+    }
+
+    // Get user
+    const user = await this.usersService.findOne(passwordReset.userId);
+
+    if (!user) {
+      this.logger.error(
+        `Password reset token for non-existent user: ${passwordReset.userId}`,
+      );
+      throw new BadRequestException('Token inválido.');
+    }
+
+    if (!user.isActive) {
+      this.logger.warn(
+        `Password reset attempted for inactive user: ${user.email}`,
+      );
+      throw new BadRequestException(
+        'Conta desativada. Entre em contato com o suporte.',
+      );
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear mustChangePassword flag
+    await this.usersService.updatePassword(user.id, hashedPassword);
+    await this.usersService.setMustChangePassword(user.id, false);
+
+    // Mark token as used
+    passwordReset.used = true;
+    await this.passwordResetRepository.save(passwordReset);
+
+    // Log for audit (LGPD compliance)
+    await this.auditService.logPasswordChange(user.id, {
+      ip: metadata?.ip,
+      userAgent: metadata?.userAgent,
+      wasReset: true,
+    });
+
+    this.logger.log(`Password reset completed for user: ${user.email}`);
+
+    return {
+      message: 'Senha redefinida com sucesso. Faça login com sua nova senha.',
     };
   }
 }

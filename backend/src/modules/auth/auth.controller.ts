@@ -22,6 +22,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -294,5 +296,85 @@ export class AuthController {
     // Return user data without exposing token in response body
     const { accessToken: _token, ...responseWithoutToken } = result;
     return responseWithoutToken;
+  }
+
+  /**
+   * Initiates password reset flow by sending reset email.
+   *
+   * @remarks
+   * For security, always returns success even if email doesn't exist.
+   * This prevents email enumeration attacks.
+   *
+   * Rate limited to 3 attempts per minute per IP to prevent abuse.
+   *
+   * @param forgotPasswordDto - Email address to send reset instructions
+   * @param ip - Client IP address for audit logging
+   * @param req - Request object for user agent extraction
+   * @returns Success message (same whether email exists or not)
+   */
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 attempts per 60 seconds
+  @Post('forgot-password')
+  @ApiOperation({
+    summary: 'Solicitar redefinição de senha',
+    description:
+      'Envia email com link para redefinir senha. Por segurança, sempre retorna sucesso mesmo se email não existir.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Email enviado (se existir na base)',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'Muitas tentativas. Tente novamente em 1 minuto.',
+  })
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+    @Ip() ip: string,
+    @Req() req: Request,
+  ) {
+    const userAgent = req.headers['user-agent'];
+    return this.authService.forgotPassword(forgotPasswordDto, {
+      ip,
+      userAgent,
+    });
+  }
+
+  /**
+   * Resets user password using a valid reset token.
+   *
+   * @remarks
+   * Token must be valid, not expired (1 hour), and not already used.
+   * After successful reset, user can login with new password immediately.
+   *
+   * Rate limited to 5 attempts per minute per IP to prevent brute force attacks.
+   *
+   * @param resetPasswordDto - Token and new password
+   * @param ip - Client IP address for audit logging
+   * @param req - Request object for user agent extraction
+   * @returns Success message
+   * @throws {BadRequestException} 400 - If token is invalid or expired
+   */
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per 60 seconds
+  @Post('reset-password')
+  @ApiOperation({
+    summary: 'Redefinir senha',
+    description:
+      'Redefine a senha usando o token recebido por email. Token válido por 1 hora.',
+  })
+  @ApiResponse({ status: 200, description: 'Senha redefinida com sucesso' })
+  @ApiResponse({ status: 400, description: 'Token inválido ou expirado' })
+  @ApiResponse({
+    status: 429,
+    description: 'Muitas tentativas. Tente novamente em 1 minuto.',
+  })
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Ip() ip: string,
+    @Req() req: Request,
+  ) {
+    const userAgent = req.headers['user-agent'];
+    return this.authService.resetPassword(resetPasswordDto, { ip, userAgent });
   }
 }
