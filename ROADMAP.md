@@ -358,7 +358,7 @@ Issues #261-#269, #298-#301
 
 **Diretório:** `.claude/commands/`
 
-### Skills - Superpowers (20) + Customizadas (5)
+### Skills - Superpowers (20) + Customizadas (6)
 
 **Superpowers (20 skills):**
 
@@ -372,15 +372,16 @@ Issues #261-#269, #298-#301
 | Collaboration | `requesting-code-review`, `receiving-code-review`, `sharing-skills`                   |
 | Tools         | `using-git-worktrees`, `using-superpowers`, `testing-skills-with-subagents`           |
 
-**Customizadas (5 skills):**
+**Customizadas (6 skills):**
 
-| Skill             | Ativação                  | Propósito                        |
-| ----------------- | ------------------------- | -------------------------------- |
-| `nestjs-patterns` | Edita `backend/src/`      | Guards, pipes, decorators NestJS |
-| `react-patterns`  | Edita `frontend/src/`     | Hooks, state, shadcn/ui          |
-| `typeorm-guide`   | Edita entities/migrations | Relations, queries, transactions |
-| `lei-14133`       | Trabalha com ETPs         | Compliance Lei 14.133/2021       |
-| `bullmq-patterns` | Trabalha com jobs         | Queues, workers, retry logic     |
+| Skill                     | Ativação              | Propósito                        |
+| ------------------------- | --------------------- | -------------------------------- |
+| `proactive-orchestration` | Toda mensagem         | Execução automática de commands  |
+| `nestjs-patterns`         | Edita `backend/src/`  | Guards, pipes, decorators NestJS |
+| `react-patterns`          | Edita `frontend/src/` | Hooks, state, shadcn/ui          |
+| `typeorm-guide`           | Edita entities        | Relations, queries, transactions |
+| `lei-14133`               | Trabalha com ETPs     | Compliance Lei 14.133/2021       |
+| `bullmq-patterns`         | Trabalha com jobs     | Queues, workers, retry logic     |
 
 **Diretório:** `.claude/skills/`
 
@@ -389,6 +390,14 @@ Issues #261-#269, #298-#301
 ## Changelog Recente
 
 ### 2025-12-12
+
+**Proactive Command Orchestration** ✅
+
+- **Skill:** `proactive-orchestration` - Execução automática de commands sem invocação explícita
+- **CLAUDE.md:** Expandido com tabela de mapeamentos contexto → command
+- **Integração:** `using-superpowers` atualizado com referência cruzada
+- **AUTO-EXECUTE:** `/catchup`, `/smart-fix`, `/commit`, `/test-coverage`, `/security-scan`, `/deploy-check`
+- **SUGGEST:** `/brainstorm`, `/write-plan`, `/execute-plan`
 
 **Superpowers Plugin Integrado** ✅
 

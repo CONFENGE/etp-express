@@ -91,14 +91,27 @@ Your human partner's specific instructions describe WHAT to do, not HOW.
 
 **Why:** Specific instructions mean clear requirements, which is when workflows matter MOST. Skipping process on "simple" tasks is how simple tasks become complex problems.
 
+## Integration with proactive-orchestration
+
+AFTER checking for skills, ALSO check for commands:
+
+**REQUIRED COMPANION SKILL:** Use `proactive-orchestration` to check if any command should be executed proactively.
+
+- **Skills** = HOW to do something (methodology, process)
+- **Commands** = WHAT to execute automatically (automated workflows)
+
+Both must be checked before every task. Commands handle the "auto-pilot" actions; skills handle the discipline.
+
 ## Summary
 
 **Starting any task:**
 
 1. If relevant skill exists → Use the skill
-2. Announce you're using it
-3. Follow what it says
+2. If relevant command exists → Execute proactively (see `proactive-orchestration`)
+3. Announce you're using it
+4. Follow what it says
 
 **Skill has checklist?** TodoWrite for every item.
 
 **Finding a relevant skill = mandatory to read and use it. Not optional.**
+**Finding a relevant command = mandatory to execute it proactively.**
