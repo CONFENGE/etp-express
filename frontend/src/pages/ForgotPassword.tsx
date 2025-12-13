@@ -41,7 +41,7 @@ export function ForgotPassword() {
     try {
       await apiHelpers.post('/auth/forgot-password', { email: data.email });
       setEmailSent(true);
-    } catch (error) {
+    } catch {
       // Always show success for security (prevent email enumeration)
       // Backend also returns success regardless of email existence
       setEmailSent(true);
