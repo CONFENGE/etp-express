@@ -157,4 +157,81 @@ export class EmailService {
       { expiresIn: '30d' },
     );
   }
+
+  /**
+   * Sends password reset email with reset link.
+   *
+   * @remarks
+   * Email includes:
+   * - Reset link with secure token (valid for 1 hour)
+   * - Instructions for password reset
+   * - Warning about link expiration
+   * - Support contact information
+   *
+   * This method is used by the "Forgot Password" feature.
+   * For security, the same response is returned whether or not the email exists.
+   *
+   * @param email - User email address
+   * @param userName - User display name
+   * @param resetToken - Secure reset token
+   * @returns Promise resolving when email is sent
+   */
+  async sendPasswordResetEmail(
+    email: string,
+    userName: string,
+    resetToken: string,
+  ): Promise<void> {
+    const frontendUrl = this.configService.get<string>(
+      'FRONTEND_URL',
+      'http://localhost:5173',
+    );
+    const supportEmail = this.configService.get<string>(
+      'SUPPORT_EMAIL',
+      'suporte@etpexpress.com',
+    );
+
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+    const templatePath = path.join(
+      __dirname,
+      'templates',
+      'password-reset.hbs',
+    );
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateSource);
+
+    const html = template({
+      userName,
+      resetUrl,
+      supportEmail,
+    });
+
+    const mailOptions = {
+      from: this.configService.get<string>(
+        'SMTP_FROM',
+        '"ETP Express" <noreply@etpexpress.com>',
+      ),
+      to: email,
+      subject: 'Redefinir senha - ETP Express',
+      html,
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      this.logger.log(
+        `Password reset email sent to ${email}: ${info.messageId}`,
+      );
+
+      // Log email content in development if using test transporter
+      if (info.message) {
+        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to send password reset email to ${email}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
 }
