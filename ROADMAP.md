@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 312/360 (86.7%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 7 issues | **Hardening:** 10 issues
+**Atualizado:** 2025-12-12 | **Progresso:** 313/360 (86.9%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 7 issues | **Hardening:** 9 issues
 
 ## ✅ Deploy Backend Railway - RESOLVIDO
 
@@ -33,14 +33,14 @@
 | **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                   |
 | **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                      |
 
-### 🔴 P1 - Segurança Multi-Tenancy (4 issues)
+### 🔴 P1 - Segurança Multi-Tenancy (3 issues restantes)
 
-| #    | Issue                                               | Risco                         |
-| ---- | --------------------------------------------------- | ----------------------------- |
-| #648 | AnalyticsService - Filtragem por organizationId     | Vazamento de dados analytics  |
-| #649 | SearchService - Isolamento de cache por organização | Resultados cross-tenant       |
-| #650 | SimilarContract - Adicionar campo organizationId    | Pré-requisito para isolamento |
-| #651 | Prompt Injection - Melhorar sanitização input       | Bypass via Unicode/variações  |
+| #        | Issue                                                | Risco                        |
+| -------- | ---------------------------------------------------- | ---------------------------- |
+| #648     | AnalyticsService - Filtragem por organizationId      | Vazamento de dados analytics |
+| #649     | SearchService - Isolamento de cache por organização  | Resultados cross-tenant      |
+| ~~#650~~ | ~~SimilarContract - Adicionar campo organizationId~~ | ✅ PR #661                   |
+| #651     | Prompt Injection - Melhorar sanitização input        | Bypass via Unicode/variações |
 
 ### 🟡 P2 - Observabilidade (4 issues)
 
@@ -315,7 +315,7 @@ Issues #261-#269, #298-#301
 
 - **Origem:** Análise de segurança externa validada contra codebase
 - **Já implementados:** BullMQ async, Circuit Breakers, Connection Pool, Graceful Shutdown
-- **Issues P1 (Segurança):** #648, #649, #650, #651 - Multi-tenancy e prompt injection
+- **Issues P1 (Segurança):** #648, #649, ~~#650~~ ✅, #651 - Multi-tenancy e prompt injection
 - **Issues P2 (Observabilidade):** #652, #653, #654, #655 - Logs JSON, Request ID, OpenTelemetry, Prometheus
 - **Issues P3 (Melhorias):** #656, #657 - Validação output LLM, documentação PgBouncer
 
