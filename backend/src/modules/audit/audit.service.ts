@@ -739,7 +739,7 @@ export class AuditService {
   /**
    * Log password change (LGPD Art. 37 compliance + M8: Domain Management)
    * @param userId User ID who changed password
-   * @param metadata Password change metadata (IP, userAgent, wasMandatory)
+   * @param metadata Password change metadata (IP, userAgent, wasMandatory, wasReset)
    */
   async logPasswordChange(
     userId: string,
@@ -747,8 +747,20 @@ export class AuditService {
       ip?: string;
       userAgent?: string;
       wasMandatory?: boolean;
+      wasReset?: boolean;
     },
   ): Promise<AuditLog> {
+    let description: string;
+    if (metadata.wasReset) {
+      description = 'Password reset via email link';
+    } else if (metadata.wasMandatory) {
+      description =
+        'Mandatory password change on first login (M8: Domain Management)';
+    } else {
+      description =
+        'User password change (LGPD Art. 37 - registro das operações)';
+    }
+
     const log = this.auditLogRepository.create({
       action: AuditAction.PASSWORD_CHANGE,
       entityType: 'User',
@@ -756,13 +768,54 @@ export class AuditService {
       userId,
       ipAddress: metadata.ip,
       userAgent: metadata.userAgent,
-      description: metadata.wasMandatory
-        ? 'Mandatory password change on first login (M8: Domain Management)'
-        : 'User password change (LGPD Art. 37 - registro das operações)',
+      description,
       changes: {
         metadata: {
           changedAt: new Date().toISOString(),
           wasMandatory: metadata.wasMandatory || false,
+          wasReset: metadata.wasReset || false,
+        },
+      },
+    });
+
+    const savedLog = await this.auditLogRepository.save(log);
+
+    let logMessage = `Password change logged: User ${userId}`;
+    if (metadata.wasReset) {
+      logMessage += ' (via reset link)';
+    } else if (metadata.wasMandatory) {
+      logMessage += ' (mandatory first login)';
+    }
+    this.logger.log(logMessage);
+
+    return savedLog;
+  }
+
+  /**
+   * Log password reset request (LGPD Art. 37 compliance)
+   * @param userId User ID who requested password reset
+   * @param metadata Request metadata (IP, userAgent, email)
+   */
+  async logPasswordResetRequest(
+    userId: string,
+    metadata: {
+      ip?: string;
+      userAgent?: string;
+      email?: string;
+    },
+  ): Promise<AuditLog> {
+    const log = this.auditLogRepository.create({
+      action: AuditAction.PASSWORD_RESET_REQUEST,
+      entityType: 'User',
+      entityId: userId,
+      userId,
+      ipAddress: metadata.ip,
+      userAgent: metadata.userAgent,
+      description: 'Password reset requested via email',
+      changes: {
+        metadata: {
+          email: metadata.email,
+          requestedAt: new Date().toISOString(),
         },
       },
     });
@@ -770,7 +823,7 @@ export class AuditService {
     const savedLog = await this.auditLogRepository.save(log);
 
     this.logger.log(
-      `Password change logged: User ${userId}${metadata.wasMandatory ? ' (mandatory first login)' : ''}`,
+      `Password reset request logged: User ${userId} (${metadata.email || 'N/A'})`,
     );
 
     return savedLog;
