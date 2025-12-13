@@ -9,6 +9,7 @@
 ## Instructions
 
 You are acting as a **Scrum Master** specialized in:
+
 - Breaking down complex features into implementable stories
 - Creating hyper-contextualized implementation guidance
 - Managing development pipeline (max 3 concurrent PRs)
@@ -53,7 +54,8 @@ You are acting as a **Scrum Master** specialized in:
    - **Key considerations** for each step
 
    Example:
-   ```
+
+   ````
    #### Step 2.1: Create Cleanup Function
    **File:** `frontend/src/hooks/useAIPolling.ts:15-30`
 
@@ -69,12 +71,13 @@ You are acting as a **Scrum Master** specialized in:
        clearInterval(intervalId);
      };
    }, [dependency]);
-   ```
+   ````
 
    **Key considerations:**
    - AbortController: Cancel in-flight requests
    - clearInterval: Stop polling timer
    - Dependencies: Include all state/props used
+
    ```
 
    ### Test Cases
@@ -88,6 +91,8 @@ You are acting as a **Scrum Master** specialized in:
    - Include compliance checks (WCAG, OWASP, LGPD if applicable)
    - Include deployment validation
 
+   ```
+
 3. **Validate Story Completeness**
    - [ ] All files explicitly listed
    - [ ] All steps have code examples
@@ -100,6 +105,7 @@ You are acting as a **Scrum Master** specialized in:
    - Commit: `docs: add implementation story for issue #XXX`
 
 5. **Comment on Issue**
+
    ```bash
    gh issue comment <NUMBER> --body "📝 Implementation Story created: [View Story](../../../docs/stories/issue-<NUMBER>-story.md)
 
@@ -120,11 +126,13 @@ You are acting as a **Scrum Master** specialized in:
 ## Example Usage
 
 **User input:**
+
 ```
 /story-etp 611
 ```
 
 **Your actions:**
+
 1. Read PRD: `docs/prds/issue-611-prd.md`
 2. Read Tech Spec: `docs/tech-specs/issue-611-tech-spec.md`
 3. Create story with:
@@ -151,18 +159,22 @@ You are acting as a **Scrum Master** specialized in:
 A good story must have:
 
 ### Specificity
+
 - ✅ **Good:** "Modify `frontend/src/hooks/useAIPolling.ts:15-30` to add cleanup"
 - ❌ **Bad:** "Add cleanup to the polling hook"
 
 ### Code Examples
+
 - ✅ **Good:** Actual TypeScript code snippets
 - ❌ **Bad:** `// TODO: Implement logic`
 
 ### Test Coverage
+
 - ✅ **Good:** "Unit test: Should abort polling on unmount (useAIPolling.test.ts:45)"
 - ❌ **Bad:** "Write tests"
 
 ### Measurable DoD
+
 - ✅ **Good:** "Coverage ≥78% backend, ≥76% frontend, zero TypeScript errors"
 - ❌ **Bad:** "Good test coverage, no errors"
 
@@ -195,6 +207,7 @@ Use Fibonacci sequence: 1, 2, 3, 5, 8, 13, 21 hours
 - **21h+:** Should be decomposed into smaller stories
 
 For ETP Express P0 issues:
+
 - #611 (Polling cleanup): ~2h
 - #612 (Export progress): ~5h
 - #579 (Org validation): ~3h
@@ -204,6 +217,7 @@ For ETP Express P0 issues:
 ## Quality Gates
 
 Before finalizing story:
+
 - [ ] PRD and Tech Spec read completely
 - [ ] All implementation steps are concrete (no TODOs)
 - [ ] Code examples are TypeScript (not pseudocode)

@@ -3,8 +3,9 @@ You are conducting a comprehensive audit to synchronize ROADMAP.md with GitHub r
 # CONTEXT
 
 This is a fast-paced project with ~5 issues closed per day (25/week). Small deviations accumulate quickly:
+
 - PRs split into multiple parts create extra issues
-- Parent issues get decomposed into atomic sub-issues  
+- Parent issues get decomposed into atomic sub-issues
 - Orphan modules discovered during development
 - Security/bugfix issues added mid-flight
 
@@ -15,20 +16,23 @@ Your job is to detect ALL discrepancies and provide actionable reconciliation st
 ## 1. ISSUE COUNT RECONCILIATION
 
 **Compare:**
+
 - Total issues in ROADMAP.md header (search for "Total: X issues")
 - Actual GitHub issues count: `gh issue list --state all --limit 1000 | wc -l`
 
 **Detect:**
+
 - Phantom references (issues mentioned in ROADMAP but don't exist in GitHub)
 - Orphan issues (exist in GitHub but not documented in ROADMAP)
 - Closed issues not marked as completed in ROADMAP
 
 **Output format:**
+
 ```
 📊 ISSUE COUNT AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ROADMAP.md:        98 issues
-GitHub (actual):   103 issues  
+GitHub (actual):   103 issues
 Drift:             +5 issues (5.1%)
 Status:            🟡 WARNING (>5% drift)
 
@@ -45,17 +49,20 @@ BREAKDOWN:
 **For each milestone (M1-M6):**
 
 **Compare:**
+
 - ROADMAP.md stated progress (e.g., "M2: 10/10 (100%)")
 - GitHub milestone actual state: `gh api repos/:owner/:repo/milestones`
 - Issue references in ROADMAP vs. actual issue states
 
 **Detect:**
+
 - Closed issues still marked as open in ROADMAP
-- Open issues marked as closed in ROADMAP  
+- Open issues marked as closed in ROADMAP
 - Issues in wrong milestone
 - Progress percentage mismatches
 
 **Output format:**
+
 ```
 📈 MILESTONE PROGRESS AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -82,17 +89,20 @@ CRITICAL ISSUES:
 **For EVERY issue referenced in ROADMAP:**
 
 **Check:**
+
 1. Does issue exist in GitHub? `gh issue view #N`
 2. Is state correct? (open/closed match ROADMAP checkboxes)
 3. Is milestone assignment correct?
 4. Are labels consistent?
 
 **Detect:**
+
 - [ ] marked but issue is closed → outdated ROADMAP
 - [x] marked but issue is open → premature closure documented
 - Issue moved to different milestone → ROADMAP outdated
 
 **Output format:**
+
 ```
 🔍 ISSUE STATE AUDIT (Detailed)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -111,7 +121,7 @@ M2 (100% claimed, INVALID):
 
 M3 (64% claimed, SHOULD BE 71%):
 ⚠️  #85 - Marked [ ] in ROADMAP, but CLOSED in GitHub
-   └─ Issue title: "OWASP Top 10 Security Audit"  
+   └─ Issue title: "OWASP Top 10 Security Audit"
    └─ Status: closed (closed 5 days ago)
    └─ PR: #133 merged
    └─ Action: Mark [x] in ROADMAP, update M3 progress to 71%
@@ -133,11 +143,13 @@ M5 (6% claimed, SHOULD BE 12%):
 ## 4. PHANTOM REFERENCE DETECTION
 
 **Scan ROADMAP.md for:**
+
 - Issue numbers that don't exist: `#49-#76` (you already found this)
 - References to issues in descriptions/notes that are invalid
 - Broken cross-references between issues
 
 **Output format:**
+
 ```
 👻 PHANTOM REFERENCES AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -150,7 +162,7 @@ Line 145: "Issues #49-#76 (14 issues)"
 ├─ Impact: ROADMAP claims 98 issues, actual is 84 (-14)
 └─ Action: Replace "#49-#76" with "#50-#63" everywhere
 
-Line 423: "See issue #200 for details"  
+Line 423: "See issue #200 for details"
 ├─ Reality: Issue #200 does not exist (max issue: #147)
 ├─ Action: Find correct issue number or remove reference
 
@@ -170,8 +182,9 @@ Line 891: "Blocked by #999"
 **Cross-reference:** Every issue number against ROADMAP.md content
 
 **Output format:**
+
 ```
-🆕 ORPHAN ISSUES AUDIT  
+🆕 ORPHAN ISSUES AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
@@ -184,7 +197,7 @@ FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
 └─ Action: Add to M3 section in ROADMAP, update issue count
 
 #146 - Security dependencies update (jspdf + dompurify)
-├─ State: closed  
+├─ State: closed
 ├─ Milestone: M3
 ├─ Created: 2 days ago
 ├─ Related: #145 (follow-up PR)
@@ -198,7 +211,7 @@ FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
 
 #148 - User-based Rate Limiting implementation
 ├─ State: closed
-├─ Milestone: M3  
+├─ Milestone: M3
 ├─ Created: 4 days ago
 └─ Action: Add to M3 section in ROADMAP
 
@@ -214,6 +227,7 @@ FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
 ## 6. VELOCITY & ETA VALIDATION
 
 **Calculate:**
+
 - Issues closed last 7 days
 - Average velocity (issues/day)
 - Projected completion dates for milestones
@@ -221,6 +235,7 @@ FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
 **Compare against:** ROADMAP stated ETAs
 
 **Output format:**
+
 ```
 ⏱️  VELOCITY & ETA AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -262,12 +277,14 @@ M4 (15% → 100%):
 ## 7. DOCUMENTATION CONSISTENCY CHECK
 
 **Verify:**
+
 - Progress bars in ROADMAP match calculated percentages
 - "X issues closed" text matches actual closed count
 - Milestone descriptions reference correct issue ranges
 - Update dates are current
 
 **Output format:**
+
 ```
 📝 DOCUMENTATION CONSISTENCY AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -305,12 +322,14 @@ MILESTONE SUMMARIES:
 ## 8. FINAL RECONCILIATION REPORT
 
 **Summarize ALL findings and provide:**
+
 1. Executive summary (3-5 bullets)
 2. Critical actions (must fix immediately)
 3. Optional improvements (nice to have)
 4. Updated metrics snapshot
 
 **Output format:**
+
 ```
 ═══════════════════════════════════════════════════
 🎯 ROADMAP AUDIT - EXECUTIVE SUMMARY
@@ -398,11 +417,12 @@ After applying P0 actions, drift will reduce to: ~2.1% ✅
 ## Step 1: Data Collection (5min)
 
 Run these commands and save outputs:
+
 ```bash
 # Get all GitHub issues
 gh issue list --state all --limit 1000 --json number,title,state,milestone,closedAt,labels > github-issues.json
 
-# Get milestone data  
+# Get milestone data
 gh api repos/:owner/:repo/milestones --jq '.[] | {title, open_issues, closed_issues}' > github-milestones.json
 
 # Parse ROADMAP.md
@@ -412,12 +432,14 @@ cat ROADMAP.md > roadmap-snapshot.md
 ## Step 2: Cross-Reference Analysis (10min)
 
 For each issue mentioned in ROADMAP.md:
+
 1. Verify existence in GitHub
 2. Compare states (open/closed)
 3. Check milestone assignment
 4. Note discrepancies
 
 For each issue in GitHub:
+
 1. Check if documented in ROADMAP
 2. Flag if orphan
 
@@ -428,6 +450,7 @@ Produce the comprehensive report following the 8-section format above.
 ## Step 4: Provide Actionable Updates (10min)
 
 Generate specific line-by-line changes needed for ROADMAP.md:
+
 ```diff
 Example output:
 
@@ -449,6 +472,7 @@ Line 891:
 ```
 
 **ℹ️ CI/CD Optimization Note:**
+
 - Commits que modificam **apenas ROADMAP.md** NÃO acionam workflows de CI/CD
 - Path filters estão ativos: apenas código TypeScript/TSX aciona lint/tests
 - See `.github/SLASH_COMMANDS.md` for details
@@ -467,6 +491,7 @@ Line 891:
 # SUCCESS CRITERIA
 
 After applying your recommendations, the user should have:
+
 - ✅ <5% drift between ROADMAP and GitHub
 - ✅ All issue states accurately reflected
 - ✅ All orphan issues documented

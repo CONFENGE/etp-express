@@ -18,7 +18,9 @@ Automatically selects, analyzes, corrects, and merges pull requests with absolut
 When invoked without arguments, `/review-pr` automatically selects the most important PR using:
 
 ### Eligibility Filter
+
 Only PRs that meet ALL of these are considered:
+
 - ✅ CI status: ALL checks passing (100% green) - if CI exists
 - ✅ Not marked as draft
 - ✅ No "wip" or "do-not-merge" labels
@@ -26,6 +28,7 @@ Only PRs that meet ALL of these are considered:
 - ✅ State: OPEN
 
 ### Scoring Formula
+
 ```
 Total Score = Priority_Weight + Age_Weight + Size_Weight + Label_Weight
 
@@ -58,11 +61,13 @@ Where:
 ```
 
 ### Tiebreaker
+
 If multiple PRs have the same score, select the **oldest PR** (First In, First Out).
 
 ## 8 Categories of Validation Criteria
 
 ### Category 1: Code Quality Gates (12.5%)
+
 - ✅ CI Pipeline: 100% green (if implemented)
 - ✅ Test Coverage: ≥70% backend, ≥60% frontend (M1 target)
 - ✅ Linting Errors: 0 (ESLint)
@@ -71,6 +76,7 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Import Sorting: Clean, no circular dependencies
 
 ### Category 2: Testing Requirements (12.5%)
+
 - ✅ Unit Tests: ≥70% coverage backend, ≥60% frontend, 100% passing
 - ✅ Integration Tests: 100% passing (if applicable)
 - ✅ E2E Tests: 100% passing (if implemented)
@@ -78,6 +84,7 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Smoke Tests: Critical paths validated
 
 ### Category 3: Security Standards (12.5%)
+
 - ✅ Vulnerability Scan: 0 HIGH/CRITICAL (`npm audit`)
 - ✅ Dependency Audit: 0 CVEs
 - ✅ Hardcoded Secrets: 0 secrets detected
@@ -86,6 +93,7 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Input Sanitization: class-validator applied
 
 ### Category 4: Documentation Standards (12.5%)
+
 - ✅ Function Docstrings: 100% public functions (JSDoc/TSDoc)
 - ✅ Class Docstrings: 100% public classes
 - ✅ CHANGELOG Updated: If feature/fix PR
@@ -93,12 +101,14 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Type Hints: 100% TypeScript (no `any` in new code)
 
 ### Category 5: Architecture & Design (12.5%)
+
 - ✅ Cyclomatic Complexity: ≤10 per function
 - ✅ Code Duplication: <5%
 - ✅ Function Length: ≤50 lines
 - ✅ Maintainability Index: Grade A/B
 
 ### Category 6: Git Standards (12.5%)
+
 - ✅ Commit Messages: 100% semantic (Conventional Commits)
 - ✅ PR Description: All 5 sections present (Context, Changes, Testing, Risks, Closes)
 - ✅ Linked Issue: "Closes #xxx" present
@@ -106,6 +116,7 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Breaking Changes: Documented if present
 
 ### Category 7: Review Standards (12.5%)
+
 - ✅ PR Size: ≤400 lines
 - ✅ Single Responsibility: 1 primary purpose
 - ✅ Backwards Compatible: No breaking changes (unless documented)
@@ -113,6 +124,7 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 - ✅ Not Draft: Ready for production
 
 ### Category 8: Operational Excellence (12.5%)
+
 - ✅ Health Checks: Implemented for new endpoints
 - ✅ Monitoring: Logs for critical paths (NestJS Logger)
 - ✅ Error Handling: Try-catch with proper logging
@@ -148,6 +160,7 @@ If score = 100% but minor formatting issues exist, these are auto-fixed:
 After successful merge, execute 3-layer validation:
 
 ### Layer 1: Health Checks (1-2 min)
+
 ```bash
 # Backend
 cd backend && npm run build && npm test
@@ -155,6 +168,7 @@ cd backend && npm run build && npm test
 # Frontend
 cd frontend && npm run build && npm test
 ```
+
 - Build succeeds
 - Tests pass
 - No runtime errors
@@ -162,10 +176,12 @@ cd frontend && npm run build && npm test
 **Failure Action**: Immediate rollback
 
 ### Layer 2: Smoke Tests (3-5 min)
+
 ```bash
 # Run critical path tests
 npm run test:e2e -- --grep "critical"
 ```
+
 - Critical user journeys
 - Authentication flows
 - Core API endpoints
@@ -174,9 +190,11 @@ npm run test:e2e -- --grep "critical"
 **Failure Action**: Immediate rollback + reopen PR with `post-merge-failure` label
 
 ### Layer 3: CI Pipeline (5-10 min)
+
 ```bash
 gh run watch --interval 10
 ```
+
 - Full test suite on `master`
 - Build artifacts
 - Integration tests
@@ -213,6 +231,7 @@ echo "❌ Rollback executed for PR #$PR_NUMBER" >&2
 When user invokes `/review-pr`:
 
 ### Step 1: Select PR (Deterministic Algorithm)
+
 ```bash
 # Fetch all open PRs
 gh pr list --state open --json number,title,labels,createdAt,additions,deletions --limit 100 > /tmp/prs.json
@@ -231,6 +250,7 @@ echo "   Reason: <selection_rationale>"
 ```
 
 ### Step 2: Validate Criteria (100% Required)
+
 ```bash
 # Manual validation (until automated scripts exist)
 echo "📋 Validating PR #$PR_NUMBER against 8 criteria categories..."
@@ -256,6 +276,7 @@ echo "✅ PR #$PR_NUMBER achieved perfect score (100/100)"
 ```
 
 ### Step 3: Apply Auto-Fixes (If Needed)
+
 ```bash
 # Check if auto-fixable issues exist
 if [ -n "$(git status --porcelain)" ]; then
@@ -294,6 +315,7 @@ fi
 ```
 
 ### Step 4: Merge PR
+
 ```bash
 echo "🚀 Merging PR #$PR_NUMBER to master..."
 
@@ -306,6 +328,7 @@ echo "✅ Merged successfully (commit: $MERGE_SHA)"
 ```
 
 ### Step 5: Post-Merge Validation
+
 ```bash
 echo "🛡️ Running post-merge validation (3 layers)..."
 
@@ -347,6 +370,7 @@ echo "✅ Post-merge validation passed - merge is safe"
 ```
 
 ### Step 6: Finalize
+
 ```bash
 echo ""
 echo "================================================================================"
@@ -376,5 +400,7 @@ fi
 ## Usage Examples
 
 ### Example 1: Auto-select and merge best PR
+
 ```
 User: /review-pr
+```

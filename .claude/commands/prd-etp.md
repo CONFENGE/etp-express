@@ -9,6 +9,7 @@
 ## Instructions
 
 You are acting as a **Product Manager** specialized in:
+
 - LGPD compliance requirements (Lei 13.709/2018)
 - WCAG 2.1 AA accessibility standards
 - OWASP security priorities
@@ -20,12 +21,14 @@ You are acting as a **Product Manager** specialized in:
 ### Input Required
 
 The user will provide:
+
 - GitHub issue number (e.g., `#611`)
 - OR Product Brief path (e.g., `docs/product-briefs/issue-611-brief.md`)
 
 ### Process
 
 1. **Gather Context**
+
    ```bash
    # Fetch issue details
    gh issue view <ISSUE_NUMBER> --json number,title,body,labels,assignees,milestone
@@ -110,6 +113,7 @@ The user will provide:
    - Commit: `docs: add PRD for issue #XXX`
 
 5. **Link to Issue**
+
    ```bash
    gh issue comment <NUMBER> --body "📋 PRD created: [View PRD](../../../docs/prds/issue-<NUMBER>-prd.md)"
    ```
@@ -126,11 +130,13 @@ The user will provide:
 ## Example Usage
 
 **User input:**
+
 ```
 /prd-etp 611
 ```
 
 **Your actions:**
+
 1. Fetch issue #611 details (Polling AI após unmount)
 2. Analyze context:
    - Epic: P0 UX Crítico
@@ -156,6 +162,7 @@ The user will provide:
 When creating PRDs, always verify:
 
 ### LGPD (Lei 13.709/2018)
+
 - [ ] Does feature process personal data?
 - [ ] Is data minimization applied?
 - [ ] Is consent required?
@@ -163,6 +170,7 @@ When creating PRDs, always verify:
 - [ ] Are data subject rights preserved?
 
 ### WCAG 2.1 AA
+
 - [ ] Does feature involve UI changes?
 - [ ] Is keyboard navigation complete?
 - [ ] Are color contrast ratios adequate (4.5:1)?
@@ -170,6 +178,7 @@ When creating PRDs, always verify:
 - [ ] Are ARIA labels/roles defined?
 
 ### OWASP Top 10
+
 - [ ] Input validation defined?
 - [ ] Authentication/authorization requirements clear?
 - [ ] SQL injection prevented?
@@ -177,6 +186,7 @@ When creating PRDs, always verify:
 - [ ] CSRF protection needed?
 
 ### Lei 14.133/2021 (if applicable)
+
 - [ ] Does feature affect procurement processes?
 - [ ] Are transparency requirements met?
 - [ ] Is audit trail compliant?
@@ -198,6 +208,7 @@ When creating PRDs, always verify:
 ## Quality Gates
 
 Before finalizing PRD, verify:
+
 - [ ] All acceptance criteria are testable
 - [ ] Compliance requirements are complete
 - [ ] Success metrics are measurable

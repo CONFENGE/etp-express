@@ -307,9 +307,75 @@ Issues #261-#269, #298-#301
 
 ---
 
+## Infraestrutura Claude Code
+
+**Atualizado:** 2025-12-12
+
+### MCP Servers Configurados
+
+| Server              | Propósito                                       | Status         |
+| ------------------- | ----------------------------------------------- | -------------- |
+| Memory              | Knowledge graph - padrões, compliance, prompts  | ✅ Configurado |
+| Sequential Thinking | Raciocínio estruturado para problemas complexos | ✅ Configurado |
+| GitHub              | Issues, PRs, code search, workflows             | ✅ Configurado |
+| PostgreSQL          | Queries em linguagem natural                    | ✅ Configurado |
+| Context7            | Documentação de bibliotecas                     | ✅ Configurado |
+| Exa                 | Web search e code context                       | ✅ Configurado |
+| Playwright          | Browser automation                              | ✅ Configurado |
+| Railway             | Deploy, logs, variables                         | ✅ Configurado |
+
+**Arquivo:** `.mcp.json`
+
+### Comandos Slash Disponíveis (16 total)
+
+**Core Workflow (7 existentes):**
+
+- `/pick-next-issue` - Seleção determinística de issues
+- `/review-pr` - Review e merge automatizado
+- `/audit-roadmap` - Detecção de drift no ROADMAP
+- `/prd-etp` - Geração de PRD
+- `/product-brief-etp` - Brief executivo
+- `/story-etp` - Template de user story
+- `/tech-spec-etp` - Especificação técnica
+
+**Novos Comandos (9):**
+
+- `/catchup` - Restaurar contexto após /clear
+- `/smart-fix` - Debug inteligente adaptativo
+- `/commit` - Commit semântico automatizado
+- `/test-coverage` - Análise de cobertura com recomendações
+- `/security-scan` - Scan OWASP + npm audit + secrets
+- `/lint-fix` - Auto-fix ESLint + Prettier
+- `/db-migrate` - Gerenciamento TypeORM migrations
+- `/deploy-check` - Validação pré-deploy Railway
+- `/health-check` - Status dos serviços em produção
+
+**Diretório:** `.claude/commands/`
+
+### Skills Customizadas (5)
+
+| Skill             | Ativação                  | Propósito                        |
+| ----------------- | ------------------------- | -------------------------------- |
+| `nestjs-patterns` | Edita `backend/src/`      | Guards, pipes, decorators NestJS |
+| `react-patterns`  | Edita `frontend/src/`     | Hooks, state, shadcn/ui          |
+| `typeorm-guide`   | Edita entities/migrations | Relations, queries, transactions |
+| `lei-14133`       | Trabalha com ETPs         | Compliance Lei 14.133/2021       |
+| `bullmq-patterns` | Trabalha com jobs         | Queues, workers, retry logic     |
+
+**Diretório:** `.claude/skills/`
+
+---
+
 ## Changelog Recente
 
 ### 2025-12-12
+
+**Infraestrutura Claude Code - Arsenal Completo** ✅
+
+- **MCP Servers:** 9 servidores configurados (Memory, GitHub, PostgreSQL, Railway, etc.)
+- **Novos Comandos:** 9 slash commands para workflow (catchup, smart-fix, commit, etc.)
+- **Skills:** 5 skills customizadas (nestjs, react, typeorm, lei-14133, bullmq)
+- **Arquivo:** `.mcp.json` criado na raiz do projeto
 
 **Hardening & Refactoring - 10 Issues Criadas** ✅
 

@@ -9,6 +9,7 @@
 ## Instructions
 
 You are acting as a **System Architect** specialized in:
+
 - NestJS + TypeORM patterns and best practices
 - React + Tailwind + shadcn/ui architecture
 - Railway deployment strategies
@@ -115,6 +116,7 @@ You are acting as a **System Architect** specialized in:
    - Commit: `docs: add tech spec for issue #XXX`
 
 6. **Comment on Issue**
+
    ```bash
    gh issue comment <NUMBER> --body "🏗️ Tech Spec created: [View Spec](../../../docs/tech-specs/issue-<NUMBER>-tech-spec.md)"
    ```
@@ -130,11 +132,13 @@ You are acting as a **System Architect** specialized in:
 ## Example Usage
 
 **User input:**
+
 ```
 /tech-spec-etp 611
 ```
 
 **Your actions:**
+
 1. Read PRD (if exists) or fetch issue #611
 2. Analyze technical requirements:
    - Frontend hook refactor (useAIPolling)
@@ -167,6 +171,7 @@ You are acting as a **System Architect** specialized in:
 When creating tech specs, follow existing patterns:
 
 ### Backend (NestJS)
+
 - **Controllers:** Handle HTTP, thin layer
 - **Services:** Business logic, orchestrate repositories
 - **Repositories:** Database access, TypeORM queries
@@ -175,6 +180,7 @@ When creating tech specs, follow existing patterns:
 - **Filters:** Global exception handling
 
 ### Frontend (React)
+
 - **Components:** Functional components, hooks-based
 - **Stores:** Zustand for global state
 - **Hooks:** Custom hooks for reusable logic
@@ -182,11 +188,13 @@ When creating tech specs, follow existing patterns:
 - **Styling:** Tailwind utility classes + shadcn/ui components
 
 ### Database (PostgreSQL)
+
 - **Migrations:** TypeORM migrations, idempotent
 - **Indexes:** For performance-critical queries
 - **Multi-tenancy:** organizationId column-based isolation
 
 ### Infrastructure (Railway)
+
 - **Deployment:** Blue-green via Railway
 - **Health checks:** `/api/health` endpoint
 - **Monitoring:** Sentry for errors
@@ -197,6 +205,7 @@ When creating tech specs, follow existing patterns:
 ## Quality Gates
 
 Before finalizing Tech Spec:
+
 - [ ] Implementation plan is file-by-file specific
 - [ ] All code examples are TypeScript (not pseudocode)
 - [ ] Testing strategy covers unit + integration + E2E
