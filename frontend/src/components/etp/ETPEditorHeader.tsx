@@ -15,23 +15,10 @@ import {
   X,
   Loader2,
 } from 'lucide-react';
+import type { ExportState } from './export-types';
 
-/**
- * Export operation state with progress tracking (#612)
- */
-export interface ExportState {
-  isExporting: boolean;
-  progress: number;
-  stage: 'idle' | 'preparing' | 'generating' | 'downloading';
-  format: 'pdf' | 'docx' | null;
-}
-
-export const initialExportState: ExportState = {
-  isExporting: false,
-  progress: 0,
-  stage: 'idle',
-  format: null,
-};
+// Re-export type for backwards compatibility (type-only exports are allowed)
+export type { ExportState } from './export-types';
 
 interface ETPEditorHeaderProps {
   etpTitle: string;
