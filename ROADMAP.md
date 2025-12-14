@@ -228,7 +228,7 @@ M9: Export/Import       █████████░░░░░░░░░�
 | ~~#555~~ | ~~Extração texto PDF~~ | ✅ PR #669 | - |
 | ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | - |
 | ~~#557~~ | ~~Geração relatório melhorias~~ | ✅ PR #684 | - |
-| #558 | Conversão documento para ETP | P1 | 2 |
+| ~~#558~~ | ~~Conversão documento para ETP~~ | ✅ PR #685 | - |
 | #559 | Endpoints análise e conversão | P1 | 2 |
 | #560 | Frontend página Import & Analysis | P1 | 3 |
 | #561 | Frontend exibição resultados | P1 | 3 |
@@ -260,7 +260,7 @@ M9: Export/Import       █████████░░░░░░░░░�
 | -------- | ------------------------------- | ---------- | ---- |
 | ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | -    |
 | ~~#557~~ | ~~Report Generation~~           | ✅ PR #684 | -    |
-| #558     | Doc Conversion                  | P1         | 4h   |
+| ~~#558~~ | ~~Doc Conversion~~              | ✅ PR #685 | -    |
 | #559     | Endpoints análise               | P1         | 3h   |
 
 ### Sprint 3 (Semana 3) - M9 Frontend + Performance | 21h
