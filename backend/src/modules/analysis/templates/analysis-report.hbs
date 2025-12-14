@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Análise ETP</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #1f2937;
+      background: #ffffff;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #1e40af;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 24pt;
+      color: #1e40af;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #6b7280;
+      font-size: 10pt;
+    }
+
+    /* Score Badge */
+    .score-badge {
+      display: inline-block;
+      padding: 15px 30px;
+      border-radius: 10px;
+      color: white;
+      font-size: 28pt;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .score-badge.approved {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    .score-badge.warning {
+      background: linear-gradient(135deg, #eab308, #ca8a04);
+    }
+
+    .score-badge.rejected {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .verdict {
+      font-size: 14pt;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .verdict.approved {
+      color: #16a34a;
+    }
+
+    .verdict.warning {
+      color: #ca8a04;
+    }
+
+    .verdict.rejected {
+      color: #dc2626;
+    }
+
+    /* Executive Summary */
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 14pt;
+      color: #1e40af;
+      border-bottom: 2px solid #1e40af;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .summary-card .label {
+      font-size: 9pt;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .summary-card .value {
+      font-size: 18pt;
+      font-weight: bold;
+    }
+
+    .summary-card .value.critical {
+      color: #dc2626;
+    }
+
+    .summary-card .value.important {
+      color: #ca8a04;
+    }
+
+    .summary-card .value.suggestion {
+      color: #16a34a;
+    }
+
+    /* Document Info */
+    .doc-info {
+      display: flex;
+      gap: 30px;
+      font-size: 10pt;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    /* Dimensions */
+    .dimension {
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+
+    .dimension-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f3f4f6;
+      padding: 10px 15px;
+      border-radius: 8px 8px 0 0;
+      border-left: 4px solid;
+    }
+
+    .dimension-header.passed {
+      border-left-color: #22c55e;
+    }
+
+    .dimension-header.failed {
+      border-left-color: #ef4444;
+    }
+
+    .dimension-title {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #1f2937;
+    }
+
+    .dimension-score {
+      font-size: 14pt;
+      font-weight: bold;
+    }
+
+    .dimension-score.high {
+      color: #16a34a;
+    }
+
+    .dimension-score.medium {
+      color: #ca8a04;
+    }
+
+    .dimension-score.low {
+      color: #dc2626;
+    }
+
+    .dimension-body {
+      border: 1px solid #e5e7eb;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 15px;
+    }
+
+    .no-issues {
+      color: #16a34a;
+      font-style: italic;
+    }
+
+    /* Issues */
+    .issue {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+
+    .issue.critical {
+      background: #fef2f2;
+      border-left-color: #dc2626;
+    }
+
+    .issue.important {
+      background: #fefce8;
+      border-left-color: #ca8a04;
+    }
+
+    .issue.suggestion {
+      background: #f0fdf4;
+      border-left-color: #16a34a;
+    }
+
+    .issue-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .issue-icon {
+      font-size: 14pt;
+    }
+
+    .issue-title {
+      font-weight: bold;
+      font-size: 10pt;
+    }
+
+    .issue-description {
+      font-size: 9pt;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+
+    .issue-recommendation {
+      font-size: 9pt;
+      color: #1e40af;
+      background: rgba(30, 64, 175, 0.05);
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .issue-recommendation::before {
+      content: "Recomendação: ";
+      font-weight: bold;
+    }
+
+    /* Prioritized Recommendations */
+    .recommendations-list {
+      counter-reset: rec-counter;
+    }
+
+    .recommendation-item {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      page-break-inside: avoid;
+    }
+
+    .recommendation-number {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12pt;
+      color: white;
+    }
+
+    .recommendation-number.critical {
+      background: #dc2626;
+    }
+
+    .recommendation-number.important {
+      background: #ca8a04;
+    }
+
+    .recommendation-number.suggestion {
+      background: #16a34a;
+    }
+
+    .recommendation-content {
+      flex: 1;
+    }
+
+    .recommendation-content .severity-badge {
+      display: inline-block;
+      font-size: 8pt;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: white;
+      margin-bottom: 5px;
+    }
+
+    .severity-badge.critical {
+      background: #dc2626;
+    }
+
+    .severity-badge.important {
+      background: #ca8a04;
+    }
+
+    .severity-badge.suggestion {
+      background: #16a34a;
+    }
+
+    .recommendation-content .title {
+      font-weight: bold;
+      font-size: 10pt;
+      margin-bottom: 3px;
+    }
+
+    .recommendation-content .text {
+      font-size: 9pt;
+      color: #4b5563;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 9pt;
+      color: #9ca3af;
+    }
+
+    .footer .disclaimer {
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    /* Page break */
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Relatório de Análise ETP</h1>
+      <p>Análise de Qualidade de Estudo Técnico Preliminar</p>
+
+      <!-- Score Badge -->
+      <div class="score-badge {{#if (eq executiveSummary.verdict 'Aprovado')}}approved{{else if (eq executiveSummary.verdict 'Aprovado com ressalvas')}}warning{{else}}rejected{{/if}}">
+        {{executiveSummary.overallScore}}%
+      </div>
+
+      <div class="verdict {{#if (eq executiveSummary.verdict 'Aprovado')}}approved{{else if (eq executiveSummary.verdict 'Aprovado com ressalvas')}}warning{{else}}rejected{{/if}}">
+        {{executiveSummary.verdict}}
+      </div>
+    </div>
+
+    <!-- Document Info -->
+    <div class="doc-info">
+      <span>Palavras: {{documentInfo.wordCount}}</span>
+      <span>Seções: {{documentInfo.sectionCount}}</span>
+      <span>Gerado em: {{formatDateTime generatedAt}}</span>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section">
+      <h2 class="section-title">Resumo Executivo</h2>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="label">Total de Issues</div>
+          <div class="value">{{executiveSummary.totalIssues}}</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Críticos</div>
+          <div class="value critical">{{executiveSummary.criticalCount}}</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Importantes</div>
+          <div class="value important">{{executiveSummary.importantCount}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="section">
+      <h2 class="section-title">Análise por Dimensão</h2>
+
+      {{#each dimensions}}
+      <div class="dimension">
+        <div class="dimension-header {{#if passed}}passed{{else}}failed{{/if}}">
+          <span class="dimension-title">{{label}}</span>
+          <span class="dimension-score {{#if (eq (scoreColor score) '#22c55e')}}high{{else if (eq (scoreColor score) '#eab308')}}medium{{else}}low{{/if}}">
+            {{score}}%
+          </span>
+        </div>
+        <div class="dimension-body">
+          {{#if issues.length}}
+            {{#each issues}}
+            <div class="issue {{severity}}">
+              <div class="issue-header">
+                <span class="issue-icon">{{severityIcon severity}}</span>
+                <span class="issue-title">{{title}}</span>
+              </div>
+              <div class="issue-description">{{description}}</div>
+              <div class="issue-recommendation">{{recommendation}}</div>
+            </div>
+            {{/each}}
+          {{else}}
+            <p class="no-issues">Nenhum problema identificado nesta dimensão.</p>
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- Prioritized Recommendations -->
+    {{#if prioritizedRecommendations.length}}
+    <div class="section page-break">
+      <h2 class="section-title">Recomendações Priorizadas</h2>
+
+      <div class="recommendations-list">
+        {{#each prioritizedRecommendations}}
+        <div class="recommendation-item">
+          <div class="recommendation-number {{severity}}">{{@index}}</div>
+          <div class="recommendation-content">
+            <span class="severity-badge {{severity}}">{{severityLabel severity}}</span>
+            <div class="title">{{title}}</div>
+            <div class="text">{{recommendation}}</div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>ETP Express - Sistema de Geração de Estudos Técnicos Preliminares</p>
+      <p class="disclaimer">
+        Este relatório foi gerado automaticamente e deve ser validado por um especialista antes de uso oficial.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
