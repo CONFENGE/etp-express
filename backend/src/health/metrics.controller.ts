@@ -1,4 +1,4 @@
-import { Controller, Get, Header } from '@nestjs/common';
+import { Controller, Get, Header, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MetricsService } from './metrics.service';
 
@@ -19,7 +19,7 @@ import { MetricsService } from './metrics.service';
  * - Custom dashboards podem usar /api/metrics/json
  */
 @ApiTags('health')
-@Controller('metrics')
+@Controller({ path: 'metrics', version: VERSION_NEUTRAL })
 export class MetricsController {
   constructor(private readonly metricsService: MetricsService) {}
 
