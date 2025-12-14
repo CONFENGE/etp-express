@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 | **Progresso:** 325/360 (90.3%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
+**Atualizado:** 2025-12-14 | **Progresso:** 326/360 (90.6%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
 
 ## 🛡️ Hardening & Refactoring (6 issues restantes)
 
@@ -54,7 +54,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         █████████████████░░░ 70/82   85%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
-M9: Export/Import       ████░░░░░░░░░░░░░░░░  4/16   25%
+M9: Export/Import       █████░░░░░░░░░░░░░░░  5/16   31%
 ```
 
 ---
@@ -222,9 +222,9 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 **Feature 2: Import & Analysis** (~27h)
 | # | Issue | Dep. |
 | ---- | ---------------------------------- | ---------- |
-| #553 | Setup infraestrutura upload | - |
-| #554 | Extração texto DOCX | #553 |
-| #555 | Extração texto PDF | #553 |
+| ~~#553~~ | ~~Setup infraestrutura upload~~ | ✅ PR #667 |
+| #554 | Extração texto DOCX | ~~#553~~ |
+| #555 | Extração texto PDF | ~~#553~~ |
 | #556 | ETPAnalysisService (agents) | #554, #555 |
 | #557 | Geração relatório melhorias | #556 |
 | #558 | Conversão documento para ETP | #556 |
@@ -247,9 +247,9 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Métrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 360   |
-| Issues Abertas    | 35    |
-| Issues Fechadas   | 325   |
-| Progresso         | 90.3% |
+| Issues Abertas    | 34    |
+| Issues Fechadas   | 326   |
+| Progresso         | 90.6% |
 | Velocidade        | 7/dia |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
