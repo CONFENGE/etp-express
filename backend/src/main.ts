@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import {
-  Logger,
   ValidationPipe,
   VersioningType,
   INestApplication,
@@ -14,10 +13,13 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { initSentry } from './config/sentry.config';
-import { getLogLevels } from './config/logger.config';
+import { createWinstonLogger } from './config/logger.config';
 import { DISCLAIMER } from './common/constants/messages';
+import { WinstonLoggerService } from './common/services/winston-logger.service';
 
-const logger = new Logger('Bootstrap');
+// Create Winston logger for bootstrap (#652)
+const logger = new WinstonLoggerService();
+logger.setContext('Bootstrap');
 
 // Track application instance for graceful shutdown
 let app: INestApplication;
@@ -26,13 +28,15 @@ async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
   initSentry();
 
-  const logLevels = getLogLevels();
+  // Use Winston logger for structured JSON logging (#652)
+  const winstonLogger = createWinstonLogger();
   app = await NestFactory.create(AppModule, {
-    logger: logLevels,
+    logger: winstonLogger,
   });
 
+  const isProduction = process.env.NODE_ENV === 'production';
   logger.log(
-    `📋 Log levels configured: ${logLevels.join(', ')} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
+    `📋 Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
   );
 
   // Enable graceful shutdown hooks (#607)
