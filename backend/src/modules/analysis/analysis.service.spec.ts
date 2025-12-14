@@ -1,38 +1,72 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ETPAnalysisService } from './analysis.service';
 import { LegalAgent } from '../orchestrator/agents/legal.agent';
 import { ClarezaAgent } from '../orchestrator/agents/clareza.agent';
 import { FundamentacaoAgent } from '../orchestrator/agents/fundamentacao.agent';
 import { ExtractedDocument } from '../document-extraction/interfaces/extracted-document.interface';
-import { AnalysisResult } from './interfaces/analysis-result.interface';
+import {
+  AnalysisResult,
+  ConvertedEtpResult,
+} from './interfaces/analysis-result.interface';
+import { Etp, EtpStatus } from '../../entities/etp.entity';
+import {
+  EtpSection,
+  SectionType,
+  SectionStatus,
+} from '../../entities/etp-section.entity';
 
 describe('ETPAnalysisService', () => {
   let service: ETPAnalysisService;
   let legalAgent: LegalAgent;
   let clarezaAgent: ClarezaAgent;
   let fundamentacaoAgent: FundamentacaoAgent;
+  let etpRepository: Repository<Etp>;
+  let sectionRepository: Repository<EtpSection>;
+
+  const mockEtpRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+  };
+
+  const mockSectionRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+  };
 
   const createMockDocument = (
     fullText: string,
     wordCount = 100,
+    sections: ExtractedDocument['sections'] = [],
   ): ExtractedDocument => ({
     fullText,
-    sections: [],
+    sections,
     metadata: {
       wordCount,
       pageCount: 1,
-      sectionCount: 1,
+      sectionCount: sections.length || 1,
       characterCount: fullText.length,
     },
   });
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ETPAnalysisService,
         LegalAgent,
         ClarezaAgent,
         FundamentacaoAgent,
+        {
+          provide: getRepositoryToken(Etp),
+          useValue: mockEtpRepository,
+        },
+        {
+          provide: getRepositoryToken(EtpSection),
+          useValue: mockSectionRepository,
+        },
       ],
     }).compile();
 
@@ -40,6 +74,10 @@ describe('ETPAnalysisService', () => {
     legalAgent = module.get<LegalAgent>(LegalAgent);
     clarezaAgent = module.get<ClarezaAgent>(ClarezaAgent);
     fundamentacaoAgent = module.get<FundamentacaoAgent>(FundamentacaoAgent);
+    etpRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
+    sectionRepository = module.get<Repository<EtpSection>>(
+      getRepositoryToken(EtpSection),
+    );
   });
 
   it('should be defined', () => {
@@ -319,6 +357,326 @@ describe('ETPAnalysisService', () => {
       // If running sequentially: ~150ms
       // If running in parallel: ~50-60ms
       expect(elapsedTime).toBeLessThan(100);
+    });
+  });
+
+  describe('convertToEtp()', () => {
+    const userId = 'user-123';
+    const organizationId = 'org-456';
+
+    beforeEach(() => {
+      // Reset mocks for each test
+      mockEtpRepository.create.mockImplementation((data) => ({
+        id: 'etp-123',
+        ...data,
+      }));
+      mockEtpRepository.save.mockImplementation((etp) =>
+        Promise.resolve({ ...etp, id: etp.id || 'etp-123' }),
+      );
+      mockSectionRepository.create.mockImplementation((data) => ({
+        id: `section-${Math.random().toString(36).substr(2, 9)}`,
+        ...data,
+      }));
+      mockSectionRepository.save.mockImplementation((section) =>
+        Promise.resolve(section),
+      );
+    });
+
+    it('should create ETP in DRAFT status', async () => {
+      // Arrange
+      const document = createMockDocument('Test content for ETP', 100, [
+        { title: 'Justificativa', content: 'A contratação é necessária...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(mockEtpRepository.create).toHaveBeenCalled();
+      const createCall = mockEtpRepository.create.mock.calls[0][0];
+      expect(createCall.status).toBe(EtpStatus.DRAFT);
+      expect(createCall.createdById).toBe(userId);
+      expect(createCall.organizationId).toBe(organizationId);
+    });
+
+    it('should map known section types correctly', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 200, [
+        { title: 'Justificativa', content: 'A contratação é necessária...' },
+        { title: 'Requisitos', content: 'Os requisitos técnicos são...' },
+        {
+          title: 'Análise de Riscos',
+          content: 'Os riscos identificados são...',
+        },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(result.mappedSectionsCount).toBe(3);
+      expect(result.customSectionsCount).toBe(0);
+
+      // Verify section types were mapped correctly
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].type).toBe(SectionType.JUSTIFICATIVA);
+      expect(createCalls[1][0].type).toBe(SectionType.REQUISITOS);
+      expect(createCalls[2][0].type).toBe(SectionType.ANALISE_RISCOS);
+    });
+
+    it('should create CUSTOM sections for unknown titles', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Seção Personalizada', content: 'Conteúdo personalizado...' },
+        { title: 'Outra Seção Especial', content: 'Mais conteúdo...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(result.mappedSectionsCount).toBe(0);
+      expect(result.customSectionsCount).toBe(2);
+
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].type).toBe(SectionType.CUSTOM);
+      expect(createCalls[1][0].type).toBe(SectionType.CUSTOM);
+    });
+
+    it('should mark sections as imported in metadata', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Justificativa', content: 'Conteúdo da justificativa...' },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCall = mockSectionRepository.create.mock.calls[0][0];
+      expect(createCall.metadata.importedFromDocument).toBe(true);
+      expect(createCall.metadata.importedAt).toBeDefined();
+    });
+
+    it('should set sections to GENERATED status', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Requisitos', content: 'Os requisitos são...' },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCall = mockSectionRepository.create.mock.calls[0][0];
+      expect(createCall.status).toBe(SectionStatus.GENERATED);
+    });
+
+    it('should skip empty sections', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Justificativa', content: 'Conteúdo válido...' },
+        { title: 'Seção Vazia', content: '' },
+        { title: 'Seção Só Espaços', content: '   ' },
+        { title: 'Requisitos', content: 'Mais conteúdo válido...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(result.sections.length).toBe(2);
+      expect(mockSectionRepository.create).toHaveBeenCalledTimes(2);
+    });
+
+    it('should assign sequential order to sections', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Primeira', content: 'Conteúdo 1...' },
+        { title: 'Segunda', content: 'Conteúdo 2...' },
+        { title: 'Terceira', content: 'Conteúdo 3...' },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].order).toBe(1);
+      expect(createCalls[1][0].order).toBe(2);
+      expect(createCalls[2][0].order).toBe(3);
+    });
+
+    it('should mark required sections correctly', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Introdução', content: 'Conteúdo...' }, // required
+        { title: 'Justificativa', content: 'Conteúdo...' }, // required
+        { title: 'Análise de Riscos', content: 'Conteúdo...' }, // NOT required
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].isRequired).toBe(true); // introducao
+      expect(createCalls[1][0].isRequired).toBe(true); // justificativa
+      expect(createCalls[2][0].isRequired).toBe(false); // analise_riscos
+    });
+
+    it('should extract title from first level-1 heading', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'ETP - Contratação de Serviços', content: '...', level: 1 },
+        { title: 'Justificativa', content: '...', level: 2 },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCall = mockEtpRepository.create.mock.calls[0][0];
+      expect(createCall.title).toBe('ETP - Contratação de Serviços');
+    });
+
+    it('should extract objeto from introduction section', async () => {
+      // Arrange
+      const introContent =
+        'Este ETP tem como objeto a contratação de serviços de desenvolvimento de software.';
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Introdução', content: introContent },
+        { title: 'Justificativa', content: 'A contratação é necessária...' },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCall = mockEtpRepository.create.mock.calls[0][0];
+      expect(createCall.objeto).toBe(introContent);
+    });
+
+    it('should include import metadata in ETP', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 150, [
+        { title: 'Seção', content: 'Conteúdo...' },
+      ]);
+      document.metadata.pageCount = 3;
+      document.metadata.sectionCount = 5;
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      const createCall = mockEtpRepository.create.mock.calls[0][0];
+      expect(createCall.metadata.importedAt).toBeDefined();
+      expect(createCall.metadata.originalWordCount).toBe(150);
+      expect(createCall.metadata.originalPageCount).toBe(3);
+      expect(createCall.metadata.originalSectionCount).toBe(5);
+    });
+
+    it('should return ConvertedEtpResult with correct structure', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Justificativa', content: 'Conteúdo...' },
+        { title: 'Seção Custom', content: 'Outro conteúdo...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(result.etp).toBeDefined();
+      expect(result.sections).toHaveLength(2);
+      expect(result.mappedSectionsCount).toBe(1);
+      expect(result.customSectionsCount).toBe(1);
+      expect(result.convertedAt).toBeInstanceOf(Date);
+    });
+
+    it('should handle document with untitled sections', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { content: 'Conteúdo sem título 1...' },
+        { content: 'Conteúdo sem título 2...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].title).toContain('Seção 1');
+      expect(createCalls[1][0].title).toContain('Seção 2');
+      expect(result.customSectionsCount).toBe(2);
+    });
+
+    it('should handle partial title matches', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        {
+          title: 'Justificativa da Contratação de TI',
+          content: 'Conteúdo...',
+        },
+        { title: 'Requisitos Técnicos Especiais', content: 'Conteúdo...' },
+      ]);
+
+      // Act
+      const result: ConvertedEtpResult = await service.convertToEtp(
+        document,
+        userId,
+        organizationId,
+      );
+
+      // Assert
+      expect(result.mappedSectionsCount).toBe(2);
+      const createCalls = mockSectionRepository.create.mock.calls;
+      expect(createCalls[0][0].type).toBe(SectionType.JUSTIFICATIVA);
+      expect(createCalls[1][0].type).toBe(SectionType.REQUISITOS);
+    });
+
+    it('should update ETP completion percentage after creating sections', async () => {
+      // Arrange
+      const document = createMockDocument('Test content', 100, [
+        { title: 'Justificativa', content: 'Conteúdo...' },
+        { title: 'Requisitos', content: 'Conteúdo...' },
+      ]);
+
+      // Act
+      await service.convertToEtp(document, userId, organizationId);
+
+      // Assert
+      // ETP should be saved twice: once on creation, once to update completion
+      expect(mockEtpRepository.save).toHaveBeenCalledTimes(2);
+      const lastSaveCall =
+        mockEtpRepository.save.mock.calls[
+          mockEtpRepository.save.mock.calls.length - 1
+        ][0];
+      expect(lastSaveCall.completionPercentage).toBe(100); // All sections are GENERATED
     });
   });
 });

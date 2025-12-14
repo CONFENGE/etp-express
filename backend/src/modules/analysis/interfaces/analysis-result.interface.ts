@@ -1,6 +1,8 @@
 import { LegalValidationResult } from '../../orchestrator/agents/legal.agent';
 import { ClarezaResult } from '../../orchestrator/agents/clareza.agent';
 import { FundamentacaoResult } from '../../orchestrator/agents/fundamentacao.agent';
+import { Etp } from '../../../entities/etp.entity';
+import { EtpSection } from '../../../entities/etp-section.entity';
 
 /**
  * Summary of an individual analysis dimension.
@@ -68,4 +70,28 @@ export interface AnalysisResult {
     wordCount: number;
     sectionCount: number;
   };
+}
+
+/**
+ * Result of converting an imported document to an ETP.
+ *
+ * @remarks
+ * This interface is the output of ETPAnalysisService.convertToEtp().
+ * It contains the newly created ETP entity with its sections populated
+ * from the imported document content.
+ *
+ * Sections are marked as imported (not AI-generated) in their metadata
+ * to distinguish them from AI-generated content.
+ */
+export interface ConvertedEtpResult {
+  /** The newly created ETP entity */
+  etp: Etp;
+  /** Sections created from the imported document */
+  sections: EtpSection[];
+  /** Number of sections successfully mapped to known types */
+  mappedSectionsCount: number;
+  /** Number of sections created as CUSTOM type (unmapped) */
+  customSectionsCount: number;
+  /** Timestamp of conversion */
+  convertedAt: Date;
 }

@@ -1,17 +1,25 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ETPAnalysisService } from './analysis.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
+import { Etp } from '../../entities/etp.entity';
+import { EtpSection } from '../../entities/etp-section.entity';
 
 /**
- * Module for ETP document analysis.
+ * Module for ETP document analysis and conversion.
  *
  * @remarks
- * This module provides the ETPAnalysisService which coordinates analysis
- * of imported documents using multiple quality agents:
+ * This module provides the ETPAnalysisService which coordinates:
  *
- * - LegalAgent - Legal compliance validation
- * - ClarezaAgent - Clarity and readability analysis
- * - FundamentacaoAgent - Argumentation quality assessment
+ * 1. **Document Analysis** - Quality assessment using multiple agents:
+ *    - LegalAgent - Legal compliance validation
+ *    - ClarezaAgent - Clarity and readability analysis
+ *    - FundamentacaoAgent - Argumentation quality assessment
+ *
+ * 2. **Document Conversion** - Convert imported documents to ETP entities:
+ *    - Creates ETP in DRAFT status
+ *    - Maps extracted sections to SectionTypes
+ *    - Preserves original content with metadata
  *
  * The agents are imported from OrchestratorModule and executed in parallel
  * for optimal performance.
@@ -27,16 +35,15 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * })
  * export class SomeModule {}
  *
- * // In a service
- * constructor(private analysisService: ETPAnalysisService) {}
+ * // Analyzing a document
+ * const result = await analysisService.analyzeDocument(doc);
  *
- * async analyzeUploadedDoc(doc: ExtractedDocument) {
- *   return this.analysisService.analyzeDocument(doc);
- * }
+ * // Converting to ETP
+ * const converted = await analysisService.convertToEtp(doc, userId, orgId);
  * ```
  */
 @Module({
-  imports: [OrchestratorModule],
+  imports: [TypeOrmModule.forFeature([Etp, EtpSection]), OrchestratorModule],
   providers: [ETPAnalysisService],
   exports: [ETPAnalysisService],
 })
