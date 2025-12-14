@@ -1,2 +1,12 @@
+# Frontend-specific nixpacks configuration
+# Optimized for Node.js 20 LTS
+# Last updated: 2025-12-14 - Issue #670
+
+[phases.setup]
+nixPkgs = ['nodejs_20']
+
 [start]
-cmd = "npm run start --workspace=etp-express-frontend"
+cmd = "npm run start"
+
+[variables]
+NODE_ENV = "production"
