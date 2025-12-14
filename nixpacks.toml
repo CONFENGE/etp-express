@@ -1,5 +1,9 @@
-# Nixpacks configuration for Railway backend deployment
-# Optimized to use system Chromium instead of bundled Puppeteer Chromium
+# Nixpacks configuration for Railway monorepo deployment
+# Optimized for Node.js 20 LTS with system Chromium for Puppeteer
+# Last updated: 2025-12-14 - Issue #670
+
+[phases.setup]
+nixPkgs = ['nodejs_20', 'chromium']
 
 [phases.install]
 cmds = ["npm ci"]
@@ -13,3 +17,4 @@ cmd = "npm run migration:run:prod --workspace=etp-express-backend && npm run sta
 [variables]
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
 PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+NODE_ENV = "production"
