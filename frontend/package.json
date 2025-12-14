@@ -47,6 +47,10 @@
   "overrides": {
     "dompurify": "^3.3.0"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@testing-library/dom": "^9.3.4",
