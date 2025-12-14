@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 | **Progresso:** 326/360 (90.6%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
+**Atualizado:** 2025-12-14 | **Progresso:** 327/360 (90.8%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
 
 ## 🛡️ Hardening & Refactoring (6 issues restantes)
 
@@ -54,7 +54,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         █████████████████░░░ 70/82   85%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
-M9: Export/Import       █████░░░░░░░░░░░░░░░  5/16   31%
+M9: Export/Import       ██████░░░░░░░░░░░░░░  6/16   38%
 ```
 
 ---
@@ -208,7 +208,7 @@ M9: Export/Import       █████░░░░░░░░░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis (12 open, 4 done)
+### M9 - Export DOCX & Import Analysis (10 open, 6 done)
 
 **Feature 1: Export DOCX** ✅ COMPLETE
 | # | Issue | Status |
@@ -223,7 +223,7 @@ M9: Export/Import       █████░░░░░░░░░░░░░�
 | # | Issue | Dep. |
 | ---- | ---------------------------------- | ---------- |
 | ~~#553~~ | ~~Setup infraestrutura upload~~ | ✅ PR #667 |
-| #554 | Extração texto DOCX | ~~#553~~ |
+| ~~#554~~ | ~~Extração texto DOCX~~ | ✅ PR #668 |
 | #555 | Extração texto PDF | ~~#553~~ |
 | #556 | ETPAnalysisService (agents) | #554, #555 |
 | #557 | Geração relatório melhorias | #556 |
