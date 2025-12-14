@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 | **Progresso:** 329/368 (89.4%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
+**Atualizado:** 2025-12-14 18:00 | **Progresso:** 300/329 (91.2%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
-## 🛡️ Hardening & Refactoring (6 issues restantes)
+## 🛡️ Hardening & Refactoring (4 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
 **Validação:** Codebase auditado, 2 pontos já implementados, 10 issues criadas
@@ -27,12 +27,12 @@
 | ~~#650~~ | ~~SimilarContract - Adicionar campo organizationId~~    | ✅ PR #661           |
 | ~~#651~~ | ~~Prompt Injection - Melhorar sanitização input~~       | ✅ PR #666           |
 
-### 🔴 P1 - Observabilidade Crítica (2 issues - Sprint 1)
+### ✅ P1 - Observabilidade Crítica (0 issues - COMPLETO)
 
-| #    | Issue                       | Impacto                    | Sprint |
-| ---- | --------------------------- | -------------------------- | ------ |
-| #652 | Logging estruturado em JSON | Análise de logs facilitada | 1      |
-| #653 | Request ID/Trace ID em logs | Correlação de requisições  | 1      |
+| #        | Issue                           | Impacto    | Sprint |
+| -------- | ------------------------------- | ---------- | ------ |
+| ~~#652~~ | ~~Logging estruturado em JSON~~ | ✅ PR #680 | 1      |
+| ~~#653~~ | ~~Request ID/Trace ID em logs~~ | ✅ PR #681 | 1      |
 
 ### 🟢 v1.1 - Observabilidade Avançada (2 issues - Postergado)
 
@@ -61,7 +61,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         █████████████████░░░ 78/90   87%  (+8 novas)
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       ███████░░░░░░░░░░░░░  7/16   44%  🔴 P1 SPRINT
+M9: Export/Import       ████████░░░░░░░░░░░░  8/16   50%  🔴 P1 SPRINT
 ```
 
 ---
@@ -207,7 +207,7 @@ M9: Export/Import       ███████░░░░░░░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (9 open, 7 done)
+### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (8 open, 8 done)
 
 > **Decisão:** Feature-complete no MVP. Sprint intensivo nas semanas 1-4.
 
@@ -226,7 +226,7 @@ M9: Export/Import       ███████░░░░░░░░░░░�
 | ~~#553~~ | ~~Setup infraestrutura upload~~ | ✅ PR #667 | - |
 | ~~#554~~ | ~~Extração texto DOCX~~ | ✅ PR #668 | - |
 | ~~#555~~ | ~~Extração texto PDF~~ | ✅ PR #669 | - |
-| #556 | ETPAnalysisService (agents) | P1 | 2 |
+| ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | - |
 | #557 | Geração relatório melhorias | P1 | 2 |
 | #558 | Conversão documento para ETP | P1 | 2 |
 | #559 | Endpoints análise e conversão | P1 | 2 |
@@ -242,26 +242,26 @@ M9: Export/Import       ███████░░░░░░░░░░░�
 **Origem:** REUNIAO_EXTRAORDINARIA_CTOS.md (14/12/2024)
 **Total:** 83h (~21h/semana)
 
-### Sprint 1 (Semana 1) - Infra Crítica + Observabilidade | 15h (-4h ✅#555)
+### Sprint 1 (Semana 1) - Infra Crítica + Observabilidade | ✅ 86% COMPLETE
 
 | #        | Issue                         | Prior.     | Est. |
 | -------- | ----------------------------- | ---------- | ---- |
-| #670     | Corrigir nixpacks.toml        | P0         | 1h   |
-| #671     | Scale backend 2+ réplicas     | P0         | 2h   |
-| #652     | JSON logging estruturado      | P1         | 4h   |
-| #653     | Request/Trace IDs             | P1         | 4h   |
+| ~~#670~~ | ~~Corrigir nixpacks.toml~~    | ✅ CLOSED  | -    |
+| ~~#671~~ | ~~Scale backend 2+ réplicas~~ | ✅ CLOSED  | -    |
+| ~~#652~~ | ~~JSON logging estruturado~~  | ✅ PR #680 | -    |
+| ~~#653~~ | ~~Request/Trace IDs~~         | ✅ PR #681 | -    |
 | #672     | Documentar restore PostgreSQL | P1         | 2h   |
-| #673     | Alertas Railway               | P1         | 2h   |
+| ~~#673~~ | ~~Alertas Railway~~           | ✅ PR #683 | -    |
 | ~~#555~~ | ~~PDF Extraction~~            | ✅ PR #669 | -    |
 
-### Sprint 2 (Semana 2) - M9 Backend | 19h
+### Sprint 2 (Semana 2) - M9 Backend | 11h remaining
 
-| #    | Issue                       | Prior. | Est. |
-| ---- | --------------------------- | ------ | ---- |
-| #556 | ETPAnalysisService (agents) | P1     | 8h   |
-| #557 | Report Generation           | P1     | 4h   |
-| #558 | Doc Conversion              | P1     | 4h   |
-| #559 | Endpoints análise           | P1     | 3h   |
+| #        | Issue                           | Prior.     | Est. |
+| -------- | ------------------------------- | ---------- | ---- |
+| ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | -    |
+| #557     | Report Generation               | P1         | 4h   |
+| #558     | Doc Conversion                  | P1         | 4h   |
+| #559     | Endpoints análise               | P1         | 3h   |
 
 ### Sprint 3 (Semana 3) - M9 Frontend + Performance | 21h
 
@@ -309,20 +309,20 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 ## Métricas
 
-| Métrica           | Valor |
-| ----------------- | ----- |
-| Issues Totais     | 368   |
-| Issues Abertas    | 41    |
-| Issues Fechadas   | 327   |
-| Progresso         | 88.9% |
-| Velocidade        | 7/dia |
-| Backend Coverage  | 78%   |
-| Frontend Coverage | 76%   |
-| Testes            | 1879  |
-| P0 Infra          | 2     |
-| P1 Sprint         | 15    |
-| P2 Sprint         | 8     |
-| v1.1 Backlog      | 7     |
+| Métrica           | Valor  |
+| ----------------- | ------ |
+| Issues Totais     | 329    |
+| Issues Abertas    | 29     |
+| Issues Fechadas   | 300    |
+| Progresso         | 91.2%  |
+| Velocidade        | 11/dia |
+| Backend Coverage  | 78%    |
+| Frontend Coverage | 76%    |
+| Testes            | 1879   |
+| P0 Infra          | 0      |
+| P1 Sprint         | 11     |
+| P2 Sprint         | 8      |
+| v1.1 Backlog      | 7      |
 
 ---
 
