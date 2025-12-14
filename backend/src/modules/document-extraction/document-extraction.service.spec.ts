@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 import { DocumentExtractionService } from './document-extraction.service';
-import { existsSync, mkdirSync, writeFileSync, unlinkSync, statSync } from 'fs';
+import { existsSync, mkdirSync, unlinkSync, statSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { UPLOAD_DIR } from './multer.config';
+import * as mammoth from 'mammoth';
 
 // Mock fs functions
 jest.mock('fs', () => ({
@@ -12,6 +14,13 @@ jest.mock('fs', () => ({
   statSync: jest.fn(),
   unlinkSync: jest.fn(),
   writeFileSync: jest.fn(),
+  readFileSync: jest.fn(),
+}));
+
+// Mock mammoth
+jest.mock('mammoth', () => ({
+  extractRawText: jest.fn(),
+  convertToHtml: jest.fn(),
 }));
 
 describe('DocumentExtractionService', () => {
@@ -105,6 +114,226 @@ describe('DocumentExtractionService', () => {
       const result = service.deleteFile('test.pdf');
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('extractFromDocx', () => {
+    const mockBuffer = Buffer.from('mock docx content');
+
+    it('should extract text and sections from DOCX buffer', async () => {
+      const mockText = 'This is the document content with some words here.';
+      const mockHtml =
+        '<h1>Introduction</h1><p>First section content.</p><h2>Details</h2><p>Second section content.</p>';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: mockHtml,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.fullText).toBe(mockText);
+      expect(result.sections).toHaveLength(2);
+      expect(result.sections[0].title).toBe('Introduction');
+      expect(result.sections[0].level).toBe(1);
+      expect(result.sections[1].title).toBe('Details');
+      expect(result.sections[1].level).toBe(2);
+      expect(result.metadata.wordCount).toBe(9);
+      expect(result.metadata.sectionCount).toBe(2);
+    });
+
+    it('should handle DOCX without headings', async () => {
+      const mockText = 'Simple text without any headings or structure.';
+      const mockHtml = '<p>Simple text without any headings or structure.</p>';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: mockHtml,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.fullText).toBe(mockText);
+      expect(result.sections).toHaveLength(1);
+      expect(result.sections[0].title).toBeUndefined();
+      expect(result.sections[0].content).toBe(mockText);
+    });
+
+    it('should create single section when no headings detected', async () => {
+      const mockText = 'Document with no headings.';
+      const mockHtml = '<p>Document with no headings.</p>';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: mockHtml,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.sections).toHaveLength(1);
+      expect(result.sections[0].content).toBeTruthy();
+    });
+
+    it('should skip section detection when option is false', async () => {
+      const mockText = 'Test content';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer, {
+        detectSections: false,
+      });
+
+      expect(mammoth.convertToHtml).not.toHaveBeenCalled();
+      expect(result.sections).toHaveLength(1);
+    });
+
+    it('should calculate metadata correctly', async () => {
+      // 100 words = approx 20 characters per word average
+      const mockText =
+        'word '.repeat(100).trim() + ' and some more words to get exact count.';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: `<p>${mockText}</p>`,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.metadata.wordCount).toBeGreaterThan(100);
+      expect(result.metadata.characterCount).toBe(mockText.length);
+      expect(result.metadata.pageCount).toBe(1); // ~107 words / 500 words per page = 1
+    });
+
+    it('should handle content before first heading', async () => {
+      const mockHtml =
+        '<p>Intro paragraph</p><h1>First Section</h1><p>Section content</p>';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: 'Intro paragraph First Section Section content',
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: mockHtml,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.sections.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should throw BadRequestException on extraction error', async () => {
+      (mammoth.extractRawText as jest.Mock).mockRejectedValue(
+        new Error('Invalid DOCX format'),
+      );
+
+      await expect(service.extractFromDocx(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should decode HTML entities in extracted content', async () => {
+      const mockHtml =
+        '<h1>Test &amp; Demo</h1><p>Content with &lt;tags&gt; and &quot;quotes&quot;</p>';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: 'Test & Demo Content with <tags> and "quotes"',
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: mockHtml,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.sections[0].title).toBe('Test & Demo');
+      expect(result.sections[0].content).toContain('<tags>');
+      expect(result.sections[0].content).toContain('"quotes"');
+    });
+
+    it('should handle empty document', async () => {
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: '',
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: '',
+        messages: [],
+      });
+
+      const result = await service.extractFromDocx(mockBuffer);
+
+      expect(result.fullText).toBe('');
+      expect(result.metadata.wordCount).toBe(0);
+      expect(result.sections).toHaveLength(1);
+    });
+
+    it('should handle mammoth warnings', async () => {
+      const mockText = 'Content with warnings';
+
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [{ type: 'warning', message: 'Unknown font' }],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: `<p>${mockText}</p>`,
+        messages: [],
+      });
+
+      // Should not throw, just log the warning
+      const result = await service.extractFromDocx(mockBuffer);
+      expect(result.fullText).toBe(mockText);
+    });
+  });
+
+  describe('extractFromDocxFile', () => {
+    it('should read file and extract content', async () => {
+      const mockBuffer = Buffer.from('mock');
+      const mockText = 'File content';
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+      (mammoth.extractRawText as jest.Mock).mockResolvedValue({
+        value: mockText,
+        messages: [],
+      });
+      (mammoth.convertToHtml as jest.Mock).mockResolvedValue({
+        value: `<p>${mockText}</p>`,
+        messages: [],
+      });
+
+      const result = await service.extractFromDocxFile('test.docx');
+
+      expect(readFileSync).toHaveBeenCalledWith(join(UPLOAD_DIR, 'test.docx'));
+      expect(result.fullText).toBe(mockText);
+    });
+
+    it('should throw BadRequestException if file not found', async () => {
+      (existsSync as jest.Mock).mockReturnValue(false);
+
+      await expect(
+        service.extractFromDocxFile('nonexistent.docx'),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
