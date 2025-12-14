@@ -13,7 +13,7 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 [![Secret Scan](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/tjsasakifln/etp-express/actions/workflows/secret-scan.yml)
 [![Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](https://github.com/tjsasakifln/etp-express/blob/master/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Zero%20Errors-blue)]()
-[![Coverage](https://img.shields.io/badge/coverage-backend%2078%25%20%7C%20frontend%2060%25-yellow)]()
+[![Coverage](https://img.shields.io/badge/coverage-backend%2078%25%20%7C%20frontend%2076%25-green)]()
 [![LGPD](https://img.shields.io/badge/LGPD-100%25%20Compliant-green)]()
 [![Production Ready](https://img.shields.io/badge/status-Production%20Ready-brightgreen)]()
 
@@ -29,7 +29,8 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 - **Anti-Hallucination**: Mitigação ativa de alucinações e invenção de fatos
 - **Busca Inteligente**: Integração com Perplexity AI para contratações similares
 - **Versionamento Completo**: Histórico com diff e restauração de versões
-- **Export Profissional**: PDF, JSON e XML com disclaimers obrigatórios
+- **Export Profissional**: PDF, JSON, XML e DOCX com disclaimers obrigatórios
+- **Import & Análise**: Upload PDF/DOCX para análise e conversão em ETP
 - **Analytics de UX**: Telemetria para melhoria contínua
 - **Cache LLM Inteligente**: OpenAI (24h TTL) + Perplexity (7d TTL) - economia ~80% custos
 - **Circuit Breaker Resiliente**: Opossum para OpenAI/Perplexity - degradação graciosa
@@ -38,7 +39,7 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 - **LGPD 100% Compliance**: Export/delete completo, audit trail, soft delete
 - **Zero-Downtime Deployment**: Blue-green deployment Railway, health checks
 - **CI/CD Otimizado**: GitHub Actions cache, -68% redução CI minutes
-- **800+ Testes Automatizados**: 70% backend, 60% frontend, zero erros TypeScript
+- **1,879 Testes Automatizados**: 78% backend, 76% frontend, zero erros TypeScript
 - **Auditorias Arquiteturais**: Orchestrator (95%), User (92%), Sections (83%)
 
 ### 🎯 Funcionalidades Core
@@ -61,19 +62,20 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  Frontend (React + TypeScript)                               │
-│  ├── Vite 7.2.4                                              │
+│  ├── Vite 7.2.7                                              │
 │  ├── Tailwind CSS + shadcn/ui                                │
 │  ├── Zustand (state)                                         │
 │  └── React Hook Form + Zod                                   │
 │                                                               │
-│  Backend (NestJS + TypeScript)                               │
+│  Backend (NestJS 11.1.9 + TypeScript)                        │
 │  ├── TypeORM + PostgreSQL                                    │
 │  ├── OpenAI GPT-4 (geração + cache 24h TTL)                  │
 │  ├── Perplexity AI (busca + cache 7d TTL)                    │
 │  ├── pgvector (RAG Lei 14.133/2021)                          │
 │  ├── Opossum (Circuit Breaker)                               │
 │  ├── node-cache (LLM response caching)                       │
-│  ├── Puppeteer (PDF)                                         │
+│  ├── Puppeteer (PDF generation)                              │
+│  ├── mammoth + pdf-parse (document extraction)               │
 │  └── JWT Auth                                                │
 │                                                               │
 │  Deploy (Railway)                                            │
@@ -427,7 +429,7 @@ docker system df
 ### Workflows Automatizados
 
 1. **ci-lint.yml** - ESLint/Prettier + Cache NPM
-2. **ci-tests.yml** - Jest + Vitest (70%/60% coverage)
+2. **ci-tests.yml** - Jest + Vitest (78%/76% coverage)
 3. **playwright.yml** - E2E + Cache browsers
 4. **secret-scan.yml** - Gitleaks (weekly + incremental PRs)
 5. **validate-lockfile.yml** - Dependency validation
@@ -747,7 +749,8 @@ ETP Express/
 │   │       ├── orchestrator/  # ⭐ Sistema de IA
 │   │       ├── rag/           # RAG + pgvector (Lei 14.133)
 │   │       ├── search/        # Busca Perplexity
-│   │       ├── export/        # Exportação PDF/JSON/XML
+│   │       ├── export/        # Exportação PDF/JSON/XML/DOCX
+│   │       ├── document-extraction/  # Extração texto (PDF/DOCX)
 │   │       ├── versions/      # Versionamento
 │   │       └── analytics/     # Telemetria
 │   ├── package.json
@@ -1210,51 +1213,66 @@ Este software é propriedade exclusiva da CONFENGE. É expressamente proibido co
 
 ## 🎯 ROADMAP
 
-**Ultima Atualizacao**: 2025-12-07 | [ROADMAP.md completo](./ROADMAP.md)
+**Ultima Atualizacao**: 2025-12-14 | [ROADMAP.md completo](./ROADMAP.md)
 
-### Progresso Global: 89% (210/236 issues)
+### Progresso Global: 89.4% (329/368 issues)
 
 ```
-M1: ████████████████████ 35/35  (100%) ✅ Foundation - Testes
+M1: ████████████████████ 36/36  (100%) ✅ Foundation
 M2: ████████████████████ 18/18  (100%) ✅ CI/CD Pipeline
-M3: ████████████████████ 57/57  (100%) ✅ Quality & Security
-M4: ████████████████████ 44/44  (100%) ✅ Refactoring & Performance
-M5: ████████░░░░░░░░░░░░ 11/26  (42%)  📚 E2E Testing & Documentation
-M6: ██████████████░░░░░░ 28/41  (68%)  🔄 Maintenance
+M3: ████████████████████ 61/61  (100%) ✅ Quality & Security
+M4: ████████████████████ 45/45  (100%) ✅ Refactoring & Performance
+M5: ███████████████░░░░░ 24/32  (75%)  📚 E2E & Documentation
+M6: ████████████████░░░░ 70/86  (81%)  🔄 Maintenance
 M7: ████████████████████  6/6   (100%) ✅ Multi-Tenancy B2G
+M8: ████████████████████ 24/24  (100%) ✅ Domain Management
+M9: ███████░░░░░░░░░░░░░  7/16  (44%)  🔴 Export/Import Sprint
 ```
 
 ### ✅ M1-M4: Foundation, CI/CD, Quality, Performance (100%)
 
-- ✅ 920+ testes passando (Jest + Vitest + Playwright)
-- ✅ Coverage: Backend 78%, Frontend 60%+
+- ✅ 1,879 testes passando (Jest + Vitest + Playwright)
+- ✅ Coverage: Backend 78%, Frontend 76%
 - ✅ Zero erros TypeScript
 - ✅ OWASP Top 10 + LGPD 100%
 - ✅ Cache LLM (80% economia)
-- ✅ Paralelizacao 4-5x speedup
+- ✅ Paralelização 4-5x speedup
 
-### 📚 M5: E2E Testing & Documentation (42%)
+### 📚 M5: E2E Testing & Documentation (75%)
 
 - ✅ E2E critical flow tests (Playwright)
 - ✅ Accessibility tests (WCAG 2.1 AA)
 - ✅ Frontend logging service (Sentry)
-- [ ] Testes integracao secoes 5-13
-- [ ] UAT sessions
+- [ ] Staged rollout, Production SLA
+- [ ] Load testing k6 (100 users)
 
-### 🔄 M6: Maintenance (68%)
+### 🔄 M6: Maintenance (81%)
 
 - ✅ Redis + BullMQ async processing
 - ✅ Async UX polling frontend
-- ✅ Migration idempotency fixes
+- ✅ UX Enterprise Polish (breadcrumbs, skeleton, confetti)
 - [ ] pgvector migration (#387)
-- [ ] Secrets rotation automation
+- [ ] Performance: N+1 queries, memory leak
 
 ### ✅ M7: Multi-Tenancy B2G (100%)
 
 - ✅ Column-based isolation (organizationId)
 - ✅ TenantGuard + RolesGuard
 - ✅ Domain whitelist registration
-- ✅ Kill switch para organizacoes
+- ✅ Kill switch para organizações
+
+### ✅ M8: Domain Management (100%)
+
+- ✅ System Admin dashboard completo
+- ✅ Domain CRUD + AssignManager
+- ✅ Authorization policies
+
+### 🔴 M9: Export/Import (44%) - Sprint Intensivo
+
+- ✅ Export DOCX (docx library)
+- ✅ Document text extraction (mammoth, pdf-parse)
+- [ ] ETPAnalysisService (AI agents)
+- [ ] Frontend Import & Analysis page
 
 📊 [ROADMAP.md](./ROADMAP.md) para detalhes completos
 
@@ -1305,7 +1323,7 @@ A responsabilidade final é sempre do servidor/agente público responsável.
 
 ---
 
-**Ultima atualizacao**: 2025-12-07
+**Ultima atualizacao**: 2025-12-14
 **Versao**: 1.0.0 (Production Ready)
-**Progresso**: 89% (210/236 issues concluidas)
-**Milestones**: M1-M4 ✅ | M5 📚 (42%) | M6 🔄 (68%) | M7 ✅
+**Progresso**: 89.4% (329/368 issues concluidas)
+**Milestones**: M1-M4 ✅ | M5 📚 (75%) | M6 🔄 (81%) | M7-M8 ✅ | M9 🔴 (44%)
