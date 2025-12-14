@@ -324,18 +324,118 @@ Se você tem um domínio próprio:
 
 Sempre configure via Railway Dashboard → Variables.
 
-### 6.3 Monitoramento
+### 6.3 Monitoramento e Alertas
 
-Railway oferece:
+Railway oferece Observability Dashboard com métricas em tempo real e alertas configuráveis.
 
-- Metrics automáticos (CPU, RAM, Network)
-- Logs em tempo real
-- Alertas de crash
+#### 6.3.1 Métricas Disponíveis
 
-Configure alertas:
+| Métrica         | Descrição                  | Widget Padrão |
+| --------------- | -------------------------- | ------------- |
+| CPU Usage       | Uso de CPU por serviço     | ✅            |
+| Memory (RAM)    | Consumo de memória         | ✅            |
+| Disk Usage      | Uso de disco               | ✅            |
+| Network Traffic | Tráfego de entrada/saída   | ✅            |
+| Project Spend   | Custo acumulado do projeto | ✅            |
 
-1. Settings → Notifications
-2. Adicione email ou webhook
+#### 6.3.2 Configuração de Alertas (OBRIGATÓRIO para Produção)
+
+**Pré-requisito:** Railway Pro Plan
+
+**Passo a passo para configurar alertas:**
+
+1. Acesse Railway Dashboard → Projeto `etp-express`
+2. Clique em **Observability** no menu lateral
+3. Para cada métrica, clique no menu de 3 pontos (⋮) do widget
+4. Selecione **"Add monitor"**
+5. Configure os thresholds conforme tabela abaixo
+
+#### 6.3.3 Thresholds Recomendados
+
+| Alerta             | Threshold  | Trigger | Ação Esperada                             |
+| ------------------ | ---------- | ------- | ----------------------------------------- |
+| **CPU Alto**       | > 80%      | Above   | Investigar carga; escalar réplicas        |
+| **CPU Baixo**      | < 1%       | Below   | App pode ter crashado                     |
+| **Memory Alta**    | > 85%      | Above   | Investigar memory leak; reiniciar serviço |
+| **Memory Baixa**   | < 10MB     | Below   | App pode ter crashado                     |
+| **Disk Alto**      | > 90%      | Above   | Limpar logs antigos; expandir storage     |
+| **Network Egress** | > 10GB/dia | Above   | Investigar tráfego; verificar Private Net |
+
+#### 6.3.4 Configuração de Canais de Notificação
+
+**Email (Padrão):**
+
+- Alertas são enviados automaticamente para o email da conta Railway
+
+**Webhook (Recomendado para Slack/Teams):**
+
+1. No Dashboard, vá em **Settings** → **Integrations**
+2. Configure webhook URL do Slack/Teams/Discord
+3. Formato do payload:
+   ```json
+   {
+     "type": "monitor_alert",
+     "service": "etp-express-backend",
+     "metric": "cpu",
+     "value": 85,
+     "threshold": 80,
+     "timestamp": "2025-12-14T10:30:00Z"
+   }
+   ```
+
+**Slack Webhook Setup:**
+
+1. No Slack, crie um webhook em: https://api.slack.com/messaging/webhooks
+2. Copie a URL do webhook
+3. No Railway, adicione como Integration
+
+#### 6.3.5 Alertas de Erro via Logs (Complementar)
+
+Para alertas baseados em taxa de erro, use o endpoint `/api/health/metrics`:
+
+```bash
+# Verificar métricas do backend
+curl https://etp-express-backend.railway.app/api/health/metrics
+```
+
+Resposta esperada:
+
+```json
+{
+  "uptime": 86400,
+  "memory": {
+    "heapUsed": 150000000,
+    "heapTotal": 250000000,
+    "external": 5000000,
+    "rss": 300000000
+  },
+  "cpu": {
+    "user": 1234567,
+    "system": 234567
+  }
+}
+```
+
+**Integração com Sentry para Error Rate:**
+
+Sentry já está configurado no projeto e captura erros automaticamente. Para alertas de error rate:
+
+1. Acesse https://sentry.io → Projeto etp-express
+2. Vá em **Alerts** → **Create Alert**
+3. Selecione **Issue Alert** com condição:
+   - When: Number of events > 10 in 1 hour
+   - Action: Send notification to team
+
+#### 6.3.6 Checklist de Alertas (Verificar antes de Go-Live)
+
+- [ ] Alerta CPU > 80% configurado no Railway
+- [ ] Alerta Memory > 85% configurado no Railway
+- [ ] Alerta CPU < 1% (crash detection) configurado
+- [ ] Alerta Disk > 90% configurado
+- [ ] Canal de notificação testado (email recebido)
+- [ ] Webhook Slack/Teams configurado (se aplicável)
+- [ ] Alerta Sentry error rate configurado
+- [ ] Teste de alerta executado (forçar threshold)
 
 ### 6.4 Backups do Database
 
