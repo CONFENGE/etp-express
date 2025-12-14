@@ -1,8 +1,8 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-12 | **Progresso:** 313/360 (86.9%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 1 issue | **P0 Enterprise:** 7 issues | **Hardening:** 9 issues
+**Atualizado:** 2025-12-14 | **Progresso:** 325/360 (90.3%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
 
-## 🛡️ Hardening & Refactoring (10 issues)
+## 🛡️ Hardening & Refactoring (6 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
 **Validação:** Codebase auditado, 2 pontos já implementados, 10 issues criadas
@@ -16,14 +16,14 @@
 | **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                   |
 | **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                      |
 
-### 🔴 P1 - Segurança Multi-Tenancy (3 issues restantes)
+### ✅ P1 - Segurança Multi-Tenancy (0 issues restantes - COMPLETO)
 
-| #        | Issue                                                | Risco                        |
-| -------- | ---------------------------------------------------- | ---------------------------- |
-| #648     | AnalyticsService - Filtragem por organizationId      | Vazamento de dados analytics |
-| #649     | SearchService - Isolamento de cache por organização  | Resultados cross-tenant      |
-| ~~#650~~ | ~~SimilarContract - Adicionar campo organizationId~~ | ✅ PR #661                   |
-| #651     | Prompt Injection - Melhorar sanitização input        | Bypass via Unicode/variações |
+| #        | Issue                                                   | Status               |
+| -------- | ------------------------------------------------------- | -------------------- |
+| ~~#648~~ | ~~AnalyticsService - Filtragem por organizationId~~     | ✅ CLOSED 2025-12-13 |
+| ~~#649~~ | ~~SearchService - Isolamento de cache por organização~~ | ✅ PR #665           |
+| ~~#650~~ | ~~SimilarContract - Adicionar campo organizationId~~    | ✅ PR #661           |
+| ~~#651~~ | ~~Prompt Injection - Melhorar sanitização input~~       | ✅ PR #666           |
 
 ### 🟡 P2 - Observabilidade (4 issues)
 
@@ -46,12 +46,12 @@
 ## Milestones
 
 ```
-M1: Foundation          ████████████████████ 35/35  100%
+M1: Foundation          ████████████████████ 36/36  100%
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
-M3: Quality & Security  ████████████████████ 60/60  100%
-M4: Refactoring & Perf  ████████████████████ 44/44  100%
-M5: E2E & Docs          █████████████████░░░ 23/27   85%
-M6: Maintenance         █████████████████░░░ 69/82   84%
+M3: Quality & Security  ████████████████████ 61/61  100%
+M4: Refactoring & Perf  ████████████████████ 45/45  100%
+M5: E2E & Docs          █████████████████░░░ 24/28   86%
+M6: Maintenance         █████████████████░░░ 70/82   85%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ███████████████████░ 23/24   96%
 M9: Export/Import       ████░░░░░░░░░░░░░░░░  4/16   25%
@@ -100,7 +100,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ---
 
-### 🚨 ÉPICO P0 - Lançamento Enterprise (9 issues restantes)
+### ✅ ÉPICO P0 - Lançamento Enterprise (0 issues restantes - COMPLETO)
 
 **Objetivo:** Garantir login funcional + wow factors para demonstrações enterprise.
 
@@ -111,7 +111,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#579~~ | ~~Validação organização no login~~ | ✅ PR #633 |
 | ~~#580~~ | ~~Melhorar mensagens erro autenticação~~ | ✅ PR #635 |
 
-**Épico 2: Login UX/UI Enterprise (Wow Factors)**
+**Épico 2: Login UX/UI Enterprise (Wow Factors) - ✅ COMPLETO**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
 | ~~#581~~ | ~~Toggle visibilidade senha~~ | ✅ CLOSED |
@@ -120,13 +120,13 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#584~~ | ~~Spinner elegante autenticação~~ | ✅ PR #634 |
 | ~~#585~~ | ~~Animações entrada login~~ | ✅ PR #641 |
 | ~~#586~~ | ~~Indicadores campo obrigatório~~ | ✅ PR #638 |
-| #587 | Funcionalidade "Esqueceu senha" | 8h |
+| ~~#587~~ | ~~Funcionalidade "Esqueceu senha"~~ | ✅ PR #664 |
 
-**Épico 3: Polish Visual Global**
+**Épico 3: Polish Visual Global - ✅ COMPLETO**
 | # | Issue | Esforço |
 | ---- | ----------------------------------------- | ------- |
 | ~~#588~~ | ~~Componente ErrorState padronizado~~ | ✅ PR #639 |
-| #589 | Ilustrações empty states | 4h |
+| ~~#589~~ | ~~Ilustrações empty states~~ | ✅ CLOSED |
 | ~~#590~~ | ~~Toast com undo ações destrutivas~~ | ✅ PR #645 |
 | ~~#591~~ | ~~Touch targets 44x44px~~ | ✅ PR #659 |
 | ~~#592~~ | ~~Micro-interações cards/botões~~ | ✅ PR #647 |
@@ -140,7 +140,7 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | ~~#596~~ | ~~Skeleton loading completo~~ | ✅ PR #658 |
 | ~~#597~~ | ~~Confetti ETP 100% concluído~~ | ✅ PR #644 |
 
-**Esforço Total:** ~38h (atualizado) | **Labels:** `priority/P0`, `wow-factor`
+**Esforço Total:** ✅ COMPLETO | **Labels:** `priority/P0`, `wow-factor`
 
 ---
 
@@ -175,14 +175,13 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (13 open)
+### M6 - Maintenance (12 open)
 
-**Security:**
+**Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
 | ---- | --------------- | -------- |
-| #452 | CSRF protection | P2 |
-
-✅ #453 CSP headers (PR #572) - MERGED
+| ~~#452~~ | ~~CSRF protection~~ | ✅ CLOSED 2025-12-14 |
+| ~~#453~~ | ~~CSP headers~~ | ✅ PR #572 |
 
 **Performance:**
 | # | Issue | Priority |
@@ -239,33 +238,33 @@ M9: Export/Import       ████░░░░░░░░░░░░░░�
 
 ## Milestones Completos
 
-M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/44), M7 Multi-Tenancy (6/6) - **Total: 163 issues**
+M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6) - **Total: 166 issues**
 
 ---
 
 ## Métricas
 
-| Métrica           | Valor  |
-| ----------------- | ------ |
-| Issues Totais     | 360    |
-| Issues Abertas    | 54     |
-| Issues Fechadas   | 306    |
-| Progresso         | 85.0%  |
-| Velocidade        | 17/dia |
-| Backend Coverage  | 78%    |
-| Frontend Coverage | 76%    |
-| Testes            | 1879   |
-| P0 Security       | 1      |
-| P0 Enterprise     | 9      |
-| Hardening P1      | 4      |
-| Hardening P2      | 4      |
-| Hardening P3      | 2      |
+| Métrica           | Valor |
+| ----------------- | ----- |
+| Issues Totais     | 360   |
+| Issues Abertas    | 35    |
+| Issues Fechadas   | 325   |
+| Progresso         | 90.3% |
+| Velocidade        | 7/dia |
+| Backend Coverage  | 78%   |
+| Frontend Coverage | 76%   |
+| Testes            | 1879  |
+| P0 Security       | 0     |
+| P0 Enterprise     | 0     |
+| Hardening P1      | 0     |
+| Hardening P2      | 4     |
+| Hardening P3      | 2     |
 
 ---
 
 ## Infraestrutura Claude Code
 
-**Atualizado:** 2025-12-12
+**Atualizado:** 2025-12-14
 
 ### MCP Servers Configurados
 
