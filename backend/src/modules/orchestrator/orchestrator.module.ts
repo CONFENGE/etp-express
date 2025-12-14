@@ -21,6 +21,12 @@ import { SearchModule } from '../search/search.module';
     SimplificacaoAgent,
     AntiHallucinationAgent,
   ],
-  exports: [OrchestratorService, OpenAIService],
+  exports: [
+    OrchestratorService,
+    OpenAIService,
+    LegalAgent,
+    FundamentacaoAgent,
+    ClarezaAgent,
+  ],
 })
 export class OrchestratorModule {}
