@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 19:45 | **Progresso:** 301/329 (91.5%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
+**Atualizado:** 2025-12-14 21:00 | **Progresso:** 302/329 (91.8%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
@@ -58,7 +58,7 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 78/90   87%  (+8 novas)
+M6: Maintenance         █████████████████░░░ 79/90   88%  (+8 novas)
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
 M9: Export/Import       █████████░░░░░░░░░░░  9/16   56%  🔴 P1 SPRINT
@@ -186,7 +186,7 @@ M9: Export/Import       █████████░░░░░░░░░�
 | # | Issue | Priority |
 | ---- | ----------------------- | -------- |
 | #426 | Perplexity timeout | P3 |
-| #454 | N+1 query fix | P2 |
+| ~~#454~~ | ~~N+1 query fix~~ | ✅ PR #689 |
 | #455 | LLM cache memory leak | P2 |
 | #457 | useCallback/useMemo | P2 |
 | #459 | Eager loading User | P3 |
@@ -265,14 +265,14 @@ M9: Export/Import       █████████░░░░░░░░░�
 
 ### Sprint 3 (Semana 3) - M9 Frontend + Performance | 21h
 
-| #    | Issue                       | Prior. | Est. |
-| ---- | --------------------------- | ------ | ---- |
-| #560 | Import Page UI              | P1     | 3h   |
-| #561 | Results Display             | P1     | 2h   |
-| #562 | Analysis Store              | P1     | 2h   |
-| #454 | N+1 query fix               | P2     | 6h   |
-| #457 | useCallback/useMemo         | P2     | 4h   |
-| #676 | Load testing k6 (100 users) | P2     | 4h   |
+| #        | Issue                       | Prior.     | Est. |
+| -------- | --------------------------- | ---------- | ---- |
+| #560     | Import Page UI              | P1         | 3h   |
+| #561     | Results Display             | P1         | 2h   |
+| #562     | Analysis Store              | P1         | 2h   |
+| ~~#454~~ | ~~N+1 query fix~~           | ✅ PR #689 |
+| #457     | useCallback/useMemo         | P2         | 4h   |
+| #676     | Load testing k6 (100 users) | P2         | 4h   |
 
 ### Sprint 4 (Semana 4) - QA + Go-Live | 24h
 
