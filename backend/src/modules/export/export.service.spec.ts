@@ -49,8 +49,17 @@ describe('ExportService', () => {
     updatedAt: new Date('2025-01-02'),
   };
 
+  // Helper to create QueryBuilder mock chain for ETP queries
+  const createQueryBuilderMock = (returnData: any = null) => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    getOne: jest.fn().mockResolvedValue(returnData),
+  });
+
   const mockEtpsRepository = {
     findOne: jest.fn(),
+    createQueryBuilder: jest.fn(() => createQueryBuilderMock(null)),
   };
 
   const mockSectionsRepository = {
@@ -93,7 +102,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToJSON('etp-123');
 
@@ -108,7 +119,9 @@ describe('ExportService', () => {
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
-      mockEtpsRepository.findOne.mockResolvedValue(null);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(null),
+      );
 
       await expect(service.exportToJSON('non-existent')).rejects.toThrow(
         NotFoundException,
@@ -124,7 +137,9 @@ describe('ExportService', () => {
         sections: [],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithoutSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithoutSections),
+      );
 
       const result = await service.exportToJSON('etp-123');
 
@@ -140,7 +155,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToXML('etp-123');
 
@@ -161,7 +178,9 @@ describe('ExportService', () => {
         sections: [],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSpecialChars);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSpecialChars),
+      );
 
       const result = await service.exportToXML('etp-123');
 
@@ -171,7 +190,9 @@ describe('ExportService', () => {
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
-      mockEtpsRepository.findOne.mockResolvedValue(null);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(null),
+      );
 
       await expect(service.exportToXML('non-existent')).rejects.toThrow(
         NotFoundException,
@@ -186,7 +207,9 @@ describe('ExportService', () => {
         sections: [],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithEmptyValues);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithEmptyValues),
+      );
 
       const result = await service.exportToXML('etp-123');
 
@@ -219,7 +242,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToPDF('etp-123');
 
@@ -255,7 +280,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
       mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
 
       await expect(service.exportToPDF('etp-123')).rejects.toThrow(
@@ -266,7 +293,9 @@ describe('ExportService', () => {
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
-      mockEtpsRepository.findOne.mockResolvedValue(null);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(null),
+      );
 
       await expect(service.exportToPDF('non-existent')).rejects.toThrow(
         NotFoundException,
@@ -282,7 +311,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
       mockBrowser.close.mockRejectedValue(
         new Error('Browser process already closed'),
       );
@@ -300,7 +331,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
       mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
       mockBrowser.close.mockRejectedValue(
         new Error('Browser process already closed'),
@@ -321,7 +354,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
       mockBrowser.close.mockRejectedValue('String error message');
 
       // Should NOT throw - browser close error is logged but not propagated
@@ -339,7 +374,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -351,7 +388,9 @@ describe('ExportService', () => {
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
-      mockEtpsRepository.findOne.mockResolvedValue(null);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(null),
+      );
 
       await expect(service.exportToDocx('non-existent')).rejects.toThrow(
         NotFoundException,
@@ -367,7 +406,9 @@ describe('ExportService', () => {
         sections: [],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithoutSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithoutSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -386,7 +427,9 @@ describe('ExportService', () => {
         sections: [sectionWithMarkdown],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -405,7 +448,9 @@ describe('ExportService', () => {
         sections: [sectionWithBullets],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -422,7 +467,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as unknown as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithNullMetadata);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithNullMetadata),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -454,7 +501,9 @@ describe('ExportService', () => {
         sections: [section1, section2, section3],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -473,7 +522,9 @@ describe('ExportService', () => {
         sections: [sectionWithEmptyContent],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithSections),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -488,7 +539,9 @@ describe('ExportService', () => {
         sections: [mockSection] as EtpSection[],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithValue);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(etpWithValue),
+      );
 
       const result = await service.exportToDocx('etp-123');
 
@@ -498,29 +551,45 @@ describe('ExportService', () => {
   });
 
   describe('getEtpWithSections (private method tested via public methods)', () => {
-    it('should retrieve ETP with sections sorted by order', async () => {
-      const section1 = { ...mockSection, order: 2 } as EtpSection;
+    it('should retrieve ETP with sections using QueryBuilder and orderBy', async () => {
+      // Sections passed in correct order (as DB would return via orderBy)
+      const section1 = {
+        ...mockSection,
+        id: 'section-1',
+        order: 1,
+      } as EtpSection;
       const section2 = {
         ...mockSection,
         id: 'section-2',
-        order: 1,
+        order: 2,
       } as EtpSection;
       const etpWithSections = {
         ...mockEtp,
         sections: [section1, section2],
       } as Etp;
 
-      mockEtpsRepository.findOne.mockResolvedValue(etpWithSections);
+      const qbMock = createQueryBuilderMock(etpWithSections);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(qbMock);
 
       const result = await service.exportToJSON('etp-123');
 
-      // Sections should be sorted by order
-      expect((result as any).sections[0].order).toBe(1);
-      expect((result as any).sections[1].order).toBe(2);
-      expect(mockEtpsRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'etp-123' },
-        relations: ['sections', 'createdBy'],
-      });
+      // Verify QueryBuilder was used with correct chain
+      expect(mockEtpsRepository.createQueryBuilder).toHaveBeenCalledWith('etp');
+      expect(qbMock.leftJoinAndSelect).toHaveBeenCalledWith(
+        'etp.sections',
+        'sections',
+      );
+      expect(qbMock.leftJoinAndSelect).toHaveBeenCalledWith(
+        'etp.createdBy',
+        'createdBy',
+      );
+      expect(qbMock.orderBy).toHaveBeenCalledWith('sections.order', 'ASC');
+      expect(qbMock.getOne).toHaveBeenCalled();
+
+      // Sections returned as provided (DB handles ordering via orderBy)
+      expect((result as any).sections).toHaveLength(2);
+      expect((result as any).sections[0].id).toBe('section-1');
+      expect((result as any).sections[1].id).toBe('section-2');
     });
   });
 });
