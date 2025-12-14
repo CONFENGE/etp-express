@@ -6,3 +6,4 @@ startCommand = "npm run migration:run:prod --workspace=etp-express-backend && np
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+numReplicas = 2

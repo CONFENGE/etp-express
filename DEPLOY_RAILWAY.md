@@ -344,6 +344,56 @@ Configure alertas:
 3. Railway faz backups automáticos diariamente
 4. Retenção: 7 dias (plano Hobby)
 
+### 6.5 Alta Disponibilidade (Múltiplas Réplicas)
+
+O backend está configurado para rodar com **2+ réplicas** para eliminar SPOF (Single Point of Failure).
+
+**Configuração (já aplicada em `railway.json` e `backend/railway.toml`):**
+
+```toml
+[deploy]
+numReplicas = 2
+```
+
+**Como funciona:**
+
+- Railway automaticamente distribui requisições entre réplicas (load balancing)
+- Se uma réplica falhar, as outras continuam atendendo
+- Health checks (`/api/health`) monitoram cada réplica independentemente
+- Réplicas que falham no health check são automaticamente reiniciadas
+
+**Componentes compatíveis com múltiplas réplicas:**
+
+| Componente      | Comportamento                               |
+| --------------- | ------------------------------------------- |
+| JWT Auth        | ✅ Stateless - funciona em qualquer réplica |
+| BullMQ Jobs     | ✅ Redis compartilhado - jobs distribuídos  |
+| PostgreSQL      | ✅ Conexões via pool compartilhado          |
+| NodeCache (LLM) | ⚠️ Cache por réplica (duplicação aceitável) |
+| Rate Limiting   | ⚠️ Contagem por réplica (não blocker)       |
+
+**Verificação via CLI:**
+
+```bash
+# Ver réplicas ativas
+railway status
+
+# Logs de todas réplicas
+railway logs --service=etp-express-backend
+
+# Forçar redeploy com novas réplicas
+railway redeploy --service=etp-express-backend
+```
+
+**Teste de failover:**
+
+1. Acesse Railway Dashboard → etp-express-backend
+2. Verifique que existem 2+ instâncias na aba "Replicas"
+3. Mate uma réplica manualmente e observe a recuperação automática
+4. Confirme que o serviço permanece acessível durante o processo
+
+**Custo adicional:** ~$3-5/mês por réplica adicional (depende do uso)
+
 ---
 
 ## 📊 PASSO 7: MONITORAMENTO PÓS-DEPLOY
@@ -762,6 +812,7 @@ Antes de considerar o deploy completo, verifique:
 - [ ] API Keys válidas (OpenAI, Perplexity)
 - [ ] JWT_SECRET configurado e seguro
 - [ ] Healthchecks passando
+- [ ] Backend com 2+ réplicas ativas (Railway Dashboard → Replicas)
 - [ ] Logs sem erros críticos
 - [ ] Teste de registro de usuário funcionando
 - [ ] Teste de criação de ETP funcionando
@@ -814,5 +865,5 @@ Todo conteúdo gerado deve ser **revisado criticamente** antes de uso oficial.
 
 ---
 
-**Última atualização**: 2025-12-12
-**Versão do guia**: 2.0.0
+**Última atualização**: 2025-12-14
+**Versão do guia**: 2.1.0

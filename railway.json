@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "numReplicas": 1,
+    "numReplicas": 2,
     "restartPolicyMaxRetries": 10,
     "restartPolicyType": "ON_FAILURE"
   }
