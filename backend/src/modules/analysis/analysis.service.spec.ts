@@ -5,6 +5,7 @@ import { ClarezaAgent } from '../orchestrator/agents/clareza.agent';
 import { FundamentacaoAgent } from '../orchestrator/agents/fundamentacao.agent';
 import { ExtractedDocument } from '../document-extraction/interfaces/extracted-document.interface';
 import { AnalysisResult } from './interfaces/analysis-result.interface';
+import { ImprovementReport } from './interfaces/improvement-report.interface';
 
 describe('ETPAnalysisService', () => {
   let service: ETPAnalysisService;
@@ -319,6 +320,555 @@ describe('ETPAnalysisService', () => {
       // If running sequentially: ~150ms
       // If running in parallel: ~50-60ms
       expect(elapsedTime).toBeLessThan(100);
+    });
+  });
+
+  describe('generateImprovementReport()', () => {
+    const createMockAnalysisResult = (
+      overrides?: Partial<AnalysisResult>,
+    ): AnalysisResult => ({
+      summary: {
+        overallScore: 75,
+        meetsMinimumQuality: true,
+        dimensions: [
+          {
+            dimension: 'legal',
+            score: 80,
+            passed: true,
+            issueCount: 1,
+            suggestionCount: 1,
+          },
+          {
+            dimension: 'clareza',
+            score: 70,
+            passed: true,
+            issueCount: 2,
+            suggestionCount: 2,
+          },
+          {
+            dimension: 'fundamentacao',
+            score: 75,
+            passed: true,
+            issueCount: 1,
+            suggestionCount: 3,
+          },
+        ],
+        totalIssues: 4,
+        totalSuggestions: 6,
+      },
+      legal: {
+        isCompliant: true,
+        score: 80,
+        issues: ['Falta referência explícita à Lei 14.133/2021'],
+        recommendations: ['Inclua referência à Lei 14.133/2021 no documento'],
+        references: ['Lei 14.133/2021 - Nova Lei de Licitações'],
+      },
+      clareza: {
+        score: 70,
+        readabilityIndex: 70,
+        issues: [
+          'Frases muito longas detectadas',
+          'Uso excessivo de voz passiva',
+        ],
+        suggestions: [
+          'Divida frases longas em frases mais curtas',
+          'Prefira voz ativa',
+        ],
+        metrics: {
+          avgSentenceLength: 28,
+          avgWordLength: 6,
+          complexWords: 15,
+          passiveVoice: 5,
+        },
+      },
+      fundamentacao: {
+        score: 75,
+        hasNecessidade: true,
+        hasInteressePublico: true,
+        hasBeneficios: true,
+        hasRiscos: false,
+        suggestions: ['Mencione os riscos de não realizar a contratação'],
+      },
+      analyzedAt: new Date(),
+      documentInfo: {
+        wordCount: 500,
+        sectionCount: 5,
+      },
+      ...overrides,
+    });
+
+    it('should generate report with correct executive summary', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult();
+
+      // Act
+      const report: ImprovementReport =
+        service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.overallScore).toBe(75);
+      expect(report.executiveSummary.meetsMinimumQuality).toBe(true);
+      expect(report.executiveSummary.totalIssues).toBeGreaterThan(0);
+      expect(report.executiveSummary.verdict).toBe('Aprovado com ressalvas');
+    });
+
+    it('should categorize issues by severity correctly', () => {
+      // Arrange - legal non-compliant => critical
+      const analysisResult = createMockAnalysisResult({
+        legal: {
+          isCompliant: false,
+          score: 50,
+          issues: ['Issue crítico de compliance'],
+          recommendations: ['Corrigir compliance'],
+          references: [],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      const criticalIssues = report.prioritizedRecommendations.filter(
+        (i) => i.severity === 'critical',
+      );
+      expect(criticalIssues.length).toBeGreaterThan(0);
+      expect(criticalIssues[0].dimension).toBe('legal');
+    });
+
+    it('should sort recommendations by priority (critical > important > suggestion)', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        summary: {
+          overallScore: 60,
+          meetsMinimumQuality: false,
+          dimensions: [
+            {
+              dimension: 'legal',
+              score: 50,
+              passed: false,
+              issueCount: 2,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'clareza',
+              score: 60,
+              passed: false,
+              issueCount: 2,
+              suggestionCount: 2,
+            },
+            {
+              dimension: 'fundamentacao',
+              score: 70,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 1,
+            },
+          ],
+          totalIssues: 4,
+          totalSuggestions: 4,
+        },
+        legal: {
+          isCompliant: false,
+          score: 50,
+          issues: ['Critical legal issue 1', 'Critical legal issue 2'],
+          recommendations: ['Fix legal issue 1', 'Fix legal issue 2'],
+          references: [],
+        },
+        clareza: {
+          score: 60,
+          readabilityIndex: 60,
+          issues: ['Important clarity issue 1', 'Important clarity issue 2'],
+          suggestions: ['Fix clarity 1', 'Fix clarity 2'],
+          metrics: {
+            avgSentenceLength: 30,
+            avgWordLength: 7,
+            complexWords: 20,
+            passiveVoice: 10,
+          },
+        },
+        fundamentacao: {
+          score: 70,
+          hasNecessidade: true,
+          hasInteressePublico: true,
+          hasBeneficios: true,
+          hasRiscos: true,
+          suggestions: ['Minor suggestion'],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      const severities = report.prioritizedRecommendations.map(
+        (r) => r.severity,
+      );
+
+      // Find first occurrence of each severity
+      const firstCritical = severities.indexOf('critical');
+      const firstImportant = severities.indexOf('important');
+      const firstSuggestion = severities.indexOf('suggestion');
+
+      // Critical should come before important (if both exist)
+      if (firstCritical !== -1 && firstImportant !== -1) {
+        expect(firstCritical).toBeLessThan(firstImportant);
+      }
+
+      // Important should come before suggestion (if both exist)
+      if (firstImportant !== -1 && firstSuggestion !== -1) {
+        expect(firstImportant).toBeLessThan(firstSuggestion);
+      }
+    });
+
+    it('should determine verdict "Aprovado" for score >= 80 and no critical issues', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        summary: {
+          overallScore: 85,
+          meetsMinimumQuality: true,
+          dimensions: [
+            {
+              dimension: 'legal',
+              score: 90,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'clareza',
+              score: 80,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'fundamentacao',
+              score: 85,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 1,
+            },
+          ],
+          totalIssues: 0,
+          totalSuggestions: 3,
+        },
+        legal: {
+          isCompliant: true,
+          score: 90,
+          issues: [],
+          recommendations: ['Consider adding more references'],
+          references: [],
+        },
+        clareza: {
+          score: 80,
+          readabilityIndex: 80,
+          issues: [],
+          suggestions: ['Minor clarity improvement'],
+          metrics: {
+            avgSentenceLength: 18,
+            avgWordLength: 5,
+            complexWords: 5,
+            passiveVoice: 1,
+          },
+        },
+        fundamentacao: {
+          score: 85,
+          hasNecessidade: true,
+          hasInteressePublico: true,
+          hasBeneficios: true,
+          hasRiscos: true,
+          suggestions: [],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.verdict).toBe('Aprovado');
+      expect(report.executiveSummary.criticalCount).toBe(0);
+    });
+
+    it('should determine verdict "Aprovado com ressalvas" for score 70-79 and no critical', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        summary: {
+          overallScore: 75,
+          meetsMinimumQuality: true,
+          dimensions: [
+            {
+              dimension: 'legal',
+              score: 80,
+              passed: true,
+              issueCount: 1,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'clareza',
+              score: 70,
+              passed: true,
+              issueCount: 1,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'fundamentacao',
+              score: 75,
+              passed: true,
+              issueCount: 1,
+              suggestionCount: 1,
+            },
+          ],
+          totalIssues: 3,
+          totalSuggestions: 3,
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.verdict).toBe('Aprovado com ressalvas');
+    });
+
+    it('should determine verdict "Reprovado" for score < 70', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        summary: {
+          overallScore: 65,
+          meetsMinimumQuality: false,
+          dimensions: [
+            {
+              dimension: 'legal',
+              score: 70,
+              passed: true,
+              issueCount: 1,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'clareza',
+              score: 60,
+              passed: false,
+              issueCount: 3,
+              suggestionCount: 3,
+            },
+            {
+              dimension: 'fundamentacao',
+              score: 65,
+              passed: false,
+              issueCount: 2,
+              suggestionCount: 2,
+            },
+          ],
+          totalIssues: 6,
+          totalSuggestions: 6,
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.verdict).toBe('Reprovado');
+    });
+
+    it('should determine verdict "Reprovado" when critical issues exist regardless of score', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        summary: {
+          overallScore: 82,
+          meetsMinimumQuality: true,
+          dimensions: [
+            {
+              dimension: 'legal',
+              score: 50,
+              passed: false,
+              issueCount: 2,
+              suggestionCount: 1,
+            },
+            {
+              dimension: 'clareza',
+              score: 95,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 0,
+            },
+            {
+              dimension: 'fundamentacao',
+              score: 100,
+              passed: true,
+              issueCount: 0,
+              suggestionCount: 0,
+            },
+          ],
+          totalIssues: 2,
+          totalSuggestions: 1,
+        },
+        legal: {
+          isCompliant: false,
+          score: 50,
+          issues: ['Major compliance violation'],
+          recommendations: ['Fix compliance'],
+          references: [],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.verdict).toBe('Reprovado');
+      expect(report.executiveSummary.criticalCount).toBeGreaterThan(0);
+    });
+
+    it('should include document info in report', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult();
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.documentInfo.wordCount).toBe(500);
+      expect(report.documentInfo.sectionCount).toBe(5);
+    });
+
+    it('should include generatedAt timestamp', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult();
+      const beforeGeneration = new Date();
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+      const afterGeneration = new Date();
+
+      // Assert
+      expect(report.generatedAt).toBeInstanceOf(Date);
+      expect(report.generatedAt.getTime()).toBeGreaterThanOrEqual(
+        beforeGeneration.getTime(),
+      );
+      expect(report.generatedAt.getTime()).toBeLessThanOrEqual(
+        afterGeneration.getTime(),
+      );
+    });
+
+    it('should build dimension sections with correct labels', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult();
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.dimensions).toHaveLength(3);
+      expect(report.dimensions[0].label).toBe('Conformidade Legal');
+      expect(report.dimensions[1].label).toBe('Clareza e Legibilidade');
+      expect(report.dimensions[2].label).toBe('Fundamentação');
+    });
+
+    it('should extract fundamentacao issues for missing elements', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        fundamentacao: {
+          score: 50,
+          hasNecessidade: false,
+          hasInteressePublico: false,
+          hasBeneficios: false,
+          hasRiscos: false,
+          suggestions: [],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      const fundamentacaoSection = report.dimensions.find(
+        (d) => d.dimension === 'fundamentacao',
+      );
+      expect(fundamentacaoSection?.issues.length).toBe(4);
+
+      const issueTitles =
+        fundamentacaoSection?.issues.map((i) => i.title) || [];
+      expect(issueTitles).toContain('Necessidade não fundamentada');
+      expect(issueTitles).toContain('Interesse público não demonstrado');
+      expect(issueTitles).toContain('Benefícios não listados');
+      expect(issueTitles).toContain('Riscos não mencionados');
+    });
+
+    it('should count severity levels correctly', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        legal: {
+          isCompliant: false,
+          score: 50,
+          issues: ['Critical issue 1', 'Critical issue 2'],
+          recommendations: ['Fix 1', 'Fix 2', 'Suggestion'],
+          references: [],
+        },
+        clareza: {
+          score: 65,
+          readabilityIndex: 65,
+          issues: ['Important issue'],
+          suggestions: ['Fix it'],
+          metrics: {
+            avgSentenceLength: 30,
+            avgWordLength: 7,
+            complexWords: 20,
+            passiveVoice: 10,
+          },
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.criticalCount).toBe(2);
+      expect(report.executiveSummary.importantCount).toBeGreaterThanOrEqual(1);
+      expect(report.executiveSummary.suggestionCount).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should handle empty issues gracefully', () => {
+      // Arrange
+      const analysisResult = createMockAnalysisResult({
+        legal: {
+          isCompliant: true,
+          score: 100,
+          issues: [],
+          recommendations: [],
+          references: [],
+        },
+        clareza: {
+          score: 100,
+          readabilityIndex: 100,
+          issues: [],
+          suggestions: [],
+          metrics: {
+            avgSentenceLength: 15,
+            avgWordLength: 5,
+            complexWords: 2,
+            passiveVoice: 0,
+          },
+        },
+        fundamentacao: {
+          score: 100,
+          hasNecessidade: true,
+          hasInteressePublico: true,
+          hasBeneficios: true,
+          hasRiscos: true,
+          suggestions: [],
+        },
+      });
+
+      // Act
+      const report = service.generateImprovementReport(analysisResult);
+
+      // Assert
+      expect(report.executiveSummary.totalIssues).toBe(0);
+      expect(report.executiveSummary.criticalCount).toBe(0);
+      expect(report.executiveSummary.importantCount).toBe(0);
+      expect(report.executiveSummary.suggestionCount).toBe(0);
+      expect(report.prioritizedRecommendations).toHaveLength(0);
     });
   });
 });
