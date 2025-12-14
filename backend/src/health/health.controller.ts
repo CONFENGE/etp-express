@@ -259,4 +259,45 @@ export class HealthController {
   getPerplexityHealth() {
     return this.perplexityService.getCircuitState();
   }
+
+  /**
+   * System Metrics Endpoint
+   *
+   * Retorna métricas de sistema do processo Node.js para monitoramento.
+   * Complementa o Railway Observability com dados internos da aplicação.
+   *
+   * @returns {object} Métricas de CPU, memória e uptime
+   * @example
+   * // Response:
+   * {
+   *   "uptime": 86400,
+   *   "uptimeFormatted": "1d 0h 0m 0s",
+   *   "memory": {
+   *     "heapUsed": 150000000,
+   *     "heapTotal": 250000000,
+   *     "heapUsedMB": 143,
+   *     "heapTotalMB": 238,
+   *     "external": 5000000,
+   *     "rss": 300000000,
+   *     "rssMB": 286
+   *   },
+   *   "cpu": {
+   *     "user": 1234567,
+   *     "system": 234567,
+   *     "userMs": 1234,
+   *     "systemMs": 234
+   *   },
+   *   "process": {
+   *     "pid": 12345,
+   *     "nodeVersion": "v20.10.0",
+   *     "platform": "linux",
+   *     "arch": "x64"
+   *   },
+   *   "timestamp": "2025-12-14T10:30:00.000Z"
+   * }
+   */
+  @Get('metrics')
+  getMetrics() {
+    return this.healthService.getSystemMetrics();
+  }
 }

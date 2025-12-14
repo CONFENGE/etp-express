@@ -169,6 +169,69 @@ export class HealthService {
   }
 
   /**
+   * Retorna métricas de sistema para monitoramento
+   *
+   * Expõe CPU, memória e uptime do processo Node.js.
+   * Utilizado para monitoramento complementar ao Railway Observability.
+   *
+   * @returns {object} Métricas de sistema
+   */
+  getSystemMetrics() {
+    const memUsage = process.memoryUsage();
+    const cpuUsage = process.cpuUsage();
+    const uptime = process.uptime();
+
+    return {
+      uptime: Math.floor(uptime),
+      uptimeFormatted: this.formatUptime(uptime),
+      memory: {
+        heapUsed: memUsage.heapUsed,
+        heapTotal: memUsage.heapTotal,
+        heapUsedMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+        heapTotalMB: Math.round(memUsage.heapTotal / 1024 / 1024),
+        external: memUsage.external,
+        rss: memUsage.rss,
+        rssMB: Math.round(memUsage.rss / 1024 / 1024),
+      },
+      cpu: {
+        user: cpuUsage.user,
+        system: cpuUsage.system,
+        userMs: Math.round(cpuUsage.user / 1000),
+        systemMs: Math.round(cpuUsage.system / 1000),
+      },
+      process: {
+        pid: process.pid,
+        nodeVersion: process.version,
+        platform: process.platform,
+        arch: process.arch,
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Formata uptime em formato legível (d:h:m:s)
+   * @private
+   */
+  private formatUptime(seconds: number): string {
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    if (days > 0) {
+      return `${days}d ${hours}h ${minutes}m ${secs}s`;
+    }
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    }
+    if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    }
+    return `${secs}s`;
+  }
+
+  /**
    * Cron Job - Verificação periódica de provedores externos
    *
    * Executa a cada 5 minutos para monitorar proativamente a saúde das APIs externas.
