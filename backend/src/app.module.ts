@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -6,6 +6,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
+
+// Middleware
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 // Configuration
 import redisConfig from './config/redis.config';
@@ -39,6 +42,11 @@ import { AppService } from './app.service';
 import { TenantGuard } from './common/guards/tenant.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
+/**
+ * AppModule - Root module of the application
+ *
+ * Implements NestModule to configure middleware (#653)
+ */
 @Module({
   imports: [
     // Configuration
@@ -215,4 +223,14 @@ import { RolesGuard } from './common/guards/roles.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  /**
+   * Configure middleware for request processing (#653)
+   *
+   * RequestIdMiddleware runs FIRST to establish request context
+   * before any other middleware or guards execute.
+   */
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestIdMiddleware).forRoutes('*'); // Apply to all routes
+  }
+}
