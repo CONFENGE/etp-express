@@ -668,4 +668,164 @@ describe('HealthService', () => {
       expect(dataSource.showMigrations).toHaveBeenCalledTimes(3);
     });
   });
+
+  describe('getSystemMetrics', () => {
+    it('should return system metrics with all required fields', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      expect(result).toHaveProperty('uptime');
+      expect(result).toHaveProperty('uptimeFormatted');
+      expect(result).toHaveProperty('memory');
+      expect(result).toHaveProperty('cpu');
+      expect(result).toHaveProperty('process');
+      expect(result).toHaveProperty('timestamp');
+    });
+
+    it('should return uptime as a positive number', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      expect(typeof result.uptime).toBe('number');
+      expect(result.uptime).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should return memory metrics with correct structure', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      expect(result.memory).toHaveProperty('heapUsed');
+      expect(result.memory).toHaveProperty('heapTotal');
+      expect(result.memory).toHaveProperty('heapUsedMB');
+      expect(result.memory).toHaveProperty('heapTotalMB');
+      expect(result.memory).toHaveProperty('external');
+      expect(result.memory).toHaveProperty('rss');
+      expect(result.memory).toHaveProperty('rssMB');
+
+      // Verify types
+      expect(typeof result.memory.heapUsed).toBe('number');
+      expect(typeof result.memory.heapTotal).toBe('number');
+      expect(typeof result.memory.heapUsedMB).toBe('number');
+      expect(typeof result.memory.heapTotalMB).toBe('number');
+    });
+
+    it('should return CPU metrics with correct structure', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      expect(result.cpu).toHaveProperty('user');
+      expect(result.cpu).toHaveProperty('system');
+      expect(result.cpu).toHaveProperty('userMs');
+      expect(result.cpu).toHaveProperty('systemMs');
+
+      // Verify types
+      expect(typeof result.cpu.user).toBe('number');
+      expect(typeof result.cpu.system).toBe('number');
+    });
+
+    it('should return process info with correct structure', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      expect(result.process).toHaveProperty('pid');
+      expect(result.process).toHaveProperty('nodeVersion');
+      expect(result.process).toHaveProperty('platform');
+      expect(result.process).toHaveProperty('arch');
+
+      // Verify types
+      expect(typeof result.process.pid).toBe('number');
+      expect(result.process.nodeVersion).toMatch(/^v\d+/);
+    });
+
+    it('should return valid ISO 8601 timestamp', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert
+      const timestamp = new Date(result.timestamp);
+      expect(timestamp.toISOString()).toBe(result.timestamp);
+    });
+
+    it('should return formatted uptime in human-readable format', () => {
+      // Act
+      const result = service.getSystemMetrics();
+
+      // Assert - should match pattern like "1d 2h 3m 4s" or "2h 3m 4s" or "3m 4s" or "4s"
+      expect(result.uptimeFormatted).toMatch(
+        /^(\d+d\s)?(\d+h\s)?(\d+m\s)?\d+s$/,
+      );
+    });
+
+    it('should handle rapid consecutive calls', () => {
+      // Act
+      const results = [
+        service.getSystemMetrics(),
+        service.getSystemMetrics(),
+        service.getSystemMetrics(),
+      ];
+
+      // Assert
+      expect(results).toHaveLength(3);
+      results.forEach((result) => {
+        expect(result).toHaveProperty('uptime');
+        expect(result).toHaveProperty('memory');
+        expect(result).toHaveProperty('cpu');
+      });
+    });
+  });
+
+  describe('formatUptime (private method)', () => {
+    it('should format seconds only', () => {
+      // Act
+      const result = (service as any).formatUptime(45);
+
+      // Assert
+      expect(result).toBe('45s');
+    });
+
+    it('should format minutes and seconds', () => {
+      // Act
+      const result = (service as any).formatUptime(125); // 2m 5s
+
+      // Assert
+      expect(result).toBe('2m 5s');
+    });
+
+    it('should format hours, minutes and seconds', () => {
+      // Act
+      const result = (service as any).formatUptime(3725); // 1h 2m 5s
+
+      // Assert
+      expect(result).toBe('1h 2m 5s');
+    });
+
+    it('should format days, hours, minutes and seconds', () => {
+      // Act
+      const result = (service as any).formatUptime(90125); // 1d 1h 2m 5s
+
+      // Assert
+      expect(result).toBe('1d 1h 2m 5s');
+    });
+
+    it('should handle zero uptime', () => {
+      // Act
+      const result = (service as any).formatUptime(0);
+
+      // Assert
+      expect(result).toBe('0s');
+    });
+
+    it('should handle large uptime values', () => {
+      // Act
+      const result = (service as any).formatUptime(864000); // 10 days
+
+      // Assert
+      expect(result).toBe('10d 0h 0m 0s');
+    });
+  });
 });
