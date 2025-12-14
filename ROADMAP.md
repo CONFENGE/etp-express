@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 18:00 | **Progresso:** 300/329 (91.2%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
+**Atualizado:** 2025-12-14 19:45 | **Progresso:** 301/329 (91.5%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
@@ -61,7 +61,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         █████████████████░░░ 78/90   87%  (+8 novas)
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       ████████░░░░░░░░░░░░  8/16   50%  🔴 P1 SPRINT
+M9: Export/Import       █████████░░░░░░░░░░░  9/16   56%  🔴 P1 SPRINT
 ```
 
 ---
@@ -227,7 +227,7 @@ M9: Export/Import       ████████░░░░░░░░░░�
 | ~~#554~~ | ~~Extração texto DOCX~~ | ✅ PR #668 | - |
 | ~~#555~~ | ~~Extração texto PDF~~ | ✅ PR #669 | - |
 | ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | - |
-| #557 | Geração relatório melhorias | P1 | 2 |
+| ~~#557~~ | ~~Geração relatório melhorias~~ | ✅ PR #684 | - |
 | #558 | Conversão documento para ETP | P1 | 2 |
 | #559 | Endpoints análise e conversão | P1 | 2 |
 | #560 | Frontend página Import & Analysis | P1 | 3 |
@@ -254,12 +254,12 @@ M9: Export/Import       ████████░░░░░░░░░░�
 | ~~#673~~ | ~~Alertas Railway~~           | ✅ PR #683 | -    |
 | ~~#555~~ | ~~PDF Extraction~~            | ✅ PR #669 | -    |
 
-### Sprint 2 (Semana 2) - M9 Backend | 11h remaining
+### Sprint 2 (Semana 2) - M9 Backend | 7h remaining
 
 | #        | Issue                           | Prior.     | Est. |
 | -------- | ------------------------------- | ---------- | ---- |
 | ~~#556~~ | ~~ETPAnalysisService (agents)~~ | ✅ PR #682 | -    |
-| #557     | Report Generation               | P1         | 4h   |
+| ~~#557~~ | ~~Report Generation~~           | ✅ PR #684 | -    |
 | #558     | Doc Conversion                  | P1         | 4h   |
 | #559     | Endpoints análise               | P1         | 3h   |
 
