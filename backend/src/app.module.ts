@@ -26,6 +26,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 import { DomainManagerModule } from './modules/domain-manager/domain-manager.module';
 import { DemoModule } from './modules/demo/demo.module';
+import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -196,6 +197,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     SystemAdminModule,
     DomainManagerModule,
     DemoModule,
+    DocumentExtractionModule,
     HealthModule,
   ],
   controllers: [AppController],
