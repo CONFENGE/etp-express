@@ -15,6 +15,7 @@ import {
 } from 'fs';
 import { join } from 'path';
 import * as mammoth from 'mammoth';
+import { PDFParse } from 'pdf-parse';
 import { UPLOAD_DIR } from './multer.config';
 import {
   ExtractedDocument,
@@ -41,6 +42,7 @@ const WORDS_PER_PAGE = 500;
  * - File path validation
  * - Upload directory management
  * - Text extraction from DOCX files (using mammoth)
+ * - Text extraction from PDF files (using pdf-parse)
  * - Section detection based on headings
  */
 @Injectable()
@@ -195,6 +197,231 @@ export class DocumentExtractionService implements OnModuleInit {
 
     const buffer = readFileSync(filePath);
     return this.extractFromDocx(buffer, options);
+  }
+
+  /**
+   * Extract text from a PDF file buffer.
+   *
+   * @param buffer - The PDF file buffer
+   * @param options - Extraction options (detectSections not applicable for PDF)
+   * @returns ExtractedDocument with fullText, sections, and metadata
+   * @throws BadRequestException if extraction fails (corrupted, password-protected, etc.)
+   */
+  async extractFromPdf(
+    buffer: Buffer,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options: ExtractionOptions = {},
+  ): Promise<ExtractedDocument> {
+    let parser: PDFParse | null = null;
+
+    try {
+      this.logger.log('Starting PDF text extraction...');
+
+      // Create parser with buffer data (pdf-parse v2 API)
+      parser = new PDFParse({ data: buffer });
+
+      // Extract text and info in parallel
+      const [textResult, infoResult] = await Promise.all([
+        parser.getText(),
+        parser.getInfo(),
+      ]);
+
+      const fullText = textResult.text || '';
+
+      // Check if PDF has text content (might be image-only)
+      if (!fullText.trim()) {
+        this.logger.warn(
+          'PDF contains no extractable text (may be image-only or scanned)',
+        );
+        throw new BadRequestException(
+          'PDF contains no extractable text. The document may contain only images or be a scanned document without OCR.',
+        );
+      }
+
+      // PDF doesn't have structured headings like DOCX, so we attempt
+      // to detect sections by common patterns (numbered headings, ALL CAPS lines)
+      const sections = this.parseSectionsFromPdfText(fullText);
+
+      // If no sections detected, create a single section with all content
+      if (sections.length === 0) {
+        sections.push({ content: fullText.trim() });
+      }
+
+      // Calculate metadata
+      const wordCount = this.countWords(fullText);
+      const characterCount = fullText.length;
+      // Use actual page count from PDF metadata (infoResult.total)
+      const pageCount =
+        infoResult.total || Math.ceil(wordCount / WORDS_PER_PAGE);
+
+      this.logger.log(
+        `PDF extraction complete: ${wordCount} words, ${pageCount} pages, ${sections.length} sections`,
+      );
+
+      return {
+        fullText,
+        sections,
+        metadata: {
+          wordCount,
+          pageCount,
+          sectionCount: sections.length,
+          characterCount,
+        },
+      };
+    } catch (error) {
+      // Handle specific pdf-parse errors
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      // Check for password-protected PDF
+      if (
+        errorMessage.includes('password') ||
+        errorMessage.includes('encrypted') ||
+        errorMessage.includes('PasswordException')
+      ) {
+        this.logger.error('PDF is password-protected:', error);
+        throw new BadRequestException(
+          'PDF file is password-protected. Please provide an unprotected document.',
+        );
+      }
+
+      // Check for corrupted PDF
+      if (
+        errorMessage.includes('Invalid PDF') ||
+        errorMessage.includes('PDF structure') ||
+        errorMessage.includes('InvalidPDFException')
+      ) {
+        this.logger.error('PDF is corrupted:', error);
+        throw new BadRequestException(
+          'PDF file is corrupted or invalid. Please provide a valid PDF document.',
+        );
+      }
+
+      this.logger.error('PDF extraction failed:', error);
+      throw new BadRequestException(
+        `Failed to extract text from PDF file: ${errorMessage}`,
+      );
+    } finally {
+      // Clean up parser resources
+      if (parser) {
+        try {
+          await parser.destroy();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    }
+  }
+
+  /**
+   * Extract text from a PDF file stored in the upload directory.
+   *
+   * @param filename - The filename in the upload directory
+   * @param options - Extraction options
+   * @returns ExtractedDocument with fullText, sections, and metadata
+   * @throws BadRequestException if file not found or extraction fails
+   */
+  async extractFromPdfFile(
+    filename: string,
+    options: ExtractionOptions = {},
+  ): Promise<ExtractedDocument> {
+    const filePath = this.getFilePath(filename);
+
+    if (!existsSync(filePath)) {
+      throw new BadRequestException(`File not found: ${filename}`);
+    }
+
+    const buffer = readFileSync(filePath);
+    return this.extractFromPdf(buffer, options);
+  }
+
+  /**
+   * Parse sections from PDF text by detecting common heading patterns.
+   * Looks for numbered sections (1., 1.1., etc.) and ALL CAPS lines.
+   */
+  private parseSectionsFromPdfText(text: string): ExtractedSection[] {
+    const sections: ExtractedSection[] = [];
+    const lines = text.split('\n');
+
+    let currentSection: ExtractedSection | null = null;
+    let contentBuffer: string[] = [];
+
+    // Pattern for numbered sections (1., 1.1., 1.1.1., etc.)
+    const numberedSectionPattern = /^(\d+(?:\.\d+)*\.?)\s+(.+)$/;
+    // Pattern for ALL CAPS headers (at least 3 words, all uppercase)
+    const capsHeaderPattern = /^([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ\s]{10,})$/;
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) continue;
+
+      let isHeading = false;
+      let headingTitle = '';
+      let headingLevel: number | undefined;
+
+      // Check for numbered section
+      const numberedMatch = trimmedLine.match(numberedSectionPattern);
+      if (numberedMatch) {
+        isHeading = true;
+        headingTitle = `${numberedMatch[1]} ${numberedMatch[2]}`;
+        // Calculate level based on number of dots
+        headingLevel = (numberedMatch[1].match(/\./g) || []).length + 1;
+      }
+
+      // Check for ALL CAPS header (only if not already matched)
+      if (!isHeading) {
+        const capsMatch = trimmedLine.match(capsHeaderPattern);
+        if (
+          capsMatch &&
+          trimmedLine === trimmedLine.toUpperCase() &&
+          trimmedLine.split(/\s+/).length >= 2
+        ) {
+          isHeading = true;
+          headingTitle = trimmedLine;
+          headingLevel = 1;
+        }
+      }
+
+      if (isHeading) {
+        // Save previous section if exists
+        if (currentSection || contentBuffer.length > 0) {
+          const content = contentBuffer.join('\n').trim();
+          if (currentSection) {
+            currentSection.content = content;
+            sections.push(currentSection);
+          } else if (content) {
+            sections.push({ content });
+          }
+          contentBuffer = [];
+        }
+
+        // Start new section
+        currentSection = {
+          title: headingTitle,
+          content: '',
+          level: headingLevel,
+        };
+      } else {
+        contentBuffer.push(trimmedLine);
+      }
+    }
+
+    // Add last section
+    if (currentSection || contentBuffer.length > 0) {
+      const content = contentBuffer.join('\n').trim();
+      if (currentSection) {
+        currentSection.content = content;
+        sections.push(currentSection);
+      } else if (content) {
+        sections.push({ content });
+      }
+    }
+
+    return sections;
   }
 
   /**
