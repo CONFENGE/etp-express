@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
@@ -46,7 +46,7 @@ export interface ProvidersHealthResponse {
  * @endpoint GET /api/health/providers/openai - Status do circuit breaker OpenAI
  * @endpoint GET /api/health/providers/perplexity - Status do circuit breaker Perplexity
  */
-@Controller('health')
+@Controller({ path: 'health', version: VERSION_NEUTRAL })
 export class HealthController {
   constructor(
     private readonly healthService: HealthService,
