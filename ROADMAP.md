@@ -1,6 +1,8 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-14 | **Progresso:** 327/360 (90.8%) | **Deploy:** 🟢 ONLINE | **P0 Security:** 0 issues | **P0 Enterprise:** 0 issues | **Hardening:** 6 issues
+**Atualizado:** 2025-12-14 | **Progresso:** 329/368 (89.4%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
+
+> **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
 ## 🛡️ Hardening & Refactoring (6 issues restantes)
 
@@ -25,12 +27,17 @@
 | ~~#650~~ | ~~SimilarContract - Adicionar campo organizationId~~    | ✅ PR #661           |
 | ~~#651~~ | ~~Prompt Injection - Melhorar sanitização input~~       | ✅ PR #666           |
 
-### 🟡 P2 - Observabilidade (4 issues)
+### 🔴 P1 - Observabilidade Crítica (2 issues - Sprint 1)
+
+| #    | Issue                       | Impacto                    | Sprint |
+| ---- | --------------------------- | -------------------------- | ------ |
+| #652 | Logging estruturado em JSON | Análise de logs facilitada | 1      |
+| #653 | Request ID/Trace ID em logs | Correlação de requisições  | 1      |
+
+### 🟢 v1.1 - Observabilidade Avançada (2 issues - Postergado)
 
 | #    | Issue                             | Impacto                        |
 | ---- | --------------------------------- | ------------------------------ |
-| #652 | Logging estruturado em JSON       | Análise de logs facilitada     |
-| #653 | Request ID/Trace ID em logs       | Correlação de requisições      |
 | #654 | OpenTelemetry distributed tracing | Visibilidade por componente    |
 | #655 | Métricas de negócio Prometheus    | KPIs: tokens, latência, falhas |
 
@@ -51,10 +58,10 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 70/82   85%
+M6: Maintenance         █████████████████░░░ 78/90   87%  (+8 novas)
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
-M8: Domínios Instit.    ███████████████████░ 23/24   96%
-M9: Export/Import       ██████░░░░░░░░░░░░░░  6/16   38%
+M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
+M9: Export/Import       ███████░░░░░░░░░░░░░  7/16   44%  🔴 P1 SPRINT
 ```
 
 ---
@@ -144,27 +151,19 @@ M9: Export/Import       ██████░░░░░░░░░░░░�
 
 ---
 
-### M8 - Gestão de Domínios ⚠️ 96% (23/24)
+### M8 - Gestão de Domínios ✅ 100% COMPLETE (24/24)
 
-**Pendente:**
-| # | Issue | Status |
-| ---- | --------------------- | ------ |
-| #470 | System Admin dashboard (parent) | OPEN |
+| #        | Issue                               | Status                           |
+| -------- | ----------------------------------- | -------------------------------- |
+| ~~#470~~ | ~~System Admin dashboard (parent)~~ | ✅ CLOSED (sub-issues completas) |
 
-**Concluídas recentemente:**
+**Sub-issues completas:**
 
-- [x] #543 Acessibilidade WCAG 2.1 AA (PR #571)
-- [x] #539 UserManagement CRUD completo (PR #570)
-- [x] #523 Setup adminStore + rotas
-- [x] #524 AdminDashboard estatísticas
-- [x] #525 DomainManagement CRUD
-- [x] #526 DomainDetail + AssignManager
-- [x] #527 Testes e responsividade
-- [x] #537 Setup managerStore + rotas
-- [x] #538 ManagerDashboard estatísticas
-- [x] #540 Setup design tokens Apple HIG
-- [x] #541 Componentes base estilizados
-- [x] #542 Dark mode
+- ✅ #523 Setup adminStore + rotas
+- ✅ #524 AdminDashboard estatísticas
+- ✅ #525 DomainManagement CRUD
+- ✅ #526 DomainDetail + AssignManager
+- ✅ #527 Testes e responsividade
 
 ### M5 - E2E & Docs - 85% (23/27, 4 open)
 
@@ -208,7 +207,9 @@ M9: Export/Import       ██████░░░░░░░░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis (10 open, 6 done)
+### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (9 open, 7 done)
+
+> **Decisão:** Feature-complete no MVP. Sprint intensivo nas semanas 1-4.
 
 **Feature 1: Export DOCX** ✅ COMPLETE
 | # | Issue | Status |
@@ -217,28 +218,92 @@ M9: Export/Import       ██████░░░░░░░░░░░░�
 | ~~#549~~ | ~~Implementar exportToDocx~~ | ✅ PR #574 |
 | ~~#550~~ | ~~Endpoint GET /export/etp/:id/docx~~ | ✅ PR #576 |
 | ~~#551~~ | ~~Frontend botão Export DOCX~~ | ✅ PR #577 |
-| #552 | Testes E2E Export DOCX | OPEN |
+| #552 | Testes E2E Export DOCX | P2 - Sprint 4 |
 
-**Feature 2: Import & Analysis** (~27h)
-| # | Issue | Dep. |
-| ---- | ---------------------------------- | ---------- |
-| ~~#553~~ | ~~Setup infraestrutura upload~~ | ✅ PR #667 |
-| ~~#554~~ | ~~Extração texto DOCX~~ | ✅ PR #668 |
-| #555 | Extração texto PDF | ~~#553~~ |
-| #556 | ETPAnalysisService (agents) | #554, #555 |
-| #557 | Geração relatório melhorias | #556 |
-| #558 | Conversão documento para ETP | #556 |
-| #559 | Endpoints análise e conversão | #557, #558 |
-| #560 | Frontend página Import & Analysis | #559 |
-| #561 | Frontend exibição resultados | #560 |
-| #562 | Frontend store análise | #559 |
-| #563 | Testes E2E Import e Analysis | #561, #562 |
+**Feature 2: Import & Analysis** (27h - P1)
+| # | Issue | Prior. | Sprint |
+| ---- | ---------------------------------- | ------ | ------ |
+| ~~#553~~ | ~~Setup infraestrutura upload~~ | ✅ PR #667 | - |
+| ~~#554~~ | ~~Extração texto DOCX~~ | ✅ PR #668 | - |
+| ~~#555~~ | ~~Extração texto PDF~~ | ✅ PR #669 | - |
+| #556 | ETPAnalysisService (agents) | P1 | 2 |
+| #557 | Geração relatório melhorias | P1 | 2 |
+| #558 | Conversão documento para ETP | P1 | 2 |
+| #559 | Endpoints análise e conversão | P1 | 2 |
+| #560 | Frontend página Import & Analysis | P1 | 3 |
+| #561 | Frontend exibição resultados | P1 | 3 |
+| #562 | Frontend store análise | P1 | 3 |
+| #563 | Testes E2E Import e Analysis | P1 | 4 |
+
+---
+
+## 🚀 Sprint Plan 30 Dias (Go-Live B2G)
+
+**Origem:** REUNIAO_EXTRAORDINARIA_CTOS.md (14/12/2024)
+**Total:** 83h (~21h/semana)
+
+### Sprint 1 (Semana 1) - Infra Crítica + Observabilidade | 15h (-4h ✅#555)
+
+| #        | Issue                         | Prior.     | Est. |
+| -------- | ----------------------------- | ---------- | ---- |
+| #670     | Corrigir nixpacks.toml        | P0         | 1h   |
+| #671     | Scale backend 2+ réplicas     | P0         | 2h   |
+| #652     | JSON logging estruturado      | P1         | 4h   |
+| #653     | Request/Trace IDs             | P1         | 4h   |
+| #672     | Documentar restore PostgreSQL | P1         | 2h   |
+| #673     | Alertas Railway               | P1         | 2h   |
+| ~~#555~~ | ~~PDF Extraction~~            | ✅ PR #669 | -    |
+
+### Sprint 2 (Semana 2) - M9 Backend | 19h
+
+| #    | Issue                       | Prior. | Est. |
+| ---- | --------------------------- | ------ | ---- |
+| #556 | ETPAnalysisService (agents) | P1     | 8h   |
+| #557 | Report Generation           | P1     | 4h   |
+| #558 | Doc Conversion              | P1     | 4h   |
+| #559 | Endpoints análise           | P1     | 3h   |
+
+### Sprint 3 (Semana 3) - M9 Frontend + Performance | 21h
+
+| #    | Issue                       | Prior. | Est. |
+| ---- | --------------------------- | ------ | ---- |
+| #560 | Import Page UI              | P1     | 3h   |
+| #561 | Results Display             | P1     | 2h   |
+| #562 | Analysis Store              | P1     | 2h   |
+| #454 | N+1 query fix               | P2     | 6h   |
+| #457 | useCallback/useMemo         | P2     | 4h   |
+| #676 | Load testing k6 (100 users) | P2     | 4h   |
+
+### Sprint 4 (Semana 4) - QA + Go-Live | 24h
+
+| #    | Issue                     | Prior. | Est. |
+| ---- | ------------------------- | ------ | ---- |
+| #563 | E2E Tests Import/Analysis | P1     | 3h   |
+| #552 | E2E Export DOCX           | P2     | 3h   |
+| #674 | Smoke test checklist      | P1     | 2h   |
+| #675 | Manual usuário PDF        | P2     | 8h   |
+| #677 | Canal suporte email       | P2     | 4h   |
+| #455 | LLM cache memory leak     | P2     | 4h   |
+
+---
+
+## 📋 Backlog v1.1 (Postergado)
+
+| #    | Issue                 | Esforço |
+| ---- | --------------------- | ------- |
+| #654 | OpenTelemetry         | 4h      |
+| #655 | Prometheus metrics    | 4h      |
+| #110 | Staged rollout        | TBD     |
+| #387 | pgvector migration    | TBD     |
+| #111 | SLA definition        | 4h      |
+| #456 | Frontend coverage 70% | 8h      |
+| #458 | WCAG 2.1 gaps         | 4h      |
 
 ---
 
 ## Milestones Completos
 
-M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6) - **Total: 166 issues**
+M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24) - **Total: 190 issues**
 
 ---
 
@@ -246,19 +311,18 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 360   |
-| Issues Abertas    | 34    |
-| Issues Fechadas   | 326   |
-| Progresso         | 90.6% |
+| Issues Totais     | 368   |
+| Issues Abertas    | 41    |
+| Issues Fechadas   | 327   |
+| Progresso         | 88.9% |
 | Velocidade        | 7/dia |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Testes            | 1879  |
-| P0 Security       | 0     |
-| P0 Enterprise     | 0     |
-| Hardening P1      | 0     |
-| Hardening P2      | 4     |
-| Hardening P3      | 2     |
+| P0 Infra          | 2     |
+| P1 Sprint         | 15    |
+| P2 Sprint         | 8     |
+| v1.1 Backlog      | 7     |
 
 ---
 
