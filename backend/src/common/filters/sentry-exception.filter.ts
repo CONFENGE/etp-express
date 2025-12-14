@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
+import { getRequestId } from '../context/request-context';
 
 /**
  * Global exception filter que captura todas as exceptions e envia para Sentry
@@ -52,6 +53,13 @@ export class SentryExceptionFilter extends BaseExceptionFilter {
       // Adicionar tags customizadas
       scope.setTag('endpoint', `${request.method} ${request.route?.path}`);
       scope.setTag('status_code', this.getStatusCode(exception));
+
+      // Add request ID for log correlation (#653)
+      const requestId = getRequestId();
+      if (requestId) {
+        scope.setTag('request_id', requestId);
+        scope.setContext('tracing', { requestId });
+      }
 
       // Capturar exception
       Sentry.captureException(exception);

@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
 import { WinstonLoggerService } from '../services/winston-logger.service';
+import { getRequestId } from '../context/request-context';
 
 /**
  * Extended Request interface with user context
@@ -38,6 +39,7 @@ interface AuthenticatedRequest extends Request {
  * - organizationId: User's organization (if available)
  * - ip: Client IP address
  * - userAgent: Client user agent string
+ * - requestId: Unique request identifier for log correlation (#653)
  *
  * @see https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html
  */
@@ -63,6 +65,9 @@ export class LoggingInterceptor implements NestInterceptor {
     const userId = request.user?.id;
     const organizationId = request.user?.organizationId;
 
+    // Get request ID from AsyncLocalStorage context (#653)
+    const requestId = getRequestId();
+
     // Log incoming request
     this.logger.logRequest({
       method,
@@ -71,6 +76,7 @@ export class LoggingInterceptor implements NestInterceptor {
       userAgent: this.truncateUserAgent(userAgent),
       userId,
       organizationId,
+      requestId,
     });
 
     return next.handle().pipe(
@@ -87,6 +93,7 @@ export class LoggingInterceptor implements NestInterceptor {
             durationMs,
             userId,
             organizationId,
+            requestId,
           });
         },
         error: (error: Error & { status?: number }) => {
@@ -102,6 +109,7 @@ export class LoggingInterceptor implements NestInterceptor {
             statusCode: error.status,
             userId,
             organizationId,
+            requestId,
           });
         },
       }),
