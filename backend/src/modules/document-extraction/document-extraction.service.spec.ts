@@ -23,6 +23,19 @@ jest.mock('mammoth', () => ({
   convertToHtml: jest.fn(),
 }));
 
+// Mock pdf-parse
+const mockGetText = jest.fn();
+const mockGetInfo = jest.fn();
+const mockDestroy = jest.fn();
+
+jest.mock('pdf-parse', () => ({
+  PDFParse: jest.fn().mockImplementation(() => ({
+    getText: mockGetText,
+    getInfo: mockGetInfo,
+    destroy: mockDestroy,
+  })),
+}));
+
 describe('DocumentExtractionService', () => {
   let service: DocumentExtractionService;
 
@@ -431,6 +444,315 @@ describe('DocumentExtractionService', () => {
         fileCount: 2,
         totalSizeBytes: 1000, // Only counts the successful one
       });
+    });
+  });
+
+  describe('extractFromPdf', () => {
+    const mockBuffer = Buffer.from('mock pdf content');
+
+    beforeEach(() => {
+      mockGetText.mockReset();
+      mockGetInfo.mockReset();
+      mockDestroy.mockReset();
+      mockDestroy.mockResolvedValue(undefined);
+    });
+
+    it('should extract text and metadata from PDF buffer', async () => {
+      const mockText =
+        'This is the document content with some words here for testing.';
+
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 3 });
+
+      const result = await service.extractFromPdf(mockBuffer);
+
+      expect(result.fullText).toBe(mockText);
+      expect(result.metadata.wordCount).toBe(11); // Actual word count
+      expect(result.metadata.pageCount).toBe(3);
+      expect(result.metadata.characterCount).toBe(mockText.length);
+      expect(result.sections.length).toBeGreaterThanOrEqual(1);
+      expect(mockDestroy).toHaveBeenCalled();
+    });
+
+    it('should detect numbered sections in PDF text', async () => {
+      const mockText = `1. Introduction
+This is the introduction section.
+
+1.1 Background
+Some background information.
+
+2. Methods
+The methods section content.`;
+
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+
+      const result = await service.extractFromPdf(mockBuffer);
+
+      expect(result.sections.length).toBeGreaterThan(1);
+      expect(
+        result.sections.some((s) => s.title?.includes('Introduction')),
+      ).toBe(true);
+    });
+
+    it('should detect ALL CAPS headings in PDF text', async () => {
+      const mockText = `ESTUDO TÉCNICO PRELIMINAR
+Este documento apresenta o estudo técnico.
+
+JUSTIFICATIVA DA CONTRATAÇÃO
+A contratação se justifica pelos seguintes motivos.`;
+
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+
+      const result = await service.extractFromPdf(mockBuffer);
+
+      expect(result.sections.length).toBeGreaterThan(1);
+    });
+
+    it('should create single section when no headings detected', async () => {
+      const mockText = 'Simple text without any headings or structure at all.';
+
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+
+      const result = await service.extractFromPdf(mockBuffer);
+
+      expect(result.sections).toHaveLength(1);
+      expect(result.sections[0].title).toBeUndefined();
+      expect(result.sections[0].content).toBe(mockText);
+    });
+
+    it('should throw BadRequestException for empty PDF (image-only)', async () => {
+      mockGetText.mockResolvedValue({ text: '' });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'no extractable text',
+      );
+    });
+
+    it('should throw BadRequestException for PDF with only whitespace', async () => {
+      mockGetText.mockResolvedValue({ text: '   \n\n   ' });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw BadRequestException for password-protected PDF', async () => {
+      mockGetText.mockRejectedValue(
+        new Error('PasswordException: Need password'),
+      );
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'password-protected',
+      );
+    });
+
+    it('should throw BadRequestException for encrypted PDF', async () => {
+      mockGetText.mockRejectedValue(new Error('Document is encrypted'));
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'password-protected',
+      );
+    });
+
+    it('should throw BadRequestException for corrupted PDF', async () => {
+      mockGetText.mockRejectedValue(
+        new Error('InvalidPDFException: Bad format'),
+      );
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'corrupted or invalid',
+      );
+    });
+
+    it('should throw BadRequestException for invalid PDF structure', async () => {
+      mockGetText.mockRejectedValue(new Error('Invalid PDF structure'));
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'corrupted or invalid',
+      );
+    });
+
+    it('should throw BadRequestException with original message for unknown errors', async () => {
+      mockGetText.mockRejectedValue(new Error('Some unknown error'));
+
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(
+        'Some unknown error',
+      );
+    });
+
+    it('should use estimated page count when PDF metadata unavailable', async () => {
+      // 1000 words should give ~2 pages (500 words per page)
+      const mockText = 'word '.repeat(1000).trim();
+
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 0 }); // No page count from metadata
+
+      const result = await service.extractFromPdf(mockBuffer);
+
+      expect(result.metadata.pageCount).toBe(2); // 1000 words / 500 = 2
+    });
+
+    it('should clean up parser resources even on error', async () => {
+      mockGetText.mockRejectedValue(new Error('Some error'));
+
+      try {
+        await service.extractFromPdf(mockBuffer);
+      } catch {
+        // Expected to throw
+      }
+
+      expect(mockDestroy).toHaveBeenCalled();
+    });
+
+    it('should handle destroy errors gracefully', async () => {
+      mockGetText.mockResolvedValue({ text: 'Some content' });
+      mockGetInfo.mockResolvedValue({ total: 1 });
+      mockDestroy.mockRejectedValue(new Error('Cleanup failed'));
+
+      // Should not throw even if destroy fails
+      const result = await service.extractFromPdf(mockBuffer);
+      expect(result.fullText).toBe('Some content');
+    });
+  });
+
+  describe('extractFromPdfFile', () => {
+    beforeEach(() => {
+      mockGetText.mockReset();
+      mockGetInfo.mockReset();
+      mockDestroy.mockReset();
+      mockDestroy.mockResolvedValue(undefined);
+    });
+
+    it('should read file and extract content', async () => {
+      const mockBuffer = Buffer.from('mock pdf');
+      const mockText = 'File content from PDF';
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+      mockGetText.mockResolvedValue({ text: mockText });
+      mockGetInfo.mockResolvedValue({ total: 2 });
+
+      const result = await service.extractFromPdfFile('test.pdf');
+
+      expect(readFileSync).toHaveBeenCalledWith(join(UPLOAD_DIR, 'test.pdf'));
+      expect(result.fullText).toBe(mockText);
+      expect(result.metadata.pageCount).toBe(2);
+    });
+
+    it('should throw BadRequestException if file not found', async () => {
+      (existsSync as jest.Mock).mockReturnValue(false);
+
+      await expect(
+        service.extractFromPdfFile('nonexistent.pdf'),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.extractFromPdfFile('nonexistent.pdf'),
+      ).rejects.toThrow('File not found');
+    });
+  });
+
+  describe('parseSectionsFromPdfText (private method via extractFromPdf)', () => {
+    beforeEach(() => {
+      mockGetText.mockReset();
+      mockGetInfo.mockReset();
+      mockDestroy.mockReset();
+      mockDestroy.mockResolvedValue(undefined);
+      mockGetInfo.mockResolvedValue({ total: 1 });
+    });
+
+    it('should detect multi-level numbered sections', async () => {
+      const mockText = `1. First Level
+Content for first level.
+
+1.1 Second Level
+Content for second level.
+
+1.1.1 Third Level
+Content for third level.
+
+2. Another First Level
+More content.`;
+
+      mockGetText.mockResolvedValue({ text: mockText });
+
+      const result = await service.extractFromPdf(Buffer.from('mock'));
+
+      // Should have 4 sections with proper levels
+      expect(result.sections.length).toBe(4);
+      // Find sections by their titles to verify levels correctly
+      const firstLevel = result.sections.find((s) =>
+        s.title?.includes('1. First Level'),
+      );
+      const secondLevel = result.sections.find((s) =>
+        s.title?.includes('1.1 Second Level'),
+      );
+      const thirdLevel = result.sections.find((s) =>
+        s.title?.includes('1.1.1 Third Level'),
+      );
+      const anotherFirst = result.sections.find((s) =>
+        s.title?.includes('2. Another First Level'),
+      );
+
+      // Level is calculated as: number of dots + 1
+      // "1." = 1 dot = level 2, "1.1" = 1 dot = level 2, "1.1.1" = 2 dots = level 3
+      expect(firstLevel?.level).toBe(2);
+      expect(secondLevel?.level).toBe(2);
+      expect(thirdLevel?.level).toBe(3);
+      expect(anotherFirst?.level).toBe(2);
+    });
+
+    it('should handle content before any headings', async () => {
+      const mockText = `This is some introductory content before any section.
+
+1. FIRST SECTION
+Section content here.`;
+
+      mockGetText.mockResolvedValue({ text: mockText });
+
+      const result = await service.extractFromPdf(Buffer.from('mock'));
+
+      // First section should be the intro content without title
+      expect(result.sections.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should handle mixed heading styles', async () => {
+      const mockText = `TÍTULO EM CAIXA ALTA
+Conteúdo do título.
+
+1. Seção Numerada
+Conteúdo da seção.
+
+OUTRO TÍTULO EM CAIXA ALTA
+Mais conteúdo.`;
+
+      mockGetText.mockResolvedValue({ text: mockText });
+
+      const result = await service.extractFromPdf(Buffer.from('mock'));
+
+      expect(result.sections.length).toBe(3);
     });
   });
 });
