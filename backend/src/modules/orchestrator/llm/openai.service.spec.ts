@@ -635,15 +635,28 @@ describe('OpenAIService', () => {
     });
 
     it('should handle timeout correctly', async () => {
-      // Mock a slow API call that will timeout (circuit breaker timeout is 60s in production, but we can't wait that long in tests)
+      // Use fake timers to avoid waiting 60s in real time
+      jest.useFakeTimers();
+
+      // Mock a slow API call that will never resolve (simulates timeout scenario)
       mockOpenAIInstance.chat.completions.create.mockImplementation(
         () =>
-          new Promise((resolve) => {
-            setTimeout(() => resolve({}), 70000); // 70s - exceeds 60s timeout
+          new Promise(() => {
+            // Never resolves - circuit breaker should timeout
           }),
       );
 
-      await expect(service.generateCompletion(mockRequest)).rejects.toThrow();
-    }, 65000); // Jest timeout slightly longer than circuit timeout
+      // Start the request (it will be pending)
+      const requestPromise = service.generateCompletion(mockRequest);
+
+      // Advance timers past the circuit breaker timeout (60s + buffer)
+      jest.advanceTimersByTime(61000);
+
+      // Now the request should reject due to timeout
+      await expect(requestPromise).rejects.toThrow();
+
+      // Restore real timers
+      jest.useRealTimers();
+    }, 10000); // 10s Jest timeout is enough with fake timers
   });
 });
