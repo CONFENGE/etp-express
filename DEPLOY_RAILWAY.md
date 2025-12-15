@@ -444,6 +444,8 @@ Sentry já está configurado no projeto e captura erros automaticamente. Para al
 3. Railway faz backups automáticos diariamente
 4. Retenção: 7 dias (plano Hobby)
 
+> **📚 Documentação Completa de Disaster Recovery:** Consulte [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) para procedimentos detalhados de backup, restore e cenários de recuperação.
+
 ### 6.5 Alta Disponibilidade (Múltiplas Réplicas)
 
 O backend está configurado para rodar com **2+ réplicas** para eliminar SPOF (Single Point of Failure).
