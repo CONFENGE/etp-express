@@ -28,6 +28,7 @@ import { ForgotPassword } from '@/pages/ForgotPassword';
 import { ResetPassword } from '@/pages/ResetPassword';
 import { AdminDashboard, DomainManagement, DomainDetail } from '@/pages/admin';
 import { ManagerDashboard, UserManagement } from '@/pages/manager';
+import { AnalysisPage } from '@/pages/AnalysisPage';
 
 /**
  * Protected Route Component
@@ -173,6 +174,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ETPEditor />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analysis"
+        element={
+          <ProtectedRoute>
+            <AnalysisPage />
           </ProtectedRoute>
         }
       />
