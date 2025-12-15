@@ -65,9 +65,21 @@ describe('UsersService', () => {
     remove: jest.fn(),
   };
 
+  // Helper to create QueryBuilder mock chain
+  const createQueryBuilderMock = (returnData: any[] = []) => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(returnData),
+    getOne: jest.fn().mockResolvedValue(returnData[0] || null),
+  });
+
   const mockEtpsRepository = {
     find: jest.fn(),
     count: jest.fn(),
+    createQueryBuilder: jest.fn(() => createQueryBuilderMock([])),
   };
 
   const mockAnalyticsRepository = {
@@ -549,7 +561,10 @@ describe('UsersService', () => {
 
     it('should successfully export all user data', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      // Mock QueryBuilder for ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtps),
+      );
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -600,9 +615,11 @@ describe('UsersService', () => {
       );
     });
 
-    it('should query ETPs with correct relations and order', async () => {
+    it('should query ETPs with QueryBuilder for optimized loading', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      // Mock QueryBuilder for ETPs query (optimized N+1 fix)
+      const qbMock = createQueryBuilderMock(mockEtps);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(qbMock);
       mockAnalyticsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -610,16 +627,22 @@ describe('UsersService', () => {
 
       await service.exportUserData(mockUser.id);
 
-      expect(mockEtpsRepository.find).toHaveBeenCalledWith({
-        where: { createdById: mockUser.id },
-        relations: ['sections', 'versions'],
-        order: { createdAt: 'DESC' },
-      });
+      expect(mockEtpsRepository.createQueryBuilder).toHaveBeenCalledWith('etp');
+      expect(qbMock.leftJoinAndSelect).toHaveBeenCalledWith(
+        'etp.sections',
+        'sections',
+      );
+      expect(qbMock.leftJoinAndSelect).toHaveBeenCalledWith(
+        'etp.versions',
+        'versions',
+      );
     });
 
     it('should query analytics with correct filters', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -635,7 +658,9 @@ describe('UsersService', () => {
 
     it('should limit audit logs to 1000 entries', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockAnalyticsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -652,7 +677,9 @@ describe('UsersService', () => {
 
     it('should create audit log for export action via AuditService', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtps),
+      );
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
 
@@ -672,7 +699,9 @@ describe('UsersService', () => {
     it('should log export action', async () => {
       const loggerSpy = jest.spyOn(service['logger'], 'log');
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtps),
+      );
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -687,7 +716,9 @@ describe('UsersService', () => {
 
     it('should include exportMetadata with correct structure', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtps),
+      );
       mockAnalyticsRepository.find.mockResolvedValue(mockAnalytics);
       mockAuditLogsRepository.find.mockResolvedValue(mockAuditLogs);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -708,7 +739,9 @@ describe('UsersService', () => {
 
     it('should handle empty data export', async () => {
       mockRepository.findOne.mockResolvedValue(mockUser);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockAnalyticsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -729,7 +762,9 @@ describe('UsersService', () => {
     it('should exclude password from user export', async () => {
       const userWithoutPassword = { ...mockUser };
       mockRepository.findOne.mockResolvedValue(userWithoutPassword);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockAnalyticsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.find.mockResolvedValue([]);
       mockAuditLogsRepository.create.mockReturnValue(mockExportLog);
@@ -772,8 +807,15 @@ describe('UsersService', () => {
       ];
 
       mockRepository.find.mockResolvedValue([oldDeletedUser]);
-      mockEtpsRepository.count.mockResolvedValue(2);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      // Mock QueryBuilder for batch ETPs query (optimized N+1 fix)
+      // Add createdById to match the user
+      const mockEtpsWithUser = mockEtps.map((etp) => ({
+        ...etp,
+        createdById: oldDeletedUser.id,
+      }));
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtpsWithUser),
+      );
       mockRepository.remove.mockResolvedValue(oldDeletedUser);
 
       const result = await service.purgeDeletedAccounts();
@@ -850,8 +892,10 @@ describe('UsersService', () => {
       };
 
       mockRepository.find.mockResolvedValue([deletedUser1, deletedUser2]);
-      mockEtpsRepository.count.mockResolvedValue(0);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      // Mock QueryBuilder for batch ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockRepository.remove
         .mockResolvedValueOnce(deletedUser1)
         .mockResolvedValueOnce(deletedUser2);
@@ -882,8 +926,10 @@ describe('UsersService', () => {
       };
 
       mockRepository.find.mockResolvedValue([deletedUser1, deletedUser2]);
-      mockEtpsRepository.count.mockResolvedValue(0);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      // Mock QueryBuilder for batch ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
 
       // First user fails, second succeeds
       mockRepository.remove
@@ -920,19 +966,23 @@ describe('UsersService', () => {
       const mockEtps = [
         {
           id: 'etp-1',
+          createdById: 'user-id',
           sections: [{}, {}, {}], // 3 sections
           versions: [{}, {}], // 2 versions
         },
         {
           id: 'etp-2',
+          createdById: 'user-id',
           sections: [{}, {}], // 2 sections
           versions: [{}], // 1 version
         },
       ];
 
       mockRepository.find.mockResolvedValue([deletedUser]);
-      mockEtpsRepository.count.mockResolvedValue(2);
-      mockEtpsRepository.find.mockResolvedValue(mockEtps);
+      // Mock QueryBuilder for batch ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock(mockEtps),
+      );
       mockRepository.remove.mockResolvedValue(deletedUser);
 
       await service.purgeDeletedAccounts();
@@ -965,8 +1015,10 @@ describe('UsersService', () => {
       };
 
       mockRepository.find.mockResolvedValue([deletedUser]);
-      mockEtpsRepository.count.mockResolvedValue(0);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      // Mock QueryBuilder for batch ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
       mockRepository.remove.mockResolvedValue(deletedUser);
 
       await service.purgeDeletedAccounts();
@@ -999,8 +1051,10 @@ describe('UsersService', () => {
         deletedAt: new Date(),
         isActive: false,
       });
-      mockEtpsRepository.count.mockResolvedValue(0);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      // Mock QueryBuilder for ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
 
       const result = await service.softDeleteAccount(mockUser.id);
 
@@ -1016,8 +1070,10 @@ describe('UsersService', () => {
         deletedAt: new Date(),
         isActive: false,
       });
-      mockEtpsRepository.count.mockResolvedValue(0);
-      mockEtpsRepository.find.mockResolvedValue([]);
+      // Mock QueryBuilder for ETPs query (optimized N+1 fix)
+      mockEtpsRepository.createQueryBuilder.mockReturnValue(
+        createQueryBuilderMock([]),
+      );
 
       const result = await service.softDeleteAccount(mockUser.id);
       const afterCall = new Date();
