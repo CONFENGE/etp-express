@@ -56,6 +56,7 @@ Para criar um backup manual imediato:
 ```
 
 **Output esperado:**
+
 ```
 🔄 Iniciando backup manual...
 ✅ Backup criado: backups/etp_express_20251114_143052.sql.gz
@@ -108,6 +109,7 @@ Para criar um backup manual imediato:
    - Status: "Restoring..." → "Active"
 
 6. **Validação Pós-Restore:**
+
    ```bash
    # Conectar ao database
    psql $DATABASE_URL
@@ -132,6 +134,7 @@ Para garantir que backups estão sendo executados:
 ```
 
 **Output esperado (backup recente):**
+
 ```
 ✅ Backup recente encontrado
 📁 Arquivo: backups/etp_express_20251114_143052.sql.gz
@@ -139,6 +142,7 @@ Para garantir que backups estão sendo executados:
 ```
 
 **Output de falha (backup antigo):**
+
 ```
 ⚠️  Último backup tem mais de 24h!
 📁 Arquivo: backups/etp_express_20251113_030000.sql.gz
@@ -151,10 +155,12 @@ Para garantir que backups estão sendo executados:
 ### Cenário 1: Deleção Acidental de ETP
 
 **Sintomas:**
+
 - Usuário reporta ETP desaparecido
 - Registro não encontrado no sistema
 
 **Diagnóstico:**
+
 ```sql
 -- Verificar se ETP existe
 SELECT * FROM etps WHERE id = '<etp-id>';
@@ -168,11 +174,13 @@ SELECT * FROM audit_logs WHERE entity_type = 'ETP' AND entity_id = '<etp-id>' AN
 1. **Confirmar horário da deleção** (via logs ou relato do usuário)
 
 2. **Identificar backup anterior ao incidente:**
+
    ```bash
    ls -lh backups/etp_express_*.sql.gz
    ```
 
 3. **Restaurar apenas a row específica** (sem sobrescrever todo o DB):
+
    ```bash
    # Descompactar backup
    gunzip -c backups/etp_express_YYYYMMDD_HHMMSS.sql.gz > /tmp/backup_temp.sql
@@ -195,11 +203,13 @@ SELECT * FROM audit_logs WHERE entity_type = 'ETP' AND entity_id = '<etp-id>' AN
 ### Cenário 2: Migration Defeituosa
 
 **Sintomas:**
+
 - Aplicação quebrada após deploy
 - Erros de schema: "column does not exist", "relation not found"
 - Logs de erro no backend
 
 **Diagnóstico:**
+
 ```bash
 # Verificar logs do deploy
 railway logs --service backend | tail -100
@@ -211,6 +221,7 @@ psql $DATABASE_URL -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;
 **Resolução:**
 
 1. **Rollback imediato do deploy:**
+
    ```bash
    # Rollback para versão anterior (via Railway ou Git)
    git revert <commit-hash-da-migration>
@@ -223,6 +234,7 @@ psql $DATABASE_URL -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;
    - Execute restore (ver seção "Restore de Backup Railway")
 
 3. **Investigar falha na migration:**
+
    ```bash
    # Revisar arquivo de migration
    cat backend/src/migrations/<migration-file>.ts
@@ -232,6 +244,7 @@ psql $DATABASE_URL -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;
    ```
 
 4. **Corrigir migration e testar em staging:**
+
    ```bash
    # Criar nova migration corrigida
    npm run migration:generate -- -n FixBrokenMigration
@@ -255,11 +268,13 @@ psql $DATABASE_URL -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;
 ### Cenário 3: Corrupção Total de Database
 
 **Sintomas:**
+
 - PostgreSQL não inicia
 - Erros de corrupção: "invalid page header", "corrupted data"
 - Database inacessível
 
 **Diagnóstico:**
+
 ```bash
 # Tentar conectar ao database
 psql $DATABASE_URL
@@ -275,11 +290,13 @@ railway logs --service postgresql | grep -i error
    - Nome: `postgresql-recovery`
 
 2. **Obter nova $DATABASE_URL:**
+
    ```bash
    railway variables --service postgresql-recovery
    ```
 
 3. **Restore do último backup válido:**
+
    ```bash
    # Baixar último backup manual
    export NEW_DATABASE_URL="<nova-url-postgresql>"
@@ -293,6 +310,7 @@ railway logs --service postgresql | grep -i error
    - Restore do snapshot mais recente
 
 4. **Atualizar $DATABASE_URL no backend:**
+
    ```bash
    # Railway Dashboard > Backend Service > Variables
    # Atualizar DATABASE_URL para nova conexão
@@ -302,6 +320,7 @@ railway logs --service postgresql | grep -i error
    ```
 
 5. **Verificar integridade de dados:**
+
    ```sql
    -- Conectar ao novo database
    psql $NEW_DATABASE_URL
@@ -334,12 +353,12 @@ railway logs --service postgresql | grep -i error
 
 ### Níveis de Severity
 
-| Severity | Descrição | Exemplo | Tempo de Resposta |
-|----------|-----------|---------|-------------------|
-| **P0** | Sistema completamente fora do ar | Database corrompido, aplicação inacessível | **15 minutos** |
-| **P1** | Funcionalidade crítica quebrada | Login não funciona, geração de ETP falha | **1 hora** |
-| **P2** | Funcionalidade secundária afetada | Validação de seção lenta | **4 horas** |
-| **P3** | Bug menor, não bloqueia usuário | Typo em mensagem de erro | **24 horas** |
+| Severity | Descrição                         | Exemplo                                    | Tempo de Resposta |
+| -------- | --------------------------------- | ------------------------------------------ | ----------------- |
+| **P0**   | Sistema completamente fora do ar  | Database corrompido, aplicação inacessível | **15 minutos**    |
+| **P1**   | Funcionalidade crítica quebrada   | Login não funciona, geração de ETP falha   | **1 hora**        |
+| **P2**   | Funcionalidade secundária afetada | Validação de seção lenta                   | **4 horas**       |
+| **P3**   | Bug menor, não bloqueia usuário   | Typo em mensagem de erro                   | **24 horas**      |
 
 ### Responsáveis
 
@@ -464,7 +483,7 @@ Adicionar ao cron ou GitHub Actions:
 name: Backup Audit
 on:
   schedule:
-    - cron: '0 9 * * 1'  # Toda segunda-feira, 9h AM UTC
+    - cron: '0 9 * * 1' # Toda segunda-feira, 9h AM UTC
 
 jobs:
   audit:
@@ -509,6 +528,7 @@ docker rm test-postgres
 ```
 
 **Output esperado:**
+
 ```
 ✅ RESTORE VALIDADO COM SUCESSO
 ✅ Integridade: 100%
@@ -540,9 +560,9 @@ O script `test-restore.sh` valida:
 
 ### Histórico de Testes
 
-| Data | Tipo | RTO | Status | Observações |
-|------|------|-----|--------|-------------|
-| 2025-11-15 | Validação de Scripts | ~7 min | ✅ | Scripts validados sintaticamente. Aguardando dados de produção para teste real. |
+| Data       | Tipo                 | RTO    | Status | Observações                                                                     |
+| ---------- | -------------------- | ------ | ------ | ------------------------------------------------------------------------------- |
+| 2025-11-15 | Validação de Scripts | ~7 min | ✅     | Scripts validados sintaticamente. Aguardando dados de produção para teste real. |
 
 Para detalhes completos dos testes de restore, consulte: `docs/DISASTER_RECOVERY_TESTING.md`
 
@@ -550,10 +570,10 @@ Para detalhes completos dos testes de restore, consulte: `docs/DISASTER_RECOVERY
 
 ## Versionamento
 
-- **Versão:** 1.1.0
+- **Versão:** 1.2.0
 - **Data de Criação:** 2025-11-14
-- **Última Atualização:** 2025-11-15 (Issue #104 - Disaster Recovery Testing)
-- **Próxima Revisão:** 2026-02-14 (trimestral)
+- **Última Atualização:** 2025-12-14 (Issue #672 - Documentar restore procedure PostgreSQL)
+- **Próxima Revisão:** 2026-03-14 (trimestral)
 
 ---
 
