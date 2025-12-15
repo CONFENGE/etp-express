@@ -4,18 +4,15 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SearchService } from './search.service';
 import { SimilarContract } from '../../entities/similar-contract.entity';
-import {
-  PerplexityService,
-  PerplexityResponse,
-  PerplexitySearchResult,
-} from './perplexity/perplexity.service';
+import { ExaService } from './exa/exa.service';
+import { ExaResponse, ExaSearchResult } from './exa/exa.types';
 
 /**
  * Unit tests for SearchService
  *
- * Tests search functionality, caching, and integration with Perplexity API:
- * - searchSimilarContracts() - Search with cache hit/miss, Perplexity integration
- * - searchLegalReferences() - Legal reference search via Perplexity
+ * Tests search functionality, caching, and integration with Exa API:
+ * - searchSimilarContracts() - Search with cache hit/miss, Exa integration
+ * - searchLegalReferences() - Legal reference search via Exa
  * - getCachedResults() - Database cache retrieval (30-day TTL)
  * - saveSearchResults() - Cache persistence after API search
  * - getContractById() - Single contract retrieval with MT isolation
@@ -32,7 +29,7 @@ import {
 describe('SearchService', () => {
   let service: SearchService;
   let contractsRepository: Repository<SimilarContract>;
-  let perplexityService: PerplexityService;
+  let exaService: ExaService;
 
   // Mock data
   const mockQuery = 'contratação de serviços de TI';
@@ -55,7 +52,7 @@ describe('SearchService', () => {
     fonte: 'PNCP',
     relevanceScore: 0.95,
     metadata: {
-      perplexityResult: true,
+      exaResult: true,
       modalidade: 'Pregão Eletrônico',
     },
     createdAt: new Date('2025-11-01T10:00:00Z'),
@@ -64,7 +61,7 @@ describe('SearchService', () => {
     organization: null,
   };
 
-  const mockPerplexityResult: PerplexitySearchResult = {
+  const mockExaResult: ExaSearchResult = {
     title: 'Contratação de Desenvolvimento de Software',
     snippet: 'Desenvolvimento de sistema web para gestão pública',
     url: 'https://pncp.gov.br/contract/123',
@@ -72,8 +69,8 @@ describe('SearchService', () => {
     source: 'PNCP',
   };
 
-  const mockPerplexityResponse: PerplexityResponse = {
-    results: [mockPerplexityResult],
+  const mockExaResponse: ExaResponse = {
+    results: [mockExaResult],
     summary:
       'Encontradas contratações similares de serviços de TI em órgãos públicos',
     sources: ['https://pncp.gov.br', 'https://paineldeprecos.gov.br'],
@@ -102,9 +99,9 @@ describe('SearchService', () => {
   };
 
   /**
-   * Mock PerplexityService
+   * Mock ExaService
    */
-  const mockPerplexityService = {
+  const mockExaService = {
     searchSimilarContracts: jest.fn(),
     searchLegalReferences: jest.fn(),
   };
@@ -118,8 +115,8 @@ describe('SearchService', () => {
           useValue: mockContractsRepository,
         },
         {
-          provide: PerplexityService,
-          useValue: mockPerplexityService,
+          provide: ExaService,
+          useValue: mockExaService,
         },
       ],
     }).compile();
@@ -128,7 +125,7 @@ describe('SearchService', () => {
     contractsRepository = module.get<Repository<SimilarContract>>(
       getRepositoryToken(SimilarContract),
     );
-    perplexityService = module.get<PerplexityService>(PerplexityService);
+    exaService = module.get<ExaService>(ExaService);
 
     // Reset mocks before each test
     jest.clearAllMocks();
@@ -176,8 +173,8 @@ describe('SearchService', () => {
       );
       expect(mockQueryBuilder.limit).toHaveBeenCalledWith(10);
 
-      // Should NOT call Perplexity when cache hits
-      expect(perplexityService.searchSimilarContracts).not.toHaveBeenCalled();
+      // Should NOT call Exa when cache hits
+      expect(exaService.searchSimilarContracts).not.toHaveBeenCalled();
     });
 
     it('should return cached results sorted by relevance score', async () => {
@@ -236,14 +233,12 @@ describe('SearchService', () => {
    * Tests for searchSimilarContracts() - Cache MISS scenario
    */
   describe('searchSimilarContracts - Cache MISS', () => {
-    it('should call Perplexity and save results when cache is empty', async () => {
+    it('should call Exa and save results when cache is empty', async () => {
       // Arrange - Mock cache MISS (empty results)
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
@@ -253,8 +248,8 @@ describe('SearchService', () => {
         mockOrganizationId,
       );
 
-      // Assert - Should call Perplexity
-      expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
+      // Assert - Should call Exa
+      expect(exaService.searchSimilarContracts).toHaveBeenCalledWith(
         mockQuery,
         undefined,
       );
@@ -263,33 +258,31 @@ describe('SearchService', () => {
       expect(contractsRepository.create).toHaveBeenCalledWith({
         searchQuery: mockQuery,
         organizationId: mockOrganizationId, // MT: Associate with organization
-        title: mockPerplexityResult.title,
-        description: mockPerplexityResult.snippet,
-        url: mockPerplexityResult.url,
-        fonte: mockPerplexityResult.source,
-        relevanceScore: mockPerplexityResult.relevance,
+        title: mockExaResult.title,
+        description: mockExaResult.snippet,
+        url: mockExaResult.url,
+        fonte: mockExaResult.source,
+        relevanceScore: mockExaResult.relevance,
         metadata: {
-          perplexityResult: true,
+          exaResult: true,
         },
       });
       expect(contractsRepository.save).toHaveBeenCalledWith(mockContract);
 
-      // Should return Perplexity response
-      expect(result.source).toBe('perplexity');
+      // Should return Exa response
+      expect(result.source).toBe('exa');
       expect(result.data).toEqual([mockContract]);
-      expect(result.summary).toBe(mockPerplexityResponse.summary);
-      expect(result.sources).toEqual(mockPerplexityResponse.sources);
+      expect(result.summary).toBe(mockExaResponse.summary);
+      expect(result.sources).toEqual(mockExaResponse.sources);
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
     });
 
-    it('should pass filters to Perplexity when provided', async () => {
+    it('should pass filters to Exa when provided', async () => {
       // Arrange
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
@@ -303,28 +296,26 @@ describe('SearchService', () => {
       );
 
       // Assert
-      expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
+      expect(exaService.searchSimilarContracts).toHaveBeenCalledWith(
         mockQuery,
         filters,
       );
     });
 
-    it('should save multiple results from Perplexity', async () => {
+    it('should save multiple results from Exa', async () => {
       // Arrange
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      const multipleResults: PerplexityResponse = {
-        ...mockPerplexityResponse,
+      const multipleResults: ExaResponse = {
+        ...mockExaResponse,
         results: [
-          mockPerplexityResult,
-          { ...mockPerplexityResult, title: 'Outro Contrato', relevance: 0.8 },
+          mockExaResult,
+          { ...mockExaResult, title: 'Outro Contrato', relevance: 0.8 },
         ],
       };
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        multipleResults,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(multipleResults);
 
       const contract1 = { ...mockContract };
       const contract2 = { ...mockContract, id: 'contract-456' };
@@ -353,9 +344,7 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
@@ -373,9 +362,9 @@ describe('SearchService', () => {
    * Tests for searchLegalReferences()
    */
   describe('searchLegalReferences', () => {
-    it('should call Perplexity for legal references', async () => {
+    it('should call Exa for legal references', async () => {
       // Arrange
-      const legalResponse: PerplexityResponse = {
+      const legalResponse: ExaResponse = {
         results: [
           {
             title: 'Lei 14.133/2021 - Nova Lei de Licitações',
@@ -391,17 +380,13 @@ describe('SearchService', () => {
         ],
       };
 
-      mockPerplexityService.searchLegalReferences.mockResolvedValue(
-        legalResponse,
-      );
+      mockExaService.searchLegalReferences.mockResolvedValue(legalResponse);
 
       // Act
       const result = await service.searchLegalReferences(mockTopic);
 
       // Assert
-      expect(perplexityService.searchLegalReferences).toHaveBeenCalledWith(
-        mockTopic,
-      );
+      expect(exaService.searchLegalReferences).toHaveBeenCalledWith(mockTopic);
       expect(result.data).toEqual(legalResponse.results);
       expect(result.summary).toBe(legalResponse.summary);
       expect(result.sources).toEqual(legalResponse.sources);
@@ -411,9 +396,7 @@ describe('SearchService', () => {
     it('should log legal reference search query', async () => {
       // Arrange
       const logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
-      mockPerplexityService.searchLegalReferences.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchLegalReferences.mockResolvedValue(mockExaResponse);
 
       // Act
       await service.searchLegalReferences(mockTopic);
@@ -426,15 +409,13 @@ describe('SearchService', () => {
 
     it('should handle empty legal reference results', async () => {
       // Arrange
-      const emptyResponse: PerplexityResponse = {
+      const emptyResponse: ExaResponse = {
         results: [],
         summary: 'Nenhuma referência legal encontrada',
         sources: [],
       };
 
-      mockPerplexityService.searchLegalReferences.mockResolvedValue(
-        emptyResponse,
-      );
+      mockExaService.searchLegalReferences.mockResolvedValue(emptyResponse);
 
       // Act
       const result = await service.searchLegalReferences('tópico inexistente');
@@ -641,19 +622,19 @@ describe('SearchService', () => {
    * Tests for error handling
    */
   describe('Error handling', () => {
-    it('should handle Perplexity API errors gracefully', async () => {
+    it('should handle Exa API errors gracefully', async () => {
       // Arrange
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockRejectedValue(
-        new Error('Perplexity API timeout'),
+      mockExaService.searchSimilarContracts.mockRejectedValue(
+        new Error('Exa API timeout'),
       );
 
       // Act & Assert - Should propagate error to caller - MT: Pass organizationId
       await expect(
         service.searchSimilarContracts(mockQuery, mockOrganizationId),
-      ).rejects.toThrow('Perplexity API timeout');
+      ).rejects.toThrow('Exa API timeout');
     });
 
     it('should handle database save errors', async () => {
@@ -661,9 +642,7 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockRejectedValue(
         new Error('Database connection lost'),
@@ -675,7 +654,7 @@ describe('SearchService', () => {
       ).rejects.toThrow('Database connection lost');
     });
 
-    it('should handle malformed Perplexity responses', async () => {
+    it('should handle malformed Exa responses', async () => {
       // Arrange
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
@@ -685,7 +664,7 @@ describe('SearchService', () => {
         summary: 'Test',
       };
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
+      mockExaService.searchSimilarContracts.mockResolvedValue(
         malformedResponse,
       );
 
@@ -705,9 +684,7 @@ describe('SearchService', () => {
       const mockQueryBuilder = contractsRepository.createQueryBuilder();
       mockQueryBuilder.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
@@ -728,15 +705,15 @@ describe('SearchService', () => {
         `Saved 1 contracts for org=${mockOrganizationId}`,
       );
 
-      expect(perplexityService.searchSimilarContracts).toHaveBeenCalledWith(
+      expect(exaService.searchSimilarContracts).toHaveBeenCalledWith(
         mockQuery,
         { orgao: 'Prefeitura' },
       );
 
       expect(result.data).toEqual([mockContract]);
-      expect(result.source).toBe('perplexity');
-      expect(result.summary).toBe(mockPerplexityResponse.summary);
-      expect(result.sources).toEqual(mockPerplexityResponse.sources);
+      expect(result.source).toBe('exa');
+      expect(result.summary).toBe(mockExaResponse.summary);
+      expect(result.sources).toEqual(mockExaResponse.sources);
     });
 
     it('should use cache on second identical search for same organization', async () => {
@@ -744,9 +721,7 @@ describe('SearchService', () => {
       const mockQueryBuilder1 = contractsRepository.createQueryBuilder();
       mockQueryBuilder1.getMany = jest.fn().mockResolvedValue([]);
 
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
@@ -765,9 +740,9 @@ describe('SearchService', () => {
         mockOrganizationId,
       );
 
-      // Assert - Should use cache, NOT Perplexity
+      // Assert - Should use cache, NOT Exa
       expect(result.source).toBe('cache');
-      expect(perplexityService.searchSimilarContracts).not.toHaveBeenCalled();
+      expect(exaService.searchSimilarContracts).not.toHaveBeenCalled();
     });
   });
 
@@ -790,9 +765,7 @@ describe('SearchService', () => {
         organizationId: mockOrganizationId,
       };
       mockQueryBuilder.getMany.mockResolvedValue([]);
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(orgAContract);
       mockContractsRepository.save.mockResolvedValue(orgAContract);
 
@@ -804,9 +777,7 @@ describe('SearchService', () => {
 
       // Arrange - Org B's cache should be empty (different org)
       mockQueryBuilder.getMany.mockResolvedValue([]); // No cache for Org B
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
 
       const orgBContract = {
         ...mockContract,
@@ -823,8 +794,8 @@ describe('SearchService', () => {
       );
 
       // Assert - MT: Org B should get fresh results, NOT Org A's cache
-      expect(result.source).toBe('perplexity'); // Fresh search, not cache
-      expect(perplexityService.searchSimilarContracts).toHaveBeenCalled();
+      expect(result.source).toBe('exa'); // Fresh search, not cache
+      expect(exaService.searchSimilarContracts).toHaveBeenCalled();
 
       // Assert - MT: Cache query should filter by Org B's organizationId
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
@@ -836,9 +807,7 @@ describe('SearchService', () => {
     it('should save contracts with correct organizationId', async () => {
       // Arrange
       mockQueryBuilder.getMany.mockResolvedValue([]);
-      mockPerplexityService.searchSimilarContracts.mockResolvedValue(
-        mockPerplexityResponse,
-      );
+      mockExaService.searchSimilarContracts.mockResolvedValue(mockExaResponse);
       mockContractsRepository.create.mockReturnValue(mockContract);
       mockContractsRepository.save.mockResolvedValue(mockContract);
 
