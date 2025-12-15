@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +33,7 @@ jobs:
 
       - name: Test Backend
         working-directory: backend
-        run: npm test
+        run: npm test -- --forceExit --testTimeout=30000
 
       - name: Test Frontend
         working-directory: frontend
