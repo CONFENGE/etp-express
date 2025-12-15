@@ -2,10 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SimilarContract } from '../../entities/similar-contract.entity';
-import {
-  PerplexityService,
-  PerplexityResponse,
-} from './perplexity/perplexity.service';
+import { ExaService } from './exa/exa.service';
+import { ExaResponse } from './exa/exa.types';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -26,7 +24,7 @@ export class SearchService {
   constructor(
     @InjectRepository(SimilarContract)
     private contractsRepository: Repository<SimilarContract>,
-    private perplexityService: PerplexityService,
+    private exaService: ExaService,
   ) {}
 
   /**
@@ -60,22 +58,24 @@ export class SearchService {
       };
     }
 
-    // If no cache, search with Perplexity
-    const perplexityResults =
-      await this.perplexityService.searchSimilarContracts(query, filters);
+    // If no cache, search with Exa
+    const exaResults = await this.exaService.searchSimilarContracts(
+      query,
+      filters,
+    );
 
     // Save results to database with organizationId
     const savedContracts = await this.saveSearchResults(
       query,
-      perplexityResults,
+      exaResults,
       organizationId,
     );
 
     return {
       data: savedContracts,
-      summary: perplexityResults.summary,
-      sources: perplexityResults.sources,
-      source: 'perplexity',
+      summary: exaResults.summary,
+      sources: exaResults.sources,
+      source: 'exa',
       disclaimer: DISCLAIMER,
     };
   }
@@ -83,13 +83,12 @@ export class SearchService {
   async searchLegalReferences(topic: string) {
     this.logger.log(`Searching legal references for: ${topic}`);
 
-    const perplexityResults =
-      await this.perplexityService.searchLegalReferences(topic);
+    const exaResults = await this.exaService.searchLegalReferences(topic);
 
     return {
-      data: perplexityResults.results,
-      summary: perplexityResults.summary,
-      sources: perplexityResults.sources,
+      data: exaResults.results,
+      summary: exaResults.summary,
+      sources: exaResults.sources,
       disclaimer: DISCLAIMER,
     };
   }
@@ -125,17 +124,17 @@ export class SearchService {
    * Multi-Tenancy: All saved contracts are tagged with organizationId.
    *
    * @param query - Original search query
-   * @param perplexityResults - Results from Perplexity API
+   * @param exaResults - Results from Exa API
    * @param organizationId - Organization ID for tenant isolation
    */
   private async saveSearchResults(
     query: string,
-    perplexityResults: PerplexityResponse,
+    exaResults: ExaResponse,
     organizationId: string,
   ): Promise<SimilarContract[]> {
     const contracts: SimilarContract[] = [];
 
-    for (const result of perplexityResults.results) {
+    for (const result of exaResults.results) {
       const contract = this.contractsRepository.create({
         searchQuery: query,
         organizationId, // Multi-Tenancy: Associate with organization
@@ -145,7 +144,7 @@ export class SearchService {
         fonte: result.source,
         relevanceScore: result.relevance,
         metadata: {
-          perplexityResult: true,
+          exaResult: true,
         },
       });
 
