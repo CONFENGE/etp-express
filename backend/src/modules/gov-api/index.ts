@@ -50,3 +50,14 @@ export {
   PNCP_SITUACAO_NAMES,
   PNCP_CATEGORIA_NAMES,
 } from './pncp/pncp.types';
+
+// Compras.gov.br (SIASG) integration
+export {
+  ComprasGovModule,
+  ComprasGovService,
+  ComprasGovModalidade,
+  ComprasGovSituacao,
+  ComprasGovLicitacaoRaw,
+  ComprasGovSearchFilters,
+  ComprasGovContract,
+} from './compras-gov';
