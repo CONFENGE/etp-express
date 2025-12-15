@@ -33,6 +33,24 @@ export {
 
 export { GovApiCache } from './utils/gov-api-cache';
 
+// PNCP (Portal Nacional de Contratações Públicas)
+export { PncpModule, PncpService } from './pncp';
+export {
+  PncpContratacao,
+  PncpContrato,
+  PncpAta,
+  PncpPaginatedResponse,
+  PncpContratacaoSearchParams,
+  PncpContratoSearchParams,
+  PncpAtaSearchParams,
+  PncpModalidade,
+  PncpSituacaoContratacao,
+  PncpCategoriaProcesso,
+  PNCP_MODALIDADE_NAMES,
+  PNCP_SITUACAO_NAMES,
+  PNCP_CATEGORIA_NAMES,
+} from './pncp/pncp.types';
+
 // Compras.gov.br (SIASG) integration
 export {
   ComprasGovModule,
