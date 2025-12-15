@@ -37,7 +37,6 @@ import {
   PncpContratoSearchParams,
   PncpAtaSearchParams,
   PNCP_MODALIDADE_NAMES,
-  PNCP_SITUACAO_NAMES,
 } from './pncp.types';
 
 /**
