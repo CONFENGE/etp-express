@@ -123,6 +123,24 @@ export function createDeferredPromise<T>(): {
 // Mock de fetch para APIs (alternativa ao MSW para casos simples)
 global.fetch = vi.fn();
 
+// =============================================================================
+// Mock de window.matchMedia (usado por hooks de tema e componentes responsivos)
+// jsdom não implementa nativamente
+// =============================================================================
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // Configuração global do MSW (opcional - adicionar quando necessário)
 // import { server } from './mocks/server'
 // beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
