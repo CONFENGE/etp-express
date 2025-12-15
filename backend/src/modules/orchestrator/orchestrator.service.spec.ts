@@ -7,7 +7,7 @@ import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
-import { PerplexityService } from '../search/perplexity/perplexity.service';
+import { ExaService } from '../search/exa/exa.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -162,10 +162,10 @@ describe('OrchestratorService', () => {
   });
 
   /**
-   * Creates a mock PerplexityService instance
+   * Creates a mock ExaService instance
    * @returns Mock object with search methods
    */
-  const createMockPerplexityService = () => ({
+  const createMockExaService = () => ({
     search: jest.fn().mockResolvedValue({
       results: [],
       summary: 'Fundamentação de mercado encontrada',
@@ -176,6 +176,12 @@ describe('OrchestratorService', () => {
       results: [],
       summary: 'Fundamentação de mercado encontrada via searchDeep',
       sources: ['https://example.com'],
+      isFallback: false,
+    }),
+    searchSimple: jest.fn().mockResolvedValue({
+      results: [],
+      summary: '',
+      sources: [],
       isFallback: false,
     }),
     searchSimilarContracts: jest.fn().mockResolvedValue({
@@ -219,8 +225,8 @@ describe('OrchestratorService', () => {
           useValue: createMockAntiHallucinationAgent(),
         },
         {
-          provide: PerplexityService,
-          useValue: createMockPerplexityService(),
+          provide: ExaService,
+          useValue: createMockExaService(),
         },
         {
           provide: PIIRedactionService,
@@ -1203,8 +1209,8 @@ describe('OrchestratorService', () => {
           },
           { provide: PIIRedactionService, useValue: piiRedactionService },
           {
-            provide: PerplexityService,
-            useValue: createMockPerplexityService(),
+            provide: ExaService,
+            useValue: createMockExaService(),
           },
         ],
       }).compile();
@@ -1253,12 +1259,10 @@ describe('OrchestratorService', () => {
       expect(result.userPrompt).toContain('Secretaria de TI');
     });
 
-    it('deve lidar com erro de Perplexity gracefully e adicionar warning', async () => {
-      const perplexityService = {
-        search: jest.fn().mockRejectedValue(new Error('Perplexity API error')),
-        searchDeep: jest
-          .fn()
-          .mockRejectedValue(new Error('Perplexity API error')),
+    it('deve lidar com erro de Exa gracefully e adicionar warning', async () => {
+      const exaService = {
+        search: jest.fn().mockRejectedValue(new Error('Exa API error')),
+        searchDeep: jest.fn().mockRejectedValue(new Error('Exa API error')),
       };
 
       const moduleRef = await Test.createTestingModule({
@@ -1290,7 +1294,7 @@ describe('OrchestratorService', () => {
               getSupportedTypes: jest.fn().mockReturnValue(['CPF', 'EMAIL']),
             },
           },
-          { provide: PerplexityService, useValue: perplexityService },
+          { provide: ExaService, useValue: exaService },
         ],
       }).compile();
 
