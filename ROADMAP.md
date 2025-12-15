@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-15 01:45 | **Progresso:** 302/329 (91.8%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete
+**Atualizado:** 2025-12-15 | **Progresso:** 340/379 (89.7%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
@@ -53,15 +53,15 @@
 ## Milestones
 
 ```
-M1: Foundation          ████████████████████ 36/36  100%
+M1: Foundation          ████████████████████ 35/35  100%
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
-M3: Quality & Security  ████████████████████ 61/61  100%
-M4: Refactoring & Perf  ████████████████████ 45/45  100%
-M5: E2E & Docs          █████████████████░░░ 24/28   86%
-M6: Maintenance         █████████████████░░░ 78/90   87%  (+8 novas)
+M3: Quality & Security  ████████████████████ 60/60  100%
+M4: Refactoring & Perf  ████████████████████ 44/44  100%
+M5: E2E & Docs          ████████████████░░░░ 25/31   81%
+M6: Maintenance         █████████████████░░░ 73/86   85%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       ██████████░░░░░░░░░░ 10/16   63%  🔴 P1 SPRINT
+M9: Export/Import       █████████████░░░░░░░ 11/16   69%  🔴 P1 SPRINT
 ```
 
 ---
@@ -165,7 +165,7 @@ M9: Export/Import       ██████████░░░░░░░░�
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 85% (23/27, 4 open)
+### M5 - E2E & Docs - 81% (25/31, 6 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -174,7 +174,7 @@ M9: Export/Import       ██████████░░░░░░░░�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (12 open)
+### M6 - Maintenance (13 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -207,7 +207,7 @@ M9: Export/Import       ██████████░░░░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (8 open, 8 done)
+### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (5 open, 11 done)
 
 > **Decisão:** Feature-complete no MVP. Sprint intensivo nas semanas 1-4.
 
@@ -242,19 +242,19 @@ M9: Export/Import       ██████████░░░░░░░░�
 **Origem:** REUNIAO_EXTRAORDINARIA_CTOS.md (14/12/2024)
 **Total:** 83h (~21h/semana)
 
-### Sprint 1 (Semana 1) - Infra Crítica + Observabilidade | ✅ 86% COMPLETE
+### Sprint 1 (Semana 1) - Infra Crítica + Observabilidade | ✅ 100% COMPLETE
 
-| #        | Issue                         | Prior.     | Est. |
-| -------- | ----------------------------- | ---------- | ---- |
-| ~~#670~~ | ~~Corrigir nixpacks.toml~~    | ✅ CLOSED  | -    |
-| ~~#671~~ | ~~Scale backend 2+ réplicas~~ | ✅ CLOSED  | -    |
-| ~~#652~~ | ~~JSON logging estruturado~~  | ✅ PR #680 | -    |
-| ~~#653~~ | ~~Request/Trace IDs~~         | ✅ PR #681 | -    |
-| #672     | Documentar restore PostgreSQL | P1         | 2h   |
-| ~~#673~~ | ~~Alertas Railway~~           | ✅ PR #683 | -    |
-| ~~#555~~ | ~~PDF Extraction~~            | ✅ PR #669 | -    |
+| #        | Issue                             | Prior.     | Est. |
+| -------- | --------------------------------- | ---------- | ---- |
+| ~~#670~~ | ~~Corrigir nixpacks.toml~~        | ✅ CLOSED  | -    |
+| ~~#671~~ | ~~Scale backend 2+ réplicas~~     | ✅ CLOSED  | -    |
+| ~~#652~~ | ~~JSON logging estruturado~~      | ✅ PR #680 | -    |
+| ~~#653~~ | ~~Request/Trace IDs~~             | ✅ PR #681 | -    |
+| ~~#672~~ | ~~Documentar restore PostgreSQL~~ | ✅ PR #688 | -    |
+| ~~#673~~ | ~~Alertas Railway~~               | ✅ PR #683 | -    |
+| ~~#555~~ | ~~PDF Extraction~~                | ✅ PR #669 | -    |
 
-### Sprint 2 (Semana 2) - M9 Backend | 7h remaining
+### Sprint 2 (Semana 2) - M9 Backend | ✅ 100% COMPLETE
 
 | #        | Issue                           | Prior.     | Est. |
 | -------- | ------------------------------- | ---------- | ---- |
@@ -274,16 +274,52 @@ M9: Export/Import       ██████████░░░░░░░░�
 | #457 | useCallback/useMemo         | P2     | 4h   |
 | #676 | Load testing k6 (100 users) | P2     | 4h   |
 
-### Sprint 4 (Semana 4) - QA + Go-Live | 24h
+### Sprint 4 (Semana 4) - QA + Go-Live | 19h remaining
 
-| #    | Issue                     | Prior. | Est. |
-| ---- | ------------------------- | ------ | ---- |
-| #563 | E2E Tests Import/Analysis | P1     | 3h   |
-| #552 | E2E Export DOCX           | P2     | 3h   |
-| #674 | Smoke test checklist      | P1     | 2h   |
-| #675 | Manual usuário PDF        | P2     | 8h   |
-| #677 | Canal suporte email       | P2     | 4h   |
-| #455 | LLM cache memory leak     | P2     | 4h   |
+| #        | Issue                     | Prior.    | Est. |
+| -------- | ------------------------- | --------- | ---- |
+| #563     | E2E Tests Import/Analysis | P1        | 3h   |
+| #552     | E2E Export DOCX           | P2        | 3h   |
+| ~~#674~~ | ~~Smoke test checklist~~  | ✅ CLOSED | -    |
+| #675     | Manual usuário PDF        | P2        | 8h   |
+| #677     | Canal suporte email       | P2        | 4h   |
+| #455     | LLM cache memory leak     | P2        | 4h   |
+
+---
+
+## 🏛️ ÉPICO - Migração para APIs Governamentais (11 issues)
+
+**Criado:** 2025-12-14 | **Objetivo:** Substituir Perplexity por fontes oficiais (PNCP, Compras.gov.br, SINAPI, SICRO)
+
+> **Decisão:** APIs governamentais como fonte primária para licitações e preços de referência. Perplexity apenas como fallback para informações complementares.
+
+### Sprint 1 - APIs de Licitações (P0)
+
+| #    | Issue                             | Prior. | Dep.       |
+| ---- | --------------------------------- | ------ | ---------- |
+| #690 | Base module gov-api               | P0     | -          |
+| #691 | Integrar Compras.gov.br (SIASG)   | P0     | #690       |
+| #692 | Integrar PNCP (Lei 14.133)        | P0     | #690       |
+| #695 | Unified search service            | P1     | #691, #692 |
+| #696 | Refactor orchestrator (gov-first) | P1     | #695       |
+
+### Sprint 2 - Tabelas de Preços (P1)
+
+| #    | Issue                         | Prior. | Dep.       |
+| ---- | ----------------------------- | ------ | ---------- |
+| #693 | SINAPI data ingestion (Excel) | P1     | #690       |
+| #694 | SICRO data ingestion (Excel)  | P1     | #690       |
+| #697 | Migrations entidades gov-data | P2     | #693, #694 |
+| #698 | Jobs sync automático (BullMQ) | P2     | #697       |
+
+### Sprint 3 - Observabilidade (P2)
+
+| #    | Issue                         | Prior. | Dep. |
+| ---- | ----------------------------- | ------ | ---- |
+| #699 | Métricas gov-api (Prometheus) | P2     | #695 |
+| #700 | Documentação integração       | P3     | #696 |
+
+**Labels:** `area/gov-api`, `enhancement`
 
 ---
 
@@ -303,7 +339,7 @@ M9: Export/Import       ██████████░░░░░░░░�
 
 ## Milestones Completos
 
-M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24) - **Total: 190 issues**
+M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/44), M7 Multi-Tenancy (6/6), M8 Domínios (24/24) - **Total: 187 issues**
 
 ---
 
@@ -311,16 +347,19 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 329    |
-| Issues Abertas    | 29     |
-| Issues Fechadas   | 300    |
-| Progresso         | 91.2%  |
-| Velocidade        | 11/dia |
+| Issues Totais     | 379    |
+| Issues Abertas    | 39     |
+| Issues Fechadas   | 340    |
+| Progresso         | 89.7%  |
+| Velocidade        | 13/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
+| P0 Gov-API        | 3      |
+| P1 Gov-API        | 5      |
+| P2 Gov-API        | 3      |
 | P0 Infra          | 0      |
-| P1 Sprint         | 11     |
+| P1 Sprint         | 8      |
 | P2 Sprint         | 8      |
 | v1.1 Backlog      | 7      |
 
