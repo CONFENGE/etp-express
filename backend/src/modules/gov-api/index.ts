@@ -32,3 +32,14 @@ export {
 } from './utils/gov-api-client';
 
 export { GovApiCache } from './utils/gov-api-cache';
+
+// Compras.gov.br (SIASG) integration
+export {
+  ComprasGovModule,
+  ComprasGovService,
+  ComprasGovModalidade,
+  ComprasGovSituacao,
+  ComprasGovLicitacaoRaw,
+  ComprasGovSearchFilters,
+  ComprasGovContract,
+} from './compras-gov';
