@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FileText, Home, PlusCircle } from 'lucide-react';
+import { FileText, Home, PlusCircle, FileSearch } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Meus ETPs', href: '/etps', icon: FileText },
+  { name: 'Import & Analysis', href: '/analysis', icon: FileSearch },
 ];
 
 export function Sidebar() {
