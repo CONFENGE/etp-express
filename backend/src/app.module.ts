@@ -67,7 +67,15 @@ import { RolesGuard } from './common/guards/roles.guard';
         JWT_EXPIRATION: Joi.string().default('7d'),
         OPENAI_API_KEY: Joi.string().required(),
         OPENAI_MODEL: Joi.string().default('gpt-4.1-nano'),
-        PERPLEXITY_API_KEY: Joi.string().required(),
+        // Exa API Configuration (#707)
+        EXA_API_KEY: Joi.string().required(),
+        EXA_TYPE: Joi.string()
+          .valid('auto', 'neural', 'keyword')
+          .default('auto'),
+        EXA_NUM_RESULTS: Joi.number().min(1).max(100).default(10),
+        EXA_FALLBACK_ENABLED: Joi.boolean().default(true),
+        // DEPRECATED: Perplexity API - Remove after migration complete
+        PERPLEXITY_API_KEY: Joi.string().optional(),
         PERPLEXITY_MODEL_SIMPLE: Joi.string().default('sonar'),
         PERPLEXITY_MODEL_DEEP: Joi.string().default('sonar-deep-research'),
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
