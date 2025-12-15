@@ -15,7 +15,7 @@ import {
   HallucinationCheckResult,
 } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
-import { PerplexityService } from '../search/perplexity/perplexity.service';
+import { ExaService } from '../search/exa/exa.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import {
   ParallelValidationResults,
@@ -73,8 +73,8 @@ export interface GenerationResult {
   warnings: string[];
   disclaimer: string;
   /**
-   * Indica se a geração foi realizada sem enriquecimento externo (Perplexity).
-   * True quando a Perplexity falhou ou retornou fallback.
+   * Indica se a geração foi realizada sem enriquecimento externo (Exa).
+   * True quando a Exa falhou ou retornou fallback.
    */
   hasEnrichmentWarning?: boolean;
 }
@@ -121,7 +121,7 @@ export class OrchestratorService {
     private simplificacaoAgent: SimplificacaoAgent,
     private antiHallucinationAgent: AntiHallucinationAgent,
     private piiRedactionService: PIIRedactionService,
-    private perplexityService: PerplexityService,
+    private exaService: ExaService,
   ) {}
 
   /**
@@ -188,7 +188,7 @@ export class OrchestratorService {
    * - Building base system prompt with all agent guidelines
    * - Enriching user prompt with legal context
    * - Adding fundamentação guidance for applicable sections
-   * - Enriching with market data via Perplexity (when applicable)
+   * - Enriching with market data via Exa (when applicable)
    * - Adding anti-hallucination safety prompts
    * - Injecting ETP context data
    * - Redacting PII for LGPD compliance
@@ -256,7 +256,7 @@ export class OrchestratorService {
       agentsUsed.push('fundamentacao-guidance');
     }
 
-    // 3.5. Enrich with market fundamentation from Perplexity (optional)
+    // 3.5. Enrich with market fundamentation from Exa (optional)
     let hasEnrichmentWarning = false;
     if (this.needsMarketEnrichment(request.sectionType)) {
       try {
@@ -266,12 +266,12 @@ export class OrchestratorService {
         );
 
         const enrichmentResult =
-          await this.perplexityService.searchDeep(enrichmentQuery);
+          await this.exaService.searchDeep(enrichmentQuery);
 
         if (enrichmentResult.isFallback) {
-          // Perplexity returned fallback - graceful degradation
+          // Exa returned fallback - graceful degradation
           this.logger.warn(
-            'Perplexity enrichment unavailable, continuing without market data',
+            'Exa enrichment unavailable, continuing without market data',
             {
               sectionType: request.sectionType,
             },
@@ -290,7 +290,7 @@ export class OrchestratorService {
         }
       } catch (error) {
         // Unexpected error - log and continue (graceful degradation)
-        this.logger.error('Unexpected error during Perplexity enrichment', {
+        this.logger.error('Unexpected error during Exa enrichment', {
           error: error.message,
           sectionType: request.sectionType,
         });
