@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-15 | **Progresso:** 340/379 (89.7%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-15 | **Progresso:** 350/387 (90.4%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
@@ -53,15 +53,15 @@
 ## Milestones
 
 ```
-M1: Foundation          ████████████████████ 35/35  100%
+M1: Foundation          ████████████████████ 36/36  100%
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
-M3: Quality & Security  ████████████████████ 60/60  100%
+M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
-M5: E2E & Docs          ████████████████░░░░ 25/31   81%
-M6: Maintenance         █████████████████░░░ 74/87   85%
+M5: E2E & Docs          █████████████████░░░ 26/32   81%
+M6: Maintenance         ██████████████████░░ 75/86   87%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       █████████████░░░░░░░ 11/16   69%  🔴 P1 SPRINT
+M9: Export/Import       ███████████████░░░░░ 12/16   75%  🔴 P1 SPRINT
 ```
 
 ---
@@ -165,7 +165,7 @@ M9: Export/Import       █████████████░░░░░�
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 81% (25/31, 6 open)
+### M5 - E2E & Docs - 81% (26/32, 6 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -174,7 +174,7 @@ M9: Export/Import       █████████████░░░░░�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (13 open)
+### M6 - Maintenance (11 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -185,7 +185,7 @@ M9: Export/Import       █████████████░░░░░�
 **Performance:**
 | # | Issue | Priority |
 | ---- | ----------------------- | -------- |
-| #426 | Perplexity timeout | P3 |
+| ~~#426~~ | ~~Perplexity timeout~~ | ✅ CLOSED |
 | ~~#454~~ | ~~N+1 query fix~~ | ✅ PR #689 |
 | #455 | LLM cache memory leak | P2 |
 | #457 | useCallback/useMemo | P2 |
@@ -207,7 +207,7 @@ M9: Export/Import       █████████████░░░░░�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (5 open, 11 done)
+### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (4 open, 12 done)
 
 > **Decisão:** Feature-complete no MVP. Sprint intensivo nas semanas 1-4.
 
@@ -230,7 +230,7 @@ M9: Export/Import       █████████████░░░░░�
 | ~~#557~~ | ~~Geração relatório melhorias~~ | ✅ PR #684 | - |
 | ~~#558~~ | ~~Conversão documento para ETP~~ | ✅ PR #685 | - |
 | ~~#559~~ | ~~Endpoints análise e conversão~~ | ✅ PR #687 | - |
-| #560 | Frontend página Import & Analysis | P1 | 3 |
+| ~~#560~~ | ~~Frontend página Import & Analysis~~ | ✅ PR #721 | - |
 | #561 | Frontend exibição resultados | P1 | 3 |
 | #562 | Frontend store análise | P1 | 3 |
 | #563 | Testes E2E Import e Analysis | P1 | 4 |
@@ -267,7 +267,7 @@ M9: Export/Import       █████████████░░░░░�
 
 | #        | Issue                       | Prior.     | Est. |
 | -------- | --------------------------- | ---------- | ---- |
-| #560     | Import Page UI              | P1         | 3h   |
+| ~~#560~~ | ~~Import Page UI~~          | ✅ PR #721 | -    |
 | #561     | Results Display             | P1         | 2h   |
 | #562     | Analysis Store              | P1         | 2h   |
 | ~~#454~~ | ~~N+1 query fix~~           | ✅ PR #689 |
@@ -287,21 +287,47 @@ M9: Export/Import       █████████████░░░░░�
 
 ---
 
+## 🔄 ÉPICO - Migração Perplexity → Exa (8 issues)
+
+**Criado:** 2025-12-15 | **Objetivo:** Substituir PerplexityService por ExaService para melhor custo-benefício
+
+### Sprint 1 - Core Migration ✅ COMPLETE
+
+| #        | Issue                                          | Prior. | Status  |
+| -------- | ---------------------------------------------- | ------ | ------- |
+| ~~#706~~ | ~~ExaService com interface PerplexityService~~ | ✅     | PR #719 |
+| ~~#707~~ | ~~Configuração ambiente Exa~~                  | ✅     | PR #719 |
+| ~~#708~~ | ~~SearchModule usar ExaService~~               | ✅     | PR #719 |
+| ~~#709~~ | ~~Orchestrator migrar para Exa~~               | ✅     | PR #720 |
+
+### Sprint 2 - Remaining Migrations (4 open)
+
+| #    | Issue                                   | Prior. | Dep.       |
+| ---- | --------------------------------------- | ------ | ---------- |
+| #710 | Anti-hallucination fact-checking → Exa  | P1     | #709       |
+| #711 | Health checks → Exa                     | P1     | #709       |
+| #712 | Remove Perplexity code and dependencies | P2     | #710, #711 |
+| #713 | Update documentation (Perplexity → Exa) | P2     | #712       |
+
+**Labels:** `type/refactor`, `area/backend`
+
+---
+
 ## 🏛️ ÉPICO - Migração para APIs Governamentais (11 issues)
 
 **Criado:** 2025-12-14 | **Objetivo:** Substituir Perplexity por fontes oficiais (PNCP, Compras.gov.br, SINAPI, SICRO)
 
 > **Decisão:** APIs governamentais como fonte primária para licitações e preços de referência. Perplexity apenas como fallback para informações complementares.
 
-### Sprint 1 - APIs de Licitações (P0)
+### Sprint 1 - APIs de Licitações ✅ COMPLETE
 
-| #    | Issue                             | Prior. | Dep.       |
-| ---- | --------------------------------- | ------ | ---------- |
-| #690 | Base module gov-api               | P0     | -          |
-| #691 | Integrar Compras.gov.br (SIASG)   | P0     | #690       |
-| #692 | Integrar PNCP (Lei 14.133)        | P0     | #690       |
-| #695 | Unified search service            | P1     | #691, #692 |
-| #696 | Refactor orchestrator (gov-first) | P1     | #695       |
+| #        | Issue                               | Prior. | Status          |
+| -------- | ----------------------------------- | ------ | --------------- |
+| ~~#690~~ | ~~Base module gov-api~~             | ✅     | PR #718         |
+| ~~#691~~ | ~~Integrar Compras.gov.br (SIASG)~~ | ✅     | PR #718         |
+| ~~#692~~ | ~~Integrar PNCP (Lei 14.133)~~      | ✅     | PR #718         |
+| #695     | Unified search service              | P1     | Dep: #691, #692 |
+| #696     | Refactor orchestrator (gov-first)   | P1     | Dep: #695       |
 
 ### Sprint 2 - Tabelas de Preços (P1)
 
@@ -347,19 +373,19 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 379    |
-| Issues Abertas    | 39     |
-| Issues Fechadas   | 340    |
-| Progresso         | 89.7%  |
-| Velocidade        | 13/dia |
+| Issues Totais     | 387    |
+| Issues Abertas    | 37     |
+| Issues Fechadas   | 350    |
+| Progresso         | 90.4%  |
+| Velocidade        | 11/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
-| P0 Gov-API        | 3      |
+| P0 Gov-API        | 0      |
 | P1 Gov-API        | 5      |
 | P2 Gov-API        | 3      |
 | P0 Infra          | 0      |
-| P1 Sprint         | 8      |
+| P1 Sprint         | 3      |
 | P2 Sprint         | 8      |
 | v1.1 Backlog      | 7      |
 
