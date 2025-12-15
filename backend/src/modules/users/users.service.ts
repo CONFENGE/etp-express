@@ -177,12 +177,15 @@ export class UsersService {
       throw new NotFoundException(`Usuário com ID ${userId} não encontrado`);
     }
 
-    // 2. Export all ETPs with related data
-    const etps = await this.etpsRepository.find({
-      where: { createdById: userId },
-      relations: ['sections', 'versions'],
-      order: { createdAt: 'DESC' },
-    });
+    // 2. Export all ETPs with related data (optimized with QueryBuilder to avoid N+1)
+    const etps = await this.etpsRepository
+      .createQueryBuilder('etp')
+      .leftJoinAndSelect('etp.sections', 'sections')
+      .leftJoinAndSelect('etp.versions', 'versions')
+      .where('etp.createdById = :userId', { userId })
+      .orderBy('etp.createdAt', 'DESC')
+      .addOrderBy('sections.order', 'ASC')
+      .getMany();
 
     // 3. Export analytics events
     const analytics = await this.analyticsRepository.find({
@@ -278,16 +281,15 @@ export class UsersService {
       scheduledDeletionDate.getDate() + this.retentionDays,
     );
 
-    // Count ETPs and related data for audit log
-    const etpsCount = await this.etpsRepository.count({
-      where: { createdById: userId },
-    });
+    // Count ETPs and related data for audit log (optimized with single QueryBuilder query)
+    const etps = await this.etpsRepository
+      .createQueryBuilder('etp')
+      .leftJoinAndSelect('etp.sections', 'sections')
+      .leftJoinAndSelect('etp.versions', 'versions')
+      .where('etp.createdById = :userId', { userId })
+      .getMany();
 
-    const etps = await this.etpsRepository.find({
-      where: { createdById: userId },
-      relations: ['sections', 'versions'],
-    });
-
+    const etpsCount = etps.length;
     const sectionsCount = etps.reduce(
       (sum, etp) => sum + (etp.sections?.length || 0),
       0,
@@ -377,6 +379,10 @@ export class UsersService {
    * - Creating audit trail for each purge
    * - Logging purge operations for compliance reporting
    *
+   * **Performance optimization**: Uses batch query to load all ETPs for all users
+   * at once, avoiding N+1 query pattern that would occur with individual queries
+   * inside the loop. For 10 users with ETPs, this reduces queries from 20+ to 2.
+   *
    * Scheduled to run: Every day at 2:00 AM
    *
    * @returns Object with purge statistics (count, timestamp, and retention days)
@@ -403,19 +409,44 @@ export class UsersService {
       },
     });
 
+    if (deletedUsers.length === 0) {
+      this.logger.log(
+        `Purge job completed: No users to purge (retention: ${this.retentionDays} days)`,
+      );
+      return {
+        purgedCount: 0,
+        purgedAt: new Date(),
+        purgedUserIds: [],
+        retentionDays: this.retentionDays,
+      };
+    }
+
+    // OPTIMIZATION: Batch load all ETPs for all users at once to avoid N+1 queries
+    // Previously: N queries inside loop (1 per user)
+    // Now: 1 query for all users
+    const userIds = deletedUsers.map((u) => u.id);
+    const allEtps = await this.etpsRepository
+      .createQueryBuilder('etp')
+      .leftJoinAndSelect('etp.sections', 'sections')
+      .leftJoinAndSelect('etp.versions', 'versions')
+      .where('etp.createdById IN (:...userIds)', { userIds })
+      .getMany();
+
+    // Group ETPs by userId for O(1) lookup in loop
+    const etpsByUserId = new Map<string, Etp[]>();
+    for (const etp of allEtps) {
+      const list = etpsByUserId.get(etp.createdById) || [];
+      list.push(etp);
+      etpsByUserId.set(etp.createdById, list);
+    }
+
     const purgedUserIds: string[] = [];
 
     for (const user of deletedUsers) {
       try {
-        // Count related data for audit log
-        const etpsCount = await this.etpsRepository.count({
-          where: { createdById: user.id },
-        });
-
-        const etps = await this.etpsRepository.find({
-          where: { createdById: user.id },
-          relations: ['sections', 'versions'],
-        });
+        // Use pre-loaded ETPs from batch query (O(1) lookup)
+        const etps = etpsByUserId.get(user.id) || [];
+        const etpsCount = etps.length;
 
         const sectionsCount = etps.reduce(
           (sum, etp) => sum + (etp.sections?.length || 0),
@@ -460,15 +491,9 @@ export class UsersService {
       retentionDays: this.retentionDays,
     };
 
-    if (purgedUserIds.length > 0) {
-      this.logger.log(
-        `Purge job completed: ${purgedUserIds.length} user(s) permanently deleted (retention: ${this.retentionDays} days)`,
-      );
-    } else {
-      this.logger.log(
-        `Purge job completed: No users to purge (retention: ${this.retentionDays} days)`,
-      );
-    }
+    this.logger.log(
+      `Purge job completed: ${purgedUserIds.length} user(s) permanently deleted (retention: ${this.retentionDays} days)`,
+    );
 
     return result;
   }
