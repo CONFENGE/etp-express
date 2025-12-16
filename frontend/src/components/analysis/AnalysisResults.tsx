@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { ScoreCard } from './ScoreCard';
 import { ImprovementList } from './ImprovementList';
 import type {
-  AnalysisDimension,
+  AnalysisDimensionScore,
   AnalysisVerdict,
   IssueSummary,
   DocumentInfo,
@@ -46,7 +46,7 @@ export interface AnalysisResultsProps {
   /**
    * Dimension scores breakdown
    */
-  dimensions: AnalysisDimension[];
+  dimensions: AnalysisDimensionScore[];
   /**
    * Issue summary by severity
    */

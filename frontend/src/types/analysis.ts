@@ -9,12 +9,17 @@
 export type AnalysisDimensionType = 'legal' | 'clareza' | 'fundamentacao';
 
 /**
- * Severity levels for issues
+ * @deprecated Use AnalysisDimensionType instead
+ */
+export type AnalysisDimension = AnalysisDimensionType;
+
+/**
+ * Severity levels for issues found during ETP analysis.
  */
 export type SeverityLevel = 'critical' | 'important' | 'suggestion';
 
 /**
- * Analysis verdict
+ * Verdict based on analysis score and critical issues.
  */
 export type AnalysisVerdict =
   | 'Aprovado'
@@ -22,16 +27,25 @@ export type AnalysisVerdict =
   | 'Reprovado';
 
 /**
- * Analysis dimension from the API
+ * Status of analysis operation.
  */
-export interface AnalysisDimension {
-  dimension: AnalysisDimensionType;
-  score: number;
-  passed: boolean;
+export type AnalysisStatus =
+  | 'idle'
+  | 'uploading'
+  | 'analyzing'
+  | 'completed'
+  | 'failed';
+
+/**
+ * Document metadata from analysis.
+ */
+export interface DocumentInfo {
+  wordCount: number;
+  sectionCount: number;
 }
 
 /**
- * Issue summary from the API
+ * Summary of issues by severity.
  */
 export interface IssueSummary {
   critical: number;
@@ -40,15 +54,22 @@ export interface IssueSummary {
 }
 
 /**
- * Document info from the API
+ * Individual dimension score breakdown.
+ * Used by ScoreCard and other display components.
  */
-export interface DocumentInfo {
-  wordCount: number;
-  sectionCount: number;
+export interface AnalysisDimensionScore {
+  dimension: AnalysisDimensionType;
+  score: number;
+  passed: boolean;
 }
 
 /**
- * Individual issue identified during analysis
+ * @deprecated Use AnalysisDimensionScore instead
+ */
+export type DimensionScore = AnalysisDimensionScore;
+
+/**
+ * Individual issue identified during ETP analysis.
  */
 export interface ReportIssue {
   dimension: AnalysisDimensionType;
@@ -59,7 +80,18 @@ export interface ReportIssue {
 }
 
 /**
- * Executive summary with scores and verdict
+ * Section containing issues for a specific analysis dimension.
+ */
+export interface DimensionSection {
+  dimension: AnalysisDimensionType;
+  label: string;
+  score: number;
+  passed: boolean;
+  issues: ReportIssue[];
+}
+
+/**
+ * Executive summary of the analysis report.
  */
 export interface ExecutiveSummary {
   overallScore: number;
@@ -72,18 +104,7 @@ export interface ExecutiveSummary {
 }
 
 /**
- * Section containing issues for a specific dimension
- */
-export interface DimensionSection {
-  dimension: AnalysisDimensionType;
-  label: string;
-  score: number;
-  passed: boolean;
-  issues: ReportIssue[];
-}
-
-/**
- * Complete improvement report
+ * Complete improvement report generated from ETP analysis.
  */
 export interface ImprovementReport {
   generatedAt: string;
@@ -94,26 +115,32 @@ export interface ImprovementReport {
 }
 
 /**
- * Upload analysis response from the API
+ * Response from document upload and analysis.
+ * Mirrors UploadAnalysisResponseDto from backend.
+ */
+export interface AnalysisResponse {
+  analysisId: string;
+  originalFilename: string;
+  mimeType: string;
+  overallScore: number;
+  meetsMinimumQuality: boolean;
+  verdict: AnalysisVerdict;
+  documentInfo: DocumentInfo;
+  issueSummary: IssueSummary;
+  dimensions: AnalysisDimensionScore[];
+  message: string;
+}
+
+/**
+ * Upload analysis response from the API (wrapper format)
  */
 export interface UploadAnalysisResponse {
-  data: {
-    analysisId: string;
-    originalFilename: string;
-    mimeType: string;
-    overallScore: number;
-    meetsMinimumQuality: boolean;
-    verdict: AnalysisVerdict;
-    documentInfo: DocumentInfo;
-    issueSummary: IssueSummary;
-    dimensions: AnalysisDimension[];
-    message: string;
-  };
+  data: AnalysisResponse;
   disclaimer: string;
 }
 
 /**
- * Full analysis details response
+ * Full analysis details response.
  */
 export interface AnalysisDetailsResponse {
   data: {
@@ -126,20 +153,26 @@ export interface AnalysisDetailsResponse {
 }
 
 /**
- * Convert to ETP response from the API
+ * Request for converting analyzed document to ETP.
+ */
+export interface ConvertToEtpRequest {
+  title?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Response from document to ETP conversion.
+ * Mirrors ConvertToEtpResponseDto from backend.
  */
 export interface ConvertToEtpResponse {
-  data: {
-    etpId: string;
-    title: string;
-    status: string;
-    sectionsCount: number;
-    mappedSectionsCount: number;
-    customSectionsCount: number;
-    convertedAt: string;
-    message: string;
-  };
-  disclaimer: string;
+  etpId: string;
+  title: string;
+  status: string;
+  sectionsCount: number;
+  mappedSectionsCount: number;
+  customSectionsCount: number;
+  convertedAt: string;
+  message: string;
 }
 
 /**
