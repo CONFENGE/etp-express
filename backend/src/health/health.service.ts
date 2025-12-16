@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
-import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
+import { ExaService } from '../modules/search/exa/exa.service';
 
 /**
  * Health Check Service
@@ -24,7 +24,7 @@ export class HealthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly openaiService: OpenAIService,
-    private readonly perplexityService: PerplexityService,
+    private readonly exaService: ExaService,
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
   ) {}
@@ -263,23 +263,20 @@ export class HealthService {
       });
     }
 
-    // Check Perplexity
+    // Check Exa
     try {
-      const { latency } = await this.perplexityService.ping();
-      const circuitState = this.perplexityService.getCircuitState();
+      const { latency } = await this.exaService.ping();
+      const circuitState = this.exaService.getCircuitState();
 
       if (circuitState.opened) {
-        this.logger.warn(
-          'Perplexity circuit breaker is OPEN - service degraded',
-          {
-            stats: circuitState.stats,
-          },
-        );
+        this.logger.warn('Exa circuit breaker is OPEN - service degraded', {
+          stats: circuitState.stats,
+        });
       } else {
-        this.logger.debug(`Perplexity health check OK - latency: ${latency}ms`);
+        this.logger.debug(`Exa health check OK - latency: ${latency}ms`);
       }
     } catch (error) {
-      this.logger.error('Perplexity health check failed', {
+      this.logger.error('Exa health check failed', {
         error: error.message,
         stack: error.stack,
       });

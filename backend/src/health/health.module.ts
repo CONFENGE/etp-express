@@ -14,7 +14,7 @@ import { SearchModule } from '../modules/search/search.module';
  * Fornece:
  * - Health check endpoint (/api/health) para validação de prontidão
  * - Metrics endpoint (/api/metrics) para Prometheus scraping
- * - Provider health checks (OpenAI, Perplexity circuit breaker status)
+ * - Provider health checks (OpenAI, Exa circuit breaker status)
  *
  * Essencial para:
  * - Zero-downtime deployment no Railway
