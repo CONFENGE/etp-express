@@ -331,12 +331,12 @@ M9: Export/Import       ███████████████░░░�
 
 ### Sprint 2 - Tabelas de Preços (P1)
 
-| #    | Issue                         | Prior. | Dep.       |
-| ---- | ----------------------------- | ------ | ---------- |
-| #693 | SINAPI data ingestion (Excel) | P1     | #690       |
-| #694 | SICRO data ingestion (Excel)  | P1     | #690       |
-| #697 | Migrations entidades gov-data | P2     | #693, #694 |
-| #698 | Jobs sync automático (BullMQ) | P2     | #697       |
+| #        | Issue                             | Prior. | Status    |
+| -------- | --------------------------------- | ------ | --------- |
+| ~~#693~~ | ~~SINAPI data ingestion (Excel)~~ | ✅     | PR #726   |
+| #694     | SICRO data ingestion (Excel)      | P1     | Dep: #690 |
+| #697     | Migrations entidades gov-data     | P2     | Dep: #694 |
+| #698     | Jobs sync automático (BullMQ)     | P2     | Dep: #697 |
 
 ### Sprint 3 - Observabilidade (P2)
 
