@@ -53,6 +53,7 @@ npm run migration:run
 ```
 
 Isso criará:
+
 - Extension `pgvector`
 - Tabela `legislation`
 - Índices de busca (B-tree para exact match, IVFFlat para vector similarity)
@@ -64,6 +65,7 @@ npm run seed:legislation
 ```
 
 Isso indexará:
+
 - Lei 14.133/2021 (Nova Lei de Licitações)
 - 14 artigos principais
 - Embedding vetorial de 1536 dimensões
@@ -198,12 +200,12 @@ npm run test:cov
 
 ### Similarity Scores
 
-| Score | Interpretação | Uso |
-|-------|---------------|-----|
-| 0.90 - 1.00 | Altamente similar | Sugerir como alternativa |
-| 0.70 - 0.89 | Similar | Busca com threshold padrão |
-| 0.50 - 0.69 | Parcialmente similar | Busca ampla |
-| 0.00 - 0.49 | Pouco similar | Desconsiderar |
+| Score       | Interpretação        | Uso                        |
+| ----------- | -------------------- | -------------------------- |
+| 0.90 - 1.00 | Altamente similar    | Sugerir como alternativa   |
+| 0.70 - 0.89 | Similar              | Busca com threshold padrão |
+| 0.50 - 0.69 | Parcialmente similar | Busca ampla                |
+| 0.00 - 0.49 | Pouco similar        | Desconsiderar              |
 
 ### Custos OpenAI
 
@@ -217,7 +219,10 @@ npm run test:cov
 
 ```typescript
 // scripts/seed-custom-legislation.ts
-import { Legislation, LegislationType } from '../src/entities/legislation.entity';
+import {
+  Legislation,
+  LegislationType,
+} from '../src/entities/legislation.entity';
 
 const decreto1234 = {
   type: LegislationType.DECRETO,
@@ -225,10 +230,8 @@ const decreto1234 = {
   year: 2020,
   title: 'Regulamenta...',
   content: 'Art. 1º ...',
-  articles: [
-    { number: '1', content: '...' }
-  ],
-  sourceUrl: 'https://...'
+  articles: [{ number: '1', content: '...' }],
+  sourceUrl: 'https://...',
 };
 
 await ragService.indexLegislation(decreto1234);
@@ -261,7 +264,7 @@ Authorization: Bearer <admin-token>
 
 ✅ **#211** - PoC RAG (CONCLUÍDO)
 🔜 **#212** - Integrar RAG no AntiHallucinationAgent
-🔜 **#213** - Fact-checking reverso via Perplexity
+🔜 **#213** - Fact-checking reverso via Exa
 🔜 **#214** - Melhorar scoring do AntiHallucinationAgent
 
 ## 🐛 Troubleshooting

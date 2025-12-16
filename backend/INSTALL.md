@@ -7,7 +7,7 @@
 - npm ou yarn
 - Chaves de API:
   - OpenAI API Key
-  - Perplexity API Key
+  - Exa API Key
 
 ## Passo a Passo
 
@@ -58,7 +58,7 @@ cp .env.example .env
 # - DATABASE_URL
 # - JWT_SECRET
 # - OPENAI_API_KEY
-# - PERPLEXITY_API_KEY
+# - EXA_API_KEY
 ```
 
 #### Exemplo de .env
@@ -82,9 +82,10 @@ OPENAI_MODEL=gpt-4-turbo-preview
 OPENAI_MAX_TOKENS=4000
 OPENAI_TEMPERATURE=0.7
 
-# Perplexity
-PERPLEXITY_API_KEY=pplx-seu-token-aqui
-PERPLEXITY_MODEL=pplx-7b-online
+# Exa
+EXA_API_KEY=exa-seu-token-aqui
+EXA_TYPE=auto
+EXA_NUM_RESULTS=10
 
 # Frontend
 FRONTEND_URL=http://localhost:5173
@@ -327,7 +328,7 @@ railway up
 heroku create etp-express-backend
 heroku addons:create heroku-postgresql:hobby-dev
 heroku config:set OPENAI_API_KEY=xxx
-heroku config:set PERPLEXITY_API_KEY=xxx
+heroku config:set EXA_API_KEY=xxx
 git push heroku main
 ```
 

@@ -184,13 +184,13 @@ describe('SimilarContract Entity', () => {
       expect(contract.metadata?.numeroProcesso).toBeUndefined();
     });
 
-    it('should support perplexity result flag in metadata', () => {
+    it('should support search result flag in metadata', () => {
       const contract = new SimilarContract();
       contract.metadata = {
-        perplexityResult: true,
+        exaResult: true,
       };
 
-      expect(contract.metadata?.perplexityResult).toBe(true);
+      expect(contract.metadata?.exaResult).toBe(true);
     });
   });
 
