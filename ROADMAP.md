@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-15 | **Progresso:** 350/387 (90.4%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-16 | **Progresso:** 359/388 (92.5%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
 
@@ -61,7 +61,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         ██████████████████░░ 75/86   87%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       ███████████████░░░░░ 12/16   75%  🔴 P1 SPRINT
+M9: Export/Import       ███████████████████░ 15/16   94%  🔴 P1 SPRINT
 ```
 
 ---
@@ -300,14 +300,14 @@ M9: Export/Import       ███████████████░░░�
 | ~~#708~~ | ~~SearchModule usar ExaService~~               | ✅     | PR #719 |
 | ~~#709~~ | ~~Orchestrator migrar para Exa~~               | ✅     | PR #720 |
 
-### Sprint 2 - Remaining Migrations (4 open)
+### Sprint 2 - Remaining Migrations (1 open)
 
-| #    | Issue                                   | Prior. | Dep.       |
-| ---- | --------------------------------------- | ------ | ---------- |
-| #710 | Anti-hallucination fact-checking → Exa  | P1     | #709       |
-| #711 | Health checks → Exa                     | P1     | #709       |
-| #712 | Remove Perplexity code and dependencies | P2     | #710, #711 |
-| #713 | Update documentation (Perplexity → Exa) | P2     | #712       |
+| #        | Issue                                       | Prior. | Dep.    |
+| -------- | ------------------------------------------- | ------ | ------- |
+| ~~#710~~ | ~~Anti-hallucination fact-checking → Exa~~  | ✅     | PR #TBD |
+| ~~#711~~ | ~~Health checks → Exa~~                     | ✅     | PR #TBD |
+| ~~#712~~ | ~~Remove Perplexity code and dependencies~~ | ✅     | PR #TBD |
+| #713     | Update documentation (Perplexity → Exa)     | P2     | #712    |
 
 **Labels:** `type/refactor`, `area/backend`
 
@@ -331,12 +331,12 @@ M9: Export/Import       ███████████████░░░�
 
 ### Sprint 2 - Tabelas de Preços (P1)
 
-| #        | Issue                             | Prior. | Status    |
-| -------- | --------------------------------- | ------ | --------- |
-| ~~#693~~ | ~~SINAPI data ingestion (Excel)~~ | ✅     | PR #726   |
-| #694     | SICRO data ingestion (Excel)      | P1     | Dep: #690 |
-| #697     | Migrations entidades gov-data     | P2     | Dep: #694 |
-| #698     | Jobs sync automático (BullMQ)     | P2     | Dep: #697 |
+| #        | Issue                             | Prior. | Status                           |
+| -------- | --------------------------------- | ------ | -------------------------------- |
+| ~~#693~~ | ~~SINAPI data ingestion (Excel)~~ | ✅     | PR #726                          |
+| ~~#694~~ | ~~SICRO data ingestion (Excel)~~  | ✅     | PR #730, #729 (xlsx→ExcelJS fix) |
+| #697     | Migrations entidades gov-data     | P2     | Dep: #694                        |
+| #698     | Jobs sync automático (BullMQ)     | P2     | Dep: #697                        |
 
 ### Sprint 3 - Observabilidade (P2)
 
@@ -373,16 +373,16 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 387    |
-| Issues Abertas    | 37     |
-| Issues Fechadas   | 350    |
-| Progresso         | 90.4%  |
-| Velocidade        | 11/dia |
+| Issues Totais     | 388    |
+| Issues Abertas    | 29     |
+| Issues Fechadas   | 359    |
+| Progresso         | 92.5%  |
+| Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
 | P0 Gov-API        | 0      |
-| P1 Gov-API        | 5      |
+| P1 Gov-API        | 3      |
 | P2 Gov-API        | 3      |
 | P0 Infra          | 0      |
 | P1 Sprint         | 3      |
