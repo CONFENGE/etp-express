@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { AntiHallucinationAgent } from './anti-hallucination.agent';
 import { RAGService } from '../../rag/rag.service';
-import { PerplexityService } from '../../search/perplexity/perplexity.service';
+import { ExaService } from '../../search/exa/exa.service';
 import { LegislationType } from '../../../entities/legislation.entity';
 
 describe('AntiHallucinationAgent', () => {
   let agent: AntiHallucinationAgent;
   let ragService: RAGService;
-  let perplexityService: PerplexityService;
+  let exaService: ExaService;
   let configService: ConfigService;
 
   // Mock RAG Service
@@ -16,8 +16,8 @@ describe('AntiHallucinationAgent', () => {
     verifyReference: jest.fn(),
   };
 
-  // Mock Perplexity Service
-  const mockPerplexityService = {
+  // Mock Exa Service
+  const mockExaService = {
     factCheckLegalReference: jest.fn(),
   };
 
@@ -38,8 +38,8 @@ describe('AntiHallucinationAgent', () => {
           useValue: mockRagService,
         },
         {
-          provide: PerplexityService,
-          useValue: mockPerplexityService,
+          provide: ExaService,
+          useValue: mockExaService,
         },
         {
           provide: ConfigService,
@@ -50,7 +50,7 @@ describe('AntiHallucinationAgent', () => {
 
     agent = module.get<AntiHallucinationAgent>(AntiHallucinationAgent);
     ragService = module.get<RAGService>(RAGService);
-    perplexityService = module.get<PerplexityService>(PerplexityService);
+    exaService = module.get<ExaService>(ExaService);
     configService = module.get<ConfigService>(ConfigService);
 
     // Reset mocks
@@ -511,11 +511,11 @@ describe('AntiHallucinationAgent', () => {
         suggestion: 'Você quis dizer Lei 14.133/2021? (95% similar)',
       });
 
-      // Mock: Perplexity fact-check também não encontra (fallback após RAG)
-      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+      // Mock: Exa fact-check também não encontra (fallback após RAG)
+      mockExaService.factCheckLegalReference.mockResolvedValue({
         reference: 'Lei 14133/2020',
         exists: false,
-        source: 'perplexity',
+        source: 'exa',
         description: 'NÃO EXISTE. Lei não encontrada.',
         confidence: 0.8,
       });
@@ -707,8 +707,8 @@ describe('AntiHallucinationAgent', () => {
           confidence: 0.0,
         });
 
-        // Mock do Perplexity para fallback (também não encontra)
-        mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        // Mock do Exa para fallback (também não encontra)
+        mockExaService.factCheckLegalReference.mockResolvedValue({
           reference: 'Lei 99999/2099',
           exists: false,
           description: 'Lei não encontrada',
@@ -731,8 +731,8 @@ describe('AntiHallucinationAgent', () => {
           suggestion: 'Você quis dizer Lei 14.133/2021?',
         });
 
-        // Mock do Perplexity para fallback
-        mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+        // Mock do Exa para fallback
+        mockExaService.factCheckLegalReference.mockResolvedValue({
           reference: 'Lei 14133/2020',
           exists: false,
           description: 'Lei não encontrada',
@@ -1092,8 +1092,8 @@ describe('AntiHallucinationAgent', () => {
         confidence: 0.0,
       });
 
-      // Mock do Perplexity para fallback
-      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+      // Mock do Exa para fallback
+      mockExaService.factCheckLegalReference.mockResolvedValue({
         reference: 'Lei 99999/2099',
         exists: false,
         description: 'Lei não encontrada',
@@ -1170,8 +1170,8 @@ describe('AntiHallucinationAgent', () => {
         confidence: 0.0,
       });
 
-      // Mock do Perplexity para fallback
-      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+      // Mock do Exa para fallback
+      mockExaService.factCheckLegalReference.mockResolvedValue({
         reference: 'Lei 99999/2099',
         exists: false,
         description: 'Lei não encontrada',
@@ -1215,8 +1215,8 @@ describe('AntiHallucinationAgent', () => {
         suggestion: 'Você quis dizer Lei 14.133/2021? (95% similar)',
       });
 
-      // Mock do Perplexity para fallback
-      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+      // Mock do Exa para fallback
+      mockExaService.factCheckLegalReference.mockResolvedValue({
         reference: 'Lei 14133/2020',
         exists: false,
         description: 'Lei não encontrada',
@@ -1241,8 +1241,8 @@ describe('AntiHallucinationAgent', () => {
         confidence: 0.0,
       });
 
-      // Mock do Perplexity para fallback
-      mockPerplexityService.factCheckLegalReference.mockResolvedValue({
+      // Mock do Exa para fallback
+      mockExaService.factCheckLegalReference.mockResolvedValue({
         reference: 'Lei 99999/2099',
         exists: false,
         description: 'Lei não encontrada',
