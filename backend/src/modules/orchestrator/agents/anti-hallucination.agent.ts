@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RAGService, VerificationResult } from '../../rag/rag.service';
 import { LegislationType } from '../../../entities/legislation.entity';
-import { PerplexityService } from '../../search/perplexity/perplexity.service';
+import { ExaService } from '../../search/exa/exa.service';
 
 export interface LegalReference {
   type: LegislationType;
@@ -63,7 +63,7 @@ export class AntiHallucinationAgent {
 
   constructor(
     private readonly ragService: RAGService,
-    private readonly perplexityService: PerplexityService,
+    private readonly exaService: ExaService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -150,8 +150,8 @@ export class AntiHallucinationAgent {
   }
 
   /**
-   * Verify legal references using RAG service with Perplexity fallback.
-   * First attempts local RAG verification, then falls back to Perplexity for external fact-checking.
+   * Verify legal references using RAG service with Exa fallback.
+   * First attempts local RAG verification, then falls back to Exa for external fact-checking.
    * Returns verification results for each reference found.
    */
   private async verifyReferences(
@@ -175,23 +175,22 @@ export class AntiHallucinationAgent {
             return { ...localResult, source: 'local' };
           }
 
-          // 3. If not found locally, fact-check via Perplexity (slower, fallback)
+          // 3. If not found locally, fact-check via Exa (slower, fallback)
           this.logger.log(
-            'Reference not found locally, attempting fact-check via Perplexity',
+            'Reference not found locally, attempting fact-check via Exa',
             { reference: ref.raw },
           );
 
-          const externalResult =
-            await this.perplexityService.factCheckLegalReference({
-              type: ref.type,
-              number: ref.number,
-              year: ref.year,
-            });
+          const externalResult = await this.exaService.factCheckLegalReference({
+            type: ref.type,
+            number: ref.number,
+            year: ref.year,
+          });
 
           // 4. If found externally, suggest adding to local DB
           if (externalResult.exists) {
             this.logger.log(
-              'Reference found externally via Perplexity - consider adding to local database',
+              'Reference found externally via Exa - consider adding to local database',
               {
                 reference: ref.raw,
                 description: externalResult.description,
@@ -199,8 +198,8 @@ export class AntiHallucinationAgent {
             );
           }
 
-          // Convert PerplexityService.FactCheckResult to RAGService.VerificationResult
-          // Only preserve RAG suggestion if it exists (don't treat Perplexity "not found" as suggestion)
+          // Convert ExaService.FactCheckResult to RAGService.VerificationResult
+          // Only preserve RAG suggestion if it exists (don't treat Exa "not found" as suggestion)
           return {
             reference: externalResult.reference,
             exists: externalResult.exists,
