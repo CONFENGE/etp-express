@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
-import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
+import { ExaService } from '../modules/search/exa/exa.service';
 
 describe('HealthController', () => {
   let controller: HealthController;
   let service: HealthService;
   let openaiService: OpenAIService;
-  let perplexityService: PerplexityService;
+  let exaService: ExaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +29,7 @@ describe('HealthController', () => {
           },
         },
         {
-          provide: PerplexityService,
+          provide: ExaService,
           useValue: {
             getCircuitState: jest.fn(),
             ping: jest.fn(),
@@ -41,7 +41,7 @@ describe('HealthController', () => {
     controller = module.get<HealthController>(HealthController);
     service = module.get<HealthService>(HealthService);
     openaiService = module.get<OpenAIService>(OpenAIService);
-    perplexityService = module.get<PerplexityService>(PerplexityService);
+    exaService = module.get<ExaService>(ExaService);
   });
 
   afterEach(() => {
@@ -309,7 +309,7 @@ describe('HealthController', () => {
     });
   });
 
-  describe('getPerplexityHealth', () => {
+  describe('getExaHealth', () => {
     it('should return circuit state when circuit is closed', () => {
       // Arrange
       const circuitState = {
@@ -323,16 +323,14 @@ describe('HealthController', () => {
           timeouts: 0,
         },
       } as any;
-      jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(circuitState);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue(circuitState);
 
       // Act
-      const result = controller.getPerplexityHealth();
+      const result = controller.getExaHealth();
 
       // Assert
       expect(result).toEqual(circuitState);
-      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+      expect(exaService.getCircuitState).toHaveBeenCalledTimes(1);
     });
 
     it('should return circuit state when circuit is open', () => {
@@ -348,16 +346,14 @@ describe('HealthController', () => {
           timeouts: 3,
         },
       } as any;
-      jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(circuitState);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue(circuitState);
 
       // Act
-      const result = controller.getPerplexityHealth();
+      const result = controller.getExaHealth();
 
       // Assert
       expect(result).toEqual(circuitState);
-      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+      expect(exaService.getCircuitState).toHaveBeenCalledTimes(1);
       expect(result.opened).toBe(true);
     });
 
@@ -374,17 +370,15 @@ describe('HealthController', () => {
           timeouts: 1,
         },
       } as any;
-      jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(circuitState);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue(circuitState);
 
       // Act
-      const result = controller.getPerplexityHealth();
+      const result = controller.getExaHealth();
 
       // Assert
       expect(result).toEqual(circuitState);
       expect(result.halfOpen).toBe(true);
-      expect(perplexityService.getCircuitState).toHaveBeenCalledTimes(1);
+      expect(exaService.getCircuitState).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -392,14 +386,14 @@ describe('HealthController', () => {
     it('should return healthy status for both providers when ping succeeds', async () => {
       // Arrange
       const openaiLatency = 245;
-      const perplexityLatency = 892;
+      const exaLatency = 892;
       const openaiCircuitState = {
         opened: false,
         halfOpen: false,
         closed: true,
         stats: { fires: 10, successes: 10, failures: 0 },
       };
-      const perplexityCircuitState = {
+      const exaCircuitState = {
         opened: false,
         halfOpen: false,
         closed: true,
@@ -409,15 +403,13 @@ describe('HealthController', () => {
       jest
         .spyOn(openaiService, 'ping')
         .mockResolvedValue({ latency: openaiLatency });
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: perplexityLatency });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: exaLatency });
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
       jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(perplexityCircuitState as any);
+        .spyOn(exaService, 'getCircuitState')
+        .mockReturnValue(exaCircuitState as any);
 
       // Act
       const result = await controller.getProvidersHealth();
@@ -428,19 +420,19 @@ describe('HealthController', () => {
       expect(result.openai.circuitState).toEqual(openaiCircuitState);
       expect(result.openai.lastCheck).toBeInstanceOf(Date);
 
-      expect(result.perplexity.status).toBe('healthy');
-      expect(result.perplexity.latency).toBe(perplexityLatency);
-      expect(result.perplexity.circuitState).toEqual(perplexityCircuitState);
-      expect(result.perplexity.lastCheck).toBeInstanceOf(Date);
+      expect(result.exa.status).toBe('healthy');
+      expect(result.exa.latency).toBe(exaLatency);
+      expect(result.exa.circuitState).toEqual(exaCircuitState);
+      expect(result.exa.lastCheck).toBeInstanceOf(Date);
 
       expect(openaiService.ping).toHaveBeenCalledTimes(1);
-      expect(perplexityService.ping).toHaveBeenCalledTimes(1);
+      expect(exaService.ping).toHaveBeenCalledTimes(1);
     });
 
     it('should return degraded status for OpenAI when ping fails', async () => {
       // Arrange
-      const perplexityLatency = 723;
-      const perplexityCircuitState = {
+      const exaLatency = 723;
+      const exaCircuitState = {
         opened: false,
         halfOpen: false,
         closed: true,
@@ -456,15 +448,13 @@ describe('HealthController', () => {
       jest
         .spyOn(openaiService, 'ping')
         .mockRejectedValue(new Error('Connection timeout'));
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: perplexityLatency });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: exaLatency });
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
       jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(perplexityCircuitState as any);
+        .spyOn(exaService, 'getCircuitState')
+        .mockReturnValue(exaCircuitState as any);
 
       // Act
       const result = await controller.getProvidersHealth();
@@ -476,11 +466,11 @@ describe('HealthController', () => {
       expect(result.openai.error).toBe('Connection timeout');
       expect(result.openai.lastCheck).toBeInstanceOf(Date);
 
-      expect(result.perplexity.status).toBe('healthy');
-      expect(result.perplexity.latency).toBe(perplexityLatency);
+      expect(result.exa.status).toBe('healthy');
+      expect(result.exa.latency).toBe(exaLatency);
     });
 
-    it('should return degraded status for Perplexity when ping fails', async () => {
+    it('should return degraded status for Exa when ping fails', async () => {
       // Arrange
       const openaiLatency = 245;
       const openaiCircuitState = {
@@ -489,7 +479,7 @@ describe('HealthController', () => {
         closed: true,
         stats: { fires: 10, successes: 10, failures: 0 },
       };
-      const perplexityCircuitState = {
+      const exaCircuitState = {
         opened: true,
         halfOpen: false,
         closed: false,
@@ -500,14 +490,14 @@ describe('HealthController', () => {
         .spyOn(openaiService, 'ping')
         .mockResolvedValue({ latency: openaiLatency });
       jest
-        .spyOn(perplexityService, 'ping')
+        .spyOn(exaService, 'ping')
         .mockRejectedValue(new Error('API key invalid'));
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
       jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(perplexityCircuitState as any);
+        .spyOn(exaService, 'getCircuitState')
+        .mockReturnValue(exaCircuitState as any);
 
       // Act
       const result = await controller.getProvidersHealth();
@@ -516,11 +506,11 @@ describe('HealthController', () => {
       expect(result.openai.status).toBe('healthy');
       expect(result.openai.latency).toBe(openaiLatency);
 
-      expect(result.perplexity.status).toBe('degraded');
-      expect(result.perplexity.latency).toBeUndefined();
-      expect(result.perplexity.circuitState).toEqual(perplexityCircuitState);
-      expect(result.perplexity.error).toBe('API key invalid');
-      expect(result.perplexity.lastCheck).toBeInstanceOf(Date);
+      expect(result.exa.status).toBe('degraded');
+      expect(result.exa.latency).toBeUndefined();
+      expect(result.exa.circuitState).toEqual(exaCircuitState);
+      expect(result.exa.error).toBe('API key invalid');
+      expect(result.exa.lastCheck).toBeInstanceOf(Date);
     });
 
     it('should return degraded status for both providers when both ping fail', async () => {
@@ -531,7 +521,7 @@ describe('HealthController', () => {
         closed: false,
         stats: { fires: 10, successes: 2, failures: 8 },
       };
-      const perplexityCircuitState = {
+      const exaCircuitState = {
         opened: true,
         halfOpen: false,
         closed: false,
@@ -541,15 +531,13 @@ describe('HealthController', () => {
       jest
         .spyOn(openaiService, 'ping')
         .mockRejectedValue(new Error('OpenAI down'));
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockRejectedValue(new Error('Perplexity down'));
+      jest.spyOn(exaService, 'ping').mockRejectedValue(new Error('Exa down'));
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
       jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(perplexityCircuitState as any);
+        .spyOn(exaService, 'getCircuitState')
+        .mockReturnValue(exaCircuitState as any);
 
       // Act
       const result = await controller.getProvidersHealth();
@@ -557,20 +545,20 @@ describe('HealthController', () => {
       // Assert
       expect(result.openai.status).toBe('degraded');
       expect(result.openai.error).toBe('OpenAI down');
-      expect(result.perplexity.status).toBe('degraded');
-      expect(result.perplexity.error).toBe('Perplexity down');
+      expect(result.exa.status).toBe('degraded');
+      expect(result.exa.error).toBe('Exa down');
     });
 
     it('should handle errors without message property', async () => {
       // Arrange
-      const perplexityLatency = 500;
+      const exaLatency = 500;
       const openaiCircuitState = {
         opened: false,
         halfOpen: false,
         closed: true,
         stats: { fires: 1, successes: 1, failures: 0 },
       };
-      const perplexityCircuitState = {
+      const exaCircuitState = {
         opened: false,
         halfOpen: false,
         closed: true,
@@ -578,15 +566,13 @@ describe('HealthController', () => {
       };
 
       jest.spyOn(openaiService, 'ping').mockRejectedValue('string error');
-      jest
-        .spyOn(perplexityService, 'ping')
-        .mockResolvedValue({ latency: perplexityLatency });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: exaLatency });
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
       jest
-        .spyOn(perplexityService, 'getCircuitState')
-        .mockReturnValue(perplexityCircuitState as any);
+        .spyOn(exaService, 'getCircuitState')
+        .mockReturnValue(exaCircuitState as any);
 
       // Act
       const result = await controller.getProvidersHealth();
@@ -594,20 +580,20 @@ describe('HealthController', () => {
       // Assert
       expect(result.openai.status).toBe('degraded');
       expect(result.openai.error).toBe('Unknown error');
-      expect(result.perplexity.status).toBe('healthy');
+      expect(result.exa.status).toBe('healthy');
     });
 
     it('should use Promise.allSettled to check providers in parallel', async () => {
       // Arrange
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
-      jest.spyOn(perplexityService, 'ping').mockResolvedValue({ latency: 200 });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
         closed: true,
         stats: {},
       } as any);
-      jest.spyOn(perplexityService, 'getCircuitState').mockReturnValue({
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
         closed: true,
@@ -626,7 +612,7 @@ describe('HealthController', () => {
       // Adding buffer for test environment overhead
       expect(duration).toBeLessThan(400);
       expect(openaiService.ping).toHaveBeenCalledTimes(1);
-      expect(perplexityService.ping).toHaveBeenCalledTimes(1);
+      expect(exaService.ping).toHaveBeenCalledTimes(1);
     });
   });
 });
