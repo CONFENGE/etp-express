@@ -4,6 +4,7 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import * as ExcelJS from 'exceljs';
 import { SinapiService } from './sinapi.service';
 import { GovApiCache } from '../utils/gov-api-cache';
 import {
@@ -11,6 +12,29 @@ import {
   SinapiPriceReference,
   SinapiCategoria,
 } from './sinapi.types';
+
+/**
+ * Helper function to create an Excel buffer from array data using ExcelJS
+ */
+async function createExcelBuffer(
+  headers: string[],
+  data: (string | number)[][],
+): Promise<Buffer> {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
+  // Add headers
+  worksheet.addRow(headers);
+
+  // Add data rows
+  for (const row of data) {
+    worksheet.addRow(row);
+  }
+
+  // Write to buffer
+  const arrayBuffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(arrayBuffer);
+}
 
 describe('SinapiService', () => {
   let service: SinapiService;
@@ -134,16 +158,14 @@ describe('SinapiService', () => {
 
   describe('loadFromBuffer()', () => {
     it('should load data from Excel buffer', async () => {
-      // Create a minimal Excel buffer
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      // Create a minimal Excel buffer using ExcelJS
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO', 'PRECO DESONERADO'],
-        ['00001', 'Cimento Portland CP-II', 'KG', '0,75', '0,70'],
-        ['00002', 'Areia lavada média', 'M3', '120,00', '115,00'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Insumos');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [
+          ['00001', 'Cimento Portland CP-II', 'KG', '0,75', '0,70'],
+          ['00002', 'Areia lavada média', 'M3', '120,00', '115,00'],
+        ],
+      );
 
       const result = await service.loadFromBuffer(
         buffer,
@@ -156,14 +178,10 @@ describe('SinapiService', () => {
     });
 
     it('should track loaded months', async () => {
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
-        ['00001', 'Test Item', 'UN', '10,00'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [['00001', 'Test Item', 'UN', '10,00']],
+      );
 
       await service.loadFromBuffer(
         buffer,
@@ -191,15 +209,11 @@ describe('SinapiService', () => {
     });
 
     it('should return healthy when data is loaded', async () => {
-      // Load some data first
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      // Load some data first using ExcelJS
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
-        ['00001', 'Test', 'UN', '10,00'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [['00001', 'Test', 'UN', '10,00']],
+      );
 
       await service.loadFromBuffer(
         buffer,
@@ -245,15 +259,11 @@ describe('SinapiService', () => {
 
   describe('clearData()', () => {
     it('should clear all loaded data', async () => {
-      // Load some data first
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      // Load some data first using ExcelJS
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
-        ['00001', 'Test', 'UN', '10,00'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [['00001', 'Test', 'UN', '10,00']],
+      );
 
       await service.loadFromBuffer(
         buffer,
@@ -282,14 +292,10 @@ describe('SinapiService', () => {
     });
 
     it('should return loaded months', async () => {
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
-        ['00001', 'Test', 'UN', '10,00'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [['00001', 'Test', 'UN', '10,00']],
+      );
 
       await service.loadFromBuffer(
         buffer,
@@ -316,18 +322,16 @@ describe('SinapiService', () => {
       mockCache.get.mockResolvedValue(null);
       mockCache.set.mockResolvedValue(undefined);
 
-      // Load test data
-      const XLSX = require('xlsx');
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([
+      // Load test data using ExcelJS
+      const buffer = await createExcelBuffer(
         ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO', 'PRECO DESONERADO'],
-        ['00001', 'Cimento Portland CP-II 32', 'KG', '0,75', '0,70'],
-        ['00002', 'Areia lavada média', 'M3', '120,00', '115,00'],
-        ['00003', 'Brita 1', 'M3', '95,00', '90,00'],
-        ['00004', 'Cimento Portland CP-V ARI', 'KG', '0,85', '0,80'],
-      ]);
-      XLSX.utils.book_append_sheet(wb, ws, 'Insumos');
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        [
+          ['00001', 'Cimento Portland CP-II 32', 'KG', '0,75', '0,70'],
+          ['00002', 'Areia lavada média', 'M3', '120,00', '115,00'],
+          ['00003', 'Brita 1', 'M3', '95,00', '90,00'],
+          ['00004', 'Cimento Portland CP-V ARI', 'KG', '0,85', '0,80'],
+        ],
+      );
 
       await service.loadFromBuffer(
         buffer,
