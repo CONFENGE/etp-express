@@ -23,7 +23,6 @@ import {
   GovApiSearchResult,
   GovApiFilterOptions,
   GovApiHealthStatus,
-  GovApiPriceReference,
   PriceSearchFilters,
 } from '../interfaces/gov-api.interface';
 import { GovApiCache } from '../utils/gov-api-cache';
@@ -33,7 +32,6 @@ import {
   SinapiUF,
   SinapiItemType,
   buildSinapiCacheKey,
-  formatMesReferencia,
 } from './sinapi.types';
 import { SinapiParser, createSinapiParser } from './sinapi-parser';
 

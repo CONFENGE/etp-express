@@ -20,7 +20,6 @@ import {
   SinapiParseResult,
   SinapiParseError,
   SinapiItemType,
-  SinapiUF,
   SinapiPriceReference,
   transformInsumoToReference,
   transformComposicaoToReference,
