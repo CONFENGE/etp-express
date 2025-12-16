@@ -11,7 +11,7 @@ import { Organization } from './organization.entity';
 
 /**
  * SimilarContract entity for storing cached search results.
- * Used by SearchService to cache Perplexity API results for 30 days.
+ * Used by SearchService to cache Exa API results for 30 days.
  *
  * Multi-Tenancy (MT): Column-based isolation via organizationId.
  * - organizationId is nullable for backward compatibility with existing data

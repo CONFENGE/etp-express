@@ -226,7 +226,7 @@ describe('AuditService', () => {
     it('should return non-anomalous status for low access counts', async () => {
       mockRepository.count.mockResolvedValue(10);
 
-      const result = await service.getAnomalyStatus('PERPLEXITY_API_KEY');
+      const result = await service.getAnomalyStatus('EXA_API_KEY');
 
       expect(result.anomalous).toBe(false);
       expect(result.accessCount).toBe(10);

@@ -22,7 +22,7 @@ export interface PIIRedactionResult {
  * PII Redaction Service
  *
  * Serviço responsável por sanitizar informações pessoais identificáveis (PII)
- * antes do envio de dados para serviços externos (OpenAI, Perplexity).
+ * antes do envio de dados para serviços externos (OpenAI, Exa).
  *
  * Conforme LGPD:
  * - Art. 6º, III - Princípio da necessidade (minimização de dados)

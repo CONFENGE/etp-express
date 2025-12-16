@@ -74,10 +74,6 @@ import { RolesGuard } from './common/guards/roles.guard';
           .default('auto'),
         EXA_NUM_RESULTS: Joi.number().min(1).max(100).default(10),
         EXA_FALLBACK_ENABLED: Joi.boolean().default(true),
-        // DEPRECATED: Perplexity API - Remove after migration complete
-        PERPLEXITY_API_KEY: Joi.string().optional(),
-        PERPLEXITY_MODEL_SIMPLE: Joi.string().default('sonar'),
-        PERPLEXITY_MODEL_DEEP: Joi.string().default('sonar-deep-research'),
         FRONTEND_URL: Joi.string().default('http://localhost:5173'),
         // CORS_ORIGINS is required in production to prevent silent fallback to localhost (#599)
         CORS_ORIGINS: Joi.when('NODE_ENV', {

@@ -24,7 +24,7 @@ npm run start:dev
 - **NestJS** - Framework Node.js
 - **TypeORM** - ORM para PostgreSQL
 - **OpenAI GPT-4** - Geração de conteúdo
-- **Perplexity AI** - Busca web inteligente
+- **Exa AI** - Busca web inteligente
 - **Puppeteer** - Geração de PDFs
 - **JWT** - Autenticação
 
@@ -51,22 +51,27 @@ src/
 O coração do sistema é o **OrchestratorService** que coordena 5 agentes especializados:
 
 ### 1. Legal Agent
+
 - Valida conformidade com Lei 14.133/2021
 - Verifica referências legais
 
 ### 2. Fundamentação Agent
+
 - Analisa qualidade da fundamentação
 - Verifica elementos essenciais (necessidade, interesse público, benefícios, riscos)
 
 ### 3. Clareza Agent
+
 - Calcula legibilidade do texto
 - Identifica frases complexas
 
 ### 4. Simplificação Agent
+
 - Remove jargão burocrático
 - Simplifica linguagem
 
 ### 5. Anti-Hallucination Agent
+
 - **CRÍTICO**: Previne invenção de fatos
 - Detecta referências não verificadas
 - Sinaliza necessidade de validação humana
@@ -118,8 +123,8 @@ JWT_EXPIRATION=7d
 OPENAI_API_KEY=sk-proj-xxxxx
 OPENAI_MODEL=gpt-4-turbo-preview
 
-# Perplexity (Obrigatório)
-PERPLEXITY_API_KEY=pplx-xxxxx
+# Exa (Obrigatório)
+EXA_API_KEY=exa-xxxxx
 
 # Frontend
 FRONTEND_URL=http://localhost:5173
@@ -155,6 +160,7 @@ npm run format         # Prettier
 ## Documentação Completa
 
 Para documentação detalhada da estrutura, veja:
+
 - [BACKEND_STRUCTURE.md](./BACKEND_STRUCTURE.md) - Estrutura completa com todos os arquivos
 
 ## Swagger API Docs
@@ -166,6 +172,7 @@ http://localhost:3001/api/docs
 ```
 
 Recursos:
+
 - Interface interativa
 - Teste de endpoints
 - Autenticação JWT integrada
@@ -253,6 +260,7 @@ railway up
 ## Troubleshooting
 
 ### Erro de conexão com banco
+
 ```bash
 # Verificar se PostgreSQL está rodando
 docker ps
@@ -262,6 +270,7 @@ echo $DATABASE_URL
 ```
 
 ### Erro OpenAI API
+
 ```bash
 # Verificar API key
 curl https://api.openai.com/v1/models \
@@ -269,6 +278,7 @@ curl https://api.openai.com/v1/models \
 ```
 
 ### Puppeteer não funciona
+
 ```bash
 # Instalar dependências Chrome (Linux)
 sudo apt-get install -y \
@@ -314,15 +324,16 @@ sudo apt-get install -y \
               │
          ┌────┴────┐
          ↓         ↓
-    ┌────────┐ ┌──────────┐
-    │OpenAI  │ │Perplexity│
-    │GPT-4   │ │AI        │
-    └────────┘ └──────────┘
+    ┌────────┐ ┌────────┐
+    │OpenAI  │ │Exa AI  │
+    │GPT-4   │ │        │
+    └────────┘ └────────┘
 ```
 
 ## Contato e Suporte
 
 Para questões sobre implementação:
+
 - Documentação NestJS: https://docs.nestjs.com
 - TypeORM: https://typeorm.io
 - OpenAI API: https://platform.openai.com/docs

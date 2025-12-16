@@ -809,7 +809,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
   }
 
   /**
-   * Determines if a section type benefits from market enrichment via Perplexity.
+   * Determines if a section type benefits from market enrichment via Exa AI.
    *
    * @remarks
    * Sections like justificativa, contextualizacao, and orcamento benefit from
@@ -829,7 +829,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
   }
 
   /**
-   * Builds an enrichment query for Perplexity based on section type and ETP context.
+   * Builds an enrichment query for Exa based on section type and ETP context.
    *
    * @remarks
    * Creates a targeted query to retrieve relevant market data, similar contracts,
@@ -837,7 +837,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    *
    * @param sectionType - Type of section being generated
    * @param objeto - The object/item being contracted
-   * @returns Formatted query string for Perplexity search
+   * @returns Formatted query string for Exa search
    */
   private buildEnrichmentQuery(sectionType: string, objeto: string): string {
     const baseQuery = `Busque informações sobre contratações públicas brasileiras similares a: "${objeto}".`;
