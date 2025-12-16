@@ -1,17 +1,22 @@
 /**
- * Types for ETP document analysis functionality.
- * Mirrors backend DTOs from analysis.controller.ts
+ * Analysis types for the Import & Analysis module.
+ * Mirrors backend DTOs and interfaces.
  */
+
+/**
+ * Analysis dimension identifier
+ */
+export type AnalysisDimensionType = 'legal' | 'clareza' | 'fundamentacao';
+
+/**
+ * @deprecated Use AnalysisDimensionType instead
+ */
+export type AnalysisDimension = AnalysisDimensionType;
 
 /**
  * Severity levels for issues found during ETP analysis.
  */
 export type SeverityLevel = 'critical' | 'important' | 'suggestion';
-
-/**
- * Analysis dimension identifier.
- */
-export type AnalysisDimension = 'legal' | 'clareza' | 'fundamentacao';
 
 /**
  * Verdict based on analysis score and critical issues.
@@ -20,6 +25,16 @@ export type AnalysisVerdict =
   | 'Aprovado'
   | 'Aprovado com ressalvas'
   | 'Reprovado';
+
+/**
+ * Status of analysis operation.
+ */
+export type AnalysisStatus =
+  | 'idle'
+  | 'uploading'
+  | 'analyzing'
+  | 'completed'
+  | 'failed';
 
 /**
  * Document metadata from analysis.
@@ -40,35 +55,24 @@ export interface IssueSummary {
 
 /**
  * Individual dimension score breakdown.
+ * Used by ScoreCard and other display components.
  */
-export interface DimensionScore {
-  dimension: AnalysisDimension;
+export interface AnalysisDimensionScore {
+  dimension: AnalysisDimensionType;
   score: number;
   passed: boolean;
 }
 
 /**
- * Response from document upload and analysis.
- * Mirrors UploadAnalysisResponseDto from backend.
+ * @deprecated Use AnalysisDimensionScore instead
  */
-export interface AnalysisResponse {
-  analysisId: string;
-  originalFilename: string;
-  mimeType: string;
-  overallScore: number;
-  meetsMinimumQuality: boolean;
-  verdict: AnalysisVerdict;
-  documentInfo: DocumentInfo;
-  issueSummary: IssueSummary;
-  dimensions: DimensionScore[];
-  message: string;
-}
+export type DimensionScore = AnalysisDimensionScore;
 
 /**
  * Individual issue identified during ETP analysis.
  */
 export interface ReportIssue {
-  dimension: AnalysisDimension;
+  dimension: AnalysisDimensionType;
   severity: SeverityLevel;
   title: string;
   description: string;
@@ -79,7 +83,7 @@ export interface ReportIssue {
  * Section containing issues for a specific analysis dimension.
  */
 export interface DimensionSection {
-  dimension: AnalysisDimension;
+  dimension: AnalysisDimensionType;
   label: string;
   score: number;
   passed: boolean;
@@ -103,7 +107,7 @@ export interface ExecutiveSummary {
  * Complete improvement report generated from ETP analysis.
  */
 export interface ImprovementReport {
-  generatedAt: Date;
+  generatedAt: string;
   documentInfo: DocumentInfo;
   executiveSummary: ExecutiveSummary;
   dimensions: DimensionSection[];
@@ -111,24 +115,41 @@ export interface ImprovementReport {
 }
 
 /**
+ * Response from document upload and analysis.
+ * Mirrors UploadAnalysisResponseDto from backend.
+ */
+export interface AnalysisResponse {
+  analysisId: string;
+  originalFilename: string;
+  mimeType: string;
+  overallScore: number;
+  meetsMinimumQuality: boolean;
+  verdict: AnalysisVerdict;
+  documentInfo: DocumentInfo;
+  issueSummary: IssueSummary;
+  dimensions: AnalysisDimensionScore[];
+  message: string;
+}
+
+/**
+ * Upload analysis response from the API (wrapper format)
+ */
+export interface UploadAnalysisResponse {
+  data: AnalysisResponse;
+  disclaimer: string;
+}
+
+/**
  * Full analysis details response.
  */
 export interface AnalysisDetailsResponse {
-  analysisId: string;
-  originalFilename: string;
-  createdAt: Date;
-  result: {
-    summary: {
-      overallScore: number;
-      meetsMinimumQuality: boolean;
-      dimensions: DimensionScore[];
-      totalIssues: number;
-      totalSuggestions: number;
-    };
-    analyzedAt: Date;
-    documentInfo: DocumentInfo;
+  data: {
+    analysisId: string;
+    originalFilename: string;
+    createdAt: string;
+    report: ImprovementReport;
   };
-  report: ImprovementReport;
+  disclaimer: string;
 }
 
 /**
@@ -150,16 +171,80 @@ export interface ConvertToEtpResponse {
   sectionsCount: number;
   mappedSectionsCount: number;
   customSectionsCount: number;
-  convertedAt: Date;
+  convertedAt: string;
   message: string;
 }
 
 /**
- * Status of analysis operation.
+ * Dimension labels in Portuguese
  */
-export type AnalysisStatus =
-  | 'idle'
-  | 'uploading'
-  | 'analyzing'
-  | 'completed'
-  | 'failed';
+export const DIMENSION_LABELS: Record<AnalysisDimensionType, string> = {
+  legal: 'Conformidade Legal',
+  clareza: 'Clareza e Legibilidade',
+  fundamentacao: 'Qualidade da Fundamentação',
+};
+
+/**
+ * Dimension descriptions
+ */
+export const DIMENSION_DESCRIPTIONS: Record<AnalysisDimensionType, string> = {
+  legal: 'Verifica conformidade com a Lei 14.133/2021 e normas aplicáveis',
+  clareza: 'Avalia legibilidade, estrutura e objetividade do texto',
+  fundamentacao: 'Analisa qualidade dos argumentos e justificativas técnicas',
+};
+
+/**
+ * Severity labels and colors
+ */
+export const SEVERITY_CONFIG: Record<
+  SeverityLevel,
+  { label: string; color: string; bgColor: string }
+> = {
+  critical: {
+    label: 'Crítico',
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+  },
+  important: {
+    label: 'Importante',
+    color: 'text-yellow-700',
+    bgColor: 'bg-yellow-100',
+  },
+  suggestion: {
+    label: 'Sugestão',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-100',
+  },
+};
+
+/**
+ * Verdict configuration
+ */
+export const VERDICT_CONFIG: Record<
+  AnalysisVerdict,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    icon: 'check' | 'warning' | 'x';
+  }
+> = {
+  Aprovado: {
+    label: 'Aprovado',
+    color: 'text-green-700',
+    bgColor: 'bg-green-500',
+    icon: 'check',
+  },
+  'Aprovado com ressalvas': {
+    label: 'Aprovado com ressalvas',
+    color: 'text-yellow-700',
+    bgColor: 'bg-yellow-500',
+    icon: 'warning',
+  },
+  Reprovado: {
+    label: 'Reprovado',
+    color: 'text-red-700',
+    bgColor: 'bg-red-500',
+    icon: 'x',
+  },
+};
