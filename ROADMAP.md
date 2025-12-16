@@ -61,7 +61,7 @@ M5: E2E & Docs          █████████████████░�
 M6: Maintenance         ██████████████████░░ 75/86   87%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
-M9: Export/Import       ███████████████████░ 15/16   94%  🔴 P1 SPRINT
+M9: Export/Import       ████████████████████ 16/16  100%  ✅ COMPLETE
 ```
 
 ---
@@ -207,7 +207,7 @@ M9: Export/Import       ██████████████████�
 | ---- | ------------------- | -------- |
 | #223 | Secrets rotation | P4 |
 
-### M9 - Export DOCX & Import Analysis 🔴 SPRINT INTENSIVO P1 (4 open, 12 done)
+### M9 - Export DOCX & Import Analysis ✅ COMPLETE (0 open, 16 done)
 
 > **Decisão:** Feature-complete no MVP. Sprint intensivo nas semanas 1-4.
 
@@ -218,7 +218,7 @@ M9: Export/Import       ██████████████████�
 | ~~#549~~ | ~~Implementar exportToDocx~~ | ✅ PR #574 |
 | ~~#550~~ | ~~Endpoint GET /export/etp/:id/docx~~ | ✅ PR #576 |
 | ~~#551~~ | ~~Frontend botão Export DOCX~~ | ✅ PR #577 |
-| #552 | Testes E2E Export DOCX | P2 - Sprint 4 |
+| ~~#552~~ | ~~Testes E2E Export DOCX~~ | ✅ PR #733 |
 
 **Feature 2: Import & Analysis** (27h - P1)
 | # | Issue | Prior. | Sprint |
@@ -279,7 +279,7 @@ M9: Export/Import       ██████████████████�
 | #        | Issue                     | Prior.    | Est. |
 | -------- | ------------------------- | --------- | ---- |
 | #563     | E2E Tests Import/Analysis | P1        | 3h   |
-| #552     | E2E Export DOCX           | P2        | 3h   |
+| ~~#552~~ | ~~E2E Export DOCX~~       | ✅ CLOSED | -    |
 | ~~#674~~ | ~~Smoke test checklist~~  | ✅ CLOSED | -    |
 | #675     | Manual usuário PDF        | P2        | 8h   |
 | #677     | Canal suporte email       | P2        | 4h   |
