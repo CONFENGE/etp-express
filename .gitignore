@@ -148,3 +148,6 @@ ops/issue-audit/ISSUE_FIXUPS.md
 ops/issue-audit/issue_improvements.md
 ops/issue-audit/RECOMMENDATIONS.md
 .claude/plugins/
+
+# Git Worktrees
+.worktrees/
