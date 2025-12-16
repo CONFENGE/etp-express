@@ -27,9 +27,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - #692: PNCP integration
  * - #697: Gov-data migrations (this)
  */
-export class CreateGovContractsTable1734134600000
-  implements MigrationInterface
-{
+export class CreateGovContractsTable1734134600000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if table already exists (idempotency)
     const tableExists = await queryRunner.hasTable('gov_contracts');

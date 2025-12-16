@@ -23,9 +23,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - #694: SICRO data ingestion service
  * - #697: Gov-data migrations (this)
  */
-export class CreateSicroItemsTable1734134500000
-  implements MigrationInterface
-{
+export class CreateSicroItemsTable1734134500000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if table already exists (idempotency)
     const tableExists = await queryRunner.hasTable('sicro_items');

@@ -22,9 +22,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - #693: SINAPI data ingestion service
  * - #697: Gov-data migrations (this)
  */
-export class CreateSinapiItemsTable1734134400000
-  implements MigrationInterface
-{
+export class CreateSinapiItemsTable1734134400000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if table already exists (idempotency)
     const tableExists = await queryRunner.hasTable('sinapi_items');
