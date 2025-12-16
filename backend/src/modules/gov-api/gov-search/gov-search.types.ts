@@ -8,7 +8,6 @@
  */
 
 import {
-  GovApiSearchResult,
   GovApiContract,
   GovApiPriceReference,
 } from '../interfaces/gov-api.interface';

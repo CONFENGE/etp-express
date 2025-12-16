@@ -28,7 +28,6 @@ import { ExaService } from '../../search/exa/exa.service';
 import {
   GovApiContract,
   GovApiPriceReference,
-  GovApiSearchResult,
 } from '../interfaces/gov-api.interface';
 import {
   GovSearchOptions,
@@ -124,12 +123,8 @@ export class GovSearchService {
     const priceResults = await Promise.allSettled(pricePromises);
 
     // 4. Extract successful results
-    const siasgResults = this.extractResult<GovApiContract>(
-      contractResults[0],
-    );
-    const pncpResults = this.extractResult<GovApiContract>(
-      contractResults[1],
-    );
+    const siasgResults = this.extractResult<GovApiContract>(contractResults[0]);
+    const pncpResults = this.extractResult<GovApiContract>(contractResults[1]);
 
     let priceIndex = 0;
     const sinapiResults =
@@ -184,7 +179,9 @@ export class GovSearchService {
       sources,
       fallbackUsed,
       totalResults:
-        consolidatedContracts.length + sinapiResults.length + sicroResults.length,
+        consolidatedContracts.length +
+        sinapiResults.length +
+        sicroResults.length,
       query,
       timestamp: new Date(),
       cached: false, // TODO: Implement caching
@@ -217,7 +214,9 @@ export class GovSearchService {
         perPage: options.maxPerSource,
       });
 
-      this.logger.log(`Compras.gov.br returned ${response.data.length} results`);
+      this.logger.log(
+        `Compras.gov.br returned ${response.data.length} results`,
+      );
       return response.data as GovApiContract[];
     } catch (error) {
       this.logger.error(
@@ -279,7 +278,10 @@ export class GovSearchService {
       this.logger.log(`SINAPI returned ${response.data.length} results`);
       return response.data as GovApiPriceReference[];
     } catch (error) {
-      this.logger.error(`Error searching SINAPI: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error searching SINAPI: ${error.message}`,
+        error.stack,
+      );
       return [];
     }
   }
@@ -314,9 +316,7 @@ export class GovSearchService {
   /**
    * Fallback search using Exa when government sources return insufficient results
    */
-  private async searchExaFallback(
-    query: string,
-  ): Promise<GovApiContract[]> {
+  private async searchExaFallback(query: string): Promise<GovApiContract[]> {
     try {
       this.logger.log('Executing Exa fallback search');
       const exaResponse = await this.exaService.searchSimple(
@@ -353,10 +353,7 @@ export class GovSearchService {
       this.logger.log(`Exa fallback returned ${contracts.length} results`);
       return contracts;
     } catch (error) {
-      this.logger.error(
-        `Error in Exa fallback: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error in Exa fallback: ${error.message}`, error.stack);
       return [];
     }
   }
@@ -364,9 +361,7 @@ export class GovSearchService {
   /**
    * Extract result from Promise.allSettled result
    */
-  private extractResult<T>(
-    result: PromiseSettledResult<T[]>,
-  ): T[] {
+  private extractResult<T>(result: PromiseSettledResult<T[]>): T[] {
     if (result.status === 'fulfilled') {
       return result.value;
     } else {
@@ -383,44 +378,61 @@ export class GovSearchService {
    * 2. Compare objeto similarity using Levenshtein distance
    * 3. Keep highest relevance score when duplicates found
    */
-  private consolidateContracts(
-    contracts: GovApiContract[],
-  ): GovApiContract[] {
-    const seen = new Map<string, GovApiContract>();
+  private consolidateContracts(contracts: GovApiContract[]): GovApiContract[] {
+    // Group contracts by CNPJ
+    const byOrg = new Map<string, GovApiContract[]>();
 
     for (const contract of contracts) {
-      // Generate deduplication key: CNPJ + normalized object
-      const dedupKey = this.generateDedupKey(contract);
+      const cnpj = contract.orgaoContratante.cnpj || 'unknown';
+      const existing = byOrg.get(cnpj) || [];
+      existing.push(contract);
+      byOrg.set(cnpj, existing);
+    }
 
-      const existing = seen.get(dedupKey);
-      if (existing) {
-        // Check similarity of contract objects
-        const similarity = this.calculateSimilarity(
-          existing.objeto,
-          contract.objeto,
-        );
+    // For each CNPJ group, deduplicate by objeto similarity
+    const consolidated: GovApiContract[] = [];
 
-        if (similarity >= SIMILARITY_THRESHOLD) {
+    for (const [, orgContracts] of byOrg) {
+      const deduplicated: GovApiContract[] = [];
+
+      for (const contract of orgContracts) {
+        // Check if similar contract already exists in deduplicated list
+        let isDuplicate = false;
+        let duplicateIndex = -1;
+
+        for (let i = 0; i < deduplicated.length; i++) {
+          const similarity = this.calculateSimilarity(
+            deduplicated[i].objeto,
+            contract.objeto,
+          );
+
+          if (similarity >= SIMILARITY_THRESHOLD) {
+            isDuplicate = true;
+            duplicateIndex = i;
+            break;
+          }
+        }
+
+        if (isDuplicate && duplicateIndex >= 0) {
           // Keep the one with higher relevance
-          if (contract.relevance > existing.relevance) {
-            seen.set(dedupKey, contract);
+          if (contract.relevance > deduplicated[duplicateIndex].relevance) {
             this.logger.debug(
               `Replaced duplicate (higher relevance): ${contract.numero}`,
             );
+            deduplicated[duplicateIndex] = contract;
           } else {
             this.logger.debug(`Skipped duplicate: ${contract.numero}`);
           }
-          continue;
+        } else {
+          deduplicated.push(contract);
         }
       }
 
-      seen.set(dedupKey, contract);
+      consolidated.push(...deduplicated);
     }
 
     // Sort by relevance descending
-    const consolidated = Array.from(seen.values()).sort(
-      (a, b) => b.relevance - a.relevance,
-    );
+    consolidated.sort((a, b) => b.relevance - a.relevance);
 
     this.logger.log(
       `Deduplication: ${contracts.length} → ${consolidated.length}`,
@@ -430,12 +442,10 @@ export class GovSearchService {
   }
 
   /**
-   * Generate deduplication key from contract
+   * Generate deduplication key from contract (CNPJ only)
    */
   private generateDedupKey(contract: GovApiContract): string {
-    const cnpj = contract.orgaoContratante.cnpj || 'unknown';
-    const objetoNormalized = this.normalizeText(contract.objeto);
-    return `${cnpj}:${objetoNormalized}`;
+    return contract.orgaoContratante.cnpj || 'unknown';
   }
 
   /**
@@ -494,7 +504,7 @@ export class GovSearchService {
   /**
    * Get health status of all government API sources
    */
-  async healthCheck(): Promise<Record<string, any>> {
+  async healthCheck(): Promise<Record<string, unknown>> {
     const [comprasGov, pncp, sinapi, sicro] = await Promise.allSettled([
       this.comprasGovService.healthCheck(),
       this.pncpService.healthCheck(),
@@ -513,7 +523,7 @@ export class GovSearchService {
   /**
    * Get combined cache statistics from all sources
    */
-  getCacheStats(): Record<string, any> {
+  getCacheStats(): Record<string, unknown> {
     return {
       comprasGov: this.comprasGovService.getCacheStats(),
       pncp: this.pncpService.getCacheStats(),
