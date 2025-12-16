@@ -1,7 +1,7 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
-import { PerplexityService } from '../modules/search/perplexity/perplexity.service';
+import { ExaService } from '../modules/search/exa/exa.service';
 import CircuitBreaker from 'opossum';
 
 /**
@@ -32,7 +32,7 @@ export interface ProviderHealth {
  */
 export interface ProvidersHealthResponse {
   openai: ProviderHealth;
-  perplexity: ProviderHealth;
+  exa: ProviderHealth;
 }
 
 /**
@@ -44,14 +44,14 @@ export interface ProvidersHealthResponse {
  * @endpoint GET /api/health - Health geral do serviço
  * @endpoint GET /api/health/providers - Health de todos os provedores externos
  * @endpoint GET /api/health/providers/openai - Status do circuit breaker OpenAI
- * @endpoint GET /api/health/providers/perplexity - Status do circuit breaker Perplexity
+ * @endpoint GET /api/health/providers/exa - Status do circuit breaker Exa
  */
 @Controller({ path: 'health', version: VERSION_NEUTRAL })
 export class HealthController {
   constructor(
     private readonly healthService: HealthService,
     private readonly openaiService: OpenAIService,
-    private readonly perplexityService: PerplexityService,
+    private readonly exaService: ExaService,
   ) {}
 
   /**
@@ -122,7 +122,7 @@ export class HealthController {
    *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
    *     "lastCheck": "2025-11-24T12:00:00.000Z"
    *   },
-   *   "perplexity": {
+   *   "exa": {
    *     "status": "healthy",
    *     "latency": 892,
    *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
@@ -139,7 +139,7 @@ export class HealthController {
    *     "lastCheck": "2025-11-24T12:00:00.000Z",
    *     "error": "Connection timeout"
    *   },
-   *   "perplexity": {
+   *   "exa": {
    *     "status": "healthy",
    *     "latency": 723,
    *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
@@ -149,9 +149,9 @@ export class HealthController {
    */
   @Get('providers')
   async getProvidersHealth(): Promise<ProvidersHealthResponse> {
-    const [openai, perplexity] = await Promise.allSettled([
+    const [openai, exa] = await Promise.allSettled([
       this.checkOpenAI(),
-      this.checkPerplexity(),
+      this.checkExa(),
     ]);
 
     return {
@@ -164,14 +164,14 @@ export class HealthController {
               lastCheck: new Date(),
               error: openai.reason?.message || 'Unknown error',
             },
-      perplexity:
-        perplexity.status === 'fulfilled'
-          ? perplexity.value
+      exa:
+        exa.status === 'fulfilled'
+          ? exa.value
           : {
               status: 'degraded',
-              circuitState: this.perplexityService.getCircuitState(),
+              circuitState: this.exaService.getCircuitState(),
               lastCheck: new Date(),
-              error: perplexity.reason?.message || 'Unknown error',
+              error: exa.reason?.message || 'Unknown error',
             },
     };
   }
@@ -193,17 +193,17 @@ export class HealthController {
   }
 
   /**
-   * Check Perplexity health by pinging the API
+   * Check Exa health by pinging the API
    * @private
-   * @returns {Promise<ProviderHealth>} Perplexity health status
+   * @returns {Promise<ProviderHealth>} Exa health status
    */
-  private async checkPerplexity(): Promise<ProviderHealth> {
-    const { latency } = await this.perplexityService.ping();
+  private async checkExa(): Promise<ProviderHealth> {
+    const { latency } = await this.exaService.ping();
 
     return {
       status: 'healthy',
       latency,
-      circuitState: this.perplexityService.getCircuitState(),
+      circuitState: this.exaService.getCircuitState(),
       lastCheck: new Date(),
     };
   }
@@ -235,9 +235,9 @@ export class HealthController {
   }
 
   /**
-   * Perplexity Circuit Breaker Status Endpoint
+   * Exa Circuit Breaker Status Endpoint
    *
-   * Retorna o estado atual do circuit breaker da Perplexity API.
+   * Retorna o estado atual do circuit breaker da Exa API.
    * Útil para monitoramento e debugging de problemas de busca externa.
    *
    * @returns {object} Estado do circuit breaker
@@ -255,9 +255,9 @@ export class HealthController {
    *   }
    * }
    */
-  @Get('providers/perplexity')
-  getPerplexityHealth() {
-    return this.perplexityService.getCircuitState();
+  @Get('providers/exa')
+  getExaHealth() {
+    return this.exaService.getCircuitState();
   }
 
   /**
