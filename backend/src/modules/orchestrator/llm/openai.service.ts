@@ -58,11 +58,12 @@ export class OpenAIService {
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
     });
 
-    // Initialize Cache
+    // Initialize Cache with size limit to prevent memory leak
     this.cache = new NodeCache({
       stdTTL: 86400, // 24h TTL
       checkperiod: 3600, // Check for expired keys every 1h
       useClones: false, // Performance optimization - don't clone objects
+      maxKeys: 1000, // Limit cache size to prevent unbounded growth (FIFO eviction)
     });
 
     // Initialize Circuit Breaker
@@ -217,12 +218,13 @@ export class OpenAIService {
 
   /**
    * Get cache statistics for monitoring
-   * @returns Cache statistics including keys count, hits, misses and hit rate
+   * @returns Cache statistics including keys count, hits, misses, hit rate and max size
    */
   getCacheStats() {
     const stats = this.cache.getStats();
     return {
       keys: this.cache.keys().length,
+      maxKeys: 1000,
       hits: stats.hits,
       misses: stats.misses,
       hitRate:
