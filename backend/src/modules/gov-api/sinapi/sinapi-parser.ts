@@ -13,7 +13,7 @@
  */
 
 import { Logger } from '@nestjs/common';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import {
   SinapiInsumoRaw,
   SinapiComposicaoRaw,
@@ -88,28 +88,53 @@ export class SinapiParser {
     const errors: SinapiParseError[] = [];
 
     try {
-      // Read workbook from buffer
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      // Read workbook from buffer using ExcelJS
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
 
       // Get first sheet
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) {
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) {
         throw new Error('Excel file contains no sheets');
       }
 
-      const worksheet = workbook.Sheets[sheetName];
-      if (!worksheet) {
-        throw new Error(`Sheet "${sheetName}" not found`);
+      // Get headers from first row
+      const headerRow = worksheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+        headers[colNumber] = String(cell.value || '');
+      });
+
+      if (headers.length === 0) {
+        throw new Error('Excel file contains no headers');
       }
 
-      // Convert to JSON array
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(
-        worksheet,
-        {
-          defval: '',
-          raw: false,
-        },
-      );
+      // Convert worksheet to array of row objects
+      const rows: Record<string, unknown>[] = [];
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber === 1) return; // Skip header row
+
+        const rowData: Record<string, unknown> = {};
+        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          const header = headers[colNumber];
+          if (header) {
+            // Handle different cell value types
+            const value = cell.value;
+            if (value === null || value === undefined) {
+              rowData[header] = '';
+            } else if (typeof value === 'object' && 'result' in value) {
+              // Formula cell - use the result
+              rowData[header] = String(value.result ?? '');
+            } else if (typeof value === 'object' && 'text' in value) {
+              // Rich text cell
+              rowData[header] = String(value.text ?? '');
+            } else {
+              rowData[header] = String(value);
+            }
+          }
+        });
+        rows.push(rowData);
+      });
 
       if (rows.length === 0) {
         return {
@@ -125,12 +150,11 @@ export class SinapiParser {
         };
       }
 
-      // Detect column mapping from first row headers
-      const headers = Object.keys(rows[0] || {});
+      // Detect column mapping from headers
       const columnMap =
         metadata.tipo === SinapiItemType.INSUMO
-          ? this.detectInsumoColumns(headers)
-          : this.detectComposicaoColumns(headers);
+          ? this.detectInsumoColumns(headers.filter(Boolean))
+          : this.detectComposicaoColumns(headers.filter(Boolean));
 
       // Parse rows based on tipo
       const items: SinapiPriceReference[] = [];
