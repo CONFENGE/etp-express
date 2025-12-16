@@ -8,6 +8,7 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import * as ExcelJS from 'exceljs';
 import { SicroService } from './sicro.service';
 import { GovApiCache } from '../utils/gov-api-cache';
 import {
@@ -16,6 +17,29 @@ import {
   SicroCategoria,
   SicroModoTransporte,
 } from './sicro.types';
+
+/**
+ * Helper function to create an Excel buffer from array data using ExcelJS
+ */
+async function createExcelBuffer(
+  headers: string[],
+  data: (string | number)[][],
+): Promise<Buffer> {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
+  // Add headers
+  worksheet.addRow(headers);
+
+  // Add data rows
+  for (const row of data) {
+    worksheet.addRow(row);
+  }
+
+  // Write to buffer
+  const arrayBuffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(arrayBuffer);
+}
 
 describe('SicroService', () => {
   let service: SicroService;
@@ -416,21 +440,16 @@ describe('SicroService', () => {
 
   describe('loadFromBuffer', () => {
     it('should load data from valid Excel buffer', async () => {
-      // Create a simple mock Excel buffer (XLSX format)
-      const XLSX = await import('xlsx');
-      const workbook = XLSX.utils.book_new();
-      const data = [
-        {
-          CODIGO: 'TER001',
-          DESCRICAO: 'Escavacao mecanica',
-          UNIDADE: 'm3',
-          'PRECO ONERADO': '12.50',
-          'PRECO DESONERADO': '10.20',
-        },
+      // Create a simple mock Excel buffer using ExcelJS
+      const headers = [
+        'CODIGO',
+        'DESCRICAO',
+        'UNIDADE',
+        'PRECO ONERADO',
+        'PRECO DESONERADO',
       ];
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Composicoes');
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      const data = [['TER001', 'Escavacao mecanica', 'm3', '12.50', '10.20']];
+      const buffer = await createExcelBuffer(headers, data);
 
       const result = await service.loadFromBuffer(
         buffer,
@@ -446,12 +465,10 @@ describe('SicroService', () => {
     });
 
     it('should track loaded months after loading', async () => {
-      const XLSX = await import('xlsx');
-      const workbook = XLSX.utils.book_new();
-      const data = [{ CODIGO: 'TEST', DESCRICAO: 'Test', UNIDADE: 'un' }];
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Test');
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      // Create a simple mock Excel buffer using ExcelJS
+      const headers = ['CODIGO', 'DESCRICAO', 'UNIDADE'];
+      const data = [['TEST', 'Test', 'un']];
+      const buffer = await createExcelBuffer(headers, data);
 
       await service.loadFromBuffer(
         buffer,
