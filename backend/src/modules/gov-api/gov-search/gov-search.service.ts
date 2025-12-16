@@ -27,7 +27,6 @@ import { SicroService } from '../sicro/sicro.service';
 import { ExaService } from '../../search/exa/exa.service';
 import {
   GovApiContract,
-  GovApiHealthStatus,
   GovApiPriceReference,
 } from '../interfaces/gov-api.interface';
 import {
@@ -380,41 +379,60 @@ export class GovSearchService {
    * 3. Keep highest relevance score when duplicates found
    */
   private consolidateContracts(contracts: GovApiContract[]): GovApiContract[] {
-    const seen = new Map<string, GovApiContract>();
+    // Group contracts by CNPJ
+    const byOrg = new Map<string, GovApiContract[]>();
 
     for (const contract of contracts) {
-      // Generate deduplication key: CNPJ + normalized object
-      const dedupKey = this.generateDedupKey(contract);
+      const cnpj = contract.orgaoContratante.cnpj || 'unknown';
+      const existing = byOrg.get(cnpj) || [];
+      existing.push(contract);
+      byOrg.set(cnpj, existing);
+    }
 
-      const existing = seen.get(dedupKey);
-      if (existing) {
-        // Check similarity of contract objects
-        const similarity = this.calculateSimilarity(
-          existing.objeto,
-          contract.objeto,
-        );
+    // For each CNPJ group, deduplicate by objeto similarity
+    const consolidated: GovApiContract[] = [];
 
-        if (similarity >= SIMILARITY_THRESHOLD) {
+    for (const [, orgContracts] of byOrg) {
+      const deduplicated: GovApiContract[] = [];
+
+      for (const contract of orgContracts) {
+        // Check if similar contract already exists in deduplicated list
+        let isDuplicate = false;
+        let duplicateIndex = -1;
+
+        for (let i = 0; i < deduplicated.length; i++) {
+          const similarity = this.calculateSimilarity(
+            deduplicated[i].objeto,
+            contract.objeto,
+          );
+
+          if (similarity >= SIMILARITY_THRESHOLD) {
+            isDuplicate = true;
+            duplicateIndex = i;
+            break;
+          }
+        }
+
+        if (isDuplicate && duplicateIndex >= 0) {
           // Keep the one with higher relevance
-          if (contract.relevance > existing.relevance) {
-            seen.set(dedupKey, contract);
+          if (contract.relevance > deduplicated[duplicateIndex].relevance) {
             this.logger.debug(
               `Replaced duplicate (higher relevance): ${contract.numero}`,
             );
+            deduplicated[duplicateIndex] = contract;
           } else {
             this.logger.debug(`Skipped duplicate: ${contract.numero}`);
           }
-          continue;
+        } else {
+          deduplicated.push(contract);
         }
       }
 
-      seen.set(dedupKey, contract);
+      consolidated.push(...deduplicated);
     }
 
     // Sort by relevance descending
-    const consolidated = Array.from(seen.values()).sort(
-      (a, b) => b.relevance - a.relevance,
-    );
+    consolidated.sort((a, b) => b.relevance - a.relevance);
 
     this.logger.log(
       `Deduplication: ${contracts.length} → ${consolidated.length}`,
@@ -424,12 +442,10 @@ export class GovSearchService {
   }
 
   /**
-   * Generate deduplication key from contract
+   * Generate deduplication key from contract (CNPJ only)
    */
   private generateDedupKey(contract: GovApiContract): string {
-    const cnpj = contract.orgaoContratante.cnpj || 'unknown';
-    const objetoNormalized = this.normalizeText(contract.objeto);
-    return `${cnpj}:${objetoNormalized}`;
+    return contract.orgaoContratante.cnpj || 'unknown';
   }
 
   /**
@@ -488,7 +504,7 @@ export class GovSearchService {
   /**
    * Get health status of all government API sources
    */
-  async healthCheck(): Promise<Record<string, GovApiHealthStatus | null>> {
+  async healthCheck(): Promise<Record<string, unknown>> {
     const [comprasGov, pncp, sinapi, sicro] = await Promise.allSettled([
       this.comprasGovService.healthCheck(),
       this.pncpService.healthCheck(),
@@ -507,10 +523,7 @@ export class GovSearchService {
   /**
    * Get combined cache statistics from all sources
    */
-  getCacheStats(): Record<
-    string,
-    { hits: number; misses: number; keys: number }
-  > {
+  getCacheStats(): Record<string, unknown> {
     return {
       comprasGov: this.comprasGovService.getCacheStats(),
       pncp: this.pncpService.getCacheStats(),
