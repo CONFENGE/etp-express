@@ -61,3 +61,23 @@ export {
   ComprasGovSearchFilters,
   ComprasGovContract,
 } from './compras-gov';
+
+// SINAPI (Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil)
+export {
+  SinapiModule,
+  SinapiService,
+  SinapiItemType,
+  SinapiCategoria,
+  SinapiUF,
+  SinapiSearchFilters,
+  SinapiPriceReference,
+  SinapiInsumoRaw,
+  SinapiComposicaoRaw,
+  SinapiParseResult,
+  SinapiExcelMetadata,
+  buildSinapiCacheKey,
+  formatMesReferencia,
+  parseMesReferencia,
+  SinapiParser,
+  createSinapiParser,
+} from './sinapi';
