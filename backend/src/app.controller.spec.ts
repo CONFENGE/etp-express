@@ -27,7 +27,7 @@ describe('AppController', () => {
     warning: DISCLAIMER,
     features: [
       'Geração assistida por LLM (OpenAI GPT-4)',
-      'Busca de contratações similares (Perplexity API)',
+      'Busca de contratações similares (Exa AI)',
       'Sistema de subagentes especializados',
       'Versionamento e auditoria completos',
       'Export para PDF, JSON e XML',

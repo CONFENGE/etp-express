@@ -1,9 +1,6 @@
 /**
  * Type definitions for Exa Search Service
  *
- * These types mirror the PerplexityService interfaces to ensure
- * compatibility and enable seamless migration.
- *
  * @module modules/search/exa/exa.types
  */
 
