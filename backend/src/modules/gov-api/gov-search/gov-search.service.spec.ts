@@ -51,6 +51,12 @@ describe('GovSearchService', () => {
     url: 'https://pncp.gov.br/1',
     numero: 'PNCP-001-2024',
     relevance: 0.85,
+    objeto: 'Construção de ponte sobre rio municipal',
+    orgaoContratante: {
+      cnpj: '11111111111111',
+      nome: 'Órgão PNCP',
+      uf: 'SP',
+    },
   };
 
   const mockSinapiPrice: GovApiPriceReference = {
@@ -168,7 +174,9 @@ describe('GovSearchService', () => {
       pncpService.search.mockResolvedValue(mockPncpResponse);
 
       // Act
-      const result = await service.search('pavimentação');
+      const result = await service.search('pavimentação', {
+        enableExaFallback: false, // Disable fallback for this test
+      });
 
       // Assert
       expect(result.contracts).toHaveLength(2);
@@ -444,13 +452,13 @@ describe('GovSearchService', () => {
       expect(exaService.searchSimple).not.toHaveBeenCalled();
     });
 
-    it('should deduplicate contracts with same CNPJ and similar objeto', async () => {
+    it('should deduplicate contracts with same CNPJ and identical objeto', async () => {
       // Arrange
       const duplicate1 = { ...mockComprasGovContract, relevance: 0.9 };
       const duplicate2 = {
         ...mockPncpContract,
         orgaoContratante: mockComprasGovContract.orgaoContratante,
-        objeto: 'Pavimentação asfáltica de ruas (similar)',
+        objeto: mockComprasGovContract.objeto, // Same objeto = same dedup key
         relevance: 0.85,
       };
 

@@ -28,7 +28,6 @@ import { ExaService } from '../../search/exa/exa.service';
 import {
   GovApiContract,
   GovApiPriceReference,
-  GovApiSearchResult,
 } from '../interfaces/gov-api.interface';
 import {
   GovSearchOptions,
@@ -124,12 +123,8 @@ export class GovSearchService {
     const priceResults = await Promise.allSettled(pricePromises);
 
     // 4. Extract successful results
-    const siasgResults = this.extractResult<GovApiContract>(
-      contractResults[0],
-    );
-    const pncpResults = this.extractResult<GovApiContract>(
-      contractResults[1],
-    );
+    const siasgResults = this.extractResult<GovApiContract>(contractResults[0]);
+    const pncpResults = this.extractResult<GovApiContract>(contractResults[1]);
 
     let priceIndex = 0;
     const sinapiResults =
@@ -184,7 +179,9 @@ export class GovSearchService {
       sources,
       fallbackUsed,
       totalResults:
-        consolidatedContracts.length + sinapiResults.length + sicroResults.length,
+        consolidatedContracts.length +
+        sinapiResults.length +
+        sicroResults.length,
       query,
       timestamp: new Date(),
       cached: false, // TODO: Implement caching
@@ -217,7 +214,9 @@ export class GovSearchService {
         perPage: options.maxPerSource,
       });
 
-      this.logger.log(`Compras.gov.br returned ${response.data.length} results`);
+      this.logger.log(
+        `Compras.gov.br returned ${response.data.length} results`,
+      );
       return response.data as GovApiContract[];
     } catch (error) {
       this.logger.error(
@@ -279,7 +278,10 @@ export class GovSearchService {
       this.logger.log(`SINAPI returned ${response.data.length} results`);
       return response.data as GovApiPriceReference[];
     } catch (error) {
-      this.logger.error(`Error searching SINAPI: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error searching SINAPI: ${error.message}`,
+        error.stack,
+      );
       return [];
     }
   }
@@ -314,9 +316,7 @@ export class GovSearchService {
   /**
    * Fallback search using Exa when government sources return insufficient results
    */
-  private async searchExaFallback(
-    query: string,
-  ): Promise<GovApiContract[]> {
+  private async searchExaFallback(query: string): Promise<GovApiContract[]> {
     try {
       this.logger.log('Executing Exa fallback search');
       const exaResponse = await this.exaService.searchSimple(
@@ -353,10 +353,7 @@ export class GovSearchService {
       this.logger.log(`Exa fallback returned ${contracts.length} results`);
       return contracts;
     } catch (error) {
-      this.logger.error(
-        `Error in Exa fallback: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error in Exa fallback: ${error.message}`, error.stack);
       return [];
     }
   }
@@ -364,9 +361,7 @@ export class GovSearchService {
   /**
    * Extract result from Promise.allSettled result
    */
-  private extractResult<T>(
-    result: PromiseSettledResult<T[]>,
-  ): T[] {
+  private extractResult<T>(result: PromiseSettledResult<T[]>): T[] {
     if (result.status === 'fulfilled') {
       return result.value;
     } else {
@@ -383,9 +378,7 @@ export class GovSearchService {
    * 2. Compare objeto similarity using Levenshtein distance
    * 3. Keep highest relevance score when duplicates found
    */
-  private consolidateContracts(
-    contracts: GovApiContract[],
-  ): GovApiContract[] {
+  private consolidateContracts(contracts: GovApiContract[]): GovApiContract[] {
     const seen = new Map<string, GovApiContract>();
 
     for (const contract of contracts) {
