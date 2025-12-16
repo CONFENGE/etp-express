@@ -5,11 +5,12 @@
 Backend completo em NestJS para o sistema ETP Express - Sistema assistivo de elaboração de Estudos Técnicos Preliminares.
 
 **Tecnologias:**
+
 - NestJS (Framework principal)
 - TypeORM (ORM para PostgreSQL)
 - JWT (Autenticação)
 - OpenAI GPT-4 (Geração de conteúdo)
-- Perplexity AI (Busca de contratações similares)
+- Exa AI (Busca de contratações similares)
 - Puppeteer (Geração de PDFs)
 - Handlebars (Templates)
 
@@ -102,8 +103,8 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 │       │   ├── search.module.ts
 │       │   ├── search.controller.ts
 │       │   ├── search.service.ts
-│       │   └── perplexity/
-│       │       └── perplexity.service.ts # Integração Perplexity AI
+│       │   └── exa/
+│       │       └── exa.service.ts       # Integração Exa AI
 │       │
 │       ├── export/                      # Exportação de Documentos
 │       │   ├── export.module.ts
@@ -135,6 +136,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 ### Total: 67+ arquivos TypeScript
 
 ### 1. Common (6 arquivos)
+
 - ✅ `src/common/filters/http-exception.filter.ts`
 - ✅ `src/common/interceptors/logging.interceptor.ts`
 - ✅ `src/common/decorators/current-user.decorator.ts`
@@ -143,6 +145,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/common/dto/pagination.dto.ts`
 
 ### 2. Entities (8 arquivos)
+
 - ✅ `src/entities/user.entity.ts`
 - ✅ `src/entities/etp.entity.ts`
 - ✅ `src/entities/etp-section.entity.ts`
@@ -153,6 +156,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/entities/section-template.entity.ts`
 
 ### 3. Auth Module (7 arquivos)
+
 - ✅ `src/modules/auth/auth.module.ts`
 - ✅ `src/modules/auth/auth.controller.ts`
 - ✅ `src/modules/auth/auth.service.ts`
@@ -162,6 +166,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/modules/auth/dto/login.dto.ts`
 
 ### 4. Users Module (5 arquivos)
+
 - ✅ `src/modules/users/users.module.ts`
 - ✅ `src/modules/users/users.controller.ts`
 - ✅ `src/modules/users/users.service.ts`
@@ -169,6 +174,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/modules/users/dto/update-user.dto.ts`
 
 ### 5. ETPs Module (5 arquivos)
+
 - ✅ `src/modules/etps/etps.module.ts`
 - ✅ `src/modules/etps/etps.controller.ts`
 - ✅ `src/modules/etps/etps.service.ts`
@@ -176,6 +182,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/modules/etps/dto/update-etp.dto.ts`
 
 ### 6. Sections Module (5 arquivos)
+
 - ✅ `src/modules/sections/sections.module.ts`
 - ✅ `src/modules/sections/sections.controller.ts`
 - ✅ `src/modules/sections/sections.service.ts`
@@ -183,6 +190,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/modules/sections/dto/update-section.dto.ts`
 
 ### 7. Orchestrator Module (8 arquivos) - CORE IA
+
 - ✅ `src/modules/orchestrator/orchestrator.module.ts`
 - ✅ `src/modules/orchestrator/orchestrator.service.ts`
 - ✅ `src/modules/orchestrator/llm/openai.service.ts`
@@ -193,23 +201,27 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - ✅ `src/modules/orchestrator/agents/anti-hallucination.agent.ts`
 
 ### 8. Search Module (5 arquivos)
+
 - ✅ `src/modules/search/search.module.ts`
 - ✅ `src/modules/search/search.controller.ts`
 - ✅ `src/modules/search/search.service.ts`
-- ✅ `src/modules/search/perplexity/perplexity.service.ts`
+- ✅ `src/modules/search/exa/exa.service.ts`
 
 ### 9. Export Module (5 arquivos)
+
 - ✅ `src/modules/export/export.module.ts`
 - ✅ `src/modules/export/export.controller.ts`
 - ✅ `src/modules/export/export.service.ts`
 - ✅ `src/modules/export/templates/etp-template.hbs`
 
 ### 10. Versions Module (3 arquivos)
+
 - ✅ `src/modules/versions/versions.module.ts`
 - ✅ `src/modules/versions/versions.controller.ts`
 - ✅ `src/modules/versions/versions.service.ts`
 
 ### 11. Analytics Module (3 arquivos)
+
 - ✅ `src/modules/analytics/analytics.module.ts`
 - ✅ `src/modules/analytics/analytics.controller.ts`
 - ✅ `src/modules/analytics/analytics.service.ts`
@@ -219,12 +231,14 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 ## Funcionalidades Principais
 
 ### 1. Autenticação & Autorização
+
 - JWT-based authentication
 - Role-based access control (Admin, User, Viewer)
 - Password hashing com bcrypt
 - Login/Register endpoints
 
 ### 2. Gestão de ETPs
+
 - CRUD completo de ETPs
 - Status workflow (Draft → In Progress → Review → Completed → Archived)
 - Metadata flexível (JSONB)
@@ -232,14 +246,17 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - Associação com usuário criador
 
 ### 3. Sistema de Orquestração de IA ⭐
+
 **5 Subagentes Especializados:**
 
 #### a) **Legal Agent**
+
 - Valida conformidade com Lei 14.133/2021
 - Verifica referências legais
 - Sugere melhorias de fundamentação legal
 
 #### b) **Fundamentação Agent**
+
 - Analisa qualidade da fundamentação
 - Verifica presença de elementos essenciais:
   - Necessidade
@@ -248,24 +265,28 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
   - Riscos de não contratar
 
 #### c) **Clareza Agent**
+
 - Calcula índice de legibilidade
 - Identifica frases longas e complexas
 - Detecta uso excessivo de voz passiva
 - Sugere melhorias de clareza
 
 #### d) **Simplificação Agent**
+
 - Remove expressões burocráticas
 - Elimina redundâncias
 - Simplifica frases complexas
 - Converte nominalizações em verbos
 
 #### e) **Anti-Hallucination Agent** 🔒
+
 - **CRÍTICO**: Previne invenção de fatos
 - Detecta referências a leis/normas específicas
 - Sinaliza necessidade de verificação
 - Identifica afirmações categóricas sem fonte
 
 ### 4. Geração de Seções com IA
+
 - Geração inteligente via OpenAI GPT-4
 - Validação automática multi-agente
 - Metadata de geração (tokens, tempo, modelo)
@@ -273,24 +294,28 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - Regeneração sob demanda
 
 ### 5. Busca de Contratações Similares
-- Integração com Perplexity AI
+
+- Integração com Exa AI
 - Cache de resultados (30 dias)
 - Busca de referências legais
 - Ranking por relevância
 
 ### 6. Exportação de Documentos
+
 - **PDF**: Template profissional com Handlebars
 - **JSON**: Estrutura completa
 - **XML**: Formato padronizado
 - Inclui validações e disclaimers
 
 ### 7. Versionamento
+
 - Snapshot automático do estado do ETP
 - Comparação entre versões (diff)
 - Restauração de versões anteriores
 - Change log
 
 ### 8. Analytics & Telemetria
+
 - Tracking de eventos
 - Dashboard de uso
 - Métricas de performance
@@ -302,12 +327,14 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 ## Endpoints API (Swagger)
 
 ### Auth
+
 - `POST /api/auth/register` - Registrar usuário
 - `POST /api/auth/login` - Login
 - `GET /api/auth/me` - Perfil do usuário
 - `POST /api/auth/validate` - Validar token
 
 ### Users
+
 - `GET /api/users` - Listar usuários
 - `GET /api/users/:id` - Obter usuário
 - `POST /api/users` - Criar usuário
@@ -315,6 +342,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - `DELETE /api/users/:id` - Deletar usuário
 
 ### ETPs
+
 - `GET /api/etps` - Listar ETPs (paginado)
 - `GET /api/etps/:id` - Obter ETP
 - `POST /api/etps` - Criar ETP
@@ -324,6 +352,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - `GET /api/etps/statistics` - Estatísticas
 
 ### Sections
+
 - `POST /api/sections/etp/:etpId/generate` - **Gerar seção com IA** ⭐
 - `GET /api/sections/etp/:etpId` - Listar seções
 - `GET /api/sections/:id` - Obter seção
@@ -333,18 +362,21 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - `DELETE /api/sections/:id` - Deletar seção
 
 ### Search
+
 - `GET /api/search/similar-contracts?q=...` - Buscar contratações
 - `GET /api/search/legal-references?topic=...` - Buscar referências legais
 - `GET /api/search/contracts` - Listar contratações salvas
 - `GET /api/search/contracts/:id` - Obter contratação
 
 ### Export
+
 - `GET /api/export/etp/:id/pdf` - Exportar para PDF
 - `GET /api/export/etp/:id/json` - Exportar para JSON
 - `GET /api/export/etp/:id/xml` - Exportar para XML
 - `GET /api/export/etp/:id?format=pdf` - Exportar (formato dinâmico)
 
 ### Versions
+
 - `POST /api/versions/etp/:etpId` - Criar versão
 - `GET /api/versions/etp/:etpId` - Listar versões
 - `GET /api/versions/:id` - Obter versão
@@ -352,6 +384,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - `POST /api/versions/:id/restore` - Restaurar versão
 
 ### Analytics
+
 - `POST /api/analytics/track` - Rastrear evento
 - `GET /api/analytics/dashboard?days=30` - Dashboard
 - `GET /api/analytics/user/activity?days=30` - Atividade do usuário
@@ -363,11 +396,13 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 ## Swagger Documentation
 
 Acesse a documentação completa em:
+
 ```
 http://localhost:3001/api/docs
 ```
 
 Características:
+
 - Interface interativa
 - Teste de endpoints direto no navegador
 - Autenticação JWT integrada
@@ -400,9 +435,10 @@ OPENAI_MODEL=gpt-4-turbo-preview
 OPENAI_MAX_TOKENS=4000
 OPENAI_TEMPERATURE=0.7
 
-# Perplexity
-PERPLEXITY_API_KEY=pplx-xxxxx
-PERPLEXITY_MODEL=pplx-7b-online
+# Exa
+EXA_API_KEY=exa-xxxxx
+EXA_TYPE=auto
+EXA_NUM_RESULTS=10
 
 # Frontend
 FRONTEND_URL=http://localhost:5173
@@ -450,6 +486,7 @@ npm run migration:revert
 ## Segurança
 
 ### Implementado:
+
 ✅ Helmet.js (Security headers)
 ✅ CORS configurado
 ✅ Rate limiting (Throttler)
@@ -460,7 +497,9 @@ npm run migration:revert
 ✅ XSS protection
 
 ### Disclaimers Obrigatórios:
+
 Todos os endpoints retornam:
+
 ```
 "O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento."
 ```
@@ -507,6 +546,7 @@ Todos os endpoints retornam:
 ## Próximos Passos
 
 ### Para Deploy:
+
 1. Configurar PostgreSQL em produção
 2. Configurar variáveis de ambiente no Railway/Render
 3. Habilitar SSL no banco de dados
@@ -514,6 +554,7 @@ Todos os endpoints retornam:
 5. Adicionar monitoring (Sentry, DataDog)
 
 ### Melhorias Futuras:
+
 - [ ] Rate limiting por usuário
 - [ ] WebSockets para geração em tempo real
 - [ ] Queue system (Bull/BullMQ) para jobs pesados

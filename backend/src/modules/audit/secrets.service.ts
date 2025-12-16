@@ -29,7 +29,7 @@ export class SecretsService {
     'JWT_SECRET',
     'JWT_REFRESH_SECRET',
     'OPENAI_API_KEY',
-    'PERPLEXITY_API_KEY',
+    'EXA_API_KEY',
     'DATABASE_URL',
     'DATABASE_PASSWORD',
     'SENTRY_DSN',

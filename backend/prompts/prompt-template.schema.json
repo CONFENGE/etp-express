@@ -54,7 +54,7 @@
     },
     "section_queries": {
       "type": "object",
-      "description": "Section-specific queries for external enrichment (for Perplexity)",
+      "description": "Section-specific queries for external enrichment (for Exa)",
       "additionalProperties": {
         "type": "string"
       }

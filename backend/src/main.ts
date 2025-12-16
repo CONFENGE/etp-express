@@ -119,7 +119,7 @@ async function bootstrap() {
 
       ## Características
       - Geração de conteúdo via OpenAI GPT-4
-      - Busca de contratações similares via Perplexity
+      - Busca de contratações similares via Exa AI
       - Sistema de subagentes especializados
       - Versionamento e auditoria completos
       - Export para PDF, JSON e XML

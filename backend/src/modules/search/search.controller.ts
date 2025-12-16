@@ -30,7 +30,7 @@ export class SearchController {
   @ApiOperation({
     summary: 'Buscar contratações similares',
     description:
-      'Busca contratações similares usando Perplexity AI. Resultados isolados por organização.',
+      'Busca contratações similares usando Exa AI. Resultados isolados por organização.',
   })
   @ApiQuery({
     name: 'q',
