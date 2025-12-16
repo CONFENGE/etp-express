@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AnalysisResults, type AnalysisResultsProps } from './AnalysisResults';
 import type {
-  AnalysisDimension,
+  AnalysisDimensionScore,
   IssueSummary,
   DocumentInfo,
   ReportIssue,
@@ -14,7 +14,7 @@ describe('AnalysisResults', () => {
   const mockOnConvertToEtp = vi.fn();
   const mockOnReset = vi.fn();
 
-  const defaultDimensions: AnalysisDimension[] = [
+  const defaultDimensions: AnalysisDimensionScore[] = [
     { dimension: 'legal', score: 75, passed: true },
     { dimension: 'clareza', score: 82, passed: true },
     { dimension: 'fundamentacao', score: 70, passed: true },

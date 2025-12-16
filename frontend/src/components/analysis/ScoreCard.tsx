@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
-  type AnalysisDimension,
+  type AnalysisDimensionScore,
   type AnalysisVerdict,
   type IssueSummary,
   type DocumentInfo,
@@ -31,7 +31,7 @@ export interface ScoreCardProps {
   /**
    * Dimension scores breakdown
    */
-  dimensions: AnalysisDimension[];
+  dimensions: AnalysisDimensionScore[];
   /**
    * Issue summary by severity
    */

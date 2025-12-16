@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { ScoreCard, type ScoreCardProps } from './ScoreCard';
 import type {
-  AnalysisDimension,
+  AnalysisDimensionScore,
   IssueSummary,
   DocumentInfo,
 } from '@/types/analysis';
 
 describe('ScoreCard', () => {
-  const defaultDimensions: AnalysisDimension[] = [
+  const defaultDimensions: AnalysisDimensionScore[] = [
     { dimension: 'legal', score: 75, passed: true },
     { dimension: 'clareza', score: 82, passed: true },
     { dimension: 'fundamentacao', score: 70, passed: true },
@@ -177,7 +177,7 @@ describe('ScoreCard', () => {
     });
 
     it('shows warning icon for failed dimensions', () => {
-      const failedDimensions: AnalysisDimension[] = [
+      const failedDimensions: AnalysisDimensionScore[] = [
         { dimension: 'legal', score: 55, passed: false },
         { dimension: 'clareza', score: 82, passed: true },
         { dimension: 'fundamentacao', score: 50, passed: false },
