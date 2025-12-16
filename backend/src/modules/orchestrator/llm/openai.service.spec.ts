@@ -502,13 +502,22 @@ describe('OpenAIService', () => {
       const stats = service.getCacheStats();
 
       expect(stats).toHaveProperty('keys');
+      expect(stats).toHaveProperty('maxKeys');
       expect(stats).toHaveProperty('hits');
       expect(stats).toHaveProperty('misses');
       expect(stats).toHaveProperty('hitRate');
       expect(typeof stats.keys).toBe('number');
+      expect(typeof stats.maxKeys).toBe('number');
       expect(typeof stats.hits).toBe('number');
       expect(typeof stats.misses).toBe('number');
       expect(typeof stats.hitRate).toBe('number');
+    });
+
+    it('should include maxKeys limit in cache stats to prevent memory leak', () => {
+      const stats = service.getCacheStats();
+
+      expect(stats.maxKeys).toBe(1000);
+      expect(stats.keys).toBeLessThanOrEqual(stats.maxKeys);
     });
 
     it('should calculate hitRate correctly', async () => {
