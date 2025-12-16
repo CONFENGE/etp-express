@@ -21,7 +21,6 @@ import {
   SicroItemType,
   SicroUF,
   SicroPriceReference,
-  SicroExcelMetadata,
   SicroCategoria,
   SicroModoTransporte,
   transformInsumoToReference,
@@ -303,14 +302,6 @@ export class SicroParser {
       if (!worksheet) {
         throw new Error(`Sheet "${sheetName}" not found`);
       }
-
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(
-        worksheet,
-        {
-          defval: '',
-          raw: false,
-        },
-      );
 
       // Reuse buffer parsing logic
       const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
