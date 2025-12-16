@@ -51,6 +51,12 @@ describe('GovSearchService', () => {
     url: 'https://pncp.gov.br/1',
     numero: 'PNCP-001-2024',
     relevance: 0.85,
+    orgaoContratante: {
+      cnpj: '11222333444455', // Different CNPJ to avoid deduplication
+      nome: 'DNIT',
+      uf: 'GO',
+    },
+    objeto: 'Construção de ponte rodoviária', // Different object
   };
 
   const mockSinapiPrice: GovApiPriceReference = {
@@ -168,7 +174,9 @@ describe('GovSearchService', () => {
       pncpService.search.mockResolvedValue(mockPncpResponse);
 
       // Act
-      const result = await service.search('pavimentação');
+      const result = await service.search('pavimentação', {
+        enableExaFallback: false,
+      });
 
       // Assert
       expect(result.contracts).toHaveLength(2);
@@ -450,7 +458,7 @@ describe('GovSearchService', () => {
       const duplicate2 = {
         ...mockPncpContract,
         orgaoContratante: mockComprasGovContract.orgaoContratante,
-        objeto: 'Pavimentação asfáltica de ruas (similar)',
+        objeto: 'Pavimentação asfáltica de vias', // 90%+ similar to "Pavimentação asfáltica de ruas"
         relevance: 0.85,
       };
 
@@ -620,7 +628,7 @@ describe('GovSearchService', () => {
       expect(result.pncp).toBeDefined();
       expect(result.sinapi).toBeDefined();
       expect(result.sicro).toBeDefined();
-      expect(result.comprasGov.healthy).toBe(true);
+      expect((result.comprasGov as { healthy: boolean }).healthy).toBe(true);
     });
 
     it('should handle health check failures gracefully', async () => {
