@@ -1,8 +1,8 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-16 | **Progresso:** 359/388 (92.5%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 30 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-16 | **Progresso:** 363/388 (93.6%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
-> **DECISÃO CTOs (14/12/2024):** GO CONDICIONAL para lançamento B2G em 30 dias. Sprint intensivo M9 no MVP.
+> **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
 ## 🛡️ Hardening & Refactoring (4 issues restantes)
 
@@ -67,6 +67,66 @@ M9: Export/Import       ██████████████████�
 ---
 
 ## Próximas Ações Prioritárias
+
+### 🚀 ÉPICO - Go-Live B2G (17 issues) - DATA FLEXÍVEL
+
+**Criado:** 2024-12-16 | **Objetivo:** Lançamento comercial B2G com todas as condições de prontidão atendidas
+
+> **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO. Progresso excepcional: M9 100%, Observabilidade P1, Migração Exa 87.5%, Gov-API Core 36%.
+
+#### Sprint 3 (Continuação) - Performance + Validações
+
+| #    | Issue                          | Prior. | Est. | Status |
+| ---- | ------------------------------ | ------ | ---- | ------ |
+| #457 | useCallback/useMemo            | P2     | 4h   | OPEN   |
+| #676 | Load testing k6 - 100 usuários | **P1** | 4h   | OPEN   |
+
+#### Sprint 4 (Final) - QA + Go-Live
+
+**P0 - Bloqueantes:**
+| # | Issue | Est. |
+|---|-------|------|
+| #735 | Scale backend 2+ réplicas Railway | 2h |
+| #738 | Fix Puppeteer npm config warning | 30min |
+
+**P1 - Críticos:**
+| # | Issue | Est. |
+|---|-------|------|
+| #736 | E2E teste fluxo completo usuário | 4h |
+| #737 | Smoke test checklist pré-launch | 2h |
+| #675 | Manual usuário PDF para órgãos B2G | 8h |
+| #677 | Canal de suporte email | 4h |
+| #741 | Deploy final validado | 2h |
+| #742 | Monitoramento 24h pós-deploy | 8h |
+
+**P1 - Infrastructure:**
+| # | Issue | Est. |
+|---|-------|------|
+| #657 | Documentar PgBouncer para escala | 12h |
+
+**P2 - Enterprise Onboarding:**
+| # | Issue | Est. |
+|---|-------|------|
+| #743 | Tour guiado in-app | 6h |
+| #111 | SLA formal | 4h |
+| #739 | Atualizar dependências outdated | 6h |
+| #744 | Pitch deck B2G | 8h |
+
+**P3 - Tech Debt:**
+| # | Issue | Est. |
+|---|-------|------|
+| #740 | Refactor deprecated methods | 2h |
+
+**v1.1 - Postergar:**
+| # | Issue | Est. |
+|---|-------|------|
+| TBD | Migrar SINAPI/SICRO para PostgreSQL | 8h |
+
+**Total Esforço:** ~80h (~20h/semana para 4 semanas)
+
+**Labels:** `go-live`, `go-to-market`, `priority/P0`, `priority/P1`, `priority/P2`
+
+---
 
 ### 🔴 ÉPICO P0 - Segurança e Estabilidade Produção (5 issues restantes)
 
@@ -187,7 +247,7 @@ M9: Export/Import       ██████████████████�
 | ---- | ----------------------- | -------- |
 | ~~#426~~ | ~~Perplexity timeout~~ | ✅ CLOSED |
 | ~~#454~~ | ~~N+1 query fix~~ | ✅ PR #689 |
-| #455 | LLM cache memory leak | P2 |
+| ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 |
 | #457 | useCallback/useMemo | P2 |
 | #459 | Eager loading User | P3 |
 | #461 | Bundle lazy loading | P3 |
@@ -263,31 +323,31 @@ M9: Export/Import       ██████████████████�
 | ~~#558~~ | ~~Doc Conversion~~              | ✅ PR #685 | -    |
 | ~~#559~~ | ~~Endpoints análise~~           | ✅ PR #687 | -    |
 
-### Sprint 3 (Semana 3) - M9 Frontend + Performance | 21h
+### Sprint 3 (Semana 3) - M9 Frontend + Performance | 60% COMPLETE
 
 | #        | Issue                       | Prior.     | Est. |
 | -------- | --------------------------- | ---------- | ---- |
 | ~~#560~~ | ~~Import Page UI~~          | ✅ PR #721 | -    |
-| #561     | Results Display             | P1         | 2h   |
-| #562     | Analysis Store              | P1         | 2h   |
-| ~~#454~~ | ~~N+1 query fix~~           | ✅ PR #689 |
+| ~~#561~~ | ~~Results Display~~         | ✅ PR #723 | -    |
+| ~~#562~~ | ~~Analysis Store~~          | ✅ PR #722 | -    |
+| ~~#454~~ | ~~N+1 query fix~~           | ✅ PR #689 | -    |
 | #457     | useCallback/useMemo         | P2         | 4h   |
 | #676     | Load testing k6 (100 users) | P2         | 4h   |
 
-### Sprint 4 (Semana 4) - QA + Go-Live | 19h remaining
+### Sprint 4 (Semana 4) - QA + Go-Live | 15h remaining
 
-| #        | Issue                     | Prior.    | Est. |
-| -------- | ------------------------- | --------- | ---- |
-| #563     | E2E Tests Import/Analysis | P1        | 3h   |
-| ~~#552~~ | ~~E2E Export DOCX~~       | ✅ CLOSED | -    |
-| ~~#674~~ | ~~Smoke test checklist~~  | ✅ CLOSED | -    |
-| #675     | Manual usuário PDF        | P2        | 8h   |
-| #677     | Canal suporte email       | P2        | 4h   |
-| #455     | LLM cache memory leak     | P2        | 4h   |
+| #        | Issue                     | Prior.     | Est. |
+| -------- | ------------------------- | ---------- | ---- |
+| #563     | E2E Tests Import/Analysis | P1         | 3h   |
+| ~~#552~~ | ~~E2E Export DOCX~~       | ✅ PR #733 | -    |
+| ~~#674~~ | ~~Smoke test checklist~~  | ✅ CLOSED  | -    |
+| #675     | Manual usuário PDF        | P2         | 8h   |
+| #677     | Canal suporte email       | P2         | 4h   |
+| ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 | -    |
 
 ---
 
-## 🔄 ÉPICO - Migração Perplexity → Exa (8 issues)
+## 🔄 ÉPICO - Migração Perplexity → Exa (8 issues) - 87.5% COMPLETE
 
 **Criado:** 2025-12-15 | **Objetivo:** Substituir PerplexityService por ExaService para melhor custo-benefício
 
@@ -295,19 +355,19 @@ M9: Export/Import       ██████████████████�
 
 | #        | Issue                                          | Prior. | Status  |
 | -------- | ---------------------------------------------- | ------ | ------- |
-| ~~#706~~ | ~~ExaService com interface PerplexityService~~ | ✅     | PR #719 |
-| ~~#707~~ | ~~Configuração ambiente Exa~~                  | ✅     | PR #719 |
+| ~~#706~~ | ~~ExaService com interface PerplexityService~~ | ✅     | PR #715 |
+| ~~#707~~ | ~~Configuração ambiente Exa~~                  | ✅     | PR #714 |
 | ~~#708~~ | ~~SearchModule usar ExaService~~               | ✅     | PR #719 |
 | ~~#709~~ | ~~Orchestrator migrar para Exa~~               | ✅     | PR #720 |
 
-### Sprint 2 - Remaining Migrations (1 open)
+### Sprint 2 - Remaining Migrations ✅ COMPLETE (1 docs open)
 
-| #        | Issue                                       | Prior. | Dep.    |
+| #        | Issue                                       | Prior. | Status  |
 | -------- | ------------------------------------------- | ------ | ------- |
-| ~~#710~~ | ~~Anti-hallucination fact-checking → Exa~~  | ✅     | PR #TBD |
-| ~~#711~~ | ~~Health checks → Exa~~                     | ✅     | PR #TBD |
-| ~~#712~~ | ~~Remove Perplexity code and dependencies~~ | ✅     | PR #TBD |
-| #713     | Update documentation (Perplexity → Exa)     | P2     | #712    |
+| ~~#710~~ | ~~Anti-hallucination fact-checking → Exa~~  | ✅     | PR #724 |
+| ~~#711~~ | ~~Health checks → Exa~~                     | ✅     | PR #725 |
+| ~~#712~~ | ~~Remove Perplexity code and dependencies~~ | ✅     | PR #728 |
+| #713     | Update documentation (Perplexity → Exa)     | P2     | -       |
 
 **Labels:** `type/refactor`, `area/backend`
 
@@ -321,22 +381,22 @@ M9: Export/Import       ██████████████████�
 
 ### Sprint 1 - APIs de Licitações ✅ COMPLETE
 
-| #        | Issue                               | Prior. | Status          |
-| -------- | ----------------------------------- | ------ | --------------- |
-| ~~#690~~ | ~~Base module gov-api~~             | ✅     | PR #718         |
-| ~~#691~~ | ~~Integrar Compras.gov.br (SIASG)~~ | ✅     | PR #718         |
-| ~~#692~~ | ~~Integrar PNCP (Lei 14.133)~~      | ✅     | PR #718         |
-| #695     | Unified search service              | P1     | Dep: #691, #692 |
-| #696     | Refactor orchestrator (gov-first)   | P1     | Dep: #695       |
+| #        | Issue                               | Prior. | Status  |
+| -------- | ----------------------------------- | ------ | ------- |
+| ~~#690~~ | ~~Base module gov-api~~             | ✅     | PR #716 |
+| ~~#691~~ | ~~Integrar Compras.gov.br (SIASG)~~ | ✅     | PR #717 |
+| ~~#692~~ | ~~Integrar PNCP (Lei 14.133)~~      | ✅     | PR #718 |
+| ~~#695~~ | ~~Unified search service~~          | ✅     | PR #731 |
+| #696     | Refactor orchestrator (gov-first)   | P1     | -       |
 
-### Sprint 2 - Tabelas de Preços (P1)
+### Sprint 2 - Tabelas de Preços ✅ COMPLETE
 
 | #        | Issue                             | Prior. | Status                           |
 | -------- | --------------------------------- | ------ | -------------------------------- |
 | ~~#693~~ | ~~SINAPI data ingestion (Excel)~~ | ✅     | PR #726                          |
-| ~~#694~~ | ~~SICRO data ingestion (Excel)~~  | ✅     | PR #730, #729 (xlsx→ExcelJS fix) |
-| #697     | Migrations entidades gov-data     | P2     | Dep: #694                        |
-| #698     | Jobs sync automático (BullMQ)     | P2     | Dep: #697                        |
+| ~~#694~~ | ~~SICRO data ingestion (Excel)~~  | ✅     | PR #727, #730 (xlsx→ExcelJS fix) |
+| ~~#697~~ | ~~Migrations entidades gov-data~~ | ✅     | PR #732                          |
+| #698     | Jobs sync automático (BullMQ)     | P2     | -                                |
 
 ### Sprint 3 - Observabilidade (P2)
 
@@ -374,19 +434,19 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 | Métrica           | Valor  |
 | ----------------- | ------ |
 | Issues Totais     | 388    |
-| Issues Abertas    | 29     |
-| Issues Fechadas   | 359    |
-| Progresso         | 92.5%  |
+| Issues Abertas    | 25     |
+| Issues Fechadas   | 363    |
+| Progresso         | 93.6%  |
 | Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
 | P0 Gov-API        | 0      |
-| P1 Gov-API        | 3      |
+| P1 Gov-API        | 1      |
 | P2 Gov-API        | 3      |
 | P0 Infra          | 0      |
-| P1 Sprint         | 3      |
-| P2 Sprint         | 8      |
+| P1 Sprint         | 1      |
+| P2 Sprint         | 6      |
 | v1.1 Backlog      | 7      |
 
 ---
