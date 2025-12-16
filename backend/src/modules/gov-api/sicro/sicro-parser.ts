@@ -12,7 +12,7 @@
  */
 
 import { Logger } from '@nestjs/common';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import {
   SicroInsumoRaw,
   SicroComposicaoRaw,
@@ -133,28 +133,53 @@ export class SicroParser {
     const errors: SicroParseError[] = [];
 
     try {
-      // Read workbook from buffer
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      // Read workbook from buffer using ExcelJS
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
 
       // Get first sheet
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) {
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) {
         throw new Error('Excel file contains no sheets');
       }
 
-      const worksheet = workbook.Sheets[sheetName];
-      if (!worksheet) {
-        throw new Error(`Sheet "${sheetName}" not found`);
+      // Get headers from first row
+      const headerRow = worksheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+        headers[colNumber] = String(cell.value || '');
+      });
+
+      if (headers.length === 0) {
+        throw new Error('Excel file contains no headers');
       }
 
-      // Convert to JSON array
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(
-        worksheet,
-        {
-          defval: '',
-          raw: false,
-        },
-      );
+      // Convert worksheet to array of row objects
+      const rows: Record<string, unknown>[] = [];
+      worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+        if (rowNumber === 1) return; // Skip header row
+
+        const rowData: Record<string, unknown> = {};
+        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          const header = headers[colNumber];
+          if (header) {
+            // Handle different cell value types
+            const value = cell.value;
+            if (value === null || value === undefined) {
+              rowData[header] = '';
+            } else if (typeof value === 'object' && 'result' in value) {
+              // Formula cell - use the result
+              rowData[header] = String(value.result ?? '');
+            } else if (typeof value === 'object' && 'text' in value) {
+              // Rich text cell
+              rowData[header] = String(value.text ?? '');
+            } else {
+              rowData[header] = String(value);
+            }
+          }
+        });
+        rows.push(rowData);
+      });
 
       if (rows.length === 0) {
         return {
@@ -170,12 +195,12 @@ export class SicroParser {
         };
       }
 
-      // Detect column mapping from first row headers
-      const headers = Object.keys(rows[0] || {});
+      // Detect column mapping from headers (filter out empty entries)
+      const filteredHeaders = headers.filter(Boolean);
       const columnMap =
         options.tipo === SicroItemType.INSUMO
-          ? this.detectInsumoColumns(headers)
-          : this.detectComposicaoColumns(headers);
+          ? this.detectInsumoColumns(filteredHeaders)
+          : this.detectComposicaoColumns(filteredHeaders);
 
       // Parse rows based on tipo
       const items: SicroPriceReference[] = [];
@@ -292,20 +317,19 @@ export class SicroParser {
     const startTime = Date.now();
 
     try {
-      const workbook = XLSX.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) {
+      // Read file using ExcelJS
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+
+      // Get first sheet
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) {
         throw new Error('Excel file contains no sheets');
       }
 
-      const worksheet = workbook.Sheets[sheetName];
-      if (!worksheet) {
-        throw new Error(`Sheet "${sheetName}" not found`);
-      }
-
-      // Reuse buffer parsing logic
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return this.parseFromBuffer(buffer, options);
+      // Convert workbook to buffer and reuse parseFromBuffer logic
+      const buffer = await workbook.xlsx.writeBuffer();
+      return this.parseFromBuffer(Buffer.from(buffer), options);
     } catch (error) {
       return {
         items: [],
