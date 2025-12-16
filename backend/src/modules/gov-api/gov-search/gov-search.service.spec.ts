@@ -628,7 +628,7 @@ describe('GovSearchService', () => {
       expect(result.pncp).toBeDefined();
       expect(result.sinapi).toBeDefined();
       expect(result.sicro).toBeDefined();
-      expect(result.comprasGov.healthy).toBe(true);
+      expect(result.comprasGov!.healthy).toBe(true);
     });
 
     it('should handle health check failures gracefully', async () => {

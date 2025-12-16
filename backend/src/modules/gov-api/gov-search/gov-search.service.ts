@@ -27,6 +27,7 @@ import { SicroService } from '../sicro/sicro.service';
 import { ExaService } from '../../search/exa/exa.service';
 import {
   GovApiContract,
+  GovApiHealthStatus,
   GovApiPriceReference,
 } from '../interfaces/gov-api.interface';
 import {
@@ -487,7 +488,7 @@ export class GovSearchService {
   /**
    * Get health status of all government API sources
    */
-  async healthCheck(): Promise<Record<string, any>> {
+  async healthCheck(): Promise<Record<string, GovApiHealthStatus | null>> {
     const [comprasGov, pncp, sinapi, sicro] = await Promise.allSettled([
       this.comprasGovService.healthCheck(),
       this.pncpService.healthCheck(),
@@ -506,7 +507,10 @@ export class GovSearchService {
   /**
    * Get combined cache statistics from all sources
    */
-  getCacheStats(): Record<string, any> {
+  getCacheStats(): Record<
+    string,
+    { hits: number; misses: number; keys: number }
+  > {
     return {
       comprasGov: this.comprasGovService.getCacheStats(),
       pncp: this.pncpService.getCacheStats(),
