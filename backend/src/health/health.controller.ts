@@ -109,7 +109,7 @@ export class HealthController {
   /**
    * Providers Health Check Endpoint
    *
-   * Verifica a saúde de todos os provedores externos (OpenAI e Perplexity)
+   * Verifica a saúde de todos os provedores externos (OpenAI e Exa)
    * fazendo ping em cada API e retornando métricas de latência e estado dos circuit breakers.
    *
    * @returns {Promise<ProvidersHealthResponse>} Status de cada provedor
