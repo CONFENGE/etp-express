@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Repository } from 'typeorm';
 import { Queue } from 'bullmq';
+import { Observable } from 'rxjs';
 import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
 import { Etp } from '../../entities/etp.entity';
 import { GenerateSectionDto } from './dto/generate-section.dto';
@@ -19,6 +20,11 @@ import {
 import { EtpsService } from '../etps/etps.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { GenerateSectionJobData } from './sections.processor';
+import { SectionProgressService } from './section-progress.service';
+import {
+  ProgressEvent,
+  SseMessageEvent,
+} from './interfaces/progress-event.interface';
 
 /**
  * Type alias for validation results from OrchestratorService.
@@ -217,6 +223,207 @@ export class SectionsService {
     );
 
     return savedSection;
+  }
+
+  /**
+   * Generates a new ETP section with real-time progress streaming via SSE.
+   *
+   * @remarks
+   * Unlike `generateSection()` which queues the job asynchronously, this method
+   * executes the generation synchronously while streaming progress events to the
+   * client via Server-Sent Events (SSE).
+   *
+   * This is ideal for clients that want real-time feedback during generation
+   * instead of polling for job status.
+   *
+   * **Progress Phases:**
+   * 1. sanitization (0-10%): Input sanitization and PII redaction
+   * 2. enrichment (10-30%): Market data enrichment via Gov-API/Exa
+   * 3. generation (30-70%): LLM content generation
+   * 4. validation (70-95%): Multi-agent validation
+   * 5. complete (100%): Final result ready
+   *
+   * @param etpId - Parent ETP unique identifier
+   * @param generateDto - Section generation parameters
+   * @param userId - Current user ID for authorization
+   * @param organizationId - Organization ID for multi-tenancy
+   * @param progressService - Service for emitting progress events
+   * @returns Observable of SSE MessageEvents with progress updates and final result
+   * @throws {NotFoundException} If ETP not found
+   * @throws {BadRequestException} If section already exists
+   *
+   * @see #754 - SSE streaming implementation
+   */
+  generateSectionWithProgress(
+    etpId: string,
+    generateDto: GenerateSectionDto,
+    userId: string,
+    organizationId: string,
+    progressService: SectionProgressService,
+  ): Observable<SseMessageEvent> {
+    const jobId = `sse-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    this.logger.log(
+      `Starting SSE generation ${generateDto.type} for ETP ${etpId} (job: ${jobId})`,
+    );
+
+    // Create progress stream
+    const progressStream = progressService.createProgressStream(jobId);
+
+    // Execute generation in background, emitting progress
+    this.executeGenerationWithProgress(
+      etpId,
+      generateDto,
+      userId,
+      organizationId,
+      jobId,
+      progressService,
+    ).catch((error) => {
+      progressService.errorStream(jobId, error);
+    });
+
+    return progressStream;
+  }
+
+  /**
+   * Executes the section generation pipeline with progress callbacks.
+   *
+   * @private
+   */
+  private async executeGenerationWithProgress(
+    etpId: string,
+    generateDto: GenerateSectionDto,
+    userId: string,
+    organizationId: string,
+    jobId: string,
+    progressService: SectionProgressService,
+  ): Promise<void> {
+    try {
+      // Phase 1: Validation and setup (0-10%)
+      progressService.emitProgress(jobId, {
+        phase: 'sanitization',
+        step: 1,
+        totalSteps: 5,
+        message: 'Validando dados de entrada...',
+        percentage: 5,
+        timestamp: Date.now(),
+      });
+
+      // Verify ETP exists and user has access
+      const etp = await this.etpsService.findOneMinimal(
+        etpId,
+        organizationId,
+        userId,
+      );
+
+      if (!etp) {
+        throw new NotFoundException(`ETP ${etpId} não encontrado`);
+      }
+
+      // Check if section already exists
+      const existingSection = await this.sectionsRepository.findOne({
+        where: { etpId, type: generateDto.type },
+      });
+
+      if (existingSection) {
+        throw new BadRequestException(
+          `Seção do tipo ${generateDto.type} já existe. Use PATCH para atualizar.`,
+        );
+      }
+
+      progressService.emitProgress(jobId, {
+        phase: 'sanitization',
+        step: 1,
+        totalSteps: 5,
+        message: 'Preparando geração de conteúdo...',
+        percentage: 10,
+        timestamp: Date.now(),
+      });
+
+      // Create section entity with GENERATING status
+      const section = this.sectionsRepository.create({
+        etpId,
+        type: generateDto.type,
+        title: generateDto.title,
+        userInput: generateDto.userInput,
+        status: SectionStatus.GENERATING,
+        order: await this.getNextOrder(etpId),
+        isRequired: this.isRequiredSection(generateDto.type),
+        metadata: { jobId, startedAt: new Date().toISOString() },
+      });
+
+      const savedSection = await this.sectionsRepository.save(section);
+
+      // Phase 2: Generate content with progress callbacks
+      const generationResult =
+        await this.orchestratorService.generateSectionWithProgress(
+          {
+            sectionType: generateDto.type,
+            title: generateDto.title,
+            userInput: generateDto.userInput || '',
+            context: generateDto.context,
+            etpData: {
+              objeto: etp.objeto,
+              metadata: etp.metadata,
+            },
+          },
+          (event: ProgressEvent) => {
+            progressService.emitProgress(jobId, event);
+          },
+        );
+
+      // Phase 5: Save and complete (95-100%)
+      progressService.emitProgress(jobId, {
+        phase: 'complete',
+        step: 5,
+        totalSteps: 5,
+        message: 'Salvando resultado...',
+        percentage: 95,
+        timestamp: Date.now(),
+      });
+
+      savedSection.content = generationResult.content;
+      savedSection.status = SectionStatus.GENERATED;
+      savedSection.metadata = {
+        ...savedSection.metadata,
+        ...generationResult.metadata,
+        warnings: generationResult.warnings,
+        completedAt: new Date().toISOString(),
+      };
+      savedSection.validationResults = this.convertValidationResults(
+        generationResult.validationResults,
+      );
+
+      await this.sectionsRepository.save(savedSection);
+
+      // Update ETP completion percentage
+      await this.etpsService.updateCompletionPercentage(etpId, organizationId);
+
+      // Emit final complete event with section data
+      progressService.emitProgress(jobId, {
+        phase: 'complete',
+        step: 5,
+        totalSteps: 5,
+        message: 'Seção gerada com sucesso!',
+        percentage: 100,
+        timestamp: Date.now(),
+        details: {
+          agents: generationResult.metadata.agentsUsed,
+          enrichmentSource: generationResult.metadata.enrichmentSource,
+        },
+      });
+
+      // Complete the stream
+      progressService.completeStream(jobId);
+
+      this.logger.log(`SSE generation completed for job ${jobId}`);
+    } catch (error) {
+      this.logger.error(
+        `SSE generation failed for job ${jobId}: ${error.message}`,
+      );
+      progressService.errorStream(jobId, error);
+      throw error;
+    }
   }
 
   /**

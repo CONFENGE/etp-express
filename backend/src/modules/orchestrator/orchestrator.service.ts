@@ -17,6 +17,11 @@ import {
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { ExaService } from '../search/exa/exa.service';
 import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
+import { GovSearchResult } from '../gov-api/gov-search/gov-search.types';
+import {
+  GovApiContract,
+  GovApiPriceReference,
+} from '../gov-api/interfaces/gov-api.interface';
 import { DISCLAIMER } from '../../common/constants/messages';
 import {
   ParallelValidationResults,
@@ -29,6 +34,7 @@ import {
   getXmlDelimiterSystemPrompt,
   SanitizationResult,
 } from '../../common/utils/sanitizer';
+import { ProgressCallback } from '../sections/interfaces/progress-event.interface';
 
 /**
  * Request structure for ETP section content generation.
@@ -448,6 +454,327 @@ export class OrchestratorService {
       this.logger.error('Error generating section:', error);
       throw error;
     }
+  }
+
+  /**
+   * Generates ETP section content with real-time progress callbacks.
+   *
+   * @remarks
+   * This method is similar to `generateSection()` but accepts a progress callback
+   * to emit events during each phase of the generation pipeline. This enables
+   * Server-Sent Events (SSE) streaming for real-time user feedback.
+   *
+   * **Progress Phases:**
+   * 1. sanitization (10-15%): Input sanitization, PII redaction
+   * 2. enrichment (15-30%): Market data enrichment via Gov-API/Exa
+   * 3. generation (30-70%): LLM content generation
+   * 4. validation (70-95%): Multi-agent validation
+   * 5. complete (95-100%): Final result assembly
+   *
+   * @param request - Generation request containing section type, user input, and ETP data
+   * @param onProgress - Callback function invoked at each progress milestone
+   * @returns Generated content with metadata, validation results, and warnings
+   * @throws {Error} If OpenAI API fails or any agent encounters a critical error
+   *
+   * @see #754 - SSE streaming implementation
+   */
+  async generateSectionWithProgress(
+    request: GenerationRequest,
+    onProgress?: ProgressCallback,
+  ): Promise<GenerationResult> {
+    const startTime = Date.now();
+    this.logger.log(`Generating section with progress: ${request.sectionType}`);
+
+    const agentsUsed: string[] = [];
+    const warnings: string[] = [];
+
+    try {
+      // Phase 1: Sanitization (10-15%)
+      onProgress?.({
+        phase: 'sanitization',
+        step: 1,
+        totalSteps: 5,
+        message: 'Sanitizando entrada e removendo dados sensíveis...',
+        percentage: 12,
+        timestamp: Date.now(),
+      });
+
+      // Build enriched prompts
+      const {
+        systemPrompt: finalSystemPrompt,
+        userPrompt: sanitizedPrompt,
+        hasEnrichmentWarning,
+        enrichmentSource,
+      } = await this.buildEnrichedPromptWithProgress(
+        request,
+        agentsUsed,
+        warnings,
+        onProgress,
+      );
+
+      // Phase 3: Generation (30-70%)
+      onProgress?.({
+        phase: 'generation',
+        step: 3,
+        totalSteps: 5,
+        message: 'Gerando conteúdo com IA...',
+        percentage: 35,
+        timestamp: Date.now(),
+      });
+
+      const llmResponse = await this.generateWithLLM(
+        sanitizedPrompt,
+        finalSystemPrompt,
+        request.sectionType,
+      );
+
+      onProgress?.({
+        phase: 'generation',
+        step: 3,
+        totalSteps: 5,
+        message: 'Processando resposta da IA...',
+        percentage: 65,
+        timestamp: Date.now(),
+      });
+
+      // Post-process content
+      const { content: processedContent, simplificationResult } =
+        await this.postProcessContent(
+          llmResponse.content,
+          warnings,
+          agentsUsed,
+        );
+
+      // Phase 4: Validation (70-95%)
+      onProgress?.({
+        phase: 'validation',
+        step: 4,
+        totalSteps: 5,
+        message: 'Validando conformidade legal...',
+        percentage: 72,
+        timestamp: Date.now(),
+        details: {
+          agents: ['legal-agent'],
+        },
+      });
+
+      const validationResults = await this.runParallelValidations(
+        processedContent,
+        request,
+        agentsUsed,
+      );
+
+      onProgress?.({
+        phase: 'validation',
+        step: 4,
+        totalSteps: 5,
+        message: 'Verificando clareza e anti-alucinação...',
+        percentage: 85,
+        timestamp: Date.now(),
+        details: {
+          agents: ['clareza-agent', 'anti-hallucination-agent'],
+        },
+      });
+
+      const validationWarnings = await this.runValidations(
+        validationResults.legalValidation,
+        validationResults.fundamentacaoValidation,
+        validationResults.clarezaValidation,
+        validationResults.hallucinationCheck,
+      );
+
+      warnings.push(...validationWarnings.warnings);
+
+      onProgress?.({
+        phase: 'validation',
+        step: 4,
+        totalSteps: 5,
+        message: 'Finalizando validações...',
+        percentage: 92,
+        timestamp: Date.now(),
+      });
+
+      // Phase 5: Finalize (95-100%)
+      return this.buildFinalResult(
+        processedContent,
+        llmResponse,
+        simplificationResult,
+        validationResults,
+        warnings,
+        agentsUsed,
+        hasEnrichmentWarning,
+        enrichmentSource,
+        startTime,
+      );
+    } catch (error) {
+      this.logger.error('Error generating section with progress:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Builds enriched prompts with progress callbacks.
+   *
+   * @private
+   */
+  private async buildEnrichedPromptWithProgress(
+    request: GenerationRequest,
+    agentsUsed: string[],
+    warnings: string[],
+    onProgress?: ProgressCallback,
+  ): Promise<{
+    systemPrompt: string;
+    userPrompt: string;
+    hasEnrichmentWarning: boolean;
+    enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null;
+  }> {
+    // Sanitization phase
+    const sanitizationResult = this.sanitizeUserInputEnhanced(
+      request.userInput,
+      request.sectionType,
+    );
+    const sanitizedInput = sanitizationResult.sanitized;
+
+    if (sanitizationResult.injectionDetected) {
+      warnings.push(
+        'Input foi sanitizado para prevenir prompt injection. Conteúdo suspeito foi removido.',
+      );
+    }
+    if (sanitizationResult.wasTruncated) {
+      warnings.push(
+        `Input foi truncado de ${sanitizationResult.originalLength} para ${sanitizedInput.length} caracteres devido ao limite da seção.`,
+      );
+    }
+
+    // Build system prompt
+    const systemPrompt = await this.buildSystemPrompt(request.sectionType);
+    agentsUsed.push('base-prompt');
+
+    // Phase 2: Enrichment (15-30%)
+    onProgress?.({
+      phase: 'enrichment',
+      step: 2,
+      totalSteps: 5,
+      message: 'Enriquecendo com contexto legal...',
+      percentage: 18,
+      timestamp: Date.now(),
+    });
+
+    // Enrich user prompt with legal context
+    let enrichedUserPrompt = sanitizedInput;
+    enrichedUserPrompt = await this.legalAgent.enrichWithLegalContext(
+      enrichedUserPrompt,
+      request.sectionType,
+    );
+    agentsUsed.push('legal-context');
+
+    // Add fundamentação guidance if applicable
+    if (this.needsFundamentacao(request.sectionType)) {
+      enrichedUserPrompt =
+        await this.fundamentacaoAgent.enrich(enrichedUserPrompt);
+      agentsUsed.push('fundamentacao-guidance');
+    }
+
+    // Market enrichment
+    let hasEnrichmentWarning = false;
+    let enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null = null;
+
+    if (this.needsMarketEnrichment(request.sectionType)) {
+      onProgress?.({
+        phase: 'enrichment',
+        step: 2,
+        totalSteps: 5,
+        message: 'Buscando dados de mercado...',
+        percentage: 22,
+        timestamp: Date.now(),
+      });
+
+      try {
+        const enrichmentResult = await this.enrichWithMarketData(
+          request.sectionType,
+          request.etpData?.objeto || sanitizedInput,
+        );
+
+        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
+        enrichmentSource = enrichmentResult.source;
+        agentsUsed.push(`market-enrichment-${enrichmentResult.source}`);
+
+        onProgress?.({
+          phase: 'enrichment',
+          step: 2,
+          totalSteps: 5,
+          message: `Dados obtidos via ${enrichmentResult.source}`,
+          percentage: 28,
+          timestamp: Date.now(),
+          details: {
+            enrichmentSource: enrichmentResult.source,
+          },
+        });
+
+        if (enrichmentResult.fallbackUsed) {
+          hasEnrichmentWarning = true;
+          if (enrichmentResult.source === 'mixed') {
+            warnings.push(
+              '⚠️ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
+            );
+          }
+        }
+      } catch (error) {
+        this.logger.error('Market enrichment failed from all sources', {
+          error: error.message,
+          sectionType: request.sectionType,
+        });
+        warnings.push(
+          '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
+        );
+        hasEnrichmentWarning = true;
+
+        onProgress?.({
+          phase: 'enrichment',
+          step: 2,
+          totalSteps: 5,
+          message: 'Enriquecimento de mercado indisponível, continuando...',
+          percentage: 28,
+          timestamp: Date.now(),
+        });
+      }
+    }
+
+    // Add anti-hallucination safety prompt
+    const safetyPrompt =
+      await this.antiHallucinationAgent.generateSafetyPrompt();
+    const xmlDelimiterPrompt = getXmlDelimiterSystemPrompt();
+    const finalSystemPrompt = `${systemPrompt}\n\n${safetyPrompt}\n\n---\n${xmlDelimiterPrompt}`;
+    agentsUsed.push('anti-hallucination', 'xml-delimiter-protection');
+
+    // Add ETP context if available
+    if (request.etpData) {
+      enrichedUserPrompt = `${enrichedUserPrompt}\n\n[CONTEXTO DO ETP]\nObjeto: ${request.etpData.objeto}\nÓrgão: ${request.etpData.metadata?.orgao || 'Não especificado'}`;
+    }
+
+    // Sanitize PII
+    const { redacted: sanitizedPrompt, findings: piiFindings } =
+      this.piiRedactionService.redact(enrichedUserPrompt);
+
+    if (piiFindings.length > 0) {
+      this.logger.warn('PII detected and redacted before LLM call', {
+        section: request.sectionType,
+        findings: piiFindings,
+      });
+      warnings.push(
+        'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
+      );
+    }
+
+    // Wrap user prompt with XML delimiters
+    const wrappedUserPrompt = wrapWithXmlDelimiters(sanitizedPrompt);
+
+    return {
+      systemPrompt: finalSystemPrompt,
+      userPrompt: wrappedUserPrompt,
+      hasEnrichmentWarning,
+      enrichmentSource,
+    };
   }
 
   /**
@@ -1022,7 +1349,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @returns Formatted summary string
    * @private
    */
-  private formatGovApiSummary(govResult: any): string {
+  private formatGovApiSummary(govResult: GovSearchResult): string {
     const sections: string[] = [];
 
     // Add contract data if available
@@ -1032,17 +1359,15 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       );
       govResult.contracts
         .slice(0, 3)
-        .forEach((contract: any, index: number) => {
-          sections.push(
-            `${index + 1}. ${contract.objeto || contract.description}`,
-          );
-          if (contract.valor) {
+        .forEach((contract: GovApiContract, index: number) => {
+          sections.push(`${index + 1}. ${contract.objeto}`);
+          if (contract.valorTotal) {
             sections.push(
-              `   Valor: R$ ${contract.valor.toLocaleString('pt-BR')}`,
+              `   Valor: R$ ${contract.valorTotal.toLocaleString('pt-BR')}`,
             );
           }
-          if (contract.orgao) {
-            sections.push(`   Órgão: ${contract.orgao}`);
+          if (contract.orgaoContratante?.nome) {
+            sections.push(`   Órgão: ${contract.orgaoContratante.nome}`);
           }
         });
     }
@@ -1053,22 +1378,26 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         sections.push(
           `\n**Preços SINAPI (${govResult.prices.sinapi.length} itens):**`,
         );
-        govResult.prices.sinapi.slice(0, 3).forEach((price: any) => {
-          sections.push(
-            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
-          );
-        });
+        govResult.prices.sinapi
+          .slice(0, 3)
+          .forEach((price: GovApiPriceReference) => {
+            sections.push(
+              `- ${price.descricao}: R$ ${price.precoUnitario.toLocaleString('pt-BR')} (${price.unidade})`,
+            );
+          });
       }
 
       if (govResult.prices.sicro && govResult.prices.sicro.length > 0) {
         sections.push(
           `\n**Preços SICRO (${govResult.prices.sicro.length} itens):**`,
         );
-        govResult.prices.sicro.slice(0, 3).forEach((price: any) => {
-          sections.push(
-            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
-          );
-        });
+        govResult.prices.sicro
+          .slice(0, 3)
+          .forEach((price: GovApiPriceReference) => {
+            sections.push(
+              `- ${price.descricao}: R$ ${price.precoUnitario.toLocaleString('pt-BR')} (${price.unidade})`,
+            );
+          });
       }
     }
 

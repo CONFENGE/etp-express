@@ -4,6 +4,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { SectionsService } from './sections.service';
 import { SectionsController } from './sections.controller';
 import { SectionsProcessor } from './sections.processor';
+import { SectionProgressService } from './section-progress.service';
 import { EtpSection } from '../../entities/etp-section.entity';
 import { Etp } from '../../entities/etp.entity';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
@@ -19,7 +20,7 @@ import { EtpsModule } from '../etps/etps.module';
     EtpsModule,
   ],
   controllers: [SectionsController],
-  providers: [SectionsService, SectionsProcessor],
-  exports: [SectionsService],
+  providers: [SectionsService, SectionsProcessor, SectionProgressService],
+  exports: [SectionsService, SectionProgressService],
 })
 export class SectionsModule {}
