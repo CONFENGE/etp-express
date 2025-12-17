@@ -28,7 +28,6 @@ import { ExaService } from '../../search/exa/exa.service';
 import {
   GovApiContract,
   GovApiPriceReference,
-  GovApiResponse,
 } from '../interfaces/gov-api.interface';
 import {
   GovSearchOptions,
