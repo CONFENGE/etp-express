@@ -9,9 +9,10 @@ import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PrivacyModule } from '../privacy/privacy.module';
 import { RAGModule } from '../rag/rag.module';
 import { SearchModule } from '../search/search.module';
+import { GovApiModule } from '../gov-api/gov-api.module';
 
 @Module({
-  imports: [PrivacyModule, RAGModule, SearchModule],
+  imports: [PrivacyModule, RAGModule, SearchModule, GovApiModule],
   providers: [
     OrchestratorService,
     OpenAIService,
