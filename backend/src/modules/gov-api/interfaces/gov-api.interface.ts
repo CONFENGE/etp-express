@@ -10,6 +10,8 @@
  * @module modules/gov-api/interfaces
  */
 
+import { SearchStatus, SourceStatus } from '../types/search-result';
+
 /**
  * Standard search result from government APIs
  */
@@ -39,6 +41,11 @@ export type GovApiSource = 'pncp' | 'comprasgov' | 'sinapi' | 'sicro';
 
 /**
  * Standard response wrapper from government APIs
+ *
+ * Now includes structured status information to differentiate
+ * between "no results" and "service unavailable" scenarios.
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/755
  */
 export interface GovApiResponse<T = GovApiSearchResult[]> {
   /** Response data */
@@ -53,10 +60,26 @@ export interface GovApiResponse<T = GovApiSearchResult[]> {
   source: GovApiSource;
   /** Whether response is from cache */
   cached: boolean;
-  /** Whether response is from fallback */
+  /**
+   * Whether response is from fallback
+   * @deprecated Use `status` field instead for better differentiation
+   */
   isFallback: boolean;
   /** Response timestamp */
   timestamp: Date;
+  /**
+   * Structured status indicating success, partial, or service unavailable
+   * This allows frontend to differentiate between "no results" and "error"
+   */
+  status?: SearchStatus;
+  /**
+   * Detailed status for each source (when aggregating multiple sources)
+   */
+  sourceStatuses?: SourceStatus[];
+  /**
+   * Human-readable status message for the user
+   */
+  statusMessage?: string;
 }
 
 /**
