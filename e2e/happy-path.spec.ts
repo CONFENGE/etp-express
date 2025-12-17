@@ -40,8 +40,21 @@ const TEST_CONFIG = {
 
 /**
  * Suite de teste do fluxo completo (Happy Path)
+ *
+ * @requires-backend Requer backend rodando em localhost:3001
+ * @skip-ci Estes testes são skipped no CI pois requerem infraestrutura completa
+ *
+ * Para rodar localmente:
+ * 1. Inicie o backend: cd backend && npm run start:dev
+ * 2. Inicie o frontend: cd frontend && npm run dev
+ * 3. Execute: npx playwright test e2e/happy-path.spec.ts
  */
 test.describe('Happy Path - Complete User Flow', () => {
+  // Skip no CI - requer backend completo rodando
+  test.skip(
+    !!process.env.CI,
+    'E2E Happy Path tests require full backend infrastructure (backend + database). Run locally or in staging.',
+  );
 
   /**
    * Setup antes de cada teste
@@ -144,7 +157,10 @@ test.describe('Happy Path - Complete User Flow', () => {
 
       // Preencher dados mínimos do ETP
       await page.fill('[name="title"]', TEST_CONFIG.testData.etpTitle);
-      await page.fill('[name="description"]', TEST_CONFIG.testData.etpDescription);
+      await page.fill(
+        '[name="description"]',
+        TEST_CONFIG.testData.etpDescription,
+      );
 
       // Criar ETP
       await page.click('button:has-text("Criar")');
@@ -155,9 +171,12 @@ test.describe('Happy Path - Complete User Flow', () => {
       });
 
       // Validar que estamos na página do ETP
-      await expect(page.locator('h1')).toContainText(TEST_CONFIG.testData.etpTitle, {
-        timeout: TEST_CONFIG.timeouts.standardAction,
-      });
+      await expect(page.locator('h1')).toContainText(
+        TEST_CONFIG.testData.etpTitle,
+        {
+          timeout: TEST_CONFIG.timeouts.standardAction,
+        },
+      );
 
       // Extrair ID do ETP da URL
       const url = page.url();
@@ -182,7 +201,10 @@ test.describe('Happy Path - Complete User Flow', () => {
       });
 
       // Selecionar tipo de seção
-      await page.selectOption('select[name="sectionType"]', 'fundamentacao-legal');
+      await page.selectOption(
+        'select[name="sectionType"]',
+        'fundamentacao-legal',
+      );
 
       // Clicar em "Gerar com AI"
       await page.click('button:has-text("Gerar com AI")');
@@ -207,7 +229,10 @@ test.describe('Happy Path - Complete User Flow', () => {
       });
 
       // Editar conteúdo da seção
-      await page.fill('textarea[name="content"]', TEST_CONFIG.testData.sectionContent);
+      await page.fill(
+        'textarea[name="content"]',
+        TEST_CONFIG.testData.sectionContent,
+      );
 
       // Salvar edição
       await page.click('button:has-text("Salvar")');
@@ -215,7 +240,7 @@ test.describe('Happy Path - Complete User Flow', () => {
       // Validar que edição foi salva
       await expect(page.locator('.section-content')).toContainText(
         TEST_CONFIG.testData.sectionContent,
-        { timeout: TEST_CONFIG.timeouts.standardAction }
+        { timeout: TEST_CONFIG.timeouts.standardAction },
       );
 
       console.log('✅ Seção editada manualmente com sucesso');
@@ -228,14 +253,20 @@ test.describe('Happy Path - Complete User Flow', () => {
 
     await test.step('Marcar ETP como 100% completo', async () => {
       // Marcar checkbox de completo
-      await page.click('input[type="checkbox"][aria-label="Marcar como completo"]', {
-        timeout: TEST_CONFIG.timeouts.standardAction,
-      });
+      await page.click(
+        'input[type="checkbox"][aria-label="Marcar como completo"]',
+        {
+          timeout: TEST_CONFIG.timeouts.standardAction,
+        },
+      );
 
       // Validar animação de confetti (opcional - wow factor)
-      const confettiVisible = await page.locator('.confetti-container').isVisible({
-        timeout: 2000,
-      }).catch(() => false);
+      const confettiVisible = await page
+        .locator('.confetti-container')
+        .isVisible({
+          timeout: 2000,
+        })
+        .catch(() => false);
 
       if (confettiVisible) {
         console.log('🎉 Confetti animation detectada!');
@@ -323,8 +354,17 @@ test.describe('Happy Path - Complete User Flow', () => {
  *
  * @description Versão rápida do happy path para smoke testing,
  * focando apenas em login e criação básica de ETP
+ *
+ * @requires-backend Requer backend rodando em localhost:3001
+ * @skip-ci Estes testes são skipped no CI pois requerem infraestrutura completa
  */
 test.describe('Smoke Test - Quick Validation', () => {
+  // Skip no CI - requer backend completo rodando
+  test.skip(
+    !!process.env.CI,
+    'Smoke tests require full backend infrastructure. Run locally or in staging.',
+  );
+
   test('login e criação rápida de ETP', async ({ page }) => {
     // Login
     await page.goto('/login');
