@@ -571,20 +571,32 @@ export class SectionsService {
    * After update, automatically recalculates parent ETP completion percentage
    * to reflect changes in section status.
    *
+   * **Security (Issue #758):**
+   * Validates organizationId when updating ETP completion to prevent cross-tenant
+   * data access.
+   *
    * @param id - Section unique identifier
    * @param updateDto - Fields to update (content, title, status, etc.)
+   * @param organizationId - Organization ID for tenancy validation
    * @returns Updated section entity
    * @throws {NotFoundException} If section not found
    */
-  async update(id: string, updateDto: UpdateSectionDto): Promise<EtpSection> {
+  async update(
+    id: string,
+    updateDto: UpdateSectionDto,
+    organizationId: string,
+  ): Promise<EtpSection> {
     const section = await this.findOne(id);
 
     Object.assign(section, updateDto);
 
     const updatedSection = await this.sectionsRepository.save(section);
 
-    // Update ETP completion percentage
-    await this.etpsService.updateCompletionPercentage(section.etpId);
+    // Update ETP completion percentage with tenancy validation
+    await this.etpsService.updateCompletionPercentage(
+      section.etpId,
+      organizationId,
+    );
 
     this.logger.log(`Section updated: ${id}`);
 
@@ -743,8 +755,11 @@ export class SectionsService {
 
     await this.sectionsRepository.remove(section);
 
-    // Update ETP completion percentage
-    await this.etpsService.updateCompletionPercentage(section.etpId);
+    // Update ETP completion percentage with tenancy validation
+    await this.etpsService.updateCompletionPercentage(
+      section.etpId,
+      organizationId,
+    );
 
     this.logger.log(`Section deleted: ${id}`);
   }
