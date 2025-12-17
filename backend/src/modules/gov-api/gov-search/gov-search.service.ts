@@ -35,6 +35,12 @@ import {
   DEFAULT_EXA_FALLBACK_THRESHOLD,
   DEFAULT_MAX_PER_SOURCE,
 } from './gov-search.types';
+import {
+  SearchStatus,
+  SourceStatus,
+  calculateOverallStatus,
+  getStatusMessage,
+} from '../types/search-result';
 import { createHash } from 'crypto';
 
 /**
@@ -98,22 +104,44 @@ export class GovSearchService {
     } = options;
 
     // 1. Search contracts in parallel (PNCP + Compras.gov.br)
+    // Now returns full response with status info
     const contractPromises = [
-      this.searchComprasGov(query, { startDate, endDate, uf, maxPerSource }),
-      this.searchPncp(query, { startDate, endDate, uf, maxPerSource }),
+      this.searchComprasGovWithStatus(query, {
+        startDate,
+        endDate,
+        uf,
+        maxPerSource,
+      }),
+      this.searchPncpWithStatus(query, {
+        startDate,
+        endDate,
+        uf,
+        maxPerSource,
+      }),
     ];
 
     // 2. Search prices if requested
-    const pricePromises: Promise<GovApiPriceReference[]>[] = [];
+    const pricePromises: Promise<{
+      data: GovApiPriceReference[];
+      status: SourceStatus;
+    }>[] = [];
     if (includePrecos) {
       if (isConstrucaoCivil) {
         pricePromises.push(
-          this.searchSinapi(query, { uf, mesReferencia, maxPerSource }),
+          this.searchSinapiWithStatus(query, {
+            uf,
+            mesReferencia,
+            maxPerSource,
+          }),
         );
       }
       if (isInfrastructure) {
         pricePromises.push(
-          this.searchSicro(query, { uf, mesReferencia, maxPerSource }),
+          this.searchSicroWithStatus(query, {
+            uf,
+            mesReferencia,
+            maxPerSource,
+          }),
         );
       }
     }
@@ -122,25 +150,49 @@ export class GovSearchService {
     const contractResults = await Promise.allSettled(contractPromises);
     const priceResults = await Promise.allSettled(pricePromises);
 
-    // 4. Extract successful results
-    const siasgResults = this.extractResult<GovApiContract>(contractResults[0]);
-    const pncpResults = this.extractResult<GovApiContract>(contractResults[1]);
+    // 4. Extract results and collect source statuses
+    const sourceStatuses: SourceStatus[] = [];
 
+    // Extract contract results with status
+    const siasgResult = this.extractResultWithStatus<GovApiContract>(
+      contractResults[0],
+      'comprasgov',
+    );
+    const pncpResult = this.extractResultWithStatus<GovApiContract>(
+      contractResults[1],
+      'pncp',
+    );
+
+    sourceStatuses.push(siasgResult.status);
+    sourceStatuses.push(pncpResult.status);
+
+    // Extract price results with status
     let priceIndex = 0;
-    const sinapiResults =
-      includePrecos && isConstrucaoCivil
-        ? this.extractResult<GovApiPriceReference>(priceResults[priceIndex++])
-        : [];
+    let sinapiResults: GovApiPriceReference[] = [];
+    let sicroResults: GovApiPriceReference[] = [];
 
-    const sicroResults =
-      includePrecos && isInfrastructure
-        ? this.extractResult<GovApiPriceReference>(priceResults[priceIndex])
-        : [];
+    if (includePrecos && isConstrucaoCivil) {
+      const sinapiResult = this.extractResultWithStatus<GovApiPriceReference>(
+        priceResults[priceIndex++],
+        'sinapi',
+      );
+      sinapiResults = sinapiResult.data;
+      sourceStatuses.push(sinapiResult.status);
+    }
+
+    if (includePrecos && isInfrastructure) {
+      const sicroResult = this.extractResultWithStatus<GovApiPriceReference>(
+        priceResults[priceIndex],
+        'sicro',
+      );
+      sicroResults = sicroResult.data;
+      sourceStatuses.push(sicroResult.status);
+    }
 
     // 5. Consolidate and deduplicate contract results
     const consolidatedContracts = this.consolidateContracts([
-      ...siasgResults,
-      ...pncpResults,
+      ...siasgResult.data,
+      ...pncpResult.data,
     ]);
 
     this.logger.log(
@@ -159,9 +211,22 @@ export class GovSearchService {
       const exaResults = await this.searchExaFallback(query);
       consolidatedContracts.push(...exaResults);
       fallbackUsed = true;
+
+      // Add Exa to source statuses
+      sourceStatuses.push({
+        name: 'exa',
+        status: SearchStatus.SUCCESS,
+        resultCount: exaResults.length,
+      });
     }
 
-    // 7. Build response
+    // 7. Calculate overall status
+    const overallStatus = calculateOverallStatus(sourceStatuses);
+    const failedSources = sourceStatuses
+      .filter((s) => s.status !== SearchStatus.SUCCESS)
+      .map((s) => s.name as string);
+
+    // 8. Build response with status info
     const sources = [
       'compras.gov.br',
       'pncp',
@@ -185,10 +250,15 @@ export class GovSearchService {
       query,
       timestamp: new Date(),
       cached: false, // TODO: Implement caching
+      status: overallStatus,
+      sourceStatuses,
+      statusMessage: getStatusMessage(overallStatus, failedSources),
     };
 
     const duration = Date.now() - startTime;
-    this.logger.log(`Unified search completed in ${duration}ms`);
+    this.logger.log(
+      `Unified search completed in ${duration}ms with status: ${overallStatus}`,
+    );
 
     return result;
   }
@@ -359,7 +429,226 @@ export class GovSearchService {
   }
 
   /**
+   * Search Compras.gov.br with full status info
+   */
+  private async searchComprasGovWithStatus(
+    query: string,
+    options: {
+      startDate?: Date;
+      endDate?: Date;
+      uf?: string;
+      maxPerSource: number;
+    },
+  ): Promise<{ data: GovApiContract[]; status: SourceStatus }> {
+    const startTime = Date.now();
+    try {
+      this.logger.log('Searching Compras.gov.br (SIASG)');
+      const response = await this.comprasGovService.search(query, {
+        startDate: options.startDate,
+        endDate: options.endDate,
+        uf: options.uf,
+        perPage: options.maxPerSource,
+      });
+
+      const latencyMs = Date.now() - startTime;
+      this.logger.log(
+        `Compras.gov.br returned ${response.data.length} results`,
+      );
+
+      return {
+        data: response.data as GovApiContract[],
+        status: {
+          name: 'comprasgov',
+          status: response.status || SearchStatus.SUCCESS,
+          resultCount: response.data.length,
+          latencyMs,
+          error:
+            response.status !== SearchStatus.SUCCESS
+              ? response.statusMessage
+              : undefined,
+        },
+      };
+    } catch (error: unknown) {
+      const latencyMs = Date.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error searching Compras.gov.br: ${errorMessage}`);
+
+      return {
+        data: [],
+        status: {
+          name: 'comprasgov',
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error: errorMessage,
+          latencyMs,
+          resultCount: 0,
+        },
+      };
+    }
+  }
+
+  /**
+   * Search PNCP with full status info
+   */
+  private async searchPncpWithStatus(
+    query: string,
+    options: {
+      startDate?: Date;
+      endDate?: Date;
+      uf?: string;
+      maxPerSource: number;
+    },
+  ): Promise<{ data: GovApiContract[]; status: SourceStatus }> {
+    const startTime = Date.now();
+    try {
+      this.logger.log('Searching PNCP');
+      const response = await this.pncpService.search(query, {
+        startDate: options.startDate,
+        endDate: options.endDate,
+        uf: options.uf,
+        perPage: options.maxPerSource,
+      });
+
+      const latencyMs = Date.now() - startTime;
+      this.logger.log(`PNCP returned ${response.data.length} results`);
+
+      return {
+        data: response.data as GovApiContract[],
+        status: {
+          name: 'pncp',
+          status: response.status || SearchStatus.SUCCESS,
+          resultCount: response.data.length,
+          latencyMs,
+          error:
+            response.status !== SearchStatus.SUCCESS
+              ? response.statusMessage
+              : undefined,
+        },
+      };
+    } catch (error: unknown) {
+      const latencyMs = Date.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error searching PNCP: ${errorMessage}`);
+
+      return {
+        data: [],
+        status: {
+          name: 'pncp',
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error: errorMessage,
+          latencyMs,
+          resultCount: 0,
+        },
+      };
+    }
+  }
+
+  /**
+   * Search SINAPI with full status info
+   */
+  private async searchSinapiWithStatus(
+    query: string,
+    options: {
+      uf?: string;
+      mesReferencia?: string;
+      maxPerSource: number;
+    },
+  ): Promise<{ data: GovApiPriceReference[]; status: SourceStatus }> {
+    const startTime = Date.now();
+    try {
+      this.logger.log('Searching SINAPI');
+      const response = await this.sinapiService.search(query, {
+        uf: options.uf,
+        mesReferencia: options.mesReferencia,
+        perPage: options.maxPerSource,
+      });
+
+      const latencyMs = Date.now() - startTime;
+      this.logger.log(`SINAPI returned ${response.data.length} results`);
+
+      return {
+        data: response.data as GovApiPriceReference[],
+        status: {
+          name: 'sinapi',
+          status: response.status || SearchStatus.SUCCESS,
+          resultCount: response.data.length,
+          latencyMs,
+        },
+      };
+    } catch (error: unknown) {
+      const latencyMs = Date.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error searching SINAPI: ${errorMessage}`);
+
+      return {
+        data: [],
+        status: {
+          name: 'sinapi',
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error: errorMessage,
+          latencyMs,
+          resultCount: 0,
+        },
+      };
+    }
+  }
+
+  /**
+   * Search SICRO with full status info
+   */
+  private async searchSicroWithStatus(
+    query: string,
+    options: {
+      uf?: string;
+      mesReferencia?: string;
+      maxPerSource: number;
+    },
+  ): Promise<{ data: GovApiPriceReference[]; status: SourceStatus }> {
+    const startTime = Date.now();
+    try {
+      this.logger.log('Searching SICRO');
+      const response = await this.sicroService.search(query, {
+        uf: options.uf,
+        mesReferencia: options.mesReferencia,
+        perPage: options.maxPerSource,
+      });
+
+      const latencyMs = Date.now() - startTime;
+      this.logger.log(`SICRO returned ${response.data.length} results`);
+
+      return {
+        data: response.data as GovApiPriceReference[],
+        status: {
+          name: 'sicro',
+          status: response.status || SearchStatus.SUCCESS,
+          resultCount: response.data.length,
+          latencyMs,
+        },
+      };
+    } catch (error: unknown) {
+      const latencyMs = Date.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error searching SICRO: ${errorMessage}`);
+
+      return {
+        data: [],
+        status: {
+          name: 'sicro',
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error: errorMessage,
+          latencyMs,
+          resultCount: 0,
+        },
+      };
+    }
+  }
+
+  /**
    * Extract result from Promise.allSettled result
+   * @deprecated Use extractResultWithStatus instead
    */
   private extractResult<T>(result: PromiseSettledResult<T[]>): T[] {
     if (result.status === 'fulfilled') {
@@ -367,6 +656,29 @@ export class GovSearchService {
     } else {
       this.logger.warn(`Promise rejected: ${result.reason}`);
       return [];
+    }
+  }
+
+  /**
+   * Extract result with status info from Promise.allSettled result
+   */
+  private extractResultWithStatus<T>(
+    result: PromiseSettledResult<{ data: T[]; status: SourceStatus }>,
+    sourceName: string,
+  ): { data: T[]; status: SourceStatus } {
+    if (result.status === 'fulfilled') {
+      return result.value;
+    } else {
+      this.logger.warn(`Promise rejected for ${sourceName}: ${result.reason}`);
+      return {
+        data: [],
+        status: {
+          name: sourceName,
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error: String(result.reason),
+          resultCount: 0,
+        },
+      };
     }
   }
 

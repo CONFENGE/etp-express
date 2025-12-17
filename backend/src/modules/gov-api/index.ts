@@ -24,6 +24,18 @@ export {
   GovApiPriceReference,
 } from './interfaces/gov-api.interface';
 
+// Search Result Types (status differentiation)
+export {
+  SearchStatus,
+  SourceStatus,
+  SearchResult,
+  calculateOverallStatus,
+  getStatusMessage,
+  createSuccessResult,
+  createPartialResult,
+  createUnavailableResult,
+} from './types/search-result';
+
 // Utilities
 export {
   GovApiClient,
