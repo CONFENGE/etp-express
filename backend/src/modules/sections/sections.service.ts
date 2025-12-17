@@ -397,7 +397,7 @@ export class SectionsService {
       await this.sectionsRepository.save(savedSection);
 
       // Update ETP completion percentage
-      await this.etpsService.updateCompletionPercentage(etpId);
+      await this.etpsService.updateCompletionPercentage(etpId, organizationId);
 
       // Emit final complete event with section data
       progressService.emitProgress(jobId, {
