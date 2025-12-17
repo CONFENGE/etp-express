@@ -151,3 +151,9 @@ ops/issue-audit/RECOMMENDATIONS.md
 
 # Git Worktrees
 .worktrees/
+
+# Load Testing (k6)
+load-tests/results/
+load-tests/*.json
+load-tests/*.html
+k6-results/
