@@ -212,9 +212,10 @@ describe('SectionsProcessor', () => {
       // Act
       await processor.process(mockJob);
 
-      // Assert
+      // Assert - includes organizationId for tenancy validation (Issue #758)
       expect(etpsService.updateCompletionPercentage).toHaveBeenCalledWith(
         'etp-123',
+        'org-789',
       );
     });
 

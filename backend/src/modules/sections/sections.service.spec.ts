@@ -732,7 +732,11 @@ describe('SectionsService', () => {
       mockSectionsRepository.save.mockResolvedValue(updatedSection);
 
       // Act
-      const result = await service.update(mockSectionId, updateDto);
+      const result = await service.update(
+        mockSectionId,
+        updateDto,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(mockSectionsRepository.findOne).toHaveBeenCalled();
@@ -745,6 +749,7 @@ describe('SectionsService', () => {
       );
       expect(mockEtpsService.updateCompletionPercentage).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
       );
       expect(result.title).toBe(updateDto.title);
     });
@@ -754,9 +759,9 @@ describe('SectionsService', () => {
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update('invalid-id', updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('invalid-id', updateDto, mockOrganizationId),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should allow partial updates', async () => {
@@ -767,7 +772,11 @@ describe('SectionsService', () => {
       mockSectionsRepository.save.mockResolvedValue(updatedSection);
 
       // Act
-      const result = await service.update(mockSectionId, partialUpdateDto);
+      const result = await service.update(
+        mockSectionId,
+        partialUpdateDto,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.title).toBe('Novo título apenas');
@@ -983,6 +992,7 @@ describe('SectionsService', () => {
       expect(mockSectionsRepository.remove).toHaveBeenCalledWith(mockSection);
       expect(mockEtpsService.updateCompletionPercentage).toHaveBeenCalledWith(
         mockSection.etpId,
+        mockOrganizationId,
       );
     });
 

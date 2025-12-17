@@ -557,6 +557,7 @@ describe('SectionsController (Integration)', () => {
       expect(sectionsService.update).toHaveBeenCalledWith(
         mockSectionId,
         updateDto,
+        mockOrganizationId,
       );
     });
 
