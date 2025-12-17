@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-17 | **Progresso:** 368/407 (90.4%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-17 | **Progresso:** 369/407 (90.7%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
@@ -404,13 +404,13 @@ M9: Export/Import       ██████████████████�
 
 ### Sprint 1 - APIs de Licitações ✅ COMPLETE
 
-| #        | Issue                               | Prior. | Status  |
-| -------- | ----------------------------------- | ------ | ------- |
-| ~~#690~~ | ~~Base module gov-api~~             | ✅     | PR #716 |
-| ~~#691~~ | ~~Integrar Compras.gov.br (SIASG)~~ | ✅     | PR #717 |
-| ~~#692~~ | ~~Integrar PNCP (Lei 14.133)~~      | ✅     | PR #718 |
-| ~~#695~~ | ~~Unified search service~~          | ✅     | PR #731 |
-| #696     | Refactor orchestrator (gov-first)   | P1     | -       |
+| #        | Issue                                 | Prior. | Status  |
+| -------- | ------------------------------------- | ------ | ------- |
+| ~~#690~~ | ~~Base module gov-api~~               | ✅     | PR #716 |
+| ~~#691~~ | ~~Integrar Compras.gov.br (SIASG)~~   | ✅     | PR #717 |
+| ~~#692~~ | ~~Integrar PNCP (Lei 14.133)~~        | ✅     | PR #718 |
+| ~~#695~~ | ~~Unified search service~~            | ✅     | PR #731 |
+| ~~#696~~ | ~~Refactor orchestrator (gov-first)~~ | ✅     | PR #751 |
 
 ### Sprint 2 - Tabelas de Preços ✅ COMPLETE
 
