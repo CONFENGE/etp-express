@@ -446,55 +446,264 @@ Sentry já está configurado no projeto e captura erros automaticamente. Para al
 
 > **📚 Documentação Completa de Disaster Recovery:** Consulte [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) para procedimentos detalhados de backup, restore e cenários de recuperação.
 
-### 6.5 Alta Disponibilidade (Múltiplas Réplicas)
+### 6.5 Horizontal Scaling (Múltiplas Réplicas)
 
-O backend está configurado para rodar com **2+ réplicas** para eliminar SPOF (Single Point of Failure).
+> **Status:** ✅ CONFIGURADO (Issue #735)
+> **Réplicas:** 2 (mínimo) a 4 (máximo com auto-scale)
 
-**Configuração (já aplicada em `railway.json` e `backend/railway.toml`):**
+O backend está configurado para rodar com **múltiplas réplicas** para eliminar SPOF (Single Point of Failure) e garantir alta disponibilidade.
 
-```toml
-[deploy]
-numReplicas = 2
+#### 6.5.1 Configuração via Railway Dashboard
+
+**Passo 1: Acessar Configurações de Scaling**
+
+1. Acesse Railway Dashboard → `etp-express-backend` service
+2. Navegue para **Settings** → **Deploy** (ou **Scaling**)
+3. Localize a seção **"Horizontal Scaling"** ou **"Replicas"**
+
+**Passo 2: Configurar Réplicas**
+
+Configure as seguintes opções:
+
+| Configuração              | Valor            | Descrição                                     |
+| ------------------------- | ---------------- | --------------------------------------------- |
+| **Min Replicas**          | 2                | Número mínimo de instâncias sempre ativas     |
+| **Max Replicas**          | 4                | Máximo de instâncias durante picos de carga   |
+| **Target CPU**            | 70%              | Auto-scale quando CPU média > 70%             |
+| **Target Memory**         | 80%              | Auto-scale quando memória média > 80%         |
+| **Cooldown Period**       | 60s              | Tempo de espera entre scaling events (padrão) |
+| **Health Check Path**     | `/api/v1/health` | Endpoint usado para validar réplicas          |
+| **Health Check Interval** | 30s              | Frequência de health checks (padrão)          |
+
+**Passo 3: Salvar e Aguardar Deploy**
+
+- Clique em **"Save"** ou **"Apply Changes"**
+- Railway iniciará um novo deploy com as configurações de scaling
+- Aguarde ~3-5 minutos até que 2 réplicas estejam ativas
+
+#### 6.5.2 Health Check Configuration
+
+**Endpoint:** `/api/v1/health` (NestJS versioned endpoint)
+
+**Response esperado (200 OK):**
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-12-17T01:00:00.000Z",
+  "database": "connected",
+  "redis": "connected"
+}
 ```
 
-**Como funciona:**
-
-- Railway automaticamente distribui requisições entre réplicas (load balancing)
-- Se uma réplica falhar, as outras continuam atendendo
-- Health checks (`/api/health`) monitoram cada réplica independentemente
-- Réplicas que falham no health check são automaticamente reiniciadas
-
-**Componentes compatíveis com múltiplas réplicas:**
-
-| Componente      | Comportamento                               |
-| --------------- | ------------------------------------------- |
-| JWT Auth        | ✅ Stateless - funciona em qualquer réplica |
-| BullMQ Jobs     | ✅ Redis compartilhado - jobs distribuídos  |
-| PostgreSQL      | ✅ Conexões via pool compartilhado          |
-| NodeCache (LLM) | ⚠️ Cache por réplica (duplicação aceitável) |
-| Rate Limiting   | ⚠️ Contagem por réplica (não blocker)       |
-
-**Verificação via CLI:**
+**Validação manual:**
 
 ```bash
-# Ver réplicas ativas
+# Testar health check em produção
+curl https://etp-express-backend-production.up.railway.app/api/v1/health
+
+# Verificar health de todas réplicas (Railway Dashboard → Metrics → Health)
+railway logs --service=etp-express-backend --tail 50 | grep "health"
+```
+
+**Timeout configuração:**
+
+- **Health Check Timeout:** 300s (5 minutos - suficiente para cold start + migrations)
+- **Request Timeout:** 120s (2 minutos - geração LLM pode levar 60-90s)
+
+#### 6.5.3 Como Funciona o Load Balancing
+
+**Distribuição de Tráfego:**
+
+- Railway automaticamente distribui requisições entre réplicas saudáveis
+- Algoritmo: Round-robin com health check awareness
+- Se uma réplica falhar no health check, é removida do pool de balanceamento
+- Réplicas degradadas são automaticamente reiniciadas
+
+**Componentes Stateless (Safe para Múltiplas Réplicas):**
+
+| Componente  | Comportamento                                      |
+| ----------- | -------------------------------------------------- |
+| JWT Auth    | ✅ Stateless - JWT validado em qualquer réplica    |
+| BullMQ Jobs | ✅ Redis compartilhado - jobs distribuídos         |
+| PostgreSQL  | ✅ Connection pool compartilhado (pgvector)        |
+| Uploads     | ✅ Armazenados em disco persistente ou S3 (futuro) |
+
+**Componentes Stateful (Considerações):**
+
+| Componente        | Comportamento                                         | Impacto                               |
+| ----------------- | ----------------------------------------------------- | ------------------------------------- |
+| NodeCache (LLM)   | ⚠️ Cache por réplica (cada réplica tem cache próprio) | Duplicação aceitável (~10MB/réplica)  |
+| Rate Limiting     | ⚠️ Contagem por réplica (não distribuída)             | Limite efetivo = limite x nº réplicas |
+| In-Memory Session | ❌ Não usar - preferir Redis ou JWT                   | N/A (não usado)                       |
+
+#### 6.5.4 Verificação de Réplicas Ativas
+
+**Via Railway Dashboard:**
+
+1. Acesse `etp-express-backend` service
+2. Navegue para **Deployments** → Latest deployment
+3. Clique em **"Metrics"** ou **"Replicas"**
+4. Verifique que 2+ instâncias estão **"Healthy"**
+
+**Via Railway CLI:**
+
+```bash
+# Ver status do serviço (inclui réplicas)
 railway status
 
-# Logs de todas réplicas
+# Logs de todas réplicas (Railway mescla automaticamente)
 railway logs --service=etp-express-backend
 
-# Forçar redeploy com novas réplicas
+# Forçar redeploy (útil para aplicar novas configurações)
 railway redeploy --service=etp-express-backend
 ```
 
-**Teste de failover:**
+#### 6.5.5 Teste de Zero-Downtime Deploy
 
-1. Acesse Railway Dashboard → etp-express-backend
-2. Verifique que existem 2+ instâncias na aba "Replicas"
-3. Mate uma réplica manualmente e observe a recuperação automática
-4. Confirme que o serviço permanece acessível durante o processo
+**Procedimento de Teste:**
 
-**Custo adicional:** ~$3-5/mês por réplica adicional (depende do uso)
+1. **Monitorar réplicas antes do deploy:**
+
+   ```bash
+   # Em um terminal, monitore os logs
+   railway logs --service=etp-express-backend --tail 100
+   ```
+
+2. **Fazer um deploy de teste:**
+   - Faça um commit trivial (ex: adicionar comentário no código)
+   - Push para branch master
+   - Railway iniciará rolling update automaticamente
+
+3. **Observar rolling update:**
+   - Railway atualiza **uma réplica por vez**
+   - Sequência:
+     1. Nova réplica V2 é iniciada (health check até passar)
+     2. Tráfego é redirecionado para V2
+     3. Réplica antiga V1 é desligada gracefully
+     4. Processo repete para próxima réplica
+   - Tempo total: ~5-10 minutos para 2 réplicas
+
+4. **Validar zero downtime:**
+   ```bash
+   # Em outro terminal, execute requisições contínuas
+   while true; do
+     curl -s https://etp-express-backend-production.up.railway.app/api/v1/health | jq -r '.status'
+     sleep 2
+   done
+   ```
+
+   - Output esperado: `healthy` contínuo (sem interrupções)
+   - Se aparecer erro de conexão, **rolling update falhou**
+
+#### 6.5.6 Teste de Failover (Alta Disponibilidade)
+
+**Simulação de Falha de Réplica:**
+
+1. Acesse Railway Dashboard → `etp-express-backend`
+2. Navegue para **Deployments** → Latest → **Replicas**
+3. Clique em **"Kill"** ou **"Restart"** em uma das réplicas
+4. Observe:
+   - Réplica em questão entra em estado "Unhealthy" ou "Restarting"
+   - Tráfego é automaticamente redirecionado para réplicas saudáveis
+   - Nova réplica é iniciada para manter o mínimo de 2
+   - Tempo de recuperação: ~60-90 segundos
+
+**Validação:**
+
+```bash
+# Executar durante teste de failover
+while true; do
+  curl -s -w "\nStatus: %{http_code} - Time: %{time_total}s\n" \
+    https://etp-express-backend-production.up.railway.app/api/v1/health
+  sleep 1
+done
+```
+
+**Resultado esperado:**
+
+- Todas requisições retornam **200 OK**
+- Pode haver leve aumento de latência (~100-200ms) durante redirecionamento
+- **Zero requisições com erro 502/503/504**
+
+#### 6.5.7 Auto-Scaling Triggers
+
+**Quando Railway escala automaticamente para 3-4 réplicas:**
+
+| Métrica          | Threshold | Ação                               |
+| ---------------- | --------- | ---------------------------------- |
+| CPU > 70%        | 2 min     | Adiciona 1 réplica                 |
+| Memory > 80%     | 2 min     | Adiciona 1 réplica                 |
+| Requests/s > 100 | 1 min     | Adiciona 1 réplica (se habilitado) |
+
+**Quando Railway escala para baixo (scale down):**
+
+- CPU < 30% e Memory < 40% por 10 minutos
+- Nunca escala abaixo de `Min Replicas` (2)
+
+**Monitoramento:**
+
+```bash
+# Verificar eventos de scaling nos logs
+railway logs --service=etp-express-backend | grep -i "scal"
+```
+
+#### 6.5.8 Custo de Horizontal Scaling
+
+**Estimativa de Custo Railway (Pro Plan):**
+
+| Configuração | Custo/mês (estimado) |
+| ------------ | -------------------- |
+| 1 réplica    | $5-10                |
+| 2 réplicas   | $10-20               |
+| 3 réplicas   | $15-30 (picos)       |
+| 4 réplicas   | $20-40 (picos)       |
+
+**Nota:** Custo varia com uso de CPU/RAM. 2 réplicas permanentes + auto-scale até 4 = ~$15-25/mês.
+
+#### 6.5.9 Troubleshooting
+
+**Problema: Apenas 1 réplica ativa**
+
+```bash
+# Verificar configuração
+railway variables | grep -i replica
+
+# Forçar redeploy
+railway redeploy --service=etp-express-backend
+```
+
+**Causa:** Configuração de scaling não salva ou plano Railway não suporta scaling.
+
+**Problema: Réplicas ficam "Unhealthy"**
+
+```bash
+# Verificar logs de health check
+railway logs --tail 200 | grep "health"
+
+# Testar health check manualmente
+curl https://etp-express-backend-production.up.railway.app/api/v1/health
+```
+
+**Causas comuns:**
+
+- Migrations demorando > 300s (aumentar `healthCheckTimeout`)
+- Database connection pool esgotado (verificar `max` connections)
+- OpenAI/Exa API down (verificar `/api/v1/health/providers`)
+
+**Problema: Deploy timeout**
+
+- Health check não passa em 300s
+- Aumentar timeout: Dashboard → Settings → Health Check Timeout → 600s
+- Investigar migrations lentas ou cold start
+
+---
+
+**Referências:**
+
+- Railway Scaling Docs: https://docs.railway.app/deploy/scaling
+- Railway Health Checks: https://docs.railway.app/deploy/healthchecks
+- Issue #735: Scale backend 2+ réplicas (implementação desta seção)
 
 ---
 
@@ -906,24 +1115,42 @@ jobs:
 
 Antes de considerar o deploy completo, verifique:
 
+### Infraestrutura Básica
+
 - [ ] PostgreSQL database criado e populado com schema
 - [ ] Backend deployado e acessível via URL
 - [ ] Frontend deployado e acessível via URL
 - [ ] Variáveis de ambiente configuradas (TODAS)
 - [ ] CORS configurado corretamente
-- [ ] API Keys válidas (OpenAI, Perplexity)
+- [ ] API Keys válidas (OpenAI, Exa)
 - [ ] JWT_SECRET configurado e seguro
-- [ ] Healthchecks passando
+
+### Alta Disponibilidade (Issue #735)
+
 - [ ] Backend com 2+ réplicas ativas (Railway Dashboard → Replicas)
+- [ ] Health check endpoint `/api/v1/health` retornando 200 OK
+- [ ] Auto-scaling configurado (min: 2, max: 4, target CPU 70%)
+- [ ] Teste de failover executado (matar uma réplica → recuperação automática)
+- [ ] Teste de zero-downtime deploy executado (requisições contínuas sem erro)
+- [ ] Logs confirmam rolling update (Railway atualiza uma réplica por vez)
+
+### Funcionalidades
+
+- [ ] Healthchecks passando
 - [ ] Logs sem erros críticos
 - [ ] Teste de registro de usuário funcionando
 - [ ] Teste de criação de ETP funcionando
 - [ ] Teste de geração de seção com IA funcionando
-- [ ] Swagger acessível e funcional
+- [ ] Swagger acessível e funcional (`/api/docs`)
 - [ ] WarningBanner visível em todas as páginas
 - [ ] Responsividade mobile testada
-- [ ] Backups configurados
-- [ ] Monitoramento ativo
+
+### Observabilidade
+
+- [ ] Backups configurados (PostgreSQL 7 dias)
+- [ ] Monitoramento ativo (Railway Observability)
+- [ ] Alertas configurados (CPU > 80%, Memory > 85%)
+- [ ] Sentry configurado para error tracking
 
 ---
 
