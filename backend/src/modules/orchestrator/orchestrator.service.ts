@@ -987,9 +987,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         exaResult.summary,
       );
 
-      this.logger.log(
-        'Market enrichment using mixed sources (Gov-API + Exa)',
-      );
+      this.logger.log('Market enrichment using mixed sources (Gov-API + Exa)');
 
       return {
         summary: mixedSummary,
@@ -1032,17 +1030,21 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       sections.push(
         `**Contratos Governamentais Similares (${govResult.contracts.length}):**`,
       );
-      govResult.contracts.slice(0, 3).forEach((contract: any, index: number) => {
-        sections.push(
-          `${index + 1}. ${contract.objeto || contract.description}`,
-        );
-        if (contract.valor) {
-          sections.push(`   Valor: R$ ${contract.valor.toLocaleString('pt-BR')}`);
-        }
-        if (contract.orgao) {
-          sections.push(`   Órgão: ${contract.orgao}`);
-        }
-      });
+      govResult.contracts
+        .slice(0, 3)
+        .forEach((contract: any, index: number) => {
+          sections.push(
+            `${index + 1}. ${contract.objeto || contract.description}`,
+          );
+          if (contract.valor) {
+            sections.push(
+              `   Valor: R$ ${contract.valor.toLocaleString('pt-BR')}`,
+            );
+          }
+          if (contract.orgao) {
+            sections.push(`   Órgão: ${contract.orgao}`);
+          }
+        });
     }
 
     // Add price references if available
