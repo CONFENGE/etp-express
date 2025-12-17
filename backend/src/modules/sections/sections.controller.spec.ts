@@ -9,6 +9,7 @@ import {
 import request from 'supertest';
 import { SectionsController } from './sections.controller';
 import { SectionsService } from './sections.service';
+import { SectionProgressService } from './section-progress.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { SectionStatus, SectionType } from '../../entities/etp-section.entity';
@@ -142,11 +143,28 @@ describe('SectionsController (Integration)', () => {
     canActivate: jest.fn(() => true),
   };
 
+  /**
+   * Creates a mock SectionProgressService
+   * Only used internally by SSE streaming endpoint
+   */
+  const createMockSectionProgressService = () => ({
+    createProgressStream: jest.fn(),
+    emitProgress: jest.fn(),
+    completeStream: jest.fn(),
+    errorStream: jest.fn(),
+    hasStream: jest.fn().mockReturnValue(false),
+    getActiveStreamCount: jest.fn().mockReturnValue(0),
+  });
+
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [SectionsController],
       providers: [
         { provide: SectionsService, useValue: createMockSectionsService() },
+        {
+          provide: SectionProgressService,
+          useValue: createMockSectionProgressService(),
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
