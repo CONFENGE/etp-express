@@ -3,6 +3,7 @@ import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { EtpsController } from './etps.controller';
 import { EtpsService } from './etps.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ResourceOwnershipGuard } from '../../common/guards/resource-ownership.guard';
 import { EtpStatus } from '../../entities/etp.entity';
 import { CreateEtpDto } from './dto/create-etp.dto';
 import { UpdateEtpDto } from './dto/update-etp.dto';
@@ -58,9 +59,13 @@ describe('EtpsController', () => {
     findOneMinimal: jest.fn(),
     findOneWithSections: jest.fn(),
     findOneWithVersions: jest.fn(),
+    findOneWithSectionsNoAuth: jest.fn(),
     update: jest.fn(),
     updateStatus: jest.fn(),
+    updateDirect: jest.fn(),
+    updateStatusDirect: jest.fn(),
     remove: jest.fn(),
+    removeDirect: jest.fn(),
   };
 
   const mockJwtAuthGuard = {
@@ -69,6 +74,11 @@ describe('EtpsController', () => {
       request.user = { id: mockUserId, organizationId: mockOrganizationId };
       return true;
     }),
+  };
+
+  // Mock ResourceOwnershipGuard - validation is tested in resource-ownership.guard.spec.ts
+  const mockResourceOwnershipGuard = {
+    canActivate: jest.fn(() => true),
   };
 
   beforeEach(async () => {
@@ -83,6 +93,8 @@ describe('EtpsController', () => {
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(mockJwtAuthGuard)
+      .overrideGuard(ResourceOwnershipGuard)
+      .useValue(mockResourceOwnershipGuard)
       .compile();
 
     controller = module.get<EtpsController>(EtpsController);
@@ -287,287 +299,163 @@ describe('EtpsController', () => {
   });
 
   describe('findOne', () => {
-    it('should return a single ETP by ID', async () => {
-      // Arrange
-      mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
+    // Note: Authorization is now handled by @RequireOwnership decorator/guard
+    // The ETP is pre-validated and injected via @Resource() decorator
+    // Tests here verify controller logic with pre-validated resource
 
-      // Act
-      const result = await controller.findOne(
-        mockEtpId,
-        mockOrganizationId,
-        mockUserId,
+    it('should return a single ETP by ID', async () => {
+      // Arrange - ETP is pre-validated by guard, service loads with sections
+      const etpWithSections = { ...mockEtp, sections: [] };
+      mockEtpsService.findOneWithSectionsNoAuth.mockResolvedValue(
+        etpWithSections,
       );
+
+      // Act - Controller receives pre-validated ETP from guard
+      const result = await controller.findOne(mockEtp as any);
 
       // Assert
-      expect(service.findOneWithSections).toHaveBeenCalledWith(
-        mockEtpId,
-        mockOrganizationId,
-        mockUserId,
-      );
-      expect(service.findOneWithSections).toHaveBeenCalledTimes(1);
-      expect(result.data).toEqual(mockEtp);
+      expect(service.findOneWithSectionsNoAuth).toHaveBeenCalledWith(mockEtpId);
+      expect(service.findOneWithSectionsNoAuth).toHaveBeenCalledTimes(1);
+      expect(result.data).toEqual(etpWithSections);
       expect(result.data.id).toBe(mockEtpId);
       expect(result.disclaimer).toBeDefined();
     });
 
-    it('should throw NotFoundException when ETP not found', async () => {
-      // Arrange
-      mockEtpsService.findOneWithSections.mockRejectedValue(
-        new NotFoundException('ETP não encontrado'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.findOne('invalid-id', mockOrganizationId, mockUserId),
-      ).rejects.toThrow(NotFoundException);
-      await expect(
-        controller.findOne('invalid-id', mockOrganizationId, mockUserId),
-      ).rejects.toThrow('ETP não encontrado');
-    });
-
-    it('should throw ForbiddenException when user does not own the ETP', async () => {
-      // Arrange
-      mockEtpsService.findOneWithSections.mockRejectedValue(
-        new ForbiddenException('Você não tem permissão para acessar este ETP'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.findOne(mockEtpId, mockOrganizationId, 'other-user'),
-      ).rejects.toThrow(ForbiddenException);
-    });
-
     it('should include disclaimer in response', async () => {
       // Arrange
-      mockEtpsService.findOneWithSections.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneWithSectionsNoAuth.mockResolvedValue(mockEtp);
 
       // Act
-      const result = await controller.findOne(
-        mockEtpId,
-        mockOrganizationId,
-        mockUserId,
-      );
+      const result = await controller.findOne(mockEtp as any);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
     });
+
+    // Note: NotFoundException and ForbiddenException tests are now covered by
+    // ResourceOwnershipGuard tests (resource-ownership.guard.spec.ts)
   });
 
   describe('update', () => {
+    // Note: Authorization is now handled by @RequireOwnership decorator/guard
+    // The ETP is pre-validated and injected via @Resource() decorator
+
     const updateEtpDto: UpdateEtpDto = {
       title: 'Updated ETP',
       description: 'Updated Description',
     };
 
     it('should update an ETP', async () => {
-      // Arrange
+      // Arrange - ETP is pre-validated by guard
       const updatedEtp = { ...mockEtp, ...updateEtpDto };
-      mockEtpsService.update.mockResolvedValue(updatedEtp);
+      mockEtpsService.updateDirect.mockResolvedValue(updatedEtp);
 
-      // Act
+      // Act - Controller receives pre-validated ETP from guard
       const result = await controller.update(
-        mockEtpId,
         updateEtpDto,
+        mockEtp as any,
         mockUserId,
-        mockOrganizationId,
       );
 
       // Assert
-      expect(service.update).toHaveBeenCalledWith(
-        mockEtpId,
+      expect(service.updateDirect).toHaveBeenCalledWith(
+        mockEtp,
         updateEtpDto,
         mockUserId,
-        mockOrganizationId,
       );
-      expect(service.update).toHaveBeenCalledTimes(1);
+      expect(service.updateDirect).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(updatedEtp);
       expect(result.data.title).toBe('Updated ETP');
       expect(result.disclaimer).toBeDefined();
     });
 
-    it('should throw NotFoundException when ETP not found', async () => {
-      // Arrange
-      mockEtpsService.update.mockRejectedValue(
-        new NotFoundException('ETP não encontrado'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.update(
-          'invalid-id',
-          updateEtpDto,
-          mockUserId,
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw ForbiddenException when user does not own the ETP', async () => {
-      // Arrange
-      mockEtpsService.update.mockRejectedValue(
-        new ForbiddenException(
-          'Você não tem permissão para atualizar este ETP',
-        ),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.update(
-          mockEtpId,
-          updateEtpDto,
-          'other-user',
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow(ForbiddenException);
-    });
+    // Note: NotFoundException and ForbiddenException tests are now covered by
+    // ResourceOwnershipGuard tests (resource-ownership.guard.spec.ts)
   });
 
   describe('updateStatus', () => {
+    // Note: Authorization is now handled by @RequireOwnership decorator/guard
+    // The ETP is pre-validated and injected via @Resource() decorator
+
     const newStatus = EtpStatus.REVIEW;
 
     it('should update ETP status', async () => {
-      // Arrange
+      // Arrange - ETP is pre-validated by guard
       const updatedEtp = { ...mockEtp, status: newStatus };
-      mockEtpsService.updateStatus.mockResolvedValue(updatedEtp);
+      mockEtpsService.updateStatusDirect.mockResolvedValue(updatedEtp);
 
-      // Act
+      // Act - Controller receives pre-validated ETP from guard
       const result = await controller.updateStatus(
-        mockEtpId,
         newStatus,
+        mockEtp as any,
         mockUserId,
-        mockOrganizationId,
       );
 
       // Assert
-      expect(service.updateStatus).toHaveBeenCalledWith(
-        mockEtpId,
+      expect(service.updateStatusDirect).toHaveBeenCalledWith(
+        mockEtp,
         newStatus,
         mockUserId,
-        mockOrganizationId,
       );
-      expect(service.updateStatus).toHaveBeenCalledTimes(1);
+      expect(service.updateStatusDirect).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(updatedEtp);
       expect(result.data.status).toBe(newStatus);
       expect(result.disclaimer).toBeDefined();
     });
 
-    it('should throw NotFoundException when ETP not found', async () => {
-      // Arrange
-      mockEtpsService.updateStatus.mockRejectedValue(
-        new NotFoundException('ETP não encontrado'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.updateStatus(
-          'invalid-id',
-          newStatus,
-          mockUserId,
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw ForbiddenException when user does not own the ETP', async () => {
-      // Arrange
-      mockEtpsService.updateStatus.mockRejectedValue(
-        new ForbiddenException(
-          'Você não tem permissão para atualizar este ETP',
-        ),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.updateStatus(
-          mockEtpId,
-          newStatus,
-          'other-user',
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow(ForbiddenException);
-    });
-
     it('should include disclaimer in response', async () => {
       // Arrange
       const updatedEtp = { ...mockEtp, status: newStatus };
-      mockEtpsService.updateStatus.mockResolvedValue(updatedEtp);
+      mockEtpsService.updateStatusDirect.mockResolvedValue(updatedEtp);
 
       // Act
       const result = await controller.updateStatus(
-        mockEtpId,
         newStatus,
+        mockEtp as any,
         mockUserId,
-        mockOrganizationId,
       );
 
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
     });
+
+    // Note: NotFoundException and ForbiddenException tests are now covered by
+    // ResourceOwnershipGuard tests (resource-ownership.guard.spec.ts)
   });
 
   describe('remove', () => {
-    it('should delete an ETP', async () => {
-      // Arrange
-      mockEtpsService.remove.mockResolvedValue(undefined);
+    // Note: Authorization is now handled by @RequireOwnership decorator/guard
+    // The ETP is pre-validated and injected via @Resource() decorator
 
-      // Act
-      const result = await controller.remove(
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
+    it('should delete an ETP', async () => {
+      // Arrange - ETP is pre-validated by guard
+      mockEtpsService.removeDirect.mockResolvedValue(undefined);
+
+      // Act - Controller receives pre-validated ETP from guard
+      const result = await controller.remove(mockEtp as any, mockUserId);
 
       // Assert
-      expect(service.remove).toHaveBeenCalledWith(
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
-      expect(service.remove).toHaveBeenCalledTimes(1);
+      expect(service.removeDirect).toHaveBeenCalledWith(mockEtp, mockUserId);
+      expect(service.removeDirect).toHaveBeenCalledTimes(1);
       expect(result.message).toBe('ETP deletado com sucesso');
       expect(result.disclaimer).toBeDefined();
     });
 
-    it('should throw NotFoundException when ETP not found', async () => {
-      // Arrange
-      mockEtpsService.remove.mockRejectedValue(
-        new NotFoundException('ETP não encontrado'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.remove('invalid-id', mockUserId, mockOrganizationId),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw ForbiddenException when user does not own the ETP', async () => {
-      // Arrange
-      mockEtpsService.remove.mockRejectedValue(
-        new ForbiddenException('Você não tem permissão para deletar este ETP'),
-      );
-
-      // Act & Assert
-      await expect(
-        controller.remove(mockEtpId, 'other-user', mockOrganizationId),
-      ).rejects.toThrow(ForbiddenException);
-    });
-
     it('should include disclaimer in delete response', async () => {
       // Arrange
-      mockEtpsService.remove.mockResolvedValue(undefined);
+      mockEtpsService.removeDirect.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.remove(
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
+      const result = await controller.remove(mockEtp as any, mockUserId);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
     });
+
+    // Note: NotFoundException and ForbiddenException tests are now covered by
+    // ResourceOwnershipGuard tests (resource-ownership.guard.spec.ts)
   });
 });
