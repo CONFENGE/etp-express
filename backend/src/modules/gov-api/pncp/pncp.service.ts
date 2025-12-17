@@ -38,6 +38,7 @@ import {
   PncpAtaSearchParams,
   PNCP_MODALIDADE_NAMES,
 } from './pncp.types';
+import { SearchStatus, getStatusMessage } from '../types/search-result';
 
 /**
  * PNCP API Base URL
@@ -129,7 +130,19 @@ export class PncpService implements IGovApiService {
       cacheKey,
     );
     if (cached) {
-      return { ...cached, cached: true };
+      return {
+        ...cached,
+        cached: true,
+        status: cached.status || SearchStatus.SUCCESS,
+      };
+    }
+
+    // Check circuit breaker before making request
+    if (!this.client.isAvailable()) {
+      this.logger.warn(
+        'Circuit breaker is open, returning SERVICE_UNAVAILABLE response',
+      );
+      return this.createServiceUnavailableResponse('Circuit breaker is open');
     }
 
     // Build date range (default to last 30 days)
@@ -177,6 +190,8 @@ export class PncpService implements IGovApiService {
         cached: false,
         isFallback: false,
         timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+        statusMessage: getStatusMessage(SearchStatus.SUCCESS),
       };
 
       // Cache the result
@@ -184,10 +199,25 @@ export class PncpService implements IGovApiService {
 
       return result;
     } catch (error) {
-      this.logger.error(
-        `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
-      throw error;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Search failed: ${errorMessage}`);
+
+      // Determine specific error type
+      const isTimeout =
+        errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
+      const isRateLimited =
+        errorMessage.includes('429') || errorMessage.includes('rate limit');
+
+      if (isTimeout) {
+        return this.createTimeoutResponse(errorMessage);
+      }
+      if (isRateLimited) {
+        return this.createRateLimitedResponse(errorMessage);
+      }
+
+      // Return service unavailable response instead of throwing
+      return this.createServiceUnavailableResponse(errorMessage);
     }
   }
 
@@ -658,5 +688,86 @@ export class PncpService implements IGovApiService {
       suspensa: 4,
     };
     return statusMap[status.toLowerCase()] || null;
+  }
+
+  /**
+   * Create a SERVICE_UNAVAILABLE response when API is down or circuit breaker is open
+   */
+  private createServiceUnavailableResponse(
+    error: string,
+  ): GovApiResponse<GovApiSearchResult[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.SERVICE_UNAVAILABLE,
+      statusMessage: getStatusMessage(SearchStatus.SERVICE_UNAVAILABLE),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create a TIMEOUT response when request times out
+   */
+  private createTimeoutResponse(
+    error: string,
+  ): GovApiResponse<GovApiSearchResult[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.TIMEOUT,
+      statusMessage: getStatusMessage(SearchStatus.TIMEOUT),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.TIMEOUT,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create a RATE_LIMITED response when rate limit is exceeded
+   */
+  private createRateLimitedResponse(
+    error: string,
+  ): GovApiResponse<GovApiSearchResult[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.RATE_LIMITED,
+      statusMessage: getStatusMessage(SearchStatus.RATE_LIMITED),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.RATE_LIMITED,
+          error,
+        },
+      ],
+    };
   }
 }

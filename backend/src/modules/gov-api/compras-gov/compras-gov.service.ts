@@ -39,6 +39,7 @@ import {
   buildCacheKey,
   ComprasGovModalidade,
 } from './compras-gov.types';
+import { SearchStatus, getStatusMessage } from '../types/search-result';
 
 /**
  * Compras.gov.br API base URL
@@ -155,6 +156,7 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
       return {
         ...cached,
         cached: true,
+        status: cached.status || SearchStatus.SUCCESS,
       };
     }
 
@@ -163,9 +165,9 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
     // Check circuit breaker before making request
     if (!this.client.isAvailable()) {
       this.logger.warn(
-        'Circuit breaker is open, returning fallback empty response',
+        'Circuit breaker is open, returning SERVICE_UNAVAILABLE response',
       );
-      return this.createFallbackResponse();
+      return this.createServiceUnavailableResponse('Circuit breaker is open');
     }
 
     try {
@@ -195,6 +197,8 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
         cached: false,
         isFallback: false,
         timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+        statusMessage: getStatusMessage(SearchStatus.SUCCESS),
       };
 
       // Cache the result
@@ -208,14 +212,27 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
       return result;
     } catch (error) {
       const duration = Date.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
-        `Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
+        `Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${errorMessage}`,
       );
 
-      // Return fallback response instead of throwing
-      return this.createFallbackResponse();
+      // Determine specific error type
+      const isTimeout =
+        errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
+      const isRateLimited =
+        errorMessage.includes('429') || errorMessage.includes('rate limit');
+
+      if (isTimeout) {
+        return this.createTimeoutResponse(errorMessage);
+      }
+      if (isRateLimited) {
+        return this.createRateLimitedResponse(errorMessage);
+      }
+
+      // Return service unavailable response instead of throwing
+      return this.createServiceUnavailableResponse(errorMessage);
     }
   }
 
@@ -439,8 +456,18 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
 
   /**
    * Create a fallback response for when API is unavailable
+   * @deprecated Use createServiceUnavailableResponse instead
    */
   private createFallbackResponse(): GovApiResponse<ComprasGovContract[]> {
+    return this.createServiceUnavailableResponse('Service unavailable');
+  }
+
+  /**
+   * Create a SERVICE_UNAVAILABLE response when API is down or circuit breaker is open
+   */
+  private createServiceUnavailableResponse(
+    error: string,
+  ): GovApiResponse<ComprasGovContract[]> {
     return {
       data: [],
       total: 0,
@@ -450,6 +477,69 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
       cached: false,
       isFallback: true,
       timestamp: new Date(),
+      status: SearchStatus.SERVICE_UNAVAILABLE,
+      statusMessage: getStatusMessage(SearchStatus.SERVICE_UNAVAILABLE),
+      sourceStatuses: [
+        {
+          name: 'comprasgov',
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create a TIMEOUT response when request times out
+   */
+  private createTimeoutResponse(
+    error: string,
+  ): GovApiResponse<ComprasGovContract[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: DEFAULT_PAGE_SIZE,
+      source: 'comprasgov',
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.TIMEOUT,
+      statusMessage: getStatusMessage(SearchStatus.TIMEOUT),
+      sourceStatuses: [
+        {
+          name: 'comprasgov',
+          status: SearchStatus.TIMEOUT,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create a RATE_LIMITED response when rate limit is exceeded
+   */
+  private createRateLimitedResponse(
+    error: string,
+  ): GovApiResponse<ComprasGovContract[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: DEFAULT_PAGE_SIZE,
+      source: 'comprasgov',
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.RATE_LIMITED,
+      statusMessage: getStatusMessage(SearchStatus.RATE_LIMITED),
+      sourceStatuses: [
+        {
+          name: 'comprasgov',
+          status: SearchStatus.RATE_LIMITED,
+          error,
+        },
+      ],
     };
   }
 }

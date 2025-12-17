@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-17 | **Progresso:** 369/407 (90.7%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-17 | **Progresso:** 371/407 (91.2%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
-## 🛡️ Hardening & Refactoring (12 issues restantes)
+## 🛡️ Hardening & Refactoring (10 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
 **Validação:** Codebase auditado, 2 pontos já implementados, 18 issues criadas
@@ -18,19 +18,19 @@
 | **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                 |
 | **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                    |
 
-### 🔴 P0 - Deploy Crítico (1 issue)
+### ✅ P0 - Deploy Crítico (0 issues - COMPLETO)
 
-| #    | Issue                                    | Est.  | Status |
-| ---- | ---------------------------------------- | ----- | ------ |
-| #753 | Remover referências residuais Perplexity | 30min | OPEN   |
+| #        | Issue                                        | Est.  | Status            |
+| -------- | -------------------------------------------- | ----- | ----------------- |
+| ~~#753~~ | ~~Remover referências residuais Perplexity~~ | 30min | ✅ DONE (PR #761) |
 
-### 🟡 P1 - UX Crítico (3 issues)
+### 🟡 P1 - UX Crítico (2 issues)
 
-| #    | Issue                                      | Est. | Status |
-| ---- | ------------------------------------------ | ---- | ------ |
-| #754 | SSE/streaming para feedback geração seções | 8h   | OPEN   |
-| #755 | SearchResult estruturado Gov-APIs          | 4h   | OPEN   |
-| #756 | DataSourceStatus frontend (alerta serviço) | 3h   | OPEN   |
+| #    | Issue                                      | Est. | Status            |
+| ---- | ------------------------------------------ | ---- | ----------------- |
+| #754 | SSE/streaming para feedback geração seções | 8h   | OPEN              |
+| #755 | SearchResult estruturado Gov-APIs          | 4h   | ✅ DONE (PR #762) |
+| #756 | DataSourceStatus frontend (alerta serviço) | 3h   | OPEN              |
 
 ### 🟡 P2 - Segurança Multi-Tenancy (2 issues)
 
