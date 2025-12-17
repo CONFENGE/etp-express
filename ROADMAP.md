@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-16 | **Progresso:** 363/388 (93.6%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-17 | **Progresso:** 364/388 (93.8%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
@@ -84,10 +84,10 @@ M9: Export/Import       ██████████████████�
 #### Sprint 4 (Final) - QA + Go-Live
 
 **P0 - Bloqueantes:**
-| # | Issue | Est. |
-|---|-------|------|
-| #735 | Scale backend 2+ réplicas Railway | 2h |
-| #738 | Fix Puppeteer npm config warning | 30min |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#735~~ | ~~Scale backend 2+ réplicas Railway~~ | ~~2h~~ | ✅ PR #746 |
+| #738 | Fix Puppeteer npm config warning | 30min | OPEN |
 
 **P1 - Críticos:**
 | # | Issue | Est. |
