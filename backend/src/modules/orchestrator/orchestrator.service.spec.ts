@@ -8,6 +8,7 @@ import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { ExaService } from '../search/exa/exa.service';
+import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -205,6 +206,32 @@ describe('OrchestratorService', () => {
     ping: jest.fn().mockResolvedValue({ latency: 100 }),
   });
 
+  /**
+   * Creates a mock GovSearchService instance
+   * @returns Mock object with government API search method
+   */
+  const createMockGovSearchService = () => ({
+    search: jest.fn().mockResolvedValue({
+      contracts: [
+        {
+          objeto: 'Aquisição de notebooks',
+          valor: 50000,
+          orgao: 'Secretaria de TI',
+        },
+      ],
+      prices: {
+        sinapi: [],
+        sicro: [],
+      },
+      sources: ['pncp', 'compras.gov.br'],
+      fallbackUsed: false,
+      totalResults: 5,
+      query: 'notebooks',
+      timestamp: new Date(),
+      cached: false,
+    }),
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -227,6 +254,10 @@ describe('OrchestratorService', () => {
         {
           provide: ExaService,
           useValue: createMockExaService(),
+        },
+        {
+          provide: GovSearchService,
+          useValue: createMockGovSearchService(),
         },
         {
           provide: PIIRedactionService,
@@ -1212,6 +1243,10 @@ describe('OrchestratorService', () => {
             provide: ExaService,
             useValue: createMockExaService(),
           },
+          {
+            provide: GovSearchService,
+            useValue: createMockGovSearchService(),
+          },
         ],
       }).compile();
 
@@ -1265,6 +1300,19 @@ describe('OrchestratorService', () => {
         searchDeep: jest.fn().mockRejectedValue(new Error('Exa API error')),
       };
 
+      const govSearchService = {
+        search: jest.fn().mockResolvedValue({
+          contracts: [],
+          prices: { sinapi: [], sicro: [] },
+          sources: ['pncp'],
+          fallbackUsed: false,
+          totalResults: 0, // Insufficient results to trigger Exa fallback
+          query: 'test',
+          timestamp: new Date(),
+          cached: false,
+        }),
+      };
+
       const moduleRef = await Test.createTestingModule({
         providers: [
           OrchestratorService,
@@ -1295,6 +1343,10 @@ describe('OrchestratorService', () => {
             },
           },
           { provide: ExaService, useValue: exaService },
+          {
+            provide: GovSearchService,
+            useValue: govSearchService,
+          },
         ],
       }).compile();
 
@@ -1322,7 +1374,7 @@ describe('OrchestratorService', () => {
 
       expect(result.hasEnrichmentWarning).toBe(true);
       expect(warnings).toContain(
-        '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
+        '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
       );
     });
   });
