@@ -90,14 +90,14 @@ M9: Export/Import       ██████████████████�
 | #738 | Fix Puppeteer npm config warning | 30min | OPEN |
 
 **P1 - Críticos:**
-| # | Issue | Est. |
-|---|-------|------|
-| #736 | E2E teste fluxo completo usuário | 4h |
-| #737 | Smoke test checklist pré-launch | 2h |
-| #675 | Manual usuário PDF para órgãos B2G | 8h |
-| #677 | Canal de suporte email | 4h |
-| #741 | Deploy final validado | 2h |
-| #742 | Monitoramento 24h pós-deploy | 8h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| #736 | E2E teste fluxo completo usuário | 4h | OPEN |
+| ~~#737~~ | ~~Smoke test checklist pré-launch~~ | ~~2h~~ | ✅ PR #748 |
+| #675 | Manual usuário PDF para órgãos B2G | 8h | OPEN |
+| #677 | Canal de suporte email | 4h | OPEN |
+| #741 | Deploy final validado | 2h | OPEN |
+| #742 | Monitoramento 24h pós-deploy | 8h | OPEN |
 
 **P1 - Infrastructure:**
 | # | Issue | Est. |
