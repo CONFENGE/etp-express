@@ -16,6 +16,7 @@ import {
 } from './agents/anti-hallucination.agent';
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { ExaService } from '../search/exa/exa.service';
+import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import {
   ParallelValidationResults,
@@ -57,6 +58,14 @@ export interface GenerationResult {
     model: string;
     generationTime: number;
     agentsUsed: string[];
+    /**
+     * Source of market enrichment data
+     * - gov-api: Government APIs only (PNCP, Compras.gov.br, SINAPI, SICRO)
+     * - exa: Exa AI only (fallback when gov data unavailable)
+     * - mixed: Government APIs + Exa AI
+     * - null: No enrichment performed
+     */
+    enrichmentSource?: 'gov-api' | 'exa' | 'mixed' | null;
   };
   validationResults: {
     /** Legal compliance validation result */
@@ -73,8 +82,8 @@ export interface GenerationResult {
   warnings: string[];
   disclaimer: string;
   /**
-   * Indica se a geração foi realizada sem enriquecimento externo (Exa).
-   * True quando a Exa falhou ou retornou fallback.
+   * Indica se a geração foi realizada sem enriquecimento externo completo.
+   * True quando houve fallback ou falha parcial.
    */
   hasEnrichmentWarning?: boolean;
 }
@@ -121,6 +130,7 @@ export class OrchestratorService {
     private simplificacaoAgent: SimplificacaoAgent,
     private antiHallucinationAgent: AntiHallucinationAgent,
     private piiRedactionService: PIIRedactionService,
+    private govSearchService: GovSearchService,
     private exaService: ExaService,
   ) {}
 
@@ -207,6 +217,7 @@ export class OrchestratorService {
     systemPrompt: string;
     userPrompt: string;
     hasEnrichmentWarning: boolean;
+    enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null;
   }> {
     // 0. Sanitize user input with enhanced protection
     const sanitizationResult = this.sanitizeUserInputEnhanced(
@@ -256,46 +267,42 @@ export class OrchestratorService {
       agentsUsed.push('fundamentacao-guidance');
     }
 
-    // 3.5. Enrich with market fundamentation from Exa (optional)
+    // 3.5. Enrich with market fundamentation (Gov-API first, Exa fallback)
     let hasEnrichmentWarning = false;
+    let enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null = null;
     if (this.needsMarketEnrichment(request.sectionType)) {
       try {
-        const enrichmentQuery = this.buildEnrichmentQuery(
+        const enrichmentResult = await this.enrichWithMarketData(
           request.sectionType,
           request.etpData?.objeto || sanitizedInput,
         );
 
-        const enrichmentResult =
-          await this.exaService.searchDeep(enrichmentQuery);
+        // Add market context to prompt
+        enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
+        enrichmentSource = enrichmentResult.source;
+        agentsUsed.push(`market-enrichment-${enrichmentResult.source}`);
 
-        if (enrichmentResult.isFallback) {
-          // Exa returned fallback - graceful degradation
-          this.logger.warn(
-            'Exa enrichment unavailable, continuing without market data',
-            {
-              sectionType: request.sectionType,
-            },
-          );
-          warnings.push(
-            '⚠️ Fundamentação de mercado temporariamente indisponível. Revise e adicione referências manualmente se necessário.',
-          );
+        this.logger.log(
+          `Market enrichment successful via ${enrichmentResult.source}`,
+        );
+
+        // Add warning if fallback was used
+        if (enrichmentResult.fallbackUsed) {
           hasEnrichmentWarning = true;
-        } else if (enrichmentResult.summary) {
-          // Success - add market context to prompt
-          enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
-          agentsUsed.push('market-enrichment');
-          this.logger.log(
-            `Enriched prompt with ${enrichmentResult.sources.length} market sources`,
-          );
+          if (enrichmentResult.source === 'mixed') {
+            warnings.push(
+              '⚠️ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
+            );
+          }
         }
       } catch (error) {
-        // Unexpected error - log and continue (graceful degradation)
-        this.logger.error('Unexpected error during Exa enrichment', {
+        // Complete failure - log and continue (graceful degradation)
+        this.logger.error('Market enrichment failed from all sources', {
           error: error.message,
           sectionType: request.sectionType,
         });
         warnings.push(
-          '⚠️ Erro ao buscar fundamentação de mercado. Geração continuou sem dados externos.',
+          '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
         );
         hasEnrichmentWarning = true;
       }
@@ -336,6 +343,7 @@ export class OrchestratorService {
       systemPrompt: finalSystemPrompt,
       userPrompt: wrappedUserPrompt,
       hasEnrichmentWarning,
+      enrichmentSource,
     };
   }
 
@@ -390,6 +398,7 @@ export class OrchestratorService {
         systemPrompt: finalSystemPrompt,
         userPrompt: sanitizedPrompt,
         hasEnrichmentWarning,
+        enrichmentSource,
       } = await this.buildEnrichedPrompt(request, agentsUsed, warnings);
 
       // 2. Generate content with LLM
@@ -432,6 +441,7 @@ export class OrchestratorService {
         warnings,
         agentsUsed,
         hasEnrichmentWarning,
+        enrichmentSource,
         startTime,
       );
     } catch (error) {
@@ -710,6 +720,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     warnings: string[],
     agentsUsed: string[],
     hasEnrichmentWarning: boolean,
+    enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null,
     startTime: number,
   ): GenerationResult {
     // Add mandatory disclaimer
@@ -730,6 +741,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         model: llmResponse.model,
         generationTime,
         agentsUsed,
+        enrichmentSource,
       },
       validationResults: {
         legal: validationResults.legalValidation,
@@ -883,6 +895,258 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       sectionSpecificQueries[sectionType.toLowerCase()] || baseQuery;
 
     return `${query}\n\nFoque em dados oficiais e cite as fontes. Priorize informações de órgãos públicos brasileiros.`;
+  }
+
+  /**
+   * Enriches content with market data using government APIs as primary source.
+   *
+   * @remarks
+   * This method implements a gov-first strategy for market enrichment:
+   * 1. First attempts to retrieve data from government APIs (PNCP, Compras.gov.br, SINAPI, SICRO)
+   * 2. If government results are insufficient, falls back to Exa AI
+   * 3. Logs the source used for metrics and monitoring
+   *
+   * **Source Priority:**
+   * - Primary: Government APIs (official data)
+   * - Fallback: Exa AI (general market intelligence)
+   *
+   * **Metrics:**
+   * - `market_enrichment_source`: gov-api | exa | mixed
+   * - Logs track which source was used for each enrichment
+   *
+   * @param sectionType - Type of section being enriched
+   * @param objeto - The object/item being contracted
+   * @returns Enrichment summary and source metadata
+   * @private
+   */
+  private async enrichWithMarketData(
+    sectionType: string,
+    objeto: string,
+  ): Promise<{
+    summary: string;
+    source: 'gov-api' | 'exa' | 'mixed';
+    fallbackUsed: boolean;
+  }> {
+    const enrichmentQuery = this.buildEnrichmentQuery(sectionType, objeto);
+
+    // Determine if this is infrastructure/construction for Gov-API targeting
+    const isInfrastructure = this.isInfrastructureProject(objeto);
+    const isConstrucaoCivil = this.isConstrucaoCivilProject(objeto);
+
+    try {
+      // 1. Try government APIs first
+      this.logger.log(
+        `Attempting market enrichment via Gov-API for: ${sectionType}`,
+      );
+
+      const govResult = await this.govSearchService.search(enrichmentQuery, {
+        includePrecos: this.needsPriceReference(sectionType),
+        isInfrastructure,
+        isConstrucaoCivil,
+        enableExaFallback: false, // We'll handle fallback ourselves
+        maxPerSource: 5,
+      });
+
+      // 2. Check if government results are sufficient
+      const hasSufficientResults = govResult.totalResults >= 3;
+
+      if (hasSufficientResults) {
+        // Success with government data only
+        const summary = this.formatGovApiSummary(govResult);
+        this.logger.log(
+          `Market enrichment successful via Gov-API (${govResult.totalResults} results)`,
+        );
+
+        return {
+          summary,
+          source: 'gov-api',
+          fallbackUsed: false,
+        };
+      }
+
+      // 3. Gov-API results insufficient - fallback to Exa
+      this.logger.warn(
+        `Gov-API results insufficient (${govResult.totalResults} < 3), falling back to Exa`,
+      );
+
+      const exaResult = await this.exaService.searchDeep(enrichmentQuery);
+
+      if (exaResult.isFallback) {
+        // Exa also unavailable - return what we have from Gov-API
+        this.logger.warn('Exa fallback also unavailable, using Gov-API only');
+        return {
+          summary: this.formatGovApiSummary(govResult),
+          source: 'gov-api',
+          fallbackUsed: true,
+        };
+      }
+
+      // 4. Mixed results (Gov-API + Exa)
+      const mixedSummary = this.mergeSummaries(
+        this.formatGovApiSummary(govResult),
+        exaResult.summary,
+      );
+
+      this.logger.log('Market enrichment using mixed sources (Gov-API + Exa)');
+
+      return {
+        summary: mixedSummary,
+        source: 'mixed',
+        fallbackUsed: true,
+      };
+    } catch (error) {
+      // Unexpected error - fallback to Exa only
+      this.logger.error('Error during Gov-API enrichment', {
+        error: error.message,
+        sectionType,
+      });
+
+      const exaResult = await this.exaService.searchDeep(enrichmentQuery);
+
+      if (exaResult.isFallback) {
+        throw new Error('Market enrichment unavailable from all sources');
+      }
+
+      return {
+        summary: exaResult.summary,
+        source: 'exa',
+        fallbackUsed: true,
+      };
+    }
+  }
+
+  /**
+   * Formats government API search results into a summary for LLM enrichment.
+   *
+   * @param govResult - Result from GovSearchService
+   * @returns Formatted summary string
+   * @private
+   */
+  private formatGovApiSummary(govResult: any): string {
+    const sections: string[] = [];
+
+    // Add contract data if available
+    if (govResult.contracts && govResult.contracts.length > 0) {
+      sections.push(
+        `**Contratos Governamentais Similares (${govResult.contracts.length}):**`,
+      );
+      govResult.contracts
+        .slice(0, 3)
+        .forEach((contract: any, index: number) => {
+          sections.push(
+            `${index + 1}. ${contract.objeto || contract.description}`,
+          );
+          if (contract.valor) {
+            sections.push(
+              `   Valor: R$ ${contract.valor.toLocaleString('pt-BR')}`,
+            );
+          }
+          if (contract.orgao) {
+            sections.push(`   Órgão: ${contract.orgao}`);
+          }
+        });
+    }
+
+    // Add price references if available
+    if (govResult.prices) {
+      if (govResult.prices.sinapi && govResult.prices.sinapi.length > 0) {
+        sections.push(
+          `\n**Preços SINAPI (${govResult.prices.sinapi.length} itens):**`,
+        );
+        govResult.prices.sinapi.slice(0, 3).forEach((price: any) => {
+          sections.push(
+            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
+          );
+        });
+      }
+
+      if (govResult.prices.sicro && govResult.prices.sicro.length > 0) {
+        sections.push(
+          `\n**Preços SICRO (${govResult.prices.sicro.length} itens):**`,
+        );
+        govResult.prices.sicro.slice(0, 3).forEach((price: any) => {
+          sections.push(
+            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
+          );
+        });
+      }
+    }
+
+    // Add source attribution
+    sections.push(
+      `\n**Fontes:** ${govResult.sources.join(', ')} (dados oficiais do governo brasileiro)`,
+    );
+
+    return sections.join('\n');
+  }
+
+  /**
+   * Merges government and Exa summaries into a unified summary.
+   *
+   * @param govSummary - Summary from government APIs
+   * @param exaSummary - Summary from Exa AI
+   * @returns Merged summary
+   * @private
+   */
+  private mergeSummaries(govSummary: string, exaSummary: string): string {
+    return `**Dados Oficiais do Governo:**\n${govSummary}\n\n**Contexto Adicional de Mercado:**\n${exaSummary}`;
+  }
+
+  /**
+   * Determines if project is infrastructure-related (for SICRO targeting).
+   *
+   * @param objeto - Object description
+   * @returns True if infrastructure-related
+   * @private
+   */
+  private isInfrastructureProject(objeto: string): boolean {
+    const keywords = [
+      'rodovia',
+      'estrada',
+      'pavimentação',
+      'asfalto',
+      'terraplanagem',
+      'drenagem',
+      'obra rodoviária',
+      'infraestrutura viária',
+    ];
+    const objetoLower = objeto.toLowerCase();
+    return keywords.some((keyword) => objetoLower.includes(keyword));
+  }
+
+  /**
+   * Determines if project is construction-related (for SINAPI targeting).
+   *
+   * @param objeto - Object description
+   * @returns True if construction-related
+   * @private
+   */
+  private isConstrucaoCivilProject(objeto: string): boolean {
+    const keywords = [
+      'construção',
+      'edificação',
+      'reforma',
+      'obra civil',
+      'alvenaria',
+      'concreto',
+      'estrutura',
+      'fundação',
+    ];
+    const objetoLower = objeto.toLowerCase();
+    return keywords.some((keyword) => objetoLower.includes(keyword));
+  }
+
+  /**
+   * Determines if section needs price references (SINAPI/SICRO).
+   *
+   * @param sectionType - Type of section
+   * @returns True if price references are needed
+   * @private
+   */
+  private needsPriceReference(sectionType: string): boolean {
+    return ['orcamento', 'pesquisa_mercado', 'especificacao_tecnica'].includes(
+      sectionType.toLowerCase(),
+    );
   }
 
   /**
