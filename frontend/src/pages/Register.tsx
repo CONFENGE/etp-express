@@ -330,7 +330,7 @@ export function Register() {
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     Seus dados serão processados em servidores nos EUA (Railway,
-                    OpenAI, Perplexity) conforme LGPD Art. 33.{' '}
+                    OpenAI, Exa) conforme LGPD Art. 33.{' '}
                     <button
                       type="button"
                       onClick={() => setShowTransferModal(true)}

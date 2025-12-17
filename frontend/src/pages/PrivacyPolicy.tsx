@@ -250,7 +250,7 @@ export function PrivacyPolicy() {
                         <td className="px-4 py-2">Geração de texto com IA</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-2 font-semibold">Perplexity</td>
+                        <td className="px-4 py-2 font-semibold">Exa</td>
                         <td className="px-4 py-2">Estados Unidos</td>
                         <td className="px-4 py-2">Pesquisa de contratos</td>
                       </tr>

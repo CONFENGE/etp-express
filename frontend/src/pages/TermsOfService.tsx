@@ -400,7 +400,7 @@ export function TermsOfService() {
                 <p className="text-xs text-muted-foreground">
                   Ao aceitar estes Termos, você consente expressamente com a
                   transferência internacional de dados para os Estados Unidos
-                  (Railway, OpenAI, Perplexity).
+                  (Railway, OpenAI, Exa).
                 </p>
               </div>
 
