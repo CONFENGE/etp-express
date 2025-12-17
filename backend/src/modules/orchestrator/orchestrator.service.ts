@@ -17,6 +17,11 @@ import {
 import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { ExaService } from '../search/exa/exa.service';
 import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
+import { GovSearchResult } from '../gov-api/gov-search/gov-search.types';
+import {
+  GovApiContract,
+  GovApiPriceReference,
+} from '../gov-api/interfaces/gov-api.interface';
 import { DISCLAIMER } from '../../common/constants/messages';
 import {
   ParallelValidationResults,
@@ -1344,7 +1349,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @returns Formatted summary string
    * @private
    */
-  private formatGovApiSummary(govResult: any): string {
+  private formatGovApiSummary(govResult: GovSearchResult): string {
     const sections: string[] = [];
 
     // Add contract data if available
@@ -1354,17 +1359,15 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       );
       govResult.contracts
         .slice(0, 3)
-        .forEach((contract: any, index: number) => {
-          sections.push(
-            `${index + 1}. ${contract.objeto || contract.description}`,
-          );
-          if (contract.valor) {
+        .forEach((contract: GovApiContract, index: number) => {
+          sections.push(`${index + 1}. ${contract.objeto}`);
+          if (contract.valorTotal) {
             sections.push(
-              `   Valor: R$ ${contract.valor.toLocaleString('pt-BR')}`,
+              `   Valor: R$ ${contract.valorTotal.toLocaleString('pt-BR')}`,
             );
           }
-          if (contract.orgao) {
-            sections.push(`   Órgão: ${contract.orgao}`);
+          if (contract.orgaoContratante?.nome) {
+            sections.push(`   Órgão: ${contract.orgaoContratante.nome}`);
           }
         });
     }
@@ -1375,22 +1378,26 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         sections.push(
           `\n**Preços SINAPI (${govResult.prices.sinapi.length} itens):**`,
         );
-        govResult.prices.sinapi.slice(0, 3).forEach((price: any) => {
-          sections.push(
-            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
-          );
-        });
+        govResult.prices.sinapi
+          .slice(0, 3)
+          .forEach((price: GovApiPriceReference) => {
+            sections.push(
+              `- ${price.descricao}: R$ ${price.precoUnitario.toLocaleString('pt-BR')} (${price.unidade})`,
+            );
+          });
       }
 
       if (govResult.prices.sicro && govResult.prices.sicro.length > 0) {
         sections.push(
           `\n**Preços SICRO (${govResult.prices.sicro.length} itens):**`,
         );
-        govResult.prices.sicro.slice(0, 3).forEach((price: any) => {
-          sections.push(
-            `- ${price.description}: R$ ${price.price.toLocaleString('pt-BR')} (${price.unit})`,
-          );
-        });
+        govResult.prices.sicro
+          .slice(0, 3)
+          .forEach((price: GovApiPriceReference) => {
+            sections.push(
+              `- ${price.descricao}: R$ ${price.precoUnitario.toLocaleString('pt-BR')} (${price.unidade})`,
+            );
+          });
       }
     }
 
