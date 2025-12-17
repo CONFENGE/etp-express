@@ -1,24 +1,45 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-17 | **Progresso:** 366/388 (94.3%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-17 | **Progresso:** 368/407 (90.4%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
-## 🛡️ Hardening & Refactoring (4 issues restantes)
+## 🛡️ Hardening & Refactoring (12 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
-**Validação:** Codebase auditado, 2 pontos já implementados, 10 issues criadas
+**Validação:** Codebase auditado, 2 pontos já implementados, 18 issues criadas
 
 ### ✅ Pontos Validados e Já Implementados
 
-| Ponto                      | Status | Implementação                                                                         |
-| -------------------------- | ------ | ------------------------------------------------------------------------------------- |
-| **Assincronismo (BullMQ)** | ✅ OK  | `sections.processor.ts`, `app.module.ts` - Workers em background, retry exponencial   |
-| **Circuit Breakers**       | ✅ OK  | `openai.service.ts`, `perplexity.service.ts` - Opossum com 60s timeout, 50% threshold |
-| **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                   |
-| **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                      |
+| Ponto                      | Status | Implementação                                                                       |
+| -------------------------- | ------ | ----------------------------------------------------------------------------------- |
+| **Assincronismo (BullMQ)** | ✅ OK  | `sections.processor.ts`, `app.module.ts` - Workers em background, retry exponencial |
+| **Circuit Breakers**       | ✅ OK  | `openai.service.ts`, `exa.service.ts` - Opossum com 60s timeout, 50% threshold      |
+| **Connection Pool**        | ✅ OK  | `app.module.ts` - Max 20, min 5, timeouts configurados para Railway                 |
+| **Graceful Shutdown**      | ✅ OK  | `main.ts` - SIGTERM/SIGINT handlers, 10s timeout                                    |
 
-### ✅ P1 - Segurança Multi-Tenancy (0 issues restantes - COMPLETO)
+### 🔴 P0 - Deploy Crítico (1 issue)
+
+| #    | Issue                                    | Est.  | Status |
+| ---- | ---------------------------------------- | ----- | ------ |
+| #753 | Remover referências residuais Perplexity | 30min | OPEN   |
+
+### 🟡 P1 - UX Crítico (3 issues)
+
+| #    | Issue                                      | Est. | Status |
+| ---- | ------------------------------------------ | ---- | ------ |
+| #754 | SSE/streaming para feedback geração seções | 8h   | OPEN   |
+| #755 | SearchResult estruturado Gov-APIs          | 4h   | OPEN   |
+| #756 | DataSourceStatus frontend (alerta serviço) | 3h   | OPEN   |
+
+### 🟡 P2 - Segurança Multi-Tenancy (2 issues)
+
+| #    | Issue                                          | Est. | Status |
+| ---- | ---------------------------------------------- | ---- | ------ |
+| #757 | Middleware centralizado autorização tenancy    | 6h   | OPEN   |
+| #758 | Fix updateCompletionPercentage() sem validação | 1h   | OPEN   |
+
+### ✅ P1 - Segurança Multi-Tenancy Anterior (0 issues restantes - COMPLETO)
 
 | #        | Issue                                                   | Status               |
 | -------- | ------------------------------------------------------- | -------------------- |
@@ -41,12 +62,14 @@
 | #654 | OpenTelemetry distributed tracing | Visibilidade por componente    |
 | #655 | Métricas de negócio Prometheus    | KPIs: tokens, latência, falhas |
 
-### 🟢 P3 - Melhorias (2 issues)
+### 🟢 P3 - Melhorias (4 issues)
 
-| #    | Issue                            | Benefício                         |
-| ---- | -------------------------------- | --------------------------------- |
-| #656 | Validação estruturada saída LLM  | Detectar outputs maliciosos       |
-| #657 | Documentar PgBouncer para escala | Preparação para escala horizontal |
+| #    | Issue                              | Benefício                            |
+| ---- | ---------------------------------- | ------------------------------------ |
+| #656 | Validação estruturada saída LLM    | Detectar outputs maliciosos          |
+| #657 | Documentar PgBouncer para escala   | Preparação para escala horizontal    |
+| #759 | Rich Text (WYSIWYG) formulários    | Tabelas, listas, formatação avançada |
+| #760 | Documentar agentes determinísticos | Clareza arquitetural (Regex vs LLM)  |
 
 ---
 
@@ -57,8 +80,8 @@ M1: Foundation          ██████████████████�
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
-M5: E2E & Docs          █████████████████░░░ 26/32   81%
-M6: Maintenance         ██████████████████░░ 75/86   87%
+M5: E2E & Docs          █████████████████░░░ 26/30   87%
+M6: Maintenance         ██████████████████░░ 76/85   89%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
 M9: Export/Import       ████████████████████ 16/16  100%  ✅ COMPLETE
@@ -87,7 +110,7 @@ M9: Export/Import       ██████████████████�
 | # | Issue | Est. | Status |
 |---|-------|------|--------|
 | ~~#735~~ | ~~Scale backend 2+ réplicas Railway~~ | ~~2h~~ | ✅ PR #746 |
-| #738 | Fix Puppeteer npm config warning | 30min | OPEN |
+| ~~#738~~ | ~~Fix Puppeteer npm config warning~~ | ~~30min~~ | ✅ CLOSED 2025-12-17 |
 
 **P1 - Críticos:**
 | # | Issue | Est. | Status |
@@ -225,7 +248,7 @@ M9: Export/Import       ██████████████████�
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 81% (26/32, 6 open)
+### M5 - E2E & Docs - 87% (26/30, 4 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -234,7 +257,7 @@ M9: Export/Import       ██████████████████�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (11 open)
+### M6 - Maintenance (9 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -291,9 +314,9 @@ M9: Export/Import       ██████████████████�
 | ~~#558~~ | ~~Conversão documento para ETP~~ | ✅ PR #685 | - |
 | ~~#559~~ | ~~Endpoints análise e conversão~~ | ✅ PR #687 | - |
 | ~~#560~~ | ~~Frontend página Import & Analysis~~ | ✅ PR #721 | - |
-| #561 | Frontend exibição resultados | P1 | 3 |
-| #562 | Frontend store análise | P1 | 3 |
-| #563 | Testes E2E Import e Analysis | P1 | 4 |
+| ~~#561~~ | ~~Frontend exibição resultados~~ | ✅ PR #723 | - |
+| ~~#562~~ | ~~Frontend store análise~~ | ✅ PR #722 | - |
+| ~~#563~~ | ~~Testes E2E Import e Analysis~~ | ✅ CLOSED | - |
 
 ---
 
@@ -334,16 +357,16 @@ M9: Export/Import       ██████████████████�
 | #457     | useCallback/useMemo             | P2         | 4h   |
 | ~~#676~~ | ~~Load testing k6 (100 users)~~ | ✅ PR #750 | -    |
 
-### Sprint 4 (Semana 4) - QA + Go-Live | 15h remaining
+### Sprint 4 (Semana 4) - QA + Go-Live | 12h remaining
 
-| #        | Issue                     | Prior.     | Est. |
-| -------- | ------------------------- | ---------- | ---- |
-| #563     | E2E Tests Import/Analysis | P1         | 3h   |
-| ~~#552~~ | ~~E2E Export DOCX~~       | ✅ PR #733 | -    |
-| ~~#674~~ | ~~Smoke test checklist~~  | ✅ CLOSED  | -    |
-| #675     | Manual usuário PDF        | P2         | 8h   |
-| #677     | Canal suporte email       | P2         | 4h   |
-| ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 | -    |
+| #        | Issue                         | Prior.     | Est. |
+| -------- | ----------------------------- | ---------- | ---- |
+| ~~#563~~ | ~~E2E Tests Import/Analysis~~ | ✅ CLOSED  | -    |
+| ~~#552~~ | ~~E2E Export DOCX~~           | ✅ PR #733 | -    |
+| ~~#674~~ | ~~Smoke test checklist~~      | ✅ CLOSED  | -    |
+| #675     | Manual usuário PDF            | P2         | 8h   |
+| #677     | Canal suporte email           | P2         | 4h   |
+| ~~#455~~ | ~~LLM cache memory leak~~     | ✅ PR #734 | -    |
 
 ---
 
@@ -433,10 +456,10 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 388    |
-| Issues Abertas    | 25     |
-| Issues Fechadas   | 363    |
-| Progresso         | 93.6%  |
+| Issues Totais     | 407    |
+| Issues Abertas    | 39     |
+| Issues Fechadas   | 368    |
+| Progresso         | 90.4%  |
 | Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
@@ -444,9 +467,9 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 | P0 Gov-API        | 0      |
 | P1 Gov-API        | 1      |
 | P2 Gov-API        | 3      |
-| P0 Infra          | 0      |
-| P1 Sprint         | 1      |
-| P2 Sprint         | 6      |
+| P0 Infra          | 1      |
+| P1 Sprint         | 0      |
+| P2 Sprint         | 5      |
 | v1.1 Backlog      | 7      |
 
 ---
