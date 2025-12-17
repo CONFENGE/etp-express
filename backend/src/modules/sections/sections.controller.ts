@@ -199,6 +199,7 @@ export class SectionsController {
    *
    * @param id - Section unique identifier (UUID)
    * @param updateDto - Partial section update data (content, status, etc.)
+   * @param organizationId - Organization ID for tenancy validation (Issue #758)
    * @returns Updated section entity with disclaimer message
    * @throws {NotFoundException} 404 - If section not found
    * @throws {BadRequestException} 400 - If validation fails
@@ -208,8 +209,16 @@ export class SectionsController {
   @ApiOperation({ summary: 'Atualizar seção manualmente' })
   @ApiResponse({ status: 200, description: 'Seção atualizada com sucesso' })
   @ApiResponse({ status: 404, description: 'Seção não encontrada' })
-  async update(@Param('id') id: string, @Body() updateDto: UpdateSectionDto) {
-    const section = await this.sectionsService.update(id, updateDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateSectionDto,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    const section = await this.sectionsService.update(
+      id,
+      updateDto,
+      organizationId,
+    );
     return {
       data: section,
       disclaimer: DISCLAIMER,
