@@ -20,7 +20,6 @@ NODE_ENV = "production"
 # Add these via Railway UI:
 # - JWT_SECRET (generate with: openssl rand -base64 32)
 # - OPENAI_API_KEY
-# - PERPLEXITY_API_KEY (if needed)
 
 # Health check endpoint
 [[services.healthcheck]]
