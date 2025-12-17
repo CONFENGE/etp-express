@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import request from 'supertest';
 import { SectionsController } from './sections.controller';
 import { SectionsService } from './sections.service';
+import { SectionProgressService } from './section-progress.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { SectionStatus, SectionType } from '../../entities/etp-section.entity';
@@ -52,6 +53,15 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
     remove: jest.fn().mockResolvedValue(undefined),
   });
 
+  const createMockSectionProgressService = () => ({
+    createProgressStream: jest.fn(),
+    emitProgress: jest.fn(),
+    completeStream: jest.fn(),
+    errorStream: jest.fn(),
+    hasStream: jest.fn().mockReturnValue(false),
+    getActiveStreamCount: jest.fn().mockReturnValue(0),
+  });
+
   /**
    * Mock JwtAuthGuard that allows setting user ID per request
    * Simulates different authenticated users for testing independent rate limits
@@ -80,6 +90,10 @@ describe('SectionsController Rate Limiting (Issue #38)', () => {
       controllers: [SectionsController],
       providers: [
         { provide: SectionsService, useValue: createMockSectionsService() },
+        {
+          provide: SectionProgressService,
+          useValue: createMockSectionProgressService(),
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)

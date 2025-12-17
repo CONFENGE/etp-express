@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Sse,
+  Query,
+  MessageEvent,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,7 +18,9 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import { Observable, map } from 'rxjs';
 import { SectionsService } from './sections.service';
+import { SectionProgressService } from './section-progress.service';
 import { GenerateSectionDto } from './dto/generate-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -48,7 +53,10 @@ import { DISCLAIMER } from '../../common/constants/messages';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class SectionsController {
-  constructor(private readonly sectionsService: SectionsService) {}
+  constructor(
+    private readonly sectionsService: SectionsService,
+    private readonly sectionProgressService: SectionProgressService,
+  ) {}
 
   /**
    * Generates a new ETP section using AI orchestration.
@@ -106,6 +114,111 @@ export class SectionsController {
       data: section,
       disclaimer: DISCLAIMER,
     };
+  }
+
+  /**
+   * Generates a new ETP section with real-time progress via Server-Sent Events.
+   *
+   * @remarks
+   * This endpoint provides real-time feedback during the AI generation pipeline
+   * using Server-Sent Events (SSE). Unlike the regular generateSection endpoint
+   * which returns immediately with a job ID, this endpoint streams progress
+   * events as the generation progresses.
+   *
+   * **SSE Event Format:**
+   * ```
+   * event: progress
+   * id: <jobId>-<step>
+   * data: {"phase":"generation","step":3,"totalSteps":5,"percentage":60,...}
+   * ```
+   *
+   * **Phases:**
+   * 1. sanitization - Input sanitization and PII redaction (0-10%)
+   * 2. enrichment - Market data enrichment via Gov-API/Exa (10-30%)
+   * 3. generation - LLM content generation (30-70%)
+   * 4. validation - Multi-agent validation (70-95%)
+   * 5. complete - Final result ready (100%)
+   *
+   * **Rate Limiting:**
+   * - Limit: 5 requests per 60 seconds per authenticated user
+   * - Same as regular generation endpoint
+   *
+   * **Connection Management:**
+   * - Maximum connection time: 5 minutes (auto-closes after)
+   * - Client should handle 'complete' event to close connection
+   * - On error, an 'error' phase event is sent before closing
+   *
+   * @param etpId - ETP unique identifier (UUID)
+   * @param generateDto - Section generation parameters (as query string for SSE)
+   * @param userId - Current user ID (extracted from JWT token)
+   * @param organizationId - Organization ID for multi-tenancy
+   * @returns Observable stream of SSE MessageEvents with progress updates
+   * @throws {NotFoundException} 404 - If ETP not found
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ThrottlerException} 429 - If rate limit exceeded
+   *
+   * @example Client-side usage:
+   * ```ts
+   * const eventSource = new EventSource(
+   *   '/sections/etp/123/generate/stream?type=justificativa&title=...',
+   *   { headers: { Authorization: 'Bearer ...' } }
+   * );
+   *
+   * eventSource.addEventListener('progress', (event) => {
+   *   const progress = JSON.parse(event.data);
+   *   console.log(`${progress.phase}: ${progress.percentage}%`);
+   *   if (progress.phase === 'complete') {
+   *     eventSource.close();
+   *   }
+   * });
+   * ```
+   *
+   * @see #754 - SSE streaming implementation
+   */
+  @Sse('etp/:etpId/generate/stream')
+  @UseGuards(UserThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({
+    summary: 'Gerar seção com streaming de progresso (SSE)',
+    description:
+      'Gera uma nova seção do ETP com feedback em tempo real via Server-Sent Events. Limite: 5 gerações por minuto por usuário.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Stream de eventos SSE com progresso da geração',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Seção já existe ou dados inválidos',
+  })
+  @ApiResponse({ status: 404, description: 'ETP não encontrado' })
+  @ApiResponse({
+    status: 429,
+    description: 'Limite de requisições excedido',
+  })
+  generateSectionStream(
+    @Param('etpId') etpId: string,
+    @Query() generateDto: GenerateSectionDto,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ): Observable<MessageEvent> {
+    // Start generation with progress tracking
+    const progressObservable = this.sectionsService.generateSectionWithProgress(
+      etpId,
+      generateDto,
+      userId,
+      organizationId,
+      this.sectionProgressService,
+    );
+
+    // Transform to NestJS MessageEvent format
+    return progressObservable.pipe(
+      map((event) => ({
+        data: event.data,
+        id: event.id,
+        type: event.type,
+      })),
+    );
   }
 
   /**
