@@ -204,8 +204,8 @@ export class SectionsProcessor
 
       await job.updateProgress(95);
 
-      // Step 5: Update ETP completion percentage
-      await this.etpsService.updateCompletionPercentage(etpId);
+      // Step 5: Update ETP completion percentage with tenancy validation (Issue #758)
+      await this.etpsService.updateCompletionPercentage(etpId, organizationId);
 
       await job.updateProgress(100);
 

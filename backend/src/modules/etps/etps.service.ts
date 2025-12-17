@@ -541,12 +541,20 @@ export class EtpsService {
    * If ETP has no sections, completion is set to 0%. This method is idempotent
    * and safe to call repeatedly.
    *
+   * **Security (Issue #758):**
+   * Validates organizationId to prevent cross-tenant data access. Only ETPs
+   * belonging to the specified organization can have their completion updated.
+   *
    * @param id - ETP unique identifier
+   * @param organizationId - Organization ID for tenancy validation
    * @returns Promise that resolves when update is complete (or silently if ETP not found)
    */
-  async updateCompletionPercentage(id: string): Promise<void> {
+  async updateCompletionPercentage(
+    id: string,
+    organizationId: string,
+  ): Promise<void> {
     const etp = await this.etpsRepository.findOne({
-      where: { id },
+      where: { id, organizationId },
       relations: ['sections'],
     });
 
