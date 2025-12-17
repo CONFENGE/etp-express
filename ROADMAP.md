@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-17 | **Progresso:** 364/388 (93.8%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-17 | **Progresso:** 366/388 (94.3%) | **Deploy:** 🟢 ONLINE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
@@ -76,10 +76,10 @@ M9: Export/Import       ██████████████████�
 
 #### Sprint 3 (Continuação) - Performance + Validações
 
-| #    | Issue                          | Prior. | Est. | Status |
-| ---- | ------------------------------ | ------ | ---- | ------ |
-| #457 | useCallback/useMemo            | P2     | 4h   | OPEN   |
-| #676 | Load testing k6 - 100 usuários | **P1** | 4h   | OPEN   |
+| #        | Issue                              | Prior.     | Est.   | Status     |
+| -------- | ---------------------------------- | ---------- | ------ | ---------- |
+| #457     | useCallback/useMemo                | P2         | 4h     | OPEN       |
+| ~~#676~~ | ~~Load testing k6 - 100 usuários~~ | ~~**P1**~~ | ~~4h~~ | ✅ PR #750 |
 
 #### Sprint 4 (Final) - QA + Go-Live
 
@@ -90,14 +90,14 @@ M9: Export/Import       ██████████████████�
 | #738 | Fix Puppeteer npm config warning | 30min | OPEN |
 
 **P1 - Críticos:**
-| # | Issue | Est. |
-|---|-------|------|
-| #736 | E2E teste fluxo completo usuário | 4h |
-| #737 | Smoke test checklist pré-launch | 2h |
-| #675 | Manual usuário PDF para órgãos B2G | 8h |
-| #677 | Canal de suporte email | 4h |
-| #741 | Deploy final validado | 2h |
-| #742 | Monitoramento 24h pós-deploy | 8h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#736~~ | ~~E2E teste fluxo completo usuário~~ | ~~4h~~ | ✅ PR #749 |
+| ~~#737~~ | ~~Smoke test checklist pré-launch~~ | ~~2h~~ | ✅ PR #748 |
+| #675 | Manual usuário PDF para órgãos B2G | 8h | OPEN |
+| #677 | Canal de suporte email | 4h | OPEN |
+| #741 | Deploy final validado | 2h | OPEN |
+| #742 | Monitoramento 24h pós-deploy | 8h | OPEN |
 
 **P1 - Infrastructure:**
 | # | Issue | Est. |
@@ -325,14 +325,14 @@ M9: Export/Import       ██████████████████�
 
 ### Sprint 3 (Semana 3) - M9 Frontend + Performance | 60% COMPLETE
 
-| #        | Issue                       | Prior.     | Est. |
-| -------- | --------------------------- | ---------- | ---- |
-| ~~#560~~ | ~~Import Page UI~~          | ✅ PR #721 | -    |
-| ~~#561~~ | ~~Results Display~~         | ✅ PR #723 | -    |
-| ~~#562~~ | ~~Analysis Store~~          | ✅ PR #722 | -    |
-| ~~#454~~ | ~~N+1 query fix~~           | ✅ PR #689 | -    |
-| #457     | useCallback/useMemo         | P2         | 4h   |
-| #676     | Load testing k6 (100 users) | P2         | 4h   |
+| #        | Issue                           | Prior.     | Est. |
+| -------- | ------------------------------- | ---------- | ---- |
+| ~~#560~~ | ~~Import Page UI~~              | ✅ PR #721 | -    |
+| ~~#561~~ | ~~Results Display~~             | ✅ PR #723 | -    |
+| ~~#562~~ | ~~Analysis Store~~              | ✅ PR #722 | -    |
+| ~~#454~~ | ~~N+1 query fix~~               | ✅ PR #689 | -    |
+| #457     | useCallback/useMemo             | P2         | 4h   |
+| ~~#676~~ | ~~Load testing k6 (100 users)~~ | ✅ PR #750 | -    |
 
 ### Sprint 4 (Semana 4) - QA + Go-Live | 15h remaining
 
