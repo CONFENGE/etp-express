@@ -483,8 +483,12 @@ describe('EtpsService', () => {
         completionPercentage: 0,
       });
 
-      await service.updateCompletionPercentage('etp-123');
+      await service.updateCompletionPercentage('etp-123', mockOrganizationId);
 
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123', organizationId: mockOrganizationId },
+        relations: ['sections'],
+      });
       expect(mockRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({ completionPercentage: 0 }),
       );
@@ -507,7 +511,7 @@ describe('EtpsService', () => {
         completionPercentage: 75,
       });
 
-      await service.updateCompletionPercentage('etp-123');
+      await service.updateCompletionPercentage('etp-123', mockOrganizationId);
 
       // 3 completed (approved, generated, reviewed) out of 4 = 75%
       expect(mockRepository.save).toHaveBeenCalledWith(
@@ -518,8 +522,24 @@ describe('EtpsService', () => {
     it('should return early when ETP not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
 
-      await service.updateCompletionPercentage('non-existent');
+      await service.updateCompletionPercentage(
+        'non-existent',
+        mockOrganizationId,
+      );
 
+      expect(mockRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should return early when ETP belongs to different organization (Issue #758)', async () => {
+      // ETP exists but belongs to different organization
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await service.updateCompletionPercentage('etp-123', mockOrganization2Id);
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123', organizationId: mockOrganization2Id },
+        relations: ['sections'],
+      });
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
   });
