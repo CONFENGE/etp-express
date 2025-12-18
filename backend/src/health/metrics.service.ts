@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { GovApiMetricsService } from '../modules/gov-api/gov-api-metrics.service';
 
 /**
  * Service para coletar métricas customizadas da aplicação
@@ -10,6 +11,7 @@ import { DataSource } from 'typeorm';
  * - Memory usage (heap/total)
  * - Process uptime
  * - Query statistics (via pg_stat_statements se disponível)
+ * - Government API metrics (PNCP, Compras.gov.br, SINAPI, SICRO)
  *
  * Formato: Prometheus-compatible (key value pairs)
  *
@@ -18,10 +20,15 @@ import { DataSource } from 'typeorm';
  * const metrics = await metricsService.getMetrics();
  * // => { database_connections_active: 5, ... }
  * ```
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/699
  */
 @Injectable()
 export class MetricsService {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @Optional() private govApiMetrics?: GovApiMetricsService,
+  ) {}
 
   /**
    * Coleta todas as métricas da aplicação
@@ -94,6 +101,12 @@ export class MetricsService {
     lines.push('# TYPE uptime_seconds counter');
     lines.push(`uptime_seconds ${metrics.uptime_seconds}`);
     lines.push('');
+
+    // Government API metrics (if available)
+    if (this.govApiMetrics) {
+      const govApiOutput = this.govApiMetrics.getPrometheusMetrics();
+      lines.push(govApiOutput);
+    }
 
     return lines.join('\n');
   }
