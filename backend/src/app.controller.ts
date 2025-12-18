@@ -1,6 +1,7 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { Public } from './common/decorators/public.decorator';
 
 /**
  * Controller handling application health and system information endpoints.
@@ -11,7 +12,11 @@ import { AppService } from './app.service';
  *
  * Standard HTTP status codes:
  * - 200: Success
+ *
+ * @public All endpoints in this controller are public (no authentication required)
+ * @see https://github.com/CONFENGE/etp-express/issues/777
  */
+@Public()
 @ApiTags('health')
 @Controller({ version: VERSION_NEUTRAL })
 export class AppController {

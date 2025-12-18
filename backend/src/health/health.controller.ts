@@ -2,6 +2,7 @@ import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { ExaService } from '../modules/search/exa/exa.service';
+import { Public } from '../common/decorators/public.decorator';
 import CircuitBreaker from 'opossum';
 
 /**
@@ -45,7 +46,11 @@ export interface ProvidersHealthResponse {
  * @endpoint GET /api/health/providers - Health de todos os provedores externos
  * @endpoint GET /api/health/providers/openai - Status do circuit breaker OpenAI
  * @endpoint GET /api/health/providers/exa - Status do circuit breaker Exa
+ *
+ * @public All endpoints in this controller are public (no authentication required)
+ * @see https://github.com/CONFENGE/etp-express/issues/777
  */
+@Public()
 @Controller({ path: 'health', version: VERSION_NEUTRAL })
 export class HealthController {
   constructor(
