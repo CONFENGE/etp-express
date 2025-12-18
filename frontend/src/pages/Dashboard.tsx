@@ -53,7 +53,7 @@ export function Dashboard() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3" data-tour="dashboard-stats">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -125,7 +125,7 @@ export function Dashboard() {
           </Card>
         </div>
 
-        <Card>
+        <Card data-tour="recent-etps">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>

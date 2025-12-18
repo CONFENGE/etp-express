@@ -9,6 +9,7 @@ import { useEffect, useCallback } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
+import { AppTour } from '@/components/tour';
 import { AdminProtectedRoute } from '@/components/auth/AdminProtectedRoute';
 import { ManagerProtectedRoute } from '@/components/auth/ManagerProtectedRoute';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -212,6 +213,7 @@ function App() {
         <AppRoutes />
         <PasswordChangeModal />
         <Toaster />
+        <AppTour />
       </BrowserRouter>
     </ErrorBoundary>
   );
