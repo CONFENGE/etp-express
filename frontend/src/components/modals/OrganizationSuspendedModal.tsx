@@ -56,10 +56,10 @@ export function OrganizationSuspendedModal({
             suspensão:
           </p>
           <a
-            href="mailto:suporte@etpexpress.com.br?subject=Organização Suspensa - Solicitação de Esclarecimento"
+            href="mailto:suporte@confenge.com.br?subject=Organização Suspensa - Solicitação de Esclarecimento"
             className="text-sm text-primary underline block"
           >
-            suporte@etpexpress.com.br
+            suporte@confenge.com.br
           </a>
         </div>
 

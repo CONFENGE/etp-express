@@ -13,9 +13,9 @@
 **Nome da Entidade:** ETP Express
 **CNPJ:** [A ser preenchido]
 **Endereço:** [A ser preenchido]
-**E-mail de Contato:** privacidade@etpexpress.com.br
+**E-mail de Contato:** privacidade@confenge.com.br
 **Encarregado de Dados (DPO):** [A ser preenchido]
-**E-mail do Encarregado:** dpo@etpexpress.com.br
+**E-mail do Encarregado:** dpo@confenge.com.br
 
 ### 1.2 Sobre Esta Política
 
@@ -156,7 +156,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Obter confirmação de quais dados pessoais tratamos sobre você.
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br` com assunto "Solicitação de Acesso - LGPD".
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br` com assunto "Solicitação de Acesso - LGPD".
 
 **Prazo de resposta:** 15 dias úteis.
 
@@ -169,7 +169,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 **Como exercer:**
 
 - Acesse "Meu Perfil" na plataforma e edite seus dados
-- OU envie e-mail para `privacidade@etpexpress.com.br`
+- OU envie e-mail para `privacidade@confenge.com.br`
 
 **Prazo de resposta:** 15 dias úteis (se via e-mail).
 
@@ -177,7 +177,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Solicitar a eliminação de dados pessoais tratados com base em consentimento ou quando desnecessários.
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br` com assunto "Solicitação de Exclusão - LGPD".
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br` com assunto "Solicitação de Exclusão - LGPD".
 
 **Prazo de resposta:** 15 dias úteis.
 
@@ -198,7 +198,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Receber seus dados em formato estruturado e legível por máquina.
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br` com assunto "Solicitação de Portabilidade - LGPD".
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br` com assunto "Solicitação de Portabilidade - LGPD".
 
 **Prazo de resposta:** 15 dias úteis.
 
@@ -213,7 +213,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Opor-se ao tratamento de dados realizado com base em legítimo interesse.
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br` com assunto "Oposição ao Tratamento - LGPD".
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br` com assunto "Oposição ao Tratamento - LGPD".
 
 **Exemplo:** Oposição à coleta de analytics (IPs, User Agents).
 
@@ -223,7 +223,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Revogar consentimento previamente dado (quando aplicável).
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br`.
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br`.
 
 **Importante:** Revogação de consentimento pode inviabilizar o uso da plataforma.
 
@@ -231,7 +231,7 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 
 **O que é:** Solicitar bloqueio ou anonimização de dados desnecessários.
 
-**Como exercer:** Envie e-mail para `privacidade@etpexpress.com.br`.
+**Como exercer:** Envie e-mail para `privacidade@confenge.com.br`.
 
 **Prazo de resposta:** 15 dias úteis.
 
@@ -242,13 +242,13 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 ### 5.1 Canais de Atendimento
 
 **E-mail do Encarregado (DPO):**
-📧 `dpo@etpexpress.com.br`
+📧 `dpo@confenge.com.br`
 
 **E-mail de Privacidade:**
-📧 `privacidade@etpexpress.com.br`
+📧 `privacidade@confenge.com.br`
 
 **Formulário na Plataforma:**
-Disponível em: [https://etpexpress.com.br/privacy/request](https://etpexpress.com.br/privacy/request) _(em desenvolvimento)_
+Disponível em: [https://confenge.com.br/privacy/request](https://confenge.com.br/privacy/request) _(em desenvolvimento)_
 
 ### 5.2 Informações Necessárias na Solicitação
 
@@ -308,7 +308,7 @@ Em caso de vazamento de dados:
 4. **Relatório de incidente:** Disponível para consulta dos usuários
 
 **Canal de denúncia:**
-📧 `security@etpexpress.com.br`
+📧 `security@confenge.com.br`
 
 ---
 
@@ -398,7 +398,7 @@ Caso identifiquemos dados de menores coletados sem autorização dos responsáve
 1. Dados serão imediatamente excluídos
 2. Responsáveis serão notificados (se identificáveis)
 
-Se você é pai/mãe ou responsável legal e acredita que seu filho forneceu dados pessoais, entre em contato: `privacidade@etpexpress.com.br`
+Se você é pai/mãe ou responsável legal e acredita que seu filho forneceu dados pessoais, entre em contato: `privacidade@confenge.com.br`
 
 ---
 
@@ -454,14 +454,14 @@ Fica eleito o foro da Comarca de **[Cidade - A ser preenchido]** para dirimir qu
 ### 13.1 Encarregado de Dados (DPO)
 
 **Nome:** [A ser preenchido]
-**E-mail:** dpo@etpexpress.com.br
+**E-mail:** dpo@confenge.com.br
 **Telefone:** [A ser preenchido]
 
 ### 13.2 Canais de Privacidade
 
-**E-mail de Privacidade:** privacidade@etpexpress.com.br
-**E-mail de Segurança:** security@etpexpress.com.br
-**Formulário Online:** [https://etpexpress.com.br/privacy/contact](https://etpexpress.com.br/privacy/contact) _(em desenvolvimento)_
+**E-mail de Privacidade:** privacidade@confenge.com.br
+**E-mail de Segurança:** security@confenge.com.br
+**Formulário Online:** [https://confenge.com.br/privacy/contact](https://confenge.com.br/privacy/contact) _(em desenvolvimento)_
 
 ### 13.3 Autoridade Nacional de Proteção de Dados (ANPD)
 
@@ -511,4 +511,4 @@ Ao utilizar a plataforma ETP Express, você declara:
 **ETP Express - Geração de Estudos Técnicos Preliminares com IA**
 **Privacidade e Segurança em Primeiro Lugar**
 
-📧 **Dúvidas?** Entre em contato: privacidade@etpexpress.com.br
+📧 **Dúvidas?** Entre em contato: privacidade@confenge.com.br

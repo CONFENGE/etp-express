@@ -414,7 +414,7 @@ export function TermsOfService() {
                 <p className="text-xs text-muted-foreground mt-2">
                   Para exercê-los, entre em contato:{' '}
                   <span className="font-semibold">
-                    privacidade@etpexpress.com.br
+                    privacidade@confenge.com.br
                   </span>
                 </p>
               </div>
@@ -502,9 +502,7 @@ export function TermsOfService() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="font-semibold">
-                    suporte@etpexpress.com.br
-                  </span>
+                  <span className="font-semibold">suporte@confenge.com.br</span>
                 </div>
                 <p className="text-xs text-muted-foreground pl-6">
                   Prazo de resposta: Até 15 dias úteis
@@ -514,8 +512,8 @@ export function TermsOfService() {
               <div className="text-xs text-muted-foreground">
                 <p className="font-semibold mb-1">Assuntos específicos:</p>
                 <ul className="space-y-1 pl-4">
-                  <li>• Privacidade e LGPD: privacidade@etpexpress.com.br</li>
-                  <li>• Problemas técnicos: suporte@etpexpress.com.br</li>
+                  <li>• Privacidade e LGPD: privacidade@confenge.com.br</li>
+                  <li>• Problemas técnicos: suporte@confenge.com.br</li>
                 </ul>
               </div>
             </CardContent>

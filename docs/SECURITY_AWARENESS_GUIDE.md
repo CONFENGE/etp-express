@@ -28,6 +28,7 @@
 Falha em restringir o que usuários autenticados podem fazer. Atacantes podem acessar dados de outros usuários, modificar permissões, ou executar funções administrativas sem autorização.
 
 **Exemplo de Código Vulnerável (NestJS):**
+
 ```typescript
 // ❌ VULNERÁVEL - Sem verificação de autorização
 @Get('etps/:id')
@@ -38,6 +39,7 @@ async getEtp(@Param('id') id: string) {
 ```
 
 **Exemplo de Código Seguro (NestJS):**
+
 ```typescript
 // ✅ SEGURO - Com verificação de propriedade
 @Get('etps/:id')
@@ -58,6 +60,7 @@ async getEtp(
 ```
 
 **Como Testar:**
+
 ```typescript
 // Teste de autorização
 it('should deny access to ETP from different user', async () => {
@@ -70,7 +73,7 @@ it('should deny access to ETP from different user', async () => {
   await expect(
     request(app.getHttpServer())
       .get(`/etps/${etp.id}`)
-      .set('Authorization', `Bearer ${user2Token}`)
+      .set('Authorization', `Bearer ${user2Token}`),
   ).rejects.toThrow(ForbiddenException);
 });
 ```
@@ -83,6 +86,7 @@ it('should deny access to ETP from different user', async () => {
 Falha em proteger dados sensíveis usando criptografia adequada. Inclui senhas em texto plano, algoritmos fracos, ou transmissão de dados sem HTTPS.
 
 **Exemplo de Código Vulnerável (NestJS):**
+
 ```typescript
 // ❌ VULNERÁVEL - Senha em texto plano
 async createUser(email: string, password: string) {
@@ -94,6 +98,7 @@ async createUser(email: string, password: string) {
 ```
 
 **Exemplo de Código Seguro (NestJS):**
+
 ```typescript
 // ✅ SEGURO - Hash bcrypt com salt
 import * as bcrypt from 'bcrypt';
@@ -114,6 +119,7 @@ async validatePassword(plainPassword: string, hashedPassword: string) {
 ```
 
 **Como Testar:**
+
 ```typescript
 it('should hash passwords before storing', async () => {
   const password = 'MySecurePassword123!';
@@ -126,6 +132,7 @@ it('should hash passwords before storing', async () => {
 ```
 
 **Configuração HTTPS (Railway):**
+
 ```typescript
 // backend/src/main.ts
 async function bootstrap() {
@@ -151,6 +158,7 @@ async function bootstrap() {
 Dados não validados são enviados para interpretadores (SQL, OS, LDAP). Atacantes podem injetar comandos maliciosos que alteram ou destroem dados.
 
 **Exemplo de Código Vulnerável (SQL Injection):**
+
 ```typescript
 // ❌ VULNERÁVEL - Query string concatenada
 async findUserByEmail(email: string) {
@@ -161,6 +169,7 @@ async findUserByEmail(email: string) {
 ```
 
 **Exemplo de Código Seguro (TypeORM Prepared Statements):**
+
 ```typescript
 // ✅ SEGURO - Prepared statements (parameterized query)
 async findUserByEmail(email: string) {
@@ -179,6 +188,7 @@ async searchUsers(searchTerm: string) {
 ```
 
 **Exemplo XSS (Cross-Site Scripting - React):**
+
 ```tsx
 // ❌ VULNERÁVEL - dangerouslySetInnerHTML sem sanitização
 function UserProfile({ userBio }) {
@@ -201,6 +211,7 @@ function UserProfile({ userBio }) {
 ```
 
 **Como Testar:**
+
 ```typescript
 it('should prevent SQL injection', async () => {
   const maliciousEmail = "' OR '1'='1 --";
@@ -220,6 +231,7 @@ it('should prevent SQL injection', async () => {
 Falhas de design arquitetural que não podem ser corrigidas apenas com implementação. Requer threat modeling e secure design patterns desde o início.
 
 **Exemplo de Design Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - Password reset sem token expiration
 interface PasswordResetToken {
@@ -238,6 +250,7 @@ async resetPassword(token: string, newPassword: string) {
 ```
 
 **Exemplo de Design Seguro:**
+
 ```typescript
 // ✅ SEGURO - Token com expiração + limite de tentativas
 interface PasswordResetToken {
@@ -263,6 +276,7 @@ async resetPassword(token: string, newPassword: string) {
 ```
 
 **Threat Modeling - Exemplo:**
+
 ```
 Threat: Atacante tenta brute force de password reset tokens
 Mitigation:
@@ -281,6 +295,7 @@ Mitigation:
 Configurações inseguras de framework, servidor, banco de dados, ou serviços em nuvem. Inclui CORS permissivo, stack traces expostos, defaults inseguros.
 
 **Exemplo de Configuração Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - CORS aberto para qualquer origem
 app.enableCors({
@@ -293,6 +308,7 @@ app.enableCors({
 ```
 
 **Exemplo de Configuração Segura:**
+
 ```typescript
 // ✅ SEGURO - CORS restrito + Helmet.js + Rate Limiting
 import helmet from 'helmet';
@@ -302,19 +318,21 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Helmet.js - Security headers
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+        },
       },
-    },
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true,
-    },
-  }));
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+    }),
+  );
 
   // CORS restrito
   app.enableCors({
@@ -340,6 +358,7 @@ async function bootstrap() {
 ```
 
 **Como Testar:**
+
 ```bash
 # Testar headers de segurança
 curl -I https://etp-express.railway.app
@@ -358,28 +377,31 @@ curl -I https://etp-express.railway.app
 Uso de bibliotecas, frameworks ou dependências com vulnerabilidades conhecidas (CVEs). Falta de atualizações regulares.
 
 **Exemplo Vulnerável:**
+
 ```json
 // ❌ VULNERÁVEL - Dependências desatualizadas
 {
   "dependencies": {
     "express": "4.16.0", // CVE-2022-24999 (vulnerável)
-    "jsonwebtoken": "8.5.0", // CVE-2022-23529 (vulnerável)
+    "jsonwebtoken": "8.5.0" // CVE-2022-23529 (vulnerável)
   }
 }
 ```
 
 **Exemplo Seguro:**
+
 ```json
 // ✅ SEGURO - Dependências atualizadas
 {
   "dependencies": {
     "express": "^4.19.0", // Versão segura
-    "jsonwebtoken": "^9.0.2", // Versão segura
+    "jsonwebtoken": "^9.0.2" // Versão segura
   }
 }
 ```
 
 **Processo de Auditoria (npm audit):**
+
 ```bash
 # 1. Executar npm audit
 npm audit
@@ -398,18 +420,19 @@ npm outdated
 ```
 
 **Dependabot Configuration (`.github/dependabot.yml`):**
+
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/backend"
+  - package-ecosystem: 'npm'
+    directory: '/backend'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
     # Auto-merge security patches
     labels:
-      - "dependencies"
-      - "security"
+      - 'dependencies'
+      - 'security'
 ```
 
 ---
@@ -420,6 +443,7 @@ updates:
 Falhas em autenticação e gerenciamento de sessão. Inclui senhas fracas, credential stuffing, session fixation.
 
 **Exemplo Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - Sem validação de senha forte
 async register(email: string, password: string) {
@@ -433,6 +457,7 @@ const token = this.jwtService.sign({ userId: user.id });
 ```
 
 **Exemplo Seguro:**
+
 ```typescript
 // ✅ SEGURO - Validação de senha forte
 import { IsStrongPassword } from 'class-validator';
@@ -441,29 +466,36 @@ class RegisterDto {
   @IsEmail()
   email: string;
 
-  @IsStrongPassword({
-    minLength: 8,
-    minLowercase: 1,
-    minUppercase: 1,
-    minNumbers: 1,
-    minSymbols: 1,
-  }, { message: 'Senha deve ter 8+ caracteres, maiúsculas, minúsculas, números e símbolos' })
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    },
+    {
+      message:
+        'Senha deve ter 8+ caracteres, maiúsculas, minúsculas, números e símbolos',
+    },
+  )
   password: string;
 }
 
 // ✅ SEGURO - JWT com expiração
 const accessToken = this.jwtService.sign(
   { userId: user.id },
-  { expiresIn: '15m' } // Expira em 15 minutos
+  { expiresIn: '15m' }, // Expira em 15 minutos
 );
 
 const refreshToken = this.jwtService.sign(
   { userId: user.id, type: 'refresh' },
-  { expiresIn: '7d' } // Expira em 7 dias
+  { expiresIn: '7d' }, // Expira em 7 dias
 );
 ```
 
 **Proteção contra Brute Force:**
+
 ```typescript
 // ✅ Rate limiting específico para login
 import * as rateLimit from 'express-rate-limit';
@@ -490,6 +522,7 @@ async login(@Body() loginDto: LoginDto) {
 Falha em verificar integridade de software, dados ou CI/CD pipeline. Inclui supply chain attacks, unsigned updates, insecure deserialization.
 
 **Exemplo Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - Desserialização insegura
 async processWebhook(payload: string) {
@@ -500,6 +533,7 @@ async processWebhook(payload: string) {
 ```
 
 **Exemplo Seguro:**
+
 ```typescript
 // ✅ SEGURO - Validação de payload com class-validator
 import { validate } from 'class-validator';
@@ -530,6 +564,7 @@ async processWebhook(payload: string) {
 ```
 
 **Subresource Integrity (SRI) - Frontend:**
+
 ```html
 <!-- ✅ SEGURO - Verificar integridade de CDN -->
 <script
@@ -540,6 +575,7 @@ async processWebhook(payload: string) {
 ```
 
 **CI/CD Pipeline Security:**
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
@@ -573,6 +609,7 @@ jobs:
 Falta de logging adequado de eventos de segurança. Dificulta detecção de breaches, investigação de incidentes, e compliance.
 
 **Exemplo Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - Sem logging de tentativas de login
 @Post('login')
@@ -585,6 +622,7 @@ async login(@Body() loginDto: LoginDto) {
 ```
 
 **Exemplo Seguro:**
+
 ```typescript
 // ✅ SEGURO - Structured logging com contexto
 import { Logger } from '@nestjs/common';
@@ -622,6 +660,7 @@ export class AuthService {
 ```
 
 **Eventos que DEVEM ser logados:**
+
 ```typescript
 // Security Events to Log
 const SECURITY_EVENTS = {
@@ -648,6 +687,7 @@ const SECURITY_EVENTS = {
 ```
 
 **NUNCA logar:**
+
 ```typescript
 // ❌ NÃO LOGAR - Dados sensíveis
 this.logger.log({
@@ -673,6 +713,7 @@ this.logger.log({
 Aplicação busca recurso remoto sem validar URL fornecida pelo usuário. Atacante pode fazer servidor acessar recursos internos (AWS metadata, Redis, etc).
 
 **Exemplo Vulnerável:**
+
 ```typescript
 // ❌ VULNERÁVEL - Fetch sem validação de URL
 @Post('fetch-url')
@@ -685,6 +726,7 @@ async fetchUrl(@Body('url') url: string) {
 ```
 
 **Exemplo Seguro:**
+
 ```typescript
 // ✅ SEGURO - Whitelist de domínios + validação
 import { URL } from 'url';
@@ -732,6 +774,7 @@ async fetchUrl(@Body('url') url: string) {
 ### Nunca Commitar Secrets
 
 **❌ O QUE NUNCA FAZER:**
+
 ```bash
 # ❌ NUNCA commitar .env
 git add .env
@@ -742,6 +785,7 @@ const DATABASE_PASSWORD = 'MyS3cr3tP@ssw0rd';
 ```
 
 **✅ O QUE FAZER:**
+
 ```bash
 # ✅ Adicionar .env ao .gitignore
 echo ".env" >> .gitignore
@@ -756,6 +800,7 @@ const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
 ### Railway Environment Variables
 
 **✅ Configurar secrets no Railway:**
+
 ```bash
 # 1. Acessar Railway Dashboard
 # 2. Selecionar projeto > Settings > Variables
@@ -766,6 +811,7 @@ JWT_SECRET=random-32-byte-string
 ```
 
 **✅ Usar secrets em código:**
+
 ```typescript
 // backend/src/config/configuration.ts
 export default () => ({
@@ -785,12 +831,14 @@ export default () => ({
 ### Rotação de Secrets
 
 **Guideline:**
+
 - **API Keys**: Rotacionar a cada 90 dias
 - **JWT Secrets**: Rotacionar a cada 180 dias
 - **Database Passwords**: Rotacionar a cada 6 meses
 - **Em caso de breach**: Rotacionar IMEDIATAMENTE
 
 **Processo de rotação:**
+
 ```bash
 # 1. Gerar novo secret
 NEW_JWT_SECRET=$(openssl rand -base64 32)
@@ -804,6 +852,7 @@ NEW_JWT_SECRET=$(openssl rand -base64 32)
 ### Secret Scanning (Gitleaks)
 
 **✅ Pre-commit hook já implementado (#154):**
+
 ```yaml
 # .pre-commit-config.yaml
 repos:
@@ -814,6 +863,7 @@ repos:
 ```
 
 **✅ CI/CD secret scanning (GitHub Actions):**
+
 ```yaml
 # .github/workflows/security.yml
 name: Security Scan
@@ -835,11 +885,12 @@ jobs:
 ### Dual-Key Strategy (Implemented #158)
 
 **✅ Usar dual-key para zero-downtime rotation:**
+
 ```typescript
 // Aceitar tanto chave antiga quanto nova durante transição
 const validApiKeys = [
-  process.env.OPENAI_API_KEY,      // Chave atual
-  process.env.OPENAI_API_KEY_NEW,  // Chave nova (se existir)
+  process.env.OPENAI_API_KEY, // Chave atual
+  process.env.OPENAI_API_KEY_NEW, // Chave nova (se existir)
 ].filter(Boolean);
 
 function validateApiKey(key: string): boolean {
@@ -854,6 +905,7 @@ function validateApiKey(key: string): boolean {
 ### Executar `npm audit` Regularmente
 
 **Weekly audit:**
+
 ```bash
 # 1. Auditar vulnerabilidades
 npm audit
@@ -864,6 +916,7 @@ npm audit
 ```
 
 **Severity Levels:**
+
 - **CRITICAL (CVSS 9.0-10.0)**: Fix IMMEDIATELY (P0)
 - **HIGH (CVSS 7.0-8.9)**: Fix within 7 days (P1)
 - **MODERATE (CVSS 4.0-6.9)**: Fix within 30 days (P2)
@@ -872,6 +925,7 @@ npm audit
 ### Revisar Dependabot PRs
 
 **Checklist para revisar Dependabot PR:**
+
 - [ ] Verificar CHANGELOG da biblioteca
 - [ ] Avaliar breaking changes (MAJOR version bump)
 - [ ] Executar testes localmente
@@ -879,6 +933,7 @@ npm audit
 - [ ] Validar compatibilidade com outras dependências
 
 **Exemplo de review:**
+
 ```bash
 # 1. Checkout do PR do Dependabot
 gh pr checkout 123
@@ -902,12 +957,14 @@ gh pr merge 123 --squash
 ### Política de Updates
 
 **Prioridade de merge:**
+
 1. **P0 (Security patches - CRITICAL)**: Merge IMEDIATAMENTE
 2. **P1 (Security patches - HIGH)**: Merge dentro de 7 dias
 3. **P2 (Feature updates - MINOR)**: Merge dentro de 30 dias
 4. **P3 (Patch updates)**: Merge dentro de 90 dias
 
 **Exemples:**
+
 ```json
 // P0 - Merge imediatamente
 {
@@ -939,12 +996,14 @@ gh pr merge 123 --squash
 **Objetivo:** Parar o ataque e isolar sistemas comprometidos.
 
 **Ações:**
+
 - [ ] Desconectar sistema comprometido da rede (se viável)
 - [ ] Revogar credenciais suspeitas (API keys, tokens, senhas)
 - [ ] Bloquear IPs maliciosos no Railway (se possível)
 - [ ] Ativar modo de manutenção (maintenance mode)
 
 **Exemplo:**
+
 ```bash
 # Revogar API keys comprometidas
 railway variables set OPENAI_API_KEY=REVOKED
@@ -961,12 +1020,14 @@ railway variables set MAINTENANCE_MODE=true
 **Objetivo:** Identificar escopo do breach (quais dados vazaram, quantos usuários afetados).
 
 **Ações:**
+
 - [ ] Revisar logs de acesso (quem acessou o quê?)
 - [ ] Identificar data/hora do breach
 - [ ] Determinar quais dados foram comprometidos
 - [ ] Estimar número de usuários afetados
 
 **Queries de investigação:**
+
 ```sql
 -- Acessos suspeitos nas últimas 24h
 SELECT * FROM audit_logs
@@ -990,12 +1051,14 @@ ORDER BY attempts DESC;
 **Objetivo:** Remover vulnerabilidade e atacante do sistema.
 
 **Ações:**
+
 - [ ] Aplicar patch de segurança (fix da vulnerabilidade)
 - [ ] Remover backdoors instalados pelo atacante
 - [ ] Resetar todas as senhas de usuários afetados
 - [ ] Rotacionar todos os secrets (API keys, JWT secret, DB password)
 
 **Exemplo:**
+
 ```bash
 # Aplicar fix via Git
 git pull origin security-patch
@@ -1015,12 +1078,14 @@ railway variables set DATABASE_PASSWORD=$(openssl rand -base64 24)
 **Objetivo:** Restaurar sistema para operação normal.
 
 **Ações:**
+
 - [ ] Restaurar backup (se dados foram corrompidos)
 - [ ] Reativar sistema
 - [ ] Monitorar tráfego anômalo por 48h
 - [ ] Notificar usuários afetados (LGPD Art. 48)
 
 **Exemplo de notificação (LGPD):**
+
 ```
 Assunto: [URGENTE] Incidente de Segurança - ETP Express
 
@@ -1040,7 +1105,7 @@ Recomendamos:
 - Habilitar autenticação de dois fatores (se disponível)
 - Monitorar atividade suspeita na sua conta
 
-Para mais informações: security@etp-express.com
+Para mais informações: security@confenge.com.br
 
 Atenciosamente,
 Equipe de Segurança - ETP Express
@@ -1053,6 +1118,7 @@ Equipe de Segurança - ETP Express
 **Objetivo:** Documentar incidente e prevenir recorrência.
 
 **Ações:**
+
 - [ ] Realizar post-mortem meeting (blame-free)
 - [ ] Documentar timeline do incidente
 - [ ] Identificar root cause (causa raiz)
@@ -1060,6 +1126,7 @@ Equipe de Segurança - ETP Express
 - [ ] Atualizar runbooks de segurança
 
 **Template de Post-Mortem:**
+
 ```markdown
 # Post-Mortem: [TÍTULO DO INCIDENTE]
 
@@ -1068,6 +1135,7 @@ Equipe de Segurança - ETP Express
 **Duração:** 2h 30min
 
 ## Timeline
+
 - 10:00 - Alerta de tráfego anômalo
 - 10:15 - Confirmação de breach (SQL injection)
 - 10:30 - Containment (maintenance mode ativado)
@@ -1075,21 +1143,26 @@ Equipe de Segurança - ETP Express
 - 12:30 - Sistema restaurado
 
 ## Root Cause
+
 Query SQL concatenada em `/api/users/search` (falta de prepared statements)
 
 ## Impact
+
 - 50 usuários afetados
 - Emails vazados (nenhuma senha comprometida - bcrypt)
 
 ## What Went Well
+
 - Detecção rápida (alertas de logging)
 - Resposta em < 3 horas
 
 ## What Went Wrong
+
 - Code review não detectou SQL injection
 - Sem testes de segurança automatizados
 
 ## Action Items
+
 - [ ] Implementar SAST (Semgrep) no CI/CD
 - [ ] Adicionar security checklist ao PR template
 - [ ] Treinar time em OWASP Top 10 (#300 - este documento)
@@ -1104,6 +1177,7 @@ Query SQL concatenada em `/api/users/search` (falta de prepared statements)
 **Cenário:** API key do OpenAI commitada no GitHub.
 
 **Response:**
+
 ```bash
 # 1. Containment
 # Revogar API key IMEDIATAMENTE no dashboard da OpenAI
@@ -1135,6 +1209,7 @@ railway up
 **Cenário:** WAF detectou tentativa de SQL injection.
 
 **Response:**
+
 ```bash
 # 1. Containment
 # Bloquear IP do atacante
@@ -1163,6 +1238,7 @@ SELECT * FROM audit_logs WHERE event_type = 'sql.error';
 **Cenário:** 10,000 req/s de IPs diferentes.
 
 **Response:**
+
 ```bash
 # 1. Containment
 # Ativar Cloudflare DDoS protection (se disponível)
@@ -1191,47 +1267,56 @@ SELECT * FROM audit_logs WHERE event_type = 'sql.error';
 **Checklist para PRs (Security-Focused):**
 
 ### Input Validation
+
 - [ ] **Inputs são validados?** (class-validator, Joi, Zod)
 - [ ] **Sanitização de HTML/XSS?** (DOMPurify para dangerouslySetInnerHTML)
 - [ ] **Type safety?** (TypeScript strict mode, no `any`)
 - [ ] **File uploads validados?** (MIME type, tamanho, extension whitelist)
 
 ### Database Security
+
 - [ ] **Queries usam prepared statements?** (TypeORM QueryBuilder, não raw queries)
 - [ ] **Transactions para operações críticas?** (ACID compliance)
 - [ ] **Indexes em campos sensíveis?** (performance + brute force mitigation)
 
 ### Authentication & Authorization
+
 - [ ] **Autenticação implementada?** (`@UseGuards(JwtAuthGuard)`)
 - [ ] **Autorização verificada?** (user ownership, RBAC)
 - [ ] **Tokens com expiração?** (JWT expiresIn: '15m')
 - [ ] **Rate limiting em endpoints sensíveis?** (login, password reset)
 
 ### Secrets & Configuration
+
 - [ ] **Secrets hardcoded?** 🚩 (RED FLAG - REJECT PR)
 - [ ] **Variáveis de ambiente usadas?** (`process.env.API_KEY`)
 - [ ] **.env no .gitignore?** (verificar)
 
 ### Logging & Monitoring
+
 - [ ] **Logs não expõem dados sensíveis?** (passwords, tokens, PII)
 - [ ] **Logs estruturados?** (JSON format para parsing)
 - [ ] **Security events logados?** (login, access denied, etc)
 
 ### HTTPS/TLS
+
 - [ ] **HTTPS forçado em produção?** (redirect HTTP → HTTPS)
 - [ ] **Cookies com Secure flag?** (`sameSite: 'strict', secure: true`)
 - [ ] **HSTS header ativado?** (Strict-Transport-Security)
 
 ### Rate Limiting & DDoS
+
 - [ ] **Rate limiting aplicado?** (global + per-endpoint)
 - [ ] **Request size limits?** (body-parser limit)
 
 ### LGPD/Privacy
+
 - [ ] **Consentimento explícito?** (checkbox LGPD)
 - [ ] **Minimização de dados?** (coletar apenas necessário)
 - [ ] **Soft delete implementado?** (direito de exclusão)
 
 ### Dependencies
+
 - [ ] **npm audit passou?** (sem HIGH/CRITICAL)
 - [ ] **Dependências atualizadas?** (npm outdated)
 
@@ -1244,18 +1329,20 @@ SELECT * FROM audit_logs WHERE event_type = 'sql.error';
 **Princípio:** Coletar apenas dados necessários para a finalidade.
 
 **❌ Não fazer:**
+
 ```typescript
 // Coletar dados desnecessários
 interface User {
   email: string;
   password: string;
-  cpf: string;        // ❌ Necessário?
+  cpf: string; // ❌ Necessário?
   motherName: string; // ❌ Necessário?
-  birthDate: Date;    // ❌ Necessário?
+  birthDate: Date; // ❌ Necessário?
 }
 ```
 
 **✅ Fazer:**
+
 ```typescript
 // Coletar apenas essencial
 interface User {
@@ -1272,6 +1359,7 @@ interface User {
 **Requerimento:** Usuário deve consentir explicitamente com coleta de dados.
 
 **✅ Implementação:**
+
 ```tsx
 // frontend/src/components/Auth/RegisterForm.tsx
 function RegisterForm() {
@@ -1293,8 +1381,8 @@ function RegisterForm() {
         Li e concordo com a{' '}
         <a href="/privacy-policy" target="_blank">
           Política de Privacidade
-        </a>
-        {' '}e com o tratamento dos meus dados conforme LGPD.
+        </a>{' '}
+        e com o tratamento dos meus dados conforme LGPD.
       </label>
 
       <button type="submit" disabled={!acceptedLGPD}>
@@ -1312,6 +1400,7 @@ function RegisterForm() {
 **Requerimento:** Titular pode solicitar exclusão de dados pessoais.
 
 **✅ Soft Delete (Recomendado):**
+
 ```typescript
 // Soft delete permite rollback e compliance (retenção mínima)
 @Entity()
@@ -1360,15 +1449,18 @@ async purgeDeletedUsers() {
 **Requerimento:** Informar titular sobre transferência internacional de dados.
 
 **Contexto ETP Express:**
+
 - **OpenAI API:** Dados enviados para USA (servidores OpenAI)
 - **Perplexity API:** Dados enviados para USA (servidores Perplexity)
 - **Railway PaaS:** Dados hospedados em USA (se região US-West)
 
 **✅ Disclosure na Política de Privacidade:**
+
 ```markdown
 ## Transferência Internacional de Dados
 
 A ETP Express utiliza serviços de terceiros localizados nos Estados Unidos:
+
 - **OpenAI**: Geração de conteúdo via GPT-4
 - **Perplexity**: Validação de informações
 - **Railway**: Hospedagem de infraestrutura
@@ -1384,12 +1476,14 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### Referências LGPD
 
 **Documentação já implementada:**
+
 - ✅ `docs/LGPD_COMPLIANCE_CHECKLIST.md` (#266)
 - ✅ `docs/LGPD_DATA_PROTECTION_POLICY.md` (#267)
 - ✅ `docs/LGPD_PRIVACY_POLICY.md` (#268)
 - ✅ `docs/LGPD_CONSENT_MANAGEMENT.md` (#269)
 
 **Guias de implementação:**
+
 - ✅ Data Export: #233-#239 (7 sub-issues)
 - ✅ LGPD Audit v2: #261-#269 (9 sub-issues)
 
@@ -1400,15 +1494,18 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### OWASP Resources
 
 **OWASP Top 10 (2023):**
+
 - https://owasp.org/Top10/
 
 **OWASP Cheat Sheets:**
+
 - https://cheatsheetseries.owasp.org/
 - SQL Injection Prevention: https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
 - XSS Prevention: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
 - Authentication: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
 
 **OWASP Testing Guide:**
+
 - https://owasp.org/www-project-web-security-testing-guide/
 
 ---
@@ -1416,6 +1513,7 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### PortSwigger Web Security Academy
 
 **Free interactive labs:**
+
 - https://portswigger.net/web-security
 - SQL Injection labs: https://portswigger.net/web-security/sql-injection
 - XSS labs: https://portswigger.net/web-security/cross-site-scripting
@@ -1426,6 +1524,7 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### HackerOne Hacker101
 
 **Free video courses:**
+
 - https://www.hacker101.com/
 - Introduction to Web Hacking
 - SQL Injection
@@ -1436,9 +1535,11 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### NIST Cybersecurity Framework
 
 **Incident Response Guide (SP 800-61):**
+
 - https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final
 
 **Secure Software Development Framework (SSDF):**
+
 - https://csrc.nist.gov/publications/detail/sp/800-218/final
 
 ---
@@ -1446,11 +1547,13 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### Books & Further Reading
 
 **Recommended Books:**
+
 1. **"The Web Application Hacker's Handbook"** - Dafydd Stuttard (Bible of web security)
 2. **"Bulletproof SSL and TLS"** - Ivan Ristić
 3. **"Security Engineering"** - Ross Anderson (free online)
 
 **LGPD Resources:**
+
 - Lei 14.133/2021 (Lei de Licitações): https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm
 - ANPD (Autoridade Nacional de Proteção de Dados): https://www.gov.br/anpd/pt-br
 
@@ -1459,12 +1562,14 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 ### Internal Training
 
 **Quarterly Security Reviews:**
+
 - Q1: OWASP Top 10 Deep Dive
 - Q2: Incident Response Drill (tabletop exercise)
 - Q3: Secure Coding Patterns (NestJS/React específico)
 - Q4: LGPD Compliance & Privacy
 
 **Security Champions Program:**
+
 - Designar 1 "security champion" por squad
 - Champions revisam PRs com foco em segurança
 - Champions participam de treinamentos avançados
@@ -1473,16 +1578,16 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 
 ## 📚 Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-11-26 | Initial release - OWASP Top 10 (2023), Secret Management, Dependency Security, Incident Response, Code Review Checklist, LGPD, Training Resources |
+| Version | Date       | Changes                                                                                                                                           |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0     | 2025-11-26 | Initial release - OWASP Top 10 (2023), Secret Management, Dependency Security, Incident Response, Code Review Checklist, LGPD, Training Resources |
 
 ---
 
 ## 📞 Contact
 
 **Security Questions:**
-security@etp-express.com
+security@confenge.com.br
 
 **Report Vulnerabilities:**
 See `SECURITY.md` (Vulnerability Disclosure Policy)
