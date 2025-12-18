@@ -28,6 +28,7 @@ ETP Express utiliza uma arquitetura moderna de 3 camadas hospedada no **Railway*
 - **Database:** PostgreSQL 15
 
 **Características principais:**
+
 - ✅ Infrastructure as Code (Docker Compose)
 - ✅ Zero-downtime deployments
 - ✅ Automated backups (PostgreSQL)
@@ -84,25 +85,25 @@ Frontend (Port 80)
             │
             ├─► PostgreSQL (Port 5432)
             ├─► OpenAI API (HTTPS)
-            ├─► Perplexity API (HTTPS - optional)
+            ├─► Exa API (HTTPS - optional)
             └─► Sentry (HTTPS - optional)
 ```
 
 ### Stack Tecnológico
 
-| Componente     | Tecnologia            | Versão      | Propósito                    |
-|----------------|-----------------------|-------------|------------------------------|
-| **Frontend**   | React + TypeScript    | 18.2        | Interface do usuário         |
-| **Build Tool** | Vite                  | 5.x         | Build & dev server           |
-| **UI Components** | Radix UI + Tailwind| Latest      | Design system                |
-| **Backend**    | NestJS + TypeScript   | 10.3        | API REST                     |
-| **Database**   | PostgreSQL            | 15-alpine   | Persistência de dados        |
-| **ORM**        | TypeORM               | Latest      | Database migrations & queries|
-| **Auth**       | JWT (Passport)        | Latest      | Autenticação                 |
-| **AI**         | OpenAI API            | GPT-4       | Geração de conteúdo          |
-| **Search**     | Perplexity API        | Latest      | Busca avançada (opcional)    |
-| **Monitoring** | Sentry                | Latest      | Error tracking & performance |
-| **Hosting**    | Railway               | Latest      | Cloud platform (PaaS)        |
+| Componente        | Tecnologia          | Versão    | Propósito                     |
+| ----------------- | ------------------- | --------- | ----------------------------- |
+| **Frontend**      | React + TypeScript  | 18.2      | Interface do usuário          |
+| **Build Tool**    | Vite                | 5.x       | Build & dev server            |
+| **UI Components** | Radix UI + Tailwind | Latest    | Design system                 |
+| **Backend**       | NestJS + TypeScript | 10.3      | API REST                      |
+| **Database**      | PostgreSQL          | 15-alpine | Persistência de dados         |
+| **ORM**           | TypeORM             | Latest    | Database migrations & queries |
+| **Auth**          | JWT (Passport)      | Latest    | Autenticação                  |
+| **AI**            | OpenAI API          | GPT-4     | Geração de conteúdo           |
+| **Search**        | Exa API             | Latest    | Busca avançada (opcional)     |
+| **Monitoring**    | Sentry              | Latest    | Error tracking & performance  |
+| **Hosting**       | Railway             | Latest    | Cloud platform (PaaS)         |
 
 ---
 
@@ -113,6 +114,7 @@ Frontend (Port 80)
 **Propósito:** Desenvolvimento local com hot-reload
 
 **Características:**
+
 - Docker Compose com 3 containers
 - Hot-reload habilitado (frontend + backend)
 - PostgreSQL local com volumes persistentes
@@ -120,6 +122,7 @@ Frontend (Port 80)
 - Portas expostas: 5173 (frontend), 3001 (backend), 5432 (postgres)
 
 **Como iniciar:**
+
 ```bash
 # Setup automático (primeira vez)
 bash scripts/setup-local.sh
@@ -131,6 +134,7 @@ docker-compose up
 ```
 
 **URLs de acesso:**
+
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
 - API Docs: http://localhost:3001/api/docs
@@ -143,6 +147,7 @@ docker-compose up
 **Propósito:** Ambiente de produção público
 
 **Características:**
+
 - 3 services separados no Railway (frontend, backend, postgres)
 - Auto-scaling vertical (Railway managed)
 - Health checks configurados
@@ -151,11 +156,13 @@ docker-compose up
 - HTTPS automático (Railway SSL)
 
 **Configuração:**
+
 - Definida em `.railway.toml` (Infrastructure as Code)
 - Variáveis de ambiente via Railway dashboard
 - Build automático via GitHub integration
 
 **URLs de acesso:**
+
 - Frontend: https://\<your-app\>.railway.app
 - Backend: https://\<your-backend\>.railway.app
 - PostgreSQL: Internal Railway URL (não exposto publicamente)
@@ -240,6 +247,7 @@ docker-compose exec backend sh
 4. **production** - Optimized runtime (imagem final)
 
 **Características:**
+
 - Node.js 20-alpine (imagem mínima)
 - Non-root user (segurança)
 - Health check integrado
@@ -247,6 +255,7 @@ docker-compose exec backend sh
 - Image size: ~150MB (development), ~80MB (production)
 
 **Build:**
+
 ```bash
 # Development
 docker build -t etp-backend:dev --target development ./backend
@@ -269,6 +278,7 @@ docker build -t etp-backend:prod --target production ./backend
 4. **production** - Nginx static server (imagem final)
 
 **Características:**
+
 - Node.js 20-alpine (build)
 - Nginx-alpine (production runtime)
 - Gzip compression habilitada
@@ -277,6 +287,7 @@ docker build -t etp-backend:prod --target production ./backend
 - Image size: ~180MB (development), ~25MB (production)
 
 **Build:**
+
 ```bash
 # Development
 docker build -t etp-frontend:dev --target development ./frontend
@@ -311,8 +322,8 @@ docker build -t etp-frontend:prod --target production ./frontend
    - `OPENAI_API_KEY` (obter em: https://platform.openai.com/api-keys)
    - `OPENAI_MODEL` (default: gpt-4-turbo-preview)
 
-5. **Perplexity API** (opcional)
-   - `PERPLEXITY_API_KEY`
+5. **Exa API** (opcional)
+   - `EXA_API_KEY`
 
 6. **Sentry** (opcional)
    - `SENTRY_DSN`
@@ -323,6 +334,7 @@ docker build -t etp-frontend:prod --target production ./frontend
    - `VITE_SENTRY_DSN`
 
 **Validação:**
+
 ```bash
 # Validar .env antes de rodar
 bash scripts/validate-env.sh
@@ -367,6 +379,7 @@ bash scripts/validate-env.sh
    - Instância antiga é destruída
 
 **Timeline típico:**
+
 - Build: ~2-3 minutos
 - Health checks: ~30-60 segundos
 - Total: ~4 minutos
@@ -396,18 +409,20 @@ railway logs
 1. Acesse Railway project → Service → Variables
 
 2. **Backend variables:**
+
    ```
    DATABASE_URL=<auto-generated-by-railway>
    PORT=<auto-assigned>
    NODE_ENV=production
    JWT_SECRET=<generate: openssl rand -base64 32>
    OPENAI_API_KEY=sk-...
-   PERPLEXITY_API_KEY=<optional>
+   EXA_API_KEY=<optional>
    SENTRY_DSN=<optional>
    SENTRY_TRACES_SAMPLE_RATE=0.1
    ```
 
 3. **Frontend variables:**
+
    ```
    VITE_API_URL=${backend.PUBLIC_URL}/api
    NODE_ENV=production
@@ -429,12 +444,14 @@ railway logs
 ### Backup Strategy
 
 **PostgreSQL Backups (Railway):**
+
 - **Frequência:** Daily (automático)
 - **Retenção:** 30 days
 - **Storage:** Railway internal storage
 - **Tipo:** Full dump (pg_dump)
 
 **Backup manual:**
+
 ```bash
 # Via Railway CLI
 railway connect postgres
@@ -453,6 +470,7 @@ railway connect postgres
 **Recovery Time Objective (RTO):** <2 horas
 
 **Procedimento:**
+
 1. Identificar último backup válido (Railway dashboard → PostgreSQL → Backups)
 2. Criar novo PostgreSQL service
 3. Restore backup:
@@ -505,14 +523,15 @@ railway connect postgres
 **Recovery Time Objective (RTO):** <1 hora
 
 **Procedimento:**
+
 1. Identific
 
-ar timestamp da deleção
-2. Restore backup imediatamente anterior
-3. Extract deleted records:
-   ```sql
-   SELECT * FROM backups.users WHERE deleted_at > '2024-01-01';
-   ```
+ar timestamp da deleção 2. Restore backup imediatamente anterior 3. Extract deleted records:
+
+```sql
+SELECT * FROM backups.users WHERE deleted_at > '2024-01-01';
+```
+
 4. Insert em production database
 5. Validate recovery
 
@@ -523,12 +542,14 @@ ar timestamp da deleção
 **Script:** `scripts/test-disaster-recovery.sh`
 
 **Execução:**
+
 ```bash
 # Simula perda total e recovery
 bash scripts/test-disaster-recovery.sh
 ```
 
 **Validação:**
+
 - ✅ Recovery em <4h
 - ✅ Zero data loss (backup diário)
 - ✅ All services operational
@@ -542,12 +563,14 @@ bash scripts/test-disaster-recovery.sh
 ### Current Scale (MVP)
 
 **Capacity:**
+
 - **Users:** ~100-500 concurrent users
 - **Requests:** ~10-50 req/s
 - **Database:** ~1GB data
 - **Traffic:** ~10GB/month
 
 **Resources (Railway):**
+
 - **Backend:** 512MB RAM, 0.5 vCPU
 - **Frontend:** 256MB RAM, 0.25 vCPU
 - **PostgreSQL:** 256MB RAM, 1GB storage
@@ -559,10 +582,12 @@ bash scripts/test-disaster-recovery.sh
 ### Vertical Scaling (0-1000 users)
 
 **Railway auto-scales verticalmente:**
+
 - Increase RAM: 512MB → 1GB → 2GB
 - Increase vCPU: 0.5 → 1.0 → 2.0
 
 **Trigger points:**
+
 - CPU >70% sustained → upgrade vCPU
 - Memory >80% → upgrade RAM
 - Response time p95 >500ms → upgrade resources
@@ -574,8 +599,9 @@ bash scripts/test-disaster-recovery.sh
 ### Horizontal Scaling (1000+ users)
 
 **Quando escalar horizontalmente:**
-- >1000 concurrent users
-- >100 req/s sustained
+
+- > 1000 concurrent users
+- > 100 req/s sustained
 - Database >10GB
 
 **Estratégia:**
@@ -607,11 +633,13 @@ bash scripts/test-disaster-recovery.sh
 ### Future: Multi-Region
 
 **Quando considerar:**
-- >10,000 concurrent users
+
+- > 10,000 concurrent users
 - International audience
 - SLA 99.9% uptime
 
 **Arquitetura:**
+
 - Multi-region deployment (US-East, EU, Asia)
 - [FUTURE] Global load balancer (Cloudflare for MVP, AWS Route53 if multi-region)
 - Database replication (multi-master ou read replicas)
@@ -627,42 +655,44 @@ bash scripts/test-disaster-recovery.sh
 
 #### Development (Local)
 
-| Item              | Cost       |
-|-------------------|------------|
-| Docker Desktop    | Free       |
-| OpenAI API (dev)  | ~$5-10     |
-| **Total**         | **~$10**   |
+| Item             | Cost     |
+| ---------------- | -------- |
+| Docker Desktop   | Free     |
+| OpenAI API (dev) | ~$5-10   |
+| **Total**        | **~$10** |
 
 ---
 
 #### Production (Railway)
 
 **Hobby Plan ($5/month):**
+
 - ❌ Insuficiente (sleep após inatividade)
 
 **Pro Plan ($20/month + usage):**
 
-| Service       | Resources          | Cost/month |
-|---------------|--------------------|------------|
-| Backend       | 512MB RAM, 0.5 vCPU| $10        |
-| Frontend      | 256MB RAM, 0.25 vCPU| $5       |
-| PostgreSQL    | 1GB storage        | $5         |
-| Bandwidth     | ~10GB/month        | Included   |
-| **Subtotal**  |                    | **$20**    |
+| Service      | Resources            | Cost/month |
+| ------------ | -------------------- | ---------- |
+| Backend      | 512MB RAM, 0.5 vCPU  | $10        |
+| Frontend     | 256MB RAM, 0.25 vCPU | $5         |
+| PostgreSQL   | 1GB storage          | $5         |
+| Bandwidth    | ~10GB/month          | Included   |
+| **Subtotal** |                      | **$20**    |
 
 **External Services:**
 
-| Service         | Tier          | Cost/month |
-|-----------------|---------------|------------|
-| OpenAI API      | Pay-as-you-go | $20-100    |
-| Sentry          | Free (10K events)| Free    |
-| Perplexity API  | Optional      | $0-20      |
-| **Subtotal**    |               | **$20-120**|
+| Service      | Tier              | Cost/month  |
+| ------------ | ----------------- | ----------- |
+| OpenAI API   | Pay-as-you-go     | $20-100     |
+| Sentry       | Free (10K events) | Free        |
+| Exa API      | Optional          | $0-20       |
+| **Subtotal** |                   | **$20-120** |
 
 **Total Estimate:**
+
 - **Mínimo:** $40/month (Railway + OpenAI light usage)
 - **Médio:** $70/month (Railway + OpenAI moderate usage)
-- **Alto:** $140/month (Railway + OpenAI heavy usage + Perplexity)
+- **Alto:** $140/month (Railway + OpenAI heavy usage + Exa)
 
 ---
 
@@ -690,16 +720,19 @@ bash scripts/test-disaster-recovery.sh
 ### Sentry Integration
 
 **Backend:**
+
 - Error tracking automático
 - Performance monitoring (APM)
 - Release tracking (git SHA)
 
 **Frontend:**
+
 - JavaScript errors
 - React error boundaries
 - User session replay (opt-in)
 
 **Configuration:**
+
 - `backend/src/config/sentry.config.ts`
 - `frontend/src/config/sentry.config.ts`
 
@@ -712,6 +745,7 @@ bash scripts/test-disaster-recovery.sh
 ### Health Checks
 
 **Backend (`/api/health`):**
+
 ```json
 {
   "status": "healthy",
@@ -722,6 +756,7 @@ bash scripts/test-disaster-recovery.sh
 ```
 
 **Railway health check:**
+
 - Interval: 30s
 - Timeout: 5s
 - Retries: 3
@@ -759,6 +794,7 @@ bash scripts/test-disaster-recovery.sh
 #### 1. "Cannot connect to database"
 
 **Sintomas:**
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:5432
 ```
@@ -766,6 +802,7 @@ Error: connect ECONNREFUSED 127.0.0.1:5432
 **Causa:** PostgreSQL não está rodando ou `DATABASE_URL` incorreto
 
 **Solução:**
+
 ```bash
 # Check PostgreSQL status
 docker-compose ps postgres
@@ -782,6 +819,7 @@ docker-compose restart postgres
 #### 2. "OpenAI API rate limit exceeded"
 
 **Sintomas:**
+
 ```
 Error: Rate limit exceeded (429)
 ```
@@ -789,6 +827,7 @@ Error: Rate limit exceeded (429)
 **Causa:** Muitas requisições para OpenAI API
 
 **Solução:**
+
 - Implement rate limiting (já configurado no backend)
 - Check `@nestjs/throttler` configuration
 - Upgrade OpenAI API tier
@@ -798,6 +837,7 @@ Error: Rate limit exceeded (429)
 #### 3. "Frontend cannot reach backend"
 
 **Sintomas:**
+
 ```
 Error: Network error (ERR_CONNECTION_REFUSED)
 ```
@@ -805,6 +845,7 @@ Error: Network error (ERR_CONNECTION_REFUSED)
 **Causa:** `VITE_API_URL` incorreto ou backend down
 
 **Solução:**
+
 ```bash
 # Check VITE_API_URL
 echo $VITE_API_URL
@@ -823,6 +864,7 @@ curl http://localhost:3001/api/health
 #### 4. "Docker build fails"
 
 **Sintomas:**
+
 ```
 Error: COPY failed: no source files were specified
 ```
@@ -830,6 +872,7 @@ Error: COPY failed: no source files were specified
 **Causa:** Dockerfile context incorreto
 
 **Solução:**
+
 ```bash
 # Build from correct directory
 cd backend
@@ -846,6 +889,7 @@ docker build -t etp-backend -f backend/Dockerfile ./backend
 **Sintomas:** Code changes não refletem imediatamente
 
 **Solução:**
+
 ```bash
 # Check volumes are mounted correctly
 docker-compose config | grep volumes

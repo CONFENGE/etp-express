@@ -76,19 +76,19 @@
 
 ### 1.4 External Services
 
-| Servico        | Esperado  | Resultado                  | Status            |
-| -------------- | --------- | -------------------------- | ----------------- |
-| Perplexity API | 200 OK    | 401 Unauthorized           | ❌ FALHOU         |
-| Redis/BullMQ   | Conectado | Nao verificado diretamente | ⚠️ NAO VERIFICADO |
+| Servico      | Esperado  | Resultado                  | Status            |
+| ------------ | --------- | -------------------------- | ----------------- |
+| Exa API      | 200 OK    | 401 Unauthorized           | ❌ FALHOU         |
+| Redis/BullMQ | Conectado | Nao verificado diretamente | ⚠️ NAO VERIFICADO |
 
 **Evidencia (logs Railway):**
 
 ```
-ERROR [PerplexityService] Perplexity ping failed after 57ms
+ERROR [ExaService] Exa ping failed after 57ms
 ERROR Request failed with status code 401
 ```
 
-**Acao Necessaria:** Renovar/corrigir PERPLEXITY_API_KEY em Railway Variables.
+**Acao Necessaria:** Renovar/corrigir EXA_API_KEY em Railway Variables.
 
 ### 1.5 Observabilidade
 
@@ -176,10 +176,10 @@ WARN [SentryConfig] SENTRY_DSN not configured. Error tracking disabled.
 
 ### 3.3 Geracao de Secoes
 
-| Check          | Esperado        | Resultado                                | Status       |
-| -------------- | --------------- | ---------------------------------------- | ------------ |
-| Generate sync  | Secao gerada    | NAO TESTADO (sem auth + Perplexity down) | ❌ BLOQUEADO |
-| Generate async | JobId retornado | NAO TESTADO (sem auth)                   | ❌ BLOQUEADO |
+| Check          | Esperado        | Resultado                         | Status       |
+| -------------- | --------------- | --------------------------------- | ------------ |
+| Generate sync  | Secao gerada    | NAO TESTADO (sem auth + Exa down) | ❌ BLOQUEADO |
+| Generate async | JobId retornado | NAO TESTADO (sem auth)            | ❌ BLOQUEADO |
 
 ### 3.4 Export
 
@@ -196,7 +196,7 @@ WARN [SentryConfig] SENTRY_DSN not configured. Error tracking disabled.
 | #   | Problema                     | Impacto                  | Acao                                  |
 | --- | ---------------------------- | ------------------------ | ------------------------------------- |
 | 1   | **Seed admin NAO executado** | Login impossivel         | `railway run npm run seed:admin:prod` |
-| 2   | **Perplexity API 401**       | Geracao de secoes falha  | Renovar PERPLEXITY_API_KEY            |
+| 2   | **Exa API 401**              | Geracao de secoes falha  | Renovar EXA_API_KEY                   |
 | 3   | **Health endpoints 404**     | Monitoramento impossivel | Verificar HealthModule                |
 
 ### P1 - WARNINGS
@@ -219,10 +219,10 @@ WARN [SentryConfig] SENTRY_DSN not configured. Error tracking disabled.
    railway run npm run seed:admin:prod --service etp-express-backend
    ```
 
-2. **Renovar Perplexity API Key**
+2. **Renovar Exa API Key**
 
    ```bash
-   railway variables set PERPLEXITY_API_KEY=<nova-key> --service etp-express-backend
+   railway variables set EXA_API_KEY=<nova-key> --service etp-express-backend
    ```
 
 3. **Verificar HealthController**
@@ -260,7 +260,7 @@ Apos aplicar as correcoes acima, re-executar este smoke test com:
 - [ ] Login com admin funciona
 - [ ] Login com demo funciona
 - [ ] Create ETP funciona
-- [ ] Generate Section funciona (Perplexity)
+- [ ] Generate Section funciona (Exa)
 - [ ] Export PDF funciona
 - [ ] Sentry captura erros de teste
 
