@@ -5,7 +5,16 @@
  */
 
 import { apiHelpers } from './api';
-import { Section, JobStatusData } from '@/types/etp';
+import { Section, JobStatusData, DataSourceStatusInfo } from '@/types/etp';
+
+/**
+ * Result from polling, including section and optional data source status.
+ * @see #756 - DataSourceStatus frontend component
+ */
+export interface PollResult {
+  section: Section;
+  dataSourceStatus?: DataSourceStatusInfo;
+}
 
 /**
  * Polling configuration
@@ -60,9 +69,12 @@ export class JobFailedError extends Error {
  * @example
  * ```ts
  * const controller = new AbortController();
- * const section = await pollJobStatus(jobId, (progress) => {
+ * const result = await pollJobStatus(jobId, (progress) => {
  *   console.log(`Progress: ${progress}%`);
  * }, { signal: controller.signal });
+ *
+ * console.log(result.section); // The generated section
+ * console.log(result.dataSourceStatus); // Data source status (if available)
  *
  * // To abort:
  * controller.abort();
@@ -76,7 +88,7 @@ export async function pollJobStatus(
     maxAttempts?: number;
     signal?: AbortSignal;
   },
-): Promise<Section> {
+): Promise<PollResult> {
   const intervalMs = options?.intervalMs ?? POLL_INTERVAL_MS;
   const maxAttempts = options?.maxAttempts ?? MAX_POLL_ATTEMPTS;
   const signal = options?.signal;
@@ -99,7 +111,14 @@ export async function pollJobStatus(
         throw new PollingAbortedError(jobId);
       }
 
-      const { status, progress, result, failedReason, error } = response.data;
+      const {
+        status,
+        progress,
+        result,
+        failedReason,
+        error,
+        dataSourceStatus,
+      } = response.data;
 
       // Report progress only if not aborted (#611)
       if (!signal?.aborted) {
@@ -108,7 +127,10 @@ export async function pollJobStatus(
 
       // Handle completion
       if (status === 'completed' && result) {
-        return result;
+        return {
+          section: result,
+          dataSourceStatus,
+        };
       }
 
       // Handle failure

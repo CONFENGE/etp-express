@@ -126,6 +126,33 @@ export type GenerationStatus =
   | 'failed';
 
 /**
+ * Data source status for government API queries.
+ * Used by DataSourceStatus component to display availability alerts.
+ * @see #756 - DataSourceStatus frontend component
+ */
+export interface DataSourceStatusInfo {
+  status:
+    | 'SUCCESS'
+    | 'PARTIAL'
+    | 'SERVICE_UNAVAILABLE'
+    | 'RATE_LIMITED'
+    | 'TIMEOUT';
+  sources: Array<{
+    name: string;
+    status:
+      | 'SUCCESS'
+      | 'PARTIAL'
+      | 'SERVICE_UNAVAILABLE'
+      | 'RATE_LIMITED'
+      | 'TIMEOUT';
+    error?: string;
+    latencyMs?: number;
+    resultCount?: number;
+  }>;
+  message: string;
+}
+
+/**
  * Job status data from backend polling endpoint
  */
 export interface JobStatusData {
@@ -140,6 +167,12 @@ export interface JobStatusData {
   failedReason?: string;
   attemptsMade?: number;
   attemptsMax?: number;
+  /**
+   * Status of data sources queried during enrichment phase.
+   * Available after job completion.
+   * @see #756 - DataSourceStatus frontend component
+   */
+  dataSourceStatus?: DataSourceStatusInfo;
 }
 
 /**

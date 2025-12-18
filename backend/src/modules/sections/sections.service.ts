@@ -51,6 +51,32 @@ export interface JobStatusResponse {
   failedReason?: string;
   attemptsMade?: number;
   attemptsMax?: number;
+  /**
+   * Status of data sources queried during enrichment phase.
+   * Available after enrichment phase completes (~30% progress).
+   * @see #756 - DataSourceStatus frontend component
+   */
+  dataSourceStatus?: {
+    status:
+      | 'SUCCESS'
+      | 'PARTIAL'
+      | 'SERVICE_UNAVAILABLE'
+      | 'RATE_LIMITED'
+      | 'TIMEOUT';
+    sources: Array<{
+      name: string;
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      error?: string;
+      latencyMs?: number;
+      resultCount?: number;
+    }>;
+    message: string;
+  };
 }
 
 /**
@@ -485,6 +511,15 @@ export class SectionsService {
           : undefined;
         response.result = job.returnvalue as EtpSection;
         response.progress = 100;
+
+        // Extract dataSourceStatus from section metadata (#756)
+        const metadata = (
+          job.returnvalue as { metadata?: Record<string, unknown> }
+        )?.metadata;
+        if (metadata?.dataSourceStatus) {
+          response.dataSourceStatus =
+            metadata.dataSourceStatus as JobStatusResponse['dataSourceStatus'];
+        }
       }
 
       // Add error data for failed jobs

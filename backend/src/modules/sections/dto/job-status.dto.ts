@@ -91,4 +91,43 @@ export class JobStatusDto {
     example: 3,
   })
   attemptsMax?: number;
+
+  @ApiProperty({
+    description: 'Status of data sources queried during enrichment phase',
+    required: false,
+    nullable: true,
+    example: {
+      status: 'PARTIAL',
+      sources: [
+        { name: 'pncp', status: 'SUCCESS', resultCount: 10, latencyMs: 120 },
+        {
+          name: 'comprasgov',
+          status: 'SERVICE_UNAVAILABLE',
+          error: 'Timeout',
+        },
+      ],
+      message: 'Busca parcial: Compras.gov.br indisponível(is)',
+    },
+  })
+  dataSourceStatus?: {
+    status:
+      | 'SUCCESS'
+      | 'PARTIAL'
+      | 'SERVICE_UNAVAILABLE'
+      | 'RATE_LIMITED'
+      | 'TIMEOUT';
+    sources: Array<{
+      name: string;
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      error?: string;
+      latencyMs?: number;
+      resultCount?: number;
+    }>;
+    message: string;
+  };
 }
