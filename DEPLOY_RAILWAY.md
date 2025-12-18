@@ -317,7 +317,7 @@ Se você tem um domínio próprio:
 **NUNCA** commite no Git:
 
 - `OPENAI_API_KEY`
-- `PERPLEXITY_API_KEY`
+- `EXA_API_KEY`
 - `JWT_SECRET`
 - `DATABASE_URL`
 
