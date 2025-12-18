@@ -627,6 +627,27 @@ export class OrchestratorService {
     userPrompt: string;
     hasEnrichmentWarning: boolean;
     enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null;
+    dataSourceStatus?: {
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      sources: Array<{
+        name: string;
+        status:
+          | 'SUCCESS'
+          | 'PARTIAL'
+          | 'SERVICE_UNAVAILABLE'
+          | 'RATE_LIMITED'
+          | 'TIMEOUT';
+        error?: string;
+        latencyMs?: number;
+        resultCount?: number;
+      }>;
+      message: string;
+    };
   }> {
     // Sanitization phase
     const sanitizationResult = this.sanitizeUserInputEnhanced(
@@ -678,6 +699,29 @@ export class OrchestratorService {
     // Market enrichment
     let hasEnrichmentWarning = false;
     let enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null = null;
+    let dataSourceStatus:
+      | {
+          status:
+            | 'SUCCESS'
+            | 'PARTIAL'
+            | 'SERVICE_UNAVAILABLE'
+            | 'RATE_LIMITED'
+            | 'TIMEOUT';
+          sources: Array<{
+            name: string;
+            status:
+              | 'SUCCESS'
+              | 'PARTIAL'
+              | 'SERVICE_UNAVAILABLE'
+              | 'RATE_LIMITED'
+              | 'TIMEOUT';
+            error?: string;
+            latencyMs?: number;
+            resultCount?: number;
+          }>;
+          message: string;
+        }
+      | undefined;
 
     if (this.needsMarketEnrichment(request.sectionType)) {
       onProgress?.({
@@ -697,6 +741,7 @@ export class OrchestratorService {
 
         enrichedUserPrompt = `${enrichedUserPrompt}\n\n[FUNDAMENTAÇÃO DE MERCADO]\n${enrichmentResult.summary}`;
         enrichmentSource = enrichmentResult.source;
+        dataSourceStatus = enrichmentResult.dataSourceStatus;
         agentsUsed.push(`market-enrichment-${enrichmentResult.source}`);
 
         onProgress?.({
@@ -708,6 +753,7 @@ export class OrchestratorService {
           timestamp: Date.now(),
           details: {
             enrichmentSource: enrichmentResult.source,
+            dataSourceStatus: enrichmentResult.dataSourceStatus,
           },
         });
 
@@ -729,6 +775,13 @@ export class OrchestratorService {
         );
         hasEnrichmentWarning = true;
 
+        // Create error status for frontend
+        dataSourceStatus = {
+          status: 'SERVICE_UNAVAILABLE',
+          sources: [],
+          message: 'Todas as fontes de dados indisponíveis',
+        };
+
         onProgress?.({
           phase: 'enrichment',
           step: 2,
@@ -736,6 +789,9 @@ export class OrchestratorService {
           message: 'Enriquecimento de mercado indisponível, continuando...',
           percentage: 28,
           timestamp: Date.now(),
+          details: {
+            dataSourceStatus,
+          },
         });
       }
     }
@@ -1253,6 +1309,27 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     summary: string;
     source: 'gov-api' | 'exa' | 'mixed';
     fallbackUsed: boolean;
+    dataSourceStatus?: {
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      sources: Array<{
+        name: string;
+        status:
+          | 'SUCCESS'
+          | 'PARTIAL'
+          | 'SERVICE_UNAVAILABLE'
+          | 'RATE_LIMITED'
+          | 'TIMEOUT';
+        error?: string;
+        latencyMs?: number;
+        resultCount?: number;
+      }>;
+      message: string;
+    };
   }> {
     const enrichmentQuery = this.buildEnrichmentQuery(sectionType, objeto);
 
@@ -1277,6 +1354,29 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       // 2. Check if government results are sufficient
       const hasSufficientResults = govResult.totalResults >= 3;
 
+      // Build dataSourceStatus from govResult
+      const dataSourceStatus = {
+        status: govResult.status as
+          | 'SUCCESS'
+          | 'PARTIAL'
+          | 'SERVICE_UNAVAILABLE'
+          | 'RATE_LIMITED'
+          | 'TIMEOUT',
+        sources: govResult.sourceStatuses.map((s) => ({
+          name: s.name as string,
+          status: s.status as
+            | 'SUCCESS'
+            | 'PARTIAL'
+            | 'SERVICE_UNAVAILABLE'
+            | 'RATE_LIMITED'
+            | 'TIMEOUT',
+          error: s.error,
+          latencyMs: s.latencyMs,
+          resultCount: s.resultCount,
+        })),
+        message: govResult.statusMessage,
+      };
+
       if (hasSufficientResults) {
         // Success with government data only
         const summary = this.formatGovApiSummary(govResult);
@@ -1288,6 +1388,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
           summary,
           source: 'gov-api',
           fallbackUsed: false,
+          dataSourceStatus,
         };
       }
 
@@ -1305,6 +1406,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
           summary: this.formatGovApiSummary(govResult),
           source: 'gov-api',
           fallbackUsed: true,
+          dataSourceStatus,
         };
       }
 
@@ -1316,10 +1418,20 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
 
       this.logger.log('Market enrichment using mixed sources (Gov-API + Exa)');
 
+      // Add Exa to data source status
+      dataSourceStatus.sources.push({
+        name: 'exa',
+        status: 'SUCCESS',
+        error: undefined,
+        latencyMs: undefined,
+        resultCount: exaResult.summary?.length || 0,
+      });
+
       return {
         summary: mixedSummary,
         source: 'mixed',
         fallbackUsed: true,
+        dataSourceStatus,
       };
     } catch (error) {
       // Unexpected error - fallback to Exa only
@@ -1338,6 +1450,27 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         summary: exaResult.summary,
         source: 'exa',
         fallbackUsed: true,
+        dataSourceStatus: {
+          status: 'PARTIAL',
+          sources: [
+            {
+              name: 'gov-api',
+              status: 'SERVICE_UNAVAILABLE',
+              error: error.message,
+              latencyMs: undefined,
+              resultCount: undefined,
+            },
+            {
+              name: 'exa',
+              status: 'SUCCESS',
+              error: undefined,
+              latencyMs: undefined,
+              resultCount: exaResult.summary?.length || 0,
+            },
+          ],
+          message:
+            'APIs governamentais indisponíveis, usando fonte alternativa',
+        },
       };
     }
   }
