@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,18 +15,33 @@ interface SectionFormProps {
   isLoading?: boolean;
 }
 
-export function SectionForm({
+// Memoized component to prevent unnecessary re-renders (#457)
+export const SectionForm = memo(function SectionForm({
   template,
   defaultValues,
   onSave,
   isLoading,
 }: SectionFormProps) {
+  // Memoize default values to prevent useForm re-initialization (#457)
+  const memoizedDefaultValues = useMemo(
+    () => defaultValues || {},
+    [defaultValues],
+  );
+
   const { register, handleSubmit } = useForm({
-    defaultValues: defaultValues || {},
+    defaultValues: memoizedDefaultValues,
   });
 
+  // Memoize the submit handler wrapper (#457)
+  const onSubmit = useCallback(
+    (data: Record<string, unknown>) => {
+      onSave(data);
+    },
+    [onSave],
+  );
+
   return (
-    <form onSubmit={handleSubmit(onSave)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {template.fields.map((field) => (
         <div key={field.name} className="space-y-2">
           <div className="flex items-center gap-2">
@@ -77,4 +93,4 @@ export function SectionForm({
       </div>
     </form>
   );
-}
+});
