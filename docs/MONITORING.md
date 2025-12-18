@@ -9,6 +9,7 @@
 O ETP Express possui infraestrutura completa de observability em produção para detectar e alertar sobre falhas automaticamente.
 
 **Objetivos:**
+
 - **MTTD (Mean Time to Detect):** <5 minutos para P0/P1 incidents
 - **Error tracking:** 100% de exceptions capturadas
 - **Alerting:** Notificações automáticas em <2 minutos
@@ -20,13 +21,13 @@ O ETP Express possui infraestrutura completa de observability em produção para
 
 ### Stack de Monitoring
 
-| Componente | Tecnologia | Função |
-|------------|------------|--------|
-| **Error Tracking** | Sentry | Captura exceptions backend + frontend |
-| **Infrastructure Metrics** | Railway Metrics | CPU, Memory, Network (built-in) |
-| **Application Metrics** | Custom `/api/metrics` | DB connections, queries, uptime |
-| **Alerting** | Sentry Alerts + Railway Webhooks | Slack/Email notifications |
-| **Dashboards** | Sentry + Railway UI | Real-time visibility |
+| Componente                 | Tecnologia                       | Função                                |
+| -------------------------- | -------------------------------- | ------------------------------------- |
+| **Error Tracking**         | Sentry                           | Captura exceptions backend + frontend |
+| **Infrastructure Metrics** | Railway Metrics                  | CPU, Memory, Network (built-in)       |
+| **Application Metrics**    | Custom `/api/metrics`            | DB connections, queries, uptime       |
+| **Alerting**               | Sentry Alerts + Railway Webhooks | Slack/Email notifications             |
+| **Dashboards**             | Sentry + Railway UI              | Real-time visibility                  |
 
 ### Diagrama de Fluxo
 
@@ -69,12 +70,14 @@ O ETP Express possui infraestrutura completa de observability em produção para
 ### Configuração
 
 **Backend (NestJS):**
+
 - SDK: `@sentry/nestjs`
 - Integrations: HTTP tracing, PostgreSQL, Profiling
 - Sample rate: 10% em produção, 100% em development
 - Filtros: Sanitiza headers (Authorization, Cookie), passwords, tokens
 
 **Frontend (React):**
+
 - SDK: `@sentry/react`
 - Integrations: Browser tracing, Session Replay
 - Sample rate: 10% navegações, 100% sessões com erro
@@ -97,6 +100,7 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 **URL:** https://sentry.io/organizations/{org}/issues/
 
 **Widgets principais:**
+
 - Error rate (last 24h)
 - Top 10 errors by frequency
 - Affected users count
@@ -115,16 +119,16 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 ### Métricas Coletadas
 
-| Métrica | Tipo | Descrição |
-|---------|------|-----------|
-| `database_connections_active` | Gauge | Conexões ativas no PostgreSQL |
-| `database_connections_total` | Gauge | Total de conexões abertas |
-| `database_connections_max` | Gauge | Máximo permitido (Railway: 100) |
-| `memory_usage_bytes` | Gauge | Heap memory usada |
-| `memory_limit_bytes` | Gauge | Heap memory total |
-| `memory_rss_bytes` | Gauge | Resident Set Size |
-| `uptime_seconds` | Counter | Uptime do processo Node.js |
-| `process_id` | Gauge | PID do processo |
+| Métrica                       | Tipo    | Descrição                       |
+| ----------------------------- | ------- | ------------------------------- |
+| `database_connections_active` | Gauge   | Conexões ativas no PostgreSQL   |
+| `database_connections_total`  | Gauge   | Total de conexões abertas       |
+| `database_connections_max`    | Gauge   | Máximo permitido (Railway: 100) |
+| `memory_usage_bytes`          | Gauge   | Heap memory usada               |
+| `memory_limit_bytes`          | Gauge   | Heap memory total               |
+| `memory_rss_bytes`            | Gauge   | Resident Set Size               |
+| `uptime_seconds`              | Counter | Uptime do processo Node.js      |
+| `process_id`                  | Gauge   | PID do processo                 |
 
 ### Exemplo de Response
 
@@ -154,16 +158,19 @@ uptime_seconds 3600
 Configurar no dashboard do Sentry:
 
 #### 1. High Error Rate
+
 - **Condition:** Error count > 10 in 1 minute
 - **Action:** Send to Slack #etp-alerts
 - **Severity:** P1
 
 #### 2. New Error (First Seen)
+
 - **Condition:** First time this error appears
 - **Action:** Send to Slack #etp-alerts
 - **Severity:** P2
 
 #### 3. Regression
+
 - **Condition:** Issue marked as resolved but reappears
 - **Action:** Send to Slack #etp-alerts + Email
 - **Severity:** P1
@@ -173,11 +180,13 @@ Configurar no dashboard do Sentry:
 Configurar no Railway Dashboard → Settings → Webhooks:
 
 #### 1. Deploy Failed
+
 - **Event:** `deployment.failed`
 - **URL:** Slack webhook URL
 - **Severity:** P0
 
 #### 2. High Memory Usage
+
 - **Event:** `metrics.memory.high`
 - **Trigger:** Memory > 85%
 - **URL:** Slack webhook URL
@@ -200,6 +209,7 @@ Configurar no Railway Dashboard → Settings → Webhooks:
 **URL:** https://railway.app/project/{project-id}/metrics
 
 **Widgets padrão:**
+
 - CPU usage (%)
 - Memory usage (MB)
 - Network I/O (MB/s)
@@ -212,6 +222,7 @@ Configurar no Railway Dashboard → Settings → Webhooks:
 **URL:** https://sentry.io/organizations/{org}/dashboard/
 
 **Widgets criados:**
+
 - Error rate trend (last 7 days)
 - Top 10 errors by frequency
 - Affected users by browser/OS
@@ -270,10 +281,11 @@ curl https://etp-express.up.railway.app/api/metrics
 **MTTD:** <2 min
 
 **Ação:**
+
 1. Acessar [Sentry Dashboard](https://sentry.io) → ver stack trace completo
 2. Executar `railway logs -f` para logs real-time
 3. Identificar root cause:
-   - API externa down? (OpenAI, Perplexity)
+   - API externa down? (OpenAI, Exa)
    - Database timeout?
    - Bug de código?
 4. Se crítico: Executar rollback (ver `INCIDENT_RESPONSE.md`)
@@ -285,6 +297,7 @@ curl https://etp-express.up.railway.app/api/metrics
 **MTTD:** <5 min
 
 **Ação:**
+
 1. Revisar stack trace no Sentry
 2. Verificar se afeta funcionalidade crítica
 3. Se sim: Escalar para P1
@@ -296,6 +309,7 @@ curl https://etp-express.up.railway.app/api/metrics
 **MTTD:** <1 min
 
 **Ação:**
+
 1. Verificar logs do Railway: `railway logs -f`
 2. Identificar causa:
    - Build error? → Corrigir código
@@ -311,6 +325,7 @@ curl https://etp-express.up.railway.app/api/metrics
 **MTTD:** <2 min
 
 **Ação:**
+
 1. Executar `curl /api/metrics/json` → ver memory_usage_bytes
 2. Verificar memory leak:
    - Conexões DB não fechadas?
@@ -326,12 +341,14 @@ curl https://etp-express.up.railway.app/api/metrics
 ### Sentry não recebe erros
 
 **Checklist:**
+
 - [ ] `SENTRY_DSN` configurado no Railway?
 - [ ] `initSentry()` sendo chamado antes de `NestFactory.create()`?
 - [ ] Error está sendo ignorado em `ignoreErrors`?
 - [ ] Ambiente é production? (development pode ter sample rate 0)
 
 **Debug:**
+
 ```bash
 # Backend: Testar endpoint de debug
 curl -X GET https://etp-express.up.railway.app/api/debug/sentry-test
@@ -343,11 +360,13 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 ### Métricas `/api/metrics` retorna 404
 
 **Checklist:**
+
 - [ ] `MetricsController` adicionado ao `HealthModule`?
 - [ ] Endpoint está em `/api/metrics` (não `/metrics`)?
 - [ ] Deploy foi feito após adicionar controller?
 
 **Fix:**
+
 ```bash
 # Verificar que HealthModule exporta MetricsController
 # backend/src/health/health.module.ts
@@ -356,6 +375,7 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 ### Railway webhooks não disparam
 
 **Checklist:**
+
 - [ ] Webhook URL válido (testar com `curl -X POST`)?
 - [ ] Evento correto configurado (ex: `deployment.failed`)?
 - [ ] Slack App tem permissões de webhook?
@@ -372,6 +392,7 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 ---
 
 **Próximos passos:**
+
 1. Configurar PagerDuty para P0 incidents (on-call rotation)
 2. Adicionar custom business metrics (ETPs criados/dia, tempo médio de geração)
 3. Configurar distributed tracing com OpenTelemetry

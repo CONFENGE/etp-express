@@ -8,7 +8,7 @@ Este documento descreve o processo completo de deploy do ETP Express em Railway,
 2. **Repositório GitHub**: Conectado ao Railway
 3. **API Keys necessárias**:
    - OpenAI API Key (obrigatória para geração de seções)
-   - Perplexity API Key (opcional, se implementado)
+   - Exa API Key (opcional, para busca web avançada)
 4. **Domínio personalizado** (opcional, mas recomendado)
 
 ## 🚀 Processo de Deploy
@@ -50,14 +50,14 @@ Railway criará automaticamente o service `backend` via `.railway.toml`.
 
 No Railway UI, acesse **Backend Service → Variables** e adicione:
 
-| Variável             | Valor                               | Fonte                           |
-| -------------------- | ----------------------------------- | ------------------------------- |
-| `DATABASE_URL`       | `${{postgres.DATABASE_URL}}`        | Referência automática           |
-| `PORT`               | `${{PORT}}`                         | Railway fornece automaticamente |
-| `NODE_ENV`           | `production`                        | Manual                          |
-| `JWT_SECRET`         | Gerar com `openssl rand -base64 32` | Manual                          |
-| `OPENAI_API_KEY`     | Sua chave da OpenAI                 | Manual                          |
-| `PERPLEXITY_API_KEY` | Sua chave da Perplexity (se houver) | Manual                          |
+| Variável         | Valor                               | Fonte                           |
+| ---------------- | ----------------------------------- | ------------------------------- |
+| `DATABASE_URL`   | `${{postgres.DATABASE_URL}}`        | Referência automática           |
+| `PORT`           | `${{PORT}}`                         | Railway fornece automaticamente |
+| `NODE_ENV`       | `production`                        | Manual                          |
+| `JWT_SECRET`     | Gerar com `openssl rand -base64 32` | Manual                          |
+| `OPENAI_API_KEY` | Sua chave da OpenAI                 | Manual                          |
+| `EXA_API_KEY`    | Sua chave da Exa (se houver)        | Manual                          |
 
 #### 3.2. Comandos de Build/Start (já configurados via `.railway.toml`)
 
@@ -230,9 +230,9 @@ npm run build
 ```typescript
 app.enableCors({
   origin: [
-    "http://localhost:3000", // Dev
-    "https://frontend-production-xxxx.up.railway.app", // Railway URL
-    "https://app.seudominio.com", // Domínio customizado (se houver)
+    'http://localhost:3000', // Dev
+    'https://frontend-production-xxxx.up.railway.app', // Railway URL
+    'https://app.seudominio.com', // Domínio customizado (se houver)
   ],
   credentials: true,
 });
@@ -316,7 +316,7 @@ railway run <comando>
 
 - `JWT_SECRET`
 - `OPENAI_API_KEY`
-- `PERPLEXITY_API_KEY`
+- `EXA_API_KEY`
 - `DATABASE_URL` (Railway gera automaticamente)
 
 **Rotação de Secrets**:

@@ -31,21 +31,25 @@ The pre-commit hook automatically scans staged files for secrets before allowing
 Gitleaks must be installed locally for the pre-commit hook to work:
 
 **Windows (Chocolatey):**
+
 ```bash
 choco install gitleaks
 ```
 
 **Windows (Scoop):**
+
 ```bash
 scoop install gitleaks
 ```
 
 **macOS (Homebrew):**
+
 ```bash
 brew install gitleaks
 ```
 
 **Linux:**
+
 ```bash
 # Download from GitHub releases
 wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
@@ -70,6 +74,7 @@ git commit -m "test"
 ```
 
 Expected output:
+
 ```
 ❌ Secret detected! Commit blocked.
    Remove the secret and try again.
@@ -94,6 +99,7 @@ Expected output:
 #### Access Secret Alerts
 
 If GitHub detects a secret:
+
 1. Go to **Security > Secret scanning alerts**
 2. Review the detected secret
 3. Follow remediation steps below
@@ -105,6 +111,7 @@ If GitHub detects a secret:
 **Location:** `.github/workflows/secret-scan.yml`
 
 The CI/CD workflow performs a comprehensive scan of the entire repository history, including:
+
 - All branches
 - All commits (full history)
 - All files (even deleted ones)
@@ -130,25 +137,27 @@ The CI/CD workflow performs a comprehensive scan of the entire repository histor
 ### Step 1: Identify the Secret
 
 Review the Gitleaks output or GitHub alert to identify:
+
 - **What** secret was detected (API key, password, token, etc.)
 - **Where** it was found (file, line number, commit)
 - **When** it was committed (commit hash, date)
 
 ### Step 2: Determine Severity
 
-| Secret Type | Severity | Immediate Action |
-|-------------|----------|------------------|
-| Production API Key (OpenAI, Perplexity) | 🔴 **CRITICAL** | Rotate immediately |
-| JWT_SECRET | 🔴 **CRITICAL** | Rotate immediately |
-| DATABASE_URL (production) | 🔴 **CRITICAL** | Rotate immediately |
-| Development/Test credentials | 🟡 **MEDIUM** | Rotate within 24h |
-| False positive | 🟢 **LOW** | Update `.gitleaks.toml` |
+| Secret Type                      | Severity        | Immediate Action        |
+| -------------------------------- | --------------- | ----------------------- |
+| Production API Key (OpenAI, Exa) | 🔴 **CRITICAL** | Rotate immediately      |
+| JWT_SECRET                       | 🔴 **CRITICAL** | Rotate immediately      |
+| DATABASE_URL (production)        | 🔴 **CRITICAL** | Rotate immediately      |
+| Development/Test credentials     | 🟡 **MEDIUM**   | Rotate within 24h       |
+| False positive                   | 🟢 **LOW**      | Update `.gitleaks.toml` |
 
 ### Step 3: Rotate the Secret (CRITICAL)
 
 **If the secret is real and exposed in a public commit:**
 
 1. **Immediately rotate the secret:**
+
    ```bash
    # For OpenAI API Key:
    # 1. Go to https://platform.openai.com/api-keys
@@ -162,6 +171,7 @@ Review the Gitleaks output or GitHub alert to identify:
    ```
 
 2. **Remove the secret from code:**
+
    ```bash
    # Remove the file or line containing the secret
    git rm <file-with-secret>
@@ -169,6 +179,7 @@ Review the Gitleaks output or GitHub alert to identify:
    ```
 
 3. **Update environment variables:**
+
    ```bash
    # Railway dashboard:
    # Settings > Variables > Add new variable
@@ -204,6 +215,7 @@ git push --force
 
 **Alternative (safer): Create new repository**
 If the secret was exposed in a public repo for an extended period, consider:
+
 1. Creating a fresh repository
 2. Migrating code without history
 3. Archiving the old repository
@@ -211,6 +223,7 @@ If the secret was exposed in a public repo for an extended period, consider:
 ### Step 5: Document the Incident
 
 Create an incident report:
+
 ```markdown
 # Security Incident Report
 
@@ -219,16 +232,19 @@ Create an incident report:
 **Secret Type:** API Key / Password / Token
 
 ## What Happened
+
 - Secret <type> was committed to <file> in commit <hash>
 - Detected by: Pre-commit hook / GitHub Scanning / CI/CD
 
 ## Actions Taken
+
 - [ ] Secret rotated (old: XXX, new: YYY)
 - [ ] Environment variables updated
 - [ ] Git history scrubbed (if applicable)
 - [ ] Team notified
 
 ## Prevention
+
 - Lessons learned
 - Improvements to scanning rules
 ```
@@ -272,17 +288,18 @@ Procedures for rotating system secrets are fully documented in:
 
 ### Rotation Schedule
 
-| Secret | Frequency | Calendar Reminder |
-|--------|-----------|-------------------|
-| JWT_SECRET | Monthly | Day 25 of each month |
-| SESSION_SECRET | Monthly | Day 25 of each month |
-| OPENAI_API_KEY | Quarterly | Feb, May, Aug, Nov |
-| PERPLEXITY_API_KEY | Quarterly | Feb, May, Aug, Nov |
-| DATABASE_URL | On-demand | As needed |
+| Secret         | Frequency | Calendar Reminder    |
+| -------------- | --------- | -------------------- |
+| JWT_SECRET     | Monthly   | Day 25 of each month |
+| SESSION_SECRET | Monthly   | Day 25 of each month |
+| OPENAI_API_KEY | Quarterly | Feb, May, Aug, Nov   |
+| EXA_API_KEY    | Quarterly | Feb, May, Aug, Nov   |
+| DATABASE_URL   | On-demand | As needed            |
 
 ### Quick Start
 
 1. **Run the helper script:**
+
    ```bash
    ./scripts/rotate-secret.sh JWT_SECRET
    ```
@@ -349,8 +366,8 @@ JWT_EXPIRES_IN=7d
 # OpenAI
 OPENAI_API_KEY=sk-your-openai-api-key-here
 
-# Perplexity
-PERPLEXITY_API_KEY=pplx-your-perplexity-api-key-here
+# Exa
+EXA_API_KEY=your-exa-api-key-here
 
 # Application
 NODE_ENV=development
@@ -365,7 +382,7 @@ FRONTEND_URL=http://localhost:5173
 DATABASE_URL=postgresql://prod_user:x8K2mP9qL4nR@db.railway.app:5432/prod_etp
 JWT_SECRET=Kj8mN2pQ5sT7vX9zA3cF6hJ8kL2nP4rS6tV8xZ1bD3fG5hJ7kM9nQ2rT4vW6yB8dF0g
 OPENAI_API_KEY=sk-proj-abc123def456...
-PERPLEXITY_API_KEY=pplx-xyz789uvw012...
+EXA_API_KEY=exa-xyz789uvw012...
 NODE_ENV=production
 PORT=3000
 FRONTEND_URL=https://etp-express.railway.app
@@ -378,11 +395,13 @@ FRONTEND_URL=https://etp-express.railway.app
 ### `.gitleaks.toml`
 
 Custom rules for ETP Express are defined in `.gitleaks.toml`. This file contains:
+
 - **Allowlists**: Paths/files to ignore (e.g., `docs/`, `*.md`)
 - **Custom rules**: Project-specific secret patterns
 - **False positive exceptions**: Known safe patterns
 
 To update rules:
+
 ```bash
 # Edit .gitleaks.toml
 # Test locally

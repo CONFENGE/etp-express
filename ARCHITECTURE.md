@@ -60,10 +60,11 @@ O **ETP Express** é um sistema wrapper de LLM projetado para auxiliar servidore
 ### 2.3 Integrações Externas
 
 - **OpenAI API** (GPT-4-turbo): Geração de conteúdo, refinamento
-- **Perplexity API**: Busca web + síntese de contratações similares
+- **Exa API**: Busca web + síntese de contratações similares
   - **Error Handling**: Lança `ServiceUnavailableException` quando API falha
   - **Transparência**: Sem fallback silencioso - usuário sempre sabe quando busca falha
   - **Mensagem**: "Busca externa temporariamente indisponível. Tente novamente em alguns minutos."
+- **Government APIs**: Fontes oficiais de licitações e preços (PNCP, Compras.gov.br, SINAPI, SICRO)
 - **PDF Generation**: Puppeteer (headless Chrome)
 - **Analytics**: Mixpanel ou PostHog (self-hosted Railway)
 
@@ -331,11 +332,11 @@ export class LegalAgent {
 ```typescript
 @Injectable()
 export class FundamentacaoAgent {
-  constructor(private perplexityService: PerplexityService) {}
+  constructor(private exaService: ExaService) {}
 
   async process(draft: string): Promise<ProcessedDraft> {
     // Extrai objeto da contratação
-    // Busca contratações similares via Perplexity
+    // Busca contratações similares via Exa + Government APIs
     // Anexa referências com aviso "verifique a fonte antes de utilizar"
   }
 }
@@ -441,7 +442,7 @@ CREATE TABLE similar_contracts (
   url TEXT,
   title TEXT,
   summary TEXT,
-  source VARCHAR(100), -- 'perplexity', 'manual'
+  source VARCHAR(100), -- 'exa', 'gov-api', 'manual'
   fetched_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -538,7 +539,7 @@ GET    /api/etps/:id/validate        # Validar completude (incisos obrigatórios
 ### 5.6 Busca e Fundamentação
 
 ```
-POST   /api/search/similar-contracts    # Buscar via Perplexity
+POST   /api/search/similar-contracts    # Buscar via Exa + Government APIs
 GET    /api/etps/:id/references          # Listar referências anexadas
 POST   /api/etps/:id/references          # Adicionar referência manual
 DELETE /api/references/:id               # Remover referência
@@ -562,7 +563,7 @@ sequenceDiagram
     participant Backend
     participant Orchestrator
     participant OpenAI
-    participant Perplexity
+    participant Exa
     participant DB
 
     User->>Frontend: Preenche contexto seção IV
@@ -572,8 +573,8 @@ sequenceDiagram
     Orchestrator->>OpenAI: Gerar draft inicial
     OpenAI-->>Orchestrator: Draft v1
 
-    Orchestrator->>Perplexity: Buscar contratações similares
-    Perplexity-->>Orchestrator: [3 referências]
+    Orchestrator->>Exa: Buscar contratações similares
+    Exa-->>Orchestrator: [3 referências]
 
     Orchestrator->>OpenAI: Refinar com fundamentação
     OpenAI-->>Orchestrator: Draft v2 + referências
@@ -705,7 +706,7 @@ NODE_ENV=production
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 JWT_SECRET=${{secrets.JWT_SECRET}}
 OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
-PERPLEXITY_API_KEY=${{secrets.PERPLEXITY_API_KEY}}
+EXA_API_KEY=${{secrets.EXA_API_KEY}}
 FRONTEND_URL=https://etp-express.up.railway.app
 CORS_ORIGINS=https://etp-express.up.railway.app
 
@@ -750,7 +751,7 @@ VITE_APP_NAME="ETP Express"
 
 ### Fase 2: Busca e Fundamentação (Semana 3)
 
-- ✅ Integração Perplexity
+- ✅ Integração Exa + Government APIs
 - ✅ Agente de fundamentação
 - ✅ Painel de referências
 
@@ -837,13 +838,13 @@ Railway platform provides integrated environment variable management with sealed
 
 #### Managed Secrets
 
-| Secret             | Frequency | Method                          |
-| ------------------ | --------- | ------------------------------- |
-| JWT_SECRET         | Monthly   | Manual rotation + documentation |
-| SESSION_SECRET     | Monthly   | Manual rotation + documentation |
-| OPENAI_API_KEY     | Quarterly | Manual rotation (provider)      |
-| PERPLEXITY_API_KEY | Quarterly | Manual rotation (provider)      |
-| DATABASE_URL       | On-demand | Manual rotation (DB password)   |
+| Secret         | Frequency | Method                          |
+| -------------- | --------- | ------------------------------- |
+| JWT_SECRET     | Monthly   | Manual rotation + documentation |
+| SESSION_SECRET | Monthly   | Manual rotation + documentation |
+| OPENAI_API_KEY | Quarterly | Manual rotation (provider)      |
+| EXA_API_KEY    | Quarterly | Manual rotation (provider)      |
+| DATABASE_URL   | On-demand | Manual rotation (DB password)   |
 
 #### Rotation Procedure
 
