@@ -1,3 +1,4 @@
+import { memo, useCallback, ChangeEvent } from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,7 +27,8 @@ interface ETPEditorContentProps {
   generationStatus?: GenerationStatus;
 }
 
-export function ETPEditorContent({
+// Memoized component to prevent unnecessary re-renders (#457)
+export const ETPEditorContent = memo(function ETPEditorContent({
   sections,
   currentContent,
   onContentChange,
@@ -35,6 +37,14 @@ export function ETPEditorContent({
   generationProgress = 0,
   generationStatus = 'idle',
 }: ETPEditorContentProps) {
+  // Memoized handler to extract value from event (#457)
+  const handleContentChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      onContentChange(e.target.value);
+    },
+    [onContentChange],
+  );
+
   return (
     <>
       {sections.map((section) => (
@@ -99,7 +109,7 @@ export function ETPEditorContent({
                 <Label>Conteúdo</Label>
                 <Textarea
                   value={currentContent}
-                  onChange={(e) => onContentChange(e.target.value)}
+                  onChange={handleContentChange}
                   placeholder={`Digite o conteúdo da seção ${section.title}...`}
                   className="min-h-[300px] mt-2"
                   disabled={isGenerating}
@@ -111,4 +121,4 @@ export function ETPEditorContent({
       ))}
     </>
   );
-}
+});
