@@ -56,7 +56,9 @@ describe('polling utilities', () => {
 
       const result = await pollJobStatus('job-123');
 
-      expect(result).toEqual(mockResult);
+      // Result is now PollResult format with section and dataSourceStatus (#756)
+      expect(result.section).toEqual(mockResult);
+      expect(result.dataSourceStatus).toBeUndefined();
       expect(apiHelpers.get).toHaveBeenCalledWith('/sections/jobs/job-123');
     });
 
@@ -165,7 +167,9 @@ describe('polling utilities', () => {
 
       const result = await pollPromise;
 
-      expect(result).toEqual(mockResult);
+      // Result is now PollResult format with section and dataSourceStatus (#756)
+      expect(result.section).toEqual(mockResult);
+      expect(result.dataSourceStatus).toBeUndefined();
       expect(apiHelpers.get).toHaveBeenCalledTimes(3);
       expect(onProgress).toHaveBeenCalledWith(50);
       expect(onProgress).toHaveBeenCalledWith(75);

@@ -1,4 +1,4 @@
-import { memo, useCallback, ChangeEvent } from 'react';
+import { memo, useCallback, ChangeEvent, useMemo } from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Sparkles, Loader2 } from 'lucide-react';
-import { GenerationStatus } from '@/types/etp';
+import { GenerationStatus, DataSourceStatusInfo } from '@/types/etp';
 import { getStatusMessage } from '@/lib/polling';
+import { DataSourceStatus } from '@/components/common/DataSourceStatus';
+import { SearchStatus, SourceStatus } from '@/types/search';
 
 interface Section {
   number: number;
@@ -25,6 +27,10 @@ interface ETPEditorContentProps {
   isGenerating?: boolean;
   generationProgress?: number;
   generationStatus?: GenerationStatus;
+  /** Data source status from last generation (#756) */
+  dataSourceStatus?: DataSourceStatusInfo | null;
+  /** Callback when retry button is clicked */
+  onRetryDataSource?: () => void;
 }
 
 // Memoized component to prevent unnecessary re-renders (#457)
@@ -36,6 +42,8 @@ export const ETPEditorContent = memo(function ETPEditorContent({
   isGenerating = false,
   generationProgress = 0,
   generationStatus = 'idle',
+  dataSourceStatus,
+  onRetryDataSource,
 }: ETPEditorContentProps) {
   // Memoized handler to extract value from event (#457)
   const handleContentChange = useCallback(
@@ -44,6 +52,40 @@ export const ETPEditorContent = memo(function ETPEditorContent({
     },
     [onContentChange],
   );
+
+  // Convert DataSourceStatusInfo to DataSourceStatus component props (#756)
+  const convertedDataSourceStatus = useMemo(() => {
+    if (!dataSourceStatus) return null;
+
+    // Map string status to SearchStatus enum
+    const statusMap: Record<string, SearchStatus> = {
+      SUCCESS: SearchStatus.SUCCESS,
+      PARTIAL: SearchStatus.PARTIAL,
+      SERVICE_UNAVAILABLE: SearchStatus.SERVICE_UNAVAILABLE,
+      RATE_LIMITED: SearchStatus.RATE_LIMITED,
+      TIMEOUT: SearchStatus.TIMEOUT,
+    };
+
+    const sources: SourceStatus[] = dataSourceStatus.sources.map((s) => ({
+      name: s.name,
+      status: statusMap[s.status] || SearchStatus.SERVICE_UNAVAILABLE,
+      error: s.error,
+      latencyMs: s.latencyMs,
+      resultCount: s.resultCount,
+    }));
+
+    return {
+      status:
+        statusMap[dataSourceStatus.status] || SearchStatus.SERVICE_UNAVAILABLE,
+      sources,
+    };
+  }, [dataSourceStatus]);
+
+  // Show data source status only after generation completes and if not SUCCESS (#756)
+  const shouldShowDataSourceStatus =
+    generationStatus === 'completed' &&
+    convertedDataSourceStatus &&
+    convertedDataSourceStatus.status !== SearchStatus.SUCCESS;
 
   return (
     <>
@@ -102,6 +144,16 @@ export const ETPEditorContent = memo(function ETPEditorContent({
                   {generationProgress}% concluído
                 </p>
               </div>
+            )}
+
+            {/* Data source status alert after generation (#756) */}
+            {shouldShowDataSourceStatus && convertedDataSourceStatus && (
+              <DataSourceStatus
+                status={convertedDataSourceStatus.status}
+                sources={convertedDataSourceStatus.sources}
+                onRetry={onRetryDataSource}
+                className="mb-4"
+              />
             )}
 
             <div className="space-y-4">
