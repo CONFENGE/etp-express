@@ -1,8 +1,8 @@
 # Manual do Usuário - ETP Express
 
 **Versão:** 1.0
-**Data:** Dezembro 2024
-**Plataforma:** https://etpexpress.com.br
+**Data:** Janeiro 2026
+**Plataforma:** https://confenge.com.br/etpexpress
 
 ---
 
@@ -66,7 +66,7 @@ O **ETP Express** é uma plataforma digital desenvolvida para auxiliar órgãos 
 
 Para criar uma conta no ETP Express:
 
-1. Acesse **https://etpexpress.com.br**
+1. Acesse **https://confenge.com.br/etpexpress**
 2. Clique em **"Cadastre-se"**
 3. Preencha os campos obrigatórios:
    - **Nome completo**: Seu nome como servidor
@@ -84,7 +84,7 @@ Para criar uma conta no ETP Express:
 
 ### 2.2 Fazendo Login
 
-1. Acesse **https://etpexpress.com.br**
+1. Acesse **https://confenge.com.br/etpexpress**
 2. Digite seu **email institucional**
 3. Digite sua **senha**
 4. Clique em **"Entrar"**
@@ -405,7 +405,7 @@ R: Verifique sua conexão com a internet. Se o problema persistir, tente acessar
 ### Canais de Atendimento
 
 **Email de Suporte:**
-📧 suporte@etpexpress.com.br
+📧 suporte@confenge.com.br
 
 **Horário de Atendimento:**
 Segunda a Sexta, das 8h às 18h (horário de Brasília)
@@ -448,10 +448,10 @@ Ao reportar um problema, inclua:
 
 | Versão | Data     | Alterações               |
 | ------ | -------- | ------------------------ |
-| 1.0    | Dez/2024 | Versão inicial do manual |
+| 1.0    | Jan/2026 | Versão inicial do manual |
 
 ---
 
 **ETP Express** - Simplificando a elaboração de Estudos Técnicos Preliminares
 
-© 2024 CONFENGE. Todos os direitos reservados.
+© 2026 CONFENGE. Todos os direitos reservados.
