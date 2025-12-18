@@ -30,6 +30,7 @@ import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 import { DomainManagerModule } from './modules/domain-manager/domain-manager.module';
 import { DemoModule } from './modules/demo/demo.module';
 import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
+import { GovDataSyncModule } from './modules/gov-data-sync/gov-data-sync.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -210,6 +211,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     DomainManagerModule,
     DemoModule,
     DocumentExtractionModule,
+    GovDataSyncModule,
     HealthModule,
   ],
   controllers: [AppController],
