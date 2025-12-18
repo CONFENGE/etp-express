@@ -45,6 +45,13 @@ export {
 
 export { GovApiCache } from './utils/gov-api-cache';
 
+// Metrics
+export {
+  GovApiMetricsService,
+  GovApiMetrics,
+  GovApiSourceMetrics,
+} from './gov-api-metrics.service';
+
 // PNCP (Portal Nacional de Contratações Públicas)
 export { PncpModule, PncpService } from './pncp';
 export {
