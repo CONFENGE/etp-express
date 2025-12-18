@@ -527,18 +527,21 @@ describe('etpStore', () => {
         },
       };
 
-      // Mock final result from polling
+      // Mock final result from polling (PollResult format #756)
       const mockPollingResult = {
-        id: 'section-1',
-        etpId: 'etp-1',
-        sectionNumber: 1,
-        title: 'Seção Regenerada',
-        content: 'Conteúdo regenerado por IA',
-        isRequired: true,
-        isCompleted: true,
-        aiGenerated: true,
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-02T00:00:00Z',
+        section: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          sectionNumber: 1,
+          title: 'Seção Regenerada',
+          content: 'Conteúdo regenerado por IA',
+          isRequired: true,
+          isCompleted: true,
+          aiGenerated: true,
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-02T00:00:00Z',
+        },
+        dataSourceStatus: undefined,
       };
 
       vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
@@ -836,10 +839,13 @@ describe('etpStore', () => {
         },
       };
 
-      // Mock polling result
+      // Mock polling result (PollResult format #756)
       const mockPollingResult = {
-        id: 'section-1',
-        content: 'Generated content',
+        section: {
+          id: 'section-1',
+          content: 'Generated content',
+        },
+        dataSourceStatus: undefined,
       };
 
       vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
