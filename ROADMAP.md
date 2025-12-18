@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-17 | **Progresso:** 371/407 (91.2%) | **Deploy:** 🟡 UNSTABLE | **Go-Live:** 28 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-18 | **Progresso:** 382/407 (93.9%) | **Deploy:** 🟢 STABLE | **Go-Live:** 26 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
-## 🛡️ Hardening & Refactoring (10 issues restantes)
+## 🛡️ Hardening & Refactoring (5 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
 **Validação:** Codebase auditado, 2 pontos já implementados, 18 issues criadas
@@ -24,20 +24,20 @@
 | -------- | -------------------------------------------- | ----- | ----------------- |
 | ~~#753~~ | ~~Remover referências residuais Perplexity~~ | 30min | ✅ DONE (PR #761) |
 
-### 🟡 P1 - UX Crítico (2 issues)
+### ✅ P1 - UX Crítico (0 issues - COMPLETO)
 
-| #    | Issue                                      | Est. | Status            |
-| ---- | ------------------------------------------ | ---- | ----------------- |
-| #754 | SSE/streaming para feedback geração seções | 8h   | OPEN              |
-| #755 | SearchResult estruturado Gov-APIs          | 4h   | ✅ DONE (PR #762) |
-| #756 | DataSourceStatus frontend (alerta serviço) | 3h   | OPEN              |
+| #        | Issue                                          | Est.   | Status            |
+| -------- | ---------------------------------------------- | ------ | ----------------- |
+| ~~#754~~ | ~~SSE/streaming para feedback geração seções~~ | ~~8h~~ | ✅ DONE (PR #763) |
+| ~~#755~~ | ~~SearchResult estruturado Gov-APIs~~          | ~~4h~~ | ✅ DONE (PR #762) |
+| ~~#756~~ | ~~DataSourceStatus frontend (alerta serviço)~~ | ~~3h~~ | ✅ DONE (PR #771) |
 
-### 🟡 P2 - Segurança Multi-Tenancy (2 issues)
+### ✅ P2 - Segurança Multi-Tenancy (0 issues - COMPLETO)
 
-| #    | Issue                                          | Est. | Status |
-| ---- | ---------------------------------------------- | ---- | ------ |
-| #757 | Middleware centralizado autorização tenancy    | 6h   | OPEN   |
-| #758 | Fix updateCompletionPercentage() sem validação | 1h   | OPEN   |
+| #        | Issue                                              | Est.   | Status            |
+| -------- | -------------------------------------------------- | ------ | ----------------- |
+| ~~#757~~ | ~~Middleware centralizado autorização tenancy~~    | ~~6h~~ | ✅ DONE (PR #765) |
+| ~~#758~~ | ~~Fix updateCompletionPercentage() sem validação~~ | ~~1h~~ | ✅ DONE (PR #764) |
 
 ### ✅ P1 - Segurança Multi-Tenancy Anterior (0 issues restantes - COMPLETO)
 
@@ -62,14 +62,14 @@
 | #654 | OpenTelemetry distributed tracing | Visibilidade por componente    |
 | #655 | Métricas de negócio Prometheus    | KPIs: tokens, latência, falhas |
 
-### 🟢 P3 - Melhorias (4 issues)
+### 🟢 P3 - Melhorias (3 issues)
 
-| #    | Issue                              | Benefício                            |
-| ---- | ---------------------------------- | ------------------------------------ |
-| #656 | Validação estruturada saída LLM    | Detectar outputs maliciosos          |
-| #657 | Documentar PgBouncer para escala   | Preparação para escala horizontal    |
-| #759 | Rich Text (WYSIWYG) formulários    | Tabelas, listas, formatação avançada |
-| #760 | Documentar agentes determinísticos | Clareza arquitetural (Regex vs LLM)  |
+| #        | Issue                                | Benefício                            |
+| -------- | ------------------------------------ | ------------------------------------ |
+| #656     | Validação estruturada saída LLM      | Detectar outputs maliciosos          |
+| ~~#657~~ | ~~Documentar PgBouncer para escala~~ | ✅ DONE (2025-12-18)                 |
+| #759     | Rich Text (WYSIWYG) formulários      | Tabelas, listas, formatação avançada |
+| #760     | Documentar agentes determinísticos   | Clareza arquitetural (Regex vs LLM)  |
 
 ---
 
@@ -81,7 +81,7 @@ M2: CI/CD Pipeline      ██████████████████�
 M3: Quality & Security  ████████████████████ 61/61  100%
 M4: Refactoring & Perf  ████████████████████ 45/45  100%
 M5: E2E & Docs          █████████████████░░░ 26/30   87%
-M6: Maintenance         ██████████████████░░ 76/85   89%
+M6: Maintenance         ██████████████████░░ 77/85   91%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
 M9: Export/Import       ████████████████████ 16/16  100%  ✅ COMPLETE
@@ -91,18 +91,18 @@ M9: Export/Import       ██████████████████�
 
 ## Próximas Ações Prioritárias
 
-### 🚀 ÉPICO - Go-Live B2G (17 issues) - DATA FLEXÍVEL
+### 🚀 ÉPICO - Go-Live B2G (4 issues restantes) - DATA FLEXÍVEL
 
 **Criado:** 2024-12-16 | **Objetivo:** Lançamento comercial B2G com todas as condições de prontidão atendidas
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO. Progresso excepcional: M9 100%, Observabilidade P1, Migração Exa 87.5%, Gov-API Core 36%.
 
-#### Sprint 3 (Continuação) - Performance + Validações
+#### Sprint 3 (Continuação) - Performance + Validações ✅ COMPLETE
 
-| #        | Issue                              | Prior.     | Est.   | Status     |
-| -------- | ---------------------------------- | ---------- | ------ | ---------- |
-| #457     | useCallback/useMemo                | P2         | 4h     | OPEN       |
-| ~~#676~~ | ~~Load testing k6 - 100 usuários~~ | ~~**P1**~~ | ~~4h~~ | ✅ PR #750 |
+| #        | Issue                              | Prior.     | Est.   | Status               |
+| -------- | ---------------------------------- | ---------- | ------ | -------------------- |
+| ~~#457~~ | ~~useCallback/useMemo~~            | ~~P2~~     | ~~4h~~ | ✅ CLOSED 2025-12-18 |
+| ~~#676~~ | ~~Load testing k6 - 100 usuários~~ | ~~**P1**~~ | ~~4h~~ | ✅ PR #750           |
 
 #### Sprint 4 (Final) - QA + Go-Live
 
@@ -117,23 +117,23 @@ M9: Export/Import       ██████████████████�
 |---|-------|------|--------|
 | ~~#736~~ | ~~E2E teste fluxo completo usuário~~ | ~~4h~~ | ✅ PR #749 |
 | ~~#737~~ | ~~Smoke test checklist pré-launch~~ | ~~2h~~ | ✅ PR #748 |
-| #675 | Manual usuário PDF para órgãos B2G | 8h | OPEN |
-| #677 | Canal de suporte email | 4h | OPEN |
+| ~~#675~~ | ~~Manual usuário PDF para órgãos B2G~~ | ~~8h~~ | ✅ CLOSED 2025-12-18 |
+| ~~#677~~ | ~~Canal de suporte email~~ | ~~4h~~ | ✅ CLOSED 2025-12-18 |
 | #741 | Deploy final validado | 2h | OPEN |
 | #742 | Monitoramento 24h pós-deploy | 8h | OPEN |
 
-**P1 - Infrastructure:**
-| # | Issue | Est. |
-|---|-------|------|
-| #657 | Documentar PgBouncer para escala | 12h |
+**P1 - Infrastructure:** ✅ COMPLETE
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#657~~ | ~~Documentar PgBouncer para escala~~ | ~~12h~~ | ✅ CLOSED 2025-12-18 |
 
 **P2 - Enterprise Onboarding:**
-| # | Issue | Est. |
-|---|-------|------|
-| #743 | Tour guiado in-app | 6h |
-| #111 | SLA formal | 4h |
-| #739 | Atualizar dependências outdated | 6h |
-| #744 | Pitch deck B2G | 8h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#743~~ | ~~Tour guiado in-app~~ | ~~6h~~ | ✅ CLOSED 2025-12-18 |
+| #111 | SLA formal | 4h | OPEN |
+| ~~#739~~ | ~~Atualizar dependências outdated~~ | ~~6h~~ | ✅ CLOSED 2025-12-18 |
+| #744 | Pitch deck B2G | 8h | OPEN |
 
 **P3 - Tech Debt:**
 | # | Issue | Est. |
@@ -145,7 +145,7 @@ M9: Export/Import       ██████████████████�
 |---|-------|------|
 | TBD | Migrar SINAPI/SICRO para PostgreSQL | 8h |
 
-**Total Esforço:** ~80h (~20h/semana para 4 semanas)
+**Total Esforço Restante:** ~14h (4 issues: #741, #742, #744, #740)
 
 **Labels:** `go-live`, `go-to-market`, `priority/P0`, `priority/P1`, `priority/P2`
 
@@ -257,7 +257,7 @@ M9: Export/Import       ██████████████████�
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (9 open)
+### M6 - Maintenance (8 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -271,7 +271,7 @@ M9: Export/Import       ██████████████████�
 | ~~#426~~ | ~~Perplexity timeout~~ | ✅ CLOSED |
 | ~~#454~~ | ~~N+1 query fix~~ | ✅ PR #689 |
 | ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 |
-| #457 | useCallback/useMemo | P2 |
+| ~~#457~~ | ~~useCallback/useMemo~~ | ✅ CLOSED 2025-12-18 |
 | #459 | Eager loading User | P3 |
 | #461 | Bundle lazy loading | P3 |
 
@@ -346,7 +346,7 @@ M9: Export/Import       ██████████████████�
 | ~~#558~~ | ~~Doc Conversion~~              | ✅ PR #685 | -    |
 | ~~#559~~ | ~~Endpoints análise~~           | ✅ PR #687 | -    |
 
-### Sprint 3 (Semana 3) - M9 Frontend + Performance | 60% COMPLETE
+### Sprint 3 (Semana 3) - M9 Frontend + Performance | ✅ 100% COMPLETE
 
 | #        | Issue                           | Prior.     | Est. |
 | -------- | ------------------------------- | ---------- | ---- |
@@ -354,18 +354,18 @@ M9: Export/Import       ██████████████████�
 | ~~#561~~ | ~~Results Display~~             | ✅ PR #723 | -    |
 | ~~#562~~ | ~~Analysis Store~~              | ✅ PR #722 | -    |
 | ~~#454~~ | ~~N+1 query fix~~               | ✅ PR #689 | -    |
-| #457     | useCallback/useMemo             | P2         | 4h   |
+| ~~#457~~ | ~~useCallback/useMemo~~         | ✅ CLOSED  | -    |
 | ~~#676~~ | ~~Load testing k6 (100 users)~~ | ✅ PR #750 | -    |
 
-### Sprint 4 (Semana 4) - QA + Go-Live | 12h remaining
+### Sprint 4 (Semana 4) - QA + Go-Live | ✅ COMPLETE
 
 | #        | Issue                         | Prior.     | Est. |
 | -------- | ----------------------------- | ---------- | ---- |
 | ~~#563~~ | ~~E2E Tests Import/Analysis~~ | ✅ CLOSED  | -    |
 | ~~#552~~ | ~~E2E Export DOCX~~           | ✅ PR #733 | -    |
 | ~~#674~~ | ~~Smoke test checklist~~      | ✅ CLOSED  | -    |
-| #675     | Manual usuário PDF            | P2         | 8h   |
-| #677     | Canal suporte email           | P2         | 4h   |
+| ~~#675~~ | ~~Manual usuário PDF~~        | ✅ CLOSED  | -    |
+| ~~#677~~ | ~~Canal suporte email~~       | ✅ CLOSED  | -    |
 | ~~#455~~ | ~~LLM cache memory leak~~     | ✅ PR #734 | -    |
 
 ---
@@ -457,19 +457,19 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 | Métrica           | Valor  |
 | ----------------- | ------ |
 | Issues Totais     | 407    |
-| Issues Abertas    | 39     |
-| Issues Fechadas   | 368    |
-| Progresso         | 90.4%  |
+| Issues Abertas    | 25     |
+| Issues Fechadas   | 382    |
+| Progresso         | 93.9%  |
 | Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
 | P0 Gov-API        | 0      |
-| P1 Gov-API        | 1      |
+| P1 Gov-API        | 0      |
 | P2 Gov-API        | 3      |
-| P0 Infra          | 1      |
+| P0 Infra          | 0      |
 | P1 Sprint         | 0      |
-| P2 Sprint         | 5      |
+| P2 Sprint         | 2      |
 | v1.1 Backlog      | 7      |
 
 ---
