@@ -53,6 +53,7 @@ export function ETPEditor() {
     generationStatus,
     generateSection: storeGenerateSection,
     cancelGeneration,
+    dataSourceStatus,
   } = useETPStore();
 
   // Demo user conversion banner (#475)
@@ -464,6 +465,8 @@ export function ETPEditor() {
                   isGenerating={aiGenerating}
                   generationProgress={generationProgress}
                   generationStatus={generationStatus}
+                  dataSourceStatus={dataSourceStatus}
+                  onRetryDataSource={() => handleGenerateSection(activeSection)}
                 />
               </Tabs>
             </CardContent>

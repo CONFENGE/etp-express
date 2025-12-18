@@ -9,6 +9,7 @@ import {
   ExportOptions,
   GenerationStatus,
   AsyncSection,
+  DataSourceStatusInfo,
 } from '@/types/etp';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
@@ -33,6 +34,9 @@ interface ETFState {
   generationProgress: number;
   generationStatus: GenerationStatus;
   generationJobId: string | null;
+
+  // Data source status for government APIs (#756)
+  dataSourceStatus: DataSourceStatusInfo | null;
 
   // ETP Operations
   fetchETPs: () => Promise<void>;
@@ -90,6 +94,8 @@ const initialState = {
   generationProgress: 0,
   generationStatus: 'idle' as GenerationStatus,
   generationJobId: null as string | null,
+  // Data source status for government APIs (#756)
+  dataSourceStatus: null as DataSourceStatusInfo | null,
 };
 
 /**
@@ -276,7 +282,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       set({ generationJobId: jobId, generationStatus: 'generating' });
 
       // 2. Poll for completion with progress updates and abort support (#611)
-      const section = await pollJobStatus(
+      const pollResult = await pollJobStatus(
         jobId,
         (progress) => {
           if (!signal.aborted) {
@@ -292,11 +298,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
           generationStatus: 'completed',
           generationProgress: 100,
           generationJobId: null,
+          // Store data source status for display (#756)
+          dataSourceStatus: pollResult.dataSourceStatus || null,
         });
       }
 
       return {
-        content: section.content || '',
+        content: pollResult.section.content || '',
         references: [],
         confidence: 1,
         warnings: [],
@@ -389,7 +397,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       set({ generationJobId: jobId, generationStatus: 'generating' });
 
       // Poll for completion with progress updates and abort support (#611)
-      const section = await pollJobStatus(
+      const pollResult = await pollJobStatus(
         jobId,
         (progress) => {
           if (!signal.aborted) {
@@ -405,11 +413,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
           generationStatus: 'completed',
           generationProgress: 100,
           generationJobId: null,
+          // Store data source status for display (#756)
+          dataSourceStatus: pollResult.dataSourceStatus || null,
         });
       }
 
       return {
-        content: section.content || '',
+        content: pollResult.section.content || '',
         references: [],
         confidence: 1,
         warnings: [],

@@ -72,6 +72,32 @@ export interface GenerationResult {
      * - null: No enrichment performed
      */
     enrichmentSource?: 'gov-api' | 'exa' | 'mixed' | null;
+    /**
+     * Status of data sources queried during enrichment phase.
+     * Used by frontend to display DataSourceStatus component.
+     * @see #756 - DataSourceStatus frontend component
+     */
+    dataSourceStatus?: {
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      sources: Array<{
+        name: string;
+        status:
+          | 'SUCCESS'
+          | 'PARTIAL'
+          | 'SERVICE_UNAVAILABLE'
+          | 'RATE_LIMITED'
+          | 'TIMEOUT';
+        error?: string;
+        latencyMs?: number;
+        resultCount?: number;
+      }>;
+      message: string;
+    };
   };
   validationResults: {
     /** Legal compliance validation result */
@@ -505,6 +531,7 @@ export class OrchestratorService {
         userPrompt: sanitizedPrompt,
         hasEnrichmentWarning,
         enrichmentSource,
+        dataSourceStatus,
       } = await this.buildEnrichedPromptWithProgress(
         request,
         agentsUsed,
@@ -605,6 +632,7 @@ export class OrchestratorService {
         hasEnrichmentWarning,
         enrichmentSource,
         startTime,
+        dataSourceStatus,
       );
     } catch (error) {
       this.logger.error('Error generating section with progress:', error);
@@ -1092,6 +1120,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @param agentsUsed - List of agents used during generation
    * @param hasEnrichmentWarning - Flag indicating if enrichment failed
    * @param startTime - Timestamp when generation started
+   * @param dataSourceStatus - Status of data sources queried during enrichment (#756)
    * @returns Complete GenerationResult object
    * @private
    */
@@ -1105,6 +1134,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     hasEnrichmentWarning: boolean,
     enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null,
     startTime: number,
+    dataSourceStatus?: GenerationResult['metadata']['dataSourceStatus'],
   ): GenerationResult {
     // Add mandatory disclaimer
     const finalContent =
@@ -1125,6 +1155,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
         generationTime,
         agentsUsed,
         enrichmentSource,
+        dataSourceStatus,
       },
       validationResults: {
         legal: validationResults.legalValidation,
