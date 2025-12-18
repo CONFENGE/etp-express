@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-18 | **Progresso:** 382/407 (93.9%) | **Deploy:** 🟢 STABLE | **Go-Live:** 26 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-18 | **Progresso:** 383/407 (94.1%) | **Deploy:** 🟢 STABLE | **Go-Live:** 26 dias | **Strategy:** Feature-Complete + Gov APIs
 
 > **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
 
@@ -419,7 +419,7 @@ M9: Export/Import       ██████████████████�
 | ~~#693~~ | ~~SINAPI data ingestion (Excel)~~ | ✅     | PR #726                          |
 | ~~#694~~ | ~~SICRO data ingestion (Excel)~~  | ✅     | PR #727, #730 (xlsx→ExcelJS fix) |
 | ~~#697~~ | ~~Migrations entidades gov-data~~ | ✅     | PR #732                          |
-| #698     | Jobs sync automático (BullMQ)     | P2     | -                                |
+| ~~#698~~ | ~~Jobs sync automático (BullMQ)~~ | ✅     | PR #774                          |
 
 ### Sprint 3 - Observabilidade (P2)
 
@@ -457,16 +457,16 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 | Métrica           | Valor  |
 | ----------------- | ------ |
 | Issues Totais     | 407    |
-| Issues Abertas    | 25     |
-| Issues Fechadas   | 382    |
-| Progresso         | 93.9%  |
+| Issues Abertas    | 24     |
+| Issues Fechadas   | 383    |
+| Progresso         | 94.1%  |
 | Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
 | P0 Gov-API        | 0      |
 | P1 Gov-API        | 0      |
-| P2 Gov-API        | 3      |
+| P2 Gov-API        | 2      |
 | P0 Infra          | 0      |
 | P1 Sprint         | 0      |
 | P2 Sprint         | 2      |
