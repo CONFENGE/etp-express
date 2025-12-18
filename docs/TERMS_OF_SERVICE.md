@@ -10,14 +10,14 @@
 
 Para os fins destes Termos de Uso, consideram-se:
 
-| Termo | Definição |
-|-------|-----------|
+| Termo                          | Definição                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------- |
 | **ETP Express** ou **Sistema** | Plataforma digital de geração automatizada de Estudos Técnicos Preliminares |
-| **Usuário** ou **Você** | Pessoa natural cadastrada e autenticada no Sistema |
-| **ETP** | Estudo Técnico Preliminar, conforme Lei 14.133/2021 |
-| **Conteúdo do Usuário** | Informações, textos, dados e documentos inseridos pelo Usuário |
-| **Conteúdo Gerado** | Textos e seções produzidos pela inteligência artificial do Sistema |
-| **Serviços** | Funcionalidades oferecidas pelo ETP Express |
+| **Usuário** ou **Você**        | Pessoa natural cadastrada e autenticada no Sistema                          |
+| **ETP**                        | Estudo Técnico Preliminar, conforme Lei 14.133/2021                         |
+| **Conteúdo do Usuário**        | Informações, textos, dados e documentos inseridos pelo Usuário              |
+| **Conteúdo Gerado**            | Textos e seções produzidos pela inteligência artificial do Sistema          |
+| **Serviços**                   | Funcionalidades oferecidas pelo ETP Express                                 |
 
 ---
 
@@ -45,14 +45,14 @@ O ETP Express oferece as seguintes funcionalidades:
 
 ### 3.1 Funcionalidades Principais
 
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| **Criação de ETPs** | Formulário guiado para criar Estudos Técnicos Preliminares |
-| **Geração Automatizada** | Produção de seções do ETP com auxílio de inteligência artificial |
-| **Pesquisa de Similares** | Busca de contratos e licitações relacionadas para fundamentação |
-| **Edição e Validação** | Ferramentas para revisar e aprovar conteúdo gerado |
-| **Exportação** | Download de ETPs em formatos PDF e DOCX |
-| **Histórico** | Acesso a versões anteriores dos documentos |
+| Funcionalidade            | Descrição                                                        |
+| ------------------------- | ---------------------------------------------------------------- |
+| **Criação de ETPs**       | Formulário guiado para criar Estudos Técnicos Preliminares       |
+| **Geração Automatizada**  | Produção de seções do ETP com auxílio de inteligência artificial |
+| **Pesquisa de Similares** | Busca de contratos e licitações relacionadas para fundamentação  |
+| **Edição e Validação**    | Ferramentas para revisar e aprovar conteúdo gerado               |
+| **Exportação**            | Download de ETPs em formatos PDF e DOCX                          |
+| **Histórico**             | Acesso a versões anteriores dos documentos                       |
 
 ### 3.2 Limitações do Serviço
 
@@ -149,11 +149,11 @@ São de propriedade exclusiva dos desenvolvedores do Sistema e estão protegidos
 
 ### 6.2 Propriedade do Conteúdo Gerado
 
-| Tipo de Conteúdo | Propriedade |
-|------------------|-------------|
-| **Conteúdo do Usuário** (inputs) | Você (Usuário) mantém a propriedade |
-| **Conteúdo Gerado** (IA) | Você recebe direitos de uso ilimitado |
-| **Templates e estruturas** | ETP Express (licenciados para uso) |
+| Tipo de Conteúdo                 | Propriedade                           |
+| -------------------------------- | ------------------------------------- |
+| **Conteúdo do Usuário** (inputs) | Você (Usuário) mantém a propriedade   |
+| **Conteúdo Gerado** (IA)         | Você recebe direitos de uso ilimitado |
+| **Templates e estruturas**       | ETP Express (licenciados para uso)    |
 
 **Concessão de Licença:**
 
@@ -221,7 +221,7 @@ Ao aceitar estes Termos, você consente expressamente com a **transferência int
 
 - **Railway:** Hospedagem e banco de dados
 - **OpenAI:** Geração de texto com IA
-- **Perplexity:** Pesquisa de contratos similares
+- **Exa:** Pesquisa de contratos similares
 
 ### 8.3 Seus Direitos
 
@@ -246,6 +246,7 @@ Você pode encerrar sua conta a qualquer momento:
 3. Confirme a exclusão
 
 **Efeitos:**
+
 - Seus dados serão excluídos conforme [Política de Privacidade](./PRIVACY_POLICY.md)
 - Dados pessoais permanentemente excluídos após 90 dias
 - Logs de auditoria mantidos por 90 dias para compliance legal, após excluídos
@@ -325,6 +326,7 @@ Para dúvidas, sugestões ou reclamações sobre estes Termos de Uso:
 **Email:** suporte@etpexpress.com.br
 
 **Assuntos específicos:**
+
 - Privacidade e LGPD: privacidade@etpexpress.com.br
 - Problemas técnicos: suporte@etpexpress.com.br
 
@@ -351,5 +353,5 @@ Estamos comprometidos em fornecer uma ferramenta útil, segura e em conformidade
 
 ---
 
-*Documento atualizado como parte da conformidade LGPD - Issue #267 (v1.1)*
-*Documento criado originalmente na Issue #196 (v1.0)*
+_Documento atualizado como parte da conformidade LGPD - Issue #267 (v1.1)_
+_Documento criado originalmente na Issue #196 (v1.0)_

@@ -14,10 +14,10 @@ Este documento avalia oportunidades de aplicação de **anonimização** e **pse
 
 ### 1.1 Definições (LGPD)
 
-| Conceito | Definição | Exemplo | Status LGPD |
-|----------|-----------|---------|-------------|
-| **Anonimização** | Remoção **irreversível** de identificadores | Agregar "1.234 usuários ativos" sem IDs | ❌ Não é mais dado pessoal (Art. 12) |
-| **Pseudonimização** | Substituição de identificadores por **tokens** | userId → hash SHA-256 | ⚠️ Ainda é dado pessoal (Art. 13) |
+| Conceito            | Definição                                      | Exemplo                                 | Status LGPD                          |
+| ------------------- | ---------------------------------------------- | --------------------------------------- | ------------------------------------ |
+| **Anonimização**    | Remoção **irreversível** de identificadores    | Agregar "1.234 usuários ativos" sem IDs | ❌ Não é mais dado pessoal (Art. 12) |
+| **Pseudonimização** | Substituição de identificadores por **tokens** | userId → hash SHA-256                   | ⚠️ Ainda é dado pessoal (Art. 13)    |
 
 ### 1.2 Princípios Aplicáveis
 
@@ -35,6 +35,7 @@ Este documento avalia oportunidades de aplicação de **anonimização** e **pse
 #### ✅ OpenAI - STATUS: ADEQUADO
 
 **Implementação atual:**
+
 - Serviço `PIIRedactionService` sanitiza prompts **antes** de enviar para OpenAI
 - Detecta e substitui: email, CPF, CNPJ, telefone, RG, matrícula, CEP, número de processo
 - Substitui por placeholders: `[EMAIL_REDACTED]`, `[CPF_REDACTED]`, etc.
@@ -44,11 +45,13 @@ Este documento avalia oportunidades de aplicação de **anonimização** e **pse
 **Uso:** `backend/src/modules/orchestrator/orchestrator.service.ts:172-183`
 
 **Recomendações:**
+
 - ✅ **Manter implementação atual** - está conforme LGPD
 - ⚠️ **Expandir patterns** - Adicionar detecção de nomes próprios (regex) e endereços completos
 - ⚠️ **Auditar logs** - Verificar se warnings de PII não estão vazando valores
 
 **Código atual (OrchestratorService):**
+
 ```typescript
 // Linha 172-183
 const { redacted: sanitizedPrompt, findings: piiFindings } =
@@ -62,16 +65,18 @@ if (piiFindings.length > 0) {
 }
 ```
 
-#### ⚠️ Perplexity - STATUS: NECESSITA VERIFICAÇÃO
+#### ✅ Exa - STATUS: ADEQUADO
 
 **Implementação atual:**
-- Envia queries de pesquisa para Perplexity API
-- Queries incluem: objeto da contratação, tópicos legais
-- **NÃO CONFIRMADO**: Uso de `PIIRedactionService` antes de enviar
 
-**Arquivo fonte:** `backend/src/modules/search/perplexity/perplexity.service.ts`
+- Envia queries de pesquisa para Exa API
+- Queries incluem: objeto da contratação, tópicos legais
+- PIIRedactionService aplicado antes de enviar queries
+
+**Arquivo fonte:** `backend/src/modules/search/exa/exa.service.ts`
 
 **Análise de risco:**
+
 ```typescript
 // Linha 129-136 - searchSimilarContracts
 const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
@@ -83,16 +88,18 @@ const query = `Busque informações sobre contratações públicas similares a: 
 ```
 
 **Possível vazamento:**
+
 - Se `objeto` contiver CPF/CNPJ do responsável técnico
 - Se `objeto` contiver matrícula de servidor
 - Se `objeto` contiver número de processo com PII
 
 **Recomendações:**
-1. **[P1 - CRÍTICO]** Aplicar `PIIRedactionService` em todas queries de Perplexity
-2. **[P2]** Criar método específico: `piiRedactionService.redactForSearch(query)` que preserve termos técnicos
-3. **[P3]** Auditar logs de Perplexity para identificar vazamentos históricos
 
-**Issue sugerida:** #270 - Aplicar sanitização de PII em queries de Perplexity
+1. ✅ **IMPLEMENTADO** - PIIRedactionService aplicado em queries Exa
+2. **[P2]** Criar método específico: `piiRedactionService.redactForSearch(query)` que preserve termos técnicos
+3. **[P3]** Auditar logs de Exa para identificar vazamentos históricos
+
+**Issue sugerida:** N/A - Sanitização já implementada na migração para Exa
 
 ---
 
@@ -102,6 +109,7 @@ const query = `Busque informações sobre contratações públicas similares a: 
 
 **Tabela:** `analytics_events`
 **Dados armazenados:**
+
 - `userId` (UUID) - Identificador direto
 - `ipAddress` - Dado pessoal (LGPD Art. 5º, I)
 - `userAgent` - Identificador indireto
@@ -113,11 +121,11 @@ const query = `Busque informações sobre contratações públicas similares a: 
 
 **Oportunidades de Anonimização:**
 
-| Dado | Ação | Quando | Benefício |
-|------|------|--------|-----------|
-| `userId` | **Anonimizar** (SET NULL) | Após 90 dias | Métricas agregadas sem rastreio individual |
-| `ipAddress` | **Pseudonimizar** (hash SHA-256) | Após 30 dias | Análise geográfica sem IP real |
-| `sessionId` | **Anonimizar** (SET NULL) | Após 60 dias | Preserva contagem de sessões, remove rastreio |
+| Dado        | Ação                             | Quando       | Benefício                                     |
+| ----------- | -------------------------------- | ------------ | --------------------------------------------- |
+| `userId`    | **Anonimizar** (SET NULL)        | Após 90 dias | Métricas agregadas sem rastreio individual    |
+| `ipAddress` | **Pseudonimizar** (hash SHA-256) | Após 30 dias | Análise geográfica sem IP real                |
+| `sessionId` | **Anonimizar** (SET NULL)        | Após 60 dias | Preserva contagem de sessões, remove rastreio |
 
 **Exemplo de implementação:**
 
@@ -139,6 +147,7 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 ```
 
 **Métricas preservadas após anonimização:**
+
 - ✅ Total de eventos por tipo/período
 - ✅ Distribuição geográfica (via IP pseudonimizado)
 - ✅ Taxas de sucesso/erro
@@ -146,6 +155,7 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 - ❌ Rastreio individual de usuários (intencionalmente removido)
 
 **Recomendações:**
+
 1. **[P2]** Implementar job cron semanal de anonimização de analytics
 2. **[P3]** Criar view materializada com dados agregados (sem userId)
 3. **[P3]** Dashboard de analytics usando apenas dados agregados/anonimizados
@@ -160,6 +170,7 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 
 **Tabela:** `audit_logs`
 **Dados armazenados:**
+
 - `userId` (FK para User) - Necessário para compliance
 - `ipAddress` - Dado pessoal
 - `userAgent` - Identificador
@@ -170,12 +181,12 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 
 **Análise de conformidade:**
 
-| Aspecto | Status | Justificativa |
-|---------|--------|---------------|
-| Armazenar `userId` | ✅ **JUSTIFICADO** | LGPD Art. 7º, II - Obrigação legal |
-| Armazenar `ipAddress` | ✅ **JUSTIFICADO** | Segurança e investigação de incidentes |
-| Armazenar `changes` (JSONB) | ⚠️ **ATENÇÃO** | Pode conter dados sensíveis |
-| Retenção 90 dias | ✅ **ADEQUADO** | Período razoável para auditoria |
+| Aspecto                     | Status             | Justificativa                          |
+| --------------------------- | ------------------ | -------------------------------------- |
+| Armazenar `userId`          | ✅ **JUSTIFICADO** | LGPD Art. 7º, II - Obrigação legal     |
+| Armazenar `ipAddress`       | ✅ **JUSTIFICADO** | Segurança e investigação de incidentes |
+| Armazenar `changes` (JSONB) | ⚠️ **ATENÇÃO**     | Pode conter dados sensíveis            |
+| Retenção 90 dias            | ✅ **ADEQUADO**    | Período razoável para auditoria        |
 
 **Oportunidade de Pseudonimização (OPCIONAL):**
 
@@ -213,6 +224,7 @@ function pseudonymizeAuditChanges(changes: AuditChanges): AuditChanges {
 ```
 
 **Recomendações:**
+
 1. ✅ **Manter userId e ipAddress** - Justificado por obrigação legal
 2. ⚠️ **[P3]** Pseudonimizar emails em `changes` (hash SHA-256 com salt)
 3. ⚠️ **[P3]** Implementar limpeza automática após 90 dias (DELETE CASCADE)
@@ -249,6 +261,7 @@ this.logger.error('Validation failed', {
 ```
 
 **Recomendações:**
+
 1. **[P1 - CRÍTICO]** Implementar `LoggerInterceptor` que sanitiza logs automaticamente
 2. **[P1]** Adicionar ao `PIIRedactionService` método `redactForLogs(message)`
 3. **[P2]** Auditar todos os `logger.error()`, `logger.warn()` no código
@@ -268,10 +281,10 @@ export class PIILoggerInterceptor implements NestInterceptor {
     // Override logger methods to sanitize
     const originalError = logger.error.bind(logger);
     logger.error = (...args) => {
-      const sanitizedArgs = args.map(arg =>
+      const sanitizedArgs = args.map((arg) =>
         typeof arg === 'string'
           ? this.piiRedactionService.redact(arg).redacted
-          : arg
+          : arg,
       );
       originalError(...sanitizedArgs);
     };
@@ -289,32 +302,32 @@ export class PIILoggerInterceptor implements NestInterceptor {
 
 ### 3.1 Classificação por Prioridade
 
-| Prioridade | Issue | Ação | Impacto LGPD | Esforço |
-|------------|-------|------|--------------|---------|
-| **P1 - CRÍTICO** | #270 | Sanitizar queries Perplexity | Alto - Transferência internacional | 2h |
-| **P1 - CRÍTICO** | #273 | Sanitizar logs de aplicação | Alto - Vazamento em logs | 4h |
-| **P1 - ALTO** | #272 | Validar audit_logs.changes | Médio - Dados sensíveis em auditoria | 2h |
-| **P2 - MÉDIO** | #271 | Anonimizar analytics após 90 dias | Médio - Minimização de dados | 6h |
-| **P3 - BAIXO** | - | Expandir patterns PIIRedactionService | Baixo - Melhoria incremental | 2h |
+| Prioridade       | Issue    | Ação                                  | Impacto LGPD                         | Esforço |
+| ---------------- | -------- | ------------------------------------- | ------------------------------------ | ------- |
+| ~~P1 - CRÍTICO~~ | ~~#270~~ | ~~Sanitizar queries Exa~~             | ✅ Já implementado na migração       | -       |
+| **P1 - CRÍTICO** | #273     | Sanitizar logs de aplicação           | Alto - Vazamento em logs             | 4h      |
+| **P1 - ALTO**    | #272     | Validar audit_logs.changes            | Médio - Dados sensíveis em auditoria | 2h      |
+| **P2 - MÉDIO**   | #271     | Anonimizar analytics após 90 dias     | Médio - Minimização de dados         | 6h      |
+| **P3 - BAIXO**   | -        | Expandir patterns PIIRedactionService | Baixo - Melhoria incremental         | 2h      |
 
 ### 3.2 Dados Identificados para Anonimização
 
-| Dado | Localização | Técnica | Implementação |
-|------|-------------|---------|---------------|
-| `analytics_events.userId` | Após 90 dias | **Anonimização** (SET NULL) | Job cron semanal |
-| `analytics_events.sessionId` | Após 60 dias | **Anonimização** (SET NULL) | Job cron semanal |
-| `analytics_events.ipAddress` | Após 30 dias | **Pseudonimização** (SHA-256) | Job cron semanal |
-| Queries Perplexity | Antes de enviar | **Pseudonimização** (PIIRedactionService) | Código imediato |
-| Logs de aplicação | Antes de logar | **Pseudonimização** (PIIRedactionService) | Interceptor global |
+| Dado                         | Localização     | Técnica                                   | Implementação      |
+| ---------------------------- | --------------- | ----------------------------------------- | ------------------ |
+| `analytics_events.userId`    | Após 90 dias    | **Anonimização** (SET NULL)               | Job cron semanal   |
+| `analytics_events.sessionId` | Após 60 dias    | **Anonimização** (SET NULL)               | Job cron semanal   |
+| `analytics_events.ipAddress` | Após 30 dias    | **Pseudonimização** (SHA-256)             | Job cron semanal   |
+| Queries Perplexity           | Antes de enviar | **Pseudonimização** (PIIRedactionService) | Código imediato    |
+| Logs de aplicação            | Antes de logar  | **Pseudonimização** (PIIRedactionService) | Interceptor global |
 
 ### 3.3 Dados que NÃO Devem Ser Anonimizados
 
-| Dado | Justificativa | Base Legal |
-|------|---------------|------------|
-| `audit_logs.userId` | Obrigação legal de auditoria | LGPD Art. 7º, II |
-| `audit_logs.ipAddress` | Segurança e investigação | LGPD Art. 7º, IX (legítimo interesse) |
-| `users.email` | Autenticação e comunicação | LGPD Art. 7º, V (execução de contrato) |
-| `users.password` (hash) | Autenticação | LGPD Art. 7º, V (execução de contrato) |
+| Dado                    | Justificativa                | Base Legal                             |
+| ----------------------- | ---------------------------- | -------------------------------------- |
+| `audit_logs.userId`     | Obrigação legal de auditoria | LGPD Art. 7º, II                       |
+| `audit_logs.ipAddress`  | Segurança e investigação     | LGPD Art. 7º, IX (legítimo interesse)  |
+| `users.email`           | Autenticação e comunicação   | LGPD Art. 7º, V (execução de contrato) |
+| `users.password` (hash) | Autenticação                 | LGPD Art. 7º, V (execução de contrato) |
 
 ---
 
@@ -359,6 +372,7 @@ GROUP BY DATE_TRUNC('month', created_at), event_type;
 ```
 
 **Benefícios:**
+
 - ✅ Preserva métricas de longo prazo sem rastreio individual
 - ✅ Dashboard não depende de dados pessoais
 - ✅ Conformidade com princípio da necessidade (LGPD Art. 6º, III)
@@ -429,7 +443,9 @@ export class AnalyticsAnonymizationJob {
     });
 
     for (const event of ipsToAnonymize) {
-      const region = await this.ipService.extractRegionBeforePseudonymization(event.ipAddress);
+      const region = await this.ipService.extractRegionBeforePseudonymization(
+        event.ipAddress,
+      );
       event.properties = { ...event.properties, region };
       event.ipAddress = this.ipService.pseudonymize(event.ipAddress);
     }
@@ -445,7 +461,7 @@ export class AnalyticsAnonymizationJob {
       {
         userId: null,
         sessionId: null,
-      }
+      },
     );
 
     this.logger.log('Analytics anonymization job completed');
@@ -462,6 +478,7 @@ export class AnalyticsAnonymizationJob {
 ✅ **IMPLEMENTADO E ADEQUADO**
 
 **Sanitização aplicada:**
+
 - `PIIRedactionService.redact()` antes de enviar prompts
 - Detecta: email, CPF, CNPJ, telefone, RG, matrícula, CEP, processo
 - Substitui por: `[EMAIL_REDACTED]`, `[CPF_REDACTED]`, etc.
@@ -485,6 +502,7 @@ if (piiFindings.length > 0) {
 ```
 
 **Patterns detectados:**
+
 - ✅ Email: `usuario@dominio.com.br`
 - ✅ CPF: `123.456.789-00`
 - ✅ CNPJ: `12.345.678/0001-90`
@@ -495,6 +513,7 @@ if (piiFindings.length > 0) {
 - ✅ Número de processo: `Processo nº 1234/2024`
 
 **Recomendações futuras:**
+
 - ⚠️ **[P3]** Adicionar detecção de nomes próprios (contexto: "Nome: João Silva")
 - ⚠️ **[P3]** Adicionar detecção de endereços completos
 - ⚠️ **[P3]** Adicionar detecção de placas de veículos
@@ -506,6 +525,7 @@ if (piiFindings.length > 0) {
 ⚠️ **NECESSITA IMPLEMENTAÇÃO**
 
 **Problema identificado:**
+
 - Queries de pesquisa enviadas para Perplexity **não passam** por `PIIRedactionService`
 - Risco: Se "objeto da contratação" contiver CPF/CNPJ/matrícula
 
@@ -544,7 +564,8 @@ export class PerplexityService {
     _filters?: Record<string, unknown>,
   ): Promise<PerplexityResponse> {
     // Sanitizar "objeto" antes de incluir na query
-    const { redacted: sanitizedObjeto } = this.piiRedactionService.redact(objeto);
+    const { redacted: sanitizedObjeto } =
+      this.piiRedactionService.redact(objeto);
 
     const query = `Busque informações sobre contratações públicas similares a: "${sanitizedObjeto}".
       Inclua informações sobre:
@@ -586,12 +607,12 @@ export class PerplexityService {
 
 ## 7. Issues Relacionadas
 
-| Issue | Título | Prioridade | Esforço | Descrição |
-|-------|--------|------------|---------|-----------|
-| #270 | Sanitizar queries Perplexity | P1 | 2h | Aplicar `PIIRedactionService` antes de enviar para Perplexity |
-| #271 | Anonimizar analytics após 90 dias | P2 | 6h | Implementar job cron de anonimização automática |
-| #272 | Validar audit_logs.changes | P1 | 2h | Garantir ausência de dados sensíveis em audit logs |
-| #273 | Sanitizar logs de aplicação | P1 | 4h | Implementar interceptor global de sanitização |
+| Issue | Título                            | Prioridade | Esforço | Descrição                                                     |
+| ----- | --------------------------------- | ---------- | ------- | ------------------------------------------------------------- |
+| #270  | Sanitizar queries Perplexity      | P1         | 2h      | Aplicar `PIIRedactionService` antes de enviar para Perplexity |
+| #271  | Anonimizar analytics após 90 dias | P2         | 6h      | Implementar job cron de anonimização automática               |
+| #272  | Validar audit_logs.changes        | P1         | 2h      | Garantir ausência de dados sensíveis em audit logs            |
+| #273  | Sanitizar logs de aplicação       | P1         | 4h      | Implementar interceptor global de sanitização                 |
 
 **Total estimado:** 14 horas
 
@@ -617,9 +638,9 @@ export class PerplexityService {
 
 ## 9. Histórico de Atualizações
 
-| Data | Versão | Autor | Descrição |
-|------|--------|-------|-----------|
-| 2025-11-22 | 1.0 | Claude (Engenheiro-Executor) | Versão inicial - Issue #268 |
+| Data       | Versão | Autor                        | Descrição                   |
+| ---------- | ------ | ---------------------------- | --------------------------- |
+| 2025-11-22 | 1.0    | Claude (Engenheiro-Executor) | Versão inicial - Issue #268 |
 
 ---
 
@@ -627,6 +648,7 @@ export class PerplexityService {
 **Parent Issue:** #86 - Auditoria de conformidade: LGPD e privacidade de dados
 
 **Próximos passos:**
+
 - Implementar issues críticas (#270, #272, #273)
 - Avaliar implementação de anonimização de analytics (#271)
 - Revisar e aprovar recomendações com DPO/responsável legal
