@@ -16,7 +16,7 @@ const tourSteps: Step[] = [
     target: 'body',
     content: (
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">Bem-vindo ao ETP Express! 🎉</h2>
+        <h2 className="text-xl font-bold mb-2">Bem-vindo ao ETP Express!</h2>
         <p className="text-muted-foreground">
           Este tour rápido vai te ajudar a conhecer as principais
           funcionalidades do sistema.
@@ -86,7 +86,7 @@ const tourSteps: Step[] = [
     target: 'body',
     content: (
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">Pronto para começar! 🚀</h2>
+        <h2 className="text-xl font-bold mb-2">Pronto para começar!</h2>
         <p className="text-muted-foreground mb-3">
           Ao editar um ETP, use o botão <strong>"Gerar com IA"</strong> para
           acelerar a criação das seções. O sistema vai pesquisar informações
