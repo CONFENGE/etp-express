@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseGuards,
   Query,
@@ -21,8 +20,13 @@ import { CreateEtpDto } from './dto/create-etp.dto';
 import { UpdateEtpDto } from './dto/update-etp.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import {
+  RequireOwnership,
+  ResourceType,
+} from '../../common/decorators/require-ownership.decorator';
+import { Resource } from '../../common/decorators/resource.decorator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { EtpStatus } from '../../entities/etp.entity';
+import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
@@ -121,30 +125,29 @@ export class EtpsController {
   /**
    * Retrieves a single ETP by ID with all sections.
    *
+   * @remarks
+   * Uses @RequireOwnership decorator for centralized authorization (#757).
+   * Resource is validated and loaded by ResourceOwnershipGuard, then
+   * injected via @Resource() decorator - no duplicate DB query needed.
+   *
    * @param id - ETP unique identifier (UUID)
-   * @param userId - Current user ID (extracted from JWT token)
    * @returns ETP entity with all related sections and disclaimer message
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {ForbiddenException} 403 - If user doesn't own this ETP
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Get(':id')
+  @RequireOwnership({ resourceType: ResourceType.ETP })
   @ApiOperation({ summary: 'Obter ETP por ID' })
   @ApiResponse({ status: 200, description: 'Dados do ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
-  async findOne(
-    @Param('id') id: string,
-    @CurrentUser('organizationId') organizationId: string,
-    @CurrentUser('id') userId: string,
-  ) {
-    // Load with sections for dashboard/editor view (no versions needed)
-    const etp = await this.etpsService.findOneWithSections(
-      id,
-      organizationId,
-      userId,
+  async findOne(@Resource() etp: Etp) {
+    // Resource already validated by guard; load sections for dashboard/editor view
+    const etpWithSections = await this.etpsService.findOneWithSectionsNoAuth(
+      etp.id,
     );
     return {
-      data: etp,
+      data: etpWithSections,
       disclaimer: DISCLAIMER,
     };
   }
@@ -152,9 +155,12 @@ export class EtpsController {
   /**
    * Updates an existing ETP.
    *
-   * @param id - ETP unique identifier (UUID)
+   * @remarks
+   * Uses @RequireOwnership decorator for centralized authorization (#757).
+   * Resource is pre-validated by guard; update operates directly on validated entity.
+   *
    * @param updateEtpDto - Partial ETP update data
-   * @param userId - Current user ID (extracted from JWT token)
+   * @param etp - Pre-validated ETP entity (injected by guard)
    * @returns Updated ETP entity with disclaimer message
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {ForbiddenException} 403 - If user doesn't own this ETP
@@ -162,24 +168,23 @@ export class EtpsController {
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Patch(':id')
+  @RequireOwnership({ resourceType: ResourceType.ETP })
   @ApiOperation({ summary: 'Atualizar ETP' })
   @ApiResponse({ status: 200, description: 'ETP atualizado com sucesso' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
   async update(
-    @Param('id') id: string,
     @Body() updateEtpDto: UpdateEtpDto,
+    @Resource() etp: Etp,
     @CurrentUser('id') userId: string,
-    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const etp = await this.etpsService.update(
-      id,
+    const updatedEtp = await this.etpsService.updateDirect(
+      etp,
       updateEtpDto,
       userId,
-      organizationId,
     );
     return {
-      data: etp,
+      data: updatedEtp,
       disclaimer: DISCLAIMER,
     };
   }
@@ -187,9 +192,11 @@ export class EtpsController {
   /**
    * Updates ETP status field.
    *
-   * @param id - ETP unique identifier (UUID)
+   * @remarks
+   * Uses @RequireOwnership decorator for centralized authorization (#757).
+   *
    * @param status - New ETP status value
-   * @param userId - Current user ID (extracted from JWT token)
+   * @param etp - Pre-validated ETP entity (injected by guard)
    * @returns Updated ETP entity with disclaimer message
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {ForbiddenException} 403 - If user doesn't own this ETP
@@ -197,22 +204,21 @@ export class EtpsController {
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Patch(':id/status')
+  @RequireOwnership({ resourceType: ResourceType.ETP })
   @ApiOperation({ summary: 'Atualizar status do ETP' })
   @ApiResponse({ status: 200, description: 'Status atualizado com sucesso' })
   async updateStatus(
-    @Param('id') id: string,
     @Body('status') status: EtpStatus,
+    @Resource() etp: Etp,
     @CurrentUser('id') userId: string,
-    @CurrentUser('organizationId') organizationId: string,
   ) {
-    const etp = await this.etpsService.updateStatus(
-      id,
+    const updatedEtp = await this.etpsService.updateStatusDirect(
+      etp,
       status,
       userId,
-      organizationId,
     );
     return {
-      data: etp,
+      data: updatedEtp,
       disclaimer: DISCLAIMER,
     };
   }
@@ -220,24 +226,23 @@ export class EtpsController {
   /**
    * Deletes an ETP and all its sections.
    *
-   * @param id - ETP unique identifier (UUID)
-   * @param userId - Current user ID (extracted from JWT token)
+   * @remarks
+   * Uses @RequireOwnership decorator for centralized authorization (#757).
+   *
+   * @param etp - Pre-validated ETP entity (injected by guard)
    * @returns Success message with disclaimer
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {ForbiddenException} 403 - If user doesn't own this ETP
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Delete(':id')
+  @RequireOwnership({ resourceType: ResourceType.ETP })
   @ApiOperation({ summary: 'Deletar ETP' })
   @ApiResponse({ status: 200, description: 'ETP deletado com sucesso' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
-  async remove(
-    @Param('id') id: string,
-    @CurrentUser('id') userId: string,
-    @CurrentUser('organizationId') organizationId: string,
-  ) {
-    await this.etpsService.remove(id, userId, organizationId);
+  async remove(@Resource() etp: Etp, @CurrentUser('id') userId: string) {
+    await this.etpsService.removeDirect(etp, userId);
     return {
       message: 'ETP deletado com sucesso',
       disclaimer: DISCLAIMER,

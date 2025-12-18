@@ -612,6 +612,108 @@ export class EtpsService {
     this.logger.log(`ETP deleted: ${id} by user ${userId}`);
   }
 
+  // ============================================================================
+  // Direct methods (pre-authorized by ResourceOwnershipGuard) - Issue #757
+  // ============================================================================
+
+  /**
+   * Retrieves ETP with sections without authorization check.
+   *
+   * @remarks
+   * Use ONLY when authorization has been pre-validated by ResourceOwnershipGuard.
+   * This method skips tenancy and ownership checks for performance.
+   *
+   * @param id - ETP unique identifier (already validated)
+   * @returns ETP entity with sections loaded
+   * @throws {NotFoundException} If ETP not found
+   */
+  async findOneWithSectionsNoAuth(id: string): Promise<Etp> {
+    const etp = await this.etpsRepository.findOne({
+      where: { id },
+      relations: ['createdBy', 'sections'],
+      order: {
+        sections: { order: 'ASC' },
+      },
+    });
+
+    if (!etp) {
+      throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+    }
+
+    return etp;
+  }
+
+  /**
+   * Updates a pre-authorized ETP directly.
+   *
+   * @remarks
+   * Use ONLY when ETP has been pre-validated by ResourceOwnershipGuard.
+   * This method skips tenancy and ownership checks.
+   *
+   * @param etp - Pre-validated ETP entity
+   * @param updateEtpDto - Fields to update
+   * @param userId - User ID for audit logging
+   * @returns Updated ETP entity
+   */
+  async updateDirect(
+    etp: Etp,
+    updateEtpDto: UpdateEtpDto,
+    userId: string,
+  ): Promise<Etp> {
+    Object.assign(etp, updateEtpDto);
+
+    const updatedEtp = await this.etpsRepository.save(etp);
+    this.logger.log(`ETP updated: ${etp.id} by user ${userId}`);
+
+    return updatedEtp;
+  }
+
+  /**
+   * Updates a pre-authorized ETP status directly.
+   *
+   * @remarks
+   * Use ONLY when ETP has been pre-validated by ResourceOwnershipGuard.
+   * This method skips tenancy and ownership checks.
+   *
+   * @param etp - Pre-validated ETP entity
+   * @param status - New status value
+   * @param userId - User ID for audit logging
+   * @returns Updated ETP entity with new status
+   */
+  async updateStatusDirect(
+    etp: Etp,
+    status: EtpStatus,
+    userId: string,
+  ): Promise<Etp> {
+    etp.status = status;
+
+    const updatedEtp = await this.etpsRepository.save(etp);
+    this.logger.log(
+      `ETP status updated: ${etp.id} to ${status} by user ${userId}`,
+    );
+
+    return updatedEtp;
+  }
+
+  /**
+   * Removes a pre-authorized ETP directly.
+   *
+   * @remarks
+   * Use ONLY when ETP has been pre-validated by ResourceOwnershipGuard.
+   * This method skips tenancy and ownership checks.
+   *
+   * @param etp - Pre-validated ETP entity
+   * @param userId - User ID for audit logging
+   */
+  async removeDirect(etp: Etp, userId: string): Promise<void> {
+    await this.etpsRepository.remove(etp);
+    this.logger.log(`ETP deleted: ${etp.id} by user ${userId}`);
+  }
+
+  // ============================================================================
+  // Statistics
+  // ============================================================================
+
   /**
    * Retrieves aggregated statistics about ETPs.
    *
