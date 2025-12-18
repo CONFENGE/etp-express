@@ -1,8 +1,79 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-18 | **Progresso:** 383/407 (94.1%) | **Deploy:** 🟢 STABLE | **Go-Live:** 26 dias | **Strategy:** Feature-Complete + Gov APIs
+**Atualizado:** 2025-12-18 | **Progresso:** 385/448 (85.9%) | **Deploy:** 🔴 ISSUES P0 | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
-> **DECISÃO CTOs (16/12/2024):** GO CONFIRMADO para lançamento B2G. Condições críticas atendidas: M9 100%, Observabilidade P1, Migração Exa, Gov-API Core.
+> **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
+
+---
+
+## 🚨 SPRINT GO-LIVE DEFINITIVO (41 issues)
+
+**Criado:** 2025-12-18 | **Objetivo:** Resolver todas as deficiencias que corroem credibilidade do sistema
+
+### P0 - BLOQUEADORES CRITICOS (10 issues)
+
+| #    | Issue                                                          | Status |
+| ---- | -------------------------------------------------------------- | ------ |
+| #777 | Fix health endpoint 404 - verificar HealthModule registration  | OPEN   |
+| #778 | Executar seed:admin em producao Railway                        | OPEN   |
+| #779 | Renovar/verificar EXA_API_KEY em Railway                       | OPEN   |
+| #780 | Configurar variaveis SMTP em Railway                           | OPEN   |
+| #781 | Configurar SENTRY_DSN backend e frontend                       | OPEN   |
+| #782 | Atualizar emails de @etpexpress.com para @confenge.com.br      | OPEN   |
+| #783 | Atualizar URLs de producao em documentacao                     | OPEN   |
+| #784 | Remover emoticons do AppTour.tsx                               | OPEN   |
+| #785 | Remover emoticons do MANUAL_USUARIO.md                         | OPEN   |
+| #786 | Auditar e remover emoticons decorativos de arquivos do projeto | OPEN   |
+
+### P1 - UX CRITICO (11 issues)
+
+| #    | Issue                                          | Status |
+| ---- | ---------------------------------------------- | ------ |
+| #787 | Aumentar font-size minimo de 11px para 12px    | OPEN   |
+| #788 | Melhorar contraste de texto secundario         | OPEN   |
+| #789 | Revisar text-xs em form-field.tsx              | OPEN   |
+| #790 | Adicionar welcome modal para primeiro login    | OPEN   |
+| #791 | Melhorar empty state do dashboard              | OPEN   |
+| #792 | Mensagens de erro amigaveis para falhas de API | OPEN   |
+| #793 | Ajustar design tokens para melhor legibilidade | OPEN   |
+| #794 | Padronizar micro-interacoes existentes         | OPEN   |
+| #795 | Criar guia de tom e voz institucional          | OPEN   |
+| #796 | Remover linguagem AI-like das interfaces       | OPEN   |
+| #797 | Revisar empty states com CTAs claros           | OPEN   |
+
+### P2 - OPERACIONAL (10 issues)
+
+| #    | Issue                                               | Status |
+| ---- | --------------------------------------------------- | ------ |
+| #798 | Criar MANUAL_TESTER.md para gestores e testadores   | OPEN   |
+| #799 | Criar TROUBLESHOOTING.md com problemas comuns       | OPEN   |
+| #800 | Exportar documentacao OpenAPI/Swagger               | OPEN   |
+| #801 | Criar OPS_RUNBOOK.md com procedimentos operacionais | OPEN   |
+| #802 | Configurar dashboard de metricas em Railway         | OPEN   |
+| #803 | Adicionar endpoint /api/health/ready                | OPEN   |
+| #804 | Configurar rate limiting agressivo para /auth/\*    | OPEN   |
+| #805 | Criar script de verificacao de security headers     | OPEN   |
+| #806 | Executar re-teste completo pos-correcoes P0         | OPEN   |
+| #807 | Documentar processo de validacao pre-deploy         | OPEN   |
+
+### P3 - FUTURO (10 issues)
+
+| #    | Issue                                          | Status |
+| ---- | ---------------------------------------------- | ------ |
+| #808 | Implementar mutation testing com Stryker       | OPEN   |
+| #809 | Adicionar visual regression testing            | OPEN   |
+| #810 | Integrar OWASP ZAP no CI                       | OPEN   |
+| #811 | Implementar cache Redis para respostas LLM     | OPEN   |
+| #812 | Configurar CDN para assets estaticos           | OPEN   |
+| #813 | Adicionar alertas para slow queries            | OPEN   |
+| #814 | Implementar sistema de feature flags           | OPEN   |
+| #815 | Configurar WAF (Web Application Firewall)      | OPEN   |
+| #816 | Documentar estrategia multi-regiao DR          | OPEN   |
+| #817 | Adicionar export de audit logs para compliance | OPEN   |
+
+**Esforco Estimado:** ~108-152h | **Labels:** `go-live`, `priority/P0-P3`
+
+---
 
 ## 🛡️ Hardening & Refactoring (5 issues restantes)
 
@@ -370,7 +441,7 @@ M9: Export/Import       ██████████████████�
 
 ---
 
-## 🔄 ÉPICO - Migração Perplexity → Exa (8 issues) - 87.5% COMPLETE
+## ✅ ÉPICO - Migração Perplexity → Exa (8 issues) - 100% COMPLETE
 
 **Criado:** 2025-12-15 | **Objetivo:** Substituir PerplexityService por ExaService para melhor custo-benefício
 
@@ -383,14 +454,14 @@ M9: Export/Import       ██████████████████�
 | ~~#708~~ | ~~SearchModule usar ExaService~~               | ✅     | PR #719 |
 | ~~#709~~ | ~~Orchestrator migrar para Exa~~               | ✅     | PR #720 |
 
-### Sprint 2 - Remaining Migrations ✅ COMPLETE (1 docs open)
+### Sprint 2 - Remaining Migrations ✅ COMPLETE
 
-| #        | Issue                                       | Prior. | Status  |
-| -------- | ------------------------------------------- | ------ | ------- |
-| ~~#710~~ | ~~Anti-hallucination fact-checking → Exa~~  | ✅     | PR #724 |
-| ~~#711~~ | ~~Health checks → Exa~~                     | ✅     | PR #725 |
-| ~~#712~~ | ~~Remove Perplexity code and dependencies~~ | ✅     | PR #728 |
-| #713     | Update documentation (Perplexity → Exa)     | P2     | -       |
+| #        | Issue                                       | Prior. | Status            |
+| -------- | ------------------------------------------- | ------ | ----------------- |
+| ~~#710~~ | ~~Anti-hallucination fact-checking → Exa~~  | ✅     | PR #724           |
+| ~~#711~~ | ~~Health checks → Exa~~                     | ✅     | PR #725           |
+| ~~#712~~ | ~~Remove Perplexity code and dependencies~~ | ✅     | PR #728           |
+| ~~#713~~ | ~~Update documentation (Perplexity → Exa)~~ | ✅     | CLOSED 2025-12-18 |
 
 **Labels:** `type/refactor`, `area/backend`
 
@@ -421,12 +492,12 @@ M9: Export/Import       ██████████████████�
 | ~~#697~~ | ~~Migrations entidades gov-data~~ | ✅     | PR #732                          |
 | ~~#698~~ | ~~Jobs sync automático (BullMQ)~~ | ✅     | PR #774                          |
 
-### Sprint 3 - Observabilidade (P2)
+### Sprint 3 - Observabilidade (1 open)
 
-| #    | Issue                         | Prior. | Dep. |
-| ---- | ----------------------------- | ------ | ---- |
-| #699 | Métricas gov-api (Prometheus) | P2     | #695 |
-| #700 | Documentação integração       | P3     | #696 |
+| #        | Issue                             | Prior. | Status            |
+| -------- | --------------------------------- | ------ | ----------------- |
+| ~~#699~~ | ~~Métricas gov-api (Prometheus)~~ | ✅     | CLOSED 2025-12-18 |
+| #700     | Documentação integração           | P3     | -                 |
 
 **Labels:** `area/gov-api`, `enhancement`
 
@@ -448,7 +519,7 @@ M9: Export/Import       ██████████████████�
 
 ## Milestones Completos
 
-M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/44), M7 Multi-Tenancy (6/6), M8 Domínios (24/24) - **Total: 187 issues**
+M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 206 issues**
 
 ---
 
@@ -456,20 +527,19 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 
 | Métrica           | Valor  |
 | ----------------- | ------ |
-| Issues Totais     | 407    |
-| Issues Abertas    | 24     |
-| Issues Fechadas   | 383    |
-| Progresso         | 94.1%  |
+| Issues Totais     | 448    |
+| Issues Abertas    | 63     |
+| Issues Fechadas   | 385    |
+| Progresso         | 85.9%  |
 | Velocidade        | 12/dia |
 | Backend Coverage  | 78%    |
 | Frontend Coverage | 76%    |
 | Testes            | 1879   |
-| P0 Gov-API        | 0      |
-| P1 Gov-API        | 0      |
-| P2 Gov-API        | 2      |
-| P0 Infra          | 0      |
-| P1 Sprint         | 0      |
-| P2 Sprint         | 2      |
+| P0 Go-Live        | 10     |
+| P1 Go-Live        | 11     |
+| P2 Go-Live        | 10     |
+| P3 Go-Live        | 10     |
+| P2 Gov-API        | 1      |
 | v1.1 Backlog      | 7      |
 
 ---
