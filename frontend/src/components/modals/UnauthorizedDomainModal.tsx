@@ -55,10 +55,10 @@ export function UnauthorizedDomainModal({
             da sua organização:
           </p>
           <a
-            href="mailto:contato@etpexpress.com.br?subject=Solicitação de Cadastro de Organização"
+            href="mailto:contato@confenge.com.br?subject=Solicitação de Cadastro de Organização"
             className="text-sm text-primary underline block"
           >
-            contato@etpexpress.com.br
+            contato@confenge.com.br
           </a>
         </div>
 

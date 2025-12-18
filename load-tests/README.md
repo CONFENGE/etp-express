@@ -87,11 +87,11 @@ k6 run --env BASE_URL=https://staging.example.com load-tests/scripts/stress.js
 
 ## Variáveis de Ambiente
 
-| Variável             | Padrão                    | Descrição                 |
-| -------------------- | ------------------------- | ------------------------- |
-| `BASE_URL`           | `http://localhost:3000`   | URL base da API           |
-| `TEST_USER_EMAIL`    | `admin@etpexpress.com.br` | Email do usuário de teste |
-| `TEST_USER_PASSWORD` | `Admin@123`               | Senha do usuário de teste |
+| Variável             | Padrão                  | Descrição                 |
+| -------------------- | ----------------------- | ------------------------- |
+| `BASE_URL`           | `http://localhost:3000` | URL base da API           |
+| `TEST_USER_EMAIL`    | `admin@confenge.com.br` | Email do usuário de teste |
+| `TEST_USER_PASSWORD` | `Admin@123`             | Senha do usuário de teste |
 
 ## Thresholds (Critérios de Aceitação)
 
