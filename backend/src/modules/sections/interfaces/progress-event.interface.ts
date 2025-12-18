@@ -70,6 +70,37 @@ export interface ProgressEvent {
      * Error message if phase is 'error'.
      */
     error?: string;
+
+    /**
+     * Status of data sources queried during enrichment.
+     * Used by frontend to display DataSourceStatus component.
+     *
+     * @see #756 - DataSourceStatus frontend component
+     */
+    dataSourceStatus?: {
+      /** Overall search status */
+      status:
+        | 'SUCCESS'
+        | 'PARTIAL'
+        | 'SERVICE_UNAVAILABLE'
+        | 'RATE_LIMITED'
+        | 'TIMEOUT';
+      /** Status of each individual source */
+      sources: Array<{
+        name: string;
+        status:
+          | 'SUCCESS'
+          | 'PARTIAL'
+          | 'SERVICE_UNAVAILABLE'
+          | 'RATE_LIMITED'
+          | 'TIMEOUT';
+        error?: string;
+        latencyMs?: number;
+        resultCount?: number;
+      }>;
+      /** Human-readable status message */
+      message: string;
+    };
   };
 }
 
