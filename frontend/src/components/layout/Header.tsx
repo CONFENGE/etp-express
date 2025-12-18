@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { FileText, LogOut, Menu, User } from 'lucide-react';
+import { FileText, HelpCircle, LogOut, Menu, User } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useUIStore } from '@/store/uiStore';
 import { Button } from '@/components/ui/button';
@@ -15,11 +15,13 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { APP_NAME } from '@/lib/constants';
 import { getInitials } from '@/lib/utils';
+import { useTour } from '@/hooks/useTour';
 
 export function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { toggleSidebar } = useUIStore();
+  const { handleRestart: restartTour } = useTour();
 
   const handleLogout = async () => {
     await logout();
@@ -96,6 +98,16 @@ export function Header() {
                 >
                   <User className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Dashboard</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigate('/dashboard');
+                    setTimeout(restartTour, 500);
+                  }}
+                  className="min-h-touch cursor-pointer"
+                >
+                  <HelpCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                  <span>Reiniciar Tour</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

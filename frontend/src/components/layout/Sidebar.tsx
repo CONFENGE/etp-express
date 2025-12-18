@@ -19,6 +19,7 @@ export function Sidebar() {
     <aside
       role="navigation"
       aria-label="Main navigation"
+      data-tour="sidebar-nav"
       className={cn(
         'fixed left-0 top-16 z-30 h-[calc(100vh-4rem)] w-64 border-r bg-background overflow-y-auto',
         // Responsive: overlay on mobile
@@ -28,7 +29,11 @@ export function Sidebar() {
     >
       <div className="flex flex-col gap-4 p-4">
         {/* New ETP button with touch target */}
-        <Button asChild className="w-full min-h-touch">
+        <Button
+          asChild
+          className="w-full min-h-touch"
+          data-tour="new-etp-button"
+        >
           <NavLink to="/etps/new" aria-label="Create new ETP">
             <PlusCircle className="mr-2 h-4 w-4" aria-hidden="true" />
             Novo ETP
