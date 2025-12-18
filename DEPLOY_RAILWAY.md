@@ -14,7 +14,7 @@ Este guia detalha o processo completo de deploy do ETP Express na Railway.
 
 2. **API Keys Necessárias**
    - OpenAI API Key (https://platform.openai.com/api-keys)
-   - Perplexity API Key (https://www.perplexity.ai/settings/api)
+   - Exa API Key (https://dashboard.exa.ai/api-keys)
 
 3. **Repositório Git**
    - Código versionado no Git
@@ -137,9 +137,8 @@ OPENAI_MODEL=gpt-4-turbo-preview
 OPENAI_MAX_TOKENS=4000
 OPENAI_TEMPERATURE=0.7
 
-# Perplexity
-PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-PERPLEXITY_MODEL=pplx-7b-online
+# Exa (Web Search)
+EXA_API_KEY=exa-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Frontend URL (será preenchido após deploy do frontend)
 FRONTEND_URL=https://etp-express-frontend.up.railway.app
@@ -585,6 +584,7 @@ railway redeploy --service=etp-express-backend
    - Tempo total: ~5-10 minutos para 2 réplicas
 
 4. **Validar zero downtime:**
+
    ```bash
    # Em outro terminal, execute requisições contínuas
    while true; do
@@ -704,6 +704,363 @@ curl https://etp-express-backend-production.up.railway.app/api/v1/health
 - Railway Scaling Docs: https://docs.railway.app/deploy/scaling
 - Railway Health Checks: https://docs.railway.app/deploy/healthchecks
 - Issue #735: Scale backend 2+ réplicas (implementação desta seção)
+
+### 6.6 Connection Pooling com PgBouncer (Escala Avançada)
+
+> **Status:** 📋 DOCUMENTADO (Issue #657)
+> **Uso:** Recomendado quando escalar além de 4 réplicas ou atingir limite de conexões
+
+O PgBouncer é um pooler de conexões externo que permite escalar significativamente o número de réplicas backend sem esgotar as conexões do PostgreSQL.
+
+#### 6.6.1 Por Que Usar PgBouncer?
+
+**Problema: Esgotamento de Conexões em Alta Escala**
+
+A configuração atual do pool de conexões está otimizada para o limite do Railway PostgreSQL (máximo 20 conexões por instância). Ao escalar horizontalmente (múltiplas réplicas), cada instância abre seu próprio pool, podendo esgotar as conexões do banco.
+
+| Cenário       | Conexões Usadas | Status    |
+| ------------- | --------------- | --------- |
+| 1 container   | 20 conexões     | ✅ OK     |
+| 2 containers  | 40 conexões     | ✅ OK     |
+| 5 containers  | 100 conexões    | ⚠️ Limite |
+| 10 containers | 200 conexões    | ❌ Falha  |
+
+**Configuração Atual (sem PgBouncer):**
+
+```typescript
+// backend/src/app.module.ts
+extra: {
+  max: 20,      // Railway Postgres Starter limit
+  min: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+}
+```
+
+**Solução: PgBouncer como Intermediário**
+
+```
+[Réplica 1] ──┐
+[Réplica 2] ──┼──► [PgBouncer] ──► [PostgreSQL]
+[Réplica 3] ──┤      (500 clients)    (20 conns)
+[Réplica N] ──┘
+```
+
+#### 6.6.2 O Que é PgBouncer?
+
+PgBouncer é um connection pooler externo que:
+
+- **Multiplica conexões**: Múltiplas aplicações compartilham poucas conexões reais
+- **Modo transaction**: Reutilização agressiva - conexão liberada ao fim de cada transação
+- **Reduz overhead**: Elimina handshake SSL repetido entre app e DB
+- **Lightweight**: Consome ~2KB de memória por conexão client
+
+**Modos de Pooling:**
+
+| Modo        | Descrição                             | Uso Recomendado                |
+| ----------- | ------------------------------------- | ------------------------------ |
+| session     | Conexão mantida durante toda a sessão | Apps com conexões longas       |
+| transaction | Conexão liberada após cada transação  | ✅ **Recomendado para NestJS** |
+| statement   | Conexão liberada após cada statement  | Não recomendado (bugs)         |
+
+#### 6.6.3 Quando Usar PgBouncer
+
+**✅ USE PgBouncer se:**
+
+- Escalar para 5+ réplicas backend
+- Atingir erros de "too many connections"
+- Load testing mostrar gargalo de conexões DB
+- Planejar crescimento para 100+ usuários simultâneos
+
+**❌ NÃO PRECISA de PgBouncer se:**
+
+- 2-4 réplicas (configuração atual)
+- Menos de 50 usuários simultâneos
+- Não há erros de conexão nos logs
+
+#### 6.6.4 Configuração no Railway
+
+**Passo 1: Adicionar Serviço PgBouncer**
+
+1. No projeto Railway, clique **"+ New"**
+2. Selecione **"Docker Image"**
+3. Use a imagem: `edoburu/pgbouncer:latest`
+4. Configure nome: `pgbouncer`
+
+**Passo 2: Configurar Variáveis do PgBouncer**
+
+No serviço `pgbouncer`, adicione estas variáveis:
+
+```bash
+# Database connection (usar URL interna do Railway)
+DATABASE_URL=${{Postgres.DATABASE_PRIVATE_URL}}
+
+# Pool configuration
+POOL_MODE=transaction
+MAX_CLIENT_CONN=500
+DEFAULT_POOL_SIZE=20
+MIN_POOL_SIZE=5
+RESERVE_POOL_SIZE=5
+RESERVE_POOL_TIMEOUT=3
+
+# Timeouts
+SERVER_IDLE_TIMEOUT=600
+CLIENT_IDLE_TIMEOUT=0
+QUERY_TIMEOUT=120
+
+# Logging
+LOG_CONNECTIONS=0
+LOG_DISCONNECTIONS=0
+LOG_STATS=1
+STATS_PERIOD=60
+
+# Auth (usar mesmo usuário do Postgres)
+AUTH_TYPE=scram-sha-256
+```
+
+**Passo 3: Configurar Internal Networking**
+
+1. No serviço `pgbouncer`, vá em **Settings** → **Networking**
+2. Habilite **"Private Networking"**
+3. Anote o hostname interno: `pgbouncer.railway.internal`
+4. Porta padrão: `6432`
+
+**Passo 4: Atualizar Backend para Usar PgBouncer**
+
+No serviço `etp-express-backend`, atualize as variáveis:
+
+```bash
+# ANTES (conexão direta com Postgres)
+DATABASE_URL=postgres://user:pass@postgres.railway.internal:5432/railway
+
+# DEPOIS (via PgBouncer)
+DATABASE_URL=postgres://user:pass@pgbouncer.railway.internal:6432/railway
+
+# Opcional: flag para código saber que está usando PgBouncer
+PGBOUNCER_ENABLED=true
+```
+
+#### 6.6.5 Ajustes no Código TypeORM
+
+**Quando usando PgBouncer, ajuste o pool size:**
+
+```typescript
+// backend/src/app.module.ts
+TypeOrmModule.forRootAsync({
+  useFactory: (configService: ConfigService) => ({
+    // ... outras configs ...
+    extra: {
+      // Com PgBouncer: reduzir pool local (PgBouncer gerencia o pool real)
+      max: configService.get('PGBOUNCER_ENABLED') === 'true' ? 5 : 20,
+      min: configService.get('PGBOUNCER_ENABLED') === 'true' ? 1 : 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    },
+  }),
+}),
+```
+
+**Explicação:**
+
+- **Sem PgBouncer**: Cada réplica mantém pool de 5-20 conexões
+- **Com PgBouncer**: Cada réplica mantém pool de 1-5 conexões (PgBouncer multiplica)
+
+#### 6.6.6 Arquivo de Configuração PgBouncer (Alternativa)
+
+Para configuração mais avançada, crie `pgbouncer.ini`:
+
+```ini
+[databases]
+; Conexão com o PostgreSQL Railway
+railway = host=postgres.railway.internal port=5432 dbname=railway
+
+[pgbouncer]
+; Listening
+listen_addr = 0.0.0.0
+listen_port = 6432
+
+; Pool settings
+pool_mode = transaction
+max_client_conn = 500
+default_pool_size = 20
+min_pool_size = 5
+reserve_pool_size = 5
+reserve_pool_timeout = 3
+
+; Timeouts
+server_idle_timeout = 600
+client_idle_timeout = 0
+query_timeout = 120
+client_login_timeout = 60
+
+; Logging
+log_connections = 0
+log_disconnections = 0
+log_pooler_errors = 1
+stats_period = 60
+
+; Authentication
+auth_type = scram-sha-256
+auth_file = /etc/pgbouncer/userlist.txt
+
+; Misc
+ignore_startup_parameters = extra_float_digits
+```
+
+**Arquivo `userlist.txt`:**
+
+```
+"postgres" "SCRAM-SHA-256$4096:salt$client_key:server_key"
+```
+
+> **Nota:** O hash SCRAM-SHA-256 deve ser obtido do PostgreSQL Railway.
+
+#### 6.6.7 Verificação e Monitoramento
+
+**Verificar Status do PgBouncer:**
+
+```bash
+# Via Railway CLI
+railway logs --service=pgbouncer | grep -E "stats|error"
+
+# Conexões ativas
+railway run --service=pgbouncer psql -p 6432 pgbouncer -c "SHOW POOLS;"
+```
+
+**Métricas Importantes:**
+
+| Métrica     | Descrição               | Threshold Saudável |
+| ----------- | ----------------------- | ------------------ |
+| `cl_active` | Clientes ativos         | < MAX_CLIENT_CONN  |
+| `sv_active` | Conexões server ativas  | < DEFAULT_POOL     |
+| `sv_idle`   | Conexões server ociosas | > 0                |
+| `sv_used`   | Total conexões usadas   | < 20               |
+| `maxwait`   | Tempo máximo de espera  | < 1s               |
+
+**Comando para Verificar Pools:**
+
+```sql
+-- Conectar ao console admin do PgBouncer
+psql -h pgbouncer.railway.internal -p 6432 pgbouncer
+
+-- Ver status dos pools
+SHOW POOLS;
+
+-- Ver estatísticas
+SHOW STATS;
+
+-- Ver configuração
+SHOW CONFIG;
+```
+
+#### 6.6.8 Troubleshooting PgBouncer
+
+**Problema: "Auth failed" ao conectar**
+
+```bash
+# Verificar credenciais
+railway variables --service=pgbouncer | grep -i auth
+
+# Solução: Garantir que userlist.txt tem hash correto
+# ou usar AUTH_TYPE=trust para teste (NÃO em produção)
+```
+
+**Problema: "No more connections allowed"**
+
+```bash
+# Aumentar MAX_CLIENT_CONN
+railway variables set MAX_CLIENT_CONN=1000 --service=pgbouncer
+
+# Ou reduzir pool size nos backends
+```
+
+**Problema: "Server connection timeout"**
+
+```bash
+# Verificar conectividade interna
+railway run --service=etp-express-backend ping postgres.railway.internal
+
+# Aumentar timeout
+railway variables set SERVER_CONNECT_TIMEOUT=30 --service=pgbouncer
+```
+
+**Problema: Queries longas sendo canceladas**
+
+```bash
+# Aumentar query_timeout (default 120s pode ser curto para LLM)
+railway variables set QUERY_TIMEOUT=300 --service=pgbouncer
+```
+
+#### 6.6.9 Checklist de Deploy com PgBouncer
+
+- [ ] Serviço PgBouncer criado no Railway
+- [ ] Variáveis configuradas (POOL_MODE=transaction, etc.)
+- [ ] Private networking habilitado
+- [ ] DATABASE_URL do backend atualizado para pgbouncer:6432
+- [ ] Pool size do TypeORM reduzido (max: 5)
+- [ ] Teste de conexão bem-sucedido
+- [ ] `SHOW POOLS` mostra conexões saudáveis
+- [ ] Load test confirmou escalabilidade
+- [ ] Alertas configurados para `maxwait > 1s`
+
+#### 6.6.10 Migração para PgBouncer (Zero Downtime)
+
+**Procedimento de Migração:**
+
+1. **Deploy PgBouncer** (sem afetar backend atual)
+
+   ```bash
+   # PgBouncer roda em paralelo, não afeta conexões existentes
+   railway up --service=pgbouncer
+   ```
+
+2. **Testar Conectividade**
+
+   ```bash
+   # Testar conexão via PgBouncer manualmente
+   railway run psql postgres://user:pass@pgbouncer.railway.internal:6432/railway -c "SELECT 1"
+   ```
+
+3. **Atualizar Uma Réplica**
+
+   ```bash
+   # Atualizar DATABASE_URL de apenas uma réplica para teste
+   # Se Railway não suportar config por réplica, pular para step 4
+   ```
+
+4. **Rolling Update do Backend**
+
+   ```bash
+   # Atualizar variável DATABASE_URL
+   railway variables set DATABASE_URL=postgres://user:pass@pgbouncer.railway.internal:6432/railway --service=etp-express-backend
+
+   # Railway fará rolling update (uma réplica por vez)
+   # Tráfego continua sendo servido pelas réplicas antigas até novas estarem healthy
+   ```
+
+5. **Validar**
+
+   ```bash
+   # Verificar logs por erros
+   railway logs --service=etp-express-backend | grep -i "error\|connection"
+
+   # Verificar pools
+   railway run --service=pgbouncer psql -p 6432 pgbouncer -c "SHOW POOLS;"
+   ```
+
+6. **Rollback (se necessário)**
+   ```bash
+   # Reverter para conexão direta
+   railway variables set DATABASE_URL=${{Postgres.DATABASE_URL}} --service=etp-express-backend
+   ```
+
+---
+
+**Referências PgBouncer:**
+
+- Documentação Oficial: https://www.pgbouncer.org/
+- Railway PostgreSQL: https://docs.railway.app/databases/postgresql
+- Issue #657: Documentar PgBouncer para escala (implementação desta seção)
 
 ---
 
@@ -1194,5 +1551,5 @@ Todo conteúdo gerado deve ser **revisado criticamente** antes de uso oficial.
 
 ---
 
-**Última atualização**: 2025-12-14
-**Versão do guia**: 2.1.0
+**Última atualização**: 2025-12-17
+**Versão do guia**: 2.2.0
