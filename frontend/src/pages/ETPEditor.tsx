@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -175,34 +175,37 @@ export function ETPEditor() {
     }
   }, [currentETP, id, updateETP, activeSection, content, success, error]);
 
-  const handleGenerateAll = async () => {
+  const handleGenerateAll = useCallback(async () => {
     // Generate all sections sequentially
     // For MVP, show message that this is still in development
     success('Funcionalidade em desenvolvimento');
-  };
+  }, [success]);
 
-  const handleGenerateSection = async (sectionNumber: number) => {
-    if (!id) return;
+  const handleGenerateSection = useCallback(
+    async (sectionNumber: number) => {
+      if (!id) return;
 
-    try {
-      const result = await storeGenerateSection({
-        etpId: id,
-        sectionNumber,
-      });
+      try {
+        const result = await storeGenerateSection({
+          etpId: id,
+          sectionNumber,
+        });
 
-      if (result?.content) {
-        setContent(result.content);
-        success('Seção gerada com sucesso!');
+        if (result?.content) {
+          setContent(result.content);
+          success('Seção gerada com sucesso!');
 
-        // Trigger demo conversion banner after successful AI generation (#475)
-        triggerBanner('ai_generation');
+          // Trigger demo conversion banner after successful AI generation (#475)
+          triggerBanner('ai_generation');
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Erro ao gerar seção';
+        error(message);
       }
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Erro ao gerar seção';
-      error(message);
-    }
-  };
+    },
+    [id, storeGenerateSection, success, triggerBanner, error],
+  );
 
   // Handle cancel export (#612) - must be before early return
   const handleCancelExport = useCallback(() => {
@@ -213,42 +216,42 @@ export function ETPEditor() {
     }
   }, [success]);
 
-  if (isLoading || !currentETP || templatesLoading) {
-    return (
-      <MainLayout>
-        <LoadingState
-          message={
-            templatesLoading ? 'Carregando templates...' : 'Carregando ETP...'
-          }
-        />
-      </MainLayout>
-    );
-  }
+  // Memoized computed values for tabs, content, and sidebar (#457)
+  const sectionsForTabs = useMemo(
+    () =>
+      sectionTemplates.map((template) => ({
+        id: String(template.number),
+        title: String(template.number),
+        completed: false, // TODO: calcular baseado em currentETP.sections
+      })),
+    [sectionTemplates],
+  );
 
-  // Transformar templates em formato para TabsList e Content
-  const sectionsForTabs = sectionTemplates.map((template) => ({
-    id: String(template.number),
-    title: String(template.number),
-    completed: false, // TODO: calcular baseado em currentETP.sections
-  }));
+  const sectionsForContent = useMemo(
+    () =>
+      sectionTemplates.map((template) => ({
+        number: template.number,
+        title: template.title,
+        description: template.description,
+        content: content,
+        isRequired: template.isRequired,
+      })),
+    [sectionTemplates, content],
+  );
 
-  const sectionsForContent = sectionTemplates.map((template) => ({
-    number: template.number,
-    title: template.title,
-    description: template.description,
-    content: content,
-    isRequired: template.isRequired,
-  }));
-
-  const sectionsForSidebar = sectionTemplates.map((template) => ({
-    id: String(template.number),
-    title: template.title,
-    completed: false, // TODO: calcular baseado em currentETP.sections
-  }));
+  const sectionsForSidebar = useMemo(
+    () =>
+      sectionTemplates.map((template) => ({
+        id: String(template.number),
+        title: template.title,
+        completed: false, // TODO: calcular baseado em currentETP.sections
+      })),
+    [sectionTemplates],
+  );
 
   // Handle PDF export with demo conversion trigger (#475), AbortController (#603), and progress (#612)
-  const handleExportPDF = async () => {
-    if (!id) return;
+  const handleExportPDF = useCallback(async () => {
+    if (!id || !currentETP) return;
 
     // Cancel any previous export operation
     if (exportAbortControllerRef.current) {
@@ -323,11 +326,11 @@ export function ETPEditor() {
       setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
-  };
+  }, [id, currentETP, success, triggerBanner, error]);
 
   // Handle DOCX export (#551) with AbortController (#603) and progress (#612)
-  const handleExportDocx = async () => {
-    if (!id) return;
+  const handleExportDocx = useCallback(async () => {
+    if (!id || !currentETP) return;
 
     // Cancel any previous export operation
     if (exportAbortControllerRef.current) {
@@ -402,7 +405,20 @@ export function ETPEditor() {
       setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
-  };
+  }, [id, currentETP, success, triggerBanner, error]);
+
+  // Early return for loading state - all hooks must be called before this
+  if (isLoading || !currentETP || templatesLoading) {
+    return (
+      <MainLayout>
+        <LoadingState
+          message={
+            templatesLoading ? 'Carregando templates...' : 'Carregando ETP...'
+          }
+        />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
