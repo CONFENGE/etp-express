@@ -25,7 +25,8 @@ export function SimilarContractsPanel({
               Nenhuma contratação similar encontrada
             </p>
             <p className="text-xs text-muted-foreground max-w-[200px]">
-              Preencha mais detalhes do objeto para encontrar referências de contratações anteriores.
+              Preencha mais detalhes do objeto para encontrar referências de
+              contratações anteriores.
             </p>
           </div>
         ) : (

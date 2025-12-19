@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, Search, MoreVertical, Edit, Trash2, X } from 'lucide-react';
+import {
+  PlusCircle,
+  Search,
+  MoreVertical,
+  Edit,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -142,7 +149,9 @@ export function ETPs() {
                 }
                 action={{
                   label: search ? 'Limpar busca' : 'Criar ETP',
-                  onClick: search ? handleClearSearch : () => navigate('/etps/new'),
+                  onClick: search
+                    ? handleClearSearch
+                    : () => navigate('/etps/new'),
                   icon: search ? X : PlusCircle,
                   variant: search ? 'outline' : 'default',
                 }}
