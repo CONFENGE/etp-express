@@ -336,9 +336,9 @@ a:focus-visible {
   background-color: var(--apple-accent-light, rgba(0, 122, 255, 0.1));
 }
 
-/* Active/pressed state */
+/* Active/pressed state - standardized with button component (0.97) */
 .active-scale:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 /* ========================================
