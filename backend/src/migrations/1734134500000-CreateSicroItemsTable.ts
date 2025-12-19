@@ -24,13 +24,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - #697: Gov-data migrations (this)
  */
 export class CreateSicroItemsTable1734134500000 implements MigrationInterface {
- public async up(queryRunner: QueryRunner): Promise<void> {
- // Check if table already exists (idempotency)
- const tableExists = await queryRunner.hasTable('sicro_items');
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Check if table already exists (idempotency)
+    const tableExists = await queryRunner.hasTable('sicro_items');
 
- if (!tableExists) {
- // Step 1: Create sicro_items table
- await queryRunner.query(`
+    if (!tableExists) {
+      // Step 1: Create sicro_items table
+      await queryRunner.query(`
  CREATE TABLE "sicro_items" (
  "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
  "organizationId" UUID NULL,
@@ -51,116 +51,116 @@ export class CreateSicroItemsTable1734134500000 implements MigrationInterface {
  "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
  )
  `);
- }
+    }
 
- // Step 2: Create foreign key to organizations table (idempotent)
- const table = await queryRunner.getTable('sicro_items');
- const hasForeignKey = table?.foreignKeys.some(
- (fk) => fk.name === 'FK_sicro_items_organization',
- );
+    // Step 2: Create foreign key to organizations table (idempotent)
+    const table = await queryRunner.getTable('sicro_items');
+    const hasForeignKey = table?.foreignKeys.some(
+      (fk) => fk.name === 'FK_sicro_items_organization',
+    );
 
- if (!hasForeignKey) {
- await queryRunner.query(`
+    if (!hasForeignKey) {
+      await queryRunner.query(`
  ALTER TABLE "sicro_items"
  ADD CONSTRAINT "FK_sicro_items_organization"
  FOREIGN KEY ("organizationId")
  REFERENCES "organizations"("id")
  ON DELETE SET NULL
  `);
- }
+    }
 
- // Step 3: Create simple indexes (idempotent)
- const indexes = [
- {
- name: 'IDX_sicro_items_organizationId',
- sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_organizationId" ON "sicro_items" ("organizationId")',
- },
- {
- name: 'IDX_sicro_items_codigo',
- sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_codigo" ON "sicro_items" ("codigo")',
- },
- {
- name: 'IDX_sicro_items_tipo',
- sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_tipo" ON "sicro_items" ("tipo")',
- },
- {
- name: 'IDX_sicro_items_uf',
- sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_uf" ON "sicro_items" ("uf")',
- },
- {
- name: 'IDX_sicro_items_modo_transporte',
- sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_modo_transporte" ON "sicro_items" ("modoTransporte")',
- },
- ];
+    // Step 3: Create simple indexes (idempotent)
+    const indexes = [
+      {
+        name: 'IDX_sicro_items_organizationId',
+        sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_organizationId" ON "sicro_items" ("organizationId")',
+      },
+      {
+        name: 'IDX_sicro_items_codigo',
+        sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_codigo" ON "sicro_items" ("codigo")',
+      },
+      {
+        name: 'IDX_sicro_items_tipo',
+        sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_tipo" ON "sicro_items" ("tipo")',
+      },
+      {
+        name: 'IDX_sicro_items_uf',
+        sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_uf" ON "sicro_items" ("uf")',
+      },
+      {
+        name: 'IDX_sicro_items_modo_transporte',
+        sql: 'CREATE INDEX IF NOT EXISTS "IDX_sicro_items_modo_transporte" ON "sicro_items" ("modoTransporte")',
+      },
+    ];
 
- for (const index of indexes) {
- await queryRunner.query(index.sql);
- }
+    for (const index of indexes) {
+      await queryRunner.query(index.sql);
+    }
 
- // Step 4: Create compound indexes (idempotent)
- await queryRunner.query(`
+    // Step 4: Create compound indexes (idempotent)
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_sicro_items_organization_createdAt"
  ON "sicro_items" ("organizationId", "createdAt")
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_sicro_items_ano_mes"
  ON "sicro_items" ("anoReferencia", "mesReferencia")
  `);
 
- // Step 5: Create full-text search index (Portuguese) on descricao
- await queryRunner.query(`
+    // Step 5: Create full-text search index (Portuguese) on descricao
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_sicro_items_descricao_gin"
  ON "sicro_items"
  USING GIN(to_tsvector('portuguese', "descricao"))
  `);
- }
+  }
 
- public async down(queryRunner: QueryRunner): Promise<void> {
- // Rollback Step 5: Drop full-text search index
- await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Rollback Step 5: Drop full-text search index
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_descricao_gin"
  `);
 
- // Rollback Step 4: Drop compound indexes
- await queryRunner.query(`
+    // Rollback Step 4: Drop compound indexes
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_ano_mes"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_organization_createdAt"
  `);
 
- // Rollback Step 3: Drop simple indexes
- await queryRunner.query(`
+    // Rollback Step 3: Drop simple indexes
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_modo_transporte"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_uf"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_tipo"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_codigo"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_sicro_items_organizationId"
  `);
 
- // Rollback Step 2: Drop foreign key constraint
- await queryRunner.query(`
+    // Rollback Step 2: Drop foreign key constraint
+    await queryRunner.query(`
  ALTER TABLE "sicro_items"
  DROP CONSTRAINT IF EXISTS "FK_sicro_items_organization"
  `);
 
- // Rollback Step 1: Drop table
- await queryRunner.query(`
+    // Rollback Step 1: Drop table
+    await queryRunner.query(`
  DROP TABLE IF EXISTS "sicro_items"
  `);
- }
+  }
 }

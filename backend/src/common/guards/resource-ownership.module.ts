@@ -29,8 +29,8 @@ import { EtpSection } from '../../entities/etp-section.entity';
  * ```
  */
 @Module({
- imports: [TypeOrmModule.forFeature([Etp, EtpSection])],
- providers: [ResourceOwnershipGuard],
- exports: [ResourceOwnershipGuard],
+  imports: [TypeOrmModule.forFeature([Etp, EtpSection])],
+  providers: [ResourceOwnershipGuard],
+  exports: [ResourceOwnershipGuard],
 })
 export class ResourceOwnershipModule {}

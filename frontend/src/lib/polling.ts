@@ -12,8 +12,8 @@ import { Section, JobStatusData, DataSourceStatusInfo } from '@/types/etp';
  * @see #756 - DataSourceStatus frontend component
  */
 export interface PollResult {
- section: Section;
- dataSourceStatus?: DataSourceStatusInfo;
+  section: Section;
+  dataSourceStatus?: DataSourceStatusInfo;
 }
 
 /**
@@ -26,12 +26,12 @@ const MAX_POLL_ATTEMPTS = 90; // Max 3 minutes (90 * 2s = 180s)
  * Error thrown when polling times out
  */
 export class PollingTimeoutError extends Error {
- constructor(jobId: string) {
- super(
- `Tempo limite excedido: a geração do job ${jobId} demorou mais que o esperado`,
- );
- this.name = 'PollingTimeoutError';
- }
+  constructor(jobId: string) {
+    super(
+      `Tempo limite excedido: a geração do job ${jobId} demorou mais que o esperado`,
+    );
+    this.name = 'PollingTimeoutError';
+  }
 }
 
 /**
@@ -39,20 +39,20 @@ export class PollingTimeoutError extends Error {
  * @see #611 - Abort polling on component unmount
  */
 export class PollingAbortedError extends Error {
- constructor(jobId: string) {
- super(`Polling cancelado para o job ${jobId}`);
- this.name = 'PollingAbortedError';
- }
+  constructor(jobId: string) {
+    super(`Polling cancelado para o job ${jobId}`);
+    this.name = 'PollingAbortedError';
+  }
 }
 
 /**
  * Error thrown when job fails
  */
 export class JobFailedError extends Error {
- constructor(jobId: string, reason?: string) {
- super(reason || `Job ${jobId} falhou durante processamento`);
- this.name = 'JobFailedError';
- }
+  constructor(jobId: string, reason?: string) {
+    super(reason || `Job ${jobId} falhou durante processamento`);
+    this.name = 'JobFailedError';
+  }
 }
 
 /**
@@ -81,98 +81,98 @@ export class JobFailedError extends Error {
  * ```
  */
 export async function pollJobStatus(
- jobId: string,
- onProgress?: (progress: number) => void,
- options?: {
- intervalMs?: number;
- maxAttempts?: number;
- signal?: AbortSignal;
- },
+  jobId: string,
+  onProgress?: (progress: number) => void,
+  options?: {
+    intervalMs?: number;
+    maxAttempts?: number;
+    signal?: AbortSignal;
+  },
 ): Promise<PollResult> {
- const intervalMs = options?.intervalMs ?? POLL_INTERVAL_MS;
- const maxAttempts = options?.maxAttempts ?? MAX_POLL_ATTEMPTS;
- const signal = options?.signal;
+  const intervalMs = options?.intervalMs ?? POLL_INTERVAL_MS;
+  const maxAttempts = options?.maxAttempts ?? MAX_POLL_ATTEMPTS;
+  const signal = options?.signal;
 
- let attempts = 0;
+  let attempts = 0;
 
- while (attempts < maxAttempts) {
- // Check if aborted before each poll (#611)
- if (signal?.aborted) {
- throw new PollingAbortedError(jobId);
- }
+  while (attempts < maxAttempts) {
+    // Check if aborted before each poll (#611)
+    if (signal?.aborted) {
+      throw new PollingAbortedError(jobId);
+    }
 
- try {
- const response = await apiHelpers.get<{ data: JobStatusData }>(
- `/sections/jobs/${jobId}`,
- );
+    try {
+      const response = await apiHelpers.get<{ data: JobStatusData }>(
+        `/sections/jobs/${jobId}`,
+      );
 
- // Check if aborted after API call (#611)
- if (signal?.aborted) {
- throw new PollingAbortedError(jobId);
- }
+      // Check if aborted after API call (#611)
+      if (signal?.aborted) {
+        throw new PollingAbortedError(jobId);
+      }
 
- const {
- status,
- progress,
- result,
- failedReason,
- error,
- dataSourceStatus,
- } = response.data;
+      const {
+        status,
+        progress,
+        result,
+        failedReason,
+        error,
+        dataSourceStatus,
+      } = response.data;
 
- // Report progress only if not aborted (#611)
- if (!signal?.aborted) {
- onProgress?.(progress);
- }
+      // Report progress only if not aborted (#611)
+      if (!signal?.aborted) {
+        onProgress?.(progress);
+      }
 
- // Handle completion
- if (status === 'completed' && result) {
- return {
- section: result,
- dataSourceStatus,
- };
- }
+      // Handle completion
+      if (status === 'completed' && result) {
+        return {
+          section: result,
+          dataSourceStatus,
+        };
+      }
 
- // Handle failure
- if (status === 'failed') {
- throw new JobFailedError(jobId, failedReason || error);
- }
+      // Handle failure
+      if (status === 'failed') {
+        throw new JobFailedError(jobId, failedReason || error);
+      }
 
- // Handle unknown status (job expired or not found)
- if (status === 'unknown') {
- throw new JobFailedError(
- jobId,
- 'Job não encontrado ou expirou. Tente novamente.',
- );
- }
+      // Handle unknown status (job expired or not found)
+      if (status === 'unknown') {
+        throw new JobFailedError(
+          jobId,
+          'Job não encontrado ou expirou. Tente novamente.',
+        );
+      }
 
- // Wait before next poll, with abort support (#611)
- await sleepWithAbort(intervalMs, signal);
- attempts++;
- } catch (err) {
- // Re-throw our custom errors
- if (
- err instanceof PollingTimeoutError ||
- err instanceof JobFailedError ||
- err instanceof PollingAbortedError
- ) {
- throw err;
- }
+      // Wait before next poll, with abort support (#611)
+      await sleepWithAbort(intervalMs, signal);
+      attempts++;
+    } catch (err) {
+      // Re-throw our custom errors
+      if (
+        err instanceof PollingTimeoutError ||
+        err instanceof JobFailedError ||
+        err instanceof PollingAbortedError
+      ) {
+        throw err;
+      }
 
- // Handle AbortError from sleepWithAbort (#611)
- if (err instanceof Error && err.name === 'AbortError') {
- throw new PollingAbortedError(jobId);
- }
+      // Handle AbortError from sleepWithAbort (#611)
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new PollingAbortedError(jobId);
+      }
 
- // Handle API errors (404, 500, etc.)
- const message =
- err instanceof Error ? err.message : 'Erro ao verificar status do job';
- throw new JobFailedError(jobId, message);
- }
- }
+      // Handle API errors (404, 500, etc.)
+      const message =
+        err instanceof Error ? err.message : 'Erro ao verificar status do job';
+      throw new JobFailedError(jobId, message);
+    }
+  }
 
- // Max attempts reached
- throw new PollingTimeoutError(jobId);
+  // Max attempts reached
+  throw new PollingTimeoutError(jobId);
 }
 
 /**
@@ -180,24 +180,24 @@ export async function pollJobStatus(
  * Resolves after ms or rejects if signal is aborted
  */
 function sleepWithAbort(ms: number, signal?: AbortSignal): Promise<void> {
- return new Promise((resolve, reject) => {
- if (signal?.aborted) {
- reject(new DOMException('Aborted', 'AbortError'));
- return;
- }
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
 
- const timeoutId = setTimeout(() => {
- signal?.removeEventListener('abort', onAbort);
- resolve();
- }, ms);
+    const timeoutId = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
 
- const onAbort = () => {
- clearTimeout(timeoutId);
- reject(new DOMException('Aborted', 'AbortError'));
- };
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      reject(new DOMException('Aborted', 'AbortError'));
+    };
 
- signal?.addEventListener('abort', onAbort, { once: true });
- });
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
 }
 
 /**
@@ -208,19 +208,19 @@ function sleepWithAbort(ms: number, signal?: AbortSignal): Promise<void> {
  * @returns Localized status message for display
  */
 export function getStatusMessage(
- status: 'idle' | 'queued' | 'generating' | 'completed' | 'failed',
- progress: number,
+  status: 'idle' | 'queued' | 'generating' | 'completed' | 'failed',
+  progress: number,
 ): string {
- if (status === 'idle') return '';
- if (status === 'queued') return 'Na fila de processamento...';
- if (status === 'completed') return 'Geração concluída!';
- if (status === 'failed') return 'Erro na geração';
+  if (status === 'idle') return '';
+  if (status === 'queued') return 'Na fila de processamento...';
+  if (status === 'completed') return 'Geração concluída!';
+  if (status === 'failed') return 'Erro na geração';
 
- // Generating - show progress-based message
- if (progress < 20) return 'Preparando contexto...';
- if (progress < 40) return 'Consultando base de conhecimento...';
- if (progress < 60) return 'Gerando conteúdo com IA...';
- if (progress < 80) return 'Validando citações legais...';
- if (progress < 95) return 'Formatando resultado...';
- return 'Finalizando...';
+  // Generating - show progress-based message
+  if (progress < 20) return 'Preparando contexto...';
+  if (progress < 40) return 'Consultando base de conhecimento...';
+  if (progress < 60) return 'Gerando conteúdo com IA...';
+  if (progress < 80) return 'Validando citações legais...';
+  if (progress < 95) return 'Formatando resultado...';
+  return 'Finalizando...';
 }

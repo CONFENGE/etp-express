@@ -40,8 +40,8 @@ import { SicroService } from './sicro.service';
  * ```
  */
 @Module({
- imports: [ConfigModule, GovApiModule],
- providers: [SicroService],
- exports: [SicroService],
+  imports: [ConfigModule, GovApiModule],
+  providers: [SicroService],
+  exports: [SicroService],
 })
 export class SicroModule {}

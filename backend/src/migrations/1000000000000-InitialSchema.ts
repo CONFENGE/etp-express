@@ -23,11 +23,11 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - similar_contracts
  */
 export class InitialSchema1000000000000 implements MigrationInterface {
- name = 'InitialSchema1000000000000';
+  name = 'InitialSchema1000000000000';
 
- public async up(queryRunner: QueryRunner): Promise<void> {
- // Create organization table (Multi-Tenancy)
- await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create organization table (Multi-Tenancy)
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "organization" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
@@ -42,8 +42,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create users table
- await queryRunner.query(`
+    // Create users table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "users" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "email" character varying NOT NULL,
@@ -67,13 +67,13 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create index on users.organizationId for performance
- await queryRunner.query(`
+    // Create index on users.organizationId for performance
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_users_organizationId" ON "users" ("organizationId")
  `);
 
- // Create etps table
- await queryRunner.query(`
+    // Create etps table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "etps" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "metadata" jsonb NOT NULL,
@@ -92,19 +92,19 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create indexes on etps for performance
- await queryRunner.query(`
+    // Create indexes on etps for performance
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_etps_organizationId" ON "etps" ("organizationId")
  `);
- await queryRunner.query(`
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_etps_created_by" ON "etps" ("created_by")
  `);
- await queryRunner.query(`
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_etps_status" ON "etps" ("status")
  `);
 
- // Create etp_versions table
- await queryRunner.query(`
+    // Create etp_versions table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "etp_versions" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "etp_id" uuid NOT NULL,
@@ -121,8 +121,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create etp_sections table
- await queryRunner.query(`
+    // Create etp_sections table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "etp_sections" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "etp_id" uuid NOT NULL,
@@ -137,8 +137,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create section_templates table
- await queryRunner.query(`
+    // Create section_templates table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "section_templates" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
@@ -150,8 +150,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create legislation table (RAG module)
- await queryRunner.query(`
+    // Create legislation table (RAG module)
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "legislation" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "title" character varying NOT NULL,
@@ -163,8 +163,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create audit_logs table (LGPD compliance)
- await queryRunner.query(`
+    // Create audit_logs table (LGPD compliance)
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "audit_logs" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "userId" uuid,
@@ -181,16 +181,16 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create index on audit_logs for performance
- await queryRunner.query(`
+    // Create index on audit_logs for performance
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_audit_logs_userId" ON "audit_logs" ("userId")
  `);
- await queryRunner.query(`
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_audit_logs_timestamp" ON "audit_logs" ("timestamp")
  `);
 
- // Create analytics_events table
- await queryRunner.query(`
+    // Create analytics_events table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "analytics_events" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "userId" uuid,
@@ -203,16 +203,16 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create index on analytics_events for performance
- await queryRunner.query(`
+    // Create index on analytics_events for performance
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_analytics_events_userId" ON "analytics_events" ("userId")
  `);
- await queryRunner.query(`
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_analytics_events_eventType" ON "analytics_events" ("eventType")
  `);
 
- // Create secret_access_logs table (Security)
- await queryRunner.query(`
+    // Create secret_access_logs table (Security)
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "secret_access_logs" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "secretKey" character varying NOT NULL,
@@ -223,13 +223,13 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
- // Create index on secret_access_logs for performance
- await queryRunner.query(`
+    // Create index on secret_access_logs for performance
+    await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_secret_access_logs_timestamp" ON "secret_access_logs" ("timestamp")
  `);
 
- // Create similar_contracts table
- await queryRunner.query(`
+    // Create similar_contracts table
+    await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "similar_contracts" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "title" character varying NOT NULL,
@@ -240,20 +240,20 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CONSTRAINT "PK_similar_contracts_id" PRIMARY KEY ("id")
  )
  `);
- }
+  }
 
- public async down(queryRunner: QueryRunner): Promise<void> {
- // Drop tables in reverse order (respecting foreign keys)
- await queryRunner.query(`DROP TABLE IF EXISTS "similar_contracts"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "secret_access_logs"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "analytics_events"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "audit_logs"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "legislation"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "section_templates"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "etp_sections"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "etp_versions"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "etps"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "users"`);
- await queryRunner.query(`DROP TABLE IF EXISTS "organization"`);
- }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Drop tables in reverse order (respecting foreign keys)
+    await queryRunner.query(`DROP TABLE IF EXISTS "similar_contracts"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "secret_access_logs"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "analytics_events"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "audit_logs"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "legislation"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "section_templates"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "etp_sections"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "etp_versions"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "etps"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "users"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "organization"`);
+  }
 }

@@ -48,13 +48,13 @@ import { EtpSection } from '../../entities/etp-section.entity';
  * ```
  */
 @Module({
- imports: [
- TypeOrmModule.forFeature([Etp, EtpSection]),
- OrchestratorModule,
- DocumentExtractionModule,
- ],
- controllers: [AnalysisController],
- providers: [ETPAnalysisService],
- exports: [ETPAnalysisService],
+  imports: [
+    TypeOrmModule.forFeature([Etp, EtpSection]),
+    OrchestratorModule,
+    DocumentExtractionModule,
+  ],
+  controllers: [AnalysisController],
+  providers: [ETPAnalysisService],
+  exports: [ETPAnalysisService],
 })
 export class AnalysisModule {}

@@ -6,31 +6,31 @@ import { ResourceOwnershipGuard } from '../guards/resource-ownership.guard';
  * Each type maps to a specific entity and repository.
  */
 export enum ResourceType {
- ETP = 'etp',
- SECTION = 'section',
+  ETP = 'etp',
+  SECTION = 'section',
 }
 
 /**
  * Configuration options for ownership validation.
  */
 export interface OwnershipConfig {
- /**
- * Type of resource to validate ownership for.
- */
- resourceType: ResourceType;
+  /**
+   * Type of resource to validate ownership for.
+   */
+  resourceType: ResourceType;
 
- /**
- * Parameter name containing the resource ID.
- * @default 'id'
- */
- idParam?: string;
+  /**
+   * Parameter name containing the resource ID.
+   * @default 'id'
+   */
+  idParam?: string;
 
- /**
- * Whether to validate that the user owns the resource (createdById).
- * When false, only organizationId is validated.
- * @default true
- */
- validateOwnership?: boolean;
+  /**
+   * Whether to validate that the user owns the resource (createdById).
+   * When false, only organizationId is validated.
+   * @default true
+   */
+  validateOwnership?: boolean;
 }
 
 export const OWNERSHIP_KEY = 'ownership_config';
@@ -89,14 +89,14 @@ export const OWNERSHIP_KEY = 'ownership_config';
  * ```
  */
 export function RequireOwnership(config: OwnershipConfig) {
- const normalizedConfig: Required<OwnershipConfig> = {
- resourceType: config.resourceType,
- idParam: config.idParam ?? 'id',
- validateOwnership: config.validateOwnership ?? true,
- };
+  const normalizedConfig: Required<OwnershipConfig> = {
+    resourceType: config.resourceType,
+    idParam: config.idParam ?? 'id',
+    validateOwnership: config.validateOwnership ?? true,
+  };
 
- return applyDecorators(
- SetMetadata(OWNERSHIP_KEY, normalizedConfig),
- UseGuards(ResourceOwnershipGuard),
- );
+  return applyDecorators(
+    SetMetadata(OWNERSHIP_KEY, normalizedConfig),
+    UseGuards(ResourceOwnershipGuard),
+  );
 }

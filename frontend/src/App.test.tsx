@@ -4,97 +4,97 @@ import App from './App';
 
 // Mock do useAuth hook
 vi.mock('@/hooks/useAuth', () => ({
- useAuth: () => ({
- isAuthenticated: false,
- isAuthInitialized: true, // Simulate auth check completed
- isLoading: false,
- user: null,
- login: vi.fn(),
- logout: vi.fn(),
- checkAuth: vi.fn(),
- }),
+  useAuth: () => ({
+    isAuthenticated: false,
+    isAuthInitialized: true, // Simulate auth check completed
+    isLoading: false,
+    user: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+    checkAuth: vi.fn(),
+  }),
 }));
 
 // Mock dos componentes de páginas para simplificar o teste
 vi.mock('@/pages/Login', () => ({
- Login: () => <div>Login Page</div>,
+  Login: () => <div>Login Page</div>,
 }));
 
 vi.mock('@/pages/Register', () => ({
- Register: () => <div>Register Page</div>,
+  Register: () => <div>Register Page</div>,
 }));
 
 vi.mock('@/pages/Dashboard', () => ({
- Dashboard: () => <div>Dashboard Page</div>,
+  Dashboard: () => <div>Dashboard Page</div>,
 }));
 
 vi.mock('@/pages/ETPs', () => ({
- ETPs: () => <div>ETPs Page</div>,
+  ETPs: () => <div>ETPs Page</div>,
 }));
 
 vi.mock('@/pages/ETPEditor', () => ({
- ETPEditor: () => <div>ETPEditor Page</div>,
+  ETPEditor: () => <div>ETPEditor Page</div>,
 }));
 
 vi.mock('@/pages/NotFound', () => ({
- NotFound: () => <div>Not Found Page</div>,
+  NotFound: () => <div>Not Found Page</div>,
 }));
 
 vi.mock('@/components/common/ErrorBoundary', () => ({
- ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
- <>{children}</>
- ),
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 vi.mock('@/components/ui/toaster', () => ({
- Toaster: () => <div>Toaster</div>,
+  Toaster: () => <div>Toaster</div>,
 }));
 
 describe('App Component', () => {
- it('renders without crashing', () => {
- render(<App />);
- expect(document.body).toBeTruthy();
- });
+  it('renders without crashing', () => {
+    render(<App />);
+    expect(document.body).toBeTruthy();
+  });
 
- it('redirects to login when not authenticated', () => {
- render(<App />);
+  it('redirects to login when not authenticated', () => {
+    render(<App />);
 
- // Usuário não autenticado deve ver a página de login
- expect(screen.getByText('Login Page')).toBeInTheDocument();
- });
+    // Usuário não autenticado deve ver a página de login
+    expect(screen.getByText('Login Page')).toBeInTheDocument();
+  });
 
- it('has ErrorBoundary wrapper', () => {
- const { container } = render(<App />);
- expect(container).toBeTruthy();
- });
+  it('has ErrorBoundary wrapper', () => {
+    const { container } = render(<App />);
+    expect(container).toBeTruthy();
+  });
 
- it('has Toaster component', () => {
- render(<App />);
- expect(screen.getByText('Toaster')).toBeInTheDocument();
- });
+  it('has Toaster component', () => {
+    render(<App />);
+    expect(screen.getByText('Toaster')).toBeInTheDocument();
+  });
 });
 
 describe('App Component - Auth Initialization', () => {
- it('shows loading state while auth is not initialized', async () => {
- // Override mock to simulate auth check in progress
- vi.doMock('@/hooks/useAuth', () => ({
- useAuth: () => ({
- isAuthenticated: false,
- isAuthInitialized: false, // Auth check not completed yet
- isLoading: false,
- user: null,
- login: vi.fn(),
- logout: vi.fn(),
- checkAuth: vi.fn(),
- }),
- }));
+  it('shows loading state while auth is not initialized', async () => {
+    // Override mock to simulate auth check in progress
+    vi.doMock('@/hooks/useAuth', () => ({
+      useAuth: () => ({
+        isAuthenticated: false,
+        isAuthInitialized: false, // Auth check not completed yet
+        isLoading: false,
+        user: null,
+        login: vi.fn(),
+        logout: vi.fn(),
+        checkAuth: vi.fn(),
+      }),
+    }));
 
- // Re-import App with new mock
- vi.resetModules();
- const { default: AppWithLoading } = await import('./App');
- render(<AppWithLoading />);
+    // Re-import App with new mock
+    vi.resetModules();
+    const { default: AppWithLoading } = await import('./App');
+    render(<AppWithLoading />);
 
- // Should show loading state instead of login page
- expect(screen.getByText('Verificando autenticação...')).toBeInTheDocument();
- });
+    // Should show loading state instead of login page
+    expect(screen.getByText('Verificando autenticação...')).toBeInTheDocument();
+  });
 });

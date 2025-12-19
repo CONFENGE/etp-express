@@ -17,16 +17,16 @@ import { AsyncLocalStorage } from 'async_hooks';
  */
 
 export interface RequestContextData {
- /**
- * Unique identifier for the request (UUID v4)
- * Can be generated internally or accepted from X-Request-ID header
- */
- requestId: string;
+  /**
+   * Unique identifier for the request (UUID v4)
+   * Can be generated internally or accepted from X-Request-ID header
+   */
+  requestId: string;
 
- /**
- * Timestamp when request started (for duration calculations)
- */
- startTime?: number;
+  /**
+   * Timestamp when request started (for duration calculations)
+   */
+  startTime?: number;
 }
 
 /**
@@ -34,14 +34,14 @@ export interface RequestContextData {
  * Automatically propagates context through async call chains
  */
 export const requestContextStorage =
- new AsyncLocalStorage<RequestContextData>();
+  new AsyncLocalStorage<RequestContextData>();
 
 /**
  * Get the current request context
  * Returns undefined if called outside of a request context
  */
 export function getRequestContext(): RequestContextData | undefined {
- return requestContextStorage.getStore();
+  return requestContextStorage.getStore();
 }
 
 /**
@@ -56,7 +56,7 @@ export function getRequestContext(): RequestContextData | undefined {
  * ```
  */
 export function getRequestId(): string | undefined {
- return getRequestContext()?.requestId;
+  return getRequestContext()?.requestId;
 }
 
 /**
@@ -64,7 +64,7 @@ export function getRequestId(): string | undefined {
  * Returns undefined if called outside of a request context
  */
 export function getRequestStartTime(): number | undefined {
- return getRequestContext()?.startTime;
+  return getRequestContext()?.startTime;
 }
 
 /**
@@ -84,8 +84,8 @@ export function getRequestStartTime(): number | undefined {
  * ```
  */
 export function runInRequestContext<T>(
- context: RequestContextData,
- fn: () => T,
+  context: RequestContextData,
+  fn: () => T,
 ): T {
- return requestContextStorage.run(context, fn);
+  return requestContextStorage.run(context, fn);
 }

@@ -10,11 +10,11 @@ import { ApiProperty } from '@nestjs/swagger';
  * }
  */
 export class AssignManagerDto {
- @ApiProperty({
- description: 'UUID of the user to assign as domain manager',
- example: '123e4567-e89b-12d3-a456-426614174000',
- })
- @IsUUID()
- @IsNotEmpty()
- userId: string;
+  @ApiProperty({
+    description: 'UUID of the user to assign as domain manager',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
 }

@@ -12,40 +12,40 @@
  */
 
 interface SkipLinkProps {
- /**
- * The target element ID to skip to (without #)
- * @default "main-content"
- */
- targetId?: string;
- /**
- * The accessible label for the skip link
- * @default "Skip to main content"
- */
- label?: string;
+  /**
+   * The target element ID to skip to (without #)
+   * @default "main-content"
+   */
+  targetId?: string;
+  /**
+   * The accessible label for the skip link
+   * @default "Skip to main content"
+   */
+  label?: string;
 }
 
 export function SkipLink({
- targetId = 'main-content',
- label = 'Skip to main content',
+  targetId = 'main-content',
+  label = 'Skip to main content',
 }: SkipLinkProps) {
- const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
- e.preventDefault();
- const target = document.getElementById(targetId);
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const target = document.getElementById(targetId);
 
- if (target) {
- // Set tabindex to allow focus on non-interactive elements
- if (!target.hasAttribute('tabindex')) {
- target.setAttribute('tabindex', '-1');
- }
- target.focus();
- // Scroll into view smoothly
- target.scrollIntoView({ behavior: 'smooth', block: 'start' });
- }
- };
+    if (target) {
+      // Set tabindex to allow focus on non-interactive elements
+      if (!target.hasAttribute('tabindex')) {
+        target.setAttribute('tabindex', '-1');
+      }
+      target.focus();
+      // Scroll into view smoothly
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
- return (
- <a href={`#${targetId}`} className="skip-link" onClick={handleClick}>
- {label}
- </a>
- );
+  return (
+    <a href={`#${targetId}`} className="skip-link" onClick={handleClick}>
+      {label}
+    </a>
+  );
 }

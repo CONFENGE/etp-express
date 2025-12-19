@@ -19,30 +19,30 @@ import { UserRole } from '../../entities/user.entity';
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
- constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) {}
 
- canActivate(context: ExecutionContext): boolean {
- // Get required roles from @Roles decorator
- const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
- ROLES_KEY,
- [context.getHandler(), context.getClass()],
- );
+  canActivate(context: ExecutionContext): boolean {
+    // Get required roles from @Roles decorator
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
- // If no roles are specified, allow access (default behavior)
- if (!requiredRoles || requiredRoles.length === 0) {
- return true;
- }
+    // If no roles are specified, allow access (default behavior)
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
 
- // Extract user from request (populated by JwtAuthGuard)
- const request = context.switchToHttp().getRequest();
- const user = request.user;
+    // Extract user from request (populated by JwtAuthGuard)
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
 
- // If no user, deny access (should never happen after JwtAuthGuard)
- if (!user) {
- return false;
- }
+    // If no user, deny access (should never happen after JwtAuthGuard)
+    if (!user) {
+      return false;
+    }
 
- // Check if user has at least one of the required roles
- return requiredRoles.some((role) => user.role === role);
- }
+    // Check if user has at least one of the required roles
+    return requiredRoles.some((role) => user.role === role);
+  }
 }

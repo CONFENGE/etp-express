@@ -12,9 +12,9 @@ import { Organization } from '../../entities/organization.entity';
  * Key usage: AuthService.register uses OrganizationsService.findByDomain to auto-assign users.
  */
 @Module({
- imports: [TypeOrmModule.forFeature([Organization])],
- controllers: [OrganizationsController],
- providers: [OrganizationsService],
- exports: [OrganizationsService],
+  imports: [TypeOrmModule.forFeature([Organization])],
+  controllers: [OrganizationsController],
+  providers: [OrganizationsService],
+  exports: [OrganizationsService],
 })
 export class OrganizationsModule {}

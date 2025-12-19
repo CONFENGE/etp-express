@@ -6,159 +6,159 @@ import { JwtStrategy, JWT_COOKIE_NAME } from './jwt.strategy';
 import { UsersService } from '../../users/users.service';
 
 describe('JwtStrategy', () => {
- let strategy: JwtStrategy;
- let usersService: UsersService;
+  let strategy: JwtStrategy;
+  let usersService: UsersService;
 
- const mockConfigService = {
- get: jest.fn((key: string) => {
- if (key === 'JWT_SECRET') return 'test-secret-key';
- return null;
- }),
- };
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'JWT_SECRET') return 'test-secret-key';
+      return null;
+    }),
+  };
 
- const mockUsersService = {
- findOne: jest.fn(),
- };
+  const mockUsersService = {
+    findOne: jest.fn(),
+  };
 
- const mockOrganization = {
- id: 'org-123',
- name: 'CONFENGE',
- cnpj: '12.345.678/0001-90',
- domainWhitelist: ['confenge.gov.br'],
- isActive: true,
- stripeCustomerId: null,
- createdAt: new Date(),
- updatedAt: new Date(),
- users: [],
- };
+  const mockOrganization = {
+    id: 'org-123',
+    name: 'CONFENGE',
+    cnpj: '12.345.678/0001-90',
+    domainWhitelist: ['confenge.gov.br'],
+    isActive: true,
+    stripeCustomerId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    users: [],
+  };
 
- const mockUser = {
- id: '123',
- email: 'test@example.com',
- name: 'Test User',
- role: 'servidor',
- organizationId: 'org-123',
- organization: mockOrganization,
- cargo: 'Analista',
- isActive: true,
- };
+  const mockUser = {
+    id: '123',
+    email: 'test@example.com',
+    name: 'Test User',
+    role: 'servidor',
+    organizationId: 'org-123',
+    organization: mockOrganization,
+    cargo: 'Analista',
+    isActive: true,
+  };
 
- /**
- * Creates a mock Express Request object for testing.
- */
- const createMockRequest = (options?: {
- cookies?: Record<string, string>;
- authorization?: string;
- }): Request =>
- ({
- cookies: options?.cookies || {},
- headers: {
- authorization: options?.authorization,
- },
- }) as unknown as Request;
+  /**
+   * Creates a mock Express Request object for testing.
+   */
+  const createMockRequest = (options?: {
+    cookies?: Record<string, string>;
+    authorization?: string;
+  }): Request =>
+    ({
+      cookies: options?.cookies || {},
+      headers: {
+        authorization: options?.authorization,
+      },
+    }) as unknown as Request;
 
- beforeEach(async () => {
- const module: TestingModule = await Test.createTestingModule({
- providers: [
- JwtStrategy,
- { provide: ConfigService, useValue: mockConfigService },
- { provide: UsersService, useValue: mockUsersService },
- ],
- }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        JwtStrategy,
+        { provide: ConfigService, useValue: mockConfigService },
+        { provide: UsersService, useValue: mockUsersService },
+      ],
+    }).compile();
 
- strategy = module.get<JwtStrategy>(JwtStrategy);
- usersService = module.get<UsersService>(UsersService);
+    strategy = module.get<JwtStrategy>(JwtStrategy);
+    usersService = module.get<UsersService>(UsersService);
 
- // Reset mocks before each test
- jest.clearAllMocks();
- });
+    // Reset mocks before each test
+    jest.clearAllMocks();
+  });
 
- it('should be defined', () => {
- expect(strategy).toBeDefined();
- });
+  it('should be defined', () => {
+    expect(strategy).toBeDefined();
+  });
 
- describe('JWT_COOKIE_NAME', () => {
- it('should export the correct cookie name', () => {
- expect(JWT_COOKIE_NAME).toBe('jwt');
- });
- });
+  describe('JWT_COOKIE_NAME', () => {
+    it('should export the correct cookie name', () => {
+      expect(JWT_COOKIE_NAME).toBe('jwt');
+    });
+  });
 
- describe('validate', () => {
- const mockPayload = {
- sub: '123',
- email: 'test@example.com',
- name: 'Test User',
- role: 'servidor',
- organizationId: 'org-123',
- mustChangePassword: false,
- };
+  describe('validate', () => {
+    const mockPayload = {
+      sub: '123',
+      email: 'test@example.com',
+      name: 'Test User',
+      role: 'servidor',
+      organizationId: 'org-123',
+      mustChangePassword: false,
+    };
 
- const mockRequest = createMockRequest();
+    const mockRequest = createMockRequest();
 
- it('should return user data when token payload is valid', async () => {
- // Arrange
- mockUsersService.findOne.mockResolvedValue(mockUser);
+    it('should return user data when token payload is valid', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(mockUser);
 
- // Act
- const result = await strategy.validate(mockRequest, mockPayload);
+      // Act
+      const result = await strategy.validate(mockRequest, mockPayload);
 
- // Assert
- expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
- expect(usersService.findOne).toHaveBeenCalledTimes(1);
- expect(result).toEqual({
- id: mockUser.id,
- email: mockUser.email,
- name: mockUser.name,
- role: mockUser.role,
- organizationId: mockUser.organizationId,
- });
- });
+      // Assert
+      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+      expect(usersService.findOne).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({
+        id: mockUser.id,
+        email: mockUser.email,
+        name: mockUser.name,
+        role: mockUser.role,
+        organizationId: mockUser.organizationId,
+      });
+    });
 
- it('should throw UnauthorizedException when user is not found', async () => {
- // Arrange
- mockUsersService.findOne.mockResolvedValue(null);
+    it('should throw UnauthorizedException when user is not found', async () => {
+      // Arrange
+      mockUsersService.findOne.mockResolvedValue(null);
 
- // Act & Assert
- await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
- UnauthorizedException,
- );
- await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
- 'Usuário inválido ou inativo',
- );
- expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
- });
+      // Act & Assert
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
+        'Usuário inválido ou inativo',
+      );
+      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+    });
 
- it('should throw UnauthorizedException when user is inactive', async () => {
- // Arrange
- const inactiveUser = { ...mockUser, isActive: false };
- mockUsersService.findOne.mockResolvedValue(inactiveUser);
+    it('should throw UnauthorizedException when user is inactive', async () => {
+      // Arrange
+      const inactiveUser = { ...mockUser, isActive: false };
+      mockUsersService.findOne.mockResolvedValue(inactiveUser);
 
- // Act & Assert
- await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
- UnauthorizedException,
- );
- await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
- 'Usuário inválido ou inativo',
- );
- expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
- });
- });
+      // Act & Assert
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
+        'Usuário inválido ou inativo',
+      );
+      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+    });
+  });
 
- describe('cookie extractor behavior', () => {
- /**
- * Note: The cookieExtractor is a private function, but we can test
- * its behavior through the strategy configuration. These tests
- * verify the expected extraction behavior documented in the strategy.
- */
- it('should have the correct cookie name constant', () => {
- // The JWT_COOKIE_NAME should match AUTH_COOKIE_NAME in auth.controller.ts
- expect(JWT_COOKIE_NAME).toBe('jwt');
- });
+  describe('cookie extractor behavior', () => {
+    /**
+     * Note: The cookieExtractor is a private function, but we can test
+     * its behavior through the strategy configuration. These tests
+     * verify the expected extraction behavior documented in the strategy.
+     */
+    it('should have the correct cookie name constant', () => {
+      // The JWT_COOKIE_NAME should match AUTH_COOKIE_NAME in auth.controller.ts
+      expect(JWT_COOKIE_NAME).toBe('jwt');
+    });
 
- it('should be configured to extract from cookies', () => {
- // Verify the strategy is defined and configured
- // The actual extraction is tested in integration/e2e tests
- expect(strategy).toBeDefined();
- });
- });
+    it('should be configured to extract from cookies', () => {
+      // Verify the strategy is defined and configured
+      // The actual extraction is tested in integration/e2e tests
+      expect(strategy).toBeDefined();
+    });
+  });
 });

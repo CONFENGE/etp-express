@@ -14,24 +14,24 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * 3. Create index for performance on organizationId queries
  */
 export class AddOrganizationIdToAnalyticsEvents1734048000000 implements MigrationInterface {
- name = 'AddOrganizationIdToAnalyticsEvents1734048000000';
+  name = 'AddOrganizationIdToAnalyticsEvents1734048000000';
 
- public async up(queryRunner: QueryRunner): Promise<void> {
- // Check if column already exists (idempotent)
- const table = await queryRunner.getTable('analytics_events');
- const hasColumn = table?.columns.some(
- (col) => col.name === 'organizationId',
- );
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Check if column already exists (idempotent)
+    const table = await queryRunner.getTable('analytics_events');
+    const hasColumn = table?.columns.some(
+      (col) => col.name === 'organizationId',
+    );
 
- if (!hasColumn) {
- // Step 1: Add organizationId column (UUID, nullable for backward compatibility)
- await queryRunner.query(`
+    if (!hasColumn) {
+      // Step 1: Add organizationId column (UUID, nullable for backward compatibility)
+      await queryRunner.query(`
  ALTER TABLE "analytics_events"
  ADD COLUMN "organizationId" UUID
  `);
 
- // Step 2: Add foreign key constraint to organizations table
- await queryRunner.query(`
+      // Step 2: Add foreign key constraint to organizations table
+      await queryRunner.query(`
  ALTER TABLE "analytics_events"
  ADD CONSTRAINT "FK_analytics_events_organizationId"
  FOREIGN KEY ("organizationId")
@@ -39,41 +39,41 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
  ON DELETE SET NULL
  `);
 
- // Step 3: Create index for performance
- await queryRunner.query(`
+      // Step 3: Create index for performance
+      await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_analytics_events_organizationId"
  ON "analytics_events" ("organizationId")
  `);
 
- // Step 4: Create compound index for common query patterns
- // - Events by organization ordered by date
- await queryRunner.query(`
+      // Step 4: Create compound index for common query patterns
+      // - Events by organization ordered by date
+      await queryRunner.query(`
  CREATE INDEX IF NOT EXISTS "IDX_analytics_events_org_created"
  ON "analytics_events" ("organizationId", "createdAt")
  `);
- }
- }
+    }
+  }
 
- public async down(queryRunner: QueryRunner): Promise<void> {
- // Rollback: Drop indexes first
- await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Rollback: Drop indexes first
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_analytics_events_org_created"
  `);
 
- await queryRunner.query(`
+    await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_analytics_events_organizationId"
  `);
 
- // Drop foreign key constraint
- await queryRunner.query(`
+    // Drop foreign key constraint
+    await queryRunner.query(`
  ALTER TABLE "analytics_events"
  DROP CONSTRAINT IF EXISTS "FK_analytics_events_organizationId"
  `);
 
- // Drop column
- await queryRunner.query(`
+    // Drop column
+    await queryRunner.query(`
  ALTER TABLE "analytics_events"
  DROP COLUMN IF EXISTS "organizationId"
  `);
- }
+  }
 }

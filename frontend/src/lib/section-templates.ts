@@ -10,24 +10,24 @@ let cachedTemplates: SectionTemplate[] | null = null;
  * @returns Promise resolving to the section templates array
  */
 export async function loadSectionTemplates(): Promise<SectionTemplate[]> {
- if (cachedTemplates) {
- return cachedTemplates;
- }
+  if (cachedTemplates) {
+    return cachedTemplates;
+  }
 
- try {
- const response = await fetch('/data/section-templates.json');
- if (!response.ok) {
- throw new Error(
- `Failed to load section templates: ${response.statusText}`,
- );
- }
- const templates = (await response.json()) as SectionTemplate[];
- cachedTemplates = templates;
- return cachedTemplates;
- } catch (error) {
- logger.error('Error loading section templates', error);
- throw error;
- }
+  try {
+    const response = await fetch('/data/section-templates.json');
+    if (!response.ok) {
+      throw new Error(
+        `Failed to load section templates: ${response.statusText}`,
+      );
+    }
+    const templates = (await response.json()) as SectionTemplate[];
+    cachedTemplates = templates;
+    return cachedTemplates;
+  } catch (error) {
+    logger.error('Error loading section templates', error);
+    throw error;
+  }
 }
 
 /**
@@ -37,12 +37,12 @@ export async function loadSectionTemplates(): Promise<SectionTemplate[]> {
  * @returns The cached section templates array
  */
 export function getSectionTemplates(): SectionTemplate[] {
- return cachedTemplates || [];
+  return cachedTemplates || [];
 }
 
 /**
  * Clear the cached templates (useful for testing).
  */
 export function clearTemplatesCache(): void {
- cachedTemplates = null;
+  cachedTemplates = null;
 }

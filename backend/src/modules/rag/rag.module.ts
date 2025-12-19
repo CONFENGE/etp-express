@@ -12,9 +12,9 @@ import { Legislation } from '../../entities/legislation.entity';
  * @see Issue #211 - PoC RAG com Lei 14.133/2021
  */
 @Module({
- imports: [TypeOrmModule.forFeature([Legislation]), ConfigModule],
- providers: [RAGService],
- controllers: [RAGController],
- exports: [RAGService],
+  imports: [TypeOrmModule.forFeature([Legislation]), ConfigModule],
+  providers: [RAGService],
+  controllers: [RAGController],
+  exports: [RAGService],
 })
 export class RAGModule {}

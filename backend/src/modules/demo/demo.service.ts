@@ -20,66 +20,66 @@ const DEMO_ORGANIZATION_CNPJ = '00.000.000/0002-00';
  * These provide realistic examples for demo users to explore.
  */
 const SAMPLE_ETPS = [
- {
- title: 'Aquisição de Computadores e Equipamentos de TI',
- objeto:
- 'Compra de equipamentos de tecnologia da informação para modernização do parque tecnológico da instituição',
- description: 'ETP modelo para demonstração de aquisição de bens de TI',
- numeroProcesso: 'DEMO-001/2025',
- valorEstimado: 150000.0,
- status: EtpStatus.IN_PROGRESS,
- metadata: {
- unidadeRequisitante: 'Departamento de TI',
- responsavelTecnico: 'Usuário Demo',
- fundamentacaoLegal: ['Lei 14.133/2021', 'IN SEGES/ME nº 65/2021'],
- tags: ['TI', 'Equipamentos', 'Modernização'],
- },
- },
- {
- title: 'Contratação de Serviços de Limpeza e Conservação',
- objeto:
- 'Prestação de serviços terceirizados de limpeza, conservação e higienização das instalações',
- description:
- 'ETP modelo para demonstração de contratação de serviços continuados',
- numeroProcesso: 'DEMO-002/2025',
- valorEstimado: 480000.0,
- status: EtpStatus.DRAFT,
- metadata: {
- unidadeRequisitante: 'Setor de Administração',
- responsavelTecnico: 'Usuário Demo',
- fundamentacaoLegal: ['Lei 14.133/2021', 'IN SEGES/ME nº 5/2017'],
- tags: ['Serviços', 'Terceirização', 'Continuado'],
- },
- },
- {
- title: 'Reforma e Adequação de Prédio Público',
- objeto:
- 'Execução de obras de engenharia para reforma e adequação das instalações físicas do órgão',
- description: 'ETP modelo para demonstração de contratação de obras',
- numeroProcesso: 'DEMO-003/2025',
- valorEstimado: 1200000.0,
- status: EtpStatus.REVIEW,
- metadata: {
- unidadeRequisitante: 'Divisão de Engenharia',
- responsavelTecnico: 'Usuário Demo',
- fundamentacaoLegal: ['Lei 14.133/2021', 'Decreto 7.983/2013'],
- tags: ['Obras', 'Engenharia', 'Infraestrutura'],
- },
- },
+  {
+    title: 'Aquisição de Computadores e Equipamentos de TI',
+    objeto:
+      'Compra de equipamentos de tecnologia da informação para modernização do parque tecnológico da instituição',
+    description: 'ETP modelo para demonstração de aquisição de bens de TI',
+    numeroProcesso: 'DEMO-001/2025',
+    valorEstimado: 150000.0,
+    status: EtpStatus.IN_PROGRESS,
+    metadata: {
+      unidadeRequisitante: 'Departamento de TI',
+      responsavelTecnico: 'Usuário Demo',
+      fundamentacaoLegal: ['Lei 14.133/2021', 'IN SEGES/ME nº 65/2021'],
+      tags: ['TI', 'Equipamentos', 'Modernização'],
+    },
+  },
+  {
+    title: 'Contratação de Serviços de Limpeza e Conservação',
+    objeto:
+      'Prestação de serviços terceirizados de limpeza, conservação e higienização das instalações',
+    description:
+      'ETP modelo para demonstração de contratação de serviços continuados',
+    numeroProcesso: 'DEMO-002/2025',
+    valorEstimado: 480000.0,
+    status: EtpStatus.DRAFT,
+    metadata: {
+      unidadeRequisitante: 'Setor de Administração',
+      responsavelTecnico: 'Usuário Demo',
+      fundamentacaoLegal: ['Lei 14.133/2021', 'IN SEGES/ME nº 5/2017'],
+      tags: ['Serviços', 'Terceirização', 'Continuado'],
+    },
+  },
+  {
+    title: 'Reforma e Adequação de Prédio Público',
+    objeto:
+      'Execução de obras de engenharia para reforma e adequação das instalações físicas do órgão',
+    description: 'ETP modelo para demonstração de contratação de obras',
+    numeroProcesso: 'DEMO-003/2025',
+    valorEstimado: 1200000.0,
+    status: EtpStatus.REVIEW,
+    metadata: {
+      unidadeRequisitante: 'Divisão de Engenharia',
+      responsavelTecnico: 'Usuário Demo',
+      fundamentacaoLegal: ['Lei 14.133/2021', 'Decreto 7.983/2013'],
+      tags: ['Obras', 'Engenharia', 'Infraestrutura'],
+    },
+  },
 ];
 
 /**
  * Demo Data Reset Result
  */
 export interface DemoResetResult {
- success: boolean;
- timestamp: Date;
- deletedEtps: number;
- deletedSections: number;
- deletedVersions: number;
- deletedAuditLogs: number;
- createdEtps: number;
- error?: string;
+  success: boolean;
+  timestamp: Date;
+  deletedEtps: number;
+  deletedSections: number;
+  deletedVersions: number;
+  deletedAuditLogs: number;
+  createdEtps: number;
+  error?: string;
 }
 
 /**
@@ -99,273 +99,273 @@ export interface DemoResetResult {
  */
 @Injectable()
 export class DemoService {
- private readonly logger = new Logger(DemoService.name);
+  private readonly logger = new Logger(DemoService.name);
 
- constructor(
- @InjectRepository(Organization)
- private readonly organizationRepository: Repository<Organization>,
- @InjectRepository(User)
- private readonly userRepository: Repository<User>,
- @InjectRepository(Etp)
- private readonly etpRepository: Repository<Etp>,
- @InjectRepository(EtpSection)
- private readonly sectionRepository: Repository<EtpSection>,
- @InjectRepository(EtpVersion)
- private readonly versionRepository: Repository<EtpVersion>,
- @InjectRepository(AuditLog)
- private readonly auditLogRepository: Repository<AuditLog>,
- private readonly dataSource: DataSource,
- ) {}
+  constructor(
+    @InjectRepository(Organization)
+    private readonly organizationRepository: Repository<Organization>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Etp)
+    private readonly etpRepository: Repository<Etp>,
+    @InjectRepository(EtpSection)
+    private readonly sectionRepository: Repository<EtpSection>,
+    @InjectRepository(EtpVersion)
+    private readonly versionRepository: Repository<EtpVersion>,
+    @InjectRepository(AuditLog)
+    private readonly auditLogRepository: Repository<AuditLog>,
+    private readonly dataSource: DataSource,
+  ) {}
 
- /**
- * Busca a organização demo pelo CNPJ.
- *
- * @returns Organization ou null se não encontrada
- */
- async findDemoOrganization(): Promise<Organization | null> {
- return this.organizationRepository.findOne({
- where: { cnpj: DEMO_ORGANIZATION_CNPJ },
- });
- }
+  /**
+   * Busca a organização demo pelo CNPJ.
+   *
+   * @returns Organization ou null se não encontrada
+   */
+  async findDemoOrganization(): Promise<Organization | null> {
+    return this.organizationRepository.findOne({
+      where: { cnpj: DEMO_ORGANIZATION_CNPJ },
+    });
+  }
 
- /**
- * Busca o usuário demo da organização.
- *
- * @param organizationId - ID da organização demo
- * @returns User ou null se não encontrado
- */
- async findDemoUser(organizationId: string): Promise<User | null> {
- return this.userRepository.findOne({
- where: { organizationId },
- });
- }
+  /**
+   * Busca o usuário demo da organização.
+   *
+   * @param organizationId - ID da organização demo
+   * @returns User ou null se não encontrado
+   */
+  async findDemoUser(organizationId: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { organizationId },
+    });
+  }
 
- /**
- * Cron Job - Reset diário de dados demo às 00:00 UTC
- *
- * Executa diariamente à meia-noite para garantir que:
- * 1. Dados demo não acumulem indefinidamente
- * 2. Novos usuários demo sempre vejam exemplos limpos
- * 3. Dados sensíveis inseridos por usuários demo sejam removidos
- *
- * @cron Executa diariamente às 00:00 UTC (EVERY_DAY_AT_MIDNIGHT)
- */
- @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
- async handleDemoReset(): Promise<void> {
- this.logger.log('Starting scheduled demo data reset...');
+  /**
+   * Cron Job - Reset diário de dados demo às 00:00 UTC
+   *
+   * Executa diariamente à meia-noite para garantir que:
+   * 1. Dados demo não acumulem indefinidamente
+   * 2. Novos usuários demo sempre vejam exemplos limpos
+   * 3. Dados sensíveis inseridos por usuários demo sejam removidos
+   *
+   * @cron Executa diariamente às 00:00 UTC (EVERY_DAY_AT_MIDNIGHT)
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleDemoReset(): Promise<void> {
+    this.logger.log('Starting scheduled demo data reset...');
 
- try {
- const result = await this.resetDemoData();
+    try {
+      const result = await this.resetDemoData();
 
- if (result.success) {
- this.logger.log('Scheduled demo data reset completed successfully', {
- deletedEtps: result.deletedEtps,
- deletedSections: result.deletedSections,
- deletedVersions: result.deletedVersions,
- deletedAuditLogs: result.deletedAuditLogs,
- createdEtps: result.createdEtps,
- });
- } else {
- this.logger.error('Scheduled demo data reset failed', {
- error: result.error,
- });
- }
- } catch (error) {
- this.logger.error('Unexpected error during scheduled demo reset', {
- error: error.message,
- stack: error.stack,
- });
- }
- }
+      if (result.success) {
+        this.logger.log('Scheduled demo data reset completed successfully', {
+          deletedEtps: result.deletedEtps,
+          deletedSections: result.deletedSections,
+          deletedVersions: result.deletedVersions,
+          deletedAuditLogs: result.deletedAuditLogs,
+          createdEtps: result.createdEtps,
+        });
+      } else {
+        this.logger.error('Scheduled demo data reset failed', {
+          error: result.error,
+        });
+      }
+    } catch (error) {
+      this.logger.error('Unexpected error during scheduled demo reset', {
+        error: error.message,
+        stack: error.stack,
+      });
+    }
+  }
 
- /**
- * Executa reset completo dos dados demo.
- *
- * Operações (em transação):
- * 1. Busca organização demo pelo CNPJ
- * 2. Busca todos os ETPs da organização
- * 3. Deleta audit logs, versions, sections, e ETPs
- * 4. Recria ETPs de exemplo
- *
- * @returns DemoResetResult com estatísticas da operação
- */
- async resetDemoData(): Promise<DemoResetResult> {
- const timestamp = new Date();
+  /**
+   * Executa reset completo dos dados demo.
+   *
+   * Operações (em transação):
+   * 1. Busca organização demo pelo CNPJ
+   * 2. Busca todos os ETPs da organização
+   * 3. Deleta audit logs, versions, sections, e ETPs
+   * 4. Recria ETPs de exemplo
+   *
+   * @returns DemoResetResult com estatísticas da operação
+   */
+  async resetDemoData(): Promise<DemoResetResult> {
+    const timestamp = new Date();
 
- // Buscar organização demo
- const demoOrg = await this.findDemoOrganization();
+    // Buscar organização demo
+    const demoOrg = await this.findDemoOrganization();
 
- if (!demoOrg) {
- this.logger.warn('Demo organization not found. Skipping reset.');
- return {
- success: false,
- timestamp,
- deletedEtps: 0,
- deletedSections: 0,
- deletedVersions: 0,
- deletedAuditLogs: 0,
- createdEtps: 0,
- error:
- 'Demo organization not found (CNPJ: ' + DEMO_ORGANIZATION_CNPJ + ')',
- };
- }
+    if (!demoOrg) {
+      this.logger.warn('Demo organization not found. Skipping reset.');
+      return {
+        success: false,
+        timestamp,
+        deletedEtps: 0,
+        deletedSections: 0,
+        deletedVersions: 0,
+        deletedAuditLogs: 0,
+        createdEtps: 0,
+        error:
+          'Demo organization not found (CNPJ: ' + DEMO_ORGANIZATION_CNPJ + ')',
+      };
+    }
 
- // Buscar usuário demo para atribuir os ETPs de exemplo
- const demoUser = await this.findDemoUser(demoOrg.id);
+    // Buscar usuário demo para atribuir os ETPs de exemplo
+    const demoUser = await this.findDemoUser(demoOrg.id);
 
- if (!demoUser) {
- this.logger.warn('Demo user not found. Skipping reset.');
- return {
- success: false,
- timestamp,
- deletedEtps: 0,
- deletedSections: 0,
- deletedVersions: 0,
- deletedAuditLogs: 0,
- createdEtps: 0,
- error: 'Demo user not found for organization ' + demoOrg.id,
- };
- }
+    if (!demoUser) {
+      this.logger.warn('Demo user not found. Skipping reset.');
+      return {
+        success: false,
+        timestamp,
+        deletedEtps: 0,
+        deletedSections: 0,
+        deletedVersions: 0,
+        deletedAuditLogs: 0,
+        createdEtps: 0,
+        error: 'Demo user not found for organization ' + demoOrg.id,
+      };
+    }
 
- // Executar em transação para garantir consistência
- const queryRunner = this.dataSource.createQueryRunner();
- await queryRunner.connect();
- await queryRunner.startTransaction();
+    // Executar em transação para garantir consistência
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
- let deletedEtps = 0;
- let deletedSections = 0;
- let deletedVersions = 0;
- let deletedAuditLogs = 0;
- let createdEtps = 0;
+    let deletedEtps = 0;
+    let deletedSections = 0;
+    let deletedVersions = 0;
+    let deletedAuditLogs = 0;
+    let createdEtps = 0;
 
- try {
- // 1. Buscar todos os ETPs da organização demo
- const demoEtps = await this.etpRepository.find({
- where: { organizationId: demoOrg.id },
- select: ['id'],
- });
+    try {
+      // 1. Buscar todos os ETPs da organização demo
+      const demoEtps = await this.etpRepository.find({
+        where: { organizationId: demoOrg.id },
+        select: ['id'],
+      });
 
- const etpIds = demoEtps.map((etp) => etp.id);
+      const etpIds = demoEtps.map((etp) => etp.id);
 
- if (etpIds.length > 0) {
- // 2. Deletar audit logs associados aos ETPs
- const auditLogsResult = await queryRunner.manager.delete(AuditLog, {
- etpId: In(etpIds),
- });
- deletedAuditLogs = auditLogsResult.affected || 0;
+      if (etpIds.length > 0) {
+        // 2. Deletar audit logs associados aos ETPs
+        const auditLogsResult = await queryRunner.manager.delete(AuditLog, {
+          etpId: In(etpIds),
+        });
+        deletedAuditLogs = auditLogsResult.affected || 0;
 
- // 3. Deletar versions associadas aos ETPs
- const versionsResult = await queryRunner.manager.delete(EtpVersion, {
- etpId: In(etpIds),
- });
- deletedVersions = versionsResult.affected || 0;
+        // 3. Deletar versions associadas aos ETPs
+        const versionsResult = await queryRunner.manager.delete(EtpVersion, {
+          etpId: In(etpIds),
+        });
+        deletedVersions = versionsResult.affected || 0;
 
- // 4. Deletar sections associadas aos ETPs
- const sectionsResult = await queryRunner.manager.delete(EtpSection, {
- etpId: In(etpIds),
- });
- deletedSections = sectionsResult.affected || 0;
+        // 4. Deletar sections associadas aos ETPs
+        const sectionsResult = await queryRunner.manager.delete(EtpSection, {
+          etpId: In(etpIds),
+        });
+        deletedSections = sectionsResult.affected || 0;
 
- // 5. Deletar os ETPs
- const etpsResult = await queryRunner.manager.delete(Etp, {
- organizationId: demoOrg.id,
- });
- deletedEtps = etpsResult.affected || 0;
- }
+        // 5. Deletar os ETPs
+        const etpsResult = await queryRunner.manager.delete(Etp, {
+          organizationId: demoOrg.id,
+        });
+        deletedEtps = etpsResult.affected || 0;
+      }
 
- // 6. Recriar ETPs de exemplo
- for (const sampleEtp of SAMPLE_ETPS) {
- const newEtp = queryRunner.manager.create(Etp, {
- ...sampleEtp,
- organizationId: demoOrg.id,
- createdById: demoUser.id,
- currentVersion: 1,
- completionPercentage: 0,
- });
- await queryRunner.manager.save(newEtp);
- createdEtps++;
- }
+      // 6. Recriar ETPs de exemplo
+      for (const sampleEtp of SAMPLE_ETPS) {
+        const newEtp = queryRunner.manager.create(Etp, {
+          ...sampleEtp,
+          organizationId: demoOrg.id,
+          createdById: demoUser.id,
+          currentVersion: 1,
+          completionPercentage: 0,
+        });
+        await queryRunner.manager.save(newEtp);
+        createdEtps++;
+      }
 
- await queryRunner.commitTransaction();
+      await queryRunner.commitTransaction();
 
- this.logger.log('Demo data reset transaction committed', {
- organizationId: demoOrg.id,
- deletedEtps,
- deletedSections,
- deletedVersions,
- deletedAuditLogs,
- createdEtps,
- });
+      this.logger.log('Demo data reset transaction committed', {
+        organizationId: demoOrg.id,
+        deletedEtps,
+        deletedSections,
+        deletedVersions,
+        deletedAuditLogs,
+        createdEtps,
+      });
 
- return {
- success: true,
- timestamp,
- deletedEtps,
- deletedSections,
- deletedVersions,
- deletedAuditLogs,
- createdEtps,
- };
- } catch (error) {
- await queryRunner.rollbackTransaction();
- this.logger.error('Demo data reset transaction rolled back', {
- error: error.message,
- stack: error.stack,
- });
+      return {
+        success: true,
+        timestamp,
+        deletedEtps,
+        deletedSections,
+        deletedVersions,
+        deletedAuditLogs,
+        createdEtps,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error('Demo data reset transaction rolled back', {
+        error: error.message,
+        stack: error.stack,
+      });
 
- return {
- success: false,
- timestamp,
- deletedEtps: 0,
- deletedSections: 0,
- deletedVersions: 0,
- deletedAuditLogs: 0,
- createdEtps: 0,
- error: error.message,
- };
- } finally {
- await queryRunner.release();
- }
- }
+      return {
+        success: false,
+        timestamp,
+        deletedEtps: 0,
+        deletedSections: 0,
+        deletedVersions: 0,
+        deletedAuditLogs: 0,
+        createdEtps: 0,
+        error: error.message,
+      };
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
- /**
- * Retorna estatísticas da organização demo.
- *
- * @returns Objeto com contagem de ETPs, Sections, Users
- */
- async getDemoStatistics(): Promise<{
- organizationId: string | null;
- organizationName: string | null;
- etpCount: number;
- userCount: number;
- lastResetInfo: string;
- }> {
- const demoOrg = await this.findDemoOrganization();
+  /**
+   * Retorna estatísticas da organização demo.
+   *
+   * @returns Objeto com contagem de ETPs, Sections, Users
+   */
+  async getDemoStatistics(): Promise<{
+    organizationId: string | null;
+    organizationName: string | null;
+    etpCount: number;
+    userCount: number;
+    lastResetInfo: string;
+  }> {
+    const demoOrg = await this.findDemoOrganization();
 
- if (!demoOrg) {
- return {
- organizationId: null,
- organizationName: null,
- etpCount: 0,
- userCount: 0,
- lastResetInfo: 'Demo organization not configured',
- };
- }
+    if (!demoOrg) {
+      return {
+        organizationId: null,
+        organizationName: null,
+        etpCount: 0,
+        userCount: 0,
+        lastResetInfo: 'Demo organization not configured',
+      };
+    }
 
- const etpCount = await this.etpRepository.count({
- where: { organizationId: demoOrg.id },
- });
+    const etpCount = await this.etpRepository.count({
+      where: { organizationId: demoOrg.id },
+    });
 
- const userCount = await this.userRepository.count({
- where: { organizationId: demoOrg.id },
- });
+    const userCount = await this.userRepository.count({
+      where: { organizationId: demoOrg.id },
+    });
 
- return {
- organizationId: demoOrg.id,
- organizationName: demoOrg.name,
- etpCount,
- userCount,
- lastResetInfo: 'Resets daily at 00:00 UTC',
- };
- }
+    return {
+      organizationId: demoOrg.id,
+      organizationName: demoOrg.name,
+      etpCount,
+      userCount,
+      lastResetInfo: 'Resets daily at 00:00 UTC',
+    };
+  }
 }

@@ -4,7 +4,7 @@ import { afterEach } from 'vitest';
 
 // Cleanup após cada teste para evitar memory leaks
 afterEach(() => {
- cleanup();
+  cleanup();
 });
 
 // =============================================================================
@@ -12,9 +12,9 @@ afterEach(() => {
 // jsdom não implementa nativamente
 // =============================================================================
 class MockResizeObserver {
- observe() {}
- unobserve() {}
- disconnect() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
 }
 
 global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
@@ -25,68 +25,68 @@ global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 // Herda de MouseEvent para compatibilidade com @testing-library/user-event
 // =============================================================================
 class MockPointerEvent extends MouseEvent {
- readonly pointerId: number;
- readonly pointerType: string;
- readonly pressure: number;
- readonly tiltX: number;
- readonly tiltY: number;
- readonly twist: number;
- readonly width: number;
- readonly height: number;
- readonly isPrimary: boolean;
- readonly tangentialPressure: number;
+  readonly pointerId: number;
+  readonly pointerType: string;
+  readonly pressure: number;
+  readonly tiltX: number;
+  readonly tiltY: number;
+  readonly twist: number;
+  readonly width: number;
+  readonly height: number;
+  readonly isPrimary: boolean;
+  readonly tangentialPressure: number;
 
- constructor(type: string, props: PointerEventInit = {}) {
- super(type, props);
- this.pointerId = props.pointerId ?? 1;
- this.pointerType = props.pointerType ?? 'mouse';
- this.pressure = props.pressure ?? 0;
- this.tiltX = props.tiltX ?? 0;
- this.tiltY = props.tiltY ?? 0;
- this.twist = props.twist ?? 0;
- this.width = props.width ?? 1;
- this.height = props.height ?? 1;
- this.isPrimary = props.isPrimary ?? true;
- this.tangentialPressure = props.tangentialPressure ?? 0;
- }
+  constructor(type: string, props: PointerEventInit = {}) {
+    super(type, props);
+    this.pointerId = props.pointerId ?? 1;
+    this.pointerType = props.pointerType ?? 'mouse';
+    this.pressure = props.pressure ?? 0;
+    this.tiltX = props.tiltX ?? 0;
+    this.tiltY = props.tiltY ?? 0;
+    this.twist = props.twist ?? 0;
+    this.width = props.width ?? 1;
+    this.height = props.height ?? 1;
+    this.isPrimary = props.isPrimary ?? true;
+    this.tangentialPressure = props.tangentialPressure ?? 0;
+  }
 
- getCoalescedEvents(): PointerEvent[] {
- return [];
- }
+  getCoalescedEvents(): PointerEvent[] {
+    return [];
+  }
 
- getPredictedEvents(): PointerEvent[] {
- return [];
- }
+  getPredictedEvents(): PointerEvent[] {
+    return [];
+  }
 }
 
 (global as unknown as { PointerEvent: typeof MockPointerEvent }).PointerEvent =
- MockPointerEvent;
+  MockPointerEvent;
 
 // =============================================================================
 // Mock de Pointer Capture API (usado por Radix UI para tracking de interações)
 // =============================================================================
 if (typeof Element !== 'undefined') {
- Element.prototype.hasPointerCapture =
- Element.prototype.hasPointerCapture || (() => false);
- Element.prototype.setPointerCapture =
- Element.prototype.setPointerCapture || (() => {});
- Element.prototype.releasePointerCapture =
- Element.prototype.releasePointerCapture || (() => {});
+  Element.prototype.hasPointerCapture =
+    Element.prototype.hasPointerCapture || (() => false);
+  Element.prototype.setPointerCapture =
+    Element.prototype.setPointerCapture || (() => {});
+  Element.prototype.releasePointerCapture =
+    Element.prototype.releasePointerCapture || (() => {});
 }
 
 // =============================================================================
 // Mock de scrollIntoView (usado por Radix UI Select para navegação de opções)
 // =============================================================================
 if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
- Element.prototype.scrollIntoView = () => {};
+  Element.prototype.scrollIntoView = () => {};
 }
 
 // Mock de localStorage (usado pelos stores Zustand)
 const localStorageMock = {
- getItem: vi.fn(),
- setItem: vi.fn(),
- removeItem: vi.fn(),
- clear: vi.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 
 global.localStorage = localStorageMock as Storage;
@@ -105,19 +105,19 @@ global.localStorage = localStorageMock as Storage;
 // await waitFor(() => expect(screen.getByText('Done')).toBeInTheDocument());
 // =============================================================================
 export function createDeferredPromise<T>(): {
- promise: Promise<T>;
- resolve: (value: T) => void;
- reject: (reason?: unknown) => void;
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
 } {
- let resolve: (value: T) => void;
- let reject: (reason?: unknown) => void;
+  let resolve: (value: T) => void;
+  let reject: (reason?: unknown) => void;
 
- const promise = new Promise<T>((res, rej) => {
- resolve = res;
- reject = rej;
- });
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
 
- return { promise, resolve: resolve!, reject: reject! };
+  return { promise, resolve: resolve!, reject: reject! };
 }
 
 // Mock de fetch para APIs (alternativa ao MSW para casos simples)
@@ -128,17 +128,17 @@ global.fetch = vi.fn();
 // jsdom não implementa nativamente
 // =============================================================================
 Object.defineProperty(window, 'matchMedia', {
- writable: true,
- value: vi.fn().mockImplementation((query: string) => ({
- matches: false,
- media: query,
- onchange: null,
- addListener: vi.fn(),
- removeListener: vi.fn(),
- addEventListener: vi.fn(),
- removeEventListener: vi.fn(),
- dispatchEvent: vi.fn(),
- })),
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
 // Configuração global do MSW (opcional - adicionar quando necessário)

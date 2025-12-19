@@ -8,12 +8,12 @@ import { describe, it, expect, beforeAll } from 'vitest';
  */
 
 describe('Design Tokens - Apple HIG', () => {
- let rootStyles: CSSStyleDeclaration;
+  let rootStyles: CSSStyleDeclaration;
 
- beforeAll(() => {
- // Import the CSS file
- const style = document.createElement('style');
- style.textContent = `
+  beforeAll(() => {
+    // Import the CSS file
+    const style = document.createElement('style');
+    style.textContent = `
  :root {
  --surface-primary: #ffffff;
  --surface-secondary: #f5f5f7;
@@ -149,336 +149,336 @@ describe('Design Tokens - Apple HIG', () => {
  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
  }
  `;
- document.head.appendChild(style);
- rootStyles = getComputedStyle(document.documentElement);
- });
+    document.head.appendChild(style);
+    rootStyles = getComputedStyle(document.documentElement);
+  });
 
- describe('Surface Colors', () => {
- it('should define surface-primary color', () => {
- expect(rootStyles.getPropertyValue('--surface-primary').trim()).toBe(
- '#ffffff',
- );
- });
+  describe('Surface Colors', () => {
+    it('should define surface-primary color', () => {
+      expect(rootStyles.getPropertyValue('--surface-primary').trim()).toBe(
+        '#ffffff',
+      );
+    });
 
- it('should define surface-secondary color', () => {
- expect(rootStyles.getPropertyValue('--surface-secondary').trim()).toBe(
- '#f5f5f7',
- );
- });
+    it('should define surface-secondary color', () => {
+      expect(rootStyles.getPropertyValue('--surface-secondary').trim()).toBe(
+        '#f5f5f7',
+      );
+    });
 
- it('should define surface-tertiary color', () => {
- expect(rootStyles.getPropertyValue('--surface-tertiary').trim()).toBe(
- '#e8e8ed',
- );
- });
+    it('should define surface-tertiary color', () => {
+      expect(rootStyles.getPropertyValue('--surface-tertiary').trim()).toBe(
+        '#e8e8ed',
+      );
+    });
 
- it('should define surface-elevated color', () => {
- expect(rootStyles.getPropertyValue('--surface-elevated').trim()).toBe(
- '#ffffff',
- );
- });
- });
+    it('should define surface-elevated color', () => {
+      expect(rootStyles.getPropertyValue('--surface-elevated').trim()).toBe(
+        '#ffffff',
+      );
+    });
+  });
 
- describe('Text Colors', () => {
- it('should define text-primary color', () => {
- expect(rootStyles.getPropertyValue('--text-primary').trim()).toBe(
- '#1d1d1f',
- );
- });
+  describe('Text Colors', () => {
+    it('should define text-primary color', () => {
+      expect(rootStyles.getPropertyValue('--text-primary').trim()).toBe(
+        '#1d1d1f',
+      );
+    });
 
- it('should define text-secondary color', () => {
- expect(rootStyles.getPropertyValue('--text-secondary').trim()).toBe(
- '#636366',
- );
- });
+    it('should define text-secondary color', () => {
+      expect(rootStyles.getPropertyValue('--text-secondary').trim()).toBe(
+        '#636366',
+      );
+    });
 
- it('should define text-tertiary color', () => {
- expect(rootStyles.getPropertyValue('--text-tertiary').trim()).toBe(
- '#aeaeb2',
- );
- });
+    it('should define text-tertiary color', () => {
+      expect(rootStyles.getPropertyValue('--text-tertiary').trim()).toBe(
+        '#aeaeb2',
+      );
+    });
 
- it('should define text-quaternary color', () => {
- expect(rootStyles.getPropertyValue('--text-quaternary').trim()).toBe(
- '#c7c7cc',
- );
- });
- });
+    it('should define text-quaternary color', () => {
+      expect(rootStyles.getPropertyValue('--text-quaternary').trim()).toBe(
+        '#c7c7cc',
+      );
+    });
+  });
 
- describe('Apple Accent Colors', () => {
- it('should define apple-accent color (Apple Blue)', () => {
- expect(rootStyles.getPropertyValue('--apple-accent').trim()).toBe(
- '#007aff',
- );
- });
+  describe('Apple Accent Colors', () => {
+    it('should define apple-accent color (Apple Blue)', () => {
+      expect(rootStyles.getPropertyValue('--apple-accent').trim()).toBe(
+        '#007aff',
+      );
+    });
 
- it('should define apple-accent-hover color', () => {
- expect(rootStyles.getPropertyValue('--apple-accent-hover').trim()).toBe(
- '#0056b3',
- );
- });
+    it('should define apple-accent-hover color', () => {
+      expect(rootStyles.getPropertyValue('--apple-accent-hover').trim()).toBe(
+        '#0056b3',
+      );
+    });
 
- it('should define apple-accent-active color', () => {
- expect(rootStyles.getPropertyValue('--apple-accent-active').trim()).toBe(
- '#004494',
- );
- });
- });
+    it('should define apple-accent-active color', () => {
+      expect(rootStyles.getPropertyValue('--apple-accent-active').trim()).toBe(
+        '#004494',
+      );
+    });
+  });
 
- describe('Apple System Colors', () => {
- it('should define apple-red color', () => {
- expect(rootStyles.getPropertyValue('--apple-red').trim()).toBe('#ff3b30');
- });
+  describe('Apple System Colors', () => {
+    it('should define apple-red color', () => {
+      expect(rootStyles.getPropertyValue('--apple-red').trim()).toBe('#ff3b30');
+    });
 
- it('should define apple-orange color', () => {
- expect(rootStyles.getPropertyValue('--apple-orange').trim()).toBe(
- '#ff9500',
- );
- });
+    it('should define apple-orange color', () => {
+      expect(rootStyles.getPropertyValue('--apple-orange').trim()).toBe(
+        '#ff9500',
+      );
+    });
 
- it('should define apple-yellow color', () => {
- expect(rootStyles.getPropertyValue('--apple-yellow').trim()).toBe(
- '#ffcc00',
- );
- });
+    it('should define apple-yellow color', () => {
+      expect(rootStyles.getPropertyValue('--apple-yellow').trim()).toBe(
+        '#ffcc00',
+      );
+    });
 
- it('should define apple-green color', () => {
- expect(rootStyles.getPropertyValue('--apple-green').trim()).toBe(
- '#34c759',
- );
- });
+    it('should define apple-green color', () => {
+      expect(rootStyles.getPropertyValue('--apple-green').trim()).toBe(
+        '#34c759',
+      );
+    });
 
- it('should define apple-blue color', () => {
- expect(rootStyles.getPropertyValue('--apple-blue').trim()).toBe(
- '#007aff',
- );
- });
+    it('should define apple-blue color', () => {
+      expect(rootStyles.getPropertyValue('--apple-blue').trim()).toBe(
+        '#007aff',
+      );
+    });
 
- it('should define apple-indigo color', () => {
- expect(rootStyles.getPropertyValue('--apple-indigo').trim()).toBe(
- '#5856d6',
- );
- });
+    it('should define apple-indigo color', () => {
+      expect(rootStyles.getPropertyValue('--apple-indigo').trim()).toBe(
+        '#5856d6',
+      );
+    });
 
- it('should define apple-purple color', () => {
- expect(rootStyles.getPropertyValue('--apple-purple').trim()).toBe(
- '#af52de',
- );
- });
+    it('should define apple-purple color', () => {
+      expect(rootStyles.getPropertyValue('--apple-purple').trim()).toBe(
+        '#af52de',
+      );
+    });
 
- it('should define apple-pink color', () => {
- expect(rootStyles.getPropertyValue('--apple-pink').trim()).toBe(
- '#ff2d55',
- );
- });
+    it('should define apple-pink color', () => {
+      expect(rootStyles.getPropertyValue('--apple-pink').trim()).toBe(
+        '#ff2d55',
+      );
+    });
 
- it('should define apple-teal color', () => {
- expect(rootStyles.getPropertyValue('--apple-teal').trim()).toBe(
- '#5ac8fa',
- );
- });
- });
+    it('should define apple-teal color', () => {
+      expect(rootStyles.getPropertyValue('--apple-teal').trim()).toBe(
+        '#5ac8fa',
+      );
+    });
+  });
 
- describe('Border Radius (Apple Style)', () => {
- it('should define radius-apple (10px)', () => {
- expect(rootStyles.getPropertyValue('--radius-apple').trim()).toBe('10px');
- });
+  describe('Border Radius (Apple Style)', () => {
+    it('should define radius-apple (10px)', () => {
+      expect(rootStyles.getPropertyValue('--radius-apple').trim()).toBe('10px');
+    });
 
- it('should define radius-apple-lg (14px)', () => {
- expect(rootStyles.getPropertyValue('--radius-apple-lg').trim()).toBe(
- '14px',
- );
- });
- });
+    it('should define radius-apple-lg (14px)', () => {
+      expect(rootStyles.getPropertyValue('--radius-apple-lg').trim()).toBe(
+        '14px',
+      );
+    });
+  });
 
- describe('Shadows (Apple Style)', () => {
- it('should define shadow-sm', () => {
- expect(rootStyles.getPropertyValue('--shadow-sm').trim()).toBe(
- '0 1px 2px rgba(0, 0, 0, 0.04)',
- );
- });
+  describe('Shadows (Apple Style)', () => {
+    it('should define shadow-sm', () => {
+      expect(rootStyles.getPropertyValue('--shadow-sm').trim()).toBe(
+        '0 1px 2px rgba(0, 0, 0, 0.04)',
+      );
+    });
 
- it('should define shadow-md', () => {
- expect(rootStyles.getPropertyValue('--shadow-md').trim()).toBe(
- '0 4px 12px rgba(0, 0, 0, 0.08)',
- );
- });
+    it('should define shadow-md', () => {
+      expect(rootStyles.getPropertyValue('--shadow-md').trim()).toBe(
+        '0 4px 12px rgba(0, 0, 0, 0.08)',
+      );
+    });
 
- it('should define shadow-lg', () => {
- expect(rootStyles.getPropertyValue('--shadow-lg').trim()).toBe(
- '0 8px 24px rgba(0, 0, 0, 0.12)',
- );
- });
- });
+    it('should define shadow-lg', () => {
+      expect(rootStyles.getPropertyValue('--shadow-lg').trim()).toBe(
+        '0 8px 24px rgba(0, 0, 0, 0.12)',
+      );
+    });
+  });
 
- describe('Transitions (Apple Style)', () => {
- it('should define duration-apple (200ms)', () => {
- expect(rootStyles.getPropertyValue('--duration-apple').trim()).toBe(
- '200ms',
- );
- });
+  describe('Transitions (Apple Style)', () => {
+    it('should define duration-apple (200ms)', () => {
+      expect(rootStyles.getPropertyValue('--duration-apple').trim()).toBe(
+        '200ms',
+      );
+    });
 
- it('should define duration-apple-slow (300ms)', () => {
- expect(rootStyles.getPropertyValue('--duration-apple-slow').trim()).toBe(
- '300ms',
- );
- });
+    it('should define duration-apple-slow (300ms)', () => {
+      expect(rootStyles.getPropertyValue('--duration-apple-slow').trim()).toBe(
+        '300ms',
+      );
+    });
 
- it('should define ease-apple cubic-bezier', () => {
- expect(rootStyles.getPropertyValue('--ease-apple').trim()).toBe(
- 'cubic-bezier(0.25, 0.1, 0.25, 1)',
- );
- });
- });
+    it('should define ease-apple cubic-bezier', () => {
+      expect(rootStyles.getPropertyValue('--ease-apple').trim()).toBe(
+        'cubic-bezier(0.25, 0.1, 0.25, 1)',
+      );
+    });
+  });
 
- describe('Typography', () => {
- it('should define font-size-base (15px)', () => {
- expect(rootStyles.getPropertyValue('--font-size-base').trim()).toBe(
- '15px',
- );
- });
+  describe('Typography', () => {
+    it('should define font-size-base (15px)', () => {
+      expect(rootStyles.getPropertyValue('--font-size-base').trim()).toBe(
+        '15px',
+      );
+    });
 
- it('should define font-size-md (17px)', () => {
- expect(rootStyles.getPropertyValue('--font-size-md').trim()).toBe('17px');
- });
+    it('should define font-size-md (17px)', () => {
+      expect(rootStyles.getPropertyValue('--font-size-md').trim()).toBe('17px');
+    });
 
- it('should define font-weight-medium (500)', () => {
- expect(rootStyles.getPropertyValue('--font-weight-medium').trim()).toBe(
- '500',
- );
- });
+    it('should define font-weight-medium (500)', () => {
+      expect(rootStyles.getPropertyValue('--font-weight-medium').trim()).toBe(
+        '500',
+      );
+    });
 
- it('should define font-weight-semibold (600)', () => {
- expect(rootStyles.getPropertyValue('--font-weight-semibold').trim()).toBe(
- '600',
- );
- });
- });
+    it('should define font-weight-semibold (600)', () => {
+      expect(rootStyles.getPropertyValue('--font-weight-semibold').trim()).toBe(
+        '600',
+      );
+    });
+  });
 
- describe('Spacing Scale', () => {
- it('should define space-4 (16px)', () => {
- expect(rootStyles.getPropertyValue('--space-4').trim()).toBe('16px');
- });
+  describe('Spacing Scale', () => {
+    it('should define space-4 (16px)', () => {
+      expect(rootStyles.getPropertyValue('--space-4').trim()).toBe('16px');
+    });
 
- it('should define space-8 (32px)', () => {
- expect(rootStyles.getPropertyValue('--space-8').trim()).toBe('32px');
- });
- });
+    it('should define space-8 (32px)', () => {
+      expect(rootStyles.getPropertyValue('--space-8').trim()).toBe('32px');
+    });
+  });
 
- describe('Z-Index Scale', () => {
- it('should define z-modal (500)', () => {
- expect(rootStyles.getPropertyValue('--z-modal').trim()).toBe('500');
- });
+  describe('Z-Index Scale', () => {
+    it('should define z-modal (500)', () => {
+      expect(rootStyles.getPropertyValue('--z-modal').trim()).toBe('500');
+    });
 
- it('should define z-tooltip (700)', () => {
- expect(rootStyles.getPropertyValue('--z-tooltip').trim()).toBe('700');
- });
+    it('should define z-tooltip (700)', () => {
+      expect(rootStyles.getPropertyValue('--z-tooltip').trim()).toBe('700');
+    });
 
- it('should define z-toast (800)', () => {
- expect(rootStyles.getPropertyValue('--z-toast').trim()).toBe('800');
- });
- });
+    it('should define z-toast (800)', () => {
+      expect(rootStyles.getPropertyValue('--z-toast').trim()).toBe('800');
+    });
+  });
 
- describe('Component Tokens', () => {
- it('should define button-height-md (36px)', () => {
- expect(rootStyles.getPropertyValue('--button-height-md').trim()).toBe(
- '36px',
- );
- });
+  describe('Component Tokens', () => {
+    it('should define button-height-md (36px)', () => {
+      expect(rootStyles.getPropertyValue('--button-height-md').trim()).toBe(
+        '36px',
+      );
+    });
 
- it('should define input-height-md (40px)', () => {
- expect(rootStyles.getPropertyValue('--input-height-md').trim()).toBe(
- '40px',
- );
- });
- });
+    it('should define input-height-md (40px)', () => {
+      expect(rootStyles.getPropertyValue('--input-height-md').trim()).toBe(
+        '40px',
+      );
+    });
+  });
 
- describe('Dark Mode', () => {
- beforeAll(() => {
- document.documentElement.classList.add('dark');
- });
+  describe('Dark Mode', () => {
+    beforeAll(() => {
+      document.documentElement.classList.add('dark');
+    });
 
- it('should have darker surface-primary in dark mode', () => {
- const darkElement = document.createElement('div');
- darkElement.className = 'dark';
- document.body.appendChild(darkElement);
+    it('should have darker surface-primary in dark mode', () => {
+      const darkElement = document.createElement('div');
+      darkElement.className = 'dark';
+      document.body.appendChild(darkElement);
 
- const darkStyles = getComputedStyle(darkElement);
- // Note: In actual implementation, CSS variables in .dark class would override :root
- // This test verifies the dark mode CSS is properly structured
- expect(darkStyles).toBeDefined();
+      const darkStyles = getComputedStyle(darkElement);
+      // Note: In actual implementation, CSS variables in .dark class would override :root
+      // This test verifies the dark mode CSS is properly structured
+      expect(darkStyles).toBeDefined();
 
- document.body.removeChild(darkElement);
- });
+      document.body.removeChild(darkElement);
+    });
 
- afterAll(() => {
- document.documentElement.classList.remove('dark');
- });
- });
+    afterAll(() => {
+      document.documentElement.classList.remove('dark');
+    });
+  });
 });
 
 describe('Design Tokens - Semantic Mapping', () => {
- it('should map success color to apple-green', () => {
- const style = document.createElement('style');
- style.textContent = `
+  it('should map success color to apple-green', () => {
+    const style = document.createElement('style');
+    style.textContent = `
  :root {
  --apple-green: #34c759;
  --color-success: var(--apple-green);
  }
  `;
- document.head.appendChild(style);
+    document.head.appendChild(style);
 
- const rootStyles = getComputedStyle(document.documentElement);
- expect(rootStyles.getPropertyValue('--color-success').trim()).toBe(
- 'var(--apple-green)',
- );
- });
+    const rootStyles = getComputedStyle(document.documentElement);
+    expect(rootStyles.getPropertyValue('--color-success').trim()).toBe(
+      'var(--apple-green)',
+    );
+  });
 
- it('should map error color to apple-red', () => {
- const style = document.createElement('style');
- style.textContent = `
+  it('should map error color to apple-red', () => {
+    const style = document.createElement('style');
+    style.textContent = `
  :root {
  --apple-red: #ff3b30;
  --color-error: var(--apple-red);
  }
  `;
- document.head.appendChild(style);
+    document.head.appendChild(style);
 
- const rootStyles = getComputedStyle(document.documentElement);
- expect(rootStyles.getPropertyValue('--color-error').trim()).toBe(
- 'var(--apple-red)',
- );
- });
+    const rootStyles = getComputedStyle(document.documentElement);
+    expect(rootStyles.getPropertyValue('--color-error').trim()).toBe(
+      'var(--apple-red)',
+    );
+  });
 
- it('should map warning color to apple-orange', () => {
- const style = document.createElement('style');
- style.textContent = `
+  it('should map warning color to apple-orange', () => {
+    const style = document.createElement('style');
+    style.textContent = `
  :root {
  --apple-orange: #ff9500;
  --color-warning: var(--apple-orange);
  }
  `;
- document.head.appendChild(style);
+    document.head.appendChild(style);
 
- const rootStyles = getComputedStyle(document.documentElement);
- expect(rootStyles.getPropertyValue('--color-warning').trim()).toBe(
- 'var(--apple-orange)',
- );
- });
+    const rootStyles = getComputedStyle(document.documentElement);
+    expect(rootStyles.getPropertyValue('--color-warning').trim()).toBe(
+      'var(--apple-orange)',
+    );
+  });
 
- it('should map info color to apple-blue', () => {
- const style = document.createElement('style');
- style.textContent = `
+  it('should map info color to apple-blue', () => {
+    const style = document.createElement('style');
+    style.textContent = `
  :root {
  --apple-blue: #007aff;
  --color-info: var(--apple-blue);
  }
  `;
- document.head.appendChild(style);
+    document.head.appendChild(style);
 
- const rootStyles = getComputedStyle(document.documentElement);
- expect(rootStyles.getPropertyValue('--color-info').trim()).toBe(
- 'var(--apple-blue)',
- );
- });
+    const rootStyles = getComputedStyle(document.documentElement);
+    expect(rootStyles.getPropertyValue('--color-info').trim()).toBe(
+      'var(--apple-blue)',
+    );
+  });
 });

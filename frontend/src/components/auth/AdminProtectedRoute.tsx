@@ -13,16 +13,16 @@ import type { UserRole } from '@/types/user';
  * Uses React Router's Outlet for nested routes.
  */
 export function AdminProtectedRoute() {
- const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
- if (!isAuthenticated) {
- return <Navigate to="/login" replace />;
- }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
- const systemAdminRole: UserRole = 'system_admin';
- if (user?.role !== systemAdminRole) {
- return <Navigate to="/" replace />;
- }
+  const systemAdminRole: UserRole = 'system_admin';
+  if (user?.role !== systemAdminRole) {
+    return <Navigate to="/" replace />;
+  }
 
- return <Outlet />;
+  return <Outlet />;
 }

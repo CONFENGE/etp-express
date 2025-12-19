@@ -54,14 +54,14 @@ export type UserWithoutPassword = Omit<User, 'password'>;
  * ```
  */
 export interface JwtPayload {
- sub: string;
- email: string;
- name: string;
- role: string;
- organizationId: string;
- /**
- * Indicates if user must change password on next action.
- * True for new users created by Domain Managers (M8: Gestão de Domínios).
- */
- mustChangePassword: boolean;
+  sub: string;
+  email: string;
+  name: string;
+  role: string;
+  organizationId: string;
+  /**
+   * Indicates if user must change password on next action.
+   * True for new users created by Domain Managers (M8: Gestão de Domínios).
+   */
+  mustChangePassword: boolean;
 }

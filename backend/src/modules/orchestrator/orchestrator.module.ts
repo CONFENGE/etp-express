@@ -13,28 +13,28 @@ import { GovApiModule } from '../gov-api/gov-api.module';
 import { GovSearchModule } from '../gov-api/gov-search/gov-search.module';
 
 @Module({
- imports: [
- PrivacyModule,
- RAGModule,
- SearchModule,
- GovApiModule,
- GovSearchModule,
- ],
- providers: [
- OrchestratorService,
- OpenAIService,
- LegalAgent,
- FundamentacaoAgent,
- ClarezaAgent,
- SimplificacaoAgent,
- AntiHallucinationAgent,
- ],
- exports: [
- OrchestratorService,
- OpenAIService,
- LegalAgent,
- FundamentacaoAgent,
- ClarezaAgent,
- ],
+  imports: [
+    PrivacyModule,
+    RAGModule,
+    SearchModule,
+    GovApiModule,
+    GovSearchModule,
+  ],
+  providers: [
+    OrchestratorService,
+    OpenAIService,
+    LegalAgent,
+    FundamentacaoAgent,
+    ClarezaAgent,
+    SimplificacaoAgent,
+    AntiHallucinationAgent,
+  ],
+  exports: [
+    OrchestratorService,
+    OpenAIService,
+    LegalAgent,
+    FundamentacaoAgent,
+    ClarezaAgent,
+  ],
 })
 export class OrchestratorModule {}

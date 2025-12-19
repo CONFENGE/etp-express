@@ -1,8 +1,8 @@
 import {
- Injectable,
- CanActivate,
- ExecutionContext,
- ForbiddenException,
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserRole } from '../../../entities/user.entity';
 
@@ -29,20 +29,20 @@ import { UserRole } from '../../../entities/user.entity';
  */
 @Injectable()
 export class SystemAdminGuard implements CanActivate {
- canActivate(context: ExecutionContext): boolean {
- const request = context.switchToHttp().getRequest();
- const user = request.user;
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
 
- if (!user) {
- throw new ForbiddenException('Access denied: Authentication required');
- }
+    if (!user) {
+      throw new ForbiddenException('Access denied: Authentication required');
+    }
 
- if (user.role !== UserRole.SYSTEM_ADMIN) {
- throw new ForbiddenException(
- 'Access denied: Only System Administrators can access this resource',
- );
- }
+    if (user.role !== UserRole.SYSTEM_ADMIN) {
+      throw new ForbiddenException(
+        'Access denied: Only System Administrators can access this resource',
+      );
+    }
 
- return true;
- }
+    return true;
+  }
 }

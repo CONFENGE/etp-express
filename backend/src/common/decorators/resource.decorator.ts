@@ -38,14 +38,14 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * ```
  */
 export const Resource = createParamDecorator(
- (data: string | undefined, ctx: ExecutionContext) => {
- const request = ctx.switchToHttp().getRequest();
- const resource = request.resource;
+  (data: string | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const resource = request.resource;
 
- if (!resource) {
- return null;
- }
+    if (!resource) {
+      return null;
+    }
 
- return data ? resource?.[data] : resource;
- },
+    return data ? resource?.[data] : resource;
+  },
 );
