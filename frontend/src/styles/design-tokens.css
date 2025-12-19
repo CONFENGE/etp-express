@@ -110,18 +110,24 @@
   --font-size-3xl: 34px;
   --font-size-4xl: 40px;
 
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  /* Line heights optimized for readability (WCAG 2.1 SC 1.4.12) */
+  --line-height-tight: 1.25; /* Improved from 1.2 - better for headings */
+  --line-height-snug: 1.4; /* New - for subheadings and short text */
+  --line-height-normal: 1.5; /* Standard - good for UI text */
+  --line-height-relaxed: 1.6; /* Improved from 1.75 - optimal for body text */
+  --line-height-loose: 1.8; /* New - for long-form content */
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --letter-spacing-tight: -0.02em;
-  --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.02em;
+  /* Letter spacing for improved legibility */
+  --letter-spacing-tighter: -0.03em; /* New - for large display text */
+  --letter-spacing-tight: -0.015em; /* Adjusted from -0.02em - less aggressive for headlines */
+  --letter-spacing-normal: 0.01em; /* Adjusted from 0 - slight positive tracking aids legibility */
+  --letter-spacing-wide: 0.025em; /* Adjusted from 0.02em - better for small text */
+  --letter-spacing-wider: 0.05em; /* New - for labels and captions */
 
   /* ========================================
    * Transition Tokens (Apple-style motion)
@@ -302,5 +308,45 @@ html.dark {
   }
   .rounded-apple-lg {
     border-radius: var(--radius-apple-lg);
+  }
+
+  /* Typography utilities for improved legibility */
+  .leading-tight {
+    line-height: var(--line-height-tight);
+  }
+  .leading-snug {
+    line-height: var(--line-height-snug);
+  }
+  .leading-normal {
+    line-height: var(--line-height-normal);
+  }
+  .leading-relaxed {
+    line-height: var(--line-height-relaxed);
+  }
+  .leading-loose {
+    line-height: var(--line-height-loose);
+  }
+
+  .tracking-tighter {
+    letter-spacing: var(--letter-spacing-tighter);
+  }
+  .tracking-tight {
+    letter-spacing: var(--letter-spacing-tight);
+  }
+  .tracking-normal {
+    letter-spacing: var(--letter-spacing-normal);
+  }
+  .tracking-wide {
+    letter-spacing: var(--letter-spacing-wide);
+  }
+  .tracking-wider {
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  /* Text rendering optimization for legibility */
+  .text-legible {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
