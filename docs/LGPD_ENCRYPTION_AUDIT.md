@@ -48,7 +48,7 @@ O sistema ETP Express implementa corretamente criptografia de dados sensíveis e
 
 ```bash
 # Produção (Railway):
-# https://etp-express-backend.railway.app
+# https://etp-express-backend-production.up.railway.app
 # Certificado válido: ✅ TLS 1.3
 ```
 
