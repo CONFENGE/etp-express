@@ -58,7 +58,7 @@ Valida que o sistema está funcionando antes de testes mais intensos:
 k6 run load-tests/scripts/smoke.js
 
 # Staging/Production
-k6 run --env BASE_URL=https://etp-express-backend.railway.app load-tests/scripts/smoke.js
+k6 run --env BASE_URL=https://etp-express-backend-production.up.railway.app load-tests/scripts/smoke.js
 ```
 
 ### 2. Load Test (100 VUs)
@@ -71,7 +71,7 @@ k6 run load-tests/scripts/load.js
 
 # Production com credenciais customizadas
 k6 run \
-  --env BASE_URL=https://etp-express-backend.railway.app \
+  --env BASE_URL=https://etp-express-backend-production.up.railway.app \
   --env TEST_USER_EMAIL=test@example.com \
   --env TEST_USER_PASSWORD=TestPass123 \
   load-tests/scripts/load.js

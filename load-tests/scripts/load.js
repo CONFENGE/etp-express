@@ -6,10 +6,10 @@
  *
  * Usage:
  *   k6 run load-tests/scripts/load.js
- *   k6 run --env BASE_URL=https://etp-express-backend.railway.app load-tests/scripts/load.js
+ *   k6 run --env BASE_URL=https://etp-express-backend-production.up.railway.app load-tests/scripts/load.js
  *
  * With custom thresholds:
- *   k6 run --env BASE_URL=https://etp-express-backend.railway.app \
+ *   k6 run --env BASE_URL=https://etp-express-backend-production.up.railway.app \
  *          --env TEST_USER_EMAIL=test@example.com \
  *          --env TEST_USER_PASSWORD=TestPass123 \
  *          load-tests/scripts/load.js

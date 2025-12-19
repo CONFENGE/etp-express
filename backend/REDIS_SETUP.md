@@ -91,7 +91,7 @@ Verifique em: **Backend Service → Variables → REDIS_URL**
 Após deploy, verifique health check:
 
 ```bash
-curl https://etp-express-backend.up.railway.app/health
+curl https://etp-express-backend-production.up.railway.app/health
 
 # Resposta esperada:
 {
