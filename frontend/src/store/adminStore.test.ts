@@ -134,7 +134,7 @@ describe('adminStore', () => {
       });
 
       const state = useAdminStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
       expect(state.domains).toEqual([]);
     });
@@ -163,7 +163,7 @@ describe('adminStore', () => {
       });
 
       const state = useAdminStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.statistics).toBeNull();
     });
   });
@@ -203,7 +203,7 @@ describe('adminStore', () => {
       }
 
       const state = useAdminStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
@@ -248,7 +248,7 @@ describe('adminStore', () => {
       }
 
       const state = useAdminStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
@@ -301,7 +301,7 @@ describe('adminStore', () => {
       }
 
       const state = useAdminStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });

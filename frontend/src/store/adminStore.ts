@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiHelpers } from '@/lib/api';
+import { getContextualErrorMessage } from '@/lib/api-errors';
 
 /**
  * Authorized domain entity for System Admin management.
@@ -72,9 +73,10 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       );
       set({ domains: response, loading: false });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch domains';
-      set({ error: errorMessage, loading: false });
+      set({
+        error: getContextualErrorMessage('carregar', 'domínios', error),
+        loading: false,
+      });
     }
   },
 
@@ -88,9 +90,9 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       );
       set({ statistics: response });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch statistics';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('carregar', 'estatísticas', error),
+      });
     }
   },
 
@@ -104,9 +106,10 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       await apiHelpers.post('/system-admin/domains', data);
       await get().fetchDomains();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to create domain';
-      set({ error: errorMessage, loading: false });
+      set({
+        error: getContextualErrorMessage('criar', 'domínio', error),
+        loading: false,
+      });
       throw error;
     }
   },
@@ -121,9 +124,10 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       await apiHelpers.delete(`/system-admin/domains/${id}`);
       await get().fetchDomains();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to delete domain';
-      set({ error: errorMessage, loading: false });
+      set({
+        error: getContextualErrorMessage('excluir', 'domínio', error),
+        loading: false,
+      });
       throw error;
     }
   },
@@ -140,9 +144,10 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       });
       await get().fetchDomains();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to assign manager';
-      set({ error: errorMessage, loading: false });
+      set({
+        error: getContextualErrorMessage('atribuir', 'gestor', error),
+        loading: false,
+      });
       throw error;
     }
   },

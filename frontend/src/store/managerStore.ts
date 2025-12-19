@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiHelpers } from '@/lib/api';
+import { getContextualErrorMessage } from '@/lib/api-errors';
 
 /**
  * Domain user entity for Domain Manager operations.
@@ -83,9 +84,10 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       );
       set({ users: response, loading: false });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch users';
-      set({ error: errorMessage, loading: false });
+      set({
+        error: getContextualErrorMessage('carregar', 'usuários', error),
+        loading: false,
+      });
     }
   },
 
@@ -97,9 +99,13 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       const response = await apiHelpers.get<QuotaInfo>('/domain-manager/quota');
       set({ quota: response });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch quota';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage(
+          'carregar',
+          'informações de cota',
+          error,
+        ),
+      });
     }
   },
 
@@ -113,9 +119,9 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       await apiHelpers.post('/domain-manager/users', data);
       await Promise.all([get().fetchUsers(), get().fetchQuota()]);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to create user';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('criar', 'usuário', error),
+      });
       throw error;
     } finally {
       set({ loading: false });
@@ -132,9 +138,9 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       await apiHelpers.patch(`/domain-manager/users/${id}`, data);
       await get().fetchUsers();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to update user';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('atualizar', 'usuário', error),
+      });
       throw error;
     } finally {
       set({ loading: false });
@@ -151,9 +157,9 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       await apiHelpers.delete(`/domain-manager/users/${id}`);
       await Promise.all([get().fetchUsers(), get().fetchQuota()]);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to delete user';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('desativar', 'usuário', error),
+      });
       throw error;
     } finally {
       set({ loading: false });
@@ -170,9 +176,9 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       await apiHelpers.post(`/domain-manager/users/${id}/reset-password`, {});
       await get().fetchUsers();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to reset password';
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('redefinir', 'a senha', error),
+      });
       throw error;
     } finally {
       set({ loading: false });

@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import { API_URL } from './constants';
 import { getNavigate } from './navigation';
 import { logger } from './logger';
+import { getApiErrorMessage, HTTP_ERROR_MESSAGES } from './api-errors';
 
 /**
  * Storage key for auth persistence.
@@ -76,12 +77,28 @@ api.interceptors.response.use(
     if (!error.response) {
       logger.error('Network error', error, { url: error.config?.url });
       return Promise.reject({
-        message: 'Erro de conexão. Verifique sua internet e tente novamente.',
+        message: getApiErrorMessage(error),
+      });
+    }
+
+    // Get user-friendly error message based on status code
+    const statusCode = error.response.status;
+    const friendlyMessage = HTTP_ERROR_MESSAGES[statusCode];
+
+    // Extract original error data
+    const errorData = error.response?.data || {};
+
+    // Enhance error with friendly message if available
+    if (friendlyMessage && typeof errorData === 'object') {
+      return Promise.reject({
+        ...errorData,
+        message: friendlyMessage,
+        originalMessage: (errorData as Record<string, unknown>).message,
       });
     }
 
     // Return error response
-    return Promise.reject(error.response?.data || error);
+    return Promise.reject(errorData);
   },
 );
 

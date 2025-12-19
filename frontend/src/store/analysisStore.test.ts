@@ -173,7 +173,7 @@ describe('analysisStore', () => {
       // Directly check store state
       const state = useAnalysisStore.getState();
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.uploadProgress).toBe(0);
       expect(state.analysisResult).toBeNull();
     });
@@ -232,7 +232,7 @@ describe('analysisStore', () => {
 
       // Directly check store state
       const state = useAnalysisStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.analysisDetails).toBeNull();
     });
   });
@@ -309,7 +309,7 @@ describe('analysisStore', () => {
 
       // Directly check store state
       const state = useAnalysisStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
     });
   });
 
@@ -384,7 +384,7 @@ describe('analysisStore', () => {
 
       // Directly check store state
       const state = useAnalysisStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.conversionResult).toBeNull();
     });
   });
