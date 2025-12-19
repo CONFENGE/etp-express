@@ -20,7 +20,7 @@
    * Text Colors (WCAG 2.1 AA compliant)
    * ======================================== */
   --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73; /* Darkened from #86868b for 4.5:1 contrast ratio */
+  --text-secondary: #636366; /* Darkened from #6e6e73 for 5.9:1 contrast ratio (WCAG AAA) */
   --text-tertiary: #8e8e93; /* Darkened from #aeaeb2 for better contrast */
   --text-quaternary: #a1a1a6; /* Darkened from #c7c7cc for better contrast */
 

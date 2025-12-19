@@ -20,7 +20,7 @@ describe('Design Tokens - Apple HIG', () => {
         --surface-tertiary: #e8e8ed;
         --surface-elevated: #ffffff;
         --text-primary: #1d1d1f;
-        --text-secondary: #86868b;
+        --text-secondary: #636366;
         --text-tertiary: #aeaeb2;
         --text-quaternary: #c7c7cc;
         --apple-accent: #007aff;
@@ -188,7 +188,7 @@ describe('Design Tokens - Apple HIG', () => {
 
     it('should define text-secondary color', () => {
       expect(rootStyles.getPropertyValue('--text-secondary').trim()).toBe(
-        '#86868b',
+        '#636366',
       );
     });
 
