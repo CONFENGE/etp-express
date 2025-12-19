@@ -12,8 +12,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-BACKEND_URL="${BACKEND_URL:-https://etp-express-backend.railway.app}"
-FRONTEND_URL="${FRONTEND_URL:-https://etp-express-frontend.railway.app}"
+BACKEND_URL="${BACKEND_URL:-https://etp-express-backend-production.up.railway.app}"
+FRONTEND_URL="${FRONTEND_URL:-https://etp-express-frontend-production.up.railway.app}"
 TIMEOUT=10
 
 # Results tracking
