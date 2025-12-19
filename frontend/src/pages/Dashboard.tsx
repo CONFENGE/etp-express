@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, TrendingUp, FileText } from 'lucide-react';
+import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -10,10 +10,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
-import { SkeletonRecentItems } from '@/components/common/LoadingState';
+import {
+  SkeletonRecentItems,
+  SkeletonStats,
+} from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
@@ -40,6 +42,97 @@ export function Dashboard() {
   }, [etps]);
 
   const recentETPs = etps.slice(0, 5);
+  const hasNoETPs = !isLoading && stats.total === 0;
+
+  // Show prominent empty state for first-time users
+  if (hasNoETPs) {
+    return (
+      <MainLayout>
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Bem-vindo, {user?.name}!
+            </h1>
+            <p className="text-muted-foreground">
+              Gerencie seus Estudos Técnicos Preliminares
+            </p>
+          </div>
+
+          <Card className="border-dashed" data-tour="dashboard-empty">
+            <CardContent className="pt-8 pb-8">
+              <div className="flex flex-col items-center justify-center text-center max-w-lg mx-auto">
+                <EmptyState
+                  type="welcome"
+                  title="Crie seu primeiro ETP"
+                  description="O ETP Express ajuda você a criar Estudos Técnicos Preliminares de forma rápida e estruturada. Comece agora e simplifique seu trabalho."
+                  size="lg"
+                />
+
+                <div className="mt-6 space-y-4 w-full max-w-sm">
+                  <Button
+                    size="lg"
+                    className="w-full text-base"
+                    onClick={() => navigate('/etps/new')}
+                  >
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Criar meu primeiro ETP
+                  </Button>
+
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span>Processo guiado passo a passo</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Estrutura completa
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  Todas as seções exigidas pela legislação organizadas de forma
+                  clara.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Sugestões inteligentes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  Receba sugestões contextualizadas para cada seção do seu ETP.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Exportação fácil
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  Exporte seu ETP em formatos prontos para uso e
+                  compartilhamento.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -53,77 +146,54 @@ export function Dashboard() {
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3" data-tour="dashboard-stats">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total de ETPs
-              </CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-3 w-24 mt-2" />
-                </>
-              ) : (
-                <>
-                  <div className="text-2xl font-bold">{stats.total}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Criados no sistema
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
+        {isLoading ? (
+          <SkeletonStats />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3" data-tour="dashboard-stats">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total de ETPs
+                </CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.total}</div>
+                <p className="text-xs text-muted-foreground">
+                  Criados no sistema
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Em Progresso
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-3 w-28 mt-2" />
-                </>
-              ) : (
-                <>
-                  <div className="text-2xl font-bold">{stats.inProgress}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Aguardando conclusão
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Em Progresso
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.inProgress}</div>
+                <p className="text-xs text-muted-foreground">
+                  Aguardando conclusão
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-3 w-20 mt-2" />
-                </>
-              ) : (
-                <>
-                  <div className="text-2xl font-bold">{stats.completed}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Prontos para uso
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.completed}</div>
+                <p className="text-xs text-muted-foreground">
+                  Prontos para uso
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <Card data-tour="recent-etps">
           <CardHeader>
@@ -143,18 +213,6 @@ export function Dashboard() {
           <CardContent>
             {isLoading ? (
               <SkeletonRecentItems count={5} />
-            ) : recentETPs.length === 0 ? (
-              <EmptyState
-                type="welcome"
-                title="Bem-vindo ao ETP Express!"
-                description="Comece criando seu primeiro Estudo Técnico Preliminar e simplifique seu trabalho"
-                action={{
-                  label: 'Criar ETP',
-                  onClick: () => navigate('/etps/new'),
-                  icon: PlusCircle,
-                }}
-                size="md"
-              />
             ) : (
               <div className="space-y-4">
                 {recentETPs.map((etp) => (
