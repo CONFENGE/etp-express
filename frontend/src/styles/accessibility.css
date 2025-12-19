@@ -26,8 +26,10 @@
   border-radius: var(--radius-apple, 10px);
   box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.12));
   transition:
-    top var(--duration-apple, 200ms) var(--ease-apple, cubic-bezier(0.25, 0.1, 0.25, 1)),
-    opacity var(--duration-apple, 200ms) var(--ease-apple, cubic-bezier(0.25, 0.1, 0.25, 1));
+    top var(--duration-apple, 200ms)
+      var(--ease-apple, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    opacity var(--duration-apple, 200ms)
+      var(--ease-apple, cubic-bezier(0.25, 0.1, 0.25, 1));
   opacity: 0;
 }
 
@@ -58,7 +60,7 @@
 
 /* High contrast focus for buttons */
 button:focus-visible,
-[role="button"]:focus-visible,
+[role='button']:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--apple-accent, #007aff);
   outline-offset: 2px;
@@ -89,7 +91,7 @@ a:focus-visible {
 }
 
 .touch-target-expand::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -165,7 +167,7 @@ a:focus-visible {
   input,
   select,
   textarea,
-  [role="button"] {
+  [role='button'] {
     border: 1px solid ButtonText;
   }
 
@@ -358,7 +360,7 @@ a:focus-visible {
  * Loading States Accessibility
  * Screen reader friendly loading indicators
  * ======================================== */
-[aria-busy="true"] {
+[aria-busy='true'] {
   cursor: wait;
 }
 
@@ -367,7 +369,7 @@ a:focus-visible {
 }
 
 .loading-overlay::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-color: rgba(255, 255, 255, 0.7);
@@ -382,7 +384,7 @@ a:focus-visible {
  * Dialog/Modal Accessibility
  * Focus trap and backdrop styling
  * ======================================== */
-[role="dialog"][aria-modal="true"] {
+[role='dialog'][aria-modal='true'] {
   /* Ensure dialogs are above everything */
   z-index: var(--z-modal, 500);
 }
@@ -421,6 +423,6 @@ tbody tr:hover {
 }
 
 /* Current row indicator */
-tbody tr[aria-current="true"] {
+tbody tr[aria-current='true'] {
   background-color: var(--apple-accent-light, rgba(0, 122, 255, 0.1));
 }
