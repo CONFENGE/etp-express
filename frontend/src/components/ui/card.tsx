@@ -30,7 +30,7 @@ const Card = React.forwardRef<
         // Hover: lift up with enhanced shadow
         'hover:shadow-apple-lg hover:-translate-y-1',
         // Active: pressed state
-        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.99]',
+        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.97]',
         // Focus visible for keyboard navigation
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
       ],
