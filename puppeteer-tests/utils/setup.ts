@@ -17,8 +17,8 @@ const config = require('../puppeteer.config.js');
  * Interface de retorno do setupBrowser
  */
 export interface BrowserSetup {
-  browser: Browser;
-  page: Page;
+ browser: Browser;
+ page: Page;
 }
 
 /**
@@ -32,33 +32,33 @@ export interface BrowserSetup {
  * await teardownBrowser(browser);
  */
 export async function setupBrowser(): Promise<BrowserSetup> {
-  const browser = await puppeteer.launch(config.launchOptions);
-  const page = await browser.newPage();
+ const browser = await puppeteer.launch(config.launchOptions);
+ const page = await browser.newPage();
 
-  // Configurar viewport
-  await page.setViewport(config.viewport);
+ // Configurar viewport
+ await page.setViewport(config.viewport);
 
-  // Configurar timeouts padrão
-  page.setDefaultNavigationTimeout(config.timeouts.navigation);
-  page.setDefaultTimeout(config.timeouts.selector);
+ // Configurar timeouts padrão
+ page.setDefaultNavigationTimeout(config.timeouts.navigation);
+ page.setDefaultTimeout(config.timeouts.selector);
 
-  // Interceptar console.log do browser (útil para debug)
-  page.on('console', (msg) => {
-    const type = msg.type();
-    const text = msg.text();
+ // Interceptar console.log do browser (útil para debug)
+ page.on('console', (msg) => {
+ const type = msg.type();
+ const text = msg.text();
 
-    // Log apenas erros e warnings no terminal (evita poluição)
-    if (type === 'error' || type === 'warn') {
-      console.log(`[Browser ${type.toUpperCase()}]:`, text);
-    }
-  });
+ // Log apenas erros e warnings no terminal (evita poluição)
+ if (type === 'error' || type === 'warn') {
+ console.log(`[Browser ${type.toUpperCase()}]:`, text);
+ }
+ });
 
-  // Interceptar page errors (uncaught exceptions)
-  page.on('pageerror', (error: Error) => {
-    console.error('[Browser Page Error]:', error.message);
-  });
+ // Interceptar page errors (uncaught exceptions)
+ page.on('pageerror', (error: Error) => {
+ console.error('[Browser Page Error]:', error.message);
+ });
 
-  return { browser, page };
+ return { browser, page };
 }
 
 /**
@@ -70,9 +70,9 @@ export async function setupBrowser(): Promise<BrowserSetup> {
  * await teardownBrowser(browser);
  */
 export async function teardownBrowser(browser: Browser): Promise<void> {
-  if (browser) {
-    await browser.close();
-  }
+ if (browser) {
+ await browser.close();
+ }
 }
 
 /**
@@ -90,32 +90,32 @@ export async function teardownBrowser(browser: Browser): Promise<void> {
  * expect(page.url()).toContain('/dashboard');
  */
 export async function login(
-  page: Page,
-  email: string,
-  password: string,
+ page: Page,
+ email: string,
+ password: string,
 ): Promise<void> {
-  // Navegar para página de login
-  await page.goto(`${config.baseUrl}/login`, {
-    waitUntil: 'networkidle2',
-  });
+ // Navegar para página de login
+ await page.goto(`${config.baseUrl}/login`, {
+ waitUntil: 'networkidle2',
+ });
 
-  // Aguardar formulário de login estar visível
-  await page.waitForSelector('#email', { visible: true });
-  await page.waitForSelector('#password', { visible: true });
-  await page.waitForSelector('button[type="submit"]', { visible: true });
+ // Aguardar formulário de login estar visível
+ await page.waitForSelector('#email', { visible: true });
+ await page.waitForSelector('#password', { visible: true });
+ await page.waitForSelector('button[type="submit"]', { visible: true });
 
-  // Preencher credenciais
-  await page.type('#email', email);
-  await page.type('#password', password);
+ // Preencher credenciais
+ await page.type('#email', email);
+ await page.type('#password', password);
 
-  // Clicar no botão de login
-  await page.click('button[type="submit"]');
+ // Clicar no botão de login
+ await page.click('button[type="submit"]');
 
-  // Aguardar navegação (redirecionamento para dashboard ou erro)
-  await page.waitForNavigation({
-    waitUntil: 'networkidle2',
-    timeout: config.timeouts.navigation,
-  });
+ // Aguardar navegação (redirecionamento para dashboard ou erro)
+ await page.waitForNavigation({
+ waitUntil: 'networkidle2',
+ timeout: config.timeouts.navigation,
+ });
 }
 
 /**
@@ -129,42 +129,42 @@ export async function login(
  *
  * @example
  * await createETP(page, {
- *   title: 'Projeto Teste E2E',
- *   description: 'Descrição teste',
+ * title: 'Projeto Teste E2E',
+ * description: 'Descrição teste',
  * });
  */
 export async function createETP(
-  page: Page,
-  etpData: { title: string; description?: string },
+ page: Page,
+ etpData: { title: string; description?: string },
 ): Promise<void> {
-  // Navegar para página de criação de ETP
-  await page.goto(`${config.baseUrl}/etps/new`, {
-    waitUntil: 'networkidle2',
-  });
+ // Navegar para página de criação de ETP
+ await page.goto(`${config.baseUrl}/etps/new`, {
+ waitUntil: 'networkidle2',
+ });
 
-  // Aguardar formulário
-  await page.waitForSelector('input[name="title"]', { visible: true });
+ // Aguardar formulário
+ await page.waitForSelector('input[name="title"]', { visible: true });
 
-  // Preencher título
-  await page.type('input[name="title"]', etpData.title);
+ // Preencher título
+ await page.type('input[name="title"]', etpData.title);
 
-  // Preencher descrição (se fornecida)
-  if (etpData.description) {
-    const descriptionSelector = 'textarea[name="description"]';
-    const descriptionExists = await page.$(descriptionSelector);
-    if (descriptionExists) {
-      await page.type(descriptionSelector, etpData.description);
-    }
-  }
+ // Preencher descrição (se fornecida)
+ if (etpData.description) {
+ const descriptionSelector = 'textarea[name="description"]';
+ const descriptionExists = await page.$(descriptionSelector);
+ if (descriptionExists) {
+ await page.type(descriptionSelector, etpData.description);
+ }
+ }
 
-  // Clicar no botão de criar
-  await page.click('button[type="submit"]');
+ // Clicar no botão de criar
+ await page.click('button[type="submit"]');
 
-  // Aguardar redirecionamento para a página do ETP criado
-  await page.waitForNavigation({
-    waitUntil: 'networkidle2',
-    timeout: config.timeouts.navigation,
-  });
+ // Aguardar redirecionamento para a página do ETP criado
+ await page.waitForNavigation({
+ waitUntil: 'networkidle2',
+ timeout: config.timeouts.navigation,
+ });
 }
 
 /**
@@ -176,43 +176,43 @@ export async function createETP(
  *
  * @example
  * try {
- *   // ... teste ...
+ * // ... teste ...
  * } catch (error) {
- *   await takeScreenshotOnFailure(page, 'login-test');
- *   throw error;
+ * await takeScreenshotOnFailure(page, 'login-test');
+ * throw error;
  * }
  */
 export async function takeScreenshotOnFailure(
-  page: Page,
-  testName: string,
+ page: Page,
+ testName: string,
 ): Promise<void> {
-  if (!config.screenshot.onFailure) {
-    return;
-  }
+ if (!config.screenshot.onFailure) {
+ return;
+ }
 
-  // Criar diretório de screenshots se não existir
-  const screenshotDir = path.resolve(
-    __dirname,
-    '..',
-    config.screenshot.directory,
-  );
-  if (!fs.existsSync(screenshotDir)) {
-    fs.mkdirSync(screenshotDir, { recursive: true });
-  }
+ // Criar diretório de screenshots se não existir
+ const screenshotDir = path.resolve(
+ __dirname,
+ '..',
+ config.screenshot.directory,
+ );
+ if (!fs.existsSync(screenshotDir)) {
+ fs.mkdirSync(screenshotDir, { recursive: true });
+ }
 
-  // Nome do arquivo: YYYY-MM-DD_HH-MM-SS_test-name.png
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `${timestamp}_${testName}.${config.screenshot.type}`;
-  const filepath = path.join(screenshotDir, filename);
+ // Nome do arquivo: YYYY-MM-DD_HH-MM-SS_test-name.png
+ const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+ const filename = `${timestamp}_${testName}.${config.screenshot.type}`;
+ const filepath = path.join(screenshotDir, filename);
 
-  // Capturar screenshot
-  await page.screenshot({
-    path: filepath,
-    type: config.screenshot.type,
-    fullPage: config.screenshot.fullPage,
-  });
+ // Capturar screenshot
+ await page.screenshot({
+ path: filepath,
+ type: config.screenshot.type,
+ fullPage: config.screenshot.fullPage,
+ });
 
-  console.log(`Screenshot capturado: ${filepath}`);
+ console.log(`Screenshot capturado: ${filepath}`);
 }
 
 /**
@@ -227,18 +227,18 @@ export async function takeScreenshotOnFailure(
  * expect(errorMsg).toContain('Credenciais inválidas');
  */
 export async function getTextContent(
-  page: Page,
-  selector: string,
+ page: Page,
+ selector: string,
 ): Promise<string> {
-  await page.waitForSelector(selector, { visible: true });
-  const element = await page.$(selector);
+ await page.waitForSelector(selector, { visible: true });
+ const element = await page.$(selector);
 
-  if (!element) {
-    throw new Error(`Elemento não encontrado: ${selector}`);
-  }
+ if (!element) {
+ throw new Error(`Elemento não encontrado: ${selector}`);
+ }
 
-  const text = await page.evaluate((el) => el.textContent || '', element);
-  return text.trim();
+ const text = await page.evaluate((el) => el.textContent || '', element);
+ return text.trim();
 }
 
 /**
@@ -255,21 +255,21 @@ export async function getTextContent(
  * await waitForUrlContains(page, '/dashboard');
  */
 export async function waitForUrlContains(
-  page: Page,
-  expectedPath: string,
-  timeout: number = config.timeouts.navigation,
+ page: Page,
+ expectedPath: string,
+ timeout: number = config.timeouts.navigation,
 ): Promise<void> {
-  const startTime = Date.now();
+ const startTime = Date.now();
 
-  while (Date.now() - startTime < timeout) {
-    const currentUrl = page.url();
-    if (currentUrl.includes(expectedPath)) {
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Poll a cada 100ms
-  }
+ while (Date.now() - startTime < timeout) {
+ const currentUrl = page.url();
+ if (currentUrl.includes(expectedPath)) {
+ return;
+ }
+ await new Promise((resolve) => setTimeout(resolve, 100)); // Poll a cada 100ms
+ }
 
-  throw new Error(
-    `Timeout aguardando URL conter "${expectedPath}". URL atual: ${page.url()}`,
-  );
+ throw new Error(
+ `Timeout aguardando URL conter "${expectedPath}". URL atual: ${page.url()}`,
+ );
 }

@@ -15,18 +15,18 @@ import { cn } from '@/lib/utils';
  * @example
  * // Basic usage
  * <ErrorState
- *   title="Erro ao carregar dados"
- *   message="Não foi possível carregar os dados. Tente novamente."
- *   onRetry={() => refetch()}
+ * title="Erro ao carregar dados"
+ * message="Não foi possível carregar os dados. Tente novamente."
+ * onRetry={() => refetch()}
  * />
  *
  * @example
  * // Fullscreen variant
  * <ErrorState
- *   variant="fullscreen"
- *   title="Página não encontrada"
- *   message="O recurso solicitado não existe."
- *   onHome={() => navigate('/')}
+ * variant="fullscreen"
+ * title="Página não encontrada"
+ * message="O recurso solicitado não existe."
+ * onHome={() => navigate('/')}
  * />
  */
 

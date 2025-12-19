@@ -26,7 +26,7 @@ Prezados usuários do ETP Express,
 
 Identificamos um problema técnico que está afetando o funcionamento do sistema.
 
-### 📋 Resumo
+### Resumo
 
 **Problema:** [Descrição clara e objetiva do problema]
 
@@ -43,13 +43,13 @@ Identificamos um problema técnico que está afetando o funcionamento do sistema
 - Se < 1h: Informar estimativa (ex: "até 30 minutos")
 - Se desconhecido: "Investigando. Atualizações a cada 30 minutos"
 
-### 🔄 Próximos Passos
+### Próximos Passos
 
 - Você receberá atualizações por email a cada **30 minutos** até a resolução
 - Mensagem de resolução será enviada assim que o sistema normalizar
 - Não é necessário abrir chamados - já estamos cientes do problema
 
-### ℹ️ Informações Adicionais
+### ℹ Informações Adicionais
 
 [Opcional: Informações relevantes, como horário alternativo, workaround temporário, etc.]
 
@@ -65,7 +65,7 @@ Atenciosamente,
 ## Slack/Teams Template
 
 ```
-🚨 **INCIDENT ALERT - ETP Express**
+ **INCIDENT ALERT - ETP Express**
 
 **Problema:** [Descrição breve]
 **Impacto:** [O que não funciona]
@@ -73,7 +73,7 @@ Atenciosamente,
 **ETA:** [Estimativa ou "TBD - updates a cada 30min"]
 
 Nossa equipe está trabalhando na resolução.
-Thread para updates: 👇
+Thread para updates: 
 ```
 
 ---
@@ -88,7 +88,7 @@ Prezados usuários do ETP Express,
 
 Identificamos um problema técnico que está afetando o funcionamento do sistema.
 
-### 📋 Resumo
+### Resumo
 
 **Problema:** Falha na conexão com banco de dados
 
@@ -102,13 +102,13 @@ Identificamos um problema técnico que está afetando o funcionamento do sistema
 
 **Previsão de normalização:** Estimamos normalização em até **1 hora**
 
-### 🔄 Próximos Passos
+### Próximos Passos
 
 - Você receberá atualizações por email a cada **30 minutos** até a resolução
 - Mensagem de resolução será enviada assim que o sistema normalizar
 - Não é necessário abrir chamados - já estamos cientes do problema
 
-### ℹ️ Informações Adicionais
+### ℹ Informações Adicionais
 
 Este é um problema pontual de infraestrutura. **Não há perda de dados** - todos os ETPs salvos anteriormente estão seguros e serão restaurados assim que o sistema normalizar.
 

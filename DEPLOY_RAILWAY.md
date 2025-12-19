@@ -1,6 +1,6 @@
 # GUIA DE DEPLOY - RAILWAY
 
-> **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
+> **⚠ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
 Este guia detalha o processo completo de deploy do ETP Express na Railway.
 
@@ -9,16 +9,16 @@ Este guia detalha o processo completo de deploy do ETP Express na Railway.
 ## PRÉ-REQUISITOS
 
 1. **Conta Railway**
-   - Criar conta em: https://railway.app
-   - Conectar com GitHub (recomendado)
+ - Criar conta em: https://railway.app
+ - Conectar com GitHub (recomendado)
 
 2. **API Keys Necessárias**
-   - OpenAI API Key (https://platform.openai.com/api-keys)
-   - Exa API Key (https://dashboard.exa.ai/api-keys)
+ - OpenAI API Key (https://platform.openai.com/api-keys)
+ - Exa API Key (https://dashboard.exa.ai/api-keys)
 
 3. **Repositório Git**
-   - Código versionado no Git
-   - Repositório no GitHub (opcional mas recomendado)
+ - Código versionado no Git
+ - Repositório no GitHub (opcional mas recomendado)
 
 ---
 
@@ -67,9 +67,9 @@ railway init
 2. Selecione **"Database"**
 3. Escolha **"Add PostgreSQL"**
 4. Railway criará automaticamente:
-   - Database instance
-   - DATABASE_URL (variável automática)
-   - Credenciais de acesso
+ - Database instance
+ - DATABASE_URL (variável automática)
+ - Credenciais de acesso
 
 ### 2.2 Conectar ao Database (Verificação)
 
@@ -107,13 +107,13 @@ railway connect postgres
 
 1. No projeto Railway, clique **"+ New"**
 2. Selecione **"GitHub Repo"** (se conectado ao GitHub)
-   - OU **"Empty Service"** para deploy manual
+ - OU **"Empty Service"** para deploy manual
 3. Selecione o repositório `ETP Express`
 4. Configure:
-   - **Name**: `etp-express-backend`
-   - **Root Directory**: `backend`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm run migration:run && npm run start:prod`
+ - **Name**: `etp-express-backend`
+ - **Root Directory**: `backend`
+ - **Build Command**: `npm install && npm run build`
+ - **Start Command**: `npm run migration:run && npm run start:prod`
 
 ### 3.2 Configurar Variáveis de Ambiente
 
@@ -122,7 +122,7 @@ No serviço `etp-express-backend`, adicione as variáveis:
 ```bash
 # Application
 NODE_ENV=production
-PORT=${{PORT}}  # Railway injeta automaticamente
+PORT=${{PORT}} # Railway injeta automaticamente
 
 # Database (injeta automaticamente da PostgreSQL)
 DATABASE_URL=${{Postgres.DATABASE_URL}}
@@ -185,10 +185,10 @@ Após deploy bem-sucedido:
 1. No projeto Railway, clique **"+ New"**
 2. Selecione **"GitHub Repo"** (mesmo repositório)
 3. Configure:
-   - **Name**: `etp-express-frontend`
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm run preview`
+ - **Name**: `etp-express-frontend`
+ - **Root Directory**: `frontend`
+ - **Build Command**: `npm install && npm run build`
+ - **Start Command**: `npm run preview`
 
 ### 4.2 Configurar Variáveis de Ambiente
 
@@ -221,10 +221,10 @@ VITE_APP_NAME=ETP Express
 
 1. Volte ao serviço `etp-express-backend`
 2. Em **"Variables"**, atualize:
-   ```bash
-   FRONTEND_URL=https://etp-express-frontend-production.up.railway.app
-   CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
-   ```
+ ```bash
+ FRONTEND_URL=https://etp-express-frontend-production.up.railway.app
+ CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
+ ```
 3. O serviço reiniciará automaticamente
 
 ### 4.6 Verificar Deploy
@@ -329,13 +329,13 @@ Railway oferece Observability Dashboard com métricas em tempo real e alertas co
 
 #### 6.3.1 Métricas Disponíveis
 
-| Métrica         | Descrição                  | Widget Padrão |
+| Métrica | Descrição | Widget Padrão |
 | --------------- | -------------------------- | ------------- |
-| CPU Usage       | Uso de CPU por serviço     | ✅            |
-| Memory (RAM)    | Consumo de memória         | ✅            |
-| Disk Usage      | Uso de disco               | ✅            |
-| Network Traffic | Tráfego de entrada/saída   | ✅            |
-| Project Spend   | Custo acumulado do projeto | ✅            |
+| CPU Usage | Uso de CPU por serviço | ✅ |
+| Memory (RAM) | Consumo de memória | ✅ |
+| Disk Usage | Uso de disco | ✅ |
+| Network Traffic | Tráfego de entrada/saída | ✅ |
+| Project Spend | Custo acumulado do projeto | ✅ |
 
 #### 6.3.2 Configuração de Alertas (OBRIGATÓRIO para Produção)
 
@@ -351,14 +351,14 @@ Railway oferece Observability Dashboard com métricas em tempo real e alertas co
 
 #### 6.3.3 Thresholds Recomendados
 
-| Alerta             | Threshold  | Trigger | Ação Esperada                             |
+| Alerta | Threshold | Trigger | Ação Esperada |
 | ------------------ | ---------- | ------- | ----------------------------------------- |
-| **CPU Alto**       | > 80%      | Above   | Investigar carga; escalar réplicas        |
-| **CPU Baixo**      | < 1%       | Below   | App pode ter crashado                     |
-| **Memory Alta**    | > 85%      | Above   | Investigar memory leak; reiniciar serviço |
-| **Memory Baixa**   | < 10MB     | Below   | App pode ter crashado                     |
-| **Disk Alto**      | > 90%      | Above   | Limpar logs antigos; expandir storage     |
-| **Network Egress** | > 10GB/dia | Above   | Investigar tráfego; verificar Private Net |
+| **CPU Alto** | > 80% | Above | Investigar carga; escalar réplicas |
+| **CPU Baixo** | < 1% | Below | App pode ter crashado |
+| **Memory Alta** | > 85% | Above | Investigar memory leak; reiniciar serviço |
+| **Memory Baixa** | < 10MB | Below | App pode ter crashado |
+| **Disk Alto** | > 90% | Above | Limpar logs antigos; expandir storage |
+| **Network Egress** | > 10GB/dia | Above | Investigar tráfego; verificar Private Net |
 
 #### 6.3.4 Configuração de Canais de Notificação
 
@@ -371,16 +371,16 @@ Railway oferece Observability Dashboard com métricas em tempo real e alertas co
 1. No Dashboard, vá em **Settings** → **Integrations**
 2. Configure webhook URL do Slack/Teams/Discord
 3. Formato do payload:
-   ```json
-   {
-     "type": "monitor_alert",
-     "service": "etp-express-backend",
-     "metric": "cpu",
-     "value": 85,
-     "threshold": 80,
-     "timestamp": "2025-12-14T10:30:00Z"
-   }
-   ```
+ ```json
+ {
+ "type": "monitor_alert",
+ "service": "etp-express-backend",
+ "metric": "cpu",
+ "value": 85,
+ "threshold": 80,
+ "timestamp": "2025-12-14T10:30:00Z"
+ }
+ ```
 
 **Slack Webhook Setup:**
 
@@ -401,17 +401,17 @@ Resposta esperada:
 
 ```json
 {
-  "uptime": 86400,
-  "memory": {
-    "heapUsed": 150000000,
-    "heapTotal": 250000000,
-    "external": 5000000,
-    "rss": 300000000
-  },
-  "cpu": {
-    "user": 1234567,
-    "system": 234567
-  }
+ "uptime": 86400,
+ "memory": {
+ "heapUsed": 150000000,
+ "heapTotal": 250000000,
+ "external": 5000000,
+ "rss": 300000000
+ },
+ "cpu": {
+ "user": 1234567,
+ "system": 234567
+ }
 }
 ```
 
@@ -422,8 +422,8 @@ Sentry já está configurado no projeto e captura erros automaticamente. Para al
 1. Acesse https://sentry.io → Projeto etp-express
 2. Vá em **Alerts** → **Create Alert**
 3. Selecione **Issue Alert** com condição:
-   - When: Number of events > 10 in 1 hour
-   - Action: Send notification to team
+ - When: Number of events > 10 in 1 hour
+ - Action: Send notification to team
 
 #### 6.3.6 Checklist de Alertas (Verificar antes de Go-Live)
 
@@ -464,15 +464,15 @@ O backend está configurado para rodar com **múltiplas réplicas** para elimina
 
 Configure as seguintes opções:
 
-| Configuração              | Valor            | Descrição                                     |
+| Configuração | Valor | Descrição |
 | ------------------------- | ---------------- | --------------------------------------------- |
-| **Min Replicas**          | 2                | Número mínimo de instâncias sempre ativas     |
-| **Max Replicas**          | 4                | Máximo de instâncias durante picos de carga   |
-| **Target CPU**            | 70%              | Auto-scale quando CPU média > 70%             |
-| **Target Memory**         | 80%              | Auto-scale quando memória média > 80%         |
-| **Cooldown Period**       | 60s              | Tempo de espera entre scaling events (padrão) |
-| **Health Check Path**     | `/api/v1/health` | Endpoint usado para validar réplicas          |
-| **Health Check Interval** | 30s              | Frequência de health checks (padrão)          |
+| **Min Replicas** | 2 | Número mínimo de instâncias sempre ativas |
+| **Max Replicas** | 4 | Máximo de instâncias durante picos de carga |
+| **Target CPU** | 70% | Auto-scale quando CPU média > 70% |
+| **Target Memory** | 80% | Auto-scale quando memória média > 80% |
+| **Cooldown Period** | 60s | Tempo de espera entre scaling events (padrão) |
+| **Health Check Path** | `/api/v1/health` | Endpoint usado para validar réplicas |
+| **Health Check Interval** | 30s | Frequência de health checks (padrão) |
 
 **Passo 3: Salvar e Aguardar Deploy**
 
@@ -488,10 +488,10 @@ Configure as seguintes opções:
 
 ```json
 {
-  "status": "healthy",
-  "timestamp": "2025-12-17T01:00:00.000Z",
-  "database": "connected",
-  "redis": "connected"
+ "status": "healthy",
+ "timestamp": "2025-12-17T01:00:00.000Z",
+ "database": "connected",
+ "redis": "connected"
 }
 ```
 
@@ -521,20 +521,20 @@ railway logs --service=etp-express-backend --tail 50 | grep "health"
 
 **Componentes Stateless (Safe para Múltiplas Réplicas):**
 
-| Componente  | Comportamento                                      |
+| Componente | Comportamento |
 | ----------- | -------------------------------------------------- |
-| JWT Auth    | ✅ Stateless - JWT validado em qualquer réplica    |
-| BullMQ Jobs | ✅ Redis compartilhado - jobs distribuídos         |
-| PostgreSQL  | ✅ Connection pool compartilhado (pgvector)        |
-| Uploads     | ✅ Armazenados em disco persistente ou S3 (futuro) |
+| JWT Auth | ✅ Stateless - JWT validado em qualquer réplica |
+| BullMQ Jobs | ✅ Redis compartilhado - jobs distribuídos |
+| PostgreSQL | ✅ Connection pool compartilhado (pgvector) |
+| Uploads | ✅ Armazenados em disco persistente ou S3 (futuro) |
 
 **Componentes Stateful (Considerações):**
 
-| Componente        | Comportamento                                         | Impacto                               |
+| Componente | Comportamento | Impacto |
 | ----------------- | ----------------------------------------------------- | ------------------------------------- |
-| NodeCache (LLM)   | ⚠️ Cache por réplica (cada réplica tem cache próprio) | Duplicação aceitável (~10MB/réplica)  |
-| Rate Limiting     | ⚠️ Contagem por réplica (não distribuída)             | Limite efetivo = limite x nº réplicas |
-| In-Memory Session | ❌ Não usar - preferir Redis ou JWT                   | N/A (não usado)                       |
+| NodeCache (LLM) | ⚠ Cache por réplica (cada réplica tem cache próprio) | Duplicação aceitável (~10MB/réplica) |
+| Rate Limiting | ⚠ Contagem por réplica (não distribuída) | Limite efetivo = limite x nº réplicas |
+| In-Memory Session | ❌ Não usar - preferir Redis ou JWT | N/A (não usado) |
 
 #### 6.5.4 Verificação de Réplicas Ativas
 
@@ -564,37 +564,37 @@ railway redeploy --service=etp-express-backend
 
 1. **Monitorar réplicas antes do deploy:**
 
-   ```bash
-   # Em um terminal, monitore os logs
-   railway logs --service=etp-express-backend --tail 100
-   ```
+ ```bash
+ # Em um terminal, monitore os logs
+ railway logs --service=etp-express-backend --tail 100
+ ```
 
 2. **Fazer um deploy de teste:**
-   - Faça um commit trivial (ex: adicionar comentário no código)
-   - Push para branch master
-   - Railway iniciará rolling update automaticamente
+ - Faça um commit trivial (ex: adicionar comentário no código)
+ - Push para branch master
+ - Railway iniciará rolling update automaticamente
 
 3. **Observar rolling update:**
-   - Railway atualiza **uma réplica por vez**
-   - Sequência:
-     1. Nova réplica V2 é iniciada (health check até passar)
-     2. Tráfego é redirecionado para V2
-     3. Réplica antiga V1 é desligada gracefully
-     4. Processo repete para próxima réplica
-   - Tempo total: ~5-10 minutos para 2 réplicas
+ - Railway atualiza **uma réplica por vez**
+ - Sequência:
+ 1. Nova réplica V2 é iniciada (health check até passar)
+ 2. Tráfego é redirecionado para V2
+ 3. Réplica antiga V1 é desligada gracefully
+ 4. Processo repete para próxima réplica
+ - Tempo total: ~5-10 minutos para 2 réplicas
 
 4. **Validar zero downtime:**
 
-   ```bash
-   # Em outro terminal, execute requisições contínuas
-   while true; do
-     curl -s https://etp-express-backend-production.up.railway.app/api/v1/health | jq -r '.status'
-     sleep 2
-   done
-   ```
+ ```bash
+ # Em outro terminal, execute requisições contínuas
+ while true; do
+ curl -s https://etp-express-backend-production.up.railway.app/api/v1/health | jq -r '.status'
+ sleep 2
+ done
+ ```
 
-   - Output esperado: `healthy` contínuo (sem interrupções)
-   - Se aparecer erro de conexão, **rolling update falhou**
+ - Output esperado: `healthy` contínuo (sem interrupções)
+ - Se aparecer erro de conexão, **rolling update falhou**
 
 #### 6.5.6 Teste de Failover (Alta Disponibilidade)
 
@@ -604,19 +604,19 @@ railway redeploy --service=etp-express-backend
 2. Navegue para **Deployments** → Latest → **Replicas**
 3. Clique em **"Kill"** ou **"Restart"** em uma das réplicas
 4. Observe:
-   - Réplica em questão entra em estado "Unhealthy" ou "Restarting"
-   - Tráfego é automaticamente redirecionado para réplicas saudáveis
-   - Nova réplica é iniciada para manter o mínimo de 2
-   - Tempo de recuperação: ~60-90 segundos
+ - Réplica em questão entra em estado "Unhealthy" ou "Restarting"
+ - Tráfego é automaticamente redirecionado para réplicas saudáveis
+ - Nova réplica é iniciada para manter o mínimo de 2
+ - Tempo de recuperação: ~60-90 segundos
 
 **Validação:**
 
 ```bash
 # Executar durante teste de failover
 while true; do
-  curl -s -w "\nStatus: %{http_code} - Time: %{time_total}s\n" \
-    https://etp-express-backend-production.up.railway.app/api/v1/health
-  sleep 1
+ curl -s -w "\nStatus: %{http_code} - Time: %{time_total}s\n" \
+ https://etp-express-backend-production.up.railway.app/api/v1/health
+ sleep 1
 done
 ```
 
@@ -630,11 +630,11 @@ done
 
 **Quando Railway escala automaticamente para 3-4 réplicas:**
 
-| Métrica          | Threshold | Ação                               |
+| Métrica | Threshold | Ação |
 | ---------------- | --------- | ---------------------------------- |
-| CPU > 70%        | 2 min     | Adiciona 1 réplica                 |
-| Memory > 80%     | 2 min     | Adiciona 1 réplica                 |
-| Requests/s > 100 | 1 min     | Adiciona 1 réplica (se habilitado) |
+| CPU > 70% | 2 min | Adiciona 1 réplica |
+| Memory > 80% | 2 min | Adiciona 1 réplica |
+| Requests/s > 100 | 1 min | Adiciona 1 réplica (se habilitado) |
 
 **Quando Railway escala para baixo (scale down):**
 
@@ -654,10 +654,10 @@ railway logs --service=etp-express-backend | grep -i "scal"
 
 | Configuração | Custo/mês (estimado) |
 | ------------ | -------------------- |
-| 1 réplica    | $5-10                |
-| 2 réplicas   | $10-20               |
-| 3 réplicas   | $15-30 (picos)       |
-| 4 réplicas   | $20-40 (picos)       |
+| 1 réplica | $5-10 |
+| 2 réplicas | $10-20 |
+| 3 réplicas | $15-30 (picos) |
+| 4 réplicas | $20-40 (picos) |
 
 **Nota:** Custo varia com uso de CPU/RAM. 2 réplicas permanentes + auto-scale até 4 = ~$15-25/mês.
 
@@ -707,7 +707,7 @@ curl https://etp-express-backend-production.up.railway.app/api/v1/health
 
 ### 6.6 Connection Pooling com PgBouncer (Escala Avançada)
 
-> **Status:** 📋 DOCUMENTADO (Issue #657)
+> **Status:** DOCUMENTADO (Issue #657)
 > **Uso:** Recomendado quando escalar além de 4 réplicas ou atingir limite de conexões
 
 O PgBouncer é um pooler de conexões externo que permite escalar significativamente o número de réplicas backend sem esgotar as conexões do PostgreSQL.
@@ -718,22 +718,22 @@ O PgBouncer é um pooler de conexões externo que permite escalar significativam
 
 A configuração atual do pool de conexões está otimizada para o limite do Railway PostgreSQL (máximo 20 conexões por instância). Ao escalar horizontalmente (múltiplas réplicas), cada instância abre seu próprio pool, podendo esgotar as conexões do banco.
 
-| Cenário       | Conexões Usadas | Status    |
+| Cenário | Conexões Usadas | Status |
 | ------------- | --------------- | --------- |
-| 1 container   | 20 conexões     | ✅ OK     |
-| 2 containers  | 40 conexões     | ✅ OK     |
-| 5 containers  | 100 conexões    | ⚠️ Limite |
-| 10 containers | 200 conexões    | ❌ Falha  |
+| 1 container | 20 conexões | ✅ OK |
+| 2 containers | 40 conexões | ✅ OK |
+| 5 containers | 100 conexões | ⚠ Limite |
+| 10 containers | 200 conexões | ❌ Falha |
 
 **Configuração Atual (sem PgBouncer):**
 
 ```typescript
 // backend/src/app.module.ts
 extra: {
-  max: 20,      // Railway Postgres Starter limit
-  min: 5,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+ max: 20, // Railway Postgres Starter limit
+ min: 5,
+ idleTimeoutMillis: 30000,
+ connectionTimeoutMillis: 5000,
 }
 ```
 
@@ -741,8 +741,8 @@ extra: {
 
 ```
 [Réplica 1] ──┐
-[Réplica 2] ──┼──► [PgBouncer] ──► [PostgreSQL]
-[Réplica 3] ──┤      (500 clients)    (20 conns)
+[Réplica 2] ──┼── [PgBouncer] ── [PostgreSQL]
+[Réplica 3] ──┤ (500 clients) (20 conns)
 [Réplica N] ──┘
 ```
 
@@ -757,11 +757,11 @@ PgBouncer é um connection pooler externo que:
 
 **Modos de Pooling:**
 
-| Modo        | Descrição                             | Uso Recomendado                |
+| Modo | Descrição | Uso Recomendado |
 | ----------- | ------------------------------------- | ------------------------------ |
-| session     | Conexão mantida durante toda a sessão | Apps com conexões longas       |
-| transaction | Conexão liberada após cada transação  | ✅ **Recomendado para NestJS** |
-| statement   | Conexão liberada após cada statement  | Não recomendado (bugs)         |
+| session | Conexão mantida durante toda a sessão | Apps com conexões longas |
+| transaction | Conexão liberada após cada transação | ✅ **Recomendado para NestJS** |
+| statement | Conexão liberada após cada statement | Não recomendado (bugs) |
 
 #### 6.6.3 Quando Usar PgBouncer
 
@@ -847,16 +847,16 @@ PGBOUNCER_ENABLED=true
 ```typescript
 // backend/src/app.module.ts
 TypeOrmModule.forRootAsync({
-  useFactory: (configService: ConfigService) => ({
-    // ... outras configs ...
-    extra: {
-      // Com PgBouncer: reduzir pool local (PgBouncer gerencia o pool real)
-      max: configService.get('PGBOUNCER_ENABLED') === 'true' ? 5 : 20,
-      min: configService.get('PGBOUNCER_ENABLED') === 'true' ? 1 : 5,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
-    },
-  }),
+ useFactory: (configService: ConfigService) => ({
+ // ... outras configs ...
+ extra: {
+ // Com PgBouncer: reduzir pool local (PgBouncer gerencia o pool real)
+ max: configService.get('PGBOUNCER_ENABLED') === 'true' ? 5 : 20,
+ min: configService.get('PGBOUNCER_ENABLED') === 'true' ? 1 : 5,
+ idleTimeoutMillis: 30000,
+ connectionTimeoutMillis: 5000,
+ },
+ }),
 }),
 ```
 
@@ -929,13 +929,13 @@ railway run --service=pgbouncer psql -p 6432 pgbouncer -c "SHOW POOLS;"
 
 **Métricas Importantes:**
 
-| Métrica     | Descrição               | Threshold Saudável |
+| Métrica | Descrição | Threshold Saudável |
 | ----------- | ----------------------- | ------------------ |
-| `cl_active` | Clientes ativos         | < MAX_CLIENT_CONN  |
-| `sv_active` | Conexões server ativas  | < DEFAULT_POOL     |
-| `sv_idle`   | Conexões server ociosas | > 0                |
-| `sv_used`   | Total conexões usadas   | < 20               |
-| `maxwait`   | Tempo máximo de espera  | < 1s               |
+| `cl_active` | Clientes ativos | < MAX_CLIENT_CONN |
+| `sv_active` | Conexões server ativas | < DEFAULT_POOL |
+| `sv_idle` | Conexões server ociosas | > 0 |
+| `sv_used` | Total conexões usadas | < 20 |
+| `maxwait` | Tempo máximo de espera | < 1s |
 
 **Comando para Verificar Pools:**
 
@@ -1009,50 +1009,50 @@ railway variables set QUERY_TIMEOUT=300 --service=pgbouncer
 
 1. **Deploy PgBouncer** (sem afetar backend atual)
 
-   ```bash
-   # PgBouncer roda em paralelo, não afeta conexões existentes
-   railway up --service=pgbouncer
-   ```
+ ```bash
+ # PgBouncer roda em paralelo, não afeta conexões existentes
+ railway up --service=pgbouncer
+ ```
 
 2. **Testar Conectividade**
 
-   ```bash
-   # Testar conexão via PgBouncer manualmente
-   railway run psql postgres://user:pass@pgbouncer.railway.internal:6432/railway -c "SELECT 1"
-   ```
+ ```bash
+ # Testar conexão via PgBouncer manualmente
+ railway run psql postgres://user:pass@pgbouncer.railway.internal:6432/railway -c "SELECT 1"
+ ```
 
 3. **Atualizar Uma Réplica**
 
-   ```bash
-   # Atualizar DATABASE_URL de apenas uma réplica para teste
-   # Se Railway não suportar config por réplica, pular para step 4
-   ```
+ ```bash
+ # Atualizar DATABASE_URL de apenas uma réplica para teste
+ # Se Railway não suportar config por réplica, pular para step 4
+ ```
 
 4. **Rolling Update do Backend**
 
-   ```bash
-   # Atualizar variável DATABASE_URL
-   railway variables set DATABASE_URL=postgres://user:pass@pgbouncer.railway.internal:6432/railway --service=etp-express-backend
+ ```bash
+ # Atualizar variável DATABASE_URL
+ railway variables set DATABASE_URL=postgres://user:pass@pgbouncer.railway.internal:6432/railway --service=etp-express-backend
 
-   # Railway fará rolling update (uma réplica por vez)
-   # Tráfego continua sendo servido pelas réplicas antigas até novas estarem healthy
-   ```
+ # Railway fará rolling update (uma réplica por vez)
+ # Tráfego continua sendo servido pelas réplicas antigas até novas estarem healthy
+ ```
 
 5. **Validar**
 
-   ```bash
-   # Verificar logs por erros
-   railway logs --service=etp-express-backend | grep -i "error\|connection"
+ ```bash
+ # Verificar logs por erros
+ railway logs --service=etp-express-backend | grep -i "error\|connection"
 
-   # Verificar pools
-   railway run --service=pgbouncer psql -p 6432 pgbouncer -c "SHOW POOLS;"
-   ```
+ # Verificar pools
+ railway run --service=pgbouncer psql -p 6432 pgbouncer -c "SHOW POOLS;"
+ ```
 
 6. **Rollback (se necessário)**
-   ```bash
-   # Reverter para conexão direta
-   railway variables set DATABASE_URL=${{Postgres.DATABASE_URL}} --service=etp-express-backend
-   ```
+ ```bash
+ # Reverter para conexão direta
+ railway variables set DATABASE_URL=${{Postgres.DATABASE_URL}} --service=etp-express-backend
+ ```
 
 ---
 
@@ -1064,7 +1064,7 @@ railway variables set QUERY_TIMEOUT=300 --service=pgbouncer
 
 ---
 
-## 📊 PASSO 7: MONITORAMENTO PÓS-DEPLOY
+## PASSO 7: MONITORAMENTO PÓS-DEPLOY
 
 ### 7.1 Verificações Diárias
 
@@ -1101,7 +1101,7 @@ Para ambientes de produção maiores, considere:
 
 ---
 
-## 🛠️ TROUBLESHOOTING
+## TROUBLESHOOTING
 
 ### Problema: Backend não inicia
 
@@ -1152,7 +1152,7 @@ railway connect postgres
 
 ---
 
-## 🚨 PROBLEMAS CONHECIDOS E SOLUÇÕES (Issue #631)
+## PROBLEMAS CONHECIDOS E SOLUÇÕES (Issue #631)
 
 Esta seção documenta problemas críticos de deploy identificados em dezembro/2025 e suas soluções definitivas.
 
@@ -1168,9 +1168,9 @@ Esta seção documenta problemas críticos de deploy identificados em dezembro/2
 
 ```json
 {
-  "puppeteer": {
-    "skipDownload": true
-  }
+ "puppeteer": {
+ "skipDownload": true
+ }
 }
 ```
 
@@ -1192,14 +1192,14 @@ railway variables set PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 ```typescript
 browser = await puppeteer.launch({
-  headless: true,
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-gpu',
-  ],
+ headless: true,
+ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+ args: [
+ '--no-sandbox',
+ '--disable-setuid-sandbox',
+ '--disable-dev-shm-usage',
+ '--disable-gpu',
+ ],
 });
 ```
 
@@ -1225,20 +1225,20 @@ railway variables set PGSSLMODE=disable
 
 ```typescript
 ssl:
-  configService.get('PGSSLMODE') === 'disable'
-    ? false
-    : configService.get('NODE_ENV') === 'production',
+ configService.get('PGSSLMODE') === 'disable'
+ ? false
+ : configService.get('NODE_ENV') === 'production',
 ```
 
 3. **Verificar `backend/src/app.module.ts`** (mesma lógica):
 
 ```typescript
 ssl:
-  configService.get('PGSSLMODE') === 'disable'
-    ? false
-    : configService.get('NODE_ENV') === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+ configService.get('PGSSLMODE') === 'disable'
+ ? false
+ : configService.get('NODE_ENV') === 'production'
+ ? { rejectUnauthorized: false }
+ : false,
 ```
 
 **Importante**: Ambos os arquivos DEVEM ter a mesma lógica de SSL. O `app.module.ts` é usado pelo NestJS em runtime, e o `typeorm.config.ts` é usado pelo CLI de migrations.
@@ -1261,17 +1261,17 @@ import { join } from 'path';
 // Detecta se está rodando de dist/ (compilado) ou src/ (dev)
 const isCompiled = __dirname.includes('dist');
 const entitiesPath = isCompiled
-  ? join(__dirname, '..', '**', '*.entity.js')
-  : join(__dirname, '..', '**', '*.entity.ts');
+ ? join(__dirname, '..', '**', '*.entity.js')
+ : join(__dirname, '..', '**', '*.entity.ts');
 const migrationsPath = isCompiled
-  ? join(__dirname, '..', 'migrations', '*.js')
-  : join(__dirname, '..', 'migrations', '*.ts');
+ ? join(__dirname, '..', 'migrations', '*.js')
+ : join(__dirname, '..', 'migrations', '*.ts');
 
 export default new DataSource({
-  // ...
-  entities: [entitiesPath],
-  migrations: [migrationsPath],
-  // ...
+ // ...
+ entities: [entitiesPath],
+ migrations: [migrationsPath],
+ // ...
 });
 ```
 
@@ -1291,10 +1291,10 @@ export default new DataSource({
 
 ```json
 {
-  "scripts": {
-    "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.config.ts",
-    "migration:run:prod": "typeorm migration:run -d dist/config/typeorm.config.js"
-  }
+ "scripts": {
+ "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.config.ts",
+ "migration:run:prod": "typeorm migration:run -d dist/config/typeorm.config.js"
+ }
 }
 ```
 
@@ -1334,18 +1334,18 @@ Criar `backend/nest-cli.json`:
 
 ```json
 {
-  "$schema": "https://json.schemastore.org/nest-cli",
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "compilerOptions": {
-    "deleteOutDir": true,
-    "assets": [
-      {
-        "include": "**/*.hbs",
-        "watchAssets": true
-      }
-    ]
-  }
+ "$schema": "https://json.schemastore.org/nest-cli",
+ "collection": "@nestjs/schematics",
+ "sourceRoot": "src",
+ "compilerOptions": {
+ "deleteOutDir": true,
+ "assets": [
+ {
+ "include": "**/*.hbs",
+ "watchAssets": true
+ }
+ ]
+ }
 }
 ```
 
@@ -1396,19 +1396,19 @@ CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
 
 ### Arquivos Críticos de Configuração
 
-| Arquivo                                | Propósito                       | Verificar                             |
+| Arquivo | Propósito | Verificar |
 | -------------------------------------- | ------------------------------- | ------------------------------------- |
-| `backend/package.json`                 | puppeteer.skipDownload, scripts | migration:run:prod existe             |
-| `backend/nest-cli.json`                | Assets (.hbs)                   | assets inclui `**/*.hbs`              |
-| `backend/railway.toml`                 | startCommand, healthcheck       | Usa migration:run:prod                |
-| `backend/src/config/typeorm.config.ts` | DB connection, SSL, paths       | \_\_dirname paths, PGSSLMODE check    |
-| `backend/src/app.module.ts`            | DB connection runtime           | SSL igual ao typeorm.config           |
-| `nixpacks.toml`                        | Build e start commands          | Workspaces corretos                   |
-| `.npmrc`                               | Puppeteer skip                  | PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true |
+| `backend/package.json` | puppeteer.skipDownload, scripts | migration:run:prod existe |
+| `backend/nest-cli.json` | Assets (.hbs) | assets inclui `**/*.hbs` |
+| `backend/railway.toml` | startCommand, healthcheck | Usa migration:run:prod |
+| `backend/src/config/typeorm.config.ts` | DB connection, SSL, paths | \_\_dirname paths, PGSSLMODE check |
+| `backend/src/app.module.ts` | DB connection runtime | SSL igual ao typeorm.config |
+| `nixpacks.toml` | Build e start commands | Workspaces corretos |
+| `.npmrc` | Puppeteer skip | PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true |
 
 ---
 
-## 📚 RECURSOS ADICIONAIS
+## RECURSOS ADICIONAIS
 
 ### Documentação Railway
 
@@ -1446,24 +1446,24 @@ Crie `.github/workflows/deploy.yml`:
 name: Deploy to Railway
 
 on:
-  push:
-    branches: [main]
+ push:
+ branches: [main]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy Backend
-        uses: bervProject/railway-deploy@main
-        with:
-          service: etp-express-backend
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
-      - name: Deploy Frontend
-        uses: bervProject/railway-deploy@main
-        with:
-          service: etp-express-frontend
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+ deploy:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v3
+ - name: Deploy Backend
+ uses: bervProject/railway-deploy@main
+ with:
+ service: etp-express-backend
+ railway_token: ${{ secrets.RAILWAY_TOKEN }}
+ - name: Deploy Frontend
+ uses: bervProject/railway-deploy@main
+ with:
+ service: etp-express-frontend
+ railway_token: ${{ secrets.RAILWAY_TOKEN }}
 ```
 
 ---
@@ -1511,34 +1511,34 @@ Antes de considerar o deploy completo, verifique:
 
 ---
 
-## 🎯 PRÓXIMOS PASSOS PÓS-DEPLOY
+## PRÓXIMOS PASSOS PÓS-DEPLOY
 
 1. **Testes em Produção**
-   - Criar ETPs de teste
-   - Gerar seções com IA
-   - Exportar PDFs
-   - Validar busca de contratações similares
+ - Criar ETPs de teste
+ - Gerar seções com IA
+ - Exportar PDFs
+ - Validar busca de contratações similares
 
 2. **Documentação Interna**
-   - Criar manual de uso para servidores
-   - Documentar fluxos de trabalho
-   - Preparar treinamento
+ - Criar manual de uso para servidores
+ - Documentar fluxos de trabalho
+ - Preparar treinamento
 
 3. **Melhorias Incrementais**
-   - Monitorar analytics
-   - Coletar feedback de usuários
-   - Iterar sobre UX
-   - Otimizar prompts de IA
+ - Monitorar analytics
+ - Coletar feedback de usuários
+ - Iterar sobre UX
+ - Otimizar prompts de IA
 
 4. **Segurança Contínua**
-   - Auditorias de segurança
-   - Atualizações de dependências
-   - Monitoramento de vulnerabilidades
-   - Backups regulares testados
+ - Auditorias de segurança
+ - Atualizações de dependências
+ - Monitoramento de vulnerabilidades
+ - Backups regulares testados
 
 ---
 
-**⚠️ LEMBRETE IMPORTANTE**
+**⚠ LEMBRETE IMPORTANTE**
 
 O ETP Express é um **sistema assistivo**. Não substitui:
 

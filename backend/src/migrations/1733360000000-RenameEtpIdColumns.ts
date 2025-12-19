@@ -47,10 +47,10 @@ export class RenameEtpIdColumns1733360000000 implements MigrationInterface {
 
       // Recreate FK constraint with correct column name
       await queryRunner.query(`
-        ALTER TABLE "etp_sections"
-        ADD CONSTRAINT "FK_etp_sections_etp_id"
-        FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
-      `);
+ ALTER TABLE "etp_sections"
+ ADD CONSTRAINT "FK_etp_sections_etp_id"
+ FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
+ `);
     }
 
     // === FIX etp_versions TABLE ===
@@ -74,10 +74,10 @@ export class RenameEtpIdColumns1733360000000 implements MigrationInterface {
 
       // Recreate FK constraint with correct column name
       await queryRunner.query(`
-        ALTER TABLE "etp_versions"
-        ADD CONSTRAINT "FK_etp_versions_etp_id"
-        FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
-      `);
+ ALTER TABLE "etp_versions"
+ ADD CONSTRAINT "FK_etp_versions_etp_id"
+ FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
+ `);
     }
   }
 
@@ -103,10 +103,10 @@ export class RenameEtpIdColumns1733360000000 implements MigrationInterface {
 
       // Recreate FK constraint with camelCase column name
       await queryRunner.query(`
-        ALTER TABLE "etp_sections"
-        ADD CONSTRAINT "FK_etp_sections_etpId"
-        FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
-      `);
+ ALTER TABLE "etp_sections"
+ ADD CONSTRAINT "FK_etp_sections_etpId"
+ FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
+ `);
     }
 
     // === ROLLBACK etp_versions TABLE ===
@@ -130,10 +130,10 @@ export class RenameEtpIdColumns1733360000000 implements MigrationInterface {
 
       // Recreate FK constraint with camelCase column name
       await queryRunner.query(`
-        ALTER TABLE "etp_versions"
-        ADD CONSTRAINT "FK_etp_versions_etpId"
-        FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
-      `);
+ ALTER TABLE "etp_versions"
+ ADD CONSTRAINT "FK_etp_versions_etpId"
+ FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
+ `);
     }
   }
 }

@@ -33,31 +33,31 @@ Only PRs that meet ALL of these are considered:
 Total Score = Priority_Weight + Age_Weight + Size_Weight + Label_Weight
 
 Where:
-  Priority_Weight = Commit type priority
-    - hotfix:  10 points
-    - feat:     8 points
-    - fix:      6 points
-    - refactor: 4 points
-    - test:     7 points (high priority for M1)
-    - docs:     2 points
-    - chore:    1 point
+ Priority_Weight = Commit type priority
+ - hotfix: 10 points
+ - feat: 8 points
+ - fix: 6 points
+ - refactor: 4 points
+ - test: 7 points (high priority for M1)
+ - docs: 2 points
+ - chore: 1 point
 
-  Age_Weight = Days since PR created
-    - >72 hours: +4 points
-    - >48 hours: +2 points
-    - >24 hours: +1 point
-    - <24 hours:  0 points
+ Age_Weight = Days since PR created
+ - >72 hours: +4 points
+ - >48 hours: +2 points
+ - >24 hours: +1 point
+ - <24 hours: 0 points
 
-  Size_Weight = Lines changed (inversely proportional)
-    - <100 lines:  +3 points
-    - <200 lines:  +2 points
-    - <400 lines:  +1 point
-    - >400 lines:  -2 points (discourage large PRs)
+ Size_Weight = Lines changed (inversely proportional)
+ - <100 lines: +3 points
+ - <200 lines: +2 points
+ - <400 lines: +1 point
+ - >400 lines: -2 points (discourage large PRs)
 
-  Label_Weight = Special labels
-    - security/deploy/performance: +5 points each
-    - test/docs:                   +2 points each
-    - wip/blocked:                 -100 points (effectively blocks)
+ Label_Weight = Special labels
+ - security/deploy/performance: +5 points each
+ - test/docs: +2 points each
+ - wip/blocked: -100 points (effectively blocks)
 ```
 
 ### Tiebreaker
@@ -137,21 +137,21 @@ If multiple PRs have the same score, select the **oldest PR** (First In, First O
 If score = 100% but minor formatting issues exist, these are auto-fixed:
 
 1. **Code Formatting** (`npx prettier --write`)
-   - Deterministic, zero semantic changes
-   - Industry standard (Google, Airbnb, Microsoft)
+ - Deterministic, zero semantic changes
+ - Industry standard (Google, Airbnb, Microsoft)
 
 2. **Import Sorting** (ESLint auto-fix)
-   - Removes ambiguity, improves readability
-   - Zero semantic changes
+ - Removes ambiguity, improves readability
+ - Zero semantic changes
 
 3. **Auto-fixable Linting** (`npx eslint --fix`)
-   - Unused imports
-   - Unused variables
-   - Semicolons, quotes consistency
+ - Unused imports
+ - Unused variables
+ - Semicolons, quotes consistency
 
 4. **Basic JSDoc** (Google-style templates)
-   - Skeleton docstrings for undocumented functions
-   - Template-based (not AI-generated)
+ - Skeleton docstrings for undocumented functions
+ - Template-based (not AI-generated)
 
 **After auto-fixes**: Re-run tests and await 100% passing before proceeding.
 
@@ -220,7 +220,7 @@ gh pr reopen $PR_NUMBER
 gh pr edit $PR_NUMBER --add-label "post-merge-failure"
 
 # 5. Comment failure details
-gh pr comment $PR_NUMBER --body "⚠️ Post-Merge Validation FAILED - Rollback executed"
+gh pr comment $PR_NUMBER --body "⚠ Post-Merge Validation FAILED - Rollback executed"
 
 # 6. Alert
 echo "❌ Rollback executed for PR #$PR_NUMBER" >&2
@@ -245,8 +245,8 @@ PR_NUMBER=<selected>
 PR_TITLE=<title>
 
 echo "Selected PR #$PR_NUMBER: $PR_TITLE"
-echo "   Score: <total_score> points"
-echo "   Reason: <selection_rationale>"
+echo " Score: <total_score> points"
+echo " Reason: <selection_rationale>"
 ```
 
 ### Step 2: Validate Criteria (100% Required)
@@ -267,9 +267,9 @@ echo "Validating PR #$PR_NUMBER against 8 criteria categories..."
 
 # If any category fails, report and exit
 if [ "$SCORE" -lt 100 ]; then
-    echo "❌ PR #$PR_NUMBER REJECTED - Score: $SCORE/100"
-    echo "Failed categories: <list>"
-    exit 1
+ echo "❌ PR #$PR_NUMBER REJECTED - Score: $SCORE/100"
+ echo "Failed categories: <list>"
+ exit 1
 fi
 
 echo "✅ PR #$PR_NUMBER achieved perfect score (100/100)"
@@ -280,37 +280,37 @@ echo "✅ PR #$PR_NUMBER achieved perfect score (100/100)"
 ```bash
 # Check if auto-fixable issues exist
 if [ -n "$(git status --porcelain)" ]; then
-    echo "Applying auto-fixes..."
+ echo "Applying auto-fixes..."
 
-    # Checkout PR branch
-    gh pr checkout $PR_NUMBER
+ # Checkout PR branch
+ gh pr checkout $PR_NUMBER
 
-    # Apply formatting
-    npm run format
+ # Apply formatting
+ npm run format
 
-    # Apply linting fixes
-    npm run lint:fix
+ # Apply linting fixes
+ npm run lint:fix
 
-    # Commit and push
-    git add .
-    git commit -m "chore: apply automated fixes (review-pr)"
-    git push
+ # Commit and push
+ git add .
+ git commit -m "chore: apply automated fixes (review-pr)"
+ git push
 
-    # CI/CD Note: Este commit acionará workflows apenas se tocar arquivos TypeScript
-    # Path filters: commits apenas de formatação em docs NÃO acionam CI/CD
+ # CI/CD Note: Este commit acionará workflows apenas se tocar arquivos TypeScript
+ # Path filters: commits apenas de formatação em docs NÃO acionam CI/CD
 
-    # Wait for tests
-    echo "Waiting for tests to re-run (cache NPM reduz tempo em ~60%)..."
-    npm test
+ # Wait for tests
+ echo "Waiting for tests to re-run (cache NPM reduz tempo em ~60%)..."
+ npm test
 
-    if [ $? -ne 0 ]; then
-        echo "❌ Auto-fixes caused test failures - manual review required"
-        exit 1
-    fi
+ if [ $? -ne 0 ]; then
+ echo "❌ Auto-fixes caused test failures - manual review required"
+ exit 1
+ fi
 
-    echo "✅ Auto-fixes applied successfully, all tests still passing"
+ echo "✅ Auto-fixes applied successfully, all tests still passing"
 else
-    echo "✅ No auto-fixes needed - PR already perfect"
+ echo "✅ No auto-fixes needed - PR already perfect"
 fi
 ```
 
@@ -343,22 +343,22 @@ cd backend && npm run build && npm test
 cd ../frontend && npm run build && npm test
 
 if [ $? -ne 0 ]; then
-    echo "❌ POST-MERGE VALIDATION FAILED (Layer 1)"
-    echo "Executing automatic rollback..."
+ echo "❌ POST-MERGE VALIDATION FAILED (Layer 1)"
+ echo "Executing automatic rollback..."
 
-    # Rollback
-    git revert $MERGE_SHA --no-edit -m 1
-    git push origin master
+ # Rollback
+ git revert $MERGE_SHA --no-edit -m 1
+ git push origin master
 
-    # Reopen PR
-    gh pr reopen $PR_NUMBER
-    gh pr edit $PR_NUMBER --add-label "post-merge-failure"
+ # Reopen PR
+ gh pr reopen $PR_NUMBER
+ gh pr edit $PR_NUMBER --add-label "post-merge-failure"
 
-    # Comment
-    gh pr comment $PR_NUMBER --body "⚠️ Post-Merge Validation FAILED (Layer 1: Build/Test) - Automatic rollback executed."
+ # Comment
+ gh pr comment $PR_NUMBER --body "⚠ Post-Merge Validation FAILED (Layer 1: Build/Test) - Automatic rollback executed."
 
-    echo "✅ Rollback completed - master branch is stable"
-    exit 1
+ echo "✅ Rollback completed - master branch is stable"
+ exit 1
 fi
 
 echo "✅ Layer 1 passed"
@@ -378,11 +378,11 @@ echo "✅ PR #$PR_NUMBER SUCCESSFULLY MERGED AND VALIDATED"
 echo "================================================================================"
 echo ""
 echo "Summary:"
-echo "   - PR Number: #$PR_NUMBER"
-echo "   - Title: $PR_TITLE"
-echo "   - Validation Score: 100/100 (Perfect)"
-echo "   - Merge Commit: $MERGE_SHA"
-echo "   - Post-Merge Validation: ✅ PASSED"
+echo " - PR Number: #$PR_NUMBER"
+echo " - Title: $PR_TITLE"
+echo " - Validation Score: 100/100 (Perfect)"
+echo " - Merge Commit: $MERGE_SHA"
+echo " - Post-Merge Validation: ✅ PASSED"
 echo ""
 echo "The merge is complete and production-safe!"
 echo ""
@@ -391,9 +391,9 @@ echo ""
 ISSUE_NUMBER=$(gh pr view $PR_NUMBER --json body -q .body | grep -oP 'Closes #\K\d+' | head -1)
 
 if [ -n "$ISSUE_NUMBER" ]; then
-    echo "Closing linked issue #$ISSUE_NUMBER..."
-    gh issue close $ISSUE_NUMBER --comment "Resolved by PR #$PR_NUMBER (automated merge via /review-pr)"
-    echo "✅ Issue #$ISSUE_NUMBER closed"
+ echo "Closing linked issue #$ISSUE_NUMBER..."
+ gh issue close $ISSUE_NUMBER --comment "Resolved by PR #$PR_NUMBER (automated merge via /review-pr)"
+ echo "✅ Issue #$ISSUE_NUMBER closed"
 fi
 ```
 

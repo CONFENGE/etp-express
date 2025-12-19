@@ -47,11 +47,11 @@ export class GovDataSyncService implements OnModuleInit {
   onModuleInit(): void {
     this.logger.log('GovDataSyncService initialized');
     this.logger.log('Scheduled jobs:');
-    this.logger.log('  - SINAPI: Monthly on day 5 at 03:00');
+    this.logger.log(' - SINAPI: Monthly on day 5 at 03:00');
     this.logger.log(
-      '  - SICRO: Quarterly on day 1 at 03:00 (Jan, Apr, Jul, Oct)',
+      ' - SICRO: Quarterly on day 1 at 03:00 (Jan, Apr, Jul, Oct)',
     );
-    this.logger.log('  - Cache refresh: Weekly on Sunday at 02:00');
+    this.logger.log(' - Cache refresh: Weekly on Sunday at 02:00');
   }
 
   /**

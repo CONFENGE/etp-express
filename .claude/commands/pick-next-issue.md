@@ -45,48 +45,48 @@ gh issue list --state open --json number,title,labels,milestone,updatedAt --limi
 **Critérios de Seleção (ordem de prioridade rigorosa):**
 
 1. **Prioridade (DECISIVO):** P0 > P1 > P2 > P3
-   - Verificar labels: `priority/P0`, `priority/P1`, `priority/P2`, `priority/P3`
-   - **P0 (BLOCKER):** Deve ser resolvido ANTES de qualquer outra prioridade
-   - **P1 (HIGH):** Alta prioridade - resolver após P0
-   - **P2 (MEDIUM):** Média prioridade - resolver após P1
-   - **P3 (LOW):** Baixa prioridade - resolver após P2
+ - Verificar labels: `priority/P0`, `priority/P1`, `priority/P2`, `priority/P3`
+ - **P0 (BLOCKER):** Deve ser resolvido ANTES de qualquer outra prioridade
+ - **P1 (HIGH):** Alta prioridade - resolver após P0
+ - **P2 (MEDIUM):** Média prioridade - resolver após P1
+ - **P3 (LOW):** Baixa prioridade - resolver após P2
 
 2. **Dependências (BLOQUEIO):**
-   - Verificar campo "Dependencies" na issue
-   - **NÃO** iniciar issue bloqueada por outras issues abertas
-   - Priorizar issues que desbloqueiam outras (efeito cascata)
+ - Verificar campo "Dependencies" na issue
+ - **NÃO** iniciar issue bloqueada por outras issues abertas
+ - Priorizar issues que desbloqueiam outras (efeito cascata)
 
 3. **Milestone (SEQUENCIAL):**
-   - Seguir ordem: M1 → M2 → M3 → M4 → M5 → M6
-   - Consultar ROADMAP.md para saber milestone atual
-   - Preferir issues do milestone em progresso
+ - Seguir ordem: M1 → M2 → M3 → M4 → M5 → M6
+ - Consultar ROADMAP.md para saber milestone atual
+ - Preferir issues do milestone em progresso
 
 4. **Tipo (IMPACTO):**
-   - Data Integrity (crítico para integridade)
-   - Security/Legal Safety (segurança e conformidade)
-   - Deploy/Infrastructure (fundação técnica)
-   - Bugs Críticos (correções urgentes)
-   - Features (funcionalidades)
-   - Refactoring (melhorias de código)
-   - Documentation (documentação)
+ - Data Integrity (crítico para integridade)
+ - Security/Legal Safety (segurança e conformidade)
+ - Deploy/Infrastructure (fundação técnica)
+ - Bugs Críticos (correções urgentes)
+ - Features (funcionalidades)
+ - Refactoring (melhorias de código)
+ - Documentation (documentação)
 
 5. **Tamanho (DESEMPATE):**
-   - Em caso de empate nas prioridades acima, escolha a menor (1–4h)
-   - Issues atômicas são sempre preferidas
+ - Em caso de empate nas prioridades acima, escolha a menor (1–4h)
+ - Issues atômicas são sempre preferidas
 
 6. **Bloqueio Total:**
-   - Se nenhuma issue cumprir os critérios → declare backlog bloqueado e **PARE**
-   - Informe ao usuário quais dependências estão bloqueando o progresso
+ - Se nenhuma issue cumprir os critérios → declare backlog bloqueado e **PARE**
+ - Informe ao usuário quais dependências estão bloqueando o progresso
 
 ### Output da Seleção
 
 ```
 ISSUE SELECIONADA: #<número> – <título>
-   Prioridade: Px
-   Milestone: Mx
-   Tempo estimado: X h
-   Dependências: <Nenhuma | Bloqueada por: #X | Bloqueia: #Y>
-   Racional: <motivo detalhado da escolha baseado no algoritmo>
+ Prioridade: Px
+ Milestone: Mx
+ Tempo estimado: X h
+ Dependências: <Nenhuma | Bloqueada por: #X | Bloqueia: #Y>
+ Racional: <motivo detalhado da escolha baseado no algoritmo>
 ```
 
 ---
@@ -136,7 +136,7 @@ A issue **DEVE** conter todos os elementos abaixo:
 - [ ] Critério 1 (verificável e testável)
 - [ ] Critério 2
 - [ ] Critério 3
-      ...
+ ...
 
 ## Estimativa
 
@@ -210,19 +210,19 @@ Para cada sub-tarefa:
 
 ```bash
 gh issue create \
-  --title "[PARENT-ID subtask-letter] <descrição-específica>" \
-  --milestone "<mesmo-milestone-do-parent>" \
-  --label "<mesmas-labels-do-parent>" \
-  --body "$(cat <<EOF
-## 🎯 Objetivo
+ --title "[PARENT-ID subtask-letter] <descrição-específica>" \
+ --milestone "<mesmo-milestone-do-parent>" \
+ --label "<mesmas-labels-do-parent>" \
+ --body "$(cat <<EOF
+## Objetivo
 <Objetivo específico desta sub-issue>
 
-## 📋 Contexto
+## Contexto
 Esta é a sub-tarefa [X] de [total] da issue parent #<parent-id>.
 
 **Parent Issue:** #<parent-id> - <título-parent>
 
-## 🔧 Solução Técnica
+## Solução Técnica
 <Approach técnico específico>
 
 **Arquivo(s):** <arquivos específicos>
@@ -232,15 +232,15 @@ Esta é a sub-tarefa [X] de [total] da issue parent #<parent-id>.
 - [ ] <critério específico 2>
 - [ ] <critério específico 3>
 
-## 📊 Estimativa
+## Estimativa
 **Esforço:** <1-3h> (atômico)
 
-## 🔗 Dependências
+## Dependências
 - **Parent:** #<parent-id>
 - **Bloqueada por:** #<issue-anterior-na-sequência> (se houver)
 - **Bloqueia:** #<próxima-issue-na-sequência> (se houver)
 
-## 📚 Referências
+## Referências
 - Parent Issue: #<parent-id>
 - Related: <outras-issues-relacionadas>
 EOF
@@ -281,7 +281,7 @@ gh issue edit <parent-id> --add-label "parent-issue"
 
 **Passo 5:** Retornar ao algoritmo de seleção
 
-Após desmembramento, **REEXECUTE** o algoritmo de seleção (passo 1️⃣) para escolher a primeira sub-issue atômica.
+Após desmembramento, **REEXECUTE** o algoritmo de seleção (passo ) para escolher a primeira sub-issue atômica.
 
 ---
 
@@ -316,14 +316,14 @@ Exemplo: `feat/42-configure-jest`
 
 # Backend (NestJS)
 cd backend
-npm test                                    # Testes unitários (cache acelera deps)
-npm run test:e2e                           # Testes E2E
-npm run test:cov                           # Cobertura
+npm test # Testes unitários (cache acelera deps)
+npm run test:e2e # Testes E2E
+npm run test:cov # Cobertura
 
 # Frontend (React)
 cd frontend
-npm test                                    # Vitest (cache acelera deps)
-npm run test:coverage                      # Cobertura
+npm test # Vitest (cache acelera deps)
+npm run test:coverage # Cobertura
 
 # Meta: Aumentar coverage em ≥ +5 pontos percentuais
 ```
@@ -370,8 +370,8 @@ Exemplos:
 git push origin feat/<issue-id>-<slug>
 
 gh pr create \
-  --title "[#<issue-id>] <resumo-claro>" \
-  --body "$(cat <<EOF
+ --title "[#<issue-id>] <resumo-claro>" \
+ --body "$(cat <<EOF
 ## Context
 <Por que esta mudança?>
 
@@ -415,8 +415,8 @@ EOF
 
 **Workflows que NÃO Serão Acionados** (se PR apenas docs):
 
-- ⏭️ Commits apenas `.md`, `docs/` não acionam CI/CD
-- ⏭️ Path filters economizam ~2900 min/mês
+- Commits apenas `.md`, `docs/` não acionam CI/CD
+- Path filters economizam ~2900 min/mês
 
 **Validação:**
 

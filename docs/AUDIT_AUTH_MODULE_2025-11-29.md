@@ -39,10 +39,10 @@ O módulo Auth está **implementado conforme especificado no ARCHITECTURE.md**, 
 **ARCHITECTURE.md - Seção 5.1 Autenticação:**
 
 ```
-POST   /api/auth/register          # Criar conta
-POST   /api/auth/login             # Login (retorna JWT)
-POST   /api/auth/logout            # Logout
-GET    /api/auth/me                # Usuário atual
+POST /api/auth/register # Criar conta
+POST /api/auth/login # Login (retorna JWT)
+POST /api/auth/logout # Logout
+GET /api/auth/me # Usuário atual
 ```
 
 ### 2.2 Componentes Auditados
@@ -110,8 +110,8 @@ Recurso de segurança não documentado no ARCHITECTURE.md, mas essencial para pr
 - Extends `PassportStrategy(Strategy)` do Passport-JWT
 - Extração de token: `Authorization: Bearer <token>`
 - Validação de token com dual-key support:
-  - `JWT_SECRET` (primary)
-  - `JWT_SECRET_OLD` (fallback durante rotação)
+ - `JWT_SECRET` (primary)
+ - `JWT_SECRET_OLD` (fallback durante rotação)
 - Validação de usuário ativo (`isActive`)
 - Logging de modo dual-key no startup
 
@@ -119,10 +119,10 @@ Recurso de segurança não documentado no ARCHITECTURE.md, mas essencial para pr
 
 ```typescript
 {
-  sub: string; // User ID
-  email: string;
-  name: string;
-  role: string;
+ sub: string; // User ID
+ email: string;
+ name: string;
+ role: string;
 }
 ```
 
@@ -131,7 +131,7 @@ Implementação vai além da especificação com suporte a rotação de secrets 
 
 ---
 
-#### 3.2.2 LocalStrategy ⚠️ NÃO UTILIZADA
+#### 3.2.2 LocalStrategy ⚠ NÃO UTILIZADA
 
 **Arquivo:** `backend/src/modules/auth/strategies/local.strategy.ts`
 
@@ -143,7 +143,7 @@ Implementação vai além da especificação com suporte a rotação de secrets 
 - **NÃO** utilizada no `AuthController` (login usa validação direta)
 - Testes unitários presentes (`local.strategy.spec.ts`)
 
-**Avaliação:** ⚠️ **Desvio Identificado**
+**Avaliação:** ⚠ **Desvio Identificado**
 LocalStrategy está registrada mas nunca utilizada. O endpoint `/login` valida credenciais diretamente via `AuthService.validateUser()` ao invés de usar `@UseGuards(LocalAuthGuard)`.
 
 **Impacto:** Baixo - código inerte não causa problemas, mas adiciona complexidade desnecessária.
@@ -167,7 +167,7 @@ LocalStrategy está registrada mas nunca utilizada. O endpoint `/login` valida c
 
 ```typescript
 @CurrentUser() user: UserWithoutPassword
-@CurrentUser('email') userEmail: string  // Suporta propriedade específica
+@CurrentUser('email') userEmail: string // Suporta propriedade específica
 ```
 
 **Avaliação:** ✅ **Conforme**
@@ -213,9 +213,9 @@ Implementação padrão NestJS. Funciona corretamente com `JwtAuthGuard`.
 - ✅ Validação de dados via `RegisterDto` (class-validator)
 - ✅ Hash de senha com bcrypt (cost factor 10)
 - ✅ **LGPD Compliance:**
-  - Validação explícita de `lgpdConsent === true`
-  - Validação de `internationalTransferConsent === true`
-  - Armazenamento de `lgpdConsentAt` e `lgpdConsentVersion`
+ - Validação explícita de `lgpdConsent === true`
+ - Validação de `internationalTransferConsent === true`
+ - Armazenamento de `lgpdConsentAt` e `lgpdConsentVersion`
 - ✅ Retorna JWT token (login automático após registro)
 - ✅ Logging de registro com versão de termos LGPD
 
@@ -235,8 +235,8 @@ Implementação robusta com conformidade LGPD (Art. 7º, 8º, 33º).
 - ✅ Validação de credenciais via `AuthService.validateUser()`
 - ✅ Retorna JWT token + user data
 - ✅ **Audit Trail (LGPD Art. 37):**
-  - Log de login bem-sucedido (user ID, IP, userAgent)
-  - Log de login falhado (email, IP, userAgent, reason)
+ - Log de login bem-sucedido (user ID, IP, userAgent)
+ - Log de login falhado (email, IP, userAgent, reason)
 - ✅ Update de `lastLogin` no banco de dados
 
 **Avaliação:** ✅ **Conforme + Segurança**
@@ -249,7 +249,7 @@ Implementação vai além da especificação com rate limiting e audit trail.
 **Especificação:** ARCHITECTURE.md linha 290
 
 ```
-POST   /api/auth/logout            # Logout
+POST /api/auth/logout # Logout
 ```
 
 **Situação:** **Endpoint NÃO implementado**
@@ -257,7 +257,7 @@ POST   /api/auth/logout            # Logout
 **Justificativa Técnica:**
 Com autenticação **stateless JWT**, não há necessidade de endpoint de logout no backend. O "logout" é feito no frontend removendo o token do localStorage/sessionStorage.
 
-**Avaliação:** ⚠️ **Desvio da Documentação**
+**Avaliação:** ⚠ **Desvio da Documentação**
 ARCHITECTURE.md documenta endpoint `/logout`, mas ele não existe no código.
 
 **Impacto:** Baixo - arquitetura JWT stateless torna logout server-side desnecessário.
@@ -383,21 +383,21 @@ Configuração limpa e seguindo padrões NestJS.
 
 ### 4.1 Conformidade com ARCHITECTURE.md
 
-| Componente                  | Status      | Observação                       |
+| Componente | Status | Observação |
 | --------------------------- | ----------- | -------------------------------- |
-| Guards (JwtAuthGuard)       | ✅ Conforme | Implementação robusta            |
-| Guards (UserThrottlerGuard) | ✅ Além     | Não documentado, mas essencial   |
-| Strategy (JwtStrategy)      | ✅ Conforme | Dual-key rotation                |
-| Strategy (LocalStrategy)    | ⚠️ Inerte   | Registrada mas não utilizada     |
-| Decorator (@CurrentUser)    | ✅ Conforme | Extração de usuário do JWT       |
-| Decorator (@Public)         | ✅ Conforme | Marcação de rotas públicas       |
-| POST /auth/register         | ✅ Conforme | + LGPD compliance                |
-| POST /auth/login            | ✅ Conforme | + Rate limiting + Audit          |
-| POST /auth/logout           | ❌ Ausente  | Documentado mas não implementado |
-| GET /auth/me                | ✅ Conforme | + Audit interceptor              |
-| POST /auth/validate         | ✅ Além     | Não documentado                  |
-| AuthService                 | ✅ Conforme | Tipagem forte, sem `any`         |
-| AuthModule                  | ✅ Conforme | Configuração padrão NestJS       |
+| Guards (JwtAuthGuard) | ✅ Conforme | Implementação robusta |
+| Guards (UserThrottlerGuard) | ✅ Além | Não documentado, mas essencial |
+| Strategy (JwtStrategy) | ✅ Conforme | Dual-key rotation |
+| Strategy (LocalStrategy) | ⚠ Inerte | Registrada mas não utilizada |
+| Decorator (@CurrentUser) | ✅ Conforme | Extração de usuário do JWT |
+| Decorator (@Public) | ✅ Conforme | Marcação de rotas públicas |
+| POST /auth/register | ✅ Conforme | + LGPD compliance |
+| POST /auth/login | ✅ Conforme | + Rate limiting + Audit |
+| POST /auth/logout | ❌ Ausente | Documentado mas não implementado |
+| GET /auth/me | ✅ Conforme | + Audit interceptor |
+| POST /auth/validate | ✅ Além | Não documentado |
+| AuthService | ✅ Conforme | Tipagem forte, sem `any` |
+| AuthModule | ✅ Conforme | Configuração padrão NestJS |
 
 ---
 
@@ -412,7 +412,7 @@ Configuração limpa e seguindo padrões NestJS.
 
 ---
 
-#### ⚠️ OBSERVAÇÃO 1: LocalStrategy não utilizada
+#### ⚠ OBSERVAÇÃO 1: LocalStrategy não utilizada
 
 **Severidade:** Baixa
 **Descrição:** `LocalStrategy` está registrada no módulo mas nunca utilizada. Login valida credenciais diretamente via `AuthService`.
@@ -471,7 +471,7 @@ Configuração limpa e seguindo padrões NestJS.
 2. **Atualizar seção 5.1 Autenticação:**
 
 ```diff
-  ### 5.1 Autenticação
+ ### 5.1 Autenticação
 
 ```
 
@@ -481,12 +481,12 @@ POST /api/auth/login # Login (retorna JWT, rate limited)
 - POST /api/auth/logout # Logout
 
 * # Logout: client-side (remove token from localStorage)
-  GET /api/auth/me # Usuário atual (protected)
+ GET /api/auth/me # Usuário atual (protected)
 * POST /api/auth/validate # Validar token JWT (protected)
 
-  ```
+ ```
 
-  ```
+ ```
 
 ````
 
@@ -533,11 +533,11 @@ async generate(@CurrentUser() user: User) { ... }
  *
  * Usage:
  * ```typescript
- * @UseGuards(JwtAuthGuard)  // Protected route
+ * @UseGuards(JwtAuthGuard) // Protected route
  * @Get('protected')
  * async getProtected() { ... }
  *
- * @Public()  // Public route (bypasses guard)
+ * @Public() // Public route (bypasses guard)
  * @Post('login')
  * async login() { ... }
  * ```
@@ -618,21 +618,21 @@ backend/src/modules/auth/
 ├── auth.module.ts
 ├── auth.service.ts
 ├── dto/
-│   ├── login.dto.ts
-│   └── register.dto.ts
+│ ├── login.dto.ts
+│ └── register.dto.ts
 ├── strategies/
-│   ├── jwt.strategy.ts
-│   └── local.strategy.ts
+│ ├── jwt.strategy.ts
+│ └── local.strategy.ts
 └── types/
-    └── user.types.ts
+ └── user.types.ts
 
 backend/src/common/
 ├── guards/
-│   ├── jwt-auth.guard.ts
-│   └── user-throttler.guard.ts
+│ ├── jwt-auth.guard.ts
+│ └── user-throttler.guard.ts
 └── decorators/
-    ├── current-user.decorator.ts
-    └── public.decorator.ts
+ ├── current-user.decorator.ts
+ └── public.decorator.ts
 ```
 
 ### 8.2 Referências

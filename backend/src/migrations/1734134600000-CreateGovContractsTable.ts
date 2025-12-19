@@ -13,12 +13,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Changes:
  * 1. Create gov_contracts table with all columns
  * 2. Create indexes for common query patterns:
- *    - organizationId (multi-tenancy isolation)
- *    - searchQuery (cache key lookup)
- *    - source (filter by data source)
- *    - externalId (lookup by source system ID)
- *    - cnpj (agency lookup)
- *    - numeroProcesso (process number lookup)
+ * - organizationId (multi-tenancy isolation)
+ * - searchQuery (cache key lookup)
+ * - source (filter by data source)
+ * - externalId (lookup by source system ID)
+ * - cnpj (agency lookup)
+ * - numeroProcesso (process number lookup)
  * 3. Create compound indexes for optimization
  * 4. Create foreign key to organizations table
  *
@@ -35,27 +35,27 @@ export class CreateGovContractsTable1734134600000 implements MigrationInterface 
     if (!tableExists) {
       // Step 1: Create gov_contracts table
       await queryRunner.query(`
-        CREATE TABLE "gov_contracts" (
-          "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          "organizationId" UUID NULL,
-          "searchQuery" TEXT NOT NULL,
-          "source" VARCHAR(50) NOT NULL,
-          "externalId" VARCHAR(100) NULL,
-          "title" TEXT NOT NULL,
-          "description" TEXT NULL,
-          "orgao" VARCHAR(500) NULL,
-          "cnpj" VARCHAR(18) NULL,
-          "valor" DECIMAL(15,2) NULL,
-          "dataContratacao" VARCHAR(50) NULL,
-          "modalidade" VARCHAR(100) NULL,
-          "numeroProcesso" VARCHAR(100) NULL,
-          "url" TEXT NULL,
-          "relevanceScore" FLOAT DEFAULT 0 NOT NULL,
-          "metadata" JSONB NULL,
-          "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
-          "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
-        )
-      `);
+ CREATE TABLE "gov_contracts" (
+ "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ "organizationId" UUID NULL,
+ "searchQuery" TEXT NOT NULL,
+ "source" VARCHAR(50) NOT NULL,
+ "externalId" VARCHAR(100) NULL,
+ "title" TEXT NOT NULL,
+ "description" TEXT NULL,
+ "orgao" VARCHAR(500) NULL,
+ "cnpj" VARCHAR(18) NULL,
+ "valor" DECIMAL(15,2) NULL,
+ "dataContratacao" VARCHAR(50) NULL,
+ "modalidade" VARCHAR(100) NULL,
+ "numeroProcesso" VARCHAR(100) NULL,
+ "url" TEXT NULL,
+ "relevanceScore" FLOAT DEFAULT 0 NOT NULL,
+ "metadata" JSONB NULL,
+ "createdAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+ "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
+ )
+ `);
     }
 
     // Step 2: Create foreign key to organizations table (idempotent)
@@ -66,12 +66,12 @@ export class CreateGovContractsTable1734134600000 implements MigrationInterface 
 
     if (!hasForeignKey) {
       await queryRunner.query(`
-        ALTER TABLE "gov_contracts"
-        ADD CONSTRAINT "FK_gov_contracts_organization"
-        FOREIGN KEY ("organizationId")
-        REFERENCES "organizations"("id")
-        ON DELETE SET NULL
-      `);
+ ALTER TABLE "gov_contracts"
+ ADD CONSTRAINT "FK_gov_contracts_organization"
+ FOREIGN KEY ("organizationId")
+ REFERENCES "organizations"("id")
+ ON DELETE SET NULL
+ `);
     }
 
     // Step 3: Create simple indexes (idempotent)
@@ -109,61 +109,61 @@ export class CreateGovContractsTable1734134600000 implements MigrationInterface 
     // Step 4: Create compound indexes (idempotent)
     // Most common query pattern: filter by organization + sort by createdAt
     await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_gov_contracts_organization_createdAt"
-      ON "gov_contracts" ("organizationId", "createdAt")
-    `);
+ CREATE INDEX IF NOT EXISTS "IDX_gov_contracts_organization_createdAt"
+ ON "gov_contracts" ("organizationId", "createdAt")
+ `);
 
     // Cache lookup: organization + query + source
     await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_gov_contracts_cache_lookup"
-      ON "gov_contracts" ("organizationId", "source", "searchQuery")
-    `);
+ CREATE INDEX IF NOT EXISTS "IDX_gov_contracts_cache_lookup"
+ ON "gov_contracts" ("organizationId", "source", "searchQuery")
+ `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Rollback Step 4: Drop compound indexes
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_cache_lookup"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_cache_lookup"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_organization_createdAt"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_organization_createdAt"
+ `);
 
     // Rollback Step 3: Drop simple indexes
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_numeroProcesso"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_numeroProcesso"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_cnpj"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_cnpj"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_externalId"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_externalId"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_source"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_source"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_searchQuery"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_searchQuery"
+ `);
 
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_gov_contracts_organizationId"
-    `);
+ DROP INDEX IF EXISTS "IDX_gov_contracts_organizationId"
+ `);
 
     // Rollback Step 2: Drop foreign key constraint
     await queryRunner.query(`
-      ALTER TABLE "gov_contracts"
-      DROP CONSTRAINT IF EXISTS "FK_gov_contracts_organization"
-    `);
+ ALTER TABLE "gov_contracts"
+ DROP CONSTRAINT IF EXISTS "FK_gov_contracts_organization"
+ `);
 
     // Rollback Step 1: Drop table
     await queryRunner.query(`
-      DROP TABLE IF EXISTS "gov_contracts"
-    `);
+ DROP TABLE IF EXISTS "gov_contracts"
+ `);
   }
 }

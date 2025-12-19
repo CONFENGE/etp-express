@@ -17,11 +17,11 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 Before responding to ANY user message, you MUST complete this checklist:
 
-1. ☐ List available skills in your mind
-2. ☐ Ask yourself: "Does ANY skill match this request?"
-3. ☐ If yes → Use the Skill tool to read and run the skill file
-4. ☐ Announce which skill you're using
-5. ☐ Follow the skill exactly
+1. List available skills in your mind
+2. Ask yourself: "Does ANY skill match this request?"
+3. If yes → Use the Skill tool to read and run the skill file
+4. Announce which skill you're using
+5. Follow the skill exactly
 
 **Responding WITHOUT completing this checklist = automatic failure.**
 

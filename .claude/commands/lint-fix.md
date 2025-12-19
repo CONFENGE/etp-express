@@ -11,11 +11,11 @@ Voce e responsavel por aplicar correcoes automaticas de linting e formatacao no 
 
 ## Ferramentas Utilizadas
 
-| Ferramenta | Proposito           | Configuracao    |
+| Ferramenta | Proposito | Configuracao |
 | ---------- | ------------------- | --------------- |
-| ESLint     | Qualidade de codigo | `.eslintrc.js`  |
-| Prettier   | Formatacao          | `.prettierrc`   |
-| TypeScript | Type checking       | `tsconfig.json` |
+| ESLint | Qualidade de codigo | `.eslintrc.js` |
+| Prettier | Formatacao | `.prettierrc` |
+| TypeScript | Type checking | `tsconfig.json` |
 
 ---
 
@@ -66,12 +66,12 @@ cd frontend && npx tsc --noEmit 2>&1 | head -50
 
 ### Backend
 
-| Categoria       | Antes | Depois |
+| Categoria | Antes | Depois |
 | --------------- | ----- | ------ |
-| ESLint Errors   | X     | Y      |
-| ESLint Warnings | X     | Y      |
-| Prettier Issues | X     | Y      |
-| Type Errors     | X     | Y      |
+| ESLint Errors | X | Y |
+| ESLint Warnings | X | Y |
+| Prettier Issues | X | Y |
+| Type Errors | X | Y |
 
 **Arquivos modificados:**
 
@@ -80,12 +80,12 @@ cd frontend && npx tsc --noEmit 2>&1 | head -50
 
 ### Frontend
 
-| Categoria       | Antes | Depois |
+| Categoria | Antes | Depois |
 | --------------- | ----- | ------ |
-| ESLint Errors   | X     | Y      |
-| ESLint Warnings | X     | Y      |
-| Prettier Issues | X     | Y      |
-| Type Errors     | X     | Y      |
+| ESLint Errors | X | Y |
+| ESLint Warnings | X | Y |
+| Prettier Issues | X | Y |
+| Type Errors | X | Y |
 
 **Arquivos modificados:**
 
@@ -96,9 +96,9 @@ cd frontend && npx tsc --noEmit 2>&1 | head -50
 
 Se houver erros que nao podem ser auto-fixados:
 
-| Arquivo | Linha | Erro                               | Correcao Manual      |
+| Arquivo | Linha | Erro | Correcao Manual |
 | ------- | ----- | ---------------------------------- | -------------------- |
-| file.ts | 42    | @typescript-eslint/no-explicit-any | Definir tipo correto |
+| file.ts | 42 | @typescript-eslint/no-explicit-any | Definir tipo correto |
 ```
 
 ---
@@ -125,12 +125,12 @@ Se houver erros que nao podem ser auto-fixados:
 
 ## Issues que Requerem Correcao Manual
 
-| Regra                                | Descricao                  | Como Corrigir        |
+| Regra | Descricao | Como Corrigir |
 | ------------------------------------ | -------------------------- | -------------------- |
-| `@typescript-eslint/no-explicit-any` | Uso de `any`               | Definir tipo correto |
-| `@typescript-eslint/no-unused-vars`  | Variavel nao usada         | Remover ou usar      |
-| `react-hooks/exhaustive-deps`        | Deps faltando em useEffect | Adicionar deps       |
-| `@typescript-eslint/ban-types`       | Tipo banido (Object, {})   | Usar tipo especifico |
+| `@typescript-eslint/no-explicit-any` | Uso de `any` | Definir tipo correto |
+| `@typescript-eslint/no-unused-vars` | Variavel nao usada | Remover ou usar |
+| `react-hooks/exhaustive-deps` | Deps faltando em useEffect | Adicionar deps |
+| `@typescript-eslint/ban-types` | Tipo banido (Object, {}) | Usar tipo especifico |
 
 ---
 

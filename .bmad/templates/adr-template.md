@@ -180,12 +180,12 @@
 
 // BEFORE
 class OldPattern {
-  // ...
+ // ...
 }
 
 // AFTER
 class NewPattern {
-  // ...
+ // ...
 }
 ```
 
@@ -197,12 +197,12 @@ class NewPattern {
 
 // BEFORE
 const OldComponent = () => {
-  // ...
+ // ...
 };
 
 // AFTER
 const NewComponent = () => {
-  // ...
+ // ...
 };
 ```
 
@@ -226,10 +226,10 @@ CREATE INDEX idx_name ON table_name(column);
 
 ## Risks & Mitigations
 
-| Risk      | Probability     | Impact          | Mitigation           | Owner  |
+| Risk | Probability | Impact | Mitigation | Owner |
 | --------- | --------------- | --------------- | -------------------- | ------ |
 | [Risco 1] | High/Medium/Low | High/Medium/Low | [Plano de mitigação] | [Nome] |
-| [Risco 2] | ...             | ...             | ...                  | ...    |
+| [Risco 2] | ... | ... | ... | ... |
 
 ---
 
@@ -246,11 +246,11 @@ CREATE INDEX idx_name ON table_name(column);
 
 <!-- Se houver benchmarks, inclua aqui -->
 
-| Métrica       | Before  | After   | Δ           |
+| Métrica | Before | After | Δ |
 | ------------- | ------- | ------- | ----------- |
-| Latency (P50) | X ms    | Y ms    | +/- Z ms    |
-| Latency (P95) | X ms    | Y ms    | +/- Z ms    |
-| Throughput    | X req/s | Y req/s | +/- Z req/s |
+| Latency (P50) | X ms | Y ms | +/- Z ms |
+| Latency (P95) | X ms | Y ms | +/- Z ms |
+| Throughput | X req/s | Y req/s | +/- Z req/s |
 
 ---
 
@@ -422,10 +422,10 @@ railway redeploy
 
 ## Revision History
 
-| Version | Date       | Author | Changes                  |
+| Version | Date | Author | Changes |
 | ------- | ---------- | ------ | ------------------------ |
-| 1.0     | YYYY-MM-DD | [Nome] | Initial version          |
-| 1.1     | YYYY-MM-DD | [Nome] | [Descrição das mudanças] |
+| 1.0 | YYYY-MM-DD | [Nome] | Initial version |
+| 1.1 | YYYY-MM-DD | [Nome] | [Descrição das mudanças] |
 
 ---
 

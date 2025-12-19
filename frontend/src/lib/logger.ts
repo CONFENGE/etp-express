@@ -81,9 +81,9 @@ const logToConsole = (
  *
  * // Error with context
  * try {
- *   await fetchData();
+ * await fetchData();
  * } catch (error) {
- *   logger.error('Failed to fetch data', error, { userId: '123' });
+ * logger.error('Failed to fetch data', error, { userId: '123' });
  * }
  * ```
  */

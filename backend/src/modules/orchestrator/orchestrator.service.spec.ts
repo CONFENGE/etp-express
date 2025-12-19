@@ -158,7 +158,7 @@ describe('OrchestratorService', () => {
     check: jest.fn().mockResolvedValue(mockHallucinationCheck),
     generateSafetyPrompt: jest
       .fn()
-      .mockResolvedValue('⚠️ NÃO invente números de leis...'),
+      .mockResolvedValue('⚠ NÃO invente números de leis...'),
     getSystemPrompt: jest.fn().mockReturnValue('Regras anti-alucinação...'),
   });
 
@@ -488,7 +488,7 @@ describe('OrchestratorService', () => {
       const result = await service.generateSection(request);
 
       expect(result.content).toContain(
-        '⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.',
+        '⚠ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.',
       );
     });
 
@@ -518,7 +518,7 @@ describe('OrchestratorService', () => {
 
       const result = await service.generateSection(request);
 
-      expect(result.content).toContain('⚠️');
+      expect(result.content).toContain('⚠');
       expect(result.warnings.length).toBeGreaterThan(0);
       expect(result.disclaimer).toBeDefined();
     });
@@ -1374,7 +1374,7 @@ describe('OrchestratorService', () => {
 
       expect(result.hasEnrichmentWarning).toBe(true);
       expect(warnings).toContain(
-        '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
+        '⚠ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
       );
     });
   });

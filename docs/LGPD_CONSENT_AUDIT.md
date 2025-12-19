@@ -41,9 +41,9 @@ Esta auditoria verificou os mecanismos de consentimento implementados no ETP Exp
 ```typescript
 // Validacao Zod - linhas 30-34
 lgpdConsent: z.literal(true, {
-  errorMap: () => ({
-    message: 'Voce deve aceitar os termos de uso e politica de privacidade',
-  }),
+ errorMap: () => ({
+ message: 'Voce deve aceitar os termos de uso e politica de privacidade',
+ }),
 }),
 ```
 
@@ -60,19 +60,19 @@ lgpdConsent: z.literal(true, {
 ```typescript
 // Validacao Zod - linhas 35-39
 internationalTransferConsent: z.literal(true, {
-  errorMap: () => ({
-    message: 'Voce deve aceitar a transferencia internacional de dados',
-  }),
+ errorMap: () => ({
+ message: 'Voce deve aceitar a transferencia internacional de dados',
+ }),
 }),
 ```
 
 **Evidencias:**
 - Checkbox obrigatorio separado (linhas 223-266)
 - Modal explicativo (`InternationalTransferModal`) com:
-  - Lista de provedores (Railway, OpenAI, Perplexity)
-  - Localizacao (Estados Unidos)
-  - Referencia ao LGPD Art. 33
-  - Dupla confirmacao (checkbox dentro do modal)
+ - Lista de provedores (Railway, OpenAI, Perplexity)
+ - Localizacao (Estados Unidos)
+ - Referencia ao LGPD Art. 33
+ - Dupla confirmacao (checkbox dentro do modal)
 
 ### 1.2 Backend (auth.service.ts)
 
@@ -85,20 +85,20 @@ internationalTransferConsent: z.literal(true, {
 ```typescript
 // Linhas 168-180
 async register(registerDto: RegisterDto) {
-  // Validate LGPD consent is explicitly true
-  if (registerDto.lgpdConsent !== true) {
-    throw new BadRequestException(
-      'E obrigatorio aceitar os termos de uso e politica de privacidade (LGPD)',
-    );
-  }
+ // Validate LGPD consent is explicitly true
+ if (registerDto.lgpdConsent !== true) {
+ throw new BadRequestException(
+ 'E obrigatorio aceitar os termos de uso e politica de privacidade (LGPD)',
+ );
+ }
 
-  // Validate international transfer consent is explicitly true (LGPD Art. 33)
-  if (registerDto.internationalTransferConsent !== true) {
-    throw new BadRequestException(
-      'E obrigatorio aceitar a transferencia internacional de dados (LGPD Art. 33)',
-    );
-  }
-  // ...
+ // Validate international transfer consent is explicitly true (LGPD Art. 33)
+ if (registerDto.internationalTransferConsent !== true) {
+ throw new BadRequestException(
+ 'E obrigatorio aceitar a transferencia internacional de dados (LGPD Art. 33)',
+ );
+ }
+ // ...
 }
 ```
 
@@ -116,14 +116,14 @@ async register(registerDto: RegisterDto) {
 const LGPD_TERMS_VERSION = '1.0.0';
 
 const user = await this.usersService.create({
-  // ... outros campos
-  lgpdConsentAt: new Date(),
-  lgpdConsentVersion: LGPD_TERMS_VERSION,
-  internationalTransferConsentAt: new Date(),
+ // ... outros campos
+ lgpdConsentAt: new Date(),
+ lgpdConsentVersion: LGPD_TERMS_VERSION,
+ internationalTransferConsentAt: new Date(),
 });
 
 this.logger.log(
-  `User registered with LGPD consent v${LGPD_TERMS_VERSION} and international transfer consent: ${user.email}`,
+ `User registered with LGPD consent v${LGPD_TERMS_VERSION} and international transfer consent: ${user.email}`,
 );
 ```
 
@@ -177,16 +177,16 @@ internationalTransferConsentAt: Date | null;
 ```typescript
 // Linhas 35-54
 @ApiProperty({
-  example: true,
-  description: 'Consentimento LGPD obrigatorio para uso do sistema',
+ example: true,
+ description: 'Consentimento LGPD obrigatorio para uso do sistema',
 })
 @IsBoolean({ message: 'Consentimento LGPD deve ser booleano' })
 @IsNotEmpty({ message: 'Consentimento LGPD e obrigatorio' })
 lgpdConsent: boolean;
 
 @ApiProperty({
-  example: true,
-  description: 'Consentimento para transferencia internacional de dados (LGPD Art. 33)',
+ example: true,
+ description: 'Consentimento para transferencia internacional de dados (LGPD Art. 33)',
 })
 @IsBoolean({ message: 'Consentimento de transferencia internacional deve ser booleano' })
 @IsNotEmpty({ message: 'Consentimento de transferencia internacional e obrigatorio' })
@@ -216,16 +216,16 @@ O consentimento para uso de IA (OpenAI, Perplexity) esta coberto pelo:
 ```typescript
 // Provedores listados explicitamente
 <div>
-  <p className="font-medium text-sm">OpenAI (Estados Unidos)</p>
-  <p className="text-xs text-muted-foreground">
-    Geracao de texto por inteligencia artificial
-  </p>
+ <p className="font-medium text-sm">OpenAI (Estados Unidos)</p>
+ <p className="text-xs text-muted-foreground">
+ Geracao de texto por inteligencia artificial
+ </p>
 </div>
 <div>
-  <p className="font-medium text-sm">Perplexity (Estados Unidos)</p>
-  <p className="text-xs text-muted-foreground">
-    Pesquisa de fundamentacao legal e tecnica
-  </p>
+ <p className="font-medium text-sm">Perplexity (Estados Unidos)</p>
+ <p className="text-xs text-muted-foreground">
+ Pesquisa de fundamentacao legal e tecnica
+ </p>
 </div>
 ```
 
@@ -243,20 +243,20 @@ O sistema utiliza Sentry para monitoramento de erros com:
 **Medidas de privacidade implementadas:**
 ```typescript
 Sentry.replayIntegration({
-  maskAllText: true,      // Mascara todo texto
-  blockAllMedia: true,    // Bloqueia midia
+ maskAllText: true, // Mascara todo texto
+ blockAllMedia: true, // Bloqueia midia
 }),
 
 beforeSend(event, hint) {
-  // Remover dados sensiveis de breadcrumbs
-  if (event.breadcrumbs) {
-    event.breadcrumbs = event.breadcrumbs.map((breadcrumb) => {
-      if (breadcrumb.category === 'ui.input') {
-        breadcrumb.message = '[Filtered]';  // Filtra inputs
-      }
-      return breadcrumb;
-    });
-  }
+ // Remover dados sensiveis de breadcrumbs
+ if (event.breadcrumbs) {
+ event.breadcrumbs = event.breadcrumbs.map((breadcrumb) => {
+ if (breadcrumb.category === 'ui.input') {
+ breadcrumb.message = '[Filtered]'; // Filtra inputs
+ }
+ return breadcrumb;
+ });
+ }
 }
 ```
 

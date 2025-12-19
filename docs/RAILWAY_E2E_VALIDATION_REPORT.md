@@ -10,8 +10,8 @@
 ## Executive Summary
 
 ✅ **Backend is OPERATIONAL** - Core infrastructure responding
-⚠️ **Health Endpoint Discrepancy** - Railway proxy intercepting /health
-⏳ **Manual Validation Required** - Full E2E tests need browser/auth
+⚠ **Health Endpoint Discrepancy** - Railway proxy intercepting /health
+ **Manual Validation Required** - Full E2E tests need browser/auth
 
 ---
 
@@ -42,13 +42,13 @@ Railway's reverse proxy is intercepting `/health` and returning a simplified "OK
 - Actual NestJS endpoint: `@Controller('health')` → `/health` (global prefix bypassed)
 - `/api/health` returns 404 (not found)
 
-**Status:** ⚠️ **PARTIAL PASS** - Service is healthy but endpoint mismatch exists
+**Status:** ⚠ **PARTIAL PASS** - Service is healthy but endpoint mismatch exists
 
 **Recommendation:**
 Fix `backend/railway.toml`:
 
 ```toml
-healthcheckPath = "/health"  # Change from "/api/health"
+healthcheckPath = "/health" # Change from "/api/health"
 ```
 
 ### 1.2 Root Endpoint
@@ -71,7 +71,7 @@ railway run psql -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;"
 
 ### 1.4 Redis Connectivity
 
-**Status:** ⏳ **VALIDATION PENDING**
+**Status:** **VALIDATION PENDING**
 **Validation Method:** Check BullMQ logs for "Worker started" message
 
 ```bash
@@ -80,7 +80,7 @@ railway logs --service etp-express-backend | grep -i "bullmq\|worker\|redis"
 
 ### 1.5 Sentry Initialization
 
-**Status:** ⏳ **VALIDATION PENDING**
+**Status:** **VALIDATION PENDING**
 **Validation Method:** Check Sentry dashboard for zero critical errors in last 24h
 
 ---
@@ -91,14 +91,14 @@ railway logs --service etp-express-backend | grep -i "bullmq\|worker\|redis"
 
 **Endpoint Tested:** `POST /auth/login`
 **Test Payload:** Invalid credentials (test@example.com)
-**Status:** ⏳ **PENDING VALIDATION**
+**Status:** **PENDING VALIDATION**
 
 **Test Command:**
 
 ```bash
 curl -X POST "https://etp-express-backend-production.up.railway.app/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"test"}'
+ -H "Content-Type: application/json" \
+ -d '{"email":"test@example.com","password":"test"}'
 ```
 
 **Expected:** HTTP 401 (Unauthorized) - confirms endpoint is operational
@@ -106,7 +106,7 @@ curl -X POST "https://etp-express-backend-production.up.railway.app/auth/login" 
 ### 2.2 ETPs Endpoint Availability
 
 **Endpoint Tested:** `GET /etps`
-**Status:** ⏳ **PENDING VALIDATION**
+**Status:** **PENDING VALIDATION**
 
 **Test Command:**
 
@@ -119,13 +119,13 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 ### 2.3 Sections Endpoint Availability
 
 **Endpoint Tested:** `GET /sections` or `POST /sections`
-**Status:** ⏳ **PENDING VALIDATION**
+**Status:** **PENDING VALIDATION**
 
 **Expected:** HTTP 401 or 404 (endpoint exists but requires auth)
 
 ### 2.4 RAG Module
 
-**Status:** ⛔ **EXCLUDED FROM VALIDATION**
+**Status:** **EXCLUDED FROM VALIDATION**
 **Reason:** Issue #387 (pgvector migration) still in progress
 **Impact:** RAG endpoints (`POST /api/rag/embed`) temporarily non-functional
 
@@ -136,7 +136,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 ### 3.1 Frontend Load
 
 **URL Tested:** https://etp-express-frontend-production.up.railway.app
-**Status:** ⏳ **PENDING BROWSER VALIDATION**
+**Status:** **PENDING BROWSER VALIDATION**
 
 **Validation Steps:**
 
@@ -146,7 +146,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 
 ### 3.2 Login Flow
 
-**Status:** ⏳ **PENDING MANUAL VALIDATION**
+**Status:** **PENDING MANUAL VALIDATION**
 
 **Test Steps:**
 
@@ -157,7 +157,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 
 ### 3.3 ETP Editor
 
-**Status:** ⏳ **PENDING MANUAL VALIDATION**
+**Status:** **PENDING MANUAL VALIDATION**
 
 **Test Steps:**
 
@@ -167,7 +167,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 
 ### 3.4 Export PDF
 
-**Status:** ⏳ **PENDING MANUAL VALIDATION**
+**Status:** **PENDING MANUAL VALIDATION**
 
 **Test Steps:**
 
@@ -183,7 +183,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 
 **Timeframe:** First 1 hour after deploy
 **Threshold:** Zero critical errors (severity: error/fatal)
-**Status:** ⏳ **PENDING DASHBOARD CHECK**
+**Status:** **PENDING DASHBOARD CHECK**
 
 **Validation:**
 
@@ -194,7 +194,7 @@ curl "https://etp-express-backend-production.up.railway.app/etps"
 
 ### 4.2 Railway Logs - Restart Loops
 
-**Status:** ⏳ **PENDING LOG ANALYSIS**
+**Status:** **PENDING LOG ANALYSIS**
 
 **Validation Command:**
 
@@ -208,7 +208,7 @@ railway logs --service etp-express-backend --tail 500 | grep -i "restart\|crash\
 
 **Endpoints:** Synchronous endpoints (auth, etps list, sections list)
 **Target:** P95 < 3s (ideal: < 2s)
-**Status:** ⏳ **PENDING PERFORMANCE TEST**
+**Status:** **PENDING PERFORMANCE TEST**
 
 **Validation Method:**
 
@@ -275,19 +275,19 @@ railway logs --service etp-express-backend --tail 500 | grep -i "restart\|crash\
 
 ### Pending Manual Validations
 
-- ⏳ Database migrations applied
-- ⏳ Redis/BullMQ worker active
-- ⏳ Sentry initialized
-- ⏳ Auth endpoint functional
-- ⏳ ETPs CRUD functional
-- ⏳ Sections generation functional (sync + async)
-- ⏳ Frontend loads without errors
-- ⏳ Login flow functional
-- ⏳ ETP editor functional
-- ⏳ Export PDF functional
-- ⏳ Sentry error tracking operational
-- ⏳ Railway logs clean (no restarts)
-- ⏳ Response time P95 < 3s
+- Database migrations applied
+- Redis/BullMQ worker active
+- Sentry initialized
+- Auth endpoint functional
+- ETPs CRUD functional
+- Sections generation functional (sync + async)
+- Frontend loads without errors
+- Login flow functional
+- ETP editor functional
+- Export PDF functional
+- Sentry error tracking operational
+- Railway logs clean (no restarts)
+- Response time P95 < 3s
 
 ---
 
@@ -296,21 +296,21 @@ railway logs --service etp-express-backend --tail 500 | grep -i "restart\|crash\
 ### Immediate Actions (This Session)
 
 1. ✅ Document findings in this report
-2. ⏳ Run manual browser-based validations (Phase 3)
-3. ⏳ Check Railway logs for Redis/BullMQ status
-4. ⏳ Verify Sentry dashboard
+2. Run manual browser-based validations (Phase 3)
+3. Check Railway logs for Redis/BullMQ status
+4. Verify Sentry dashboard
 
 ### Follow-up Issues to Create
 
 1. **[P2] Fix Railway health check endpoint mismatch** (#390 sub-task)
-   - Update `backend/railway.toml` healthcheckPath
-   - Verify Railway uses correct endpoint
-   - Test health checks trigger correctly
+ - Update `backend/railway.toml` healthcheckPath
+ - Verify Railway uses correct endpoint
+ - Test health checks trigger correctly
 
 2. **[P3] Implement detailed health endpoint** (Optional)
-   - Create `/health/detailed` endpoint returning JSON
-   - Include database, Redis, LLM provider status
-   - Use for observability dashboards
+ - Create `/health/detailed` endpoint returning JSON
+ - Include database, Redis, LLM provider status
+ - Use for observability dashboards
 
 ### Future Enhancements
 
@@ -324,36 +324,36 @@ railway logs --service etp-express-backend --tail 500 | grep -i "restart\|crash\
 
 ### Backend Health
 
-- ⚠️ Health check endpoint returns 200 OK (**PARTIAL** - proxy intercept)
-- ⏳ Database migrations applied (requires Railway CLI validation)
-- ⏳ Redis connected (requires log validation)
-- ⏳ Sentry initialized (requires dashboard check)
+- ⚠ Health check endpoint returns 200 OK (**PARTIAL** - proxy intercept)
+- Database migrations applied (requires Railway CLI validation)
+- Redis connected (requires log validation)
+- Sentry initialized (requires dashboard check)
 
 ### Core Functionality
 
-- ⏳ Auth JWT functional
-- ⏳ Create ETP functional
-- ⏳ Generate Section (sync) functional
-- ⏳ Generate Section (async) functional
+- Auth JWT functional
+- Create ETP functional
+- Generate Section (sync) functional
+- Generate Section (async) functional
 
 ### Frontend
 
-- ⏳ Frontend loads without errors
-- ⏳ Login flow functional
-- ⏳ ETP editor loads
-- ⏳ Export PDF functional
+- Frontend loads without errors
+- Login flow functional
+- ETP editor loads
+- Export PDF functional
 
 ### Observability
 
-- ⏳ Sentry: Zero critical errors
-- ⏳ Railway logs: No restart loops
-- ⏳ Response time P95 < 3s
+- Sentry: Zero critical errors
+- Railway logs: No restart loops
+- Response time P95 < 3s
 
 ### Documentation
 
 - ✅ Execution Note created (this document)
-- ⏳ Problems documented (Issue #390 sub-tasks)
-- ⏳ ROADMAP.md updated
+- Problems documented (Issue #390 sub-tasks)
+- ROADMAP.md updated
 
 ---
 
@@ -378,7 +378,7 @@ bash validate-railway-deploy.sh
 
 ## Conclusion
 
-**Overall Status:** ⚠️ **PARTIALLY VALIDATED**
+**Overall Status:** ⚠ **PARTIALLY VALIDATED**
 
 The Railway deployment is **operationally healthy** based on basic connectivity tests, but comprehensive E2E validation requires:
 

@@ -50,7 +50,7 @@ All services, controllers, and DTOs must have class-level JSDoc.
  */
 @Injectable()
 export class ETPsService {
-  // ...
+ // ...
 }
 ```
 
@@ -71,7 +71,7 @@ export class ETPsService {
 @Controller('etps')
 @UseGuards(JwtAuthGuard)
 export class ETPsController {
-  // ...
+ // ...
 }
 ```
 
@@ -85,7 +85,7 @@ export class ETPsController {
  * The title must be unique per user.
  */
 export class CreateETPDto {
-  // ...
+ // ...
 }
 ```
 
@@ -127,7 +127,7 @@ All public methods must have JSDoc with `@param`, `@returns`, and `@throws` tags
  * @throws {ForbiddenException} If user doesn't own this ETP
  */
 async findOne(id: string, userId: string): Promise<ETP> {
-  // ...
+ // ...
 }
 ```
 
@@ -153,19 +153,19 @@ async findOne(id: string, userId: string): Promise<ETP> {
  * @example
  * ```ts
  * const section = await sectionsService.generate(
- *   'etp-uuid',
- *   '1-introducao',
- *   'user-uuid'
+ * 'etp-uuid',
+ * '1-introducao',
+ * 'user-uuid'
  * );
  * console.log(section.content); // AI-generated markdown content
  * ```
  */
 async generate(
-  etpId: string,
-  sectionKey: string,
-  userId: string
+ etpId: string,
+ sectionKey: string,
+ userId: string
 ): Promise<Section> {
-  // ...
+ // ...
 }
 ```
 
@@ -181,7 +181,7 @@ async generate(
  * @throws {BadRequestException} If email format is invalid
  */
 async login(credentials: LoginDto): Promise<AuthResponse> {
-  // ...
+ // ...
 }
 ```
 
@@ -192,30 +192,30 @@ Document non-obvious fields in DTOs and entities.
 **Example:**
 ```typescript
 export class CreateETPDto {
-  /**
-   * ETP title (must be unique per user).
-   * @example "Aquisição de 50 Notebooks Dell Latitude 5420"
-   */
-  @IsNotEmpty()
-  @MaxLength(200)
-  title: string;
+ /**
+ * ETP title (must be unique per user).
+ * @example "Aquisição de 50 Notebooks Dell Latitude 5420"
+ */
+ @IsNotEmpty()
+ @MaxLength(200)
+ title: string;
 
-  /**
-   * Fiscal year for procurement planning.
-   * @example 2025
-   */
-  @IsInt()
-  @Min(2020)
-  @Max(2050)
-  fiscalYear: number;
+ /**
+ * Fiscal year for procurement planning.
+ * @example 2025
+ */
+ @IsInt()
+ @Min(2020)
+ @Max(2050)
+ fiscalYear: number;
 
-  /**
-   * Estimated procurement budget in BRL cents (to avoid floating-point errors).
-   * @example 10000000 // R$ 100,000.00
-   */
-  @IsInt()
-  @Min(0)
-  estimatedValue: number;
+ /**
+ * Estimated procurement budget in BRL cents (to avoid floating-point errors).
+ * @example 10000000 // R$ 100,000.00
+ */
+ @IsInt()
+ @Min(0)
+ estimatedValue: number;
 }
 ```
 
@@ -280,8 +280,8 @@ Generate HTML documentation from JSDoc:
 
 ```bash
 npm install --save-dev typedoc
-npm run docs:generate  # Generates docs/api/
-npm run docs:serve     # Serves on http://localhost:3000
+npm run docs:generate # Generates docs/api/
+npm run docs:serve # Serves on http://localhost:3000
 ```
 
 ### ESLint JSDoc Plugin (Optional)
@@ -295,19 +295,19 @@ npm install --save-dev eslint-plugin-jsdoc
 Add to `.eslintrc.js`:
 ```javascript
 {
-  "plugins": ["jsdoc"],
-  "rules": {
-    "jsdoc/require-jsdoc": ["warn", {
-      "require": {
-        "ClassDeclaration": true,
-        "MethodDefinition": true
-      }
-    }],
-    "jsdoc/require-param": "warn",
-    "jsdoc/require-returns": "warn",
-    "jsdoc/check-param-names": "error",
-    "jsdoc/check-tag-names": "error"
-  }
+ "plugins": ["jsdoc"],
+ "rules": {
+ "jsdoc/require-jsdoc": ["warn", {
+ "require": {
+ "ClassDeclaration": true,
+ "MethodDefinition": true
+ }
+ }],
+ "jsdoc/require-param": "warn",
+ "jsdoc/require-returns": "warn",
+ "jsdoc/check-param-names": "error",
+ "jsdoc/check-tag-names": "error"
+ }
 }
 ```
 

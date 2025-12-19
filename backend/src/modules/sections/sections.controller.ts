@@ -160,16 +160,16 @@ export class SectionsController {
    * @example Client-side usage:
    * ```ts
    * const eventSource = new EventSource(
-   *   '/sections/etp/123/generate/stream?type=justificativa&title=...',
-   *   { headers: { Authorization: 'Bearer ...' } }
+   * '/sections/etp/123/generate/stream?type=justificativa&title=...',
+   * { headers: { Authorization: 'Bearer ...' } }
    * );
    *
    * eventSource.addEventListener('progress', (event) => {
-   *   const progress = JSON.parse(event.data);
-   *   console.log(`${progress.phase}: ${progress.percentage}%`);
-   *   if (progress.phase === 'complete') {
-   *     eventSource.close();
-   *   }
+   * const progress = JSON.parse(event.data);
+   * console.log(`${progress.phase}: ${progress.percentage}%`);
+   * if (progress.phase === 'complete') {
+   * eventSource.close();
+   * }
    * });
    * ```
    *

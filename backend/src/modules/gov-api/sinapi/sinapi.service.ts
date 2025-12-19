@@ -64,8 +64,8 @@ const DEFAULT_PAGE_SIZE = 50;
  *
  * // Search for construction materials
  * const results = await service.search('cimento', {
- *   uf: 'DF',
- *   mesReferencia: '2024-01',
+ * uf: 'DF',
+ * mesReferencia: '2024-01',
  * });
  *
  * // Get specific item by code

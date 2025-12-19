@@ -18,47 +18,47 @@ export class ExtendUserRoleEnum1763800000000 implements MigrationInterface {
     // Add new enum values to user_role_enum
     // PostgreSQL requires ALTER TYPE ... ADD VALUE for each new value
     await queryRunner.query(`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'system_admin' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-          ALTER TYPE "users_role_enum" ADD VALUE 'system_admin';
-        END IF;
-      END
-      $$;
-    `);
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'system_admin' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'system_admin';
+ END IF;
+ END
+ $$;
+ `);
 
     await queryRunner.query(`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'domain_manager' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-          ALTER TYPE "users_role_enum" ADD VALUE 'domain_manager';
-        END IF;
-      END
-      $$;
-    `);
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'domain_manager' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'domain_manager';
+ END IF;
+ END
+ $$;
+ `);
 
     await queryRunner.query(`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'demo' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-          ALTER TYPE "users_role_enum" ADD VALUE 'demo';
-        END IF;
-      END
-      $$;
-    `);
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'demo' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'demo';
+ END IF;
+ END
+ $$;
+ `);
 
     // Add mustChangePassword column with default false
     await queryRunner.query(`
-      ALTER TABLE "users"
-      ADD COLUMN IF NOT EXISTS "mustChangePassword" boolean NOT NULL DEFAULT false
-    `);
+ ALTER TABLE "users"
+ ADD COLUMN IF NOT EXISTS "mustChangePassword" boolean NOT NULL DEFAULT false
+ `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Remove mustChangePassword column
     await queryRunner.query(`
-      ALTER TABLE "users" DROP COLUMN IF EXISTS "mustChangePassword"
-    `);
+ ALTER TABLE "users" DROP COLUMN IF EXISTS "mustChangePassword"
+ `);
 
     // Note: PostgreSQL does not support removing enum values directly.
     // To fully rollback, you would need to:

@@ -15,10 +15,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  *
  * @example
  * {
- *   domain: 'lages.sc.gov.br',
- *   institutionName: 'Prefeitura de Lages',
- *   maxUsers: 10,
- *   organizationId: '123e4567-e89b-12d3-a456-426614174000'
+ * domain: 'lages.sc.gov.br',
+ * institutionName: 'Prefeitura de Lages',
+ * maxUsers: 10,
+ * organizationId: '123e4567-e89b-12d3-a456-426614174000'
  * }
  */
 export class CreateDomainDto {

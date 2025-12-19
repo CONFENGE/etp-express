@@ -43,8 +43,8 @@ WHEN receiving code review feedback:
 
 ```
 IF any item is unclear:
-  STOP - do not implement anything yet
-  ASK for clarification on unclear items
+ STOP - do not implement anything yet
+ ASK for clarification on unclear items
 
 WHY: Items may be related. Partial understanding = wrong implementation.
 ```
@@ -72,20 +72,20 @@ You understand 1,2,3,6. Unclear on 4,5.
 
 ```
 BEFORE implementing:
-  1. Check: Technically correct for THIS codebase?
-  2. Check: Breaks existing functionality?
-  3. Check: Reason for current implementation?
-  4. Check: Works on all platforms/versions?
-  5. Check: Does reviewer understand full context?
+ 1. Check: Technically correct for THIS codebase?
+ 2. Check: Breaks existing functionality?
+ 3. Check: Reason for current implementation?
+ 4. Check: Works on all platforms/versions?
+ 5. Check: Does reviewer understand full context?
 
 IF suggestion seems wrong:
-  Push back with technical reasoning
+ Push back with technical reasoning
 
 IF can't easily verify:
-  Say so: "I can't verify this without [X]. Should I [investigate/ask/proceed]?"
+ Say so: "I can't verify this without [X]. Should I [investigate/ask/proceed]?"
 
 IF conflicts with your human partner's prior decisions:
-  Stop and discuss with your human partner first
+ Stop and discuss with your human partner first
 ```
 
 **your human partner's rule:** "External feedback - be skeptical, but check carefully"
@@ -94,10 +94,10 @@ IF conflicts with your human partner's prior decisions:
 
 ```
 IF reviewer suggests "implementing properly":
-  grep codebase for actual usage
+ grep codebase for actual usage
 
-  IF unused: "This endpoint isn't called. Remove it (YAGNI)?"
-  IF used: Then implement properly
+ IF unused: "This endpoint isn't called. Remove it (YAGNI)?"
+ IF used: Then implement properly
 ```
 
 **your human partner's rule:** "You and reviewer both report to me. If we don't need this feature, don't add it."
@@ -106,13 +106,13 @@ IF reviewer suggests "implementing properly":
 
 ```
 FOR multi-item feedback:
-  1. Clarify anything unclear FIRST
-  2. Then implement in this order:
-     - Blocking issues (breaks, security)
-     - Simple fixes (typos, imports)
-     - Complex fixes (refactoring, logic)
-  3. Test each fix individually
-  4. Verify no regressions
+ 1. Clarify anything unclear FIRST
+ 2. Then implement in this order:
+ - Blocking issues (breaks, security)
+ - Simple fixes (typos, imports)
+ - Complex fixes (refactoring, logic)
+ 3. Test each fix individually
+ 4. Verify no regressions
 ```
 
 ## When To Push Back
@@ -172,14 +172,14 @@ State the correction factually and move on.
 
 ## Common Mistakes
 
-| Mistake                      | Fix                                 |
+| Mistake | Fix |
 | ---------------------------- | ----------------------------------- |
-| Performative agreement       | State requirement or just act       |
-| Blind implementation         | Verify against codebase first       |
-| Batch without testing        | One at a time, test each            |
-| Assuming reviewer is right   | Check if breaks things              |
-| Avoiding pushback            | Technical correctness > comfort     |
-| Partial implementation       | Clarify all items first             |
+| Performative agreement | State requirement or just act |
+| Blind implementation | Verify against codebase first |
+| Batch without testing | One at a time, test each |
+| Assuming reviewer is right | Check if breaks things |
+| Avoiding pushback | Technical correctness > comfort |
+| Partial implementation | Clarify all items first |
 | Can't verify, proceed anyway | State limitation, ask for direction |
 
 ## Real Examples

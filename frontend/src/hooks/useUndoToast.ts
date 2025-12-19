@@ -40,15 +40,15 @@ let toastIdCounter = 0;
  * const { showUndoToast, handleUndo, dismiss, activeToasts, isProcessing } = useUndoToast();
  *
  * const handleDelete = async (id: string) => {
- *   // Hide item from UI immediately (optimistic)
- *   hideItem(id);
+ * // Hide item from UI immediately (optimistic)
+ * hideItem(id);
  *
- *   showUndoToast({
- *     message: 'Item excluído',
- *     undoAction: () => restoreItem(id),
- *     onConfirm: () => api.delete(`/items/${id}`),
- *     duration: 5000,
- *   });
+ * showUndoToast({
+ * message: 'Item excluído',
+ * undoAction: () => restoreItem(id),
+ * onConfirm: () => api.delete(`/items/${id}`),
+ * duration: 5000,
+ * });
  * };
  * ```
  */

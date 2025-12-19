@@ -119,7 +119,7 @@ export class SimplificacaoAgent {
    * @example
    * ```ts
    * const result = await simplificacaoAgent.analyze(
-   *   'Tendo em vista que faz-se necessário proceder à realização do planejamento antecipadamente...'
+   * 'Tendo em vista que faz-se necessário proceder à realização do planejamento antecipadamente...'
    * );
    * console.log(result.score); // 25 (5 issues * 5 penalty each)
    * console.log(result.complexPhrases); // [{ phrase: 'tendo em vista que', suggestion: 'porque' }, ...]
@@ -236,7 +236,7 @@ export class SimplificacaoAgent {
    * @example
    * ```ts
    * const simplified = await simplificacaoAgent.simplify(
-   *   'Tendo em vista que faz-se necessário proceder à realização...'
+   * 'Tendo em vista que faz-se necessário proceder à realização...'
    * );
    * console.log(simplified);
    * // "Porque é necessário fazer a realização..."
@@ -285,24 +285,24 @@ Sua função é transformar textos complexos e rebuscados em comunicação SIMPL
 Princípios de simplificação:
 
 1. USE PALAVRAS SIMPLES
-   ❌ "proceder à realização"
-   ✅ "fazer"
+ ❌ "proceder à realização"
+ ✅ "fazer"
 
 2. EVITE REDUNDÂNCIAS
-   ❌ "planejar antecipadamente"
-   ✅ "planejar"
+ ❌ "planejar antecipadamente"
+ ✅ "planejar"
 
 3. PREFIRA VOZ ATIVA
-   ❌ "será realizado pelo órgão"
-   ✅ "o órgão realizará"
+ ❌ "será realizado pelo órgão"
+ ✅ "o órgão realizará"
 
 4. ELIMINE EXPRESSÕES VAZIAS
-   ❌ "tendo em vista que"
-   ✅ "porque"
+ ❌ "tendo em vista que"
+ ✅ "porque"
 
 5. USE VERBOS NO LUGAR DE SUBSTANTIVOS
-   ❌ "realizar a implementação"
-   ✅ "implementar"
+ ❌ "realizar a implementação"
+ ✅ "implementar"
 
 LEMBRE-SE:
 - Clareza é mais importante que formalidade excessiva

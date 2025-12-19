@@ -38,13 +38,13 @@ sudo apt-get install k6
 
 ```
 load-tests/
-├── config.js           # Configuração compartilhada
-├── README.md           # Esta documentação
+├── config.js # Configuração compartilhada
+├── README.md # Esta documentação
 └── scripts/
-    ├── helpers.js      # Funções utilitárias
-    ├── smoke.js        # Smoke test (1 VU, 30s)
-    ├── load.js         # Load test (100 VUs, 8min)
-    └── stress.js       # Stress test (até 250 VUs)
+ ├── helpers.js # Funções utilitárias
+ ├── smoke.js # Smoke test (1 VU, 30s)
+ ├── load.js # Load test (100 VUs, 8min)
+ └── stress.js # Stress test (até 250 VUs)
 ```
 
 ## Uso
@@ -71,10 +71,10 @@ k6 run load-tests/scripts/load.js
 
 # Production com credenciais customizadas
 k6 run \
-  --env BASE_URL=https://etp-express-backend-production.up.railway.app \
-  --env TEST_USER_EMAIL=test@example.com \
-  --env TEST_USER_PASSWORD=TestPass123 \
-  load-tests/scripts/load.js
+ --env BASE_URL=https://etp-express-backend-production.up.railway.app \
+ --env TEST_USER_EMAIL=test@example.com \
+ --env TEST_USER_PASSWORD=TestPass123 \
+ load-tests/scripts/load.js
 ```
 
 ### 3. Stress Test
@@ -87,21 +87,21 @@ k6 run --env BASE_URL=https://staging.example.com load-tests/scripts/stress.js
 
 ## Variáveis de Ambiente
 
-| Variável             | Padrão                  | Descrição                 |
+| Variável | Padrão | Descrição |
 | -------------------- | ----------------------- | ------------------------- |
-| `BASE_URL`           | `http://localhost:3000` | URL base da API           |
-| `TEST_USER_EMAIL`    | `admin@confenge.com.br` | Email do usuário de teste |
-| `TEST_USER_PASSWORD` | `Admin@123`             | Senha do usuário de teste |
+| `BASE_URL` | `http://localhost:3000` | URL base da API |
+| `TEST_USER_EMAIL` | `admin@confenge.com.br` | Email do usuário de teste |
+| `TEST_USER_PASSWORD` | `Admin@123` | Senha do usuário de teste |
 
 ## Thresholds (Critérios de Aceitação)
 
 Os testes são configurados com os seguintes limites:
 
-| Métrica                   | Limite   | Descrição                          |
+| Métrica | Limite | Descrição |
 | ------------------------- | -------- | ---------------------------------- |
 | `http_req_duration p(95)` | < 3000ms | 95% das requisições em menos de 3s |
-| `http_req_failed`         | < 1%     | Menos de 1% de falhas              |
-| `successful_operations`   | > 95%    | Taxa de sucesso > 95%              |
+| `http_req_failed` | < 1% | Menos de 1% de falhas |
+| `successful_operations` | > 95% | Taxa de sucesso > 95% |
 
 ## Cenários de Teste
 
@@ -134,21 +134,21 @@ Escala progressiva para encontrar limites:
 ### Exemplo de Output
 
 ```
-          /\      |‾‾| /‾‾/   /‾‾/
-     /\  /  \     |  |/  /   /  /
-    /  \/    \    |     (   /   ‾‾\
-   /          \   |  |\  \ |  (‾)  |
-  / __________ \  |__| \__\ \_____/
+ /\ |‾‾| /‾‾/ /‾‾/
+ /\ / \ | |/ / / /
+ / \/ \ | ( / ‾‾\
+ / \ | |\ \ | (‾) |
+ / __________ \ |__| \__\ \_____/
 
-     execution: local
-        script: load-tests/scripts/load.js
-        output: -
+ execution: local
+ script: load-tests/scripts/load.js
+ output: -
 
-     scenarios: (100.00%) 1 scenario, 100 max VUs, 8m30s max duration
+ scenarios: (100.00%) 1 scenario, 100 max VUs, 8m30s max duration
 
-     ✓ http_req_duration..............: avg=245ms  p(95)=1234ms
-     ✓ http_req_failed................: 0.05%  ✓ 12     ✗ 23456
-     ✓ successful_operations..........: 98.5%
+ http_req_duration..............: avg=245ms p(95)=1234ms
+ http_req_failed................: 0.05% 12 23456
+ successful_operations..........: 98.5%
 ```
 
 ### Métricas Importantes

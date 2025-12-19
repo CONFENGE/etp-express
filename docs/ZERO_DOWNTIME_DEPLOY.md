@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Índice
+## Índice
 
 1. [Visão Geral](#visão-geral)
 2. [Arquitetura](#arquitetura)
@@ -57,33 +57,33 @@ Implementamos **zero-downtime deployment** usando:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    DEPLOY FLOW                              │
+│ DEPLOY FLOW │
 └─────────────────────────────────────────────────────────────┘
 
 1. [Trigger Deploy]
-   │
-   ├─> Railway builds new container
-   │   (old container ainda serve requests)
-   │
+ │
+ ├─> Railway builds new container
+ │ (old container ainda serve requests)
+ │
 2. [Health Check]
-   │
-   ├─> Railway aguarda /api/health return 200 OK
-   │   │
-   │   ├─> ✅ Success → Switch traffic to new container
-   │   │                 (old container gracefully shutdown)
-   │   │
-   │   └─> ❌ Timeout/500 → Rollback automático
-   │                         (new container destroyed)
-   │
+ │
+ ├─> Railway aguarda /api/health return 200 OK
+ │ │
+ │ ├─> ✅ Success → Switch traffic to new container
+ │ │ (old container gracefully shutdown)
+ │ │
+ │ └─> ❌ Timeout/500 → Rollback automático
+ │ (new container destroyed)
+ │
 3. [Smoke Tests]
-   │
-   ├─> Validate JSON response
-   ├─> Validate database connectivity
-   └─> Validate response time (<2s)
-       │
-       ├─> ✅ Success → Deploy complete
-       │
-       └─> ❌ Failure → Execute rollback.sh
+ │
+ ├─> Validate JSON response
+ ├─> Validate database connectivity
+ └─> Validate response time (<2s)
+ │
+ ├─> ✅ Success → Deploy complete
+ │
+ └─> ❌ Failure → Execute rollback.sh
 ```
 
 ### Componentes
@@ -112,9 +112,9 @@ Implementamos **zero-downtime deployment** usando:
 
 ```json
 {
-  "status": "healthy",
-  "timestamp": "2025-11-14T12:00:00.000Z",
-  "database": "connected"
+ "status": "healthy",
+ "timestamp": "2025-11-14T12:00:00.000Z",
+ "database": "connected"
 }
 ```
 
@@ -122,9 +122,9 @@ Implementamos **zero-downtime deployment** usando:
 
 ```json
 {
-  "status": "unhealthy",
-  "timestamp": "2025-11-14T12:00:00.000Z",
-  "database": "disconnected"
+ "status": "unhealthy",
+ "timestamp": "2025-11-14T12:00:00.000Z",
+ "database": "disconnected"
 }
 ```
 
@@ -135,12 +135,12 @@ Implementamos **zero-downtime deployment** usando:
 ```typescript
 @Controller('health')
 export class HealthController {
-  constructor(private readonly healthService: HealthService) {}
+ constructor(private readonly healthService: HealthService) {}
 
-  @Get()
-  async check() {
-    return this.healthService.check();
-  }
+ @Get()
+ async check() {
+ return this.healthService.check();
+ }
 }
 ```
 
@@ -149,24 +149,24 @@ export class HealthController {
 ```typescript
 @Injectable()
 export class HealthService {
-  async check() {
-    const dbHealth = await this.checkDatabase();
+ async check() {
+ const dbHealth = await this.checkDatabase();
 
-    return {
-      status: dbHealth ? 'healthy' : 'unhealthy',
-      timestamp: new Date().toISOString(),
-      database: dbHealth ? 'connected' : 'disconnected',
-    };
-  }
+ return {
+ status: dbHealth ? 'healthy' : 'unhealthy',
+ timestamp: new Date().toISOString(),
+ database: dbHealth ? 'connected' : 'disconnected',
+ };
+ }
 
-  private async checkDatabase(): Promise<boolean> {
-    try {
-      await this.userRepository.query('SELECT 1');
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
+ private async checkDatabase(): Promise<boolean> {
+ try {
+ await this.userRepository.query('SELECT 1');
+ return true;
+ } catch (error) {
+ return false;
+ }
+ }
 }
 ```
 
@@ -177,8 +177,8 @@ export class HealthService {
 ```toml
 [[services.healthcheck]]
 path = "/api/health"
-interval = 30  # Check every 30s
-timeout = 5    # 5s timeout
+interval = 30 # Check every 30s
+timeout = 5 # 5s timeout
 
 [[services.restart]]
 policy = "ON_FAILURE"
@@ -192,22 +192,22 @@ max_retries = 10
 ### Pré-requisitos
 
 1. **Railway CLI** instalado:
-   ```bash
-   npm install -g @railway/cli
-   ```
+ ```bash
+ npm install -g @railway/cli
+ ```
 
 2. **Variáveis de ambiente** configuradas:
-   ```bash
-   export RAILWAY_TOKEN="your-token"
-   export RAILWAY_BACKEND_URL="https://your-backend.railway.app"
-   ```
+ ```bash
+ export RAILWAY_TOKEN="your-token"
+ export RAILWAY_BACKEND_URL="https://your-backend.railway.app"
+ ```
 
 3. **Testes locais** passando:
-   ```bash
-   cd backend
-   npm test
-   npm run test:e2e
-   ```
+ ```bash
+ cd backend
+ npm test
+ npm run test:e2e
+ ```
 
 ### Executar Deploy
 
@@ -272,9 +272,9 @@ Total: ~4 minutes
 
 **Rollback manual** deve ser feito se:
 
-- 🐛 Bug crítico descoberto em produção
-- 📊 Métricas de erro aumentaram (>5% error rate)
-- 👥 Usuários reportando problemas
+- Bug crítico descoberto em produção
+- Métricas de erro aumentaram (>5% error rate)
+- Usuários reportando problemas
 
 ### Executar Rollback
 
@@ -348,17 +348,17 @@ Database migrations podem **quebrar deploys** se não forem backward-compatible:
 ```typescript
 @MigrationInterface()
 export class AddEmailVerified1234567890 {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "user" ADD "emailVerified" boolean DEFAULT false`
-    );
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ await queryRunner.query(
+ `ALTER TABLE "user" ADD "emailVerified" boolean DEFAULT false`
+ );
+ }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "user" DROP COLUMN "emailVerified"`
-    );
-  }
+ public async down(queryRunner: QueryRunner): Promise<void> {
+ await queryRunner.query(
+ `ALTER TABLE "user" DROP COLUMN "emailVerified"`
+ );
+ }
 }
 ```
 
@@ -375,12 +375,12 @@ export class AddEmailVerified1234567890 {
 // 1. Migration: Marcar coluna como nullable
 @MigrationInterface()
 export class DeprecateOldColumn1234567890 {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    // Tornar nullable se não for
-    await queryRunner.query(
-      `ALTER TABLE "user" ALTER COLUMN "oldColumn" DROP NOT NULL`
-    );
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ // Tornar nullable se não for
+ await queryRunner.query(
+ `ALTER TABLE "user" ALTER COLUMN "oldColumn" DROP NOT NULL`
+ );
+ }
 }
 
 // 2. Código: Parar de escrever/ler coluna
@@ -393,11 +393,11 @@ export class DeprecateOldColumn1234567890 {
 // Migration: Remover coluna
 @MigrationInterface()
 export class RemoveOldColumn1234567891 {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "user" DROP COLUMN "oldColumn"`
-    );
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ await queryRunner.query(
+ `ALTER TABLE "user" DROP COLUMN "oldColumn"`
+ );
+ }
 }
 ```
 
@@ -408,25 +408,25 @@ export class RemoveOldColumn1234567891 {
 ```typescript
 @MigrationInterface()
 export class AddNewColumnName1234567890 {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    // Adicionar coluna nova
-    await queryRunner.query(
-      `ALTER TABLE "user" ADD "newColumnName" varchar`
-    );
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ // Adicionar coluna nova
+ await queryRunner.query(
+ `ALTER TABLE "user" ADD "newColumnName" varchar`
+ );
 
-    // Copiar dados existentes
-    await queryRunner.query(
-      `UPDATE "user" SET "newColumnName" = "oldColumnName"`
-    );
-  }
+ // Copiar dados existentes
+ await queryRunner.query(
+ `UPDATE "user" SET "newColumnName" = "oldColumnName"`
+ );
+ }
 }
 
 // Código: Escrever em AMBAS as colunas (dual-write)
 async updateUser(id: number, value: string) {
-  await this.userRepository.update(id, {
-    oldColumnName: value,  // Compatibilidade com código antigo
-    newColumnName: value,  // Código novo usa esta
-  });
+ await this.userRepository.update(id, {
+ oldColumnName: value, // Compatibilidade com código antigo
+ newColumnName: value, // Código novo usa esta
+ });
 }
 ```
 
@@ -444,18 +444,18 @@ const value = user.newColumnName; // Usar coluna nova
 ```typescript
 @MigrationInterface()
 export class RemoveOldColumnName1234567892 {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "user" DROP COLUMN "oldColumnName"`
-    );
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ await queryRunner.query(
+ `ALTER TABLE "user" DROP COLUMN "oldColumnName"`
+ );
+ }
 }
 
 // Código: Remover dual-write
 async updateUser(id: number, value: string) {
-  await this.userRepository.update(id, {
-    newColumnName: value,  // Apenas coluna nova
-  });
+ await this.userRepository.update(id, {
+ newColumnName: value, // Apenas coluna nova
+ });
 }
 ```
 
@@ -536,7 +536,7 @@ curl -s -o /dev/null -w '%{time_total}' https://backend.railway.app/api/health
 
 **Validações:**
 - ✅ Response time <2s (target: <500ms)
-- ⚠️ Warning se >2s (mas não bloqueia deploy)
+- ⚠ Warning se >2s (mas não bloqueia deploy)
 
 ### Post-Deploy Monitoring
 
@@ -576,31 +576,31 @@ Após deploy, monitor por **15-30 minutos**:
 ```
 ⚠ Health check não respondeu (tentativa 30/30)
 ❌ Health check falhou após 30 tentativas
-🔄 Rollback automático iniciado
+ Rollback automático iniciado
 ```
 
 **Possíveis Causas:**
 
 1. **Database não conecta**
-   ```bash
-   # Verificar DATABASE_URL
-   railway variables --service etp-express-backend
+ ```bash
+ # Verificar DATABASE_URL
+ railway variables --service etp-express-backend
 
-   # Testar conectividade PostgreSQL
-   railway run psql $DATABASE_URL -c "SELECT 1"
-   ```
+ # Testar conectividade PostgreSQL
+ railway run psql $DATABASE_URL -c "SELECT 1"
+ ```
 
 2. **Build falhou silenciosamente**
-   ```bash
-   # Ver logs de build
-   railway logs --service etp-express-backend --deployment <id>
-   ```
+ ```bash
+ # Ver logs de build
+ railway logs --service etp-express-backend --deployment <id>
+ ```
 
 3. **PORT incorreto**
-   ```bash
-   # Verificar PORT configurado
-   railway variables --service etp-express-backend
-   ```
+ ```bash
+ # Verificar PORT configurado
+ railway variables --service etp-express-backend
+ ```
 
 **Solução:**
 - Corrigir variável de ambiente
@@ -619,16 +619,16 @@ Após deploy, monitor por **15-30 minutos**:
 **Possíveis Causas:**
 
 1. **Migration incompatível**
-   - Código novo tenta usar coluna que não existe em DB antigo
-   - **Solução:** Rollback + fix migration
+ - Código novo tenta usar coluna que não existe em DB antigo
+ - **Solução:** Rollback + fix migration
 
 2. **Cache desatualizado**
-   - Frontend usa cache antigo com API nova
-   - **Solução:** Invalidar cache CloudFlare/CDN
+ - Frontend usa cache antigo com API nova
+ - **Solução:** Invalidar cache CloudFlare/CDN
 
 3. **Environment variable faltando**
-   - Código novo depende de ENV var não configurada
-   - **Solução:** `railway variables set KEY=value`
+ - Código novo depende de ENV var não configurada
+ - **Solução:** `railway variables set KEY=value`
 
 **Debugging:**
 
@@ -656,20 +656,20 @@ railway variables --service etp-express-backend
 **Ação Imediata:**
 
 1. **Verificar deployment atual:**
-   ```bash
-   railway deployment list --service etp-express-backend
-   ```
+ ```bash
+ railway deployment list --service etp-express-backend
+ ```
 
 2. **Force rollback manual:**
-   ```bash
-   # Pegar ID do deployment estável conhecido
-   railway deployment rollback <stable-deployment-id>
-   ```
+ ```bash
+ # Pegar ID do deployment estável conhecido
+ railway deployment rollback <stable-deployment-id>
+ ```
 
 3. **Verificar database:**
-   ```bash
-   railway run psql $DATABASE_URL -c "\dt"
-   ```
+ ```bash
+ railway run psql $DATABASE_URL -c "\dt"
+ ```
 
 4. **Contact Railway Support** se persistir
 
@@ -701,7 +701,7 @@ railway run psql $DATABASE_URL
 ALTER TABLE "user" DROP COLUMN "emailVerified";
 ```
 
-**⚠️ ATENÇÃO:**
+**⚠ ATENÇÃO:**
 - Rollback de migration pode causar **perda de dados**
 - Sempre ter backup antes de migration complexa
 - Testar migration em staging primeiro

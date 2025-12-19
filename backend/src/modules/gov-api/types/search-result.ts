@@ -63,25 +63,25 @@ export interface SourceStatus {
  * ```typescript
  * // Success scenario
  * const result: SearchResult<Contract> = {
- *   data: contracts,
- *   status: SearchStatus.SUCCESS,
- *   sources: [
- *     { name: 'pncp', status: SearchStatus.SUCCESS, resultCount: 10 },
- *     { name: 'comprasgov', status: SearchStatus.SUCCESS, resultCount: 5 },
- *   ],
- *   timestamp: new Date(),
+ * data: contracts,
+ * status: SearchStatus.SUCCESS,
+ * sources: [
+ * { name: 'pncp', status: SearchStatus.SUCCESS, resultCount: 10 },
+ * { name: 'comprasgov', status: SearchStatus.SUCCESS, resultCount: 5 },
+ * ],
+ * timestamp: new Date(),
  * };
  *
  * // Service unavailable scenario
  * const result: SearchResult<Contract> = {
- *   data: [],
- *   status: SearchStatus.SERVICE_UNAVAILABLE,
- *   sources: [
- *     { name: 'pncp', status: SearchStatus.TIMEOUT, error: 'Connection timeout' },
- *     { name: 'comprasgov', status: SearchStatus.SERVICE_UNAVAILABLE, error: 'Circuit breaker open' },
- *   ],
- *   timestamp: new Date(),
- *   message: 'Os serviços governamentais estão temporariamente indisponíveis',
+ * data: [],
+ * status: SearchStatus.SERVICE_UNAVAILABLE,
+ * sources: [
+ * { name: 'pncp', status: SearchStatus.TIMEOUT, error: 'Connection timeout' },
+ * { name: 'comprasgov', status: SearchStatus.SERVICE_UNAVAILABLE, error: 'Circuit breaker open' },
+ * ],
+ * timestamp: new Date(),
+ * message: 'Os serviços governamentais estão temporariamente indisponíveis',
  * };
  * ```
  */
