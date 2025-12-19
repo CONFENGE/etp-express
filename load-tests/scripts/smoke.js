@@ -6,7 +6,7 @@
  *
  * Usage:
  *   k6 run load-tests/scripts/smoke.js
- *   k6 run --env BASE_URL=https://etp-express-backend.railway.app load-tests/scripts/smoke.js
+ *   k6 run --env BASE_URL=https://etp-express-backend-production.up.railway.app load-tests/scripts/smoke.js
  */
 
 import http from 'k6/http';
