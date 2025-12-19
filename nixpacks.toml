@@ -1,12 +1,13 @@
 # Nixpacks configuration for Railway monorepo deployment
 # Optimized for Node.js 20 LTS with system Chromium for Puppeteer
-# Last updated: 2025-12-14 - Issue #670
+# Last updated: 2025-12-19 - Force rebuild for @types/uuid
 
 [phases.setup]
 nixPkgs = ['nodejs_20', 'chromium']
 
 [phases.install]
-cmds = ["npm ci"]
+# Force fresh install to pick up new devDependencies
+cmds = ["npm cache clean --force && npm ci"]
 
 [phases.build]
 cmds = ["npm run build --workspace=etp-express-backend"]
