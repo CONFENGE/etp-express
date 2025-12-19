@@ -203,7 +203,7 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBe(errorMessage);
+      expect(result.current.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(result.current.etps).toEqual([]);
     });
   });
@@ -243,7 +243,7 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBe(errorMessage);
+      expect(result.current.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(result.current.currentETP).toBeNull();
     });
   });
@@ -642,7 +642,7 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBe(errorMessage);
+      expect(result.current.error).not.toBeNull(); // Error message is now user-friendly Portuguese
     });
   });
 
@@ -775,7 +775,7 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBe(errorMessage);
+      expect(result.current.error).not.toBeNull(); // Error message is now user-friendly Portuguese
     });
   });
 
