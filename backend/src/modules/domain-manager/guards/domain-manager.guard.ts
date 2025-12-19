@@ -1,8 +1,8 @@
 import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
+ Injectable,
+ CanActivate,
+ ExecutionContext,
+ ForbiddenException,
 } from '@nestjs/common';
 import { UserRole } from '../../../entities/user.entity';
 
@@ -25,32 +25,32 @@ import { UserRole } from '../../../entities/user.entity';
  * @Controller('domain-manager')
  * @UseGuards(JwtAuthGuard, DomainManagerGuard)
  * export class DomainManagerController {
- *   // All endpoints require DOMAIN_MANAGER role
+ * // All endpoints require DOMAIN_MANAGER role
  * }
  * ```
  */
 @Injectable()
 export class DomainManagerGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+ canActivate(context: ExecutionContext): boolean {
+ const request = context.switchToHttp().getRequest();
+ const user = request.user;
 
-    if (!user) {
-      throw new ForbiddenException('Access denied: Authentication required');
-    }
+ if (!user) {
+ throw new ForbiddenException('Access denied: Authentication required');
+ }
 
-    if (user.role !== UserRole.DOMAIN_MANAGER) {
-      throw new ForbiddenException(
-        'Access denied: Only Domain Managers can access this resource',
-      );
-    }
+ if (user.role !== UserRole.DOMAIN_MANAGER) {
+ throw new ForbiddenException(
+ 'Access denied: Only Domain Managers can access this resource',
+ );
+ }
 
-    if (!user.authorizedDomainId) {
-      throw new ForbiddenException(
-        'Access denied: No authorized domain assigned to this manager',
-      );
-    }
+ if (!user.authorizedDomainId) {
+ throw new ForbiddenException(
+ 'Access denied: No authorized domain assigned to this manager',
+ );
+ }
 
-    return true;
-  }
+ return true;
+ }
 }

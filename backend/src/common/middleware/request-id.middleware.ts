@@ -2,15 +2,15 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  runInRequestContext,
-  RequestContextData,
+ runInRequestContext,
+ RequestContextData,
 } from '../context/request-context';
 
 /**
  * Extended Request interface with requestId
  */
 export interface RequestWithId extends Request {
-  requestId: string;
+ requestId: string;
 }
 
 /**
@@ -42,60 +42,60 @@ export interface RequestWithId extends Request {
  */
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
-  use(req: RequestWithId, res: Response, next: NextFunction): void {
-    // Accept request ID from external sources (load balancers, API gateways)
-    // or generate a new UUID v4
-    const requestId = this.extractRequestId(req) || uuidv4();
+ use(req: RequestWithId, res: Response, next: NextFunction): void {
+ // Accept request ID from external sources (load balancers, API gateways)
+ // or generate a new UUID v4
+ const requestId = this.extractRequestId(req) || uuidv4();
 
-    // Attach to request object for easy access in controllers/services
-    req.requestId = requestId;
+ // Attach to request object for easy access in controllers/services
+ req.requestId = requestId;
 
-    // Set response header for client-side correlation
-    res.setHeader('X-Request-ID', requestId);
+ // Set response header for client-side correlation
+ res.setHeader('X-Request-ID', requestId);
 
-    // Create request context for AsyncLocalStorage propagation
-    const context: RequestContextData = {
-      requestId,
-      startTime: Date.now(),
-    };
+ // Create request context for AsyncLocalStorage propagation
+ const context: RequestContextData = {
+ requestId,
+ startTime: Date.now(),
+ };
 
-    // Run the rest of the request in the context
-    // This makes requestId available throughout the entire async call chain
-    runInRequestContext(context, () => {
-      next();
-    });
-  }
+ // Run the rest of the request in the context
+ // This makes requestId available throughout the entire async call chain
+ runInRequestContext(context, () => {
+ next();
+ });
+ }
 
-  /**
-   * Extract request ID from incoming request headers
-   * Supports multiple header formats used by different proxies/load balancers
-   *
-   * Supported headers (in order of priority):
-   * - X-Request-ID (standard)
-   * - X-Correlation-ID (AWS ALB, some APM tools)
-   * - X-Trace-ID (some tracing systems)
-   */
-  private extractRequestId(req: Request): string | undefined {
-    const headers = ['x-request-id', 'x-correlation-id', 'x-trace-id'];
+ /**
+ * Extract request ID from incoming request headers
+ * Supports multiple header formats used by different proxies/load balancers
+ *
+ * Supported headers (in order of priority):
+ * - X-Request-ID (standard)
+ * - X-Correlation-ID (AWS ALB, some APM tools)
+ * - X-Trace-ID (some tracing systems)
+ */
+ private extractRequestId(req: Request): string | undefined {
+ const headers = ['x-request-id', 'x-correlation-id', 'x-trace-id'];
 
-    for (const header of headers) {
-      const value = req.get(header);
-      if (value && this.isValidRequestId(value)) {
-        return value;
-      }
-    }
+ for (const header of headers) {
+ const value = req.get(header);
+ if (value && this.isValidRequestId(value)) {
+ return value;
+ }
+ }
 
-    return undefined;
-  }
+ return undefined;
+ }
 
-  /**
-   * Validate that a request ID is safe to use
-   * Prevents injection attacks and ensures reasonable length
-   */
-  private isValidRequestId(id: string): boolean {
-    // Must be alphanumeric with dashes (UUID format or similar)
-    // Max 64 chars to prevent log injection
-    const validPattern = /^[a-zA-Z0-9-_]{1,64}$/;
-    return validPattern.test(id);
-  }
+ /**
+ * Validate that a request ID is safe to use
+ * Prevents injection attacks and ensures reasonable length
+ */
+ private isValidRequestId(id: string): boolean {
+ // Must be alphanumeric with dashes (UUID format or similar)
+ // Max 64 chars to prevent log injection
+ const validPattern = /^[a-zA-Z0-9-_]{1,64}$/;
+ return validPattern.test(id);
+ }
 }

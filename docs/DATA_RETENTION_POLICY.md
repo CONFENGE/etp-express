@@ -125,22 +125,22 @@ Este documento define os períodos de retenção de dados pessoais no ETP Expres
 **Processo:**
 1. Sistema identifica contas com `deletedAt < (agora - 30 dias)`
 2. Para cada conta identificada:
-   - Remove permanentemente o registro da tabela `users`
-   - Remove em cascata todos os ETPs e seções associados
-   - Cria registro em `audit_logs` com ação `ACCOUNT_HARD_DELETED`
-   - Preserva logs de auditoria anteriores (2 anos)
-   - Preserva comprovantes de consentimento (permanente)
+ - Remove permanentemente o registro da tabela `users`
+ - Remove em cascata todos os ETPs e seções associados
+ - Cria registro em `audit_logs` com ação `ACCOUNT_HARD_DELETED`
+ - Preserva logs de auditoria anteriores (2 anos)
+ - Preserva comprovantes de consentimento (permanente)
 3. Loga estatísticas: `purgedCount`, `purgedAt`, `purgedUserIds`
 
 **Código:**
 ```typescript
 @Cron(CronExpression.EVERY_DAY_AT_2AM)
 async purgeDeletedAccounts(): Promise<{
-  purgedCount: number;
-  purgedAt: Date;
-  purgedUserIds: string[];
+ purgedCount: number;
+ purgedAt: Date;
+ purgedUserIds: string[];
 }> {
-  // Lógica implementada em users.service.ts:331
+ // Lógica implementada em users.service.ts:331
 }
 ```
 
@@ -156,22 +156,22 @@ async purgeDeletedAccounts(): Promise<{
 1. Usuário autenticado solicita exclusão da conta via API
 2. Sistema valida token de confirmação (dupla verificação)
 3. Sistema realiza **soft delete**:
-   - Define `deletedAt = now()`
-   - Define `isActive = false`
-   - Calcula `scheduledDeletionDate = deletedAt + 30 dias`
+ - Define `deletedAt = now()`
+ - Define `isActive = false`
+ - Calcula `scheduledDeletionDate = deletedAt + 30 dias`
 4. Sistema envia email de confirmação com:
-   - Data agendada para exclusão permanente
-   - Token para cancelamento de exclusão (válido por 30 dias)
+ - Data agendada para exclusão permanente
+ - Token para cancelamento de exclusão (válido por 30 dias)
 5. Usuário tem 30 dias para cancelar via `POST /users/cancel-deletion`
 6. Após 30 dias, exclusão permanente automática via cron
 
 **Código:**
 ```typescript
 async softDeleteAccount(
-  userId: string,
-  confirmationToken: string,
+ userId: string,
+ confirmationToken: string,
 ): Promise<{ scheduledDeletionDate: Date }> {
-  // Lógica implementada em users.service.ts:212
+ // Lógica implementada em users.service.ts:212
 }
 ```
 
@@ -188,9 +188,9 @@ async softDeleteAccount(
 2. Sistema valida token JWT
 3. Sistema verifica se `deletedAt` ainda é `< 30 dias`
 4. Sistema **reverte soft delete**:
-   - Define `deletedAt = null`
-   - Define `isActive = true`
-   - Restaura acesso completo à conta
+ - Define `deletedAt = null`
+ - Define `isActive = true`
+ - Restaura acesso completo à conta
 5. Cria registro em `audit_logs` com ação `ACCOUNT_DELETION_CANCELLED`
 
 **Status de Implementação:** ✅ IMPLEMENTADO
@@ -204,7 +204,7 @@ async softDeleteAccount(
 **Processo:**
 - Dispara manualmente o cron job de purge
 - Útil para testes ou limpeza imediata sem aguardar cron
-- **⚠️ ATENÇÃO:** Remove permanentemente todos os dados de usuários soft-deleted há mais de 30 dias
+- **⚠ ATENÇÃO:** Remove permanentemente todos os dados de usuários soft-deleted há mais de 30 dias
 
 **Status de Implementação:** ✅ IMPLEMENTADO
 
@@ -225,12 +225,12 @@ async softDeleteAccount(
 // backend/src/modules/analytics/analytics.service.ts
 @Cron(CronExpression.EVERY_DAY_AT_3AM)
 async purgeOldAnalyticsEvents(): Promise<void> {
-  const cutoffDate = new Date();
-  cutoffDate.setFullYear(cutoffDate.getFullYear() - 1); // 1 ano atrás
+ const cutoffDate = new Date();
+ cutoffDate.setFullYear(cutoffDate.getFullYear() - 1); // 1 ano atrás
 
-  await this.analyticsEventsRepository.delete({
-    createdAt: LessThan(cutoffDate),
-  });
+ await this.analyticsEventsRepository.delete({
+ createdAt: LessThan(cutoffDate),
+ });
 }
 ```
 
@@ -249,12 +249,12 @@ async purgeOldAnalyticsEvents(): Promise<void> {
 // backend/src/modules/audit/audit.service.ts
 @Cron(CronExpression.EVERY_WEEK)
 async purgeOldAuditLogs(): Promise<void> {
-  const cutoffDate = new Date();
-  cutoffDate.setFullYear(cutoffDate.getFullYear() - 2); // 2 anos atrás
+ const cutoffDate = new Date();
+ cutoffDate.setFullYear(cutoffDate.getFullYear() - 2); // 2 anos atrás
 
-  await this.auditLogsRepository.delete({
-    createdAt: LessThan(cutoffDate),
-  });
+ await this.auditLogsRepository.delete({
+ createdAt: LessThan(cutoffDate),
+ });
 }
 ```
 
@@ -274,13 +274,13 @@ async purgeOldAuditLogs(): Promise<void> {
 // backend/src/modules/users/users.service.ts
 @Cron(CronExpression.EVERY_MONTH)
 async purgeOldLastLoginDates(): Promise<void> {
-  const cutoffDate = new Date();
-  cutoffDate.setFullYear(cutoffDate.getFullYear() - 1); // 1 ano atrás
+ const cutoffDate = new Date();
+ cutoffDate.setFullYear(cutoffDate.getFullYear() - 1); // 1 ano atrás
 
-  await this.usersRepository.update(
-    { lastLoginAt: LessThan(cutoffDate) },
-    { lastLoginAt: null },
-  );
+ await this.usersRepository.update(
+ { lastLoginAt: LessThan(cutoffDate) },
+ { lastLoginAt: null },
+ );
 }
 ```
 

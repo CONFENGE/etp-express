@@ -41,7 +41,7 @@ Contribute skills from your local branch back to the upstream repository.
 cd ~/.config/superpowers/skills/
 git checkout main
 git pull upstream main
-git push origin main  # Push to your fork
+git push origin main # Push to your fork
 ```
 
 ### 2. Create Feature Branch
@@ -86,9 +86,9 @@ git push -u origin "add-${skill_name}-skill"
 ```bash
 # Create PR to upstream using gh CLI
 gh pr create \
-  --repo upstream-org/upstream-repo \
-  --title "Add ${skill_name} skill" \
-  --body "$(cat <<'EOF'
+ --repo upstream-org/upstream-repo \
+ --title "Add ${skill_name} skill" \
+ --body "$(cat <<'EOF'
 ## Summary
 Brief description of the skill and what problem it solves.
 
@@ -131,9 +131,9 @@ git push -u origin "add-async-patterns-skill"
 
 # 6. Create PR
 gh pr create \
-  --repo upstream-org/upstream-repo \
-  --title "Add async-patterns skill" \
-  --body "## Summary
+ --repo upstream-org/upstream-repo \
+ --title "Add async-patterns skill" \
+ --body "## Summary
 Patterns for handling asynchronous operations correctly in tests and application code.
 
 ## Testing

@@ -8,13 +8,13 @@ Runbook completo para rotação de secrets do sistema ETP Express.
 
 ## Rotation Schedule
 
-| Secret         | Frequency | Last Rotated | Next Rotation | Risk Level |
+| Secret | Frequency | Last Rotated | Next Rotation | Risk Level |
 | -------------- | --------- | ------------ | ------------- | ---------- |
-| JWT_SECRET     | Monthly   | 2025-11-18   | 2025-12-18    | HIGH       |
-| SESSION_SECRET | Monthly   | 2025-11-18   | 2025-12-18    | HIGH       |
-| OPENAI_API_KEY | Quarterly | 2025-11-18   | 2026-02-18    | MEDIUM     |
-| EXA_API_KEY    | Quarterly | 2025-11-18   | 2026-02-18    | MEDIUM     |
-| DATABASE_URL   | On-demand | N/A          | N/A           | CRITICAL   |
+| JWT_SECRET | Monthly | 2025-11-18 | 2025-12-18 | HIGH |
+| SESSION_SECRET | Monthly | 2025-11-18 | 2025-12-18 | HIGH |
+| OPENAI_API_KEY | Quarterly | 2025-11-18 | 2026-02-18 | MEDIUM |
+| EXA_API_KEY | Quarterly | 2025-11-18 | 2026-02-18 | MEDIUM |
+| DATABASE_URL | On-demand | N/A | N/A | CRITICAL |
 
 **Calendar Reminders:**
 
@@ -367,8 +367,8 @@ Labels: security, incident
 ### How to Track Rotations
 
 1. **GitHub Issues:** Create issue for each rotation
-   - Use template: `.github/ISSUE_TEMPLATE/rotate-secret.md`
-   - Close when rotation complete
+ - Use template: `.github/ISSUE_TEMPLATE/rotate-secret.md`
+ - Close when rotation complete
 
 2. **This Document:** Update schedule table
 

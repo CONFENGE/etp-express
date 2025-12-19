@@ -20,7 +20,7 @@ Foram instalados 4 MCPs essenciais para o desenvolvimento do ETP Express:
 "postgresql://user:password@localhost:5432/etp_express"
 ```
 
-⚠️ **AÇÃO NECESSÁRIA:** Atualize com suas credenciais reais do PostgreSQL:
+⚠ **AÇÃO NECESSÁRIA:** Atualize com suas credenciais reais do PostgreSQL:
 
 1. Abra: `C:\Users\tj_sa\AppData\Roaming\Claude\claude_desktop_config.json`
 2. Substitua `user:password` pelas suas credenciais
@@ -36,7 +36,7 @@ Foram instalados 4 MCPs essenciais para o desenvolvimento do ETP Express:
 - Criar PRs com templates
 - Visualizar progresso dos milestones
 
-⚠️ **AÇÃO NECESSÁRIA:** Configure seu GitHub Personal Access Token:
+⚠ **AÇÃO NECESSÁRIA:** Configure seu GitHub Personal Access Token:
 
 1. Crie um token em: https://github.com/settings/tokens/new
 2. Permissões necessárias: `repo`, `read:org`, `workflow`
@@ -108,7 +108,7 @@ Salve na memória: "Arquitetura do projeto usa NestJS + TypeORM + PostgreSQL"
 
 ---
 
-## 📋 MCPs Opcionais (Considerar Depois)
+## MCPs Opcionais (Considerar Depois)
 
 ### Git MCP
 
@@ -127,7 +127,7 @@ Salve na memória: "Arquitetura do projeto usa NestJS + TypeORM + PostgreSQL"
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### MCP não aparece
 
@@ -149,7 +149,7 @@ Salve na memória: "Arquitetura do projeto usa NestJS + TypeORM + PostgreSQL"
 
 ---
 
-## 📚 Recursos
+## Recursos
 
 - [MCP Documentation](https://modelcontextprotocol.io/)
 - [Available MCP Servers](https://github.com/modelcontextprotocol/servers)

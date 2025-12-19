@@ -20,18 +20,18 @@ import { AuditLog } from '../../entities/audit-log.entity';
  * @see Issue #474 - Implementar isolamento e reset periódico de dados demo
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Organization,
-      User,
-      Etp,
-      EtpSection,
-      EtpVersion,
-      AuditLog,
-    ]),
-  ],
-  controllers: [DemoController],
-  providers: [DemoService],
-  exports: [DemoService],
+ imports: [
+ TypeOrmModule.forFeature([
+ Organization,
+ User,
+ Etp,
+ EtpSection,
+ EtpVersion,
+ AuditLog,
+ ]),
+ ],
+ controllers: [DemoController],
+ providers: [DemoService],
+ exports: [DemoService],
 })
 export class DemoModule {}

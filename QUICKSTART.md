@@ -1,6 +1,6 @@
 # QUICKSTART - ETP EXPRESS
 
-> **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
+> **⚠ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
 Guia rápido para rodar o **ETP Express** em 10 minutos.
 
@@ -118,75 +118,75 @@ npm run dev
 
 ---
 
-## 🎉 PRIMEIRO ACESSO
+## PRIMEIRO ACESSO
 
-### 5️⃣ Criar Conta
+### Criar Conta
 
 1. Abra: `http://localhost:5173`
 2. Clique em **"Registrar"**
 3. Preencha:
-   - **Nome**: Seu nome
-   - **Email**: seu@email.com
-   - **Senha**: senha123
-   - **Órgão**: (opcional) Nome do seu órgão
+ - **Nome**: Seu nome
+ - **Email**: seu@email.com
+ - **Senha**: senha123
+ - **Órgão**: (opcional) Nome do seu órgão
 4. Clique **"Criar Conta"**
 
-### 6️⃣ Fazer Login
+### Fazer Login
 
 1. Na tela de login, digite:
-   - **Email**: seu@email.com
-   - **Senha**: senha123
+ - **Email**: seu@email.com
+ - **Senha**: senha123
 2. Clique **"Entrar"**
 
 ✅ Você será redirecionado para o **Dashboard**
 
-### 7️⃣ Criar Seu Primeiro ETP
+### Criar Seu Primeiro ETP
 
 1. No Dashboard, clique **"+ Novo ETP"**
 2. Preencha:
-   - **Título**: "Sistema de Gestão de Documentos"
-   - **Objeto**: "Contratação de sistema de gestão eletrônica de documentos para modernização administrativa"
+ - **Título**: "Sistema de Gestão de Documentos"
+ - **Objeto**: "Contratação de sistema de gestão eletrônica de documentos para modernização administrativa"
 3. Clique **"Criar"**
 
 ✅ Você será levado ao **Editor de ETP**
 
-### 8️⃣ Gerar Seção com IA
+### Gerar Seção com IA
 
 1. No Editor, clique na **Seção I** (Descrição da Necessidade)
 2. Você verá o painel lateral **"Gerar com IA"**
-3. Clique no botão **"🤖 Gerar com IA"**
+3. Clique no botão **" Gerar com IA"**
 4. Aguarde 5-10 segundos...
 5. A IA gerará uma sugestão baseada no objeto do ETP
-6. **Revise criticamente** a sugestão! ⚠️
-7. Clique **"✅ Aceitar"** ou **"✏️ Editar"**
+6. **Revise criticamente** a sugestão! ⚠
+7. Clique **"✅ Aceitar"** ou **" Editar"**
 
-### 9️⃣ Buscar Contratações Similares
+### Buscar Contratações Similares
 
 1. No painel lateral, clique em **"Buscar Similares"**
 2. Digite: "gestão eletrônica documentos"
 3. Aguarde a busca no Perplexity...
 4. Você verá referências de contratações reais
-5. **Verifique as fontes** antes de usar! ⚠️
+5. **Verifique as fontes** antes de usar! ⚠
 
-### 🔟 Exportar PDF
+### Exportar PDF
 
 1. Preencha pelo menos as **seções obrigatórias**:
-   - ✅ I - Descrição da necessidade
-   - ✅ IV - Justificativa da solução
-   - ✅ VI - Requisitos
-   - ✅ VIII - Justificativa parcelamento
-   - ✅ XIII - Declaração de viabilidade
+ - ✅ I - Descrição da necessidade
+ - ✅ IV - Justificativa da solução
+ - ✅ VI - Requisitos
+ - ✅ VIII - Justificativa parcelamento
+ - ✅ XIII - Declaração de viabilidade
 
 2. Clique em **"Exportar"** → **"PDF"**
 3. O PDF será gerado com:
-   - ⚠️ Aviso destacado no topo
-   - Todas as seções preenchidas
-   - Referências anexadas
-   - Metadados (data, autor, versão)
+ - ⚠ Aviso destacado no topo
+ - Todas as seções preenchidas
+ - Referências anexadas
+ - Metadados (data, autor, versão)
 
 ---
 
-## 🔍 VERIFICAÇÃO DE FUNCIONAMENTO
+## VERIFICAÇÃO DE FUNCIONAMENTO
 
 ### Backend Health Check
 
@@ -199,10 +199,10 @@ curl http://localhost:3001/api
 
 # Resposta esperada:
 {
-  "status": "ok",
-  "timestamp": "2025-11-05T...",
-  "warning": "⚠️ O ETP Express pode cometer erros...",
-  "message": "ETP Express Backend is running"
+ "status": "ok",
+ "timestamp": "2025-11-05T...",
+ "warning": "⚠ O ETP Express pode cometer erros...",
+ "message": "ETP Express Backend is running"
 }
 ```
 
@@ -240,7 +240,7 @@ psql -d etp_express
 
 ---
 
-## 🛠️ TROUBLESHOOTING
+## TROUBLESHOOTING
 
 ### ❌ "Cannot connect to database"
 
@@ -298,7 +298,7 @@ PORT=3002
 ```bash
 # Altere em vite.config.ts
 server: {
-  port: 5174,  // Ou outra porta livre
+ port: 5174, // Ou outra porta livre
 }
 ```
 
@@ -312,38 +312,38 @@ server: {
 
 ---
 
-## 📚 PRÓXIMOS PASSOS
+## PRÓXIMOS PASSOS
 
 Agora que você tem tudo rodando:
 
-1. 📖 **Leia a documentação completa**: [README.md](./README.md)
-2. 🏗️ **Entenda a arquitetura**: [ARCHITECTURE.md](./ARCHITECTURE.md)
-3. 🚀 **Deploy em produção**: [DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)
-4. 🧪 **Explore a API**: `http://localhost:3001/api/docs`
-5. 🎨 **Customize a UI**: Edite componentes em `frontend/src/components/`
-6. 🤖 **Melhore os prompts**: Edite em `backend/src/modules/orchestrator/agents/`
+1. **Leia a documentação completa**: [README.md](./README.md)
+2. **Entenda a arquitetura**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+3. **Deploy em produção**: [DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)
+4. **Explore a API**: `http://localhost:3001/api/docs`
+5. **Customize a UI**: Edite componentes em `frontend/src/components/`
+6. **Melhore os prompts**: Edite em `backend/src/modules/orchestrator/agents/`
 
 ---
 
-## 🎓 USANDO O SISTEMA
+## USANDO O SISTEMA
 
 ### Fluxo Recomendado
 
 ```
 1. Criar ETP → 2. Gerar Seções (IA) → 3. Revisar Criticamente
-    ↓
+ ↓
 4. Buscar Similares → 5. Fundamentar → 6. Ajustar Conteúdo
-    ↓
+ ↓
 7. Validar Completude → 8. Exportar PDF → 9. Usar Oficialmente
 ```
 
 ### Dicas de Uso
 
-💡 **Sempre revise** as sugestões da IA antes de aceitar
-💡 **Busque referências** para fundamentar valores e soluções
-💡 **Use tooltips** para entender termos jurídicos
-💡 **Salve versões** antes de grandes mudanças
-💡 **Exporte JSON** para backup antes de finalizar
+ **Sempre revise** as sugestões da IA antes de aceitar
+ **Busque referências** para fundamentar valores e soluções
+ **Use tooltips** para entender termos jurídicos
+ **Salve versões** antes de grandes mudanças
+ **Exporte JSON** para backup antes de finalizar
 
 ### Seções Obrigatórias (Lei 14.133/2021)
 
@@ -357,9 +357,9 @@ Para poder exportar, você **DEVE** preencher:
 
 ---
 
-## 🔒 AVISOS IMPORTANTES
+## AVISOS IMPORTANTES
 
-### ⚠️ Sistema Assistivo
+### ⚠ Sistema Assistivo
 
 O ETP Express **NÃO substitui**:
 
@@ -368,7 +368,7 @@ O ETP Express **NÃO substitui**:
 - ❌ Decisão técnica do servidor
 - ❌ Validação humana final
 
-### ⚠️ Limitações da IA
+### ⚠ Limitações da IA
 
 A IA **PODE**:
 
@@ -386,7 +386,7 @@ A IA **PODE**:
 
 ---
 
-## 📊 COMANDOS ÚTEIS
+## COMANDOS ÚTEIS
 
 ### Backend
 
@@ -450,7 +450,7 @@ SELECT COUNT(*) FROM etp_sections;
 
 ---
 
-## 🎯 CHECKLIST DE FUNCIONAMENTO
+## CHECKLIST DE FUNCIONAMENTO
 
 Antes de usar em produção, verifique:
 
@@ -470,14 +470,14 @@ Antes de usar em produção, verifique:
 
 ---
 
-## 📞 PRECISA DE AJUDA?
+## PRECISA DE AJUDA?
 
-- 📖 **Documentação**: [README.md](./README.md)
-- 🏗️ **Arquitetura**: [ARCHITECTURE.md](./ARCHITECTURE.md)
-- 🚀 **Deploy**: [DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)
-- 📊 **Sumário**: [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)
-- 🐛 **Issues**: GitHub Issues
-- 💬 **Suporte**: suporte@etpexpress.gov.br (exemplo)
+- **Documentação**: [README.md](./README.md)
+- **Arquitetura**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Deploy**: [DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)
+- **Sumário**: [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)
+- **Issues**: GitHub Issues
+- **Suporte**: suporte@etpexpress.gov.br (exemplo)
 
 ---
 
@@ -491,11 +491,11 @@ Agora você tem o **ETP Express** rodando localmente e pode:
 4. ✅ Exportar PDFs profissionais
 5. ✅ Versionar e auditar
 
-**Bom trabalho! 🚀**
+**Bom trabalho! **
 
 ---
 
-**⚠️ LEMBRE-SE**: Sempre revise as saídas da IA antes de usar oficialmente.
+**⚠ LEMBRE-SE**: Sempre revise as saídas da IA antes de usar oficialmente.
 
 A responsabilidade final é do servidor/agente público responsável.
 

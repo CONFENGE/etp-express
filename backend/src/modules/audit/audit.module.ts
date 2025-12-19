@@ -8,9 +8,9 @@ import { SecretsService } from './secrets.service';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([SecretAccessLog, AuditLog])],
-  controllers: [AuditController],
-  providers: [AuditService, SecretsService],
-  exports: [AuditService, SecretsService],
+ imports: [TypeOrmModule.forFeature([SecretAccessLog, AuditLog])],
+ controllers: [AuditController],
+ providers: [AuditService, SecretsService],
+ exports: [AuditService, SecretsService],
 })
 export class AuditModule {}

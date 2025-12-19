@@ -13,8 +13,8 @@ import { SinapiService } from './sinapi.service';
 import { GovApiCache } from '../utils/gov-api-cache';
 
 @Module({
-  imports: [ConfigModule],
-  providers: [SinapiService, GovApiCache],
-  exports: [SinapiService],
+ imports: [ConfigModule],
+ providers: [SinapiService, GovApiCache],
+ exports: [SinapiService],
 })
 export class SinapiModule {}

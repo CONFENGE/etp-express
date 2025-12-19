@@ -10,14 +10,14 @@
 
 Para os fins destes Termos de Uso, consideram-se:
 
-| Termo                          | Definição                                                                   |
+| Termo | Definição |
 | ------------------------------ | --------------------------------------------------------------------------- |
 | **ETP Express** ou **Sistema** | Plataforma digital de geração automatizada de Estudos Técnicos Preliminares |
-| **Usuário** ou **Você**        | Pessoa natural cadastrada e autenticada no Sistema                          |
-| **ETP**                        | Estudo Técnico Preliminar, conforme Lei 14.133/2021                         |
-| **Conteúdo do Usuário**        | Informações, textos, dados e documentos inseridos pelo Usuário              |
-| **Conteúdo Gerado**            | Textos e seções produzidos pela inteligência artificial do Sistema          |
-| **Serviços**                   | Funcionalidades oferecidas pelo ETP Express                                 |
+| **Usuário** ou **Você** | Pessoa natural cadastrada e autenticada no Sistema |
+| **ETP** | Estudo Técnico Preliminar, conforme Lei 14.133/2021 |
+| **Conteúdo do Usuário** | Informações, textos, dados e documentos inseridos pelo Usuário |
+| **Conteúdo Gerado** | Textos e seções produzidos pela inteligência artificial do Sistema |
+| **Serviços** | Funcionalidades oferecidas pelo ETP Express |
 
 ---
 
@@ -45,18 +45,18 @@ O ETP Express oferece as seguintes funcionalidades:
 
 ### 3.1 Funcionalidades Principais
 
-| Funcionalidade            | Descrição                                                        |
+| Funcionalidade | Descrição |
 | ------------------------- | ---------------------------------------------------------------- |
-| **Criação de ETPs**       | Formulário guiado para criar Estudos Técnicos Preliminares       |
-| **Geração Automatizada**  | Produção de seções do ETP com auxílio de inteligência artificial |
-| **Pesquisa de Similares** | Busca de contratos e licitações relacionadas para fundamentação  |
-| **Edição e Validação**    | Ferramentas para revisar e aprovar conteúdo gerado               |
-| **Exportação**            | Download de ETPs em formatos PDF e DOCX                          |
-| **Histórico**             | Acesso a versões anteriores dos documentos                       |
+| **Criação de ETPs** | Formulário guiado para criar Estudos Técnicos Preliminares |
+| **Geração Automatizada** | Produção de seções do ETP com auxílio de inteligência artificial |
+| **Pesquisa de Similares** | Busca de contratos e licitações relacionadas para fundamentação |
+| **Edição e Validação** | Ferramentas para revisar e aprovar conteúdo gerado |
+| **Exportação** | Download de ETPs em formatos PDF e DOCX |
+| **Histórico** | Acesso a versões anteriores dos documentos |
 
 ### 3.2 Limitações do Serviço
 
-⚠️ **Importante:**
+⚠ **Importante:**
 
 - O Sistema é uma ferramenta de **auxílio** à elaboração de ETPs
 - O conteúdo gerado por IA **não substitui** a análise técnica humana
@@ -86,7 +86,7 @@ Você é responsável por:
 - ✅ Notificar imediatamente sobre uso não autorizado
 - ✅ Atualizar seus dados cadastrais quando necessário
 
-⚠️ **Atenção:** Não compartilhe sua senha com terceiros.
+⚠ **Atenção:** Não compartilhe sua senha com terceiros.
 
 ### 4.3 Suspensão de Conta
 
@@ -149,11 +149,11 @@ São de propriedade exclusiva dos desenvolvedores do Sistema e estão protegidos
 
 ### 6.2 Propriedade do Conteúdo Gerado
 
-| Tipo de Conteúdo                 | Propriedade                           |
+| Tipo de Conteúdo | Propriedade |
 | -------------------------------- | ------------------------------------- |
-| **Conteúdo do Usuário** (inputs) | Você (Usuário) mantém a propriedade   |
-| **Conteúdo Gerado** (IA)         | Você recebe direitos de uso ilimitado |
-| **Templates e estruturas**       | ETP Express (licenciados para uso)    |
+| **Conteúdo do Usuário** (inputs) | Você (Usuário) mantém a propriedade |
+| **Conteúdo Gerado** (IA) | Você recebe direitos de uso ilimitado |
+| **Templates e estruturas** | ETP Express (licenciados para uso) |
 
 **Concessão de Licença:**
 
@@ -200,10 +200,10 @@ O Usuário é **integralmente responsável** por:
 Na máxima extensão permitida pela lei:
 
 1. **Não nos responsabilizamos** por:
-   - Danos diretos, indiretos, incidentais ou consequentes
-   - Perda de dados, lucros ou oportunidades
-   - Decisões tomadas com base em conteúdo gerado
-   - Rejeição de ETPs por órgãos de controle
+ - Danos diretos, indiretos, incidentais ou consequentes
+ - Perda de dados, lucros ou oportunidades
+ - Decisões tomadas com base em conteúdo gerado
+ - Rejeição de ETPs por órgãos de controle
 
 2. **Nossa responsabilidade máxima** é limitada ao valor pago pelo Usuário nos últimos 12 meses (atualmente R$ 0, pois o serviço é gratuito).
 

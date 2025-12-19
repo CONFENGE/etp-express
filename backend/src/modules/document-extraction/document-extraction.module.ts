@@ -16,9 +16,9 @@ import { multerConfig } from './multer.config';
  * Text extraction from PDF/DOCX will be implemented in separate issues (#554, #555).
  */
 @Module({
-  imports: [MulterModule.register(multerConfig)],
-  controllers: [DocumentExtractionController],
-  providers: [DocumentExtractionService],
-  exports: [DocumentExtractionService],
+ imports: [MulterModule.register(multerConfig)],
+ controllers: [DocumentExtractionController],
+ providers: [DocumentExtractionService],
+ exports: [DocumentExtractionService],
 })
 export class DocumentExtractionModule {}

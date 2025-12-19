@@ -6,21 +6,21 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 BMAD (Build More, Architect Dreams) Method is an AI-driven agile development framework integrated into ETP Express to elevate technical rigor, optimize development processes, and systematically resolve P0 issues with enterprise-grade quality.
 
 **Key Benefits:**
 
-- 🏗️ **Structured Planning:** PRDs, Tech Specs, and Stories for all complex features
-- 📊 **Token Optimization:** 70-85% savings via document sharding and helper patterns
-- 🔄 **4-Phase Workflow:** Analysis → Planning → Solutioning → Implementation
-- 🎯 **Scale-Adaptive:** Quick Flow (< 5min) to Enterprise Track (< 30min)
+- **Structured Planning:** PRDs, Tech Specs, and Stories for all complex features
+- **Token Optimization:** 70-85% savings via document sharding and helper patterns
+- **4-Phase Workflow:** Analysis → Planning → Solutioning → Implementation
+- **Scale-Adaptive:** Quick Flow (< 5min) to Enterprise Track (< 30min)
 - ✅ **Compliance-First:** Lei 14.133/2021, LGPD, WCAG 2.1 AA, OWASP Top 10
 
 ---
 
-## 📋 Four-Phase Workflow
+## Four-Phase Workflow
 
 ### Phase 1: Analysis (Optional)
 
@@ -118,7 +118,7 @@ BMAD (Build More, Architect Dreams) Method is an AI-driven agile development fra
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Example: Resolve Issue #611 (Polling AI após unmount)
 
@@ -144,50 +144,50 @@ BMAD (Build More, Architect Dreams) Method is an AI-driven agile development fra
 
 ---
 
-## 📂 File Structure
+## File Structure
 
 ```
 .bmad/
-├── README.md                       # This file
-├── config.yml                      # BMAD configuration (B2G customized)
+├── README.md # This file
+├── config.yml # BMAD configuration (B2G customized)
 ├── templates/
-│   ├── prd-template.md             # PRD template
-│   ├── tech-spec-template.md       # Tech Spec template
-│   ├── story-template.md           # Story template
-│   └── adr-template.md             # ADR template
-├── helpers/                        # Document sharding (token optimization)
-│   ├── roadmap/
-│   │   ├── milestones.md
-│   │   ├── p0-issues.md
-│   │   ├── metrics.md
-│   │   └── changelog.md
-│   └── architecture/
-│       ├── backend-stack.md
-│       ├── frontend-stack.md
-│       ├── database-schema.md
-│       └── deployment.md
-└── agents/                         # Agent configurations (future)
+│ ├── prd-template.md # PRD template
+│ ├── tech-spec-template.md # Tech Spec template
+│ ├── story-template.md # Story template
+│ └── adr-template.md # ADR template
+├── helpers/ # Document sharding (token optimization)
+│ ├── roadmap/
+│ │ ├── milestones.md
+│ │ ├── p0-issues.md
+│ │ ├── metrics.md
+│ │ └── changelog.md
+│ └── architecture/
+│ ├── backend-stack.md
+│ ├── frontend-stack.md
+│ ├── database-schema.md
+│ └── deployment.md
+└── agents/ # Agent configurations (future)
 
 .claude/commands/
-├── product-brief-etp.md            # Business Analyst command
-├── prd-etp.md                      # Product Manager command
-├── tech-spec-etp.md                # System Architect command
-├── story-etp.md                    # Scrum Master command
-├── audit-roadmap.md                # Existing command (preserved)
-├── pick-next-issue.md              # Existing command (preserved)
-└── review-pr.md                    # Existing command (preserved)
+├── product-brief-etp.md # Business Analyst command
+├── prd-etp.md # Product Manager command
+├── tech-spec-etp.md # System Architect command
+├── story-etp.md # Scrum Master command
+├── audit-roadmap.md # Existing command (preserved)
+├── pick-next-issue.md # Existing command (preserved)
+└── review-pr.md # Existing command (preserved)
 
 docs/
-├── product-briefs/                 # Product briefs (Phase 1)
-├── prds/                           # PRDs (Phase 2)
-├── tech-specs/                     # Tech Specs (Phase 3)
-├── stories/                        # Stories (Phase 4)
-└── architecture/                   # ADRs (Architecture Decision Records)
+├── product-briefs/ # Product briefs (Phase 1)
+├── prds/ # PRDs (Phase 2)
+├── tech-specs/ # Tech Specs (Phase 3)
+├── stories/ # Stories (Phase 4)
+└── architecture/ # ADRs (Architecture Decision Records)
 ```
 
 ---
 
-## 🎓 Agent Expertise
+## Agent Expertise
 
 ### Business Analyst
 
@@ -220,7 +220,7 @@ docs/
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Scale Tracks
 
@@ -260,7 +260,7 @@ All P0 issues automatically checked for:
 
 ---
 
-## 📊 Success Metrics
+## Success Metrics
 
 ### Development
 
@@ -283,7 +283,7 @@ All P0 issues automatically checked for:
 
 ---
 
-## 🔄 Integration with Existing Workflow
+## Integration with Existing Workflow
 
 ### Preserved Commands
 
@@ -316,7 +316,7 @@ All P0 issues automatically checked for:
 
 ---
 
-## 🛠️ Usage Guidelines
+## Usage Guidelines
 
 ### When to Use BMAD Workflow
 
@@ -329,7 +329,7 @@ All P0 issues automatically checked for:
 - API breaking changes
 - Complex UI refactors
 
-⚠️ **Consider using for:**
+⚠ **Consider using for:**
 
 - Medium features (3-5 files)
 - Bug fixes with unclear scope
@@ -373,7 +373,7 @@ Implement
 
 ---
 
-## 🎯 Token Optimization
+## Token Optimization
 
 ### Document Sharding
 
@@ -395,7 +395,7 @@ Agents focus on deliverables, not personas:
 
 ---
 
-## 📚 Templates
+## Templates
 
 All templates are in `.bmad/templates/`:
 
@@ -406,7 +406,7 @@ All templates are in `.bmad/templates/`:
 
 ---
 
-## 🔗 References
+## References
 
 ### BMAD Method
 
@@ -422,7 +422,7 @@ All templates are in `.bmad/templates/`:
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 ### 2025-12-11 - Initial Integration (v1.0)
 

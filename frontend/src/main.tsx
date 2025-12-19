@@ -10,9 +10,9 @@ import { ErrorFallback } from './components/ErrorFallback';
 initSentry();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Sentry.ErrorBoundary fallback={ErrorFallback} showDialog>
-      <App />
-    </Sentry.ErrorBoundary>
-  </React.StrictMode>,
+ <React.StrictMode>
+ <Sentry.ErrorBoundary fallback={ErrorFallback} showDialog>
+ <App />
+ </Sentry.ErrorBoundary>
+ </React.StrictMode>,
 );

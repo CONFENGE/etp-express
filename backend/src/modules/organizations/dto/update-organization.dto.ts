@@ -9,13 +9,13 @@ import { ApiProperty } from '@nestjs/swagger';
  * Adds isActive field for suspend/reactivate operations.
  */
 export class UpdateOrganizationDto extends PartialType(CreateOrganizationDto) {
-  @ApiProperty({
-    description:
-      'Organization active status. Kill Switch for blocking organization access.',
-    example: true,
-    required: false,
-  })
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
+ @ApiProperty({
+ description:
+ 'Organization active status. Kill Switch for blocking organization access.',
+ example: true,
+ required: false,
+ })
+ @IsBoolean()
+ @IsOptional()
+ isActive?: boolean;
 }

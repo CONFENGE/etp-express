@@ -20,15 +20,15 @@ import { SicroModule } from '../sicro/sicro.module';
 import { SearchModule } from '../../search/search.module';
 
 @Module({
-  imports: [
-    ConfigModule,
-    ComprasGovModule,
-    PncpModule,
-    SinapiModule,
-    SicroModule,
-    SearchModule, // Import SearchModule for ExaService
-  ],
-  providers: [GovSearchService],
-  exports: [GovSearchService],
+ imports: [
+ ConfigModule,
+ ComprasGovModule,
+ PncpModule,
+ SinapiModule,
+ SicroModule,
+ SearchModule, // Import SearchModule for ExaService
+ ],
+ providers: [GovSearchService],
+ exports: [GovSearchService],
 })
 export class GovSearchModule {}

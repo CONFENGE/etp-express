@@ -60,8 +60,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 ```python
 def test_specific_behavior():
-    result = function(input)
-    assert result == expected
+ result = function(input)
+ assert result == expected
 ```
 ````
 
@@ -74,7 +74,7 @@ Expected: FAIL with "function not defined"
 
 ```python
 def function(input):
-    return expected
+ return expected
 ```
 
 **Step 4: Run test to verify it passes**

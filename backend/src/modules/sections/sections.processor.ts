@@ -11,25 +11,25 @@ import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
  * Job payload for section generation queue
  */
 export interface GenerateSectionJobData {
-  etpId: string;
-  sectionType: string;
-  title: string;
-  userInput?: string;
-  context?: Record<string, unknown>;
-  userId: string;
-  organizationId: string;
-  sectionId: string; // Pre-created section ID
+ etpId: string;
+ sectionType: string;
+ title: string;
+ userInput?: string;
+ context?: Record<string, unknown>;
+ userId: string;
+ organizationId: string;
+ sectionId: string; // Pre-created section ID
 }
 
 /**
  * Section generation result
  */
 export interface GeneratedSectionResult {
-  sectionId: string;
-  status: SectionStatus;
-  content?: string;
-  metadata?: Record<string, unknown>;
-  error?: string;
+ sectionId: string;
+ status: SectionStatus;
+ content?: string;
+ metadata?: Record<string, unknown>;
+ error?: string;
 }
 
 /**
@@ -58,220 +58,220 @@ export interface GeneratedSectionResult {
  */
 @Processor('sections')
 export class SectionsProcessor
-  extends WorkerHost
-  implements OnApplicationShutdown
+ extends WorkerHost
+ implements OnApplicationShutdown
 {
-  private readonly logger = new Logger(SectionsProcessor.name);
+ private readonly logger = new Logger(SectionsProcessor.name);
 
-  constructor(
-    @InjectRepository(EtpSection)
-    private sectionsRepository: Repository<EtpSection>,
-    private orchestratorService: OrchestratorService,
-    private etpsService: EtpsService,
-  ) {
-    super();
-  }
+ constructor(
+ @InjectRepository(EtpSection)
+ private sectionsRepository: Repository<EtpSection>,
+ private orchestratorService: OrchestratorService,
+ private etpsService: EtpsService,
+ ) {
+ super();
+ }
 
-  /**
-   * Graceful shutdown handler for BullMQ worker (#607)
-   *
-   * Called automatically by NestJS when the application receives shutdown signal.
-   * Ensures currently processing jobs complete before the worker terminates.
-   *
-   * @param signal - The signal that triggered shutdown (SIGTERM, SIGINT)
-   */
-  async onApplicationShutdown(signal?: string): Promise<void> {
-    this.logger.log(
-      `SectionsProcessor shutting down (${signal || 'unknown signal'})...`,
-    );
+ /**
+ * Graceful shutdown handler for BullMQ worker (#607)
+ *
+ * Called automatically by NestJS when the application receives shutdown signal.
+ * Ensures currently processing jobs complete before the worker terminates.
+ *
+ * @param signal - The signal that triggered shutdown (SIGTERM, SIGINT)
+ */
+ async onApplicationShutdown(signal?: string): Promise<void> {
+ this.logger.log(
+ `SectionsProcessor shutting down (${signal || 'unknown signal'})...`,
+ );
 
-    try {
-      // WorkerHost from @nestjs/bullmq provides access to the underlying worker
-      const worker = this.worker;
+ try {
+ // WorkerHost from @nestjs/bullmq provides access to the underlying worker
+ const worker = this.worker;
 
-      if (worker) {
-        // Close the worker gracefully - this waits for active jobs to complete
-        // Force: false means wait for current job to finish
-        await worker.close(false);
-        this.logger.log('BullMQ worker closed gracefully');
-      }
-    } catch (error) {
-      this.logger.error(
-        `Error closing BullMQ worker: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
-    }
-  }
+ if (worker) {
+ // Close the worker gracefully - this waits for active jobs to complete
+ // Force: false means wait for current job to finish
+ await worker.close(false);
+ this.logger.log('BullMQ worker closed gracefully');
+ }
+ } catch (error) {
+ this.logger.error(
+ `Error closing BullMQ worker: ${error instanceof Error ? error.message : 'Unknown error'}`,
+ );
+ }
+ }
 
-  /**
-   * Processes a section generation job
-   *
-   * @remarks
-   * This method is automatically called by BullMQ for each job in the queue.
-   * It performs the following steps:
-   *
-   * 1. Validates the section still exists (10% progress)
-   * 2. Loads ETP data for context
-   * 3. Calls OrchestratorService for AI generation (10-90% progress)
-   * 4. Saves generated content to database (90% progress)
-   * 5. Updates ETP completion percentage (95% progress)
-   * 6. Marks job as complete (100% progress)
-   *
-   * Progress updates allow frontend to show real-time generation status.
-   *
-   * On failure:
-   * - Job is automatically retried up to 3 times (configured in SectionsService)
-   * - Section status is set to PENDING with error message
-   * - Error is logged and rethrown for BullMQ to handle
-   *
-   * @param job - BullMQ job containing GenerateSectionJobData
-   * @returns GeneratedSectionResult with final section state
-   * @throws {Error} If section not found, ETP not found, or generation fails
-   */
-  async process(
-    job: Job<GenerateSectionJobData>,
-  ): Promise<GeneratedSectionResult> {
-    const {
-      etpId,
-      sectionType,
-      title,
-      userInput,
-      context,
-      userId,
-      organizationId,
-      sectionId,
-    } = job.data;
+ /**
+ * Processes a section generation job
+ *
+ * @remarks
+ * This method is automatically called by BullMQ for each job in the queue.
+ * It performs the following steps:
+ *
+ * 1. Validates the section still exists (10% progress)
+ * 2. Loads ETP data for context
+ * 3. Calls OrchestratorService for AI generation (10-90% progress)
+ * 4. Saves generated content to database (90% progress)
+ * 5. Updates ETP completion percentage (95% progress)
+ * 6. Marks job as complete (100% progress)
+ *
+ * Progress updates allow frontend to show real-time generation status.
+ *
+ * On failure:
+ * - Job is automatically retried up to 3 times (configured in SectionsService)
+ * - Section status is set to PENDING with error message
+ * - Error is logged and rethrown for BullMQ to handle
+ *
+ * @param job - BullMQ job containing GenerateSectionJobData
+ * @returns GeneratedSectionResult with final section state
+ * @throws {Error} If section not found, ETP not found, or generation fails
+ */
+ async process(
+ job: Job<GenerateSectionJobData>,
+ ): Promise<GeneratedSectionResult> {
+ const {
+ etpId,
+ sectionType,
+ title,
+ userInput,
+ context,
+ userId,
+ organizationId,
+ sectionId,
+ } = job.data;
 
-    this.logger.log(
-      `Processing section generation job ${job.id} for ETP ${etpId}, section ${sectionType}`,
-    );
+ this.logger.log(
+ `Processing section generation job ${job.id} for ETP ${etpId}, section ${sectionType}`,
+ );
 
-    try {
-      // Step 1: Validate section exists
-      await job.updateProgress(10);
+ try {
+ // Step 1: Validate section exists
+ await job.updateProgress(10);
 
-      const section = await this.sectionsRepository.findOne({
-        where: { id: sectionId },
-      });
+ const section = await this.sectionsRepository.findOne({
+ where: { id: sectionId },
+ });
 
-      if (!section) {
-        throw new Error(`Section ${sectionId} not found`);
-      }
+ if (!section) {
+ throw new Error(`Section ${sectionId} not found`);
+ }
 
-      // Step 2: Load ETP data for context
-      const etp = await this.etpsService.findOneMinimal(
-        etpId,
-        organizationId,
-        userId,
-      );
+ // Step 2: Load ETP data for context
+ const etp = await this.etpsService.findOneMinimal(
+ etpId,
+ organizationId,
+ userId,
+ );
 
-      if (!etp) {
-        throw new Error(`ETP ${etpId} not found`);
-      }
+ if (!etp) {
+ throw new Error(`ETP ${etpId} not found`);
+ }
 
-      // Step 3: Generate content with progress tracking
-      this.logger.log(`Calling OrchestratorService for section ${sectionType}`);
+ // Step 3: Generate content with progress tracking
+ this.logger.log(`Calling OrchestratorService for section ${sectionType}`);
 
-      const generationResult = await this.orchestratorService.generateSection({
-        sectionType,
-        title,
-        userInput: userInput || '',
-        context,
-        etpData: {
-          objeto: etp.objeto,
-          metadata: etp.metadata,
-        },
-      });
+ const generationResult = await this.orchestratorService.generateSection({
+ sectionType,
+ title,
+ userInput: userInput || '',
+ context,
+ etpData: {
+ objeto: etp.objeto,
+ metadata: etp.metadata,
+ },
+ });
 
-      await job.updateProgress(90);
+ await job.updateProgress(90);
 
-      // Step 4: Save generated content
-      section.content = generationResult.content;
-      section.status = SectionStatus.GENERATED;
-      section.metadata = {
-        ...generationResult.metadata,
-        warnings: generationResult.warnings,
-        generatedAt: new Date().toISOString(),
-        jobId: job.id,
-      };
-      const validationResults = this.convertValidationResults(
-        generationResult.validationResults,
-      );
-      if (validationResults) {
-        section.validationResults = validationResults;
-      }
+ // Step 4: Save generated content
+ section.content = generationResult.content;
+ section.status = SectionStatus.GENERATED;
+ section.metadata = {
+ ...generationResult.metadata,
+ warnings: generationResult.warnings,
+ generatedAt: new Date().toISOString(),
+ jobId: job.id,
+ };
+ const validationResults = this.convertValidationResults(
+ generationResult.validationResults,
+ );
+ if (validationResults) {
+ section.validationResults = validationResults;
+ }
 
-      await this.sectionsRepository.save(section);
+ await this.sectionsRepository.save(section);
 
-      await job.updateProgress(95);
+ await job.updateProgress(95);
 
-      // Step 5: Update ETP completion percentage with tenancy validation (Issue #758)
-      await this.etpsService.updateCompletionPercentage(etpId, organizationId);
+ // Step 5: Update ETP completion percentage with tenancy validation (Issue #758)
+ await this.etpsService.updateCompletionPercentage(etpId, organizationId);
 
-      await job.updateProgress(100);
+ await job.updateProgress(100);
 
-      this.logger.log(
-        `Section generation job ${job.id} completed successfully`,
-      );
+ this.logger.log(
+ `Section generation job ${job.id} completed successfully`,
+ );
 
-      return {
-        sectionId: section.id,
-        status: SectionStatus.GENERATED,
-        content: section.content,
-        metadata: section.metadata,
-      };
-    } catch (error) {
-      this.logger.error(
-        `Error processing job ${job.id}: ${error.message}`,
-        error.stack,
-      );
+ return {
+ sectionId: section.id,
+ status: SectionStatus.GENERATED,
+ content: section.content,
+ metadata: section.metadata,
+ };
+ } catch (error) {
+ this.logger.error(
+ `Error processing job ${job.id}: ${error.message}`,
+ error.stack,
+ );
 
-      // Update section with error status
-      try {
-        const section = await this.sectionsRepository.findOne({
-          where: { id: sectionId },
-        });
+ // Update section with error status
+ try {
+ const section = await this.sectionsRepository.findOne({
+ where: { id: sectionId },
+ });
 
-        if (section) {
-          section.status = SectionStatus.PENDING;
-          section.content = `Erro ao gerar conteúdo: ${error.message}`;
-          section.metadata = {
-            ...section.metadata,
-            error: error.message,
-            failedAt: new Date().toISOString(),
-            jobId: job.id,
-          };
+ if (section) {
+ section.status = SectionStatus.PENDING;
+ section.content = `Erro ao gerar conteúdo: ${error.message}`;
+ section.metadata = {
+ ...section.metadata,
+ error: error.message,
+ failedAt: new Date().toISOString(),
+ jobId: job.id,
+ };
 
-          await this.sectionsRepository.save(section);
-        }
-      } catch (saveError) {
-        this.logger.error(
-          `Failed to update section with error status: ${saveError.message}`,
-        );
-      }
+ await this.sectionsRepository.save(section);
+ }
+ } catch (saveError) {
+ this.logger.error(
+ `Failed to update section with error status: ${saveError.message}`,
+ );
+ }
 
-      throw error; // Rethrow to trigger BullMQ retry
-    }
-  }
+ throw error; // Rethrow to trigger BullMQ retry
+ }
+ }
 
-  /**
-   * Converts validation results from orchestrator format to section metadata format
-   *
-   * @param validationResults - Validation results from orchestrator
-   * @returns Converted validation results or null
-   */
-  private convertValidationResults(
-    validationResults: unknown,
-  ): Record<string, unknown> | null {
-    if (!validationResults || typeof validationResults !== 'object') {
-      return null;
-    }
+ /**
+ * Converts validation results from orchestrator format to section metadata format
+ *
+ * @param validationResults - Validation results from orchestrator
+ * @returns Converted validation results or null
+ */
+ private convertValidationResults(
+ validationResults: unknown,
+ ): Record<string, unknown> | null {
+ if (!validationResults || typeof validationResults !== 'object') {
+ return null;
+ }
 
-    const results = validationResults as Record<string, unknown>;
-    return {
-      isCompliant: results.isCompliant,
-      complianceScore: results.complianceScore,
-      issues: results.issues || [],
-      checkedAt: new Date().toISOString(),
-    };
-  }
+ const results = validationResults as Record<string, unknown>;
+ return {
+ isCompliant: results.isCompliant,
+ complianceScore: results.complianceScore,
+ issues: results.issues || [],
+ checkedAt: new Date().toISOString(),
+ };
+ }
 }

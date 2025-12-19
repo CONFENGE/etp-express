@@ -25,18 +25,18 @@ export const JWT_COOKIE_NAME = 'jwt';
  * @returns JWT token string or null if not found
  */
 const cookieExtractor = (req: Request): string | null => {
-  // Primary: Extract from httpOnly cookie
-  if (req?.cookies?.[JWT_COOKIE_NAME]) {
-    return req.cookies[JWT_COOKIE_NAME];
-  }
+ // Primary: Extract from httpOnly cookie
+ if (req?.cookies?.[JWT_COOKIE_NAME]) {
+ return req.cookies[JWT_COOKIE_NAME];
+ }
 
-  // Fallback: Extract from Authorization header (for Swagger/API testing)
-  const authHeader = req?.headers?.authorization;
-  if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
+ // Fallback: Extract from Authorization header (for Swagger/API testing)
+ const authHeader = req?.headers?.authorization;
+ if (authHeader?.startsWith('Bearer ')) {
+ return authHeader.substring(7);
+ }
 
-  return null;
+ return null;
 };
 
 /**
@@ -57,94 +57,94 @@ const cookieExtractor = (req: Request): string | null => {
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  private readonly logger = new Logger(JwtStrategy.name);
-  private readonly secrets: string[];
+ private readonly logger = new Logger(JwtStrategy.name);
+ private readonly secrets: string[];
 
-  constructor(
-    private configService: ConfigService,
-    private usersService: UsersService,
-  ) {
-    // Get all available secrets (primary + fallback)
-    const primarySecret = configService.get<string>('JWT_SECRET');
-    const oldSecret = configService.get<string>('JWT_SECRET_OLD');
+ constructor(
+ private configService: ConfigService,
+ private usersService: UsersService,
+ ) {
+ // Get all available secrets (primary + fallback)
+ const primarySecret = configService.get<string>('JWT_SECRET');
+ const oldSecret = configService.get<string>('JWT_SECRET_OLD');
 
-    // Build secrets array (primary first, then old if exists)
-    const secrets: string[] = [];
-    if (primarySecret) {
-      secrets.push(primarySecret);
-    }
-    if (oldSecret) {
-      secrets.push(oldSecret);
-    }
+ // Build secrets array (primary first, then old if exists)
+ const secrets: string[] = [];
+ if (primarySecret) {
+ secrets.push(primarySecret);
+ }
+ if (oldSecret) {
+ secrets.push(oldSecret);
+ }
 
-    // Use secretOrKeyProvider for dynamic secret validation
-    // Extract JWT from httpOnly cookie (primary) or Authorization header (fallback)
-    super({
-      jwtFromRequest: cookieExtractor,
-      ignoreExpiration: false,
-      passReqToCallback: true,
-      secretOrKeyProvider: (
-        _request: Request,
-        rawJwtToken: string,
-        done: (err: Error | null, secret?: string) => void,
-      ) => {
-        // Try each secret until one validates
-        for (const secret of secrets) {
-          try {
-            jwt.verify(rawJwtToken, secret);
-            return done(null, secret);
-          } catch {
-            // Token invalid with this secret, try next
-            continue;
-          }
-        }
+ // Use secretOrKeyProvider for dynamic secret validation
+ // Extract JWT from httpOnly cookie (primary) or Authorization header (fallback)
+ super({
+ jwtFromRequest: cookieExtractor,
+ ignoreExpiration: false,
+ passReqToCallback: true,
+ secretOrKeyProvider: (
+ _request: Request,
+ rawJwtToken: string,
+ done: (err: Error | null, secret?: string) => void,
+ ) => {
+ // Try each secret until one validates
+ for (const secret of secrets) {
+ try {
+ jwt.verify(rawJwtToken, secret);
+ return done(null, secret);
+ } catch {
+ // Token invalid with this secret, try next
+ continue;
+ }
+ }
 
-        // No secret validated the token
-        return done(new UnauthorizedException('Token inválido'));
-      },
-    });
+ // No secret validated the token
+ return done(new UnauthorizedException('Token inválido'));
+ },
+ });
 
-    this.secrets = secrets;
+ this.secrets = secrets;
 
-    // Log auth mode on startup
-    this.logger.log(
-      'JWT Strategy initialized: using httpOnly cookie extraction (with Bearer fallback)',
-    );
+ // Log auth mode on startup
+ this.logger.log(
+ 'JWT Strategy initialized: using httpOnly cookie extraction (with Bearer fallback)',
+ );
 
-    // Log dual-key status on startup
-    if (oldSecret) {
-      this.logger.warn(
-        'Dual-key rotation mode active: accepting both JWT_SECRET and JWT_SECRET_OLD',
-      );
-    }
-  }
+ // Log dual-key status on startup
+ if (oldSecret) {
+ this.logger.warn(
+ 'Dual-key rotation mode active: accepting both JWT_SECRET and JWT_SECRET_OLD',
+ );
+ }
+ }
 
-  /**
-   * Validates JWT payload and returns user data.
-   *
-   * @remarks
-   * When passReqToCallback is true, validate receives (req, payload).
-   * The request object is available for additional context if needed.
-   *
-   * @param _req - Express request object (unused, but required by passport)
-   * @param payload - Decoded JWT payload
-   * @returns User data for request context
-   * @throws {UnauthorizedException} If user is invalid or inactive
-   */
-  async validate(_req: Request, payload: JwtPayload) {
-    const user = await this.usersService.findOne(payload.sub);
+ /**
+ * Validates JWT payload and returns user data.
+ *
+ * @remarks
+ * When passReqToCallback is true, validate receives (req, payload).
+ * The request object is available for additional context if needed.
+ *
+ * @param _req - Express request object (unused, but required by passport)
+ * @param payload - Decoded JWT payload
+ * @returns User data for request context
+ * @throws {UnauthorizedException} If user is invalid or inactive
+ */
+ async validate(_req: Request, payload: JwtPayload) {
+ const user = await this.usersService.findOne(payload.sub);
 
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('Usuário inválido ou inativo');
-    }
+ if (!user || !user.isActive) {
+ throw new UnauthorizedException('Usuário inválido ou inativo');
+ }
 
-    // MT-03: Return organizationId for Multi-Tenancy data isolation
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      organizationId: user.organizationId,
-    };
-  }
+ // MT-03: Return organizationId for Multi-Tenancy data isolation
+ return {
+ id: user.id,
+ email: user.email,
+ name: user.name,
+ role: user.role,
+ organizationId: user.organizationId,
+ };
+ }
 }

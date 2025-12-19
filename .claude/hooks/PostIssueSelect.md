@@ -34,14 +34,14 @@ Salvar no knowledge graph:
 
 ```json
 {
-  "entity": "current-work",
-  "type": "issue",
-  "properties": {
-    "issueId": "XXX",
-    "title": "Titulo da issue",
-    "branch": "feat/XXX-slug",
-    "startedAt": "2025-01-15T14:30:00Z"
-  }
+ "entity": "current-work",
+ "type": "issue",
+ "properties": {
+ "issueId": "XXX",
+ "title": "Titulo da issue",
+ "branch": "feat/XXX-slug",
+ "startedAt": "2025-01-15T14:30:00Z"
+ }
 }
 ```
 

@@ -12,8 +12,8 @@ import { GovApiModule } from '../gov-api.module';
 import { ComprasGovService } from './compras-gov.service';
 
 @Module({
-  imports: [ConfigModule, GovApiModule],
-  providers: [ComprasGovService],
-  exports: [ComprasGovService],
+ imports: [ConfigModule, GovApiModule],
+ providers: [ComprasGovService],
+ exports: [ComprasGovService],
 })
 export class ComprasGovModule {}

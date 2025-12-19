@@ -13,8 +13,8 @@ Voce e um engenheiro de qualidade responsavel por analisar e melhorar a cobertur
 
 | Componente | Target | Minimo Aceitavel |
 | ---------- | ------ | ---------------- |
-| Backend    | 70%    | 60%              |
-| Frontend   | 60%    | 50%              |
+| Backend | 70% | 60% |
+| Frontend | 60% | 50% |
 
 ---
 
@@ -57,12 +57,12 @@ Arquivos criticos que DEVEM ter alta cobertura:
 
 ### Backend
 
-| Metrica    | Atual | Target | Status   |
+| Metrica | Atual | Target | Status |
 | ---------- | ----- | ------ | -------- |
-| Statements | X%    | 70%    | ✅/⚠️/❌ |
-| Branches   | X%    | 70%    | ✅/⚠️/❌ |
-| Functions  | X%    | 70%    | ✅/⚠️/❌ |
-| Lines      | X%    | 70%    | ✅/⚠️/❌ |
+| Statements | X% | 70% | ✅/⚠/❌ |
+| Branches | X% | 70% | ✅/⚠/❌ |
+| Functions | X% | 70% | ✅/⚠/❌ |
+| Lines | X% | 70% | ✅/⚠/❌ |
 
 #### Arquivos com Menor Cobertura
 
@@ -72,12 +72,12 @@ Arquivos criticos que DEVEM ter alta cobertura:
 
 ### Frontend
 
-| Metrica    | Atual | Target | Status   |
+| Metrica | Atual | Target | Status |
 | ---------- | ----- | ------ | -------- |
-| Statements | X%    | 60%    | ✅/⚠️/❌ |
-| Branches   | X%    | 60%    | ✅/⚠️/❌ |
-| Functions  | X%    | 60%    | ✅/⚠️/❌ |
-| Lines      | X%    | 60%    | ✅/⚠️/❌ |
+| Statements | X% | 60% | ✅/⚠/❌ |
+| Branches | X% | 60% | ✅/⚠/❌ |
+| Functions | X% | 60% | ✅/⚠/❌ |
+| Lines | X% | 60% | ✅/⚠/❌ |
 
 #### Arquivos com Menor Cobertura
 
@@ -103,7 +103,7 @@ Para aumentar cobertura em +5%, recomendo:
 ## Criterios de Status
 
 - ✅ **OK:** >= Target
-- ⚠️ **Warning:** >= Minimo e < Target
+- ⚠ **Warning:** >= Minimo e < Target
 - ❌ **Critico:** < Minimo
 
 ---
@@ -121,7 +121,7 @@ Assistente:
 | Metrica | Atual | Target | Status |
 |---------|-------|--------|--------|
 | Statements | 72% | 70% | ✅ |
-| Branches | 65% | 70% | ⚠️ |
+| Branches | 65% | 70% | ⚠ |
 | Functions | 78% | 70% | ✅ |
 | Lines | 71% | 70% | ✅ |
 

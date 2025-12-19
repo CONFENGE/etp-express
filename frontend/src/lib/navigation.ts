@@ -29,12 +29,12 @@ let navigateInstance: NavigateFunction | null = null;
  * ```typescript
  * const navigate = useNavigate();
  * useEffect(() => {
- *   setNavigate(navigate);
+ * setNavigate(navigate);
  * }, [navigate]);
  * ```
  */
 export const setNavigate = (navigate: NavigateFunction): void => {
-  navigateInstance = navigate;
+ navigateInstance = navigate;
 };
 
 /**
@@ -51,10 +51,10 @@ export const setNavigate = (navigate: NavigateFunction): void => {
  * ```
  */
 export const getNavigate = (): NavigateFunction => {
-  if (!navigateInstance) {
-    throw new Error(
-      'Navigate not initialized. Call setNavigate() in App.tsx before using getNavigate().',
-    );
-  }
-  return navigateInstance;
+ if (!navigateInstance) {
+ throw new Error(
+ 'Navigate not initialized. Call setNavigate() in App.tsx before using getNavigate().',
+ );
+ }
+ return navigateInstance;
 };

@@ -8,12 +8,12 @@ import { EtpVersion } from '../../entities/etp-version.entity';
 import { ResourceOwnershipModule } from '../../common/guards/resource-ownership.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Etp, EtpSection, EtpVersion]),
-    ResourceOwnershipModule,
-  ],
-  controllers: [EtpsController],
-  providers: [EtpsService],
-  exports: [EtpsService],
+ imports: [
+ TypeOrmModule.forFeature([Etp, EtpSection, EtpVersion]),
+ ResourceOwnershipModule,
+ ],
+ controllers: [EtpsController],
+ providers: [EtpsService],
+ exports: [EtpsService],
 })
 export class EtpsModule {}

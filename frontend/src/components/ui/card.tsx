@@ -14,104 +14,104 @@ import { cn } from '@/lib/utils';
  * - Respects prefers-reduced-motion
  */
 const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean }
+ HTMLDivElement,
+ React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean }
 >(({ className, interactive, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      // Base styles with Apple HIG tokens
-      'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
-      // Apple-style transition with GPU acceleration
-      'transition-all duration-200 ease-out',
-      // Interactive card micro-interactions
-      interactive && [
-        'cursor-pointer',
-        // Hover: lift up with enhanced shadow
-        'hover:shadow-apple-lg hover:-translate-y-1',
-        // Active: pressed state
-        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.99]',
-        // Focus visible for keyboard navigation
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
-      ],
-      // Respect reduced motion preference
-      'motion-reduce:transition-none motion-reduce:hover:transform-none',
-      className,
-    )}
-    {...props}
-  />
+ <div
+ ref={ref}
+ className={cn(
+ // Base styles with Apple HIG tokens
+ 'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
+ // Apple-style transition with GPU acceleration
+ 'transition-all duration-200 ease-out',
+ // Interactive card micro-interactions
+ interactive && [
+ 'cursor-pointer',
+ // Hover: lift up with enhanced shadow
+ 'hover:shadow-apple-lg hover:-translate-y-1',
+ // Active: pressed state
+ 'active:shadow-apple-sm active:translate-y-0 active:scale-[0.99]',
+ // Focus visible for keyboard navigation
+ 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
+ ],
+ // Respect reduced motion preference
+ 'motion-reduce:transition-none motion-reduce:hover:transform-none',
+ className,
+ )}
+ {...props}
+ />
 ));
 Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+ HTMLDivElement,
+ React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('flex flex-col space-y-1.5 p-6', className)}
-    {...props}
-  />
+ <div
+ ref={ref}
+ className={cn('flex flex-col space-y-1.5 p-6', className)}
+ {...props}
+ />
 ));
 CardHeader.displayName = 'CardHeader';
 
 const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+ HTMLParagraphElement,
+ React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn(
-      // Apple HIG typography
-      'text-apple-xl font-semibold leading-none tracking-tight text-text-apple-primary',
-      className,
-    )}
-    {...props}
-  />
+ <h3
+ ref={ref}
+ className={cn(
+ // Apple HIG typography
+ 'text-apple-xl font-semibold leading-none tracking-tight text-text-apple-primary',
+ className,
+ )}
+ {...props}
+ />
 ));
 CardTitle.displayName = 'CardTitle';
 
 const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+ HTMLParagraphElement,
+ React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn(
-      // Apple HIG secondary text
-      'text-apple-sm text-text-apple-secondary',
-      className,
-    )}
-    {...props}
-  />
+ <p
+ ref={ref}
+ className={cn(
+ // Apple HIG secondary text
+ 'text-apple-sm text-text-apple-secondary',
+ className,
+ )}
+ {...props}
+ />
 ));
 CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+ HTMLDivElement,
+ React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+ <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
 
 const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+ HTMLDivElement,
+ React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('flex items-center p-6 pt-0', className)}
-    {...props}
-  />
+ <div
+ ref={ref}
+ className={cn('flex items-center p-6 pt-0', className)}
+ {...props}
+ />
 ));
 CardFooter.displayName = 'CardFooter';
 
 export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
+ Card,
+ CardHeader,
+ CardFooter,
+ CardTitle,
+ CardDescription,
+ CardContent,
 };

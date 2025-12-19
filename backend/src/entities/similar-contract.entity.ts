@@ -1,11 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  Index,
-  ManyToOne,
-  JoinColumn,
+ Entity,
+ PrimaryGeneratedColumn,
+ Column,
+ CreateDateColumn,
+ Index,
+ ManyToOne,
+ JoinColumn,
 } from 'typeorm';
 import { Organization } from './organization.entity';
 
@@ -23,70 +23,70 @@ import { Organization } from './organization.entity';
  */
 @Entity('similar_contracts')
 @Index('IDX_similar_contracts_organization_createdAt', [
-  'organizationId',
-  'createdAt',
+ 'organizationId',
+ 'createdAt',
 ])
 export class SimilarContract {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+ @PrimaryGeneratedColumn('uuid')
+ id: string;
 
-  /**
-   * Organization ID for multi-tenancy isolation.
-   * Nullable for backward compatibility with existing records.
-   * New records MUST include organizationId via SearchService.
-   *
-   * Column-based isolation: Ensures search results are scoped to organization.
-   */
-  @Column({ type: 'uuid', nullable: true })
-  @Index('IDX_similar_contracts_organizationId')
-  organizationId: string | null;
+ /**
+ * Organization ID for multi-tenancy isolation.
+ * Nullable for backward compatibility with existing records.
+ * New records MUST include organizationId via SearchService.
+ *
+ * Column-based isolation: Ensures search results are scoped to organization.
+ */
+ @Column({ type: 'uuid', nullable: true })
+ @Index('IDX_similar_contracts_organizationId')
+ organizationId: string | null;
 
-  /**
-   * Organization relation (Multi-Tenancy).
-   * Loaded when needed for organization-specific queries.
-   */
-  @ManyToOne(() => Organization, { nullable: true })
-  @JoinColumn({ name: 'organizationId' })
-  organization: Organization | null;
+ /**
+ * Organization relation (Multi-Tenancy).
+ * Loaded when needed for organization-specific queries.
+ */
+ @ManyToOne(() => Organization, { nullable: true })
+ @JoinColumn({ name: 'organizationId' })
+ organization: Organization | null;
 
-  @Column()
-  @Index()
-  searchQuery: string;
+ @Column()
+ @Index()
+ searchQuery: string;
 
-  @Column()
-  title: string;
+ @Column()
+ title: string;
 
-  @Column({ type: 'text', nullable: true })
-  description: string;
+ @Column({ type: 'text', nullable: true })
+ description: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  orgao: string;
+ @Column({ type: 'varchar', nullable: true })
+ orgao: string;
 
-  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valor: number;
+ @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+ valor: number;
 
-  @Column({ type: 'varchar', nullable: true })
-  dataContratacao: string;
+ @Column({ type: 'varchar', nullable: true })
+ dataContratacao: string;
 
-  @Column({ type: 'text', nullable: true })
-  url: string;
+ @Column({ type: 'text', nullable: true })
+ url: string;
 
-  @Column({ type: 'text', nullable: true })
-  fonte: string;
+ @Column({ type: 'text', nullable: true })
+ fonte: string;
 
-  @Column({ type: 'float', default: 0 })
-  relevanceScore: number;
+ @Column({ type: 'float', default: 0 })
+ relevanceScore: number;
 
-  @Column({ type: 'jsonb', nullable: true })
-  metadata: {
-    numeroProcesso?: string;
-    modalidade?: string;
-    vigencia?: string;
-    fornecedor?: string;
-    objeto?: string;
-    [key: string]: unknown;
-  };
+ @Column({ type: 'jsonb', nullable: true })
+ metadata: {
+ numeroProcesso?: string;
+ modalidade?: string;
+ vigencia?: string;
+ fornecedor?: string;
+ objeto?: string;
+ [key: string]: unknown;
+ };
 
-  @CreateDateColumn()
-  createdAt: Date;
+ @CreateDateColumn()
+ createdAt: Date;
 }

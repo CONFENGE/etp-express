@@ -21,9 +21,9 @@ import { AuthorizedDomain } from '../../entities/authorized-domain.entity';
  * @see DomainManagerService
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([User, AuthorizedDomain])],
-  controllers: [DomainManagerController],
-  providers: [DomainManagerService],
-  exports: [DomainManagerService],
+ imports: [TypeOrmModule.forFeature([User, AuthorizedDomain])],
+ controllers: [DomainManagerController],
+ providers: [DomainManagerService],
+ exports: [DomainManagerService],
 })
 export class DomainManagerModule {}

@@ -10,20 +10,20 @@ E2E tests require a PostgreSQL database for full integration testing.
 
 1. Install PostgreSQL 14+ locally
 2. Create test database:
-   ```bash
-   psql -U postgres
-   CREATE DATABASE etp_express_test;
-   \q
-   ```
+ ```bash
+ psql -U postgres
+ CREATE DATABASE etp_express_test;
+ \q
+ ```
 
 **Option 2: Docker PostgreSQL**
 
 ```bash
 docker run --name postgres-test \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=etp_express_test \
-  -p 5432:5432 \
-  -d postgres:14
+ -e POSTGRES_PASSWORD=postgres \
+ -e POSTGRES_DB=etp_express_test \
+ -p 5432:5432 \
+ -d postgres:14
 ```
 
 **Option 3: Railway PostgreSQL**
@@ -158,21 +158,21 @@ Add E2E tests to CI workflow (`.github/workflows/test.yml`):
 
 ```yaml
 - name: Set up PostgreSQL
-  run: |
-    docker run -d \
-      --name postgres-test \
-      -e POSTGRES_PASSWORD=postgres \
-      -e POSTGRES_DB=etp_express_test \
-      -p 5432:5432 \
-      postgres:14
+ run: |
+ docker run -d \
+ --name postgres-test \
+ -e POSTGRES_PASSWORD=postgres \
+ -e POSTGRES_DB=etp_express_test \
+ -p 5432:5432 \
+ postgres:14
 
 - name: Wait for PostgreSQL
-  run: |
-    timeout 30 bash -c 'until docker exec postgres-test pg_isready; do sleep 1; done'
+ run: |
+ timeout 30 bash -c 'until docker exec postgres-test pg_isready; do sleep 1; done'
 
 - name: Run E2E Tests
-  working-directory: backend
-  run: npm run test:e2e
+ working-directory: backend
+ run: npm run test:e2e
 ```
 
 ### Railway Deployment
@@ -210,42 +210,42 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 describe('Feature Name (e2e)', () => {
-  let app: INestApplication;
-  let testUser: { id: string; accessToken: string };
+ let app: INestApplication;
+ let testUser: { id: string; accessToken: string };
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+ beforeAll(async () => {
+ const moduleFixture: TestingModule = await Test.createTestingModule({
+ imports: [AppModule],
+ }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-    await app.init();
+ app = moduleFixture.createNestApplication();
+ app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+ await app.init();
 
-    // Setup test user
-    const response = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({ email: 'test@example.com', password: 'pass', ... });
+ // Setup test user
+ const response = await request(app.getHttpServer())
+ .post('/auth/register')
+ .send({ email: 'test@example.com', password: 'pass', ... });
 
-    testUser = {
-      id: response.body.data.user.id,
-      accessToken: response.body.data.accessToken,
-    };
-  });
+ testUser = {
+ id: response.body.data.user.id,
+ accessToken: response.body.data.accessToken,
+ };
+ });
 
-  afterAll(async () => {
-    // Cleanup
-    await app.close();
-  });
+ afterAll(async () => {
+ // Cleanup
+ await app.close();
+ });
 
-  it('should do something', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/endpoint')
-      .set('Authorization', `Bearer ${testUser.accessToken}`)
-      .expect(200);
+ it('should do something', async () => {
+ const response = await request(app.getHttpServer())
+ .get('/endpoint')
+ .set('Authorization', `Bearer ${testUser.accessToken}`)
+ .expect(200);
 
-    expect(response.body).toHaveProperty('data');
-  });
+ expect(response.body).toHaveProperty('data');
+ });
 });
 ```
 
@@ -272,19 +272,19 @@ describe('Feature Name (e2e)', () => {
 After LGPD E2E tests:
 
 1. **Authentication E2E** (`auth.e2e-spec.ts`)
-   - Register, login, JWT refresh
-   - Password validation
-   - Rate limiting
+ - Register, login, JWT refresh
+ - Password validation
+ - Rate limiting
 
 2. **ETPs E2E** (`etps.e2e-spec.ts`)
-   - Create, update, delete ETPs
-   - Generate sections with AI
-   - Export to PDF
+ - Create, update, delete ETPs
+ - Generate sections with AI
+ - Export to PDF
 
 3. **Sections E2E** (`sections.e2e-spec.ts`)
-   - CRUD operations
-   - Validation logic
-   - Regeneration flows
+ - CRUD operations
+ - Validation logic
+ - Regeneration flows
 
 ---
 

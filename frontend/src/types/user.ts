@@ -2,44 +2,44 @@
  * User roles for hierarchical access control (M8: Gestão de Domínios Institucionais).
  */
 export type UserRole =
-  | 'system_admin'
-  | 'domain_manager'
-  | 'admin'
-  | 'user'
-  | 'viewer'
-  | 'demo';
+ | 'system_admin'
+ | 'domain_manager'
+ | 'admin'
+ | 'user'
+ | 'viewer'
+ | 'demo';
 
 export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  organization?: {
-    id: string;
-    name: string;
-  };
-  organizationId?: string;
-  /**
-   * Flag indicating user must change password on next login.
-   * Required for M8: Domain management - new users created by Domain Managers
-   * must change their initial password.
-   */
-  mustChangePassword?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+ id: string;
+ email: string;
+ name: string;
+ role: UserRole;
+ organization?: {
+ id: string;
+ name: string;
+ };
+ organizationId?: string;
+ /**
+ * Flag indicating user must change password on next login.
+ * Required for M8: Domain management - new users created by Domain Managers
+ * must change their initial password.
+ */
+ mustChangePassword?: boolean;
+ createdAt?: string;
+ updatedAt?: string;
 }
 
 export interface LoginCredentials {
-  email: string;
-  password: string;
+ email: string;
+ password: string;
 }
 
 export interface RegisterData {
-  email: string;
-  password: string;
-  name: string;
-  lgpdConsent: boolean;
-  internationalTransferConsent: boolean;
+ email: string;
+ password: string;
+ name: string;
+ lgpdConsent: boolean;
+ internationalTransferConsent: boolean;
 }
 
 /**
@@ -53,6 +53,6 @@ export interface RegisterData {
  * The token field will be deprecated after backend migration to cookie-only auth (#505).
  */
 export interface AuthResponse {
-  token?: string; // Optional - will be removed after #505 backend migration
-  user: User;
+ token?: string; // Optional - will be removed after #505 backend migration
+ user: User;
 }

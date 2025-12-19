@@ -13,7 +13,7 @@ import { PIIRedactionService } from './pii-redaction.service';
  * @module PrivacyModule
  */
 @Module({
-  providers: [PIIRedactionService],
-  exports: [PIIRedactionService],
+ providers: [PIIRedactionService],
+ exports: [PIIRedactionService],
 })
 export class PrivacyModule {}

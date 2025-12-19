@@ -1,9 +1,9 @@
 import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
+ BrowserRouter,
+ Routes,
+ Route,
+ Navigate,
+ useNavigate,
 } from 'react-router-dom';
 import { useEffect, useCallback } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
@@ -37,22 +37,22 @@ import { AnalysisPage } from '@/pages/AnalysisPage';
  * Prevents "flash of login" on page refresh for authenticated users.
  */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAuthInitialized } = useAuth();
+ const { isAuthenticated, isAuthInitialized } = useAuth();
 
-  // Show loading while auth check is in progress
-  if (!isAuthInitialized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <LoadingState message="Verificando autenticação..." size="lg" />
-      </div>
-    );
-  }
+ // Show loading while auth check is in progress
+ if (!isAuthInitialized) {
+ return (
+ <div className="flex items-center justify-center min-h-screen bg-background">
+ <LoadingState message="Verificando autenticação..." size="lg" />
+ </div>
+ );
+ }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+ if (!isAuthenticated) {
+ return <Navigate to="/login" replace />;
+ }
 
-  return <>{children}</>;
+ return <>{children}</>;
 }
 
 /**
@@ -61,22 +61,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
  * Prevents unnecessary redirect to login for authenticated users.
  */
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAuthInitialized } = useAuth();
+ const { isAuthenticated, isAuthInitialized } = useAuth();
 
-  // Show loading while auth check is in progress
-  if (!isAuthInitialized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <LoadingState message="Verificando autenticação..." size="lg" />
-      </div>
-    );
-  }
+ // Show loading while auth check is in progress
+ if (!isAuthInitialized) {
+ return (
+ <div className="flex items-center justify-center min-h-screen bg-background">
+ <LoadingState message="Verificando autenticação..." size="lg" />
+ </div>
+ );
+ }
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
+ if (isAuthenticated) {
+ return <Navigate to="/dashboard" replace />;
+ }
 
-  return <>{children}</>;
+ return <>{children}</>;
 }
 
 /**
@@ -89,134 +89,134 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
  * would redirect to login before knowing if the user is actually authenticated.
  */
 function AppRoutes() {
-  const navigate = useNavigate();
-  const { checkAuth } = useAuth();
+ const navigate = useNavigate();
+ const { checkAuth } = useAuth();
 
-  // Memoize checkAuth to prevent unnecessary re-renders
-  const validateAuth = useCallback(() => {
-    checkAuth();
-  }, [checkAuth]);
+ // Memoize checkAuth to prevent unnecessary re-renders
+ const validateAuth = useCallback(() => {
+ checkAuth();
+ }, [checkAuth]);
 
-  // Initialize global navigation singleton on mount
-  useEffect(() => {
-    setNavigate(navigate);
-  }, [navigate]);
+ // Initialize global navigation singleton on mount
+ useEffect(() => {
+ setNavigate(navigate);
+ }, [navigate]);
 
-  // Validate auth state on app startup
-  useEffect(() => {
-    validateAuth();
-  }, [validateAuth]);
+ // Validate auth state on app startup
+ useEffect(() => {
+ validateAuth();
+ }, [validateAuth]);
 
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          <PublicRoute>
-            <ResetPassword />
-          </PublicRoute>
-        }
-      />
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/terms" element={<TermsOfService />} />
+ return (
+ <Routes>
+ {/* Public Routes */}
+ <Route
+ path="/login"
+ element={
+ <PublicRoute>
+ <Login />
+ </PublicRoute>
+ }
+ />
+ <Route
+ path="/register"
+ element={
+ <PublicRoute>
+ <Register />
+ </PublicRoute>
+ }
+ />
+ <Route
+ path="/forgot-password"
+ element={
+ <PublicRoute>
+ <ForgotPassword />
+ </PublicRoute>
+ }
+ />
+ <Route
+ path="/reset-password"
+ element={
+ <PublicRoute>
+ <ResetPassword />
+ </PublicRoute>
+ }
+ />
+ <Route path="/privacy" element={<PrivacyPolicy />} />
+ <Route path="/terms" element={<TermsOfService />} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/etps"
-        element={
-          <ProtectedRoute>
-            <ETPs />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/etps/:id"
-        element={
-          <ProtectedRoute>
-            <ETPEditor />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analysis"
-        element={
-          <ProtectedRoute>
-            <AnalysisPage />
-          </ProtectedRoute>
-        }
-      />
+ {/* Protected Routes */}
+ <Route
+ path="/"
+ element={
+ <ProtectedRoute>
+ <Dashboard />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/dashboard"
+ element={
+ <ProtectedRoute>
+ <Dashboard />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/etps"
+ element={
+ <ProtectedRoute>
+ <ETPs />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/etps/:id"
+ element={
+ <ProtectedRoute>
+ <ETPEditor />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/analysis"
+ element={
+ <ProtectedRoute>
+ <AnalysisPage />
+ </ProtectedRoute>
+ }
+ />
 
-      {/* Admin Routes (System Admin only) */}
-      <Route path="/admin" element={<AdminProtectedRoute />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="domains" element={<DomainManagement />} />
-        <Route path="domains/:id" element={<DomainDetail />} />
-      </Route>
+ {/* Admin Routes (System Admin only) */}
+ <Route path="/admin" element={<AdminProtectedRoute />}>
+ <Route index element={<AdminDashboard />} />
+ <Route path="domains" element={<DomainManagement />} />
+ <Route path="domains/:id" element={<DomainDetail />} />
+ </Route>
 
-      {/* Manager Routes (Domain Manager only) */}
-      <Route path="/manager" element={<ManagerProtectedRoute />}>
-        <Route index element={<ManagerDashboard />} />
-        <Route path="users" element={<UserManagement />} />
-      </Route>
+ {/* Manager Routes (Domain Manager only) */}
+ <Route path="/manager" element={<ManagerProtectedRoute />}>
+ <Route index element={<ManagerDashboard />} />
+ <Route path="users" element={<UserManagement />} />
+ </Route>
 
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+ {/* 404 */}
+ <Route path="*" element={<NotFound />} />
+ </Routes>
+ );
 }
 
 function App() {
-  return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <AppRoutes />
-        <PasswordChangeModal />
-        <Toaster />
-        <AppTour />
-      </BrowserRouter>
-    </ErrorBoundary>
-  );
+ return (
+ <ErrorBoundary>
+ <BrowserRouter>
+ <AppRoutes />
+ <PasswordChangeModal />
+ <Toaster />
+ <AppTour />
+ </BrowserRouter>
+ </ErrorBoundary>
+ );
 }
 
 export default App;

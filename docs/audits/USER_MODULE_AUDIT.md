@@ -1,4 +1,4 @@
-# 📋 Auditoria do Módulo User - ETP Express
+# Auditoria do Módulo User - ETP Express
 
 **Data:** 2025-11-30
 **Issue:** [#81](https://github.com/tjsasakifln/etp-express/issues/81)
@@ -7,27 +7,27 @@
 
 ---
 
-## 🎯 Objetivo da Auditoria
+## Objetivo da Auditoria
 
 Verificar se o módulo **User** (usuários, roles, permissões) está implementado conforme especificado no [ARCHITECTURE.md](../../ARCHITECTURE.md).
 
 ---
 
-## 📊 Resumo Executivo
+## Resumo Executivo
 
-### Conformidade Geral: **92%** 🟢
+### Conformidade Geral: **92%** 
 
-| Categoria                              | Conformidade | Status                   |
+| Categoria | Conformidade | Status |
 | -------------------------------------- | ------------ | ------------------------ |
-| **Modelo de Dados (User Entity)**      | 100%         | ✅ Conforme              |
-| **Service Layer (UsersService)**       | 100%         | ✅ Conforme              |
-| **Controller Layer (UsersController)** | 95%          | ⚠️ Desvio Crítico        |
-| **DTOs e Validação**                   | 100%         | ✅ Conforme              |
-| **LGPD Compliance**                    | 100%         | ✅ Excedeu Especificação |
-| **Autenticação (JWT)**                 | 100%         | ✅ Conforme              |
-| **Autorização (RBAC)**                 | 0%           | ❌ NÃO Implementado      |
-| **Testes**                             | 100%         | ✅ Conforme              |
-| **Documentação**                       | 100%         | ✅ Conforme              |
+| **Modelo de Dados (User Entity)** | 100% | ✅ Conforme |
+| **Service Layer (UsersService)** | 100% | ✅ Conforme |
+| **Controller Layer (UsersController)** | 95% | ⚠ Desvio Crítico |
+| **DTOs e Validação** | 100% | ✅ Conforme |
+| **LGPD Compliance** | 100% | ✅ Excedeu Especificação |
+| **Autenticação (JWT)** | 100% | ✅ Conforme |
+| **Autorização (RBAC)** | 0% | ❌ NÃO Implementado |
+| **Testes** | 100% | ✅ Conforme |
+| **Documentação** | 100% | ✅ Conforme |
 
 ### Highlights
 
@@ -43,14 +43,14 @@ Verificar se o módulo **User** (usuários, roles, permissões) está implementa
 
 - **Sistema de RBAC (Roles-Based Access Control) não implementado** - Endpoints admin-only não têm guards de autorização
 
-⚠️ **Melhorias Recomendadas:**
+⚠ **Melhorias Recomendadas:**
 
 - Implementar RolesGuard/AdminGuard para endpoints administrativos
 - Adicionar decorador @Roles() para controle de acesso
 
 ---
 
-## 📐 Especificação vs Implementação
+## Especificação vs Implementação
 
 ### 1. Modelo de Dados (User Entity)
 
@@ -58,36 +58,36 @@ Verificar se o módulo **User** (usuários, roles, permissões) está implementa
 
 ```sql
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  orgao VARCHAR(255),
-  role VARCHAR(50) DEFAULT 'user',
-  created_at TIMESTAMP DEFAULT NOW()
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ email VARCHAR(255) UNIQUE NOT NULL,
+ name VARCHAR(255) NOT NULL,
+ orgao VARCHAR(255),
+ role VARCHAR(50) DEFAULT 'user',
+ created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
 **Implementação (backend/src/entities/user.entity.ts):**
 
-| Campo                            | Especificado | Implementado | Status | Observação                         |
+| Campo | Especificado | Implementado | Status | Observação |
 | -------------------------------- | ------------ | ------------ | ------ | ---------------------------------- |
-| `id` (UUID PK)                   | ✅           | ✅           | ✅     | Conforme                           |
-| `email` (unique)                 | ✅           | ✅           | ✅     | Conforme                           |
-| `password`                       | ❌           | ✅           | ✅     | Implícito (necessário) + @Exclude  |
-| `name`                           | ✅           | ✅           | ✅     | Conforme                           |
-| `orgao` (nullable)               | ✅           | ✅           | ✅     | Conforme                           |
-| `cargo`                          | ❌           | ✅           | ✅     | **Melhoria** (não especificado)    |
-| `role` (enum)                    | ✅           | ✅           | ✅     | Conforme (ADMIN, USER, VIEWER)     |
-| `isActive`                       | ❌           | ✅           | ✅     | **Melhoria** (soft deactivation)   |
-| `lastLoginAt`                    | ❌           | ✅           | ✅     | **Melhoria** (analytics)           |
-| `lgpdConsentAt`                  | ❌           | ✅           | ✅     | **LGPD Art. 7º, I**                |
-| `lgpdConsentVersion`             | ❌           | ✅           | ✅     | **LGPD Art. 8º, §4º**              |
-| `internationalTransferConsentAt` | ❌           | ✅           | ✅     | **LGPD Art. 33**                   |
-| `deletedAt`                      | ❌           | ✅           | ✅     | **LGPD Art. 18, VI** (soft delete) |
-| `createdAt`                      | ✅           | ✅           | ✅     | Conforme                           |
-| `updatedAt`                      | ❌           | ✅           | ✅     | **Melhoria** (audit trail)         |
-| Relations: `etps`                | ❌           | ✅           | ✅     | Relação OneToMany com ETPs         |
-| Relations: `auditLogs`           | ❌           | ✅           | ✅     | Relação OneToMany com AuditLog     |
+| `id` (UUID PK) | ✅ | ✅ | ✅ | Conforme |
+| `email` (unique) | ✅ | ✅ | ✅ | Conforme |
+| `password` | ❌ | ✅ | ✅ | Implícito (necessário) + @Exclude |
+| `name` | ✅ | ✅ | ✅ | Conforme |
+| `orgao` (nullable) | ✅ | ✅ | ✅ | Conforme |
+| `cargo` | ❌ | ✅ | ✅ | **Melhoria** (não especificado) |
+| `role` (enum) | ✅ | ✅ | ✅ | Conforme (ADMIN, USER, VIEWER) |
+| `isActive` | ❌ | ✅ | ✅ | **Melhoria** (soft deactivation) |
+| `lastLoginAt` | ❌ | ✅ | ✅ | **Melhoria** (analytics) |
+| `lgpdConsentAt` | ❌ | ✅ | ✅ | **LGPD Art. 7º, I** |
+| `lgpdConsentVersion` | ❌ | ✅ | ✅ | **LGPD Art. 8º, §4º** |
+| `internationalTransferConsentAt` | ❌ | ✅ | ✅ | **LGPD Art. 33** |
+| `deletedAt` | ❌ | ✅ | ✅ | **LGPD Art. 18, VI** (soft delete) |
+| `createdAt` | ✅ | ✅ | ✅ | Conforme |
+| `updatedAt` | ❌ | ✅ | ✅ | **Melhoria** (audit trail) |
+| Relations: `etps` | ❌ | ✅ | ✅ | Relação OneToMany com ETPs |
+| Relations: `auditLogs` | ❌ | ✅ | ✅ | Relação OneToMany com AuditLog |
 
 **Conformidade: 100%** ✅
 **Melhorias Implementadas:** 9 campos adicionais (LGPD compliance, analytics, audit trail)
@@ -109,19 +109,19 @@ CREATE TABLE users (
 
 **Implementação (backend/src/modules/users/users.service.ts):**
 
-| Método                   | Especificado   | Implementado | Status | Observação                                 |
+| Método | Especificado | Implementado | Status | Observação |
 | ------------------------ | -------------- | ------------ | ------ | ------------------------------------------ |
-| `create()`               | ✅             | ✅           | ✅     | Conforme                                   |
-| `findAll()`              | ✅             | ✅           | ✅     | Conforme                                   |
-| `findOne()`              | ✅             | ✅           | ✅     | Conforme + NotFoundException               |
-| `findByEmail()`          | ❌             | ✅           | ✅     | **Melhoria** (usado por AuthService)       |
-| `update()`               | ✅             | ✅           | ✅     | Conforme                                   |
-| `remove()`               | ✅             | ✅           | ✅     | Conforme (hard delete)                     |
-| `updateLastLogin()`      | ❌             | ✅           | ✅     | **Melhoria** (analytics)                   |
-| `exportUserData()`       | ✅ (implícito) | ✅           | ✅     | **LGPD Art. 18, II e V** (portabilidade)   |
-| `softDeleteAccount()`    | ✅ (implícito) | ✅           | ✅     | **LGPD Art. 18, VI** (direito de exclusão) |
-| `cancelDeletion()`       | ❌             | ✅           | ✅     | **Melhoria** (grace period 30 dias)        |
-| `purgeDeletedAccounts()` | ❌             | ✅           | ✅     | **Melhoria** (cron job @2AM)               |
+| `create()` | ✅ | ✅ | ✅ | Conforme |
+| `findAll()` | ✅ | ✅ | ✅ | Conforme |
+| `findOne()` | ✅ | ✅ | ✅ | Conforme + NotFoundException |
+| `findByEmail()` | ❌ | ✅ | ✅ | **Melhoria** (usado por AuthService) |
+| `update()` | ✅ | ✅ | ✅ | Conforme |
+| `remove()` | ✅ | ✅ | ✅ | Conforme (hard delete) |
+| `updateLastLogin()` | ❌ | ✅ | ✅ | **Melhoria** (analytics) |
+| `exportUserData()` | ✅ (implícito) | ✅ | ✅ | **LGPD Art. 18, II e V** (portabilidade) |
+| `softDeleteAccount()` | ✅ (implícito) | ✅ | ✅ | **LGPD Art. 18, VI** (direito de exclusão) |
+| `cancelDeletion()` | ❌ | ✅ | ✅ | **Melhoria** (grace period 30 dias) |
+| `purgeDeletedAccounts()` | ❌ | ✅ | ✅ | **Melhoria** (cron job @2AM) |
 
 **Conformidade: 100%** ✅
 **Melhorias Implementadas:** 5 métodos adicionais (LGPD compliance avançado)
@@ -129,20 +129,20 @@ CREATE TABLE users (
 **Análise:**
 
 - **Exportação de dados (LGPD):**
-  - Exporta: perfil, ETPs, sections, versions, analytics, audit logs (últimos 1000)
-  - Cria audit trail da exportação
-  - Inclui metadata: data retention policy, direitos LGPD
-  - Exclui password via @Exclude decorator
+ - Exporta: perfil, ETPs, sections, versions, analytics, audit logs (últimos 1000)
+ - Cria audit trail da exportação
+ - Inclui metadata: data retention policy, direitos LGPD
+ - Exclui password via @Exclude decorator
 
 - **Soft Delete com Grace Period:**
-  - 30 dias de grace period antes de hard delete
-  - Email de confirmação com link de cancelamento
-  - Audit trail de deleções (soft e hard)
-  - Cron job diário (2 AM) para purge automático
+ - 30 dias de grace period antes de hard delete
+ - Email de confirmação com link de cancelamento
+ - Audit trail de deleções (soft e hard)
+ - Cron job diário (2 AM) para purge automático
 
 - **Logging Estruturado:**
-  - Usa `Logger` do NestJS em todas as operações críticas
-  - Logs detalhados: email, contagem de dados, timestamps
+ - Usa `Logger` do NestJS em todas as operações críticas
+ - Logs detalhados: email, contagem de dados, timestamps
 
 ---
 
@@ -151,30 +151,30 @@ CREATE TABLE users (
 **Especificação (ARCHITECTURE.md linha 383-390):**
 
 ```
-POST   /api/auth/register          # Criar conta
-POST   /api/auth/login             # Login (retorna JWT)
-POST   /api/auth/logout            # Logout
-GET    /api/auth/me                # Usuário atual
+POST /api/auth/register # Criar conta
+POST /api/auth/login # Login (retorna JWT)
+POST /api/auth/logout # Logout
+GET /api/auth/me # Usuário atual
 ```
 
 **Nota:** Endpoints `/api/auth/*` devem estar em **AuthController** separado (não auditado neste documento).
 
 **Implementação (backend/src/modules/users/users.controller.ts):**
 
-| Endpoint                     | Método HTTP | Especificado   | Implementado | Status | Observação                 |
+| Endpoint | Método HTTP | Especificado | Implementado | Status | Observação |
 | ---------------------------- | ----------- | -------------- | ------------ | ------ | -------------------------- |
-| `/users`                     | POST        | ❌             | ✅           | ⚠️     | Admin-only **SEM guard**   |
-| `/users`                     | GET         | ❌             | ✅           | ✅     | Listar usuários            |
-| `/users/me`                  | GET         | ✅ (auth/me)   | ✅           | ✅     | Perfil do usuário atual    |
-| `/users/me/export`           | GET         | ✅ (implícito) | ✅           | ✅     | Exportar dados LGPD        |
-| `/users/me`                  | DELETE      | ✅ (implícito) | ✅           | ✅     | Soft delete LGPD           |
-| `/users/cancel-deletion`     | POST        | ❌             | ✅           | ✅     | Cancelar deleção (público) |
-| `/users/:id`                 | GET         | ❌             | ✅           | ✅     | Obter usuário por ID       |
-| `/users/:id`                 | PATCH       | ❌             | ✅           | ✅     | Atualizar usuário          |
-| `/users/:id`                 | DELETE      | ❌             | ✅           | ⚠️     | Admin-only **SEM guard**   |
-| `/users/admin/purge-deleted` | POST        | ❌             | ✅           | ⚠️     | Admin-only **SEM guard**   |
+| `/users` | POST | ❌ | ✅ | ⚠ | Admin-only **SEM guard** |
+| `/users` | GET | ❌ | ✅ | ✅ | Listar usuários |
+| `/users/me` | GET | ✅ (auth/me) | ✅ | ✅ | Perfil do usuário atual |
+| `/users/me/export` | GET | ✅ (implícito) | ✅ | ✅ | Exportar dados LGPD |
+| `/users/me` | DELETE | ✅ (implícito) | ✅ | ✅ | Soft delete LGPD |
+| `/users/cancel-deletion` | POST | ❌ | ✅ | ✅ | Cancelar deleção (público) |
+| `/users/:id` | GET | ❌ | ✅ | ✅ | Obter usuário por ID |
+| `/users/:id` | PATCH | ❌ | ✅ | ✅ | Atualizar usuário |
+| `/users/:id` | DELETE | ❌ | ✅ | ⚠ | Admin-only **SEM guard** |
+| `/users/admin/purge-deleted` | POST | ❌ | ✅ | ⚠ | Admin-only **SEM guard** |
 
-**Conformidade: 95%** ⚠️
+**Conformidade: 95%** ⚠
 **Desvio Crítico:** 3 endpoints admin-only sem RolesGuard
 
 **Análise:**
@@ -190,9 +190,9 @@ GET    /api/auth/me                # Usuário atual
 ❌ **Desvio Crítico:**
 
 - **Endpoints admin-only NÃO têm RolesGuard:**
-  - `POST /users` (criar usuário)
-  - `DELETE /users/:id` (deletar usuário)
-  - `POST /users/admin/purge-deleted` (purge manual)
+ - `POST /users` (criar usuário)
+ - `DELETE /users/:id` (deletar usuário)
+ - `POST /users/admin/purge-deleted` (purge manual)
 - Comentários no código indicam "admin only" mas **sem enforcement real**
 
 **Exemplo do Desvio (users.controller.ts:73-77):**
@@ -203,7 +203,7 @@ GET    /api/auth/me                # Usuário atual
 // ❌ SEM @Roles('admin') decorator
 // ❌ SEM RolesGuard
 async create(@Body() createUserDto: CreateUserDto) {
-  // Qualquer usuário autenticado pode criar outros usuários
+ // Qualquer usuário autenticado pode criar outros usuários
 }
 ```
 
@@ -226,14 +226,14 @@ Auth: Passport + JWT (Padrão industry, extensível)
 
 **Implementação (backend/src/modules/users/users.module.ts):**
 
-| Requisito          | Especificado | Implementado | Status | Observação                                   |
+| Requisito | Especificado | Implementado | Status | Observação |
 | ------------------ | ------------ | ------------ | ------ | -------------------------------------------- |
-| Passport           | ✅           | ✅           | ✅     | Via @nestjs/passport                         |
-| JWT                | ✅           | ✅           | ✅     | JwtModule.registerAsync()                    |
-| JWT expiração      | ✅           | ✅           | ✅     | Default 7d (configurável via JWT_EXPIRATION) |
-| Bcrypt             | ✅           | ✅           | ✅     | Implementado no AuthService (não auditado)   |
-| JwtAuthGuard       | ❌           | ✅           | ✅     | Implementado e aplicado                      |
-| JWT_SECRET env var | ✅           | ✅           | ✅     | Via ConfigService                            |
+| Passport | ✅ | ✅ | ✅ | Via @nestjs/passport |
+| JWT | ✅ | ✅ | ✅ | JwtModule.registerAsync() |
+| JWT expiração | ✅ | ✅ | ✅ | Default 7d (configurável via JWT_EXPIRATION) |
+| Bcrypt | ✅ | ✅ | ✅ | Implementado no AuthService (não auditado) |
+| JwtAuthGuard | ❌ | ✅ | ✅ | Implementado e aplicado |
+| JWT_SECRET env var | ✅ | ✅ | ✅ | Via ConfigService |
 
 **Conformidade: 100%** ✅
 
@@ -261,12 +261,12 @@ role VARCHAR(50) DEFAULT 'user'
 
 **Implementação:**
 
-| Componente          | Especificado   | Implementado | Status | Observação           |
+| Componente | Especificado | Implementado | Status | Observação |
 | ------------------- | -------------- | ------------ | ------ | -------------------- |
-| UserRole enum       | ✅             | ✅           | ✅     | ADMIN, USER, VIEWER  |
-| RolesGuard          | ⚠️ (implícito) | ❌           | ❌     | **NÃO IMPLEMENTADO** |
-| @Roles() decorator  | ⚠️ (implícito) | ❌           | ❌     | **NÃO IMPLEMENTADO** |
-| Authorization logic | ⚠️ (implícito) | ❌           | ❌     | **NÃO IMPLEMENTADO** |
+| UserRole enum | ✅ | ✅ | ✅ | ADMIN, USER, VIEWER |
+| RolesGuard | ⚠ (implícito) | ❌ | ❌ | **NÃO IMPLEMENTADO** |
+| @Roles() decorator | ⚠ (implícito) | ❌ | ❌ | **NÃO IMPLEMENTADO** |
+| Authorization logic | ⚠ (implícito) | ❌ | ❌ | **NÃO IMPLEMENTADO** |
 
 **Conformidade: 0%** ❌
 
@@ -274,9 +274,9 @@ role VARCHAR(50) DEFAULT 'user'
 
 - Enum `UserRole` existe na entidade User
 - **NÃO há guards de autorização implementados:**
-  - Nenhum arquivo `roles.guard.ts` ou `admin.guard.ts`
-  - Nenhum uso de decoradores `@Roles()`
-  - Endpoints admin-only confiam apenas em comentários
+ - Nenhum arquivo `roles.guard.ts` ou `admin.guard.ts`
+ - Nenhum uso de decoradores `@Roles()`
+ - Endpoints admin-only confiam apenas em comentários
 
 **Busca realizada:**
 
@@ -289,9 +289,9 @@ Path: backend/src
 **Impacto de Segurança:**
 
 - **CRÍTICO:** Qualquer usuário autenticado pode:
-  - Criar outros usuários (`POST /users`)
-  - Deletar qualquer usuário (`DELETE /users/:id`)
-  - Executar purge manual de contas (`POST /users/admin/purge-deleted`)
+ - Criar outros usuários (`POST /users`)
+ - Deletar qualquer usuário (`DELETE /users/:id`)
+ - Executar purge manual de contas (`POST /users/admin/purge-deleted`)
 
 ---
 
@@ -305,12 +305,12 @@ Validação: class-validator (Validação declarativa, pipes NestJS)
 
 **Implementação:**
 
-| DTO               | Arquivo                | Validação                                                            | Status |
+| DTO | Arquivo | Validação | Status |
 | ----------------- | ---------------------- | -------------------------------------------------------------------- | ------ |
-| CreateUserDto     | create-user.dto.ts     | ✅ @IsEmail, @MinLength(8), @IsString, @IsOptional, @IsEnum, @IsDate | ✅     |
-| UpdateUserDto     | update-user.dto.ts     | ✅ @IsString, @IsOptional, @IsBoolean, @IsEnum                       | ✅     |
-| DeleteAccountDto  | delete-account.dto.ts  | ✅ @IsString, @IsNotEmpty, @MaxLength(500)                           | ✅     |
-| CancelDeletionDto | cancel-deletion.dto.ts | ✅ @IsString, @IsNotEmpty                                            | ✅     |
+| CreateUserDto | create-user.dto.ts | ✅ @IsEmail, @MinLength(8), @IsString, @IsOptional, @IsEnum, @IsDate | ✅ |
+| UpdateUserDto | update-user.dto.ts | ✅ @IsString, @IsOptional, @IsBoolean, @IsEnum | ✅ |
+| DeleteAccountDto | delete-account.dto.ts | ✅ @IsString, @IsNotEmpty, @MaxLength(500) | ✅ |
+| CancelDeletionDto | cancel-deletion.dto.ts | ✅ @IsString, @IsNotEmpty | ✅ |
 
 **Conformidade: 100%** ✅
 
@@ -329,10 +329,10 @@ Validação: class-validator (Validação declarativa, pipes NestJS)
 
 **Implementação (backend/src/modules/users/):**
 
-| Arquivo de Teste         | Status | Observação                     |
+| Arquivo de Teste | Status | Observação |
 | ------------------------ | ------ | ------------------------------ |
-| users.service.spec.ts    | ✅     | Testes unitários do serviço    |
-| users.controller.spec.ts | ✅     | Testes unitários do controller |
+| users.service.spec.ts | ✅ | Testes unitários do serviço |
+| users.controller.spec.ts | ✅ | Testes unitários do controller |
 
 **Conformidade: 100%** ✅
 
@@ -350,13 +350,13 @@ Validação: class-validator (Validação declarativa, pipes NestJS)
 
 **Implementação:**
 
-| Tipo             | Localização         | Status | Observação                            |
+| Tipo | Localização | Status | Observação |
 | ---------------- | ------------------- | ------ | ------------------------------------- |
-| JSDoc Service    | users.service.ts    | ✅     | Excelente - métodos LGPD documentados |
-| JSDoc Controller | users.controller.ts | ✅     | Excelente - inclui @throws, @remarks  |
-| JSDoc DTOs       | \*.dto.ts           | ✅     | Swagger annotations completas         |
-| Swagger/OpenAPI  | users.controller.ts | ✅     | @ApiTags, @ApiOperation, @ApiResponse |
-| Inline Comments  | Todos os arquivos   | ✅     | Comentários claros e objetivos        |
+| JSDoc Service | users.service.ts | ✅ | Excelente - métodos LGPD documentados |
+| JSDoc Controller | users.controller.ts | ✅ | Excelente - inclui @throws, @remarks |
+| JSDoc DTOs | \*.dto.ts | ✅ | Swagger annotations completas |
+| Swagger/OpenAPI | users.controller.ts | ✅ | @ApiTags, @ApiOperation, @ApiResponse |
+| Inline Comments | Todos os arquivos | ✅ | Comentários claros e objetivos |
 
 **Conformidade: 100%** ✅
 
@@ -364,10 +364,10 @@ Validação: class-validator (Validação declarativa, pipes NestJS)
 
 - **Documentação exemplar** no UsersService (linhas 87-103, 195-211, 276-289, 316-329)
 - Cada método LGPD tem:
-  - @remarks explicando conformidade legal
-  - @param descrevendo parâmetros
-  - @returns descrevendo retorno
-  - @throws listando exceções
+ - @remarks explicando conformidade legal
+ - @param descrevendo parâmetros
+ - @returns descrevendo retorno
+ - @throws listando exceções
 - Controllers documentam autorizações esperadas (mesmo sem guards)
 - DTOs incluem exemplos práticos no Swagger
 
@@ -395,11 +395,11 @@ Validação: class-validator (Validação declarativa, pipes NestJS)
 
 ---
 
-## 🔍 Desvios Identificados
+## Desvios Identificados
 
 ### Desvio Crítico #1: Sistema RBAC Não Implementado
 
-**Severidade:** 🔴 CRÍTICO
+**Severidade:** CRÍTICO
 **Categoria:** Segurança / Autorização
 **Arquivos Afetados:**
 
@@ -422,8 +422,8 @@ Endpoints administrativos estão marcados como "admin only" em comentários e do
 @ApiOperation({ summary: 'Criar novo usuário (admin only)' })
 // ❌ Sem @UseGuards(RolesGuard) ou @Roles('admin')
 async create(@Body() createUserDto: CreateUserDto) {
-  const user = await this.usersService.create(createUserDto);
-  return { data: user, disclaimer: DISCLAIMER };
+ const user = await this.usersService.create(createUserDto);
+ return { data: user, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -435,8 +435,8 @@ async create(@Body() createUserDto: CreateUserDto) {
 @Roles('admin')
 @ApiOperation({ summary: 'Criar novo usuário (admin only)' })
 async create(@Body() createUserDto: CreateUserDto) {
-  const user = await this.usersService.create(createUserDto);
-  return { data: user, disclaimer: DISCLAIMER };
+ const user = await this.usersService.create(createUserDto);
+ return { data: user, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -459,7 +459,7 @@ async create(@Body() createUserDto: CreateUserDto) {
 
 ### Desvio Menor #1: Campo `cargo` Não Especificado
 
-**Severidade:** 🟡 MENOR
+**Severidade:** MENOR
 **Categoria:** Modelo de Dados
 **Arquivos Afetados:**
 
@@ -480,13 +480,13 @@ Atualizar ARCHITECTURE.md para documentar o campo `cargo`:
 
 ```sql
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  orgao VARCHAR(255),
-  cargo VARCHAR(255),  -- Cargo/função do servidor público
-  role VARCHAR(50) DEFAULT 'user',
-  created_at TIMESTAMP DEFAULT NOW()
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ email VARCHAR(255) UNIQUE NOT NULL,
+ name VARCHAR(255) NOT NULL,
+ orgao VARCHAR(255),
+ cargo VARCHAR(255), -- Cargo/função do servidor público
+ role VARCHAR(50) DEFAULT 'user',
+ created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -496,7 +496,7 @@ CREATE TABLE users (
 
 ### Desvio Menor #2: Campos LGPD Não Especificados
 
-**Severidade:** 🟢 NÃO É DESVIO (Melhoria Obrigatória)
+**Severidade:** NÃO É DESVIO (Melhoria Obrigatória)
 **Categoria:** Modelo de Dados / Compliance Legal
 **Arquivos Afetados:**
 
@@ -508,10 +508,10 @@ Campos LGPD (`lgpdConsentAt`, `lgpdConsentVersion`, `internationalTransferConsen
 **Análise:**
 
 - **NÃO é desvio** - são **obrigatórios por lei** (LGPD):
-  - Art. 7º, I: Consentimento do titular
-  - Art. 8º, §4º: Auditoria de consentimento
-  - Art. 33: Transferência internacional de dados
-  - Art. 18, VI: Direito de exclusão
+ - Art. 7º, I: Consentimento do titular
+ - Art. 8º, §4º: Auditoria de consentimento
+ - Art. 33: Transferência internacional de dados
+ - Art. 18, VI: Direito de exclusão
 - Implementação **excede especificação** de forma justificada
 - ARCHITECTURE.md menciona "LGPD-friendly" (linha 700) mas não detalha campos
 
@@ -520,10 +520,10 @@ Atualizar ARCHITECTURE.md seção 11.2 (Privacidade) para documentar campos LGPD
 
 ```sql
 -- Campos LGPD (Compliance)
-lgpd_consent_at TIMESTAMP,           -- LGPD Art. 7º, I
-lgpd_consent_version VARCHAR(50),    -- LGPD Art. 8º, §4º
+lgpd_consent_at TIMESTAMP, -- LGPD Art. 7º, I
+lgpd_consent_version VARCHAR(50), -- LGPD Art. 8º, §4º
 international_transfer_consent_at TIMESTAMP, -- LGPD Art. 33
-deleted_at TIMESTAMP,                -- LGPD Art. 18, VI (soft delete)
+deleted_at TIMESTAMP, -- LGPD Art. 18, VI (soft delete)
 ```
 
 **Prioridade:** **P3 - LOW** (documentação)
@@ -532,7 +532,7 @@ deleted_at TIMESTAMP,                -- LGPD Art. 18, VI (soft delete)
 
 ### Desvio Menor #3: Endpoint `/users/cancel-deletion` Público
 
-**Severidade:** 🟢 NÃO É DESVIO (By Design)
+**Severidade:** NÃO É DESVIO (By Design)
 **Categoria:** Autenticação / Autorização
 **Arquivos Afetados:**
 
@@ -556,13 +556,13 @@ Endpoint `POST /users/cancel-deletion` remove o JwtAuthGuard via `@UseGuards()` 
 @UseGuards() // Remove JwtAuthGuard (público por design)
 @ApiOperation({ summary: 'Cancelar exclusão de conta usando token do email' })
 async cancelDeletion(@Body() cancelDto: CancelDeletionDto) {
-  const payload = await this.jwtService.verifyAsync(cancelDto.token);
-  // Valida tipo de token
-  if (payload.type !== 'CANCEL_DELETION') {
-    throw new BadRequestException('Token inválido...');
-  }
-  await this.usersService.cancelDeletion(payload.sub);
-  // ...
+ const payload = await this.jwtService.verifyAsync(cancelDto.token);
+ // Valida tipo de token
+ if (payload.type !== 'CANCEL_DELETION') {
+ throw new BadRequestException('Token inválido...');
+ }
+ await this.usersService.cancelDeletion(payload.sub);
+ // ...
 }
 ```
 
@@ -586,17 +586,17 @@ Nenhuma ação necessária. Design está correto.
 ### 1. LGPD Compliance Completo
 
 **Categoria:** Legal / Data Privacy
-**Impacto:** 🟢 POSITIVO (Obrigatório por Lei)
+**Impacto:** POSITIVO (Obrigatório por Lei)
 
 **Funcionalidades Implementadas:**
 
-| Funcionalidade              | Artigo LGPD     | Implementação                                                             |
+| Funcionalidade | Artigo LGPD | Implementação |
 | --------------------------- | --------------- | ------------------------------------------------------------------------- |
-| Exportação de dados         | Art. 18, II e V | `exportUserData()` - exporta perfil, ETPs, analytics, audit logs          |
-| Direito de exclusão         | Art. 18, VI     | `softDeleteAccount()` - soft delete com 30 dias de grace period           |
-| Consentimento auditável     | Art. 8º, §4º    | Campos `lgpdConsentAt`, `lgpdConsentVersion`                              |
-| Transferência internacional | Art. 33         | Campo `internationalTransferConsentAt` (USA: Railway, OpenAI, Perplexity) |
-| Data retention policy       | Implícito       | Hard delete após 30 dias via cron job                                     |
+| Exportação de dados | Art. 18, II e V | `exportUserData()` - exporta perfil, ETPs, analytics, audit logs |
+| Direito de exclusão | Art. 18, VI | `softDeleteAccount()` - soft delete com 30 dias de grace period |
+| Consentimento auditável | Art. 8º, §4º | Campos `lgpdConsentAt`, `lgpdConsentVersion` |
+| Transferência internacional | Art. 33 | Campo `internationalTransferConsentAt` (USA: Railway, OpenAI, Perplexity) |
+| Data retention policy | Implícito | Hard delete após 30 dias via cron job |
 
 **Destaques:**
 
@@ -617,7 +617,7 @@ Nenhuma ação necessária. Design está correto.
 ### 2. Soft Delete com Grace Period
 
 **Categoria:** Data Management / UX
-**Impacto:** 🟢 POSITIVO
+**Impacto:** POSITIVO
 
 **Descrição:**
 Sistema de soft delete permite usuário cancelar deleção dentro de 30 dias, prevenindo deleções acidentais.
@@ -643,7 +643,7 @@ Sistema de soft delete permite usuário cancelar deleção dentro de 30 dias, pr
 ### 3. Campos Adicionais de Analytics
 
 **Categoria:** Analytics / Observability
-**Impacto:** 🟢 POSITIVO
+**Impacto:** POSITIVO
 
 **Campos Implementados:**
 
@@ -662,7 +662,7 @@ Sistema de soft delete permite usuário cancelar deleção dentro de 30 dias, pr
 ### 4. Documentação JSDoc Exemplar
 
 **Categoria:** Documentação / Developer Experience
-**Impacto:** 🟢 POSITIVO
+**Impacto:** POSITIVO
 
 **Destaques:**
 
@@ -699,7 +699,7 @@ Sistema de soft delete permite usuário cancelar deleção dentro de 30 dias, pr
 ### 5. Validação Robusta com class-validator
 
 **Categoria:** Input Validation / Security
-**Impacto:** 🟢 POSITIVO
+**Impacto:** POSITIVO
 
 **Validações Implementadas:**
 
@@ -721,7 +721,7 @@ Sistema de soft delete permite usuário cancelar deleção dentro de 30 dias, pr
 ### 6. ClassSerializerInterceptor para Proteção de Senha
 
 **Categoria:** Security / Data Exposure
-**Impacto:** 🟢 POSITIVO
+**Impacto:** POSITIVO
 
 **Implementação:**
 
@@ -736,9 +736,9 @@ Campo `password` **nunca** é retornado em respostas da API, mesmo se acidentalm
 ```typescript
 @Entity('users')
 export class User {
-  @Column()
-  @Exclude() // ✅ Password nunca retornado
-  password: string;
+ @Column()
+ @Exclude() // ✅ Password nunca retornado
+ password: string;
 }
 
 @Controller('users')
@@ -748,7 +748,7 @@ export class UsersController {}
 
 ---
 
-## 🎯 Recomendações Prioritizadas
+## Recomendações Prioritizadas
 
 ### P0 - BLOCKER (Implementar Antes de Produção)
 
@@ -762,10 +762,10 @@ export class UsersController {}
 
 ```typescript
 import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
+ Injectable,
+ CanActivate,
+ ExecutionContext,
+ ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../../entities/user.entity';
@@ -773,34 +773,34 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+ constructor(private reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+ canActivate(context: ExecutionContext): boolean {
+ const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+ ROLES_KEY,
+ [context.getHandler(), context.getClass()],
+ );
 
-    if (!requiredRoles) {
-      return true; // No roles required, allow access
-    }
+ if (!requiredRoles) {
+ return true; // No roles required, allow access
+ }
 
-    const { user } = context.switchToHttp().getRequest();
+ const { user } = context.switchToHttp().getRequest();
 
-    if (!user) {
-      throw new ForbiddenException('Usuário não autenticado');
-    }
+ if (!user) {
+ throw new ForbiddenException('Usuário não autenticado');
+ }
 
-    const hasRole = requiredRoles.includes(user.role);
+ const hasRole = requiredRoles.includes(user.role);
 
-    if (!hasRole) {
-      throw new ForbiddenException(
-        `Acesso negado. Roles requeridas: ${requiredRoles.join(', ')}`,
-      );
-    }
+ if (!hasRole) {
+ throw new ForbiddenException(
+ `Acesso negado. Roles requeridas: ${requiredRoles.join(', ')}`,
+ );
+ }
 
-    return true;
-  }
+ return true;
+ }
 }
 ```
 
@@ -824,29 +824,29 @@ import { UserRole } from '../../entities/user.entity';
 @Controller('users')
 @UseGuards(JwtAuthGuard) // Já existente
 export class UsersController {
-  @Post()
-  @UseGuards(RolesGuard) // ✅ ADICIONAR
-  @Roles(UserRole.ADMIN) // ✅ ADICIONAR
-  @ApiOperation({ summary: 'Criar novo usuário (admin only)' })
-  async create(@Body() createUserDto: CreateUserDto) {
-    // ...
-  }
+ @Post()
+ @UseGuards(RolesGuard) // ✅ ADICIONAR
+ @Roles(UserRole.ADMIN) // ✅ ADICIONAR
+ @ApiOperation({ summary: 'Criar novo usuário (admin only)' })
+ async create(@Body() createUserDto: CreateUserDto) {
+ // ...
+ }
 
-  @Delete(':id')
-  @UseGuards(RolesGuard) // ✅ ADICIONAR
-  @Roles(UserRole.ADMIN) // ✅ ADICIONAR
-  @ApiOperation({ summary: 'Deletar usuário (admin only)' })
-  async remove(@Param('id') id: string) {
-    // ...
-  }
+ @Delete(':id')
+ @UseGuards(RolesGuard) // ✅ ADICIONAR
+ @Roles(UserRole.ADMIN) // ✅ ADICIONAR
+ @ApiOperation({ summary: 'Deletar usuário (admin only)' })
+ async remove(@Param('id') id: string) {
+ // ...
+ }
 
-  @Post('admin/purge-deleted')
-  @UseGuards(RolesGuard) // ✅ ADICIONAR
-  @Roles(UserRole.ADMIN) // ✅ ADICIONAR
-  @ApiOperation({ summary: 'Purge manual (admin only)' })
-  async adminPurgeDeleted() {
-    // ...
-  }
+ @Post('admin/purge-deleted')
+ @UseGuards(RolesGuard) // ✅ ADICIONAR
+ @Roles(UserRole.ADMIN) // ✅ ADICIONAR
+ @ApiOperation({ summary: 'Purge manual (admin only)' })
+ async adminPurgeDeleted() {
+ // ...
+ }
 }
 ```
 
@@ -854,22 +854,22 @@ export class UsersController {
 
 ```typescript
 describe('UsersController - Authorization', () => {
-  it('should deny POST /users for non-admin users', async () => {
-    // Mock user with role USER
-    const mockRequest = { user: { id: '123', role: UserRole.USER } };
+ it('should deny POST /users for non-admin users', async () => {
+ // Mock user with role USER
+ const mockRequest = { user: { id: '123', role: UserRole.USER } };
 
-    await expect(controller.create(createUserDto)).rejects.toThrow(
-      ForbiddenException,
-    );
-  });
+ await expect(controller.create(createUserDto)).rejects.toThrow(
+ ForbiddenException,
+ );
+ });
 
-  it('should allow POST /users for admin users', async () => {
-    // Mock user with role ADMIN
-    const mockRequest = { user: { id: '123', role: UserRole.ADMIN } };
+ it('should allow POST /users for admin users', async () => {
+ // Mock user with role ADMIN
+ const mockRequest = { user: { id: '123', role: UserRole.ADMIN } };
 
-    const result = await controller.create(createUserDto);
-    expect(result.data).toBeDefined();
-  });
+ const result = await controller.create(createUserDto);
+ expect(result.data).toBeDefined();
+ });
 });
 ```
 
@@ -890,24 +890,24 @@ describe('UsersController - Authorization', () => {
 
 ```sql
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,  -- Bcrypt hashed
-  name VARCHAR(255) NOT NULL,
-  orgao VARCHAR(255),
-  cargo VARCHAR(255),  -- Cargo/função do servidor público
-  role VARCHAR(50) DEFAULT 'user', -- enum: admin, user, viewer
-  is_active BOOLEAN DEFAULT true,
-  last_login_at TIMESTAMP,
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ email VARCHAR(255) UNIQUE NOT NULL,
+ password VARCHAR(255) NOT NULL, -- Bcrypt hashed
+ name VARCHAR(255) NOT NULL,
+ orgao VARCHAR(255),
+ cargo VARCHAR(255), -- Cargo/função do servidor público
+ role VARCHAR(50) DEFAULT 'user', -- enum: admin, user, viewer
+ is_active BOOLEAN DEFAULT true,
+ last_login_at TIMESTAMP,
 
-  -- LGPD Compliance Fields
-  lgpd_consent_at TIMESTAMP,           -- LGPD Art. 7º, I
-  lgpd_consent_version VARCHAR(50),    -- LGPD Art. 8º, §4º
-  international_transfer_consent_at TIMESTAMP, -- LGPD Art. 33
-  deleted_at TIMESTAMP,                -- LGPD Art. 18, VI (soft delete)
+ -- LGPD Compliance Fields
+ lgpd_consent_at TIMESTAMP, -- LGPD Art. 7º, I
+ lgpd_consent_version VARCHAR(50), -- LGPD Art. 8º, §4º
+ international_transfer_consent_at TIMESTAMP, -- LGPD Art. 33
+ deleted_at TIMESTAMP, -- LGPD Art. 18, VI (soft delete)
 
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+ created_at TIMESTAMP DEFAULT NOW(),
+ updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -919,13 +919,13 @@ CREATE TABLE users (
 **Direitos do Titular (LGPD Art. 18):**
 
 - ✅ **Exportação de Dados:** GET /users/me/export
-  - Exporta: perfil, ETPs, analytics, audit logs
-  - Formato: JSON estruturado
-  - Metadata: retention policy, direitos LGPD
+ - Exporta: perfil, ETPs, analytics, audit logs
+ - Formato: JSON estruturado
+ - Metadata: retention policy, direitos LGPD
 - ✅ **Exclusão de Dados:** DELETE /users/me
-  - Soft delete com grace period de 30 dias
-  - Email de confirmação com link de cancelamento
-  - Hard delete automático após 30 dias (cron job @2AM)
+ - Soft delete com grace period de 30 dias
+ - Email de confirmação com link de cancelamento
+ - Hard delete automático após 30 dias (cron job @2AM)
 
 **Consentimentos Rastreados:**
 
@@ -960,23 +960,23 @@ CREATE TABLE users (
 @Roles(UserRole.ADMIN)
 @ApiOperation({ summary: 'Auditar roles de usuários (admin only)' })
 async auditUserRoles() {
-  const users = await this.usersService.findAll();
+ const users = await this.usersService.findAll();
 
-  const roleStats = {
-    total: users.length,
-    admins: users.filter(u => u.role === UserRole.ADMIN).length,
-    users: users.filter(u => u.role === UserRole.USER).length,
-    viewers: users.filter(u => u.role === UserRole.VIEWER).length,
-    inactive: users.filter(u => !u.isActive).length,
-    adminsDetails: users
-      .filter(u => u.role === UserRole.ADMIN)
-      .map(u => ({ id: u.id, email: u.email, isActive: u.isActive })),
-  };
+ const roleStats = {
+ total: users.length,
+ admins: users.filter(u => u.role === UserRole.ADMIN).length,
+ users: users.filter(u => u.role === UserRole.USER).length,
+ viewers: users.filter(u => u.role === UserRole.VIEWER).length,
+ inactive: users.filter(u => !u.isActive).length,
+ adminsDetails: users
+ .filter(u => u.role === UserRole.ADMIN)
+ .map(u => ({ id: u.id, email: u.email, isActive: u.isActive })),
+ };
 
-  return {
-    data: roleStats,
-    disclaimer: DISCLAIMER,
-  };
+ return {
+ data: roleStats,
+ disclaimer: DISCLAIMER,
+ };
 }
 ```
 
@@ -995,27 +995,27 @@ async auditUserRoles() {
 
 ```typescript
 describe('/users (E2E) - Authorization', () => {
-  it('should deny POST /users for user with role USER', () => {
-    return request(app.getHttpServer())
-      .post('/users')
-      .set('Authorization', `Bearer ${userToken}`) // Token com role USER
-      .send(createUserDto)
-      .expect(403)
-      .expect((res) => {
-        expect(res.body.message).toContain('Acesso negado');
-      });
-  });
+ it('should deny POST /users for user with role USER', () => {
+ return request(app.getHttpServer())
+ .post('/users')
+ .set('Authorization', `Bearer ${userToken}`) // Token com role USER
+ .send(createUserDto)
+ .expect(403)
+ .expect((res) => {
+ expect(res.body.message).toContain('Acesso negado');
+ });
+ });
 
-  it('should allow POST /users for user with role ADMIN', () => {
-    return request(app.getHttpServer())
-      .post('/users')
-      .set('Authorization', `Bearer ${adminToken}`) // Token com role ADMIN
-      .send(createUserDto)
-      .expect(201)
-      .expect((res) => {
-        expect(res.body.data.email).toBe(createUserDto.email);
-      });
-  });
+ it('should allow POST /users for user with role ADMIN', () => {
+ return request(app.getHttpServer())
+ .post('/users')
+ .set('Authorization', `Bearer ${adminToken}`) // Token com role ADMIN
+ .send(createUserDto)
+ .expect(201)
+ .expect((res) => {
+ expect(res.body.data.email).toBe(createUserDto.email);
+ });
+ });
 });
 ```
 
@@ -1024,32 +1024,32 @@ describe('/users (E2E) - Authorization', () => {
 
 ---
 
-## 📈 Resumo de Conformidade por Categoria
+## Resumo de Conformidade por Categoria
 
-| Categoria              | Conformidade | Desvios Críticos | Desvios Menores     | Melhorias           |
+| Categoria | Conformidade | Desvios Críticos | Desvios Menores | Melhorias |
 | ---------------------- | ------------ | ---------------- | ------------------- | ------------------- |
-| **Modelo de Dados**    | 100%         | 0                | 2 (não impactantes) | 9 campos adicionais |
-| **Service Layer**      | 100%         | 0                | 0                   | 5 métodos LGPD      |
-| **Controller Layer**   | 95%          | 1                | 0                   | 6 endpoints LGPD    |
-| **Autenticação (JWT)** | 100%         | 0                | 0                   | 0                   |
-| **Autorização (RBAC)** | 0%           | 1                | 0                   | 0                   |
-| **DTOs e Validação**   | 100%         | 0                | 0                   | 4 DTOs completos    |
-| **Testes**             | 100%         | 0                | 0                   | 0                   |
-| **Documentação**       | 100%         | 0                | 0                   | JSDoc exemplar      |
+| **Modelo de Dados** | 100% | 0 | 2 (não impactantes) | 9 campos adicionais |
+| **Service Layer** | 100% | 0 | 0 | 5 métodos LGPD |
+| **Controller Layer** | 95% | 1 | 0 | 6 endpoints LGPD |
+| **Autenticação (JWT)** | 100% | 0 | 0 | 0 |
+| **Autorização (RBAC)** | 0% | 1 | 0 | 0 |
+| **DTOs e Validação** | 100% | 0 | 0 | 4 DTOs completos |
+| **Testes** | 100% | 0 | 0 | 0 |
+| **Documentação** | 100% | 0 | 0 | JSDoc exemplar |
 
-**Conformidade Geral: 92%** 🟢
+**Conformidade Geral: 92%** 
 
 **Nota:** Conformidade alta apesar de RBAC ausente, pois módulo **excede significativamente** as especificações em LGPD compliance e documentação.
 
 ---
 
-## 🎬 Conclusão
+## Conclusão
 
-### Status: **APROVADO CONDICIONALMENTE** ⚠️
+### Status: **APROVADO CONDICIONALMENTE** ⚠
 
 O módulo User está **bem implementado** e **excede as especificações** em áreas críticas (LGPD compliance, documentação, validação). Porém, possui **1 desvio crítico de segurança** que **deve ser corrigido antes de produção**:
 
-**🔴 BLOCKER:** Sistema RBAC não implementado - endpoints admin-only estão desprotegidos.
+** BLOCKER:** Sistema RBAC não implementado - endpoints admin-only estão desprotegidos.
 
 ### Próximos Passos
 

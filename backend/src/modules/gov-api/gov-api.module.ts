@@ -46,37 +46,37 @@ import { GovApiMetricsService } from './gov-api-metrics.service';
  * import { GovApiMetricsService } from '../gov-api/gov-api-metrics.service';
  *
  * @Module({
- *   imports: [GovApiModule],
- *   providers: [MyGovApiService],
+ * imports: [GovApiModule],
+ * providers: [MyGovApiService],
  * })
  * export class MyGovApiModule {}
  *
  * // In your service
  * @Injectable()
  * export class MyGovApiService implements IGovApiService {
- *   constructor(
- *     private cache: GovApiCache,
- *     private metrics: GovApiMetricsService,
- *   ) {}
+ * constructor(
+ * private cache: GovApiCache,
+ * private metrics: GovApiMetricsService,
+ * ) {}
  *
- *   async search(query: string): Promise<Result> {
- *     const start = Date.now();
- *     try {
- *       const result = await this.doSearch(query);
- *       this.metrics.recordRequest('pncp', Date.now() - start, true);
- *       return result;
- *     } catch (error) {
- *       this.metrics.recordRequest('pncp', Date.now() - start, false);
- *       throw error;
- *     }
- *   }
+ * async search(query: string): Promise<Result> {
+ * const start = Date.now();
+ * try {
+ * const result = await this.doSearch(query);
+ * this.metrics.recordRequest('pncp', Date.now() - start, true);
+ * return result;
+ * } catch (error) {
+ * this.metrics.recordRequest('pncp', Date.now() - start, false);
+ * throw error;
+ * }
+ * }
  * }
  * ```
  */
 @Global()
 @Module({
-  imports: [ConfigModule],
-  providers: [GovApiCache, GovApiMetricsService],
-  exports: [GovApiCache, GovApiMetricsService],
+ imports: [ConfigModule],
+ providers: [GovApiCache, GovApiMetricsService],
+ exports: [GovApiCache, GovApiMetricsService],
 })
 export class GovApiModule {}

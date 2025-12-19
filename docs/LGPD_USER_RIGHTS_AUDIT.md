@@ -53,8 +53,8 @@ O titular tem direito de acesso aos seus dados pessoais em processamento.
 @Get('me/export')
 @ApiOperation({ summary: 'Exportar todos os dados do usuario (LGPD Art. 18, II e V)' })
 async exportUserData(@CurrentUser('id') userId: string) {
-  const data = await this.usersService.exportUserData(userId);
-  return { data, disclaimer: DISCLAIMER };
+ const data = await this.usersService.exportUserData(userId);
+ return { data, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -95,8 +95,8 @@ O titular tem direito de corrigir dados incompletos, inexatos ou desatualizados.
 @Patch(':id')
 @ApiOperation({ summary: 'Atualizar usuario' })
 async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  const user = await this.usersService.update(id, updateUserDto);
-  return { data: user, disclaimer: DISCLAIMER };
+ const user = await this.usersService.update(id, updateUserDto);
+ return { data: user, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -140,30 +140,30 @@ O titular tem direito de solicitar a exclusao de seus dados pessoais.
 @Delete('me')
 @ApiOperation({ summary: 'Deletar minha propria conta (soft delete) - LGPD Art. 18, VI' })
 async deleteMyAccount(@CurrentUser('id') userId: string, @Body() deleteDto: DeleteAccountDto) {
-  if (deleteDto.confirmation !== 'DELETE MY ACCOUNT') {
-    throw new BadRequestException('Confirmacao invalida...');
-  }
-  const { scheduledDeletionDate } = await this.usersService.softDeleteAccount(userId, deleteDto.reason);
-  // Returns scheduled deletion date (30 days from now)
+ if (deleteDto.confirmation !== 'DELETE MY ACCOUNT') {
+ throw new BadRequestException('Confirmacao invalida...');
+ }
+ const { scheduledDeletionDate } = await this.usersService.softDeleteAccount(userId, deleteDto.reason);
+ // Returns scheduled deletion date (30 days from now)
 }
 ```
 
 #### Deletion Flow
 ```
 User requests DELETE /users/me
-     |
-     v
+ |
+ v
 Soft delete (deletedAt = now, isActive = false)
-     |
-     v
+ |
+ v
 Email sent with cancellation link (30-day valid token)
-     |
-     v
+ |
+ v
 [30-day grace period]
-     |
-     +---> User clicks cancel link --> Account reactivated
-     |
-     v
+ |
+ +---> User clicks cancel link --> Account reactivated
+ |
+ v
 Cron job @ 2AM daily --> Hard delete (cascade to ETPs)
 ```
 
@@ -208,18 +208,18 @@ O titular tem direito de receber seus dados em formato estruturado, de uso comum
 ```typescript
 // backend/src/modules/users/users.service.ts:104-193
 async exportUserData(userId: string) {
-  const user = await this.usersRepository.findOne({...});
-  const etps = await this.etpsRepository.find({
-    where: { createdById: userId },
-    relations: ['sections', 'versions'],
-  });
-  const analytics = await this.analyticsRepository.find({...});
-  const auditLogs = await this.auditLogsRepository.find({...});
+ const user = await this.usersRepository.findOne({...});
+ const etps = await this.etpsRepository.find({
+ where: { createdById: userId },
+ relations: ['sections', 'versions'],
+ });
+ const analytics = await this.analyticsRepository.find({...});
+ const auditLogs = await this.auditLogsRepository.find({...});
 
-  // Audit trail for export
-  await this.auditService.logDataExport(userId, {...});
+ // Audit trail for export
+ await this.auditService.logDataExport(userId, {...});
 
-  return { user, etps, analytics, auditLogs, exportMetadata: {...} };
+ return { user, etps, analytics, auditLogs, exportMetadata: {...} };
 }
 ```
 
@@ -255,13 +255,13 @@ O titular tem direito de revogar consentimento a qualquer momento.
 ```typescript
 // backend/src/entities/user.entity.ts:53-73
 @Column({ type: 'timestamp', nullable: true })
-lgpdConsentAt: Date | null;          // LGPD Art. 7, I
+lgpdConsentAt: Date | null; // LGPD Art. 7, I
 
 @Column({ nullable: true })
-lgpdConsentVersion: string | null;    // LGPD Art. 8, §4
+lgpdConsentVersion: string | null; // LGPD Art. 8, §4
 
 @Column({ type: 'timestamp', nullable: true })
-internationalTransferConsentAt: Date | null;  // LGPD Art. 33
+internationalTransferConsentAt: Date | null; // LGPD Art. 33
 ```
 
 #### Consent Tracking
@@ -294,17 +294,17 @@ Operacoes de tratamento devem ser registradas.
 ```typescript
 // backend/src/entities/audit-log.entity.ts:12-24
 export enum AuditAction {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  GENERATE = 'generate',
-  EXPORT = 'export',
-  VERSION = 'version',
-  STATUS_CHANGE = 'status_change',
-  USER_DATA_EXPORT = 'user_data_export',        // NEW
-  ACCOUNT_DELETION_SOFT = 'account_deletion_soft',  // NEW
-  ACCOUNT_DELETION_HARD = 'account_deletion_hard',  // NEW
-  ACCOUNT_DELETION_CANCELLED = 'account_deletion_cancelled',  // NEW
+ CREATE = 'create',
+ UPDATE = 'update',
+ DELETE = 'delete',
+ GENERATE = 'generate',
+ EXPORT = 'export',
+ VERSION = 'version',
+ STATUS_CHANGE = 'status_change',
+ USER_DATA_EXPORT = 'user_data_export', // NEW
+ ACCOUNT_DELETION_SOFT = 'account_deletion_soft', // NEW
+ ACCOUNT_DELETION_HARD = 'account_deletion_hard', // NEW
+ ACCOUNT_DELETION_CANCELLED = 'account_deletion_cancelled', // NEW
 }
 ```
 
@@ -364,12 +364,12 @@ The ETP Express system is now **95% compliant** with LGPD Article 18 data subjec
 ## References
 
 - LGPD Lei 13.709/2018
-  - Art. 18 (Direitos do Titular)
-  - Art. 7, I (Base Legal - Consentimento)
-  - Art. 8, §4 (Prova de Consentimento)
-  - Art. 33 (Transferencia Internacional)
-  - Art. 37 (Registro de Operacoes)
-  - Art. 50 (Boas Praticas)
+ - Art. 18 (Direitos do Titular)
+ - Art. 7, I (Base Legal - Consentimento)
+ - Art. 8, §4 (Prova de Consentimento)
+ - Art. 33 (Transferencia Internacional)
+ - Art. 37 (Registro de Operacoes)
+ - Art. 50 (Boas Praticas)
 - Issue #86 - Parent LGPD Audit
 - Issue #265 - This audit
 - docs/PRIVACY_POLICY.md
