@@ -70,9 +70,9 @@ export class HealthController {
    * @example
    * // Response quando saudável:
    * {
-   *   "status": "healthy",
-   *   "timestamp": "2025-11-29T12:00:00.000Z",
-   *   "database": "connected"
+   * "status": "healthy",
+   * "timestamp": "2025-11-29T12:00:00.000Z",
+   * "database": "connected"
    * }
    */
   @Get()
@@ -91,19 +91,19 @@ export class HealthController {
    * @example
    * // Response quando pronto:
    * {
-   *   "status": "ready",
-   *   "timestamp": "2025-11-29T12:00:00.000Z",
-   *   "database": "connected",
-   *   "migrations": "completed"
+   * "status": "ready",
+   * "timestamp": "2025-11-29T12:00:00.000Z",
+   * "database": "connected",
+   * "migrations": "completed"
    * }
    *
    * @example
    * // Response durante migrations:
    * {
-   *   "status": "starting",
-   *   "reason": "migrations_in_progress",
-   *   "database": "connected",
-   *   "timestamp": "2025-11-29T12:00:00.000Z"
+   * "status": "starting",
+   * "reason": "migrations_in_progress",
+   * "database": "connected",
+   * "timestamp": "2025-11-29T12:00:00.000Z"
    * }
    */
   @Get('ready')
@@ -121,35 +121,35 @@ export class HealthController {
    * @example
    * // Response quando todos saudáveis:
    * {
-   *   "openai": {
-   *     "status": "healthy",
-   *     "latency": 245,
-   *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
-   *     "lastCheck": "2025-11-24T12:00:00.000Z"
-   *   },
-   *   "exa": {
-   *     "status": "healthy",
-   *     "latency": 892,
-   *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
-   *     "lastCheck": "2025-11-24T12:00:00.000Z"
-   *   }
+   * "openai": {
+   * "status": "healthy",
+   * "latency": 245,
+   * "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
+   * "lastCheck": "2025-11-24T12:00:00.000Z"
+   * },
+   * "exa": {
+   * "status": "healthy",
+   * "latency": 892,
+   * "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
+   * "lastCheck": "2025-11-24T12:00:00.000Z"
+   * }
    * }
    *
    * @example
    * // Response quando OpenAI degradado:
    * {
-   *   "openai": {
-   *     "status": "degraded",
-   *     "circuitState": { "opened": true, "halfOpen": false, "closed": false, "stats": {...} },
-   *     "lastCheck": "2025-11-24T12:00:00.000Z",
-   *     "error": "Connection timeout"
-   *   },
-   *   "exa": {
-   *     "status": "healthy",
-   *     "latency": 723,
-   *     "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
-   *     "lastCheck": "2025-11-24T12:00:00.000Z"
-   *   }
+   * "openai": {
+   * "status": "degraded",
+   * "circuitState": { "opened": true, "halfOpen": false, "closed": false, "stats": {...} },
+   * "lastCheck": "2025-11-24T12:00:00.000Z",
+   * "error": "Connection timeout"
+   * },
+   * "exa": {
+   * "status": "healthy",
+   * "latency": 723,
+   * "circuitState": { "opened": false, "halfOpen": false, "closed": true, "stats": {...} },
+   * "lastCheck": "2025-11-24T12:00:00.000Z"
+   * }
    * }
    */
   @Get('providers')
@@ -223,15 +223,15 @@ export class HealthController {
    * @example
    * // Response quando circuit fechado (saudável):
    * {
-   *   "opened": false,
-   *   "halfOpen": false,
-   *   "closed": true,
-   *   "stats": {
-   *     "fires": 10,
-   *     "successes": 10,
-   *     "failures": 0,
-   *     "timeouts": 0
-   *   }
+   * "opened": false,
+   * "halfOpen": false,
+   * "closed": true,
+   * "stats": {
+   * "fires": 10,
+   * "successes": 10,
+   * "failures": 0,
+   * "timeouts": 0
+   * }
    * }
    */
   @Get('providers/openai')
@@ -249,15 +249,15 @@ export class HealthController {
    * @example
    * // Response quando circuit fechado (saudável):
    * {
-   *   "opened": false,
-   *   "halfOpen": false,
-   *   "closed": true,
-   *   "stats": {
-   *     "fires": 5,
-   *     "successes": 5,
-   *     "failures": 0,
-   *     "timeouts": 0
-   *   }
+   * "opened": false,
+   * "halfOpen": false,
+   * "closed": true,
+   * "stats": {
+   * "fires": 5,
+   * "successes": 5,
+   * "failures": 0,
+   * "timeouts": 0
+   * }
    * }
    */
   @Get('providers/exa')
@@ -275,30 +275,30 @@ export class HealthController {
    * @example
    * // Response:
    * {
-   *   "uptime": 86400,
-   *   "uptimeFormatted": "1d 0h 0m 0s",
-   *   "memory": {
-   *     "heapUsed": 150000000,
-   *     "heapTotal": 250000000,
-   *     "heapUsedMB": 143,
-   *     "heapTotalMB": 238,
-   *     "external": 5000000,
-   *     "rss": 300000000,
-   *     "rssMB": 286
-   *   },
-   *   "cpu": {
-   *     "user": 1234567,
-   *     "system": 234567,
-   *     "userMs": 1234,
-   *     "systemMs": 234
-   *   },
-   *   "process": {
-   *     "pid": 12345,
-   *     "nodeVersion": "v20.10.0",
-   *     "platform": "linux",
-   *     "arch": "x64"
-   *   },
-   *   "timestamp": "2025-12-14T10:30:00.000Z"
+   * "uptime": 86400,
+   * "uptimeFormatted": "1d 0h 0m 0s",
+   * "memory": {
+   * "heapUsed": 150000000,
+   * "heapTotal": 250000000,
+   * "heapUsedMB": 143,
+   * "heapTotalMB": 238,
+   * "external": 5000000,
+   * "rss": 300000000,
+   * "rssMB": 286
+   * },
+   * "cpu": {
+   * "user": 1234567,
+   * "system": 234567,
+   * "userMs": 1234,
+   * "systemMs": 234
+   * },
+   * "process": {
+   * "pid": 12345,
+   * "nodeVersion": "v20.10.0",
+   * "platform": "linux",
+   * "arch": "x64"
+   * },
+   * "timestamp": "2025-12-14T10:30:00.000Z"
    * }
    */
   @Get('metrics')

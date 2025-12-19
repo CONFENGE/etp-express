@@ -15,7 +15,7 @@ export function ETPEditorTabsList({ sections }: ETPEditorTabsListProps) {
     <TabsList className="grid grid-cols-4 lg:grid-cols-7">
       {sections.map((section) => (
         <TabsTrigger key={section.id} value={section.id}>
-          {section.completed && '✓'} {section.title}
+          {section.completed && '✅'} {section.title}
         </TabsTrigger>
       ))}
     </TabsList>

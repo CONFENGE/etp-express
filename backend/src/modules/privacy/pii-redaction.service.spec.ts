@@ -96,12 +96,12 @@ describe('PIIRedactionService', () => {
 
     it('should handle multiple PII types in one text', () => {
       const input = `
-        Responsável: João Silva
-        Email: joao.silva@gov.br
-        CPF: 123.456.789-00
-        Telefone: (11) 98765-4321
-        Matrícula: 123456
-      `;
+ Responsável: João Silva
+ Email: joao.silva@gov.br
+ CPF: 123.456.789-00
+ Telefone: (11) 98765-4321
+ Matrícula: 123456
+ `;
       const { redacted, findings } = service.redact(input);
 
       expect(findings.length).toBeGreaterThan(0);
@@ -208,7 +208,7 @@ describe('PIIRedactionService', () => {
 - Item 2: maria@gov.br
 
 **Importante:** CPF 123.456.789-00
-      `;
+ `;
       const { redacted } = service.redact(input);
 
       expect(redacted).toContain('## Título');

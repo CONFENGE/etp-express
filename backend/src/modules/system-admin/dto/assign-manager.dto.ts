@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
  *
  * @example
  * {
- *   userId: '123e4567-e89b-12d3-a456-426614174000'
+ * userId: '123e4567-e89b-12d3-a456-426614174000'
  * }
  */
 export class AssignManagerDto {

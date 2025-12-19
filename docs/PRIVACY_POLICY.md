@@ -29,25 +29,25 @@ Ao utilizar nossos serviços, você concorda com os termos desta política. Caso
 
 ### 2.1 Dados de Cadastro e Autenticação
 
-| Dado Pessoal                | Finalidade                                       | Base Legal (LGPD)                            |
+| Dado Pessoal | Finalidade | Base Legal (LGPD) |
 | --------------------------- | ------------------------------------------------ | -------------------------------------------- |
-| **E-mail**                  | Autenticação, comunicação e recuperação de senha | Art. 7º, V - Execução de contrato            |
-| **Senha (hash bcrypt)**     | Autenticação segura                              | Art. 7º, V - Execução de contrato            |
-| **Nome completo**           | Identificação do usuário na plataforma           | Art. 7º, V - Execução de contrato            |
-| **Órgão público vinculado** | Contextualização de ETPs geradas                 | Art. 7º, V - Execução de contrato            |
-| **Data de cadastro**        | Auditoria e conformidade                         | Art. 7º, II - Cumprimento de obrigação legal |
+| **E-mail** | Autenticação, comunicação e recuperação de senha | Art. 7º, V - Execução de contrato |
+| **Senha (hash bcrypt)** | Autenticação segura | Art. 7º, V - Execução de contrato |
+| **Nome completo** | Identificação do usuário na plataforma | Art. 7º, V - Execução de contrato |
+| **Órgão público vinculado** | Contextualização de ETPs geradas | Art. 7º, V - Execução de contrato |
+| **Data de cadastro** | Auditoria e conformidade | Art. 7º, II - Cumprimento de obrigação legal |
 
 **Armazenamento:** Banco de dados PostgreSQL com criptografia em repouso (Railway)
 **Retenção:** Enquanto a conta estiver ativa + 90 dias após exclusão solicitada
 
 ### 2.2 Dados de Uso e Analytics
 
-| Dado Pessoal               | Finalidade                           | Base Legal (LGPD)                 |
+| Dado Pessoal | Finalidade | Base Legal (LGPD) |
 | -------------------------- | ------------------------------------ | --------------------------------- |
-| **Endereço IP**            | Segurança, análise geográfica de uso | Art. 7º, IX - Legítimo interesse  |
-| **User Agent (navegador)** | Compatibilidade técnica              | Art. 7º, IX - Legítimo interesse  |
-| **Session ID**             | Gerenciamento de sessão              | Art. 7º, V - Execução de contrato |
-| **Eventos de interação**   | Melhoria da experiência do usuário   | Art. 7º, IX - Legítimo interesse  |
+| **Endereço IP** | Segurança, análise geográfica de uso | Art. 7º, IX - Legítimo interesse |
+| **User Agent (navegador)** | Compatibilidade técnica | Art. 7º, IX - Legítimo interesse |
+| **Session ID** | Gerenciamento de sessão | Art. 7º, V - Execução de contrato |
+| **Eventos de interação** | Melhoria da experiência do usuário | Art. 7º, IX - Legítimo interesse |
 
 **Armazenamento:** Tabela `analytics_events` no PostgreSQL
 **Retenção:**
@@ -60,12 +60,12 @@ Ao utilizar nossos serviços, você concorda com os termos desta política. Caso
 
 ### 2.3 Logs de Auditoria
 
-| Dado Pessoal            | Finalidade                                | Base Legal (LGPD)                            |
+| Dado Pessoal | Finalidade | Base Legal (LGPD) |
 | ----------------------- | ----------------------------------------- | -------------------------------------------- |
-| **User ID**             | Conformidade LGPD (registro de operações) | Art. 7º, II - Obrigação legal (Art. 37 LGPD) |
-| **IP Address**          | Investigação de incidentes de segurança   | Art. 7º, IX - Legítimo interesse             |
-| **Timestamp**           | Rastreio de operações críticas            | Art. 7º, II - Obrigação legal                |
-| **Mudanças realizadas** | Registro de tratamento de dados           | Art. 7º, II - Obrigação legal                |
+| **User ID** | Conformidade LGPD (registro de operações) | Art. 7º, II - Obrigação legal (Art. 37 LGPD) |
+| **IP Address** | Investigação de incidentes de segurança | Art. 7º, IX - Legítimo interesse |
+| **Timestamp** | Rastreio de operações críticas | Art. 7º, II - Obrigação legal |
+| **Mudanças realizadas** | Registro de tratamento de dados | Art. 7º, II - Obrigação legal |
 
 **Armazenamento:** Tabela `audit_logs` no PostgreSQL
 **Retenção:** 90 dias (após este período, registros são **automaticamente excluídos**)
@@ -74,11 +74,11 @@ Ao utilizar nossos serviços, você concorda com os termos desta política. Caso
 
 ### 2.4 Conteúdo de Estudos Técnicos Preliminares (ETPs)
 
-| Dado Pessoal             | Finalidade                 | Base Legal (LGPD)                 |
+| Dado Pessoal | Finalidade | Base Legal (LGPD) |
 | ------------------------ | -------------------------- | --------------------------------- |
-| **Título do ETP**        | Identificação do projeto   | Art. 7º, V - Execução de contrato |
+| **Título do ETP** | Identificação do projeto | Art. 7º, V - Execução de contrato |
 | **Descrição do projeto** | Geração de conteúdo via IA | Art. 7º, V - Execução de contrato |
-| **Seções geradas**       | Documento final do usuário | Art. 7º, V - Execução de contrato |
+| **Seções geradas** | Documento final do usuário | Art. 7º, V - Execução de contrato |
 
 **Armazenamento:** Tabelas `etps` e `sections` no PostgreSQL
 **Retenção:** Enquanto a conta estiver ativa + 90 dias após exclusão solicitada
@@ -130,10 +130,10 @@ Ao utilizar nossos serviços, você concorda com os termos desta política. Caso
 - **Localização:** Estados Unidos (transferência internacional)
 - **Base legal:** Art. 7º, V - Execução de contrato + Art. 33 LGPD
 - **Proteção:**
-  - ✅ PostgreSQL com encryption at rest (criptografia em repouso)
-  - ✅ HTTPS forçado (TLS 1.2+)
-  - ✅ SSL/TLS na conexão com banco de dados
-  - ✅ Logs retidos por 7 dias (Railway) com sanitização de PII
+ - ✅ PostgreSQL com encryption at rest (criptografia em repouso)
+ - ✅ HTTPS forçado (TLS 1.2+)
+ - ✅ SSL/TLS na conexão com banco de dados
+ - ✅ Logs retidos por 7 dias (Railway) com sanitização de PII
 - **DPA:** Railway possui Data Processing Agreement conforme GDPR/LGPD
 
 ### 3.3 Quando NÃO Compartilhamos Dados
@@ -242,10 +242,10 @@ Conforme a LGPD (Art. 18), você tem os seguintes direitos:
 ### 5.1 Canais de Atendimento
 
 **E-mail do Encarregado (DPO):**
-📧 `dpo@confenge.com.br`
+ `dpo@confenge.com.br`
 
 **E-mail de Privacidade:**
-📧 `privacidade@confenge.com.br`
+ `privacidade@confenge.com.br`
 
 **Formulário na Plataforma:**
 Disponível em: [https://confenge.com.br/privacy/request](https://confenge.com.br/privacy/request) _(em desenvolvimento)_
@@ -280,15 +280,15 @@ Conforme LGPD Art. 19:
 
 ### 6.1 Segurança Técnica
 
-| Medida                       | Descrição                                       | Status          |
+| Medida | Descrição | Status |
 | ---------------------------- | ----------------------------------------------- | --------------- |
-| **Criptografia em trânsito** | HTTPS/TLS 1.2+ forçado                          | ✅ Implementado |
-| **Criptografia em repouso**  | PostgreSQL encryption at rest (Railway)         | ✅ Implementado |
-| **Hash de senhas**           | bcrypt com salt (custo 10)                      | ✅ Implementado |
-| **Rate limiting**            | Proteção contra força bruta (5 tentativas/min)  | ✅ Implementado |
-| **Sanitização de PII**       | `PIIRedactionService` antes de enviar para APIs | ✅ Implementado |
-| **Logs de auditoria**        | Registro de operações críticas (90 dias)        | ✅ Implementado |
-| **Anonimização automática**  | Analytics anonimizados após 90 dias             | ✅ Implementado |
+| **Criptografia em trânsito** | HTTPS/TLS 1.2+ forçado | ✅ Implementado |
+| **Criptografia em repouso** | PostgreSQL encryption at rest (Railway) | ✅ Implementado |
+| **Hash de senhas** | bcrypt com salt (custo 10) | ✅ Implementado |
+| **Rate limiting** | Proteção contra força bruta (5 tentativas/min) | ✅ Implementado |
+| **Sanitização de PII** | `PIIRedactionService` antes de enviar para APIs | ✅ Implementado |
+| **Logs de auditoria** | Registro de operações críticas (90 dias) | ✅ Implementado |
+| **Anonimização automática** | Analytics anonimizados após 90 dias | ✅ Implementado |
 
 ### 6.2 Segurança Organizacional
 
@@ -308,7 +308,7 @@ Em caso de vazamento de dados:
 4. **Relatório de incidente:** Disponível para consulta dos usuários
 
 **Canal de denúncia:**
-📧 `security@confenge.com.br`
+ `security@confenge.com.br`
 
 ---
 
@@ -316,9 +316,9 @@ Em caso de vazamento de dados:
 
 ### 7.1 Cookies Essenciais
 
-| Cookie          | Finalidade                             | Duração | Base Legal                        |
+| Cookie | Finalidade | Duração | Base Legal |
 | --------------- | -------------------------------------- | ------- | --------------------------------- |
-| `session_token` | Autenticação e gerenciamento de sessão | 7 dias  | Art. 7º, V - Execução de contrato |
+| `session_token` | Autenticação e gerenciamento de sessão | 7 dias | Art. 7º, V - Execução de contrato |
 
 **Importante:** Não utilizamos cookies de terceiros para publicidade ou rastreamento.
 
@@ -341,16 +341,16 @@ Você pode desativar cookies nas configurações do navegador, mas isso pode afe
 
 ### 8.1 Tabela de Retenção
 
-| Tipo de Dado              | Período de Retenção                          | Ação após Retenção                 |
+| Tipo de Dado | Período de Retenção | Ação após Retenção |
 | ------------------------- | -------------------------------------------- | ---------------------------------- |
-| **Dados cadastrais**      | Enquanto conta ativa + 90 dias após exclusão | Exclusão permanente                |
-| **Senhas (hash)**         | Enquanto conta ativa                         | Exclusão permanente                |
-| **ETPs criados**          | Enquanto conta ativa + 90 dias após exclusão | Exclusão permanente                |
-| **Analytics (userId)**    | 90 dias                                      | **Anonimização** (SET NULL)        |
-| **Analytics (IP)**        | 30 dias                                      | **Pseudonimização** (hash SHA-256) |
-| **Analytics (sessionId)** | 60 dias                                      | **Anonimização** (SET NULL)        |
-| **Logs de auditoria**     | 90 dias                                      | Exclusão permanente                |
-| **Logs de aplicação**     | 7 dias (Railway)                             | Exclusão automática                |
+| **Dados cadastrais** | Enquanto conta ativa + 90 dias após exclusão | Exclusão permanente |
+| **Senhas (hash)** | Enquanto conta ativa | Exclusão permanente |
+| **ETPs criados** | Enquanto conta ativa + 90 dias após exclusão | Exclusão permanente |
+| **Analytics (userId)** | 90 dias | **Anonimização** (SET NULL) |
+| **Analytics (IP)** | 30 dias | **Pseudonimização** (hash SHA-256) |
+| **Analytics (sessionId)** | 60 dias | **Anonimização** (SET NULL) |
+| **Logs de auditoria** | 90 dias | Exclusão permanente |
+| **Logs de aplicação** | 7 dias (Railway) | Exclusão automática |
 
 ### 8.2 Justificativa dos Prazos
 
@@ -364,10 +364,10 @@ Você pode desativar cookies nas configurações do navegador, mas isso pode afe
 
 ### 9.1 Países Destinatários
 
-| Provedor    | País           | Garantias                                   |
+| Provedor | País | Garantias |
 | ----------- | -------------- | ------------------------------------------- |
-| **OpenAI**  | Estados Unidos | DPA conforme GDPR/LGPD + PII Redaction      |
-| **Exa**     | Estados Unidos | DPA conforme GDPR/LGPD + PII Redaction      |
+| **OpenAI** | Estados Unidos | DPA conforme GDPR/LGPD + PII Redaction |
+| **Exa** | Estados Unidos | DPA conforme GDPR/LGPD + PII Redaction |
 | **Railway** | Estados Unidos | DPA conforme GDPR/LGPD + Encryption at rest |
 
 ### 9.2 Garantias Legais (LGPD Art. 33)
@@ -474,17 +474,17 @@ Caso não fique satisfeito com nossas respostas, você pode contatar a ANPD:
 
 ## 14. Glossário
 
-| Termo                 | Definição                                                                               |
+| Termo | Definição |
 | --------------------- | --------------------------------------------------------------------------------------- |
-| **Dado Pessoal**      | Informação relacionada a pessoa natural identificada ou identificável (LGPD Art. 5º, I) |
-| **Titular**           | Pessoa natural a quem se referem os dados pessoais (LGPD Art. 5º, V)                    |
-| **Controlador**       | ETP Express - quem decide sobre tratamento de dados (LGPD Art. 5º, VI)                  |
-| **Operador**          | Quem trata dados em nome do controlador (ex: Railway) (LGPD Art. 5º, VII)               |
-| **Encarregado (DPO)** | Pessoa indicada para atuar como canal de comunicação (LGPD Art. 5º, VIII)               |
-| **Consentimento**     | Manifestação livre, informada e inequívoca (LGPD Art. 5º, XII)                          |
-| **Anonimização**      | Remoção irreversível de identificadores (LGPD Art. 5º, XI)                              |
-| **Pseudonimização**   | Substituição de identificadores por tokens reversíveis (LGPD Art. 13)                   |
-| **PII Redaction**     | Processo de remoção automática de dados pessoais de textos                              |
+| **Dado Pessoal** | Informação relacionada a pessoa natural identificada ou identificável (LGPD Art. 5º, I) |
+| **Titular** | Pessoa natural a quem se referem os dados pessoais (LGPD Art. 5º, V) |
+| **Controlador** | ETP Express - quem decide sobre tratamento de dados (LGPD Art. 5º, VI) |
+| **Operador** | Quem trata dados em nome do controlador (ex: Railway) (LGPD Art. 5º, VII) |
+| **Encarregado (DPO)** | Pessoa indicada para atuar como canal de comunicação (LGPD Art. 5º, VIII) |
+| **Consentimento** | Manifestação livre, informada e inequívoca (LGPD Art. 5º, XII) |
+| **Anonimização** | Remoção irreversível de identificadores (LGPD Art. 5º, XI) |
+| **Pseudonimização** | Substituição de identificadores por tokens reversíveis (LGPD Art. 13) |
+| **PII Redaction** | Processo de remoção automática de dados pessoais de textos |
 
 ---
 
@@ -511,4 +511,4 @@ Ao utilizar a plataforma ETP Express, você declara:
 **ETP Express - Geração de Estudos Técnicos Preliminares com IA**
 **Privacidade e Segurança em Primeiro Lugar**
 
-📧 **Dúvidas?** Entre em contato: privacidade@confenge.com.br
+ **Dúvidas?** Entre em contato: privacidade@confenge.com.br

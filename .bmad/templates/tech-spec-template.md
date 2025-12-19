@@ -39,10 +39,10 @@ Arquivos envolvidos:
 
 ```mermaid
 graph LR
-    A[Component] --> B[API Call]
-    B --> C[Controller]
-    C --> D[Service]
-    D --> E[Repository]
+ A[Component] --> B[API Call]
+ B --> C[Controller]
+ C --> D[Service]
+ D --> E[Repository]
 ```
 
 ### 2.3 Problemas Identificados
@@ -73,11 +73,11 @@ graph LR
 ```typescript
 // Exemplo de mudança proposta
 interface NewInterface {
-  // ...
+ // ...
 }
 
 class UpdatedService {
-  // ...
+ // ...
 }
 ```
 
@@ -86,7 +86,7 @@ class UpdatedService {
 ```typescript
 // Exemplo de mudança proposta
 const useCustomHook = () => {
-  // ...
+ // ...
 };
 ```
 
@@ -96,10 +96,10 @@ const useCustomHook = () => {
 
 ```mermaid
 graph LR
-    A[Component] --> B[Hook with Cleanup]
-    B --> C[AbortController]
-    C --> D[API Call]
-    D --> E[Cleanup on Unmount]
+ A[Component] --> B[Hook with Cleanup]
+ B --> C[AbortController]
+ C --> D[API Call]
+ D --> E[Cleanup on Unmount]
 ```
 
 ---
@@ -114,12 +114,12 @@ graph LR
 ### 4.2 Fase 2: Core Implementation
 
 - [ ] Task 2.1: [Descrição]
-  - **File:** `path/to/file.ts`
-  - **Changes:** [Resumo das mudanças]
+ - **File:** `path/to/file.ts`
+ - **Changes:** [Resumo das mudanças]
 
 - [ ] Task 2.2: [Descrição]
-  - **File:** `path/to/component.tsx`
-  - **Changes:** [Resumo das mudanças]
+ - **File:** `path/to/component.tsx`
+ - **Changes:** [Resumo das mudanças]
 
 ### 4.3 Fase 3: Testing & Validation
 
@@ -147,7 +147,7 @@ graph LR
 
 ```json
 {
-  "field": "value"
+ "field": "value"
 }
 ```
 
@@ -155,15 +155,15 @@ graph LR
 
 ```json
 {
-  "field": "value",
-  "newField": "newValue"
+ "field": "value",
+ "newField": "newValue"
 }
 ```
 
 ### 5.2 Breaking Changes
 
 - [ ] **BC1:** [Descrição da breaking change]
-  - **Mitigação:** [Como lidar]
+ - **Mitigação:** [Como lidar]
 
 ### 5.3 Backward Compatibility
 
@@ -188,9 +188,9 @@ CREATE INDEX idx_name ON table_name(column_name);
 ### 6.2 Data Migrations
 
 - [ ] **DM1:** [Descrição da data migration]
-  - **Script:** `backend/migrations/YYYYMMDDHHMMSS-Name.ts`
-  - **Idempotent:** Sim / Não
-  - **Rollback:** [Procedimento]
+ - **Script:** `backend/migrations/YYYYMMDDHHMMSS-Name.ts`
+ - **Idempotent:** Sim / Não
+ - **Rollback:** [Procedimento]
 
 ### 6.3 Performance Impact
 
@@ -209,9 +209,9 @@ CREATE INDEX idx_name ON table_name(column_name);
 ```typescript
 // backend/src/path/__tests__/service.spec.ts
 describe('ServiceName', () => {
-  it('should handle scenario X', async () => {
-    // Test implementation
-  });
+ it('should handle scenario X', async () => {
+ // Test implementation
+ });
 });
 ```
 
@@ -222,9 +222,9 @@ describe('ServiceName', () => {
 ```typescript
 // frontend/src/path/__tests__/component.test.tsx
 describe('ComponentName', () => {
-  it('should render correctly', () => {
-    // Test implementation
-  });
+ it('should render correctly', () => {
+ // Test implementation
+ });
 });
 ```
 
@@ -233,13 +233,13 @@ describe('ComponentName', () => {
 ### 7.2 Integration Tests
 
 - [ ] **IT1:** [Descrição do teste de integração]
-  - **Scope:** [Backend/Frontend/Full-stack]
+ - **Scope:** [Backend/Frontend/Full-stack]
 
 ### 7.3 E2E Tests
 
 - [ ] **E2E1:** [Descrição do teste E2E]
-  - **Tool:** Playwright
-  - **Scenario:** [Descrição do cenário]
+ - **Tool:** Playwright
+ - **Scenario:** [Descrição do cenário]
 
 ### 7.4 Manual Testing
 
@@ -281,9 +281,9 @@ describe('ComponentName', () => {
 ```typescript
 // Exemplo de validação
 class DtoName {
-  @IsString()
-  @MaxLength(255)
-  field: string;
+ @IsString()
+ @MaxLength(255)
+ field: string;
 }
 ```
 
@@ -348,10 +348,10 @@ npm run migration:revert
 
 ## 12. Risks & Mitigations
 
-| Risco             | Probabilidade    | Impacto          | Mitigação   |
+| Risco | Probabilidade | Impacto | Mitigação |
 | ----------------- | ---------------- | ---------------- | ----------- |
 | [Risco técnico 1] | Alta/Média/Baixa | Alto/Médio/Baixo | [Mitigação] |
-| [Risco técnico 2] | ...              | ...              | ...         |
+| [Risco técnico 2] | ... | ... | ... |
 
 ---
 
@@ -390,8 +390,8 @@ npm run migration:revert
 ### 14.1 External Dependencies
 
 - [ ] **DEP1:** [Biblioteca/Serviço externo]
-  - **Version:** X.Y.Z
-  - **Reason:** [Por que necessário]
+ - **Version:** X.Y.Z
+ - **Reason:** [Por que necessário]
 
 ### 14.2 Internal Dependencies
 

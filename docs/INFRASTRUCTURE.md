@@ -44,66 +44,66 @@ ETP Express utiliza uma arquitetura moderna de 3 camadas hospedada no **Railway*
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         INTERNET                                 │
+│ INTERNET │
 └──────────────────────────┬──────────────────────────────────────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │   Railway    │
-                    │  Load Balancer│
-                    └──────┬───────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                 │
-          ▼                ▼                 ▼
-   ┌──────────┐    ┌──────────┐      ┌──────────┐
-   │ Frontend │    │ Backend  │      │PostgreSQL│
-   │  (React) │◄───┤ (NestJS) │◄─────┤   15     │
-   │  +Nginx  │    │  +Node   │      │ (Alpine) │
-   └──────────┘    └──────┬───┘      └──────────┘
-        │                 │                 │
-        │                 ▼                 │
-        │          ┌──────────┐             │
-        │          │  OpenAI  │             │
-        │          │   API    │             │
-        │          └──────────┘             │
-        │                                   │
-        └───────────────┬───────────────────┘
-                        ▼
-                 ┌──────────┐
-                 │  Sentry  │
-                 │ (Errors) │
-                 └──────────┘
+ │
+ 
+ ┌──────────────┐
+ │ Railway │
+ │ Load Balancer│
+ └──────┬───────┘
+ │
+ ┌────────────────┼────────────────┐
+ │ │ │
+ 
+ ┌──────────┐ ┌──────────┐ ┌──────────┐
+ │ Frontend │ │ Backend │ │PostgreSQL│
+ │ (React) │───┤ (NestJS) │─────┤ 15 │
+ │ +Nginx │ │ +Node │ │ (Alpine) │
+ └──────────┘ └──────┬───┘ └──────────┘
+ │ │ │
+ │ │
+ │ ┌──────────┐ │
+ │ │ OpenAI │ │
+ │ │ API │ │
+ │ └──────────┘ │
+ │ │
+ └───────────────┬───────────────────┘
+ 
+ ┌──────────┐
+ │ Sentry │
+ │ (Errors) │
+ └──────────┘
 ```
 
 ### Diagrama de Comunicação
 
 ```
 Frontend (Port 80)
-    │
-    └─► Backend API (Port 3001)
-            │
-            ├─► PostgreSQL (Port 5432)
-            ├─► OpenAI API (HTTPS)
-            ├─► Exa API (HTTPS - optional)
-            └─► Sentry (HTTPS - optional)
+ │
+ └─ Backend API (Port 3001)
+ │
+ ├─ PostgreSQL (Port 5432)
+ ├─ OpenAI API (HTTPS)
+ ├─ Exa API (HTTPS - optional)
+ └─ Sentry (HTTPS - optional)
 ```
 
 ### Stack Tecnológico
 
-| Componente        | Tecnologia          | Versão    | Propósito                     |
+| Componente | Tecnologia | Versão | Propósito |
 | ----------------- | ------------------- | --------- | ----------------------------- |
-| **Frontend**      | React + TypeScript  | 18.2      | Interface do usuário          |
-| **Build Tool**    | Vite                | 5.x       | Build & dev server            |
-| **UI Components** | Radix UI + Tailwind | Latest    | Design system                 |
-| **Backend**       | NestJS + TypeScript | 10.3      | API REST                      |
-| **Database**      | PostgreSQL          | 15-alpine | Persistência de dados         |
-| **ORM**           | TypeORM             | Latest    | Database migrations & queries |
-| **Auth**          | JWT (Passport)      | Latest    | Autenticação                  |
-| **AI**            | OpenAI API          | GPT-4     | Geração de conteúdo           |
-| **Search**        | Exa API             | Latest    | Busca avançada (opcional)     |
-| **Monitoring**    | Sentry              | Latest    | Error tracking & performance  |
-| **Hosting**       | Railway             | Latest    | Cloud platform (PaaS)         |
+| **Frontend** | React + TypeScript | 18.2 | Interface do usuário |
+| **Build Tool** | Vite | 5.x | Build & dev server |
+| **UI Components** | Radix UI + Tailwind | Latest | Design system |
+| **Backend** | NestJS + TypeScript | 10.3 | API REST |
+| **Database** | PostgreSQL | 15-alpine | Persistência de dados |
+| **ORM** | TypeORM | Latest | Database migrations & queries |
+| **Auth** | JWT (Passport) | Latest | Autenticação |
+| **AI** | OpenAI API | GPT-4 | Geração de conteúdo |
+| **Search** | Exa API | Latest | Busca avançada (opcional) |
+| **Monitoring** | Sentry | Latest | Error tracking & performance |
+| **Hosting** | Railway | Latest | Cloud platform (PaaS) |
 
 ---
 
@@ -178,24 +178,24 @@ docker-compose up
 **Serviços:**
 
 1. **PostgreSQL** (`postgres`)
-   - Image: `postgres:15-alpine`
-   - Port: 5432
-   - Volume: `postgres_data` (persistente)
-   - Healthcheck: `pg_isready` a cada 10s
+ - Image: `postgres:15-alpine`
+ - Port: 5432
+ - Volume: `postgres_data` (persistente)
+ - Healthcheck: `pg_isready` a cada 10s
 
 2. **Backend** (`backend`)
-   - Build: `backend/Dockerfile` (target: development)
-   - Port: 3001
-   - Depends on: `postgres` (healthcheck)
-   - Hot-reload: Source code montado como volume
-   - Healthcheck: `curl /api/health` a cada 30s
+ - Build: `backend/Dockerfile` (target: development)
+ - Port: 3001
+ - Depends on: `postgres` (healthcheck)
+ - Hot-reload: Source code montado como volume
+ - Healthcheck: `curl /api/health` a cada 30s
 
 3. **Frontend** (`frontend`)
-   - Build: `frontend/Dockerfile` (target: development)
-   - Port: 5173
-   - Depends on: `backend` (healthcheck)
-   - Hot-reload: Source code montado como volume
-   - Healthcheck: `curl /` a cada 30s
+ - Build: `frontend/Dockerfile` (target: development)
+ - Port: 5173
+ - Depends on: `backend` (healthcheck)
+ - Hot-reload: Source code montado como volume
+ - Healthcheck: `curl /` a cada 30s
 
 **Comandos úteis:**
 
@@ -305,33 +305,33 @@ docker build -t etp-frontend:prod --target production ./frontend
 **Categorias:**
 
 1. **Database** (PostgreSQL)
-   - `POSTGRES_DB`
-   - `POSTGRES_USER`
-   - `POSTGRES_PASSWORD` (⚠️ MUDAR EM PRODUÇÃO!)
+ - `POSTGRES_DB`
+ - `POSTGRES_USER`
+ - `POSTGRES_PASSWORD` (⚠ MUDAR EM PRODUÇÃO!)
 
 2. **Server**
-   - `NODE_ENV` (development | production | test)
-   - `BACKEND_PORT` (default: 3001)
-   - `FRONTEND_PORT` (default: 5173)
+ - `NODE_ENV` (development | production | test)
+ - `BACKEND_PORT` (default: 3001)
+ - `FRONTEND_PORT` (default: 5173)
 
 3. **Authentication**
-   - `JWT_SECRET` (⚠️ MUDAR EM PRODUÇÃO! Gerar: `openssl rand -base64 32`)
-   - `JWT_EXPIRES_IN` (default: 7d)
+ - `JWT_SECRET` (⚠ MUDAR EM PRODUÇÃO! Gerar: `openssl rand -base64 32`)
+ - `JWT_EXPIRES_IN` (default: 7d)
 
-4. **OpenAI API** (⚠️ REQUIRED!)
-   - `OPENAI_API_KEY` (obter em: https://platform.openai.com/api-keys)
-   - `OPENAI_MODEL` (default: gpt-4-turbo-preview)
+4. **OpenAI API** (⚠ REQUIRED!)
+ - `OPENAI_API_KEY` (obter em: https://platform.openai.com/api-keys)
+ - `OPENAI_MODEL` (default: gpt-4-turbo-preview)
 
 5. **Exa API** (opcional)
-   - `EXA_API_KEY`
+ - `EXA_API_KEY`
 
 6. **Sentry** (opcional)
-   - `SENTRY_DSN`
-   - `SENTRY_TRACES_SAMPLE_RATE`
+ - `SENTRY_DSN`
+ - `SENTRY_TRACES_SAMPLE_RATE`
 
 7. **Frontend**
-   - `VITE_API_URL` (backend URL)
-   - `VITE_SENTRY_DSN`
+ - `VITE_API_URL` (backend URL)
+ - `VITE_SENTRY_DSN`
 
 **Validação:**
 
@@ -353,30 +353,30 @@ bash scripts/validate-env.sh
 1. **Trigger:** Push para `master` branch (GitHub integration)
 
 2. **Railway Build:**
-   - Detecta monorepo structure
-   - Build backend:
-     ```bash
-     cd backend
-     npm install
-     npm run build
-     ```
-   - Build frontend:
-     ```bash
-     cd frontend
-     npm install
-     npm run build
-     ```
+ - Detecta monorepo structure
+ - Build backend:
+ ```bash
+ cd backend
+ npm install
+ npm run build
+ ```
+ - Build frontend:
+ ```bash
+ cd frontend
+ npm install
+ npm run build
+ ```
 
 3. **Health Checks:**
-   - Backend: `GET /api/health` a cada 30s
-   - Frontend: `GET /` a cada 60s
-   - Se falhar 3x consecutivas → rollback automático
+ - Backend: `GET /api/health` a cada 30s
+ - Frontend: `GET /` a cada 60s
+ - Se falhar 3x consecutivas → rollback automático
 
 4. **Zero-Downtime:**
-   - Railway mantém instância antiga rodando
-   - Nova instância passa health checks
-   - Traffic switch (blue-green deployment)
-   - Instância antiga é destruída
+ - Railway mantém instância antiga rodando
+ - Nova instância passa health checks
+ - Traffic switch (blue-green deployment)
+ - Instância antiga é destruída
 
 **Timeline típico:**
 
@@ -410,32 +410,32 @@ railway logs
 
 2. **Backend variables:**
 
-   ```
-   DATABASE_URL=<auto-generated-by-railway>
-   PORT=<auto-assigned>
-   NODE_ENV=production
-   JWT_SECRET=<generate: openssl rand -base64 32>
-   OPENAI_API_KEY=sk-...
-   EXA_API_KEY=<optional>
-   SENTRY_DSN=<optional>
-   SENTRY_TRACES_SAMPLE_RATE=0.1
-   ```
+ ```
+ DATABASE_URL=<auto-generated-by-railway>
+ PORT=<auto-assigned>
+ NODE_ENV=production
+ JWT_SECRET=<generate: openssl rand -base64 32>
+ OPENAI_API_KEY=sk-...
+ EXA_API_KEY=<optional>
+ SENTRY_DSN=<optional>
+ SENTRY_TRACES_SAMPLE_RATE=0.1
+ ```
 
 3. **Frontend variables:**
 
-   ```
-   VITE_API_URL=${backend.PUBLIC_URL}/api
-   NODE_ENV=production
-   VITE_SENTRY_DSN=<optional>
-   ```
+ ```
+ VITE_API_URL=${backend.PUBLIC_URL}/api
+ NODE_ENV=production
+ VITE_SENTRY_DSN=<optional>
+ ```
 
 4. **PostgreSQL variables** (auto-managed):
-   ```
-   POSTGRES_DB=railway
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=<auto-generated>
-   DATABASE_URL=postgresql://...<auto-generated>
-   ```
+ ```
+ POSTGRES_DB=railway
+ POSTGRES_USER=postgres
+ POSTGRES_PASSWORD=<auto-generated>
+ DATABASE_URL=postgresql://...<auto-generated>
+ ```
 
 ---
 
@@ -474,10 +474,10 @@ railway connect postgres
 1. Identificar último backup válido (Railway dashboard → PostgreSQL → Backups)
 2. Criar novo PostgreSQL service
 3. Restore backup:
-   ```bash
-   railway connect postgres
-   psql -U postgres -d railway < backup_latest.sql
-   ```
+ ```bash
+ railway connect postgres
+ psql -U postgres -d railway < backup_latest.sql
+ ```
 4. Update `DATABASE_URL` no backend service
 5. Redeploy backend
 
@@ -492,27 +492,27 @@ railway connect postgres
 **Procedimento:**
 
 1. **Recriar Railway Project** (15 min)
-   - New project no Railway dashboard
-   - Add GitHub integration
+ - New project no Railway dashboard
+ - Add GitHub integration
 
 2. **Recriar Services** (30 min)
-   - PostgreSQL: Add database service
-   - Backend: Add service, root directory `backend/`
-   - Frontend: Add service, root directory `frontend/`
+ - PostgreSQL: Add database service
+ - Backend: Add service, root directory `backend/`
+ - Frontend: Add service, root directory `frontend/`
 
 3. **Configurar Variables** (15 min)
-   - Copiar values do `.railway.toml` e documentação
-   - Set all environment variables via dashboard
+ - Copiar values do `.railway.toml` e documentação
+ - Set all environment variables via dashboard
 
 4. **Restore Database** (1-2 horas)
-   - Upload último backup
-   - Run restore script
-   - Validate data integrity
+ - Upload último backup
+ - Run restore script
+ - Validate data integrity
 
 5. **Deploy & Validate** (30 min)
-   - Trigger deploy (push to GitHub)
-   - Run smoke tests
-   - Validate all features
+ - Trigger deploy (push to GitHub)
+ - Run smoke tests
+ - Validate all features
 
 **Documentação completa:** `docs/DISASTER_RECOVERY.md`
 
@@ -607,24 +607,24 @@ bash scripts/test-disaster-recovery.sh
 **Estratégia:**
 
 1. **Database (PostgreSQL):**
-   - Read replicas (Railway não suporta nativamente)
-   - [FUTURE] Consider AWS RDS or Supabase for larger data volumes
-   - Connection pooling (PgBouncer)
+ - Read replicas (Railway não suporta nativamente)
+ - [FUTURE] Consider AWS RDS or Supabase for larger data volumes
+ - Connection pooling (PgBouncer)
 
 2. **Backend (NestJS):**
-   - Múltiplas instâncias (Railway supports)
-   - Load balancer (Railway built-in)
-   - Stateless design (JWT auth já é stateless)
+ - Múltiplas instâncias (Railway supports)
+ - Load balancer (Railway built-in)
+ - Stateless design (JWT auth já é stateless)
 
 3. **Frontend (React):**
-   - [FUTURE] CDN for static assets (Cloudflare preferred for simplicity)
-   - Edge caching
-   - Static assets em S3
+ - [FUTURE] CDN for static assets (Cloudflare preferred for simplicity)
+ - Edge caching
+ - Static assets em S3
 
 4. **Caching Layer:**
-   - Redis (Railway add-on)
-   - Cache API responses
-   - Session storage
+ - Redis (Railway add-on)
+ - Cache API responses
+ - Session storage
 
 **Cost:** ~$200-500/month (5000+ users)
 
@@ -655,11 +655,11 @@ bash scripts/test-disaster-recovery.sh
 
 #### Development (Local)
 
-| Item             | Cost     |
+| Item | Cost |
 | ---------------- | -------- |
-| Docker Desktop   | Free     |
-| OpenAI API (dev) | ~$5-10   |
-| **Total**        | **~$10** |
+| Docker Desktop | Free |
+| OpenAI API (dev) | ~$5-10 |
+| **Total** | **~$10** |
 
 ---
 
@@ -671,22 +671,22 @@ bash scripts/test-disaster-recovery.sh
 
 **Pro Plan ($20/month + usage):**
 
-| Service      | Resources            | Cost/month |
+| Service | Resources | Cost/month |
 | ------------ | -------------------- | ---------- |
-| Backend      | 512MB RAM, 0.5 vCPU  | $10        |
-| Frontend     | 256MB RAM, 0.25 vCPU | $5         |
-| PostgreSQL   | 1GB storage          | $5         |
-| Bandwidth    | ~10GB/month          | Included   |
-| **Subtotal** |                      | **$20**    |
+| Backend | 512MB RAM, 0.5 vCPU | $10 |
+| Frontend | 256MB RAM, 0.25 vCPU | $5 |
+| PostgreSQL | 1GB storage | $5 |
+| Bandwidth | ~10GB/month | Included |
+| **Subtotal** | | **$20** |
 
 **External Services:**
 
-| Service      | Tier              | Cost/month  |
+| Service | Tier | Cost/month |
 | ------------ | ----------------- | ----------- |
-| OpenAI API   | Pay-as-you-go     | $20-100     |
-| Sentry       | Free (10K events) | Free        |
-| Exa API      | Optional          | $0-20       |
-| **Subtotal** |                   | **$20-120** |
+| OpenAI API | Pay-as-you-go | $20-100 |
+| Sentry | Free (10K events) | Free |
+| Exa API | Optional | $0-20 |
+| **Subtotal** | | **$20-120** |
 
 **Total Estimate:**
 
@@ -699,19 +699,19 @@ bash scripts/test-disaster-recovery.sh
 ### Cost Optimization Tips
 
 1. **OpenAI API:**
-   - Use `gpt-3.5-turbo` para drafts (10x cheaper)
-   - Cache responses comuns
-   - Implement rate limiting
+ - Use `gpt-3.5-turbo` para drafts (10x cheaper)
+ - Cache responses comuns
+ - Implement rate limiting
 
 2. **Railway:**
-   - Use sleep policies para staging environments
-   - Optimize Docker images (smaller = cheaper bandwidth)
-   - Monitor resource usage
+ - Use sleep policies para staging environments
+ - Optimize Docker images (smaller = cheaper bandwidth)
+ - Monitor resource usage
 
 3. **Database:**
-   - Regular VACUUM (reduce bloat)
-   - Archive old ETPs (reduce storage)
-   - Optimize queries (reduce CPU)
+ - Regular VACUUM (reduce bloat)
+ - Archive old ETPs (reduce storage)
+ - Optimize queries (reduce CPU)
 
 ---
 
@@ -748,10 +748,10 @@ bash scripts/test-disaster-recovery.sh
 
 ```json
 {
-  "status": "healthy",
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "uptime": 3600,
-  "database": "connected"
+ "status": "healthy",
+ "timestamp": "2024-01-15T10:30:00.000Z",
+ "uptime": 3600,
+ "database": "connected"
 }
 ```
 
@@ -770,16 +770,16 @@ bash scripts/test-disaster-recovery.sh
 
 ```json
 {
-  "memory": {
-    "heapUsed": 45000000,
-    "heapTotal": 60000000,
-    "rss": 80000000
-  },
-  "database": {
-    "connections": 5,
-    "maxConnections": 20
-  },
-  "uptime": 3600
+ "memory": {
+ "heapUsed": 45000000,
+ "heapTotal": 60000000,
+ "rss": 80000000
+ },
+ "database": {
+ "connections": 5,
+ "maxConnections": 20
+ },
+ "uptime": 3600
 }
 ```
 
@@ -931,25 +931,25 @@ docker system prune -a
 ## Security Best Practices
 
 1. **Never commit secrets:**
-   - ✅ `.env` in `.gitignore`
-   - ✅ Use `.env.template` without real values
-   - ✅ Rotate secrets regularly
+ - ✅ `.env` in `.gitignore`
+ - ✅ Use `.env.template` without real values
+ - ✅ Rotate secrets regularly
 
 2. **Production security:**
-   - ✅ Strong `JWT_SECRET` (32+ chars, random)
-   - ✅ Strong `POSTGRES_PASSWORD` (16+ chars)
-   - ✅ HTTPS only (Railway auto-provides)
-   - ✅ Rate limiting configured
+ - ✅ Strong `JWT_SECRET` (32+ chars, random)
+ - ✅ Strong `POSTGRES_PASSWORD` (16+ chars)
+ - ✅ HTTPS only (Railway auto-provides)
+ - ✅ Rate limiting configured
 
 3. **Docker security:**
-   - ✅ Non-root user in production images
-   - ✅ Minimal base images (alpine)
-   - ✅ No sensitive data in image layers
+ - ✅ Non-root user in production images
+ - ✅ Minimal base images (alpine)
+ - ✅ No sensitive data in image layers
 
 4. **Database security:**
-   - ✅ PostgreSQL não exposto publicamente (Railway internal)
-   - ✅ Backups encrypted at rest
-   - ✅ Connection pooling
+ - ✅ PostgreSQL não exposto publicamente (Railway internal)
+ - ✅ Backups encrypted at rest
+ - ✅ Connection pooling
 
 ---
 

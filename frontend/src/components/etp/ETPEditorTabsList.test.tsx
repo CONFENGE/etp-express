@@ -22,14 +22,14 @@ describe('ETPEditorTabsList', () => {
     expect(screen.getByRole('tab', { name: /seção 3/i })).toBeInTheDocument();
   });
 
-  it('should show completed indicator (✓) for completed sections', () => {
+  it('should show completed indicator (✅) for completed sections', () => {
     render(
       <Tabs defaultValue="1">
         <ETPEditorTabsList sections={mockSections} />
       </Tabs>,
     );
 
-    const completedTab = screen.getByRole('tab', { name: /✓ seção 2/i });
+    const completedTab = screen.getByRole('tab', { name: /✅ seção 2/i });
     expect(completedTab).toBeInTheDocument();
   });
 
@@ -43,8 +43,8 @@ describe('ETPEditorTabsList', () => {
     const tab1 = screen.getByRole('tab', { name: /seção 1/i });
     const tab3 = screen.getByRole('tab', { name: /seção 3/i });
 
-    expect(tab1.textContent).not.toContain('✓');
-    expect(tab3.textContent).not.toContain('✓');
+    expect(tab1.textContent).not.toContain('✅');
+    expect(tab3.textContent).not.toContain('✅');
   });
 
   it('should render correct number of tabs', () => {

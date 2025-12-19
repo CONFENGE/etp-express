@@ -63,9 +63,9 @@ const MAX_PAGE_SIZE = 500;
  * @example
  * ```typescript
  * const results = await pncpService.search('software', {
- *   startDate: new Date('2024-01-01'),
- *   endDate: new Date('2024-12-31'),
- *   uf: 'DF',
+ * startDate: new Date('2024-01-01'),
+ * endDate: new Date('2024-12-31'),
+ * uf: 'DF',
  * });
  * ```
  */

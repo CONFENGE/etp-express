@@ -183,15 +183,15 @@ function ImprovementItem({
  * @example
  * ```tsx
  * <ImprovementList
- *   issues={[
- *     {
- *       dimension: 'legal',
- *       severity: 'critical',
- *       title: 'Referência legal ausente',
- *       description: 'O documento não menciona a Lei 14.133/2021',
- *       recommendation: 'Adicione referência explícita ao artigo aplicável'
- *     }
- *   ]}
+ * issues={[
+ * {
+ * dimension: 'legal',
+ * severity: 'critical',
+ * title: 'Referência legal ausente',
+ * description: 'O documento não menciona a Lei 14.133/2021',
+ * recommendation: 'Adicione referência explícita ao artigo aplicável'
+ * }
+ * ]}
  * />
  * ```
  */

@@ -66,9 +66,9 @@ memory_usage_bytes 45678901`,
    * Formato simplificado para dashboards customizados:
    * ```json
    * {
-   *   "database_connections_active": 5,
-   *   "memory_usage_bytes": 45678901,
-   *   ...
+   * "database_connections_active": 5,
+   * "memory_usage_bytes": 45678901,
+   * ...
    * }
    * ```
    *

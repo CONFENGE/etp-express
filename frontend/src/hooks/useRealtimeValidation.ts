@@ -28,17 +28,17 @@ interface UseRealtimeValidationReturn {
  *
  * @example
  * const emailValidation = useRealtimeValidation(
- *   (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
- *   { delay: 500, minLength: 1 }
+ * (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+ * { delay: 500, minLength: 1 }
  * );
  *
  * // In component:
  * <Input
- *   onChange={(e) => emailValidation.validate(e.target.value)}
- *   className={cn(
- *     emailValidation.state === 'valid' && 'border-green-500',
- *     emailValidation.state === 'invalid' && 'border-red-500'
- *   )}
+ * onChange={(e) => emailValidation.validate(e.target.value)}
+ * className={cn(
+ * emailValidation.state === 'valid' && 'border-green-500',
+ * emailValidation.state === 'invalid' && 'border-red-500'
+ * )}
  * />
  */
 export function useRealtimeValidation(

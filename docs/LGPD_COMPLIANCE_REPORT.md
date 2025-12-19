@@ -10,7 +10,7 @@
 
 ---
 
-## 📋 Sumário Executivo
+## Sumário Executivo
 
 ### Status Geral de Conformidade: **88% CONFORME**
 
@@ -21,13 +21,13 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 | Pilar de Conformidade | Status | Score | Evidência |
 |----------------------|--------|-------|-----------|
 | **1. Inventário de Dados** | ✅ CONFORME | 100% | [Issue #261] DATA_MAPPING.md completo |
-| **2. Consentimento de Usuários** | ⚠️ PARCIAL | 85% | [Issue #262] Gaps: re-consent + revogação |
+| **2. Consentimento de Usuários** | ⚠ PARCIAL | 85% | [Issue #262] Gaps: re-consent + revogação |
 | **3. Segurança de Dados** | ✅ CONFORME | 100% | [Issue #263] HTTPS + SSL + bcrypt |
 | **4. Retenção de Dados** | ✅ CONFORME | 95% | [Issue #264] Política documentada + cron |
-| **5. Direitos do Titular** | ⚠️ PARCIAL | 75% | [Issue #265] 4/5 direitos implementados |
+| **5. Direitos do Titular** | ⚠ PARCIAL | 75% | [Issue #265] 4/5 direitos implementados |
 | **6. Logs de Auditoria** | ✅ CONFORME | 100% | [Issue #266] AuditService implementado |
 | **7. Política de Privacidade** | ✅ CONFORME | 100% | [Issue #267] Docs legais completos |
-| **8. Anonimização** | ⚠️ PARCIAL | 70% | [Issue #268] Analytics precisa melhorias |
+| **8. Anonimização** | ⚠ PARCIAL | 70% | [Issue #268] Analytics precisa melhorias |
 
 ### Principais Conquistas ✅
 
@@ -39,7 +39,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 6. **Política de privacidade** e termos de uso publicados e acessíveis
 7. **Anonimização proativa** de analytics após 30-90 dias
 
-### Principais Riscos Identificados 🔴
+### Principais Riscos Identificados 
 
 | Risco | Nível | Impacto LGPD | Issue de Remediação |
 |-------|-------|--------------|---------------------|
@@ -50,13 +50,13 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 ### Avaliação de Risco Geral
 
-**Nível de Risco:** 🟡 **MÉDIO-BAIXO** (Reduzido de ALTO após implementações #261-#268)
+**Nível de Risco:** **MÉDIO-BAIXO** (Reduzido de ALTO após implementações #261-#268)
 
 **Exposição Legal Atual:**
 - ✅ Base legal válida estabelecida (consentimento explícito implementado)
 - ✅ Criptografia 100% conforme (proteção técnica robusta)
-- ⚠️ Direitos do titular parcialmente implementados (necessita UI de revogação)
-- ⚠️ Export de dados incompleto (falta incluir ETPs + audit logs)
+- ⚠ Direitos do titular parcialmente implementados (necessita UI de revogação)
+- ⚠ Export de dados incompleto (falta incluir ETPs + audit logs)
 
 **Pontos de Atenção para Produção:**
 - Implementar UI de revogação de consentimento antes de scale (#202)
@@ -65,7 +65,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 ---
 
-## 1️⃣ Inventário de Dados Pessoais (Issue #191)
+## Inventário de Dados Pessoais (Issue #191)
 
 ### Status: ✅ COMPLETO (100%)
 
@@ -87,7 +87,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 [Usuário BR] → [Railway USA] → [PostgreSQL USA] → [OpenAI/Perplexity USA]
 ```
 
-⚠️ **ATENÇÃO:** Transferência internacional de dados sem consentimento específico (Art. 33).
+⚠ **ATENÇÃO:** Transferência internacional de dados sem consentimento específico (Art. 33).
 
 ### Armazenamento
 
@@ -107,7 +107,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 ---
 
-## 2️⃣ Análise de Conformidade por Área
+## Análise de Conformidade por Área
 
 ### 2.1 Consentimento (Issue #192)
 
@@ -117,17 +117,17 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 | GAP ID | Severidade | Descrição | Art. LGPD | Impacto |
 |--------|-----------|-----------|-----------|---------|
-| GAP-01 | 🔴 CRÍTICO | Ausência de checkbox de consentimento no registro | Art. 7º, I | Base legal inválida |
-| GAP-02 | 🔴 CRÍTICO | Falta de campo `consentedAt` na entidade User | Art. 8º, §6º | Sem prova de consentimento |
-| GAP-03 | 🔴 CRÍTICO | Ausência de Política de Privacidade acessível | Art. 9º, 14 | Falta transparência |
-| GAP-04 | 🔴 CRÍTICO | Ausência de Termos de Uso linkados | Art. 8º, §5º | Consentimento inválido |
-| GAP-05 | 🟡 ALTO | Falta de versionamento de termos aceitos | Art. 8º, §4º | Sem re-consent |
+| GAP-01 | CRÍTICO | Ausência de checkbox de consentimento no registro | Art. 7º, I | Base legal inválida |
+| GAP-02 | CRÍTICO | Falta de campo `consentedAt` na entidade User | Art. 8º, §6º | Sem prova de consentimento |
+| GAP-03 | CRÍTICO | Ausência de Política de Privacidade acessível | Art. 9º, 14 | Falta transparência |
+| GAP-04 | CRÍTICO | Ausência de Termos de Uso linkados | Art. 8º, §5º | Consentimento inválido |
+| GAP-05 | ALTO | Falta de versionamento de termos aceitos | Art. 8º, §4º | Sem re-consent |
 
 **Dados Processados Sem Consentimento:**
 - Email, nome, orgao, cargo (todos os usuários cadastrados)
 - Compartilhamento com OpenAI/Perplexity sem informar titular
 
-**Risco Legal:** 🔴 **BLOQUEADOR** - Processamento de dados sem base legal válida.
+**Risco Legal:** **BLOQUEADOR** - Processamento de dados sem base legal válida.
 
 **Remediações Obrigatórias (P0):**
 - [ ] Adicionar checkbox obrigatório no registro com links para termos (#196)
@@ -166,7 +166,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 ### 2.3 Retenção de Dados (Issue #194)
 
-**Status:** ⚠️ PARCIAL (50%)
+**Status:** ⚠ PARCIAL (50%)
 
 **Documento Gerado:** `docs/DATA_RETENTION_POLICY.md`
 
@@ -174,7 +174,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 | Tipo de Dado | Período de Retenção | Status Implementação |
 |--------------|---------------------|----------------------|
-| Dados de conta | Enquanto ativo + 5 anos* | ⚠️ Manual (falta automation) |
+| Dados de conta | Enquanto ativo + 5 anos* | ⚠ Manual (falta automation) |
 | ETPs/Seções | Enquanto ativo | ✅ Cascade delete configurado |
 | Audit logs | 90 dias | ❌ Purge não automatizado |
 | Secret access logs | 90 dias | ❌ Purge não automatizado |
@@ -187,10 +187,10 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 | Gap | Severidade | Descrição |
 |-----|-----------|-----------|
-| Purge automatizado de audit logs ausente | 🟡 ALTA | Logs acumulam indefinidamente |
-| Anonimização de analytics não implementada | 🟡 ALTA | Dados pessoais retidos > necessário |
-| Notificação de inatividade (2 anos) ausente | 🟡 ALTA | Sem processo de purge de contas inativas |
-| Legal hold não implementado | 🟢 MÉDIA | Sem mecanismo para retenção por litígio |
+| Purge automatizado de audit logs ausente | ALTA | Logs acumulam indefinidamente |
+| Anonimização de analytics não implementada | ALTA | Dados pessoais retidos > necessário |
+| Notificação de inatividade (2 anos) ausente | ALTA | Sem processo de purge de contas inativas |
+| Legal hold não implementado | MÉDIA | Sem mecanismo para retenção por litígio |
 
 **Remediações Obrigatórias (P1):**
 - [ ] Implementar cron job para purge de audit logs (90 dias) (#194)
@@ -202,7 +202,7 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 ### 2.4 Direitos do Titular (Issue #195)
 
-**Status:** ⚠️ PARCIAL (75%)
+**Status:** ⚠ PARCIAL (75%)
 
 **Documento Gerado:** `docs/LGPD_RIGHTS_COMPLIANCE_REPORT.md`
 
@@ -220,12 +220,12 @@ Este relatório consolida as 8 auditorias LGPD realizadas no sistema ETP Express
 
 | Gap | Severidade | Violação LGPD | Usuários Afetados |
 |-----|-----------|---------------|-------------------|
-| Sem endpoint de export de user data | 🔴 P0 | Art. 18, II e V | 100% |
-| Deleção de usuário deixa ETPs órfãos | 🔴 P0 | Art. 16 | 100% |
-| Delete endpoint é admin-only | 🔴 P0 | Art. 18, VI | 100% |
-| Sem tracking de consentimento | 🔴 P0 | Art. 8º, §6º | 100% |
-| Email não editável | 🟡 P1 | Art. 18, III | 100% |
-| Sem endpoint de troca de senha | 🟡 P1 | Art. 18, III | 100% |
+| Sem endpoint de export de user data | P0 | Art. 18, II e V | 100% |
+| Deleção de usuário deixa ETPs órfãos | P0 | Art. 16 | 100% |
+| Delete endpoint é admin-only | P0 | Art. 18, VI | 100% |
+| Sem tracking de consentimento | P0 | Art. 8º, §6º | 100% |
+| Email não editável | P1 | Art. 18, III | 100% |
+| Sem endpoint de troca de senha | P1 | Art. 18, III | 100% |
 
 **Cascading Delete Issues:**
 
@@ -290,10 +290,10 @@ auditLogs: AuditLog[];
 
 | Gap | Severidade | Descrição |
 |-----|-----------|-----------|
-| Documentos não linkados no frontend | 🔴 P0 | Usuários não conseguem acessar |
-| Checkbox de aceite ausente no registro | 🔴 P0 | Consentimento não capturado |
-| Rota `/privacy` e `/terms` inexistentes | 🔴 P0 | Políticas não acessíveis |
-| Versionamento não rastreado no banco | 🟡 P1 | Sem histórico de aceites |
+| Documentos não linkados no frontend | P0 | Usuários não conseguem acessar |
+| Checkbox de aceite ausente no registro | P0 | Consentimento não capturado |
+| Rota `/privacy` e `/terms` inexistentes | P0 | Políticas não acessíveis |
+| Versionamento não rastreado no banco | P1 | Sem histórico de aceites |
 
 **Remediações Obrigatórias (P0):**
 - [ ] Adicionar links de Privacidade e Termos no footer do frontend (#196)
@@ -303,11 +303,11 @@ auditLogs: AuditLog[];
 
 ---
 
-## 3️⃣ Gaps e Remediações Consolidados
+## Gaps e Remediações Consolidados
 
 ### 3.1 Gaps por Prioridade
 
-#### 🔴 Prioridade P0 - CRÍTICOS (Bloqueadores para Produção)
+#### Prioridade P0 - CRÍTICOS (Bloqueadores para Produção)
 
 | ID | Gap | Impacto | Área | Issue Remediação |
 |----|-----|---------|------|------------------|
@@ -321,7 +321,7 @@ auditLogs: AuditLog[];
 
 **Total:** 7 gaps críticos
 
-#### 🟡 Prioridade P1 - ALTA (Resolver em até 30 dias)
+#### Prioridade P1 - ALTA (Resolver em até 30 dias)
 
 | ID | Gap | Impacto | Área | Issue Remediação |
 |----|-----|---------|------|------------------|
@@ -334,7 +334,7 @@ auditLogs: AuditLog[];
 
 **Total:** 6 gaps altos
 
-#### 🟢 Prioridade P2 - MÉDIA (Resolver em até 90 dias)
+#### Prioridade P2 - MÉDIA (Resolver em até 90 dias)
 
 | ID | Gap | Impacto | Área | Issue Remediação |
 |----|-----|---------|------|------------------|
@@ -349,20 +349,20 @@ auditLogs: AuditLog[];
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ GAPS POR ÁREA                                               │
+│ GAPS POR ÁREA │
 ├─────────────────────────────────────────────────────────────┤
-│ Consentimento (#192):    █████ P0 (5 gaps)                  │
-│ Direitos (#195):         ████  P0 (3 gaps) + P1 (3 gaps)   │
-│ Políticas (#196):        ███   P0 (3 gaps) + P1 (1 gap)    │
-│ Retenção (#194):         ███   P1 (3 gaps) + P2 (1 gap)    │
-│ Criptografia (#193):     ✅    Nenhum gap                   │
-│ Inventário (#191):       █     P0 (1 gap)                   │
+│ Consentimento (#192): █████ P0 (5 gaps) │
+│ Direitos (#195): ████ P0 (3 gaps) + P1 (3 gaps) │
+│ Políticas (#196): ███ P0 (3 gaps) + P1 (1 gap) │
+│ Retenção (#194): ███ P1 (3 gaps) + P2 (1 gap) │
+│ Criptografia (#193): ✅ Nenhum gap │
+│ Inventário (#191): █ P0 (1 gap) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4️⃣ Plano de Ação
+## Plano de Ação
 
 ### 4.1 Fase 1: Remediações Críticas (P0) - Prazo: 15 dias
 
@@ -372,10 +372,10 @@ auditLogs: AuditLog[];
 
 **Issue #202 - Registrar consentimento de usuários**
 - [ ] Adicionar campos ao User entity:
-  - `consentedAt: Date`
-  - `termsVersion: string`
-  - `privacyVersion: string`
-  - `dataTransferConsent: boolean` (Art. 33)
+ - `consentedAt: Date`
+ - `termsVersion: string`
+ - `privacyVersion: string`
+ - `dataTransferConsent: boolean` (Art. 33)
 - [ ] Migration TypeORM para adicionar campos
 - [ ] Atualizar RegisterDto para capturar consentimento
 
@@ -383,27 +383,27 @@ auditLogs: AuditLog[];
 - [ ] Criar páginas `/privacy` e `/terms` no React
 - [ ] Adicionar links no footer (visível em todas as páginas)
 - [ ] Adicionar checkbox obrigatório no registro:
-  - "Li e aceito os [Termos de Uso] e [Política de Privacidade]"
-  - "Autorizo transferência de dados para processamento nos EUA"
+ - "Li e aceito os [Termos de Uso] e [Política de Privacidade]"
+ - "Autorizo transferência de dados para processamento nos EUA"
 - [ ] Implementar validação frontend e backend
 
 #### Week 2 (Dias 8-15) - Direitos do Titular
 
 **Issue #113 - Automação de Export e Deletion**
 - [ ] Criar endpoint `GET /users/me/export`:
-  - Retorna JSON com: user, etps, sections, versions, analytics, audit_logs
-  - Opcionalmente: CSV, PDF
+ - Retorna JSON com: user, etps, sections, versions, analytics, audit_logs
+ - Opcionalmente: CSV, PDF
 - [ ] Criar endpoint `DELETE /users/me`:
-  - Self-service deletion com confirmação
-  - Soft delete (flag `deletedAt`)
-  - Hard delete após 30 dias (retenção)
-  - Email de confirmação obrigatório
+ - Self-service deletion com confirmação
+ - Soft delete (flag `deletedAt`)
+ - Hard delete após 30 dias (retenção)
+ - Email de confirmação obrigatório
 - [ ] Configurar cascade delete para ETPs e seções:
-  - `@ManyToOne(() => User, { onDelete: 'CASCADE' })`
-  - Ou anonymização: `createdById = NULL`
+ - `@ManyToOne(() => User, { onDelete: 'CASCADE' })`
+ - Ou anonymização: `createdById = NULL`
 - [ ] Implementar tela de confirmação de deleção:
-  - Countdown 48h
-  - Reversível antes do hard delete
+ - Countdown 48h
+ - Reversível antes do hard delete
 
 ### 4.2 Fase 2: Remediações Altas (P1) - Prazo: 30 dias
 
@@ -414,15 +414,15 @@ auditLogs: AuditLog[];
 - [ ] Cron job diário para secret_access_logs (90 dias)
 - [ ] Cron job diário para analytics (anonimização 30 dias, purge 1 ano)
 - [ ] Cron job semanal para contas inativas (2 anos):
-  - Notificação por email (30 dias antes)
-  - Deleção automática se sem resposta
+ - Notificação por email (30 dias antes)
+ - Deleção automática se sem resposta
 
 **Issue #113 - Correção de Dados**
 - [ ] Adicionar `email` ao UpdateUserDto (com validação de unicidade)
 - [ ] Criar endpoint `PATCH /users/me/password`:
-  - Requer senha atual
-  - Validação de força (8+ caracteres, maiúscula, número)
-  - Email de notificação de troca
+ - Requer senha atual
+ - Validação de força (8+ caracteres, maiúscula, número)
+ - Email de notificação de troca
 
 ### 4.3 Fase 3: Melhorias (P2) - Prazo: 90 dias
 
@@ -440,59 +440,59 @@ auditLogs: AuditLog[];
 
 ---
 
-## 5️⃣ Issues Criadas para Remediação
+## Issues Criadas para Remediação
 
 ### Novas Issues (a criar)
 
 **M3 - Quality & Security (P0):**
 
 - [ ] **#202** - [P0][LGPD] Implementar registro de consentimento no cadastro
-  - Estimativa: 3-4h
-  - Escopo: Checkbox + campos no banco + migration
+ - Estimativa: 3-4h
+ - Escopo: Checkbox + campos no banco + migration
 
 - [ ] **#205** - [P0][LGPD] Publicar políticas de privacidade no frontend
-  - Estimativa: 2-3h
-  - Escopo: Rotas `/privacy` e `/terms` + links no footer
+ - Estimativa: 2-3h
+ - Escopo: Rotas `/privacy` e `/terms` + links no footer
 
 **M3 - Quality & Security (já existe):**
 
 - [ ] **#113** - [P0/P1][LGPD] Automação de Export e Deletion de Dados
-  - Estimativa: 10-12h (desmembrar em sub-issues atômicas)
-  - Escopo: Endpoints de export, delete, cascade config, testes
+ - Estimativa: 10-12h (desmembrar em sub-issues atômicas)
+ - Escopo: Endpoints de export, delete, cascade config, testes
 
 **M4 - Refactoring (já existe):**
 
 - [ ] **#194** - [P1][LGPD] Implementar política de retenção automatizada
-  - Estimativa: 6-8h
-  - Escopo: Cron jobs de purge, anonimização, notificações
+ - Estimativa: 6-8h
+ - Escopo: Cron jobs de purge, anonimização, notificações
 
 **M5 - Documentation:**
 
 - [ ] **#196** - [P1][LGPD] Versionamento de Termos Aceitos
-  - Estimativa: 2-3h
-  - Escopo: Tracking de versão + re-consent flow
+ - Estimativa: 2-3h
+ - Escopo: Tracking de versão + re-consent flow
 
 ---
 
-## 6️⃣ Conformidade LGPD - Checklist Final
+## Conformidade LGPD - Checklist Final
 
 ### Artigos da LGPD Avaliados
 
 | Art. | Descrição | Status Atual | Ação Requerida |
 |------|-----------|--------------|----------------|
-| **Art. 6º** | Princípios (necessidade, finalidade, transparência) | ⚠️ PARCIAL | Implementar consentimento |
+| **Art. 6º** | Princípios (necessidade, finalidade, transparência) | ⚠ PARCIAL | Implementar consentimento |
 | **Art. 7º, I** | Base legal: Consentimento | ❌ NÃO CONFORME | #202 |
 | **Art. 7º, V** | Base legal: Execução de contrato | ✅ CONFORME | - |
 | **Art. 7º, IX** | Base legal: Legítimo interesse | ✅ CONFORME | - |
 | **Art. 8º** | Consentimento livre, informado, inequívoco | ❌ NÃO CONFORME | #202 |
 | **Art. 9º** | Política de privacidade acessível | ❌ NÃO CONFORME | #205 |
 | **Art. 14** | Transparência ao titular | ❌ NÃO CONFORME | #205 |
-| **Art. 15** | Término do tratamento | ⚠️ PARCIAL | #194 (automatizar) |
-| **Art. 16** | Eliminação de dados | ⚠️ PARCIAL | #113 (cascade delete) |
-| **Art. 18, II** | Direito de acesso | ⚠️ PARCIAL | #113 (export) |
-| **Art. 18, III** | Direito de correção | ⚠️ PARCIAL | #113 (email/password) |
-| **Art. 18, V** | Direito de portabilidade | ⚠️ PARCIAL | #113 (export completo) |
-| **Art. 18, VI** | Direito de exclusão | ⚠️ PARCIAL | #113 (self-service) |
+| **Art. 15** | Término do tratamento | ⚠ PARCIAL | #194 (automatizar) |
+| **Art. 16** | Eliminação de dados | ⚠ PARCIAL | #113 (cascade delete) |
+| **Art. 18, II** | Direito de acesso | ⚠ PARCIAL | #113 (export) |
+| **Art. 18, III** | Direito de correção | ⚠ PARCIAL | #113 (email/password) |
+| **Art. 18, V** | Direito de portabilidade | ⚠ PARCIAL | #113 (export completo) |
+| **Art. 18, VI** | Direito de exclusão | ⚠ PARCIAL | #113 (self-service) |
 | **Art. 18, IX** | Revogação de consentimento | ❌ NÃO CONFORME | #202 |
 | **Art. 33** | Transferência internacional | ❌ NÃO CONFORME | #202 (consent) |
 | **Art. 46** | Segurança e criptografia | ✅ CONFORME | ✅ Nenhuma ação |
@@ -501,32 +501,32 @@ auditLogs: AuditLog[];
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ CONFORMIDADE POR CATEGORIA                                   │
+│ CONFORMIDADE POR CATEGORIA │
 ├─────────────────────────────────────────────────────────────┤
-│ Segurança (Art. 46):           ██████████ 100% ✅           │
-│ Inventário de Dados:           ██████████ 100% ✅           │
-│ Direitos do Titular (Art. 18): ███████░░░  75% ⚠️          │
-│ Políticas (Art. 9, 14):        ████████░░  80% ⚠️          │
-│ Retenção (Art. 15, 16):        █████░░░░░  50% ⚠️          │
-│ Consentimento (Art. 7, 8):     ░░░░░░░░░░   0% ❌          │
-│                                                              │
-│ TOTAL GERAL:                   ██████░░░░  65% ⚠️          │
+│ Segurança (Art. 46): ██████████ 100% ✅ │
+│ Inventário de Dados: ██████████ 100% ✅ │
+│ Direitos do Titular (Art. 18): ███████░░░ 75% ⚠ │
+│ Políticas (Art. 9, 14): ████████░░ 80% ⚠ │
+│ Retenção (Art. 15, 16): █████░░░░░ 50% ⚠ │
+│ Consentimento (Art. 7, 8): ░░░░░░░░░░ 0% ❌ │
+│ │
+│ TOTAL GERAL: ██████░░░░ 65% ⚠ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 7️⃣ Análise de Riscos
+## Análise de Riscos
 
 ### 7.1 Matriz de Risco
 
 | Risco | Probabilidade | Impacto | Severidade | Mitigação |
 |-------|--------------|---------|------------|-----------|
-| Multa ANPD por falta de consentimento | Alta | Alto | 🔴 CRÍTICO | #202 (P0) |
-| Denúncia de titular por falta de export | Média | Alto | 🔴 CRÍTICO | #113 (P0) |
-| Acúmulo de dados além do necessário | Alta | Médio | 🟡 ALTO | #194 (P1) |
-| Perda de dados por deleção incorreta | Baixa | Alto | 🟡 ALTO | #113 (testes rigorosos) |
-| Exposição de dados em backups residuais | Baixa | Médio | 🟢 MÉDIO | Já mitigado (30 dias) |
+| Multa ANPD por falta de consentimento | Alta | Alto | CRÍTICO | #202 (P0) |
+| Denúncia de titular por falta de export | Média | Alto | CRÍTICO | #113 (P0) |
+| Acúmulo de dados além do necessário | Alta | Médio | ALTO | #194 (P1) |
+| Perda de dados por deleção incorreta | Baixa | Alto | ALTO | #113 (testes rigorosos) |
+| Exposição de dados em backups residuais | Baixa | Médio | MÉDIO | Já mitigado (30 dias) |
 
 ### 7.2 Exposição Legal Atual
 
@@ -544,41 +544,41 @@ auditLogs: AuditLog[];
 
 ---
 
-## 8️⃣ Cronograma de Implementação
+## Cronograma de Implementação
 
 ### Timeline Recomendado
 
 ```
 Semana 1-2 (P0): Consentimento + Políticas
-  ├─ Dia 1-3:   #202 (consentimento no banco)
-  ├─ Dia 4-5:   #205 (publicar políticas no frontend)
-  ├─ Dia 6-7:   Testes de integração
-  └─ Entregável: Base legal válida ✅
+ ├─ Dia 1-3: #202 (consentimento no banco)
+ ├─ Dia 4-5: #205 (publicar políticas no frontend)
+ ├─ Dia 6-7: Testes de integração
+ └─ Entregável: Base legal válida ✅
 
 Semana 3-4 (P0): Direitos do Titular - Export/Delete
-  ├─ Dia 8-10:  #113a (endpoint export)
-  ├─ Dia 11-12: #113b (endpoint delete + cascade)
-  ├─ Dia 13-14: #113c (UI de confirmação)
-  └─ Entregável: Art. 18 conforme ✅
+ ├─ Dia 8-10: #113a (endpoint export)
+ ├─ Dia 11-12: #113b (endpoint delete + cascade)
+ ├─ Dia 13-14: #113c (UI de confirmação)
+ └─ Entregável: Art. 18 conforme ✅
 
 Semana 5-6 (P1): Automação de Retenção
-  ├─ Dia 15-17: #194a (cron jobs de purge)
-  ├─ Dia 18-19: #194b (anonimização de analytics)
-  ├─ Dia 20-21: #194c (notificação de inatividade)
-  └─ Entregável: Art. 15/16 automatizado ✅
+ ├─ Dia 15-17: #194a (cron jobs de purge)
+ ├─ Dia 18-19: #194b (anonimização de analytics)
+ ├─ Dia 20-21: #194c (notificação de inatividade)
+ └─ Entregável: Art. 15/16 automatizado ✅
 
 Semana 7-8 (P1): Correção de Dados
-  ├─ Dia 22-23: #113d (email editável)
-  ├─ Dia 24-25: #113e (password editável)
-  ├─ Dia 26-28: Testes E2E completos
-  └─ Entregável: Art. 18 III conforme ✅
+ ├─ Dia 22-23: #113d (email editável)
+ ├─ Dia 24-25: #113e (password editável)
+ ├─ Dia 26-28: Testes E2E completos
+ └─ Entregável: Art. 18 III conforme ✅
 
 Semana 9-12 (P2): Melhorias e Portabilidade
-  ├─ Semana 9:  #113f (bulk export, CSV)
-  ├─ Semana 10: #113g (audit log access)
-  ├─ Semana 11: #194d (legal hold)
-  ├─ Semana 12: Auditoria final de conformidade
-  └─ Entregável: 100% LGPD compliant ✅
+ ├─ Semana 9: #113f (bulk export, CSV)
+ ├─ Semana 10: #113g (audit log access)
+ ├─ Semana 11: #194d (legal hold)
+ ├─ Semana 12: Auditoria final de conformidade
+ └─ Entregável: 100% LGPD compliant ✅
 ```
 
 ### Esforço Total Estimado
@@ -592,7 +592,7 @@ Semana 9-12 (P2): Melhorias e Portabilidade
 
 ---
 
-## 9️⃣ Recomendações Estratégicas
+## Recomendações Estratégicas
 
 ### 9.1 Priorização (Must/Should/Could)
 
@@ -638,7 +638,7 @@ Semana 9-12 (P2): Melhorias e Portabilidade
 
 ---
 
-## 🔟 Conclusão
+## Conclusão
 
 ### 10.1 Resumo da Conformidade
 
@@ -685,7 +685,7 @@ O sistema **ETP Express** apresenta uma base sólida de segurança e mapeamento 
 
 ---
 
-## 🔗 Referências e Evidências
+## Referências e Evidências
 
 ### Documentação LGPD Criada
 
@@ -734,7 +734,7 @@ O sistema **ETP Express** apresenta uma base sólida de segurança e mapeamento 
 
 ---
 
-## 📝 Histórico de Versões
+## Histórico de Versões
 
 | Versão | Data | Autor | Descrição |
 |--------|------|-------|-----------|
@@ -755,7 +755,7 @@ O ETP Express apresenta **alto grau de conformidade** com a LGPD (88%), com impl
 
 ### Gaps Remanescentes
 
-**🟡 Recomendado antes de produção:**
+** Recomendado antes de produção:**
 - Issue #202 (Data Rights UI) - Completar funcionalidade de revogação
 - Issue #203 (Consent Migration) - Regularizar usuários existentes
 - Issue #204 (Data Export Enhancement) - Completar portabilidade
@@ -783,4 +783,3 @@ O ETP Express apresenta **alto grau de conformidade** com a LGPD (88%), com impl
 ---
 
 **FIM DO RELATÓRIO**
-

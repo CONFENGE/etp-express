@@ -99,18 +99,18 @@ export interface AnalysisResultsProps {
  * @example
  * ```tsx
  * <AnalysisResults
- *   analysisId="abc-123"
- *   filename="documento.pdf"
- *   overallScore={78}
- *   meetsMinimumQuality={true}
- *   verdict="Aprovado com ressalvas"
- *   dimensions={[...]}
- *   issueSummary={{ critical: 1, important: 3, suggestion: 5 }}
- *   documentInfo={{ wordCount: 1500, sectionCount: 8 }}
- *   improvements={[...]}
- *   onDownloadReport={handleDownload}
- *   onConvertToEtp={handleConvert}
- *   onReset={handleReset}
+ * analysisId="abc-123"
+ * filename="documento.pdf"
+ * overallScore={78}
+ * meetsMinimumQuality={true}
+ * verdict="Aprovado com ressalvas"
+ * dimensions={[...]}
+ * issueSummary={{ critical: 1, important: 3, suggestion: 5 }}
+ * documentInfo={{ wordCount: 1500, sectionCount: 8 }}
+ * improvements={[...]}
+ * onDownloadReport={handleDownload}
+ * onConvertToEtp={handleConvert}
+ * onReset={handleReset}
  * />
  * ```
  */

@@ -92,7 +92,7 @@ Graças aos **path filters**, os seguintes tipos de commit **NÃO acionam workfl
 - Mudanças em `.editorconfig`, `.prettierrc`
 - Commits com apenas updates de CHANGELOG.md
 
-### ⚠️ Mudanças que Acionam Workflows
+### ⚠ Mudanças que Acionam Workflows
 
 - Qualquer código TypeScript (`**/*.ts`, `**/*.tsx`)
 - Mudanças em `package.json` ou `package-lock.json`
@@ -140,8 +140,8 @@ gh api /repos/OWNER/REPO/actions/billing/usage --jq '.total_minutes_used'
 
 ```bash
 gh api /repos/OWNER/REPO/actions/runs?per_page=100 | \
-  jq '.workflow_runs[] | {name: .name, duration_min: (.run_duration_ms / 60000)}' | \
-  jq -s 'sort_by(.duration_min) | reverse | .[0:10]'
+ jq '.workflow_runs[] | {name: .name, duration_min: (.run_duration_ms / 60000)}' | \
+ jq -s 'sort_by(.duration_min) | reverse | .[0:10]'
 ```
 
 ### Ver Histórico de Execuções Recentes
@@ -198,7 +198,7 @@ git commit -am "feat: adicionar nova feature no service"
 git push
 ```
 
-**Resultado:** ⚠️ Workflows acionados (lint + tests + secret-scan em master)
+**Resultado:** ⚠ Workflows acionados (lint + tests + secret-scan em master)
 
 ### Exemplo 3: Uso do /review-pr
 

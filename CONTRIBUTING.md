@@ -89,20 +89,20 @@ Footer opcional (Breaking Changes, etc.)
 
 ### Tipos Permitidos
 
-| Tipo       | Quando Usar                                    |
+| Tipo | Quando Usar |
 | ---------- | ---------------------------------------------- |
-| `feat`     | Nova funcionalidade                            |
-| `fix`      | Correcao de bug                                |
-| `docs`     | Apenas documentacao (README, JSDoc, etc.)      |
-| `test`     | Adicao ou correcao de testes                   |
-| `refactor` | Refatoracao sem mudanca de comportamento       |
-| `perf`     | Melhoria de performance                        |
-| `chore`    | Tarefas de manutencao (deps, configs, scripts) |
-| `security` | Correcao de vulnerabilidade                    |
-| `style`    | Formatacao, espacos, ponto-e-virgula (nao CSS) |
-| `ci`       | Mudancas em CI/CD (GitHub Actions, etc.)       |
-| `build`    | Build system ou dependencias externas          |
-| `revert`   | Revert de commit anterior                      |
+| `feat` | Nova funcionalidade |
+| `fix` | Correcao de bug |
+| `docs` | Apenas documentacao (README, JSDoc, etc.) |
+| `test` | Adicao ou correcao de testes |
+| `refactor` | Refatoracao sem mudanca de comportamento |
+| `perf` | Melhoria de performance |
+| `chore` | Tarefas de manutencao (deps, configs, scripts) |
+| `security` | Correcao de vulnerabilidade |
+| `style` | Formatacao, espacos, ponto-e-virgula (nao CSS) |
+| `ci` | Mudancas em CI/CD (GitHub Actions, etc.) |
+| `build` | Build system ou dependencias externas |
+| `revert` | Revert de commit anterior |
 
 ### Escopos Comuns
 
@@ -164,13 +164,13 @@ git checkout -b feat/123-minha-feature
 
 ### 2. Nomenclatura de Branches
 
-| Tipo         | Padrao                     | Exemplo                    |
+| Tipo | Padrao | Exemplo |
 | ------------ | -------------------------- | -------------------------- |
-| Feature      | `feat/ISSUE-descricao`     | `feat/42-rate-limiting`    |
-| Bug fix      | `fix/ISSUE-descricao`      | `fix/156-memory-leak`      |
-| Hotfix       | `hotfix/ISSUE-descricao`   | `hotfix/413-jwt-vuln`      |
-| Documentacao | `docs/ISSUE-descricao`     | `docs/36-readme-badges`    |
-| Refatoracao  | `refactor/ISSUE-descricao` | `refactor/78-orchestrator` |
+| Feature | `feat/ISSUE-descricao` | `feat/42-rate-limiting` |
+| Bug fix | `fix/ISSUE-descricao` | `fix/156-memory-leak` |
+| Hotfix | `hotfix/ISSUE-descricao` | `hotfix/413-jwt-vuln` |
+| Documentacao | `docs/ISSUE-descricao` | `docs/36-readme-badges` |
+| Refatoracao | `refactor/ISSUE-descricao` | `refactor/78-orchestrator` |
 
 ### 3. Durante o Desenvolvimento
 
@@ -271,15 +271,15 @@ Closes #NUMERO-DA-ISSUE
 
 ### Naming Conventions
 
-| Item              | Padrao         | Exemplo              |
+| Item | Padrao | Exemplo |
 | ----------------- | -------------- | -------------------- |
-| Arquivos TS       | kebab-case     | `user-service.ts`    |
-| Classes           | PascalCase     | `UserService`        |
-| Funcoes/Metodos   | camelCase      | `getUserById()`      |
-| Constantes        | SCREAMING_CASE | `MAX_RETRY_ATTEMPTS` |
-| Interfaces        | PascalCase + I | `IUserResponse`      |
-| Types             | PascalCase     | `UserRole`           |
-| Componentes React | PascalCase     | `ETPEditor.tsx`      |
+| Arquivos TS | kebab-case | `user-service.ts` |
+| Classes | PascalCase | `UserService` |
+| Funcoes/Metodos | camelCase | `getUserById()` |
+| Constantes | SCREAMING_CASE | `MAX_RETRY_ATTEMPTS` |
+| Interfaces | PascalCase + I | `IUserResponse` |
+| Types | PascalCase | `UserRole` |
+| Componentes React | PascalCase | `ETPEditor.tsx` |
 
 ---
 
@@ -290,19 +290,19 @@ Closes #NUMERO-DA-ISSUE
 ```
 projeto/
 ├── backend/
-│   ├── src/
-│   │   └── modulo/
-│   │       ├── modulo.service.ts
-│   │       └── modulo.service.spec.ts  # Unitarios
-│   └── test/
-│       └── modulo.e2e-spec.ts          # E2E
+│ ├── src/
+│ │ └── modulo/
+│ │ ├── modulo.service.ts
+│ │ └── modulo.service.spec.ts # Unitarios
+│ └── test/
+│ └── modulo.e2e-spec.ts # E2E
 ├── frontend/
-│   └── src/
-│       └── components/
-│           ├── Component.tsx
-│           └── Component.test.tsx      # Unitarios
+│ └── src/
+│ └── components/
+│ ├── Component.tsx
+│ └── Component.test.tsx # Unitarios
 └── e2e/
-    └── fluxo.spec.ts                   # E2E Playwright
+ └── fluxo.spec.ts # E2E Playwright
 ```
 
 ### Comandos
@@ -310,26 +310,26 @@ projeto/
 ```bash
 # Backend
 cd backend
-npm test                  # Unitarios
-npm run test:e2e          # Integracao
-npm run test:cov          # Com coverage
+npm test # Unitarios
+npm run test:e2e # Integracao
+npm run test:cov # Com coverage
 
 # Frontend
 cd frontend
-npm test                  # Unitarios
-npm run test:coverage     # Com coverage
+npm test # Unitarios
+npm run test:coverage # Com coverage
 
 # E2E (Playwright)
 cd e2e
-npm test                  # Requer frontend rodando
+npm test # Requer frontend rodando
 ```
 
 ### Metas de Coverage
 
-| Modulo   | Meta | Atual |
+| Modulo | Meta | Atual |
 | -------- | ---- | ----- |
-| Backend  | 70%+ | 78%   |
-| Frontend | 60%+ | 60%   |
+| Backend | 70%+ | 78% |
+| Frontend | 60%+ | 60% |
 
 ### Boas Praticas
 

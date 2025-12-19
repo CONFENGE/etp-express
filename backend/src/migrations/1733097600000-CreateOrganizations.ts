@@ -18,48 +18,48 @@ export class CreateOrganizations1733097600000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if table exists
     const tableExists = await queryRunner.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables
-        WHERE table_schema = 'public'
-        AND table_name = 'organizations'
-      );
-    `);
+ SELECT EXISTS (
+ SELECT FROM information_schema.tables
+ WHERE table_schema = 'public'
+ AND table_name = 'organizations'
+ );
+ `);
 
     if (!tableExists[0].exists) {
       // Create organizations table
       await queryRunner.query(`
-        CREATE TABLE "organizations" (
-          "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-          "name" character varying NOT NULL,
-          "cnpj" character varying NOT NULL,
-          "domainWhitelist" text array NOT NULL,
-          "isActive" boolean NOT NULL DEFAULT true,
-          "stripeCustomerId" character varying,
-          "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-          "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-          CONSTRAINT "PK_organizations" PRIMARY KEY ("id"),
-          CONSTRAINT "UQ_organizations_cnpj" UNIQUE ("cnpj")
-        );
-      `);
+ CREATE TABLE "organizations" (
+ "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+ "name" character varying NOT NULL,
+ "cnpj" character varying NOT NULL,
+ "domainWhitelist" text array NOT NULL,
+ "isActive" boolean NOT NULL DEFAULT true,
+ "stripeCustomerId" character varying,
+ "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+ "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+ CONSTRAINT "PK_organizations" PRIMARY KEY ("id"),
+ CONSTRAINT "UQ_organizations_cnpj" UNIQUE ("cnpj")
+ );
+ `);
 
       // Create GIN index on domainWhitelist for efficient domain lookup
       // Used by OrganizationsService.findByDomain() in AuthService.register
       await queryRunner.query(`
-        CREATE INDEX "IDX_organizations_domainWhitelist"
-        ON "organizations" USING GIN ("domainWhitelist");
-      `);
+ CREATE INDEX "IDX_organizations_domainWhitelist"
+ ON "organizations" USING GIN ("domainWhitelist");
+ `);
 
       // Create index on isActive for filtering active organizations
       await queryRunner.query(`
-        CREATE INDEX "IDX_organizations_isActive"
-        ON "organizations" ("isActive");
-      `);
+ CREATE INDEX "IDX_organizations_isActive"
+ ON "organizations" ("isActive");
+ `);
 
       // Create index on createdAt for ordering
       await queryRunner.query(`
-        CREATE INDEX "IDX_organizations_createdAt"
-        ON "organizations" ("createdAt" DESC);
-      `);
+ CREATE INDEX "IDX_organizations_createdAt"
+ ON "organizations" ("createdAt" DESC);
+ `);
     }
   }
 

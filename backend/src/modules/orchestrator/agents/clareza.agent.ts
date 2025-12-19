@@ -88,7 +88,7 @@ export class ClarezaAgent {
    * @example
    * ```ts
    * const result = await clarezaAgent.analyze(
-   *   'O sistema atual não atende. Por isso, precisamos contratar um novo.'
+   * 'O sistema atual não atende. Por isso, precisamos contratar um novo.'
    * );
    * console.log(result.score); // 85
    * console.log(result.metrics.avgSentenceLength); // 8.5

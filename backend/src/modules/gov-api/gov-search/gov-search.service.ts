@@ -78,9 +78,9 @@ export class GovSearchService {
    * @example
    * ```typescript
    * const results = await govSearchService.search('pavimentação asfaltica', {
-   *   includePrecos: true,
-   *   isInfrastructure: true,
-   *   uf: 'DF',
+   * includePrecos: true,
+   * isInfrastructure: true,
+   * uf: 'DF',
    * });
    * ```
    */

@@ -10,28 +10,28 @@
 
 1. [Introdução](#1-introdução)
 2. [Primeiros Passos](#2-primeiros-passos)
-   - [Criando sua Conta](#21-criando-sua-conta)
-   - [Fazendo Login](#22-fazendo-login)
-   - [Recuperação de Senha](#23-recuperação-de-senha)
+ - [Criando sua Conta](#21-criando-sua-conta)
+ - [Fazendo Login](#22-fazendo-login)
+ - [Recuperação de Senha](#23-recuperação-de-senha)
 3. [Dashboard](#3-dashboard)
 4. [Criando um Novo ETP](#4-criando-um-novo-etp)
-   - [Informações Básicas](#41-informações-básicas)
-   - [Seções do ETP](#42-seções-do-etp)
+ - [Informações Básicas](#41-informações-básicas)
+ - [Seções do ETP](#42-seções-do-etp)
 5. [Geração de Conteúdo com IA](#5-geração-de-conteúdo-com-ia)
-   - [Como Funciona](#51-como-funciona)
-   - [Gerando uma Seção](#52-gerando-uma-seção)
-   - [Dicas para Melhores Resultados](#53-dicas-para-melhores-resultados)
+ - [Como Funciona](#51-como-funciona)
+ - [Gerando uma Seção](#52-gerando-uma-seção)
+ - [Dicas para Melhores Resultados](#53-dicas-para-melhores-resultados)
 6. [Exportação de Documentos](#6-exportação-de-documentos)
-   - [Exportar para PDF](#61-exportar-para-pdf)
-   - [Exportar para DOCX](#62-exportar-para-docx)
+ - [Exportar para PDF](#61-exportar-para-pdf)
+ - [Exportar para DOCX](#62-exportar-para-docx)
 7. [Import & Analysis](#7-import--analysis)
-   - [Importando Documentos](#71-importando-documentos)
-   - [Análise de Qualidade](#72-análise-de-qualidade)
-   - [Convertendo para ETP](#73-convertendo-para-etp)
+ - [Importando Documentos](#71-importando-documentos)
+ - [Análise de Qualidade](#72-análise-de-qualidade)
+ - [Convertendo para ETP](#73-convertendo-para-etp)
 8. [Gestão de Usuários](#8-gestão-de-usuários)
-   - [Criando Usuários](#81-criando-usuários)
-   - [Editando Usuários](#82-editando-usuários)
-   - [Gerenciando Acessos](#83-gerenciando-acessos)
+ - [Criando Usuários](#81-criando-usuários)
+ - [Editando Usuários](#82-editando-usuários)
+ - [Gerenciando Acessos](#83-gerenciando-acessos)
 9. [Perguntas Frequentes (FAQ)](#9-perguntas-frequentes-faq)
 10. [Suporte](#10-suporte)
 
@@ -69,14 +69,14 @@ Para criar uma conta no ETP Express:
 1. Acesse **https://confenge.com.br/etpexpress**
 2. Clique em **"Cadastre-se"**
 3. Preencha os campos obrigatórios:
-   - **Nome completo**: Seu nome como servidor
-   - **Email**: Use seu email institucional (ex: nome@orgao.gov.br)
-   - **Senha**: Mínimo de 6 caracteres
-   - **Confirmar Senha**: Repita a senha
+ - **Nome completo**: Seu nome como servidor
+ - **Email**: Use seu email institucional (ex: nome@orgao.gov.br)
+ - **Senha**: Mínimo de 6 caracteres
+ - **Confirmar Senha**: Repita a senha
 
 4. Aceite os termos obrigatórios:
-   - [x] Termos de Uso e Política de Privacidade (LGPD)
-   - [x] Transferência Internacional de Dados
+ - [x] Termos de Uso e Política de Privacidade (LGPD)
+ - [x] Transferência Internacional de Dados
 
 5. Clique em **"Cadastrar"**
 
@@ -135,8 +135,8 @@ Lista dos últimos 5 ETPs acessados, com:
 
 1. No Dashboard, clique em **"Novo ETP"**
 2. Preencha as informações iniciais:
-   - **Título**: Nome descritivo do ETP (ex: "Aquisição de Equipamentos de Informática")
-   - **Descrição** (opcional): Breve resumo do objeto
+ - **Título**: Nome descritivo do ETP (ex: "Aquisição de Equipamentos de Informática")
+ - **Descrição** (opcional): Breve resumo do objeto
 
 3. O sistema criará automaticamente o ETP com todas as 13 seções
 
@@ -144,21 +144,21 @@ Lista dos últimos 5 ETPs acessados, com:
 
 O ETP Express segue a estrutura definida pela Lei 14.133/2021, com as seguintes seções:
 
-| Seção | Título                          | Obrigatória |
+| Seção | Título | Obrigatória |
 | ----- | ------------------------------- | ----------- |
-| I     | Necessidade da Contratação      | Sim         |
-| II    | Objetivos da Contratação        | Não         |
-| III   | Descrição da Solução            | Não         |
-| IV    | Requisitos da Contratação       | Sim         |
-| V     | Levantamento de Mercado         | Não         |
-| VI    | Estimativa de Preços            | Sim         |
-| VII   | Justificativa para Parcelamento | Não         |
-| VIII  | Adequação Orçamentária          | Sim         |
-| IX    | Resultados Pretendidos          | Não         |
-| X     | Providências a serem Adotadas   | Não         |
-| XI    | Possíveis Impactos Ambientais   | Não         |
-| XII   | Declaração de Viabilidade       | Não         |
-| XIII  | Contratações Correlatas         | Sim         |
+| I | Necessidade da Contratação | Sim |
+| II | Objetivos da Contratação | Não |
+| III | Descrição da Solução | Não |
+| IV | Requisitos da Contratação | Sim |
+| V | Levantamento de Mercado | Não |
+| VI | Estimativa de Preços | Sim |
+| VII | Justificativa para Parcelamento | Não |
+| VIII | Adequação Orçamentária | Sim |
+| IX | Resultados Pretendidos | Não |
+| X | Providências a serem Adotadas | Não |
+| XI | Possíveis Impactos Ambientais | Não |
+| XII | Declaração de Viabilidade | Não |
+| XIII | Contratações Correlatas | Sim |
 
 ### Navegando entre Seções
 
@@ -181,9 +181,9 @@ O ETP Express segue a estrutura definida pela Lei 14.133/2021, com as seguintes 
 O ETP Express utiliza **Inteligência Artificial** para auxiliar na redação das seções do ETP:
 
 1. A IA pesquisa informações em **fontes governamentais oficiais**:
-   - Portal Nacional de Contratações Públicas (PNCP)
-   - Compras.gov.br (SIASG)
-   - Tabelas SINAPI e SICRO (preços de referência)
+ - Portal Nacional de Contratações Públicas (PNCP)
+ - Compras.gov.br (SIASG)
+ - Tabelas SINAPI e SICRO (preços de referência)
 
 2. Gera textos em **conformidade com a Lei 14.133/2021**
 
@@ -269,11 +269,11 @@ O módulo de **Import & Analysis** permite importar e analisar ETPs existentes.
 
 O sistema avalia o documento em três dimensões:
 
-| Dimensão                       | O que avalia                |
+| Dimensão | O que avalia |
 | ------------------------------ | --------------------------- |
-| **Conformidade Legal**         | Aderência à Lei 14.133/2021 |
-| **Clareza e Legibilidade**     | Qualidade da redação        |
-| **Qualidade da Fundamentação** | Embasamento técnico         |
+| **Conformidade Legal** | Aderência à Lei 14.133/2021 |
+| **Clareza e Legibilidade** | Qualidade da redação |
+| **Qualidade da Fundamentação** | Embasamento técnico |
 
 Resultados apresentados:
 
@@ -303,9 +303,9 @@ Após a análise, você pode converter o documento para o sistema:
 1. Acesse **"Gerenciamento" > "Usuários"**
 2. Clique em **"Novo Usuário"**
 3. Preencha os dados:
-   - **Nome**: Nome completo do usuário
-   - **Email**: Deve ser do mesmo domínio do órgão
-   - **Cargo** (opcional): Função no órgão
+ - **Nome**: Nome completo do usuário
+ - **Email**: Deve ser do mesmo domínio do órgão
+ - **Cargo** (opcional): Função no órgão
 
 4. Clique em **"Criar"**
 5. O usuário receberá um email com instruções de acesso
@@ -432,23 +432,23 @@ Ao reportar um problema, inclua:
 
 ## Glossário
 
-| Termo               | Definição                                                                  |
+| Termo | Definição |
 | ------------------- | -------------------------------------------------------------------------- |
-| **ETP**             | Estudo Técnico Preliminar - documento que fundamenta a contratação pública |
-| **Lei 14.133/2021** | Nova Lei de Licitações e Contratos Administrativos                         |
-| **PNCP**            | Portal Nacional de Contratações Públicas                                   |
-| **SINAPI**          | Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil       |
-| **SICRO**           | Sistema de Custos Referenciais de Obras                                    |
-| **LGPD**            | Lei Geral de Proteção de Dados                                             |
-| **IA**              | Inteligência Artificial                                                    |
+| **ETP** | Estudo Técnico Preliminar - documento que fundamenta a contratação pública |
+| **Lei 14.133/2021** | Nova Lei de Licitações e Contratos Administrativos |
+| **PNCP** | Portal Nacional de Contratações Públicas |
+| **SINAPI** | Sistema Nacional de Pesquisa de Custos e Índices da Construção Civil |
+| **SICRO** | Sistema de Custos Referenciais de Obras |
+| **LGPD** | Lei Geral de Proteção de Dados |
+| **IA** | Inteligência Artificial |
 
 ---
 
 ## Histórico de Versões
 
-| Versão | Data     | Alterações               |
+| Versão | Data | Alterações |
 | ------ | -------- | ------------------------ |
-| 1.0    | Jan/2026 | Versão inicial do manual |
+| 1.0 | Jan/2026 | Versão inicial do manual |
 
 ---
 

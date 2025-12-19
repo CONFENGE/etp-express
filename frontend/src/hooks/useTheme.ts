@@ -93,9 +93,9 @@ function subscribeToSystemTheme(callback: () => void): () => void {
  * const { theme, resolvedTheme, setTheme } = useTheme();
  *
  * return (
- *   <button onClick={() => setTheme('dark')}>
- *     Current: {resolvedTheme}
- *   </button>
+ * <button onClick={() => setTheme('dark')}>
+ * Current: {resolvedTheme}
+ * </button>
  * );
  * ```
  */

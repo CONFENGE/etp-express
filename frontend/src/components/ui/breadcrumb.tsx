@@ -41,11 +41,11 @@ export interface BreadcrumbProps {
  * @example
  * ```tsx
  * <Breadcrumb
- *   items={[
- *     { label: 'Administração', href: '/admin' },
- *     { label: 'Domínios', href: '/admin/domains' },
- *     { label: 'example.com' }, // current page, no href
- *   ]}
+ * items={[
+ * { label: 'Administração', href: '/admin' },
+ * { label: 'Domínios', href: '/admin/domains' },
+ * { label: 'example.com' }, // current page, no href
+ * ]}
  * />
  * ```
  */

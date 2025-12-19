@@ -14,10 +14,10 @@ export class AddLgpdConsentFields1763500000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if lgpdConsentAt column already exists
     const lgpdConsentAtExists = await queryRunner.query(`
-      SELECT 1 FROM information_schema.columns
-      WHERE table_name = 'users'
-      AND column_name = 'lgpdConsentAt'
-    `);
+ SELECT 1 FROM information_schema.columns
+ WHERE table_name = 'users'
+ AND column_name = 'lgpdConsentAt'
+ `);
 
     if (lgpdConsentAtExists.length === 0) {
       await queryRunner.addColumn(
@@ -33,10 +33,10 @@ export class AddLgpdConsentFields1763500000000 implements MigrationInterface {
 
     // Check if lgpdConsentVersion column already exists
     const lgpdConsentVersionExists = await queryRunner.query(`
-      SELECT 1 FROM information_schema.columns
-      WHERE table_name = 'users'
-      AND column_name = 'lgpdConsentVersion'
-    `);
+ SELECT 1 FROM information_schema.columns
+ WHERE table_name = 'users'
+ AND column_name = 'lgpdConsentVersion'
+ `);
 
     if (lgpdConsentVersionExists.length === 0) {
       await queryRunner.addColumn(

@@ -28,9 +28,9 @@ export class AddOrganizationIdToSimilarContracts1765583168494 implements Migrati
     // Step 1: Add organizationId column (UUID, NULLABLE) - only if not exists
     if (!hasOrganizationIdColumn) {
       await queryRunner.query(`
-        ALTER TABLE "similar_contracts"
-        ADD COLUMN "organizationId" UUID NULL
-      `);
+ ALTER TABLE "similar_contracts"
+ ADD COLUMN "organizationId" UUID NULL
+ `);
     }
 
     // Step 2: Create foreign key to organizations table (ON DELETE SET NULL) - idempotent
@@ -40,12 +40,12 @@ export class AddOrganizationIdToSimilarContracts1765583168494 implements Migrati
 
     if (!hasForeignKey) {
       await queryRunner.query(`
-        ALTER TABLE "similar_contracts"
-        ADD CONSTRAINT "FK_similar_contracts_organization"
-        FOREIGN KEY ("organizationId")
-        REFERENCES "organizations"("id")
-        ON DELETE SET NULL
-      `);
+ ALTER TABLE "similar_contracts"
+ ADD CONSTRAINT "FK_similar_contracts_organization"
+ FOREIGN KEY ("organizationId")
+ REFERENCES "organizations"("id")
+ ON DELETE SET NULL
+ `);
     }
 
     // Step 3: Create simple index on organizationId - idempotent
@@ -55,9 +55,9 @@ export class AddOrganizationIdToSimilarContracts1765583168494 implements Migrati
 
     if (!hasSimpleIndex) {
       await queryRunner.query(`
-        CREATE INDEX "IDX_similar_contracts_organizationId"
-        ON "similar_contracts" ("organizationId")
-      `);
+ CREATE INDEX "IDX_similar_contracts_organizationId"
+ ON "similar_contracts" ("organizationId")
+ `);
     }
 
     // Step 4: Create compound index (organizationId, createdAt) - idempotent
@@ -70,33 +70,33 @@ export class AddOrganizationIdToSimilarContracts1765583168494 implements Migrati
 
     if (!hasCompoundIndex) {
       await queryRunner.query(`
-        CREATE INDEX "IDX_similar_contracts_organization_createdAt"
-        ON "similar_contracts" ("organizationId", "createdAt")
-      `);
+ CREATE INDEX "IDX_similar_contracts_organization_createdAt"
+ ON "similar_contracts" ("organizationId", "createdAt")
+ `);
     }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Rollback Step 4: Drop compound index
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_similar_contracts_organization_createdAt"
-    `);
+ DROP INDEX IF EXISTS "IDX_similar_contracts_organization_createdAt"
+ `);
 
     // Rollback Step 3: Drop simple index
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_similar_contracts_organizationId"
-    `);
+ DROP INDEX IF EXISTS "IDX_similar_contracts_organizationId"
+ `);
 
     // Rollback Step 2: Drop foreign key constraint
     await queryRunner.query(`
-      ALTER TABLE "similar_contracts"
-      DROP CONSTRAINT IF EXISTS "FK_similar_contracts_organization"
-    `);
+ ALTER TABLE "similar_contracts"
+ DROP CONSTRAINT IF EXISTS "FK_similar_contracts_organization"
+ `);
 
     // Rollback Step 1: Drop organizationId column
     await queryRunner.query(`
-      ALTER TABLE "similar_contracts"
-      DROP COLUMN IF EXISTS "organizationId"
-    `);
+ ALTER TABLE "similar_contracts"
+ DROP COLUMN IF EXISTS "organizationId"
+ `);
   }
 }

@@ -31,15 +31,15 @@ Your job is to detect ALL discrepancies and provide actionable reconciliation st
 ```
 ISSUE COUNT AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ROADMAP.md:        98 issues
-GitHub (actual):   103 issues
-Drift:             +5 issues (5.1%)
-Status:            🟡 WARNING (>5% drift)
+ROADMAP.md: 98 issues
+GitHub (actual): 103 issues
+Drift: +5 issues (5.1%)
+Status: WARNING (>5% drift)
 
 BREAKDOWN:
-✅ Documented & exist:     93 issues
-❌ Phantom (doc only):     5 issues → #49-#76 range (GHOST RANGE)
-🆕 Orphan (GitHub only):   10 issues → #145, #146, #147...
+✅ Documented & exist: 93 issues
+❌ Phantom (doc only): 5 issues → #49-#76 range (GHOST RANGE)
+ Orphan (GitHub only): 10 issues → #145, #146, #147...
 ```
 
 ---
@@ -67,19 +67,19 @@ BREAKDOWN:
 MILESTONE PROGRESS AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-| Milestone | ROADMAP    | GitHub     | Sync | Issues                  |
+| Milestone | ROADMAP | GitHub | Sync | Issues |
 |-----------|------------|------------|------|-------------------------|
-| M1        | 34/34 100% | 34/34 100% | ✅   | Perfect sync            |
-| M2        | 10/10 100% | 9/10  90%  | ❌   | #112 marked done, still open |
-| M3        | 9/14  64%  | 10/14 71%  | ⚠️   | #85 closed, not marked  |
-| M4        | 3/20  15%  | 3/20  15%  | ✅   | Perfect sync            |
-| M5        | 1/17  6%   | 2/17  12%  | ⚠️   | #97 closed, not marked  |
-| M6        | 0/2   0%   | 0/2   0%   | ✅   | Perfect sync            |
+| M1 | 34/34 100% | 34/34 100% | ✅ | Perfect sync |
+| M2 | 10/10 100% | 9/10 90% | ❌ | #112 marked done, still open |
+| M3 | 9/14 64% | 10/14 71% | ⚠ | #85 closed, not marked |
+| M4 | 3/20 15% | 3/20 15% | ✅ | Perfect sync |
+| M5 | 1/17 6% | 2/17 12% | ⚠ | #97 closed, not marked |
+| M6 | 0/2 0% | 0/2 0% | ✅ | Perfect sync |
 
 CRITICAL ISSUES:
 ❌ M2: Issue #112 marked as closed in ROADMAP but still OPEN in GitHub
-⚠️  M3: Issue #85 is CLOSED in GitHub but marked OPEN in ROADMAP
-⚠️  M5: Issue #97 is CLOSED in GitHub but marked OPEN in ROADMAP
+⚠ M3: Issue #85 is CLOSED in GitHub but marked OPEN in ROADMAP
+⚠ M5: Issue #97 is CLOSED in GitHub but marked OPEN in ROADMAP
 ```
 
 ---
@@ -114,28 +114,28 @@ M1 (100% claimed, VALID):
 
 M2 (100% claimed, INVALID):
 ❌ #112 - Marked [x] in ROADMAP, but OPEN in GitHub
-   └─ Issue title: "Infrastructure as Code & Environment Reproducibility"
-   └─ Status: open (last updated: 2 hours ago)
-   └─ Milestone: M2
-   └─ Action: Either close issue in GitHub OR mark [ ] in ROADMAP
+ └─ Issue title: "Infrastructure as Code & Environment Reproducibility"
+ └─ Status: open (last updated: 2 hours ago)
+ └─ Milestone: M2
+ └─ Action: Either close issue in GitHub OR mark [ ] in ROADMAP
 
 M3 (64% claimed, SHOULD BE 71%):
-⚠️  #85 - Marked [ ] in ROADMAP, but CLOSED in GitHub
-   └─ Issue title: "OWASP Top 10 Security Audit"
-   └─ Status: closed (closed 5 days ago)
-   └─ PR: #133 merged
-   └─ Action: Mark [x] in ROADMAP, update M3 progress to 71%
+⚠ #85 - Marked [ ] in ROADMAP, but CLOSED in GitHub
+ └─ Issue title: "OWASP Top 10 Security Audit"
+ └─ Status: closed (closed 5 days ago)
+ └─ PR: #133 merged
+ └─ Action: Mark [x] in ROADMAP, update M3 progress to 71%
 
-⚠️  #17 - Marked [ ] in ROADMAP, but CLOSED in GitHub
-   └─ Issue title: "Fix useEffect in ETPEditor.tsx"
-   └─ Status: closed (closed 3 days ago via commit 40afb8e)
-   └─ Action: Mark [x] in ROADMAP, update M3 progress
+⚠ #17 - Marked [ ] in ROADMAP, but CLOSED in GitHub
+ └─ Issue title: "Fix useEffect in ETPEditor.tsx"
+ └─ Status: closed (closed 3 days ago via commit 40afb8e)
+ └─ Action: Mark [x] in ROADMAP, update M3 progress
 
 M5 (6% claimed, SHOULD BE 12%):
-⚠️  #97 - Marked [ ] in ROADMAP, but CLOSED in GitHub
-   └─ Issue title: "Sync documentation standards"
-   └─ Status: closed (closed 6 days ago)
-   └─ Action: Mark [x] in ROADMAP, update M5 progress to 12%
+⚠ #97 - Marked [ ] in ROADMAP, but CLOSED in GitHub
+ └─ Issue title: "Sync documentation standards"
+ └─ Status: closed (closed 6 days ago)
+ └─ Action: Mark [x] in ROADMAP, update M5 progress to 12%
 ```
 
 ---
@@ -252,21 +252,21 @@ M2 (90% → 100%):
 ├─ ROADMAP ETA: 2025-11-27
 ├─ Remaining: 1 issue (#112)
 ├─ Projected: 2025-11-18 (TODAY at current velocity!)
-└─ Status: 🟢 AHEAD OF SCHEDULE by 9 days
+└─ Status: AHEAD OF SCHEDULE by 9 days
 
 M3 (64% → 100%):
 ├─ ROADMAP ETA: 2025-12-04
 ├─ Remaining: 5 issues (if #85, #17 marked correctly)
 ├─ Projected: 2025-11-19 (1.1 days at current velocity)
-└─ Status: 🟢 AHEAD OF SCHEDULE by 15 days
+└─ Status: AHEAD OF SCHEDULE by 15 days
 
 M4 (15% → 100%):
 ├─ ROADMAP ETA: 2025-12-18
 ├─ Remaining: 17 issues
 ├─ Projected: 2025-11-22 (3.7 days at current velocity)
-└─ Status: 🟢 AHEAD OF SCHEDULE by 26 days!
+└─ Status: AHEAD OF SCHEDULE by 26 days!
 
-⚠️  RECOMMENDATION: ETAs in ROADMAP are VERY conservative. Consider:
+⚠ RECOMMENDATION: ETAs in ROADMAP are VERY conservative. Consider:
 - Updating ETAs to reflect actual velocity
 - Compressing timeline to maintain momentum
 - Adding stretch goals to M3/M4 to fill time
@@ -291,22 +291,22 @@ DOCUMENTATION CONSISTENCY AUDIT
 
 HEADER SECTION:
 ❌ Line 12: "Total: 98 issues (40 open + 58 closed)"
-   └─ Reality: 103 total (35 open + 68 closed)
-   └─ Action: Update to "Total: 103 issues (35 open + 68 closed)"
+ └─ Reality: 103 total (35 open + 68 closed)
+ └─ Action: Update to "Total: 103 issues (35 open + 68 closed)"
 
 PROGRESS BARS:
 ❌ Line 15: M3 shows "█████████████░░░░░░░ 9/14 (64%)"
-   └─ Reality: Should be "██████████████░░░░░░ 10/14 (71%)"
-   └─ Action: Update progress bar + percentage
+ └─ Reality: Should be "██████████████░░░░░░ 10/14 (71%)"
+ └─ Action: Update progress bar + percentage
 
 ❌ Line 18: M5 shows "█░░░░░░░░░░░░░░░░░░░ 1/17 (6%)"
-   └─ Reality: Should be "██░░░░░░░░░░░░░░░░░░ 2/17 (12%)"
-   └─ Action: Update progress bar + percentage
+ └─ Reality: Should be "██░░░░░░░░░░░░░░░░░░ 2/17 (12%)"
+ └─ Action: Update progress bar + percentage
 
 UPDATE TIMESTAMPS:
-⚠️  Line 8: "Última Atualização: 2025-11-16"
-   └─ Reality: Today is 2025-11-18
-   └─ Action: Update to current date
+⚠ Line 8: "Última Atualização: 2025-11-16"
+ └─ Reality: Today is 2025-11-18
+ └─ Action: Update to current date
 
 MILESTONE SUMMARIES:
 ✅ M1 summary accurate (34/34, 100%)
@@ -337,14 +337,14 @@ ROADMAP AUDIT - EXECUTIVE SUMMARY
 
 Audit Date: 2025-11-18
 Scope: 103 GitHub issues vs ROADMAP.md
-Sync Status: 🟡 MODERATE DRIFT (8.2% deviation)
+Sync Status: MODERATE DRIFT (8.2% deviation)
 
 KEY FINDINGS:
 1. ❌ CRITICAL: 14 phantom issues (#49-#76) - typo in range
-2. ⚠️  8 state mismatches (closed issues marked open, vice versa)
-3. 🆕 5 orphan issues discovered (exist in GitHub, not in ROADMAP)
-4. 🟢 Velocity 115% of target (4.6/day vs 4/day planned)
-5. 🟢 M2, M3 AHEAD of schedule by 9-15 days
+2. ⚠ 8 state mismatches (closed issues marked open, vice versa)
+3. 5 orphan issues discovered (exist in GitHub, not in ROADMAP)
+4. Velocity 115% of target (4.6/day vs 4/day planned)
+5. M2, M3 AHEAD of schedule by 9-15 days
 
 IMPACT:
 ├─ Documentation accuracy: 91.8% (down from 95% last week)
@@ -363,9 +363,9 @@ P0 - CRITICAL (Fix immediately):
 
 P1 - HIGH (Fix this week):
 [ ] 5. Add orphan issues to ROADMAP:
-       - #145, #146 → M3 (Security)
-       - #147 → M4 (Performance)
-       - #148, #149 → M3 (already in ROADMAP as #38, #39?)
+ - #145, #146 → M3 (Security)
+ - #147 → M4 (Performance)
+ - #148, #149 → M3 (already in ROADMAP as #38, #39?)
 [ ] 6. Verify issue #112 state (marked done in ROADMAP, open in GitHub)
 [ ] 7. Update progress bars (M3, M5)
 [ ] 8. Update "Última Atualização" timestamp
@@ -386,7 +386,7 @@ Total Issues: 103 (was 98, +5 discovered)
 Milestone Progress (Corrected):
 ├─ M1: 34/34 (100%) ✅
 ├─ M2: 10/10 (100%) ✅ (pending #112 confirmation)
-├─ M3: 10/14 (71%) 🔥 [was 64%, +7%]
+├─ M3: 10/14 (71%) [was 64%, +7%]
 ├─ M4: 3/20 (15%)
 ├─ M5: 2/17 (12%) [was 6%, +6%]
 └─ M6: 0/2 (0%)

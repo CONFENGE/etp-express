@@ -21,8 +21,8 @@ Follow this priority order:
 
 ```bash
 # Check in priority order
-ls -d .worktrees 2>/dev/null     # Preferred (hidden)
-ls -d worktrees 2>/dev/null      # Alternative
+ls -d .worktrees 2>/dev/null # Preferred (hidden)
+ls -d worktrees 2>/dev/null # Alternative
 ```
 
 **If found:** Use that directory. If both exist, `.worktrees` wins.
@@ -86,12 +86,12 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 ```bash
 # Determine full path
 case $LOCATION in
-  .worktrees|worktrees)
-    path="$LOCATION/$BRANCH_NAME"
-    ;;
-  ~/.config/superpowers/worktrees/*)
-    path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
-    ;;
+ .worktrees|worktrees)
+ path="$LOCATION/$BRANCH_NAME"
+ ;;
+ ~/.config/superpowers/worktrees/*)
+ path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+ ;;
 esac
 
 # Create worktree with new branch
@@ -144,15 +144,15 @@ Ready to implement <feature-name>
 
 ## Quick Reference
 
-| Situation                   | Action                      |
+| Situation | Action |
 | --------------------------- | --------------------------- |
-| `.worktrees/` exists        | Use it (verify .gitignore)  |
-| `worktrees/` exists         | Use it (verify .gitignore)  |
-| Both exist                  | Use `.worktrees/`           |
-| Neither exists              | Check CLAUDE.md → Ask user  |
+| `.worktrees/` exists | Use it (verify .gitignore) |
+| `worktrees/` exists | Use it (verify .gitignore) |
+| Both exist | Use `.worktrees/` |
+| Neither exists | Check CLAUDE.md → Ask user |
 | Directory not in .gitignore | Add it immediately + commit |
-| Tests fail during baseline  | Report failures + ask       |
-| No package.json/Cargo.toml  | Skip dependency install     |
+| Tests fail during baseline | Report failures + ask |
+| No package.json/Cargo.toml | Skip dependency install |
 
 ## Common Mistakes
 

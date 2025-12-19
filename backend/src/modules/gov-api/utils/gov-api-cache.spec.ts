@@ -413,7 +413,7 @@ describe('GovApiCache', () => {
     it('should normalize keys before hashing', async () => {
       mockRedisInstance.get.mockResolvedValue(null);
 
-      await cache.get('pncp', '  test  query  ');
+      await cache.get('pncp', ' test query ');
       await cache.get('pncp', 'test query');
 
       // Normalized keys should be the same

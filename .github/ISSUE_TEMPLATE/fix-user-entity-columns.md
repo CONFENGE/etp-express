@@ -31,4 +31,4 @@ cargo: string | null;
 
 ## Prioridade
 
-🟡 **ALTA** - Prevenir futuros crashes em deploy
+ **ALTA** - Prevenir futuros crashes em deploy

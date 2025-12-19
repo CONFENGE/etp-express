@@ -20,14 +20,14 @@ O usuario fornecera uma descricao do erro em `$ARGUMENTS`. Se nao fornecido, per
 
 Identifique o tipo de erro:
 
-| Tipo        | Indicadores                   | Estrategia                  |
+| Tipo | Indicadores | Estrategia |
 | ----------- | ----------------------------- | --------------------------- |
 | **Runtime** | Stack trace, crash, exception | Trace stack, verificar logs |
-| **Type**    | TypeScript errors, TS2xxx     | Verificar tipos, interfaces |
-| **Lint**    | ESLint errors, warnings       | Auto-fix ou correcao manual |
-| **Test**    | Jest/Vitest failures          | Analisar assertions, mocks  |
-| **Build**   | Webpack, Vite, tsc errors     | Verificar configs, deps     |
-| **Network** | 4xx, 5xx, timeout             | Verificar endpoints, auth   |
+| **Type** | TypeScript errors, TS2xxx | Verificar tipos, interfaces |
+| **Lint** | ESLint errors, warnings | Auto-fix ou correcao manual |
+| **Test** | Jest/Vitest failures | Analisar assertions, mocks |
+| **Build** | Webpack, Vite, tsc errors | Verificar configs, deps |
+| **Network** | 4xx, 5xx, timeout | Verificar endpoints, auth |
 
 ---
 

@@ -96,8 +96,8 @@ function validateFile(file: File): string | null {
  * @example
  * ```tsx
  * <FileUpload
- *   onFileSelect={(file) => console.log('Selected:', file.name)}
- *   onFileRemove={() => console.log('Removed')}
+ * onFileSelect={(file) => console.log('Selected:', file.name)}
+ * onFileRemove={() => console.log('Removed')}
  * />
  * ```
  */

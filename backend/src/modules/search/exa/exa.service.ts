@@ -15,7 +15,7 @@ import {
 
 /** Disclaimer displayed when external search is unavailable */
 const FALLBACK_DISCLAIMER =
-  '⚠️ Busca externa temporariamente indisponível. Informações de mercado podem estar incompletas.';
+  '⚠ Busca externa temporariamente indisponível. Informações de mercado podem estar incompletas.';
 
 @Injectable()
 export class ExaService {
@@ -288,13 +288,13 @@ export class ExaService {
     _filters?: Record<string, unknown>,
   ): Promise<ExaResponse> {
     const query = `Contratações públicas brasileiras similares a: "${objeto}".
-    Busque informações sobre:
-    - Órgãos que realizaram contratações similares
-    - Valores praticados em licitações
-    - Modalidades utilizadas
-    - Processos ou documentos relacionados
+ Busque informações sobre:
+ - Órgãos que realizaram contratações similares
+ - Valores praticados em licitações
+ - Modalidades utilizadas
+ - Processos ou documentos relacionados
 
-    Foque em dados do Brasil e fontes oficiais como PNCP, ComprasNet, TCU.`;
+ Foque em dados do Brasil e fontes oficiais como PNCP, ComprasNet, TCU.`;
 
     // Use deep research for contract search
     return this.searchDeep(query);
@@ -305,13 +305,13 @@ export class ExaService {
    */
   async searchLegalReferences(topic: string): Promise<ExaResponse> {
     const query = `Base legal para: "${topic}" no contexto de contratações públicas brasileiras.
-    Busque referências a:
-    - Lei 14.133/2021 (Nova Lei de Licitações)
-    - Instruções Normativas da SEGES
-    - Jurisprudência do TCU
-    - Outros normativos aplicáveis
+ Busque referências a:
+ - Lei 14.133/2021 (Nova Lei de Licitações)
+ - Instruções Normativas da SEGES
+ - Jurisprudência do TCU
+ - Outros normativos aplicáveis
 
-    Cite fontes oficiais e artigos específicos quando possível.`;
+ Cite fontes oficiais e artigos específicos quando possível.`;
 
     // Use deep research for legal references
     return this.searchDeep(query);

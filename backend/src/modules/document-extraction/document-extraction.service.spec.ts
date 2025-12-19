@@ -536,7 +536,7 @@ A contratação se justifica pelos seguintes motivos.`;
     });
 
     it('should throw BadRequestException for PDF with only whitespace', async () => {
-      mockGetText.mockResolvedValue({ text: '   \n\n   ' });
+      mockGetText.mockResolvedValue({ text: ' \n\n ' });
       mockGetInfo.mockResolvedValue({ total: 1 });
 
       await expect(service.extractFromPdf(mockBuffer)).rejects.toThrow(

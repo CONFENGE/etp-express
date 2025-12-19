@@ -29,18 +29,18 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 
 ## TDD Mapping for Skills
 
-| TDD Concept             | Skill Creation                                   |
+| TDD Concept | Skill Creation |
 | ----------------------- | ------------------------------------------------ |
-| **Test case**           | Pressure scenario with subagent                  |
-| **Production code**     | Skill document (SKILL.md)                        |
-| **Test fails (RED)**    | Agent violates rule without skill (baseline)     |
-| **Test passes (GREEN)** | Agent complies with skill present                |
-| **Refactor**            | Close loopholes while maintaining compliance     |
-| **Write test first**    | Run baseline scenario BEFORE writing skill       |
-| **Watch it fail**       | Document exact rationalizations agent uses       |
-| **Minimal code**        | Write skill addressing those specific violations |
-| **Watch it pass**       | Verify agent now complies                        |
-| **Refactor cycle**      | Find new rationalizations → plug → re-verify     |
+| **Test case** | Pressure scenario with subagent |
+| **Production code** | Skill document (SKILL.md) |
+| **Test fails (RED)** | Agent violates rule without skill (baseline) |
+| **Test passes (GREEN)** | Agent complies with skill present |
+| **Refactor** | Close loopholes while maintaining compliance |
+| **Write test first** | Run baseline scenario BEFORE writing skill |
+| **Watch it fail** | Document exact rationalizations agent uses |
+| **Minimal code** | Write skill addressing those specific violations |
+| **Watch it pass** | Verify agent now complies |
+| **Refactor cycle** | Find new rationalizations → plug → re-verify |
 
 The entire skill creation process follows RED-GREEN-REFACTOR.
 
@@ -77,9 +77,9 @@ API docs, syntax guides, tool documentation (office docs)
 
 ```
 skills/
-  skill-name/
-    SKILL.md              # Main reference (required)
-    supporting-file.*     # Only if needed
+ skill-name/
+ SKILL.md # Main reference (required)
+ supporting-file.* # Only if needed
 ```
 
 **Flat namespace** - all skills in one searchable namespace
@@ -103,9 +103,9 @@ skills/
 - Max 1024 characters total
 - `name`: Use letters, numbers, and hyphens only (no parentheses, special chars)
 - `description`: Third-person, includes BOTH what it does AND when to use it
-  - Start with "Use when..." to focus on triggering conditions
-  - Include specific symptoms, situations, and contexts
-  - Keep under 500 characters if possible
+ - Start with "Use when..." to focus on triggering conditions
+ - Include specific symptoms, situations, and contexts
+ - Keep under 500 characters if possible
 
 ```markdown
 ---
@@ -293,14 +293,14 @@ Use skill name only, with explicit requirement markers:
 
 ```dot
 digraph when_flowchart {
-    "Need to show information?" [shape=diamond];
-    "Decision where I might go wrong?" [shape=diamond];
-    "Use markdown" [shape=box];
-    "Small inline flowchart" [shape=box];
+ "Need to show information?" [shape=diamond];
+ "Decision where I might go wrong?" [shape=diamond];
+ "Use markdown" [shape=box];
+ "Small inline flowchart" [shape=box];
 
-    "Need to show information?" -> "Decision where I might go wrong?" [label="yes"];
-    "Decision where I might go wrong?" -> "Small inline flowchart" [label="yes"];
-    "Decision where I might go wrong?" -> "Use markdown" [label="no"];
+ "Need to show information?" -> "Decision where I might go wrong?" [label="yes"];
+ "Decision where I might go wrong?" -> "Small inline flowchart" [label="yes"];
+ "Decision where I might go wrong?" -> "Use markdown" [label="no"];
 }
 ```
 
@@ -351,7 +351,7 @@ You're good at porting - one great example is enough.
 
 ```
 defense-in-depth/
-  SKILL.md    # Everything inline
+ SKILL.md # Everything inline
 ```
 
 When: All content fits, no heavy reference needed
@@ -360,8 +360,8 @@ When: All content fits, no heavy reference needed
 
 ```
 condition-based-waiting/
-  SKILL.md    # Overview + patterns
-  example.ts  # Working helpers to adapt
+ SKILL.md # Overview + patterns
+ example.ts # Working helpers to adapt
 ```
 
 When: Tool is reusable code, not just narrative
@@ -370,10 +370,10 @@ When: Tool is reusable code, not just narrative
 
 ```
 pptx/
-  SKILL.md       # Overview + workflows
-  pptxgenjs.md   # 600 lines API reference
-  ooxml.md       # 500 lines XML structure
-  scripts/       # Executable tools
+ SKILL.md # Overview + workflows
+ pptxgenjs.md # 600 lines API reference
+ ooxml.md # 500 lines XML structure
+ scripts/ # Executable tools
 ```
 
 When: Reference material too large for inline
@@ -455,16 +455,16 @@ Different skill types need different test approaches:
 
 ## Common Rationalizations for Skipping Testing
 
-| Excuse                         | Reality                                                          |
+| Excuse | Reality |
 | ------------------------------ | ---------------------------------------------------------------- |
-| "Skill is obviously clear"     | Clear to you ≠ clear to other agents. Test it.                   |
-| "It's just a reference"        | References can have gaps, unclear sections. Test retrieval.      |
-| "Testing is overkill"          | Untested skills have issues. Always. 15 min testing saves hours. |
-| "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying.        |
-| "Too tedious to test"          | Testing is less tedious than debugging bad skill in production.  |
-| "I'm confident it's good"      | Overconfidence guarantees issues. Test anyway.                   |
-| "Academic review is enough"    | Reading ≠ using. Test application scenarios.                     |
-| "No time to test"              | Deploying untested skill wastes more time fixing it later.       |
+| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Test it. |
+| "It's just a reference" | References can have gaps, unclear sections. Test retrieval. |
+| "Testing is overkill" | Untested skills have issues. Always. 15 min testing saves hours. |
+| "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying. |
+| "Too tedious to test" | Testing is less tedious than debugging bad skill in production. |
+| "I'm confident it's good" | Overconfidence guarantees issues. Test anyway. |
+| "Academic review is enough" | Reading ≠ using. Test application scenarios. |
+| "No time to test" | Deploying untested skill wastes more time fixing it later. |
 
 **All of these mean: Test before deploying. No exceptions.**
 
@@ -513,10 +513,10 @@ This cuts off entire class of "I'm following the spirit" rationalizations.
 Capture rationalizations from baseline testing (see Testing section below). Every excuse agents make goes in the table:
 
 ```markdown
-| Excuse                           | Reality                                                                 |
+| Excuse | Reality |
 | -------------------------------- | ----------------------------------------------------------------------- |
-| "Too simple to test"             | Simple code breaks. Test takes 30 seconds.                              |
-| "I'll test after"                | Tests passing immediately prove nothing.                                |
+| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "I'll test after" | Tests passing immediately prove nothing. |
 | "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
 ```
 

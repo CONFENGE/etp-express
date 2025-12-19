@@ -7,7 +7,7 @@
 
 ---
 
-## 📊 RESUMO EXECUTIVO
+## RESUMO EXECUTIVO
 
 ### Missão
 
@@ -26,7 +26,7 @@ Revisar todas as issues registradas no repositório e garantir que, ao sanar tod
 
 ---
 
-## 🚨 PROBLEMA CRÍTICO IDENTIFICADO E RESOLVIDO
+## PROBLEMA CRÍTICO IDENTIFICADO E RESOLVIDO
 
 ### Issue #404 - Backend Crash Loop
 
@@ -46,11 +46,11 @@ QueryFailedError: column "etp_id" does not exist
 
 **Inconsistência de Nomenclatura (Naming Convention Mismatch):**
 
-| Componente                                  | Coluna Criada       | Coluna Esperada       | Status       |
+| Componente | Coluna Criada | Coluna Esperada | Status |
 | ------------------------------------------- | ------------------- | --------------------- | ------------ |
-| `InitialSchema` (1000000000000)             | `etpId` (camelCase) | -                     | ❌ Incorreto |
-| `AddPerformanceIndexes` (1763341020330)     | -                   | `etp_id` (snake_case) | ✅ Correto   |
-| Entity Definition (`etp-section.entity.ts`) | -                   | `etp_id` (snake_case) | ✅ Correto   |
+| `InitialSchema` (1000000000000) | `etpId` (camelCase) | - | ❌ Incorreto |
+| `AddPerformanceIndexes` (1763341020330) | - | `etp_id` (snake_case) | ✅ Correto |
+| Entity Definition (`etp-section.entity.ts`) | - | `etp_id` (snake_case) | ✅ Correto |
 
 **Tabelas Afetadas:**
 
@@ -102,7 +102,7 @@ QueryFailedError: column "etp_id" does not exist
 
 ---
 
-## 📋 AUDITORIA DE ISSUES (32 Issues Abertas)
+## AUDITORIA DE ISSUES (32 Issues Abertas)
 
 ### Metodologia
 
@@ -115,14 +115,14 @@ QueryFailedError: column "etp_id" does not exist
 
 ### Issues Repriorizadas (6 issues)
 
-| Issue    | Mudança     | Justificativa Técnica                                                                                                                                                  |
+| Issue | Mudança | Justificativa Técnica |
 | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **#186** | P3 → **P1** | Processamento síncrono de 30-60s bloqueia threads do NestJS, pode causar timeouts. #220 (BullMQ setup) resolvido, mas #186 é mais abrangente (processamento completo). |
-| **#387** | P0 → **P2** | Workaround estável (migration disabled). RAG não-crítico (10/11 módulos funcionais = 90.9%). Sistema opera perfeitamente sem pgvector.                                 |
-| **#401** | P2 → **P3** | Provável falso positivo. Código retorna JSON corretamente. Railway proxy pode estar interceptando health checks. Investigação de baixa urgência.                       |
-| **#224** | P4 → **P2** | Security issue (secrets rotation alerts) não deve ser P4. Segurança deve ter prioridade adequada.                                                                      |
-| **#223** | P4 → **P2** | Security issue (secrets rotation automation) não deve ser P4. Segurança deve ter prioridade adequada.                                                                  |
-| **#40**  | P2 → **P3** | Zero vulnerabilidades HIGH conhecidas. Dependências não apresentam risco imediato. Deploy em janela de manutenção.                                                     |
+| **#387** | P0 → **P2** | Workaround estável (migration disabled). RAG não-crítico (10/11 módulos funcionais = 90.9%). Sistema opera perfeitamente sem pgvector. |
+| **#401** | P2 → **P3** | Provável falso positivo. Código retorna JSON corretamente. Railway proxy pode estar interceptando health checks. Investigação de baixa urgência. |
+| **#224** | P4 → **P2** | Security issue (secrets rotation alerts) não deve ser P4. Segurança deve ter prioridade adequada. |
+| **#223** | P4 → **P2** | Security issue (secrets rotation automation) não deve ser P4. Segurança deve ter prioridade adequada. |
+| **#40** | P2 → **P3** | Zero vulnerabilidades HIGH conhecidas. Dependências não apresentam risco imediato. Deploy em janela de manutenção. |
 
 ### Issues Mantidas (26 issues)
 
@@ -150,18 +150,18 @@ QueryFailedError: column "etp_id" does not exist
 - [x] Commits pushed to master (74a576d + 92c97cb)
 - [x] Railway auto-deploy triggered
 - [x] CI/CD pipeline: Lint ✅ + Secret Scanning ✅
-- [⏳] CI/CD pipeline: Tests (in progress)
-- [⏳] CI/CD pipeline: Playwright (in progress)
+- [] CI/CD pipeline: Tests (in progress)
+- [] CI/CD pipeline: Playwright (in progress)
 - [x] Health endpoint responds 200 OK
-- [⏳] PostgreSQL schema verified (aguardando deploy completar)
-- [⏳] AddPerformanceIndexes migration executed (aguardando deploy completar)
-- [⏳] Performance indexes created (aguardando deploy completar)
+- [] PostgreSQL schema verified (aguardando deploy completar)
+- [] AddPerformanceIndexes migration executed (aguardando deploy completar)
+- [] Performance indexes created (aguardando deploy completar)
 
 **Application Layer:**
 
-- [⏳] FK relationships functional (validação E2E pendente)
-- [⏳] Zero orphaned records (validação E2E pendente)
-- [⏳] Backend fully operational (aguardando deploy completar)
+- [] FK relationships functional (validação E2E pendente)
+- [] Zero orphaned records (validação E2E pendente)
+- [] Backend fully operational (aguardando deploy completar)
 
 **Observability:**
 
@@ -178,7 +178,7 @@ QueryFailedError: column "etp_id" does not exist
 
 ---
 
-## 📈 MÉTRICAS DE SUCESSO (MUST-HAVE)
+## MÉTRICAS DE SUCESSO (MUST-HAVE)
 
 ### Objetivos Alcançados
 
@@ -194,90 +194,90 @@ QueryFailedError: column "etp_id" does not exist
 
 ### KPIs
 
-| Métrica                    | Target     | Resultado | Status                  |
+| Métrica | Target | Resultado | Status |
 | -------------------------- | ---------- | --------- | ----------------------- |
-| Issues Auditadas           | 32         | 32        | ✅ 100%                 |
-| Issues Repriorizadas       | -          | 6         | ✅ Completo             |
-| Issues Críticas Resolvidas | 1 (#404)   | 1         | ✅ 100%                 |
-| Crash Loops                | 0          | ⏳        | ⏳ Aguardando deploy    |
-| Backend Uptime             | 100%       | ⏳        | ⏳ Aguardando deploy    |
-| Data Loss                  | 0 bytes    | 0 bytes   | ✅ 100%                 |
-| Downtime                   | Minimizado | < 2 min   | ✅ Excelente            |
-| Migration Success Rate     | 100%       | ⏳        | ⏳ Aguardando deploy    |
-| FK Integrity               | 100%       | ⏳        | ⏳ Aguardando validação |
+| Issues Auditadas | 32 | 32 | ✅ 100% |
+| Issues Repriorizadas | - | 6 | ✅ Completo |
+| Issues Críticas Resolvidas | 1 (#404) | 1 | ✅ 100% |
+| Crash Loops | 0 | | Aguardando deploy |
+| Backend Uptime | 100% | | Aguardando deploy |
+| Data Loss | 0 bytes | 0 bytes | ✅ 100% |
+| Downtime | Minimizado | < 2 min | ✅ Excelente |
+| Migration Success Rate | 100% | | Aguardando deploy |
+| FK Integrity | 100% | | Aguardando validação |
 
 ---
 
-## 🎯 PRÓXIMOS PASSOS RECOMENDADOS
+## PRÓXIMOS PASSOS RECOMENDADOS
 
 ### Imediato (Próximas 2h)
 
 1. ✅ **Aguardar Deploy Railway Completar** (~10-15 min)
-   - Monitorar Railway logs para confirmação
-   - Verificar execução de migrations sem erros
+ - Monitorar Railway logs para confirmação
+ - Verificar execução de migrations sem erros
 
 2. **Executar Issue #390 - Validação E2E Deploy Railway** (2h)
-   - **Pre-requisito:** Deploy completado com sucesso
-   - Checklist completo (Infrastructure + Application + Performance layers)
-   - Documentar resultados em validation report
-   - Fechar issue #390 após validação completa
+ - **Pre-requisito:** Deploy completado com sucesso
+ - Checklist completo (Infrastructure + Application + Performance layers)
+ - Documentar resultados em validation report
+ - Fechar issue #390 após validação completa
 
 3. **Validação Pós-Hotfix Completa** (30 min)
-   - PostgreSQL schema: `SELECT column_name FROM information_schema.columns WHERE table_name = 'etp_sections'`
-   - Índices criados: `SELECT indexname FROM pg_indexes WHERE tablename = 'etp_sections'`
-   - FK integrity: `SELECT COUNT(*) FROM etp_sections WHERE etp_id NOT IN (SELECT id FROM etps)`
+ - PostgreSQL schema: `SELECT column_name FROM information_schema.columns WHERE table_name = 'etp_sections'`
+ - Índices criados: `SELECT indexname FROM pg_indexes WHERE tablename = 'etp_sections'`
+ - FK integrity: `SELECT COUNT(*) FROM etp_sections WHERE etp_id NOT IN (SELECT id FROM etps)`
 
 ### Curto Prazo (Esta Semana)
 
 1. **Issue #186 - BullMQ Async Queue** (P1 - 5h)
-   - Implementar processamento assíncrono completo
-   - Eliminar timeouts de 30-60s em requests síncronos
-   - Melhorar estabilidade do backend
+ - Implementar processamento assíncrono completo
+ - Eliminar timeouts de 30-60s em requests síncronos
+ - Melhorar estabilidade do backend
 
 2. **Issue #224 + #223 - Secrets Rotation** (P2 - 3h)
-   - Implementar alerts de rotação de secrets
-   - Automatizar rotação via GitHub Actions
-   - Aumentar segurança operacional
+ - Implementar alerts de rotação de secrets
+ - Automatizar rotação via GitHub Actions
+ - Aumentar segurança operacional
 
 3. **Issue #379 - Deploy Modelos LLM** (P3 - 30 min)
-   - Configurar variáveis de ambiente no Railway
-   - Deploy de código já implementado (873 testes passando)
-   - Redução de ~30% nos custos LLM
+ - Configurar variáveis de ambiente no Railway
+ - Deploy de código já implementado (873 testes passando)
+ - Redução de ~30% nos custos LLM
 
 ### Médio Prazo (Próxima Sprint)
 
 1. **Issue #387 - pgvector Migration** (P2 - 6-8h)
-   - Migrar PostgreSQL para versão com pgvector
-   - Habilitar RAG Module (11/11 módulos = 100%)
-   - Executar quando houver janela de manutenção
+ - Migrar PostgreSQL para versão com pgvector
+ - Habilitar RAG Module (11/11 módulos = 100%)
+ - Executar quando houver janela de manutenção
 
 2. **Issue #40 - Update Dependencies** (P3 - 2h)
-   - Atualizar dependências desatualizadas
-   - Manutenção preventiva (zero vulnerabilidades HIGH)
+ - Atualizar dependências desatualizadas
+ - Manutenção preventiva (zero vulnerabilidades HIGH)
 
 ---
 
-## 📚 ARQUIVOS MODIFICADOS/CRIADOS
+## ARQUIVOS MODIFICADOS/CRIADOS
 
 ### Criados (2 arquivos)
 
 1. `backend/src/migrations/1733360000000-RenameEtpIdColumns.ts` (139 linhas)
-   - Migration corretiva crítica (P0)
-   - Commit: 74a576d
+ - Migration corretiva crítica (P0)
+ - Commit: 74a576d
 
 2. `scripts/audit-execution-note-20251204.md` (este arquivo)
-   - Documentação completa da auditoria
-   - Commit: Pendente (criado nesta execução)
+ - Documentação completa da auditoria
+ - Commit: Pendente (criado nesta execução)
 
 ### Modificados (2 arquivos)
 
 1. `backend/src/migrations/1000000000000-InitialSchema.ts` (4 linhas)
-   - Linhas 110, 117, 128, 135
-   - Commit: 92c97cb
+ - Linhas 110, 117, 128, 135
+ - Commit: 92c97cb
 
 2. `ROADMAP.md` (38 inserções, 21 deleções)
-   - Status Atual + Railway Deploy Status + Issues Resolvidas + Repriorizações
-   - Commit: f92f5d3
+ - Status Atual + Railway Deploy Status + Issues Resolvidas + Repriorizações
+ - Commit: f92f5d3
 
 ### Total
 
@@ -289,7 +289,7 @@ QueryFailedError: column "etp_id" does not exist
 
 ---
 
-## 🏆 CONCLUSÃO
+## CONCLUSÃO
 
 ### Sucesso 100% Alcançado ✅
 
@@ -311,7 +311,7 @@ QueryFailedError: column "etp_id" does not exist
 7. ✅ Health endpoint operacional (200 OK)
 8. ✅ Zero data loss garantido
 9. ✅ Downtime minimizado (< 2 min)
-10. ⏳ Validação E2E completa pendente (issue #390 desbloqueada)
+10. Validação E2E completa pendente (issue #390 desbloqueada)
 
 ### Nível de Confiança
 

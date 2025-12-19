@@ -15,14 +15,14 @@ Flaky tests often guess at timing with arbitrary delays. This creates race condi
 
 ```dot
 digraph when_to_use {
-    "Test uses setTimeout/sleep?" [shape=diamond];
-    "Testing timing behavior?" [shape=diamond];
-    "Document WHY timeout needed" [shape=box];
-    "Use condition-based waiting" [shape=box];
+ "Test uses setTimeout/sleep?" [shape=diamond];
+ "Testing timing behavior?" [shape=diamond];
+ "Document WHY timeout needed" [shape=box];
+ "Use condition-based waiting" [shape=box];
 
-    "Test uses setTimeout/sleep?" -> "Testing timing behavior?" [label="yes"];
-    "Testing timing behavior?" -> "Document WHY timeout needed" [label="yes"];
-    "Testing timing behavior?" -> "Use condition-based waiting" [label="no"];
+ "Test uses setTimeout/sleep?" -> "Testing timing behavior?" [label="yes"];
+ "Testing timing behavior?" -> "Document WHY timeout needed" [label="yes"];
+ "Testing timing behavior?" -> "Use condition-based waiting" [label="no"];
 }
 ```
 
@@ -54,13 +54,13 @@ expect(result).toBeDefined();
 
 ## Quick Patterns
 
-| Scenario          | Pattern                                              |
+| Scenario | Pattern |
 | ----------------- | ---------------------------------------------------- |
-| Wait for event    | `waitFor(() => events.find(e => e.type === 'DONE'))` |
-| Wait for state    | `waitFor(() => machine.state === 'ready')`           |
-| Wait for count    | `waitFor(() => items.length >= 5)`                   |
-| Wait for file     | `waitFor(() => fs.existsSync(path))`                 |
-| Complex condition | `waitFor(() => obj.ready && obj.value > 10)`         |
+| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'))` |
+| Wait for state | `waitFor(() => machine.state === 'ready')` |
+| Wait for count | `waitFor(() => items.length >= 5)` |
+| Wait for file | `waitFor(() => fs.existsSync(path))` |
+| Complex condition | `waitFor(() => obj.ready && obj.value > 10)` |
 
 ## Implementation
 
@@ -68,24 +68,24 @@ Generic polling function:
 
 ```typescript
 async function waitFor<T>(
-  condition: () => T | undefined | null | false,
-  description: string,
-  timeoutMs = 5000,
+ condition: () => T | undefined | null | false,
+ description: string,
+ timeoutMs = 5000,
 ): Promise<T> {
-  const startTime = Date.now();
+ const startTime = Date.now();
 
-  while (true) {
-    const result = condition();
-    if (result) return result;
+ while (true) {
+ const result = condition();
+ if (result) return result;
 
-    if (Date.now() - startTime > timeoutMs) {
-      throw new Error(
-        `Timeout waiting for ${description} after ${timeoutMs}ms`,
-      );
-    }
+ if (Date.now() - startTime > timeoutMs) {
+ throw new Error(
+ `Timeout waiting for ${description} after ${timeoutMs}ms`,
+ );
+ }
 
-    await new Promise((r) => setTimeout(r, 10)); // Poll every 10ms
-  }
+ await new Promise((r) => setTimeout(r, 10)); // Poll every 10ms
+ }
 }
 ```
 

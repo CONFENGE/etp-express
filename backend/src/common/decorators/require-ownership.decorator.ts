@@ -63,8 +63,8 @@ export const OWNERSHIP_KEY = 'ownership_config';
  * @RequireOwnership({ resourceType: ResourceType.ETP })
  * @Patch(':id')
  * async update(@Param('id') id: string, @Resource() etp: Etp) {
- *   // etp is already validated and loaded
- *   return this.etpsService.updateDirect(etp, updateDto);
+ * // etp is already validated and loaded
+ * return this.etpsService.updateDirect(etp, updateDto);
  * }
  * ```
  *
@@ -74,7 +74,7 @@ export const OWNERSHIP_KEY = 'ownership_config';
  * @RequireOwnership({ resourceType: ResourceType.ETP, validateOwnership: false })
  * @Get(':id')
  * async findOne(@Resource() etp: Etp) {
- *   return { data: etp };
+ * return { data: etp };
  * }
  * ```
  *
@@ -84,7 +84,7 @@ export const OWNERSHIP_KEY = 'ownership_config';
  * @RequireOwnership({ resourceType: ResourceType.ETP, idParam: 'etpId' })
  * @Post(':etpId/sections')
  * async createSection(@Param('etpId') etpId: string, @Resource() etp: Etp) {
- *   // ...
+ * // ...
  * }
  * ```
  */

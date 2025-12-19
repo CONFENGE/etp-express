@@ -32,18 +32,18 @@ npm run start:dev
 
 ```
 src/
-├── common/          # Utilitários compartilhados
-├── entities/        # Entidades TypeORM
-└── modules/         # Módulos funcionais
-    ├── auth/        # Autenticação
-    ├── users/       # Usuários
-    ├── etps/        # ETPs
-    ├── sections/    # Seções
-    ├── orchestrator/ # Sistema de IA com 5 subagentes
-    ├── search/      # Busca de contratações
-    ├── export/      # Exportação (PDF/JSON/XML)
-    ├── versions/    # Versionamento
-    └── analytics/   # Telemetria
+├── common/ # Utilitários compartilhados
+├── entities/ # Entidades TypeORM
+└── modules/ # Módulos funcionais
+ ├── auth/ # Autenticação
+ ├── users/ # Usuários
+ ├── etps/ # ETPs
+ ├── sections/ # Seções
+ ├── orchestrator/ # Sistema de IA com 5 subagentes
+ ├── search/ # Busca de contratações
+ ├── export/ # Exportação (PDF/JSON/XML)
+ ├── versions/ # Versionamento
+ └── analytics/ # Telemetria
 ```
 
 ## Sistema de Orquestração de IA
@@ -86,12 +86,12 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "type": "justificativa",
-  "title": "Justificativa da Contratação",
-  "userInput": "Precisamos contratar sistema de gestão...",
-  "context": {
-    "prazo": "urgente"
-  }
+ "type": "justificativa",
+ "title": "Justificativa da Contratação",
+ "userInput": "Precisamos contratar sistema de gestão...",
+ "context": {
+ "prazo": "urgente"
+ }
 }
 ```
 
@@ -134,27 +134,27 @@ FRONTEND_URL=http://localhost:5173
 
 ```bash
 # Desenvolvimento
-npm run start:dev      # Hot-reload
-npm run start:debug    # Debug mode
+npm run start:dev # Hot-reload
+npm run start:debug # Debug mode
 
 # Produção
-npm run build          # Build do projeto
-npm run start:prod     # Rodar produção
+npm run build # Build do projeto
+npm run start:prod # Rodar produção
 
 # Testes
-npm run test           # Unit tests
-npm run test:e2e       # E2E tests
-npm run test:cov       # Coverage
+npm run test # Unit tests
+npm run test:e2e # E2E tests
+npm run test:cov # Coverage
 
 # Database
-npm run typeorm        # CLI TypeORM
+npm run typeorm # CLI TypeORM
 npm run migration:generate
 npm run migration:run
 npm run migration:revert
 
 # Qualidade
-npm run lint           # ESLint
-npm run format         # Prettier
+npm run lint # ESLint
+npm run format # Prettier
 ```
 
 ## Documentação Completa
@@ -182,27 +182,27 @@ Recursos:
 
 ```
 1. User solicita geração de seção
-   ↓
+ ↓
 2. SectionsService cria seção (status: GENERATING)
-   ↓
+ ↓
 3. OrchestratorService recebe request
-   ↓
+ ↓
 4. Legal Agent enriquece prompt com contexto legal
-   ↓
+ ↓
 5. Fundamentação Agent adiciona guidance (se aplicável)
-   ↓
+ ↓
 6. Anti-Hallucination Agent adiciona safety prompts
-   ↓
+ ↓
 7. OpenAIService gera conteúdo via GPT-4
-   ↓
+ ↓
 8. Simplificação Agent analisa e simplifica
-   ↓
+ ↓
 9. Todos os agents validam resultado em paralelo
-   ↓
+ ↓
 10. Warnings e recommendations são coletados
-   ↓
+ ↓
 11. Seção é salva com metadata completa
-   ↓
+ ↓
 12. User recebe seção gerada + validações
 ```
 
@@ -274,7 +274,7 @@ echo $DATABASE_URL
 ```bash
 # Verificar API key
 curl https://api.openai.com/v1/models \
-  -H "Authorization: Bearer $OPENAI_API_KEY"
+ -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
 ### Puppeteer não funciona
@@ -282,52 +282,52 @@ curl https://api.openai.com/v1/models \
 ```bash
 # Instalar dependências Chrome (Linux)
 sudo apt-get install -y \
-  libnss3 \
-  libatk-bridge2.0-0 \
-  libx11-xcb1 \
-  libxcomposite1 \
-  libxdamage1
+ libnss3 \
+ libatk-bridge2.0-0 \
+ libx11-xcb1 \
+ libxcomposite1 \
+ libxdamage1
 ```
 
 ## Arquitetura de Alto Nível
 
 ```
 ┌─────────────┐
-│   Client    │ (Frontend React)
+│ Client │ (Frontend React)
 └──────┬──────┘
-       │ HTTP/HTTPS
-       ↓
+ │ HTTP/HTTPS
+ ↓
 ┌─────────────────────────────────┐
-│      NestJS API Gateway         │
-│  (Guards, Filters, Interceptors)│
+│ NestJS API Gateway │
+│ (Guards, Filters, Interceptors)│
 └────────┬────────────────────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ↓         ↓
+ │
+ ┌────┴────┐
+ │ │
+ ↓ ↓
 ┌────────┐ ┌──────────────┐
-│ Auth   │ │ Business     │
-│ Layer  │ │ Logic Layer  │
+│ Auth │ │ Business │
+│ Layer │ │ Logic Layer │
 └────────┘ └──────┬───────┘
-              │
-         ┌────┴────┬──────────┬─────────┐
-         ↓         ↓          ↓         ↓
-    ┌────────┐ ┌──────────┐ ┌────┐ ┌──────┐
-    │ ETP    │ │Orchestra-│ │Sear│ │Expor-│
-    │ Service│ │tor + AI  │ │ch  │ │t     │
-    └────────┘ └──────────┘ └────┘ └──────┘
-         │         │
-         ↓         ↓
-    ┌────────────────────┐
-    │  TypeORM + Postgres│
-    └────────────────────┘
-              │
-         ┌────┴────┐
-         ↓         ↓
-    ┌────────┐ ┌────────┐
-    │OpenAI  │ │Exa AI  │
-    │GPT-4   │ │        │
-    └────────┘ └────────┘
+ │
+ ┌────┴────┬──────────┬─────────┐
+ ↓ ↓ ↓ ↓
+ ┌────────┐ ┌──────────┐ ┌────┐ ┌──────┐
+ │ ETP │ │Orchestra-│ │Sear│ │Expor-│
+ │ Service│ │tor + AI │ │ch │ │t │
+ └────────┘ └──────────┘ └────┘ └──────┘
+ │ │
+ ↓ ↓
+ ┌────────────────────┐
+ │ TypeORM + Postgres│
+ └────────────────────┘
+ │
+ ┌────┴────┐
+ ↓ ↓
+ ┌────────┐ ┌────────┐
+ │OpenAI │ │Exa AI │
+ │GPT-4 │ │ │
+ └────────┘ └────────┘
 ```
 
 ## Contato e Suporte

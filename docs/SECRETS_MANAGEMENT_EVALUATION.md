@@ -19,7 +19,7 @@ Given that ETP Express is **deployed exclusively on Railway**, adding external s
 - ✅ Project deploys exclusively to Railway platform
 - ✅ Railway provides sealed environment variables (not visible in UI)
 - ✅ Secrets currently managed through Railway dashboard
-- ⚠️ Need: Clear rotation procedures for compliance
+- ⚠ Need: Clear rotation procedures for compliance
 - ❌ No need: Multi-platform secrets management (not relevant for MVP)
 
 ---
@@ -50,9 +50,9 @@ Given that ETP Express is **deployed exclusively on Railway**, adding external s
 - ✅ No cost
 
 **Limitations (acceptable for MVP):**
-- ⚠️ Manual rotation (not automatic)
-- ⚠️ No native audit trail
-- ⚠️ No programmatic API for rotation
+- ⚠ Manual rotation (not automatic)
+- ⚠ No native audit trail
+- ⚠ No programmatic API for rotation
 
 **Mitigation:**
 - Document clear rotation procedures
@@ -80,7 +80,7 @@ Given that ETP Express is **deployed exclusively on Railway**, adding external s
 
 ```bash
 # 1. Generate new secret value
-openssl rand -base64 32  # for symmetric keys
+openssl rand -base64 32 # for symmetric keys
 # or use provider's API (OpenAI, Perplexity)
 
 # 2. Update in Railway dashboard
@@ -111,13 +111,13 @@ Create calendar reminders:
 
 Track rotations via:
 1. **GitHub Issues** - One issue per rotation cycle
-   - Label: `security`, `maintenance`
-   - Title: `[SEC] Rotate JWT_SECRET - Nov 2025`
-   - Body: date, who rotated, validation results
+ - Label: `security`, `maintenance`
+ - Title: `[SEC] Rotate JWT_SECRET - Nov 2025`
+ - Body: date, who rotated, validation results
 
 2. **Git commits** - Any code changes for rotation automation
-   - Signed commits with GPG
-   - Conventional commit format: `chore(security): rotate secrets for Nov 2025`
+ - Signed commits with GPG
+ - Conventional commit format: `chore(security): rotate secrets for Nov 2025`
 
 3. **Railway deployment logs** - Auto-captured when variable changes
 
@@ -128,24 +128,24 @@ Track rotations via:
 Instead of external secrets system, M3 focuses on:
 
 1. **Documentation** (Issue #156 - rename from #109d)
-   - Rotation procedures documented in `docs/SECRETS_ROTATION_PROCEDURES.md`
-   - Scripts created for assisted rotation
-   - GitHub issue template for rotation tracking
+ - Rotation procedures documented in `docs/SECRETS_ROTATION_PROCEDURES.md`
+ - Scripts created for assisted rotation
+ - GitHub issue template for rotation tracking
 
 2. **Process** (Issue #157 - rename from #109e)
-   - Establish monthly rotation schedule
-   - Create alert/reminder system (GitHub Actions or calendar)
-   - Train team on procedures
+ - Establish monthly rotation schedule
+ - Create alert/reminder system (GitHub Actions or calendar)
+ - Train team on procedures
 
 3. **Monitoring** (Issue #158 - rename from #109f)
-   - Monitor logs for authentication failures after rotation
-   - Alert on unusual patterns (e.g., JWT validation errors)
-   - Document recovery procedures if rotation breaks app
+ - Monitor logs for authentication failures after rotation
+ - Alert on unusual patterns (e.g., JWT validation errors)
+ - Document recovery procedures if rotation breaks app
 
 4. **Rollback Plan** (Issue #154 - new, adapted from #109b)
-   - For each secret: document how to quickly revert
-   - Test rollback procedure in staging
-   - Keep old secret available for 24h after rotation
+ - For each secret: document how to quickly revert
+ - Test rollback procedure in staging
+ - Keep old secret available for 24h after rotation
 
 ---
 
