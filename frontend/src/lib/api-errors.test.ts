@@ -48,7 +48,9 @@ describe('API Error Handling', () => {
         };
 
         const result = getApiErrorMessage(error);
-        expect(result).toBe('Você não tem permissão para acessar este recurso.');
+        expect(result).toBe(
+          'Você não tem permissão para acessar este recurso.',
+        );
       });
 
       it('should return message for statusCode property', () => {
@@ -58,7 +60,9 @@ describe('API Error Handling', () => {
         };
 
         const result = getApiErrorMessage(error);
-        expect(result).toBe('Erro interno do servidor. Tente novamente em instantes.');
+        expect(result).toBe(
+          'Erro interno do servidor. Tente novamente em instantes.',
+        );
       });
     });
 
@@ -100,7 +104,9 @@ describe('API Error Handling', () => {
       });
 
       it('should match duplicate errors', () => {
-        const error = { message: 'Unique constraint violation: already exists' };
+        const error = {
+          message: 'Unique constraint violation: already exists',
+        };
         const result = getApiErrorMessage(error);
         expect(result).toContain('já existe');
       });
@@ -128,7 +134,9 @@ describe('API Error Handling', () => {
         };
 
         const result = getApiErrorMessage(error);
-        expect(result).toBe('Dados inválidos. Verifique as informações e tente novamente.');
+        expect(result).toBe(
+          'Dados inválidos. Verifique as informações e tente novamente.',
+        );
       });
 
       it('should extract message from Axios error format', () => {
@@ -165,21 +173,29 @@ describe('API Error Handling', () => {
       });
 
       it('should pass through action-oriented messages', () => {
-        const error = { message: 'Por favor, preencha todos os campos obrigatórios.' };
+        const error = {
+          message: 'Por favor, preencha todos os campos obrigatórios.',
+        };
         const result = getApiErrorMessage(error);
-        expect(result).toBe('Por favor, preencha todos os campos obrigatórios.');
+        expect(result).toBe(
+          'Por favor, preencha todos os campos obrigatórios.',
+        );
       });
     });
 
     describe('with technical messages (should filter)', () => {
       it('should filter stack traces', () => {
-        const error = { message: 'Error at Module._compile (/app/index.js:10)' };
+        const error = {
+          message: 'Error at Module._compile (/app/index.js:10)',
+        };
         const result = getApiErrorMessage(error);
         expect(result).not.toContain('Module._compile');
       });
 
       it('should filter file references', () => {
-        const error = { message: 'TypeError in file.ts:25 - undefined is not a function' };
+        const error = {
+          message: 'TypeError in file.ts:25 - undefined is not a function',
+        };
         const result = getApiErrorMessage(error);
         expect(result).not.toContain('.ts:');
       });
