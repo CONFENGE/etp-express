@@ -162,7 +162,7 @@ Para reverter: `npm run typeorm migration:revert`
 ```markdown
 ## Migration Gerada
 
-📝 **1705313100000-AddSectionStatus.ts** criada
+**1705313100000-AddSectionStatus.ts** criada
 
 **Mudancas detectadas:**
 
@@ -228,7 +228,7 @@ cd backend && npm run typeorm migration:generate -- -n AddOrganizationToEtp
 
 ## Migration Gerada
 
-📝 **1705313200000-AddOrganizationToEtp.ts** criada
+**1705313200000-AddOrganizationToEtp.ts** criada
 
 **Mudancas detectadas:**
 

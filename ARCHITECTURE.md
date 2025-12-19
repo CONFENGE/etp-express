@@ -1,4 +1,4 @@
-# 🏗️ ARQUITETURA DO ETP EXPRESS
+# ARQUITETURA DO ETP EXPRESS
 
 > **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 

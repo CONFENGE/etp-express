@@ -76,7 +76,7 @@ const DEMO_DATA = {
 };
 
 async function seedAdmin(): Promise<void> {
-  console.log('🌱 Starting admin seed script...');
+  console.log('Starting admin seed script...');
 
   const dataSource = new DataSource({
     type: 'postgres',
@@ -124,7 +124,7 @@ async function seedAdmin(): Promise<void> {
       authorizedDomainRepository,
     );
 
-    console.log('\n📊 Summary:');
+    console.log('\nSummary:');
     console.log('   Admin Organization:', adminResult.organizationStatus);
     console.log('   Admin User:', adminResult.userStatus);
     console.log('   Admin Domain:', adminResult.domainStatus);
@@ -132,13 +132,13 @@ async function seedAdmin(): Promise<void> {
     console.log('   Demo User:', demoResult.userStatus);
     console.log('   Demo Domain:', demoResult.domainStatus);
 
-    console.log('\n🎉 Seed completed successfully!');
+    console.log('\nSeed completed successfully!');
   } catch (error) {
-    console.error('❌ Error during seed:', error);
+    console.error('Error during seed:', error);
     throw error;
   } finally {
     await dataSource.destroy();
-    console.log('🔌 Database connection closed');
+    console.log('Database connection closed');
   }
 }
 
@@ -153,7 +153,7 @@ async function createAdminUser(
   userRepository: ReturnType<DataSource['getRepository']>,
   authorizedDomainRepository: ReturnType<DataSource['getRepository']>,
 ): Promise<SeedResult> {
-  console.log('\n👤 Creating admin user...');
+  console.log('\nCreating admin user...');
 
   // Check if admin organization exists
   let adminOrg = await organizationRepository.findOne({
@@ -163,7 +163,7 @@ async function createAdminUser(
   let organizationStatus: string;
   if (adminOrg) {
     organizationStatus = 'Already exists (skipped)';
-    console.log('⚠️  Admin organization already exists. Skipping creation.');
+    console.log('⚠️ Admin organization already exists. Skipping creation.');
   } else {
     adminOrg = await organizationRepository.save(
       organizationRepository.create(ADMIN_DATA.organization),
@@ -181,7 +181,7 @@ async function createAdminUser(
   if (adminDomain) {
     domainStatus = 'Already exists (skipped)';
     console.log(
-      '⚠️  Admin authorized domain already exists. Skipping creation.',
+      '⚠️ Admin authorized domain already exists. Skipping creation.',
     );
   } else {
     adminDomain = await authorizedDomainRepository.save(
@@ -202,7 +202,7 @@ async function createAdminUser(
   let userStatus: string;
   if (existingAdmin) {
     userStatus = 'Already exists (skipped)';
-    console.log('⚠️  Admin user already exists. Skipping creation.');
+    console.log('⚠️ Admin user already exists. Skipping creation.');
   } else {
     const hashedPassword = await bcrypt.hash(
       ADMIN_DATA.user.password,
@@ -234,7 +234,7 @@ async function createDemoUser(
   userRepository: ReturnType<DataSource['getRepository']>,
   authorizedDomainRepository: ReturnType<DataSource['getRepository']>,
 ): Promise<SeedResult> {
-  console.log('\n🎭 Creating demo user...');
+  console.log('\nCreating demo user...');
 
   // Check if demo organization exists
   let demoOrg = await organizationRepository.findOne({
@@ -244,7 +244,7 @@ async function createDemoUser(
   let organizationStatus: string;
   if (demoOrg) {
     organizationStatus = 'Already exists (skipped)';
-    console.log('⚠️  Demo organization already exists. Skipping creation.');
+    console.log('⚠️ Demo organization already exists. Skipping creation.');
   } else {
     demoOrg = await organizationRepository.save(
       organizationRepository.create(DEMO_DATA.organization),
@@ -261,9 +261,7 @@ async function createDemoUser(
   let domainStatus: string;
   if (demoDomain) {
     domainStatus = 'Already exists (skipped)';
-    console.log(
-      '⚠️  Demo authorized domain already exists. Skipping creation.',
-    );
+    console.log('⚠️ Demo authorized domain already exists. Skipping creation.');
   } else {
     demoDomain = await authorizedDomainRepository.save(
       authorizedDomainRepository.create({
@@ -283,7 +281,7 @@ async function createDemoUser(
   let userStatus: string;
   if (existingDemo) {
     userStatus = 'Already exists (skipped)';
-    console.log('⚠️  Demo user already exists. Skipping creation.');
+    console.log('⚠️ Demo user already exists. Skipping creation.');
   } else {
     const hashedPassword = await bcrypt.hash(
       DEMO_DATA.user.password,
@@ -307,10 +305,10 @@ async function createDemoUser(
 // Run seed
 seedAdmin()
   .then(() => {
-    console.log('\n✨ All done!');
+    console.log('\nAll done!');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n💥 Fatal error:', error);
+    console.error('\nFatal error:', error);
     process.exit(1);
   });

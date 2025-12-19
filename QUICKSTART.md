@@ -1,4 +1,4 @@
-# ⚡ QUICKSTART - ETP EXPRESS
+# QUICKSTART - ETP EXPRESS
 
 > **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
@@ -6,7 +6,7 @@ Guia rápido para rodar o **ETP Express** em 10 minutos.
 
 ---
 
-## 📋 PRÉ-REQUISITOS
+## PRÉ-REQUISITOS
 
 Certifique-se de ter instalado:
 
@@ -21,16 +21,16 @@ E tenha em mãos:
 
 ---
 
-## 🚀 INSTALAÇÃO LOCAL (10 MINUTOS)
+## INSTALAÇÃO LOCAL (10 MINUTOS)
 
-### 1️⃣ Clone o Repositório
+### 1. Clone o Repositório
 
 ```bash
 git clone <seu-repositorio>
 cd "ETP Express"
 ```
 
-### 2️⃣ Configure o Database
+### 2. Configure o Database
 
 ```bash
 # Criar database PostgreSQL
@@ -41,11 +41,12 @@ psql -d etp_express -f DATABASE_SCHEMA.sql
 ```
 
 **Ou via GUI** (TablePlus, pgAdmin):
+
 1. Conecte ao PostgreSQL local
 2. Crie database `etp_express`
 3. Execute o arquivo `DATABASE_SCHEMA.sql`
 
-### 3️⃣ Configure o Backend
+### 3. Configure o Backend
 
 ```bash
 cd backend
@@ -61,6 +62,7 @@ cp .env.example .env
 ```
 
 **.env** mínimo para rodar:
+
 ```bash
 NODE_ENV=development
 PORT=3001
@@ -86,7 +88,7 @@ npm run start:dev
 ✅ **Backend rodando em**: `http://localhost:3001`
 ✅ **Swagger docs em**: `http://localhost:3001/api/docs`
 
-### 4️⃣ Configure o Frontend (Novo Terminal)
+### 4. Configure o Frontend (Novo Terminal)
 
 ```bash
 cd frontend
@@ -101,6 +103,7 @@ cp .env.example .env
 ```
 
 **.env** padrão (já funciona):
+
 ```bash
 VITE_API_URL=http://localhost:3001/api
 VITE_APP_NAME=ETP Express
@@ -242,6 +245,7 @@ psql -d etp_express
 ### ❌ "Cannot connect to database"
 
 **Solução**:
+
 ```bash
 # Verificar se PostgreSQL está rodando
 # Windows:
@@ -257,6 +261,7 @@ DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/etp_express
 ### ❌ "OpenAI API error: 401 Unauthorized"
 
 **Solução**:
+
 1. Verifique `OPENAI_API_KEY` no `.env`
 2. Confirme que a key é válida em: https://platform.openai.com/api-keys
 3. Verifique se tem créditos disponíveis
@@ -264,6 +269,7 @@ DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/etp_express
 ### ❌ "Perplexity API error"
 
 **Solução**:
+
 1. Verifique `PERPLEXITY_API_KEY` no `.env`
 2. Confirme que a key é válida em: https://www.perplexity.ai/settings/api
 3. Verifique rate limits
@@ -271,6 +277,7 @@ DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/etp_express
 ### ❌ "Port 3001 already in use"
 
 **Solução**:
+
 ```bash
 # Windows: Matar processo na porta
 netstat -ano | findstr :3001
@@ -287,6 +294,7 @@ PORT=3002
 ### ❌ "Port 5173 already in use"
 
 **Solução**:
+
 ```bash
 # Altere em vite.config.ts
 server: {
@@ -297,6 +305,7 @@ server: {
 ### ❌ "CORS error"
 
 **Solução**:
+
 1. Verifique `FRONTEND_URL` no backend `.env`
 2. Verifique `CORS_ORIGINS` no backend `.env`
 3. Ambos devem ser: `http://localhost:5173`
@@ -353,6 +362,7 @@ Para poder exportar, você **DEVE** preencher:
 ### ⚠️ Sistema Assistivo
 
 O ETP Express **NÃO substitui**:
+
 - ❌ Responsabilidade administrativa
 - ❌ Análise jurídica especializada
 - ❌ Decisão técnica do servidor
@@ -361,12 +371,14 @@ O ETP Express **NÃO substitui**:
 ### ⚠️ Limitações da IA
 
 A IA **PODE**:
+
 - ❌ Inventar fatos (alucinação)
 - ❌ Interpretar leis incorretamente
 - ❌ Sugerir valores desatualizados
 - ❌ Fazer afirmações imprecisas
 
 **POR ISSO**:
+
 - ✅ Sempre revise criticamente
 - ✅ Valide referências legais
 - ✅ Confirme valores com mercado

@@ -107,7 +107,7 @@ You are acting as a **Scrum Master** specialized in:
 5. **Comment on Issue**
 
    ```bash
-   gh issue comment <NUMBER> --body "📝 Implementation Story created: [View Story](../../../docs/stories/issue-<NUMBER>-story.md)
+   gh issue comment <NUMBER> --body "Implementation Story created: [View Story](../../../docs/stories/issue-<NUMBER>-story.md)
 
    Ready for implementation. Follow the step-by-step guide.
 
