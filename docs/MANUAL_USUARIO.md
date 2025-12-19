@@ -75,8 +75,8 @@ Para criar uma conta no ETP Express:
    - **Confirmar Senha**: Repita a senha
 
 4. Aceite os termos obrigatórios:
-   - ☑️ Termos de Uso e Política de Privacidade (LGPD)
-   - ☑️ Transferência Internacional de Dados
+   - [x] Termos de Uso e Política de Privacidade (LGPD)
+   - [x] Transferência Internacional de Dados
 
 5. Clique em **"Cadastrar"**
 
@@ -89,7 +89,7 @@ Para criar uma conta no ETP Express:
 3. Digite sua **senha**
 4. Clique em **"Entrar"**
 
-> **Dica**: Você pode clicar no ícone 👁️ para visualizar a senha enquanto digita.
+> **Dica**: Você pode clicar no icone de olho para visualizar a senha enquanto digita.
 
 ### 2.3 Recuperação de Senha
 
@@ -146,25 +146,25 @@ O ETP Express segue a estrutura definida pela Lei 14.133/2021, com as seguintes 
 
 | Seção | Título                          | Obrigatória |
 | ----- | ------------------------------- | ----------- |
-| I     | Necessidade da Contratação      | ✅ Sim      |
+| I     | Necessidade da Contratação      | Sim         |
 | II    | Objetivos da Contratação        | Não         |
 | III   | Descrição da Solução            | Não         |
-| IV    | Requisitos da Contratação       | ✅ Sim      |
+| IV    | Requisitos da Contratação       | Sim         |
 | V     | Levantamento de Mercado         | Não         |
-| VI    | Estimativa de Preços            | ✅ Sim      |
+| VI    | Estimativa de Preços            | Sim         |
 | VII   | Justificativa para Parcelamento | Não         |
-| VIII  | Adequação Orçamentária          | ✅ Sim      |
+| VIII  | Adequação Orçamentária          | Sim         |
 | IX    | Resultados Pretendidos          | Não         |
 | X     | Providências a serem Adotadas   | Não         |
 | XI    | Possíveis Impactos Ambientais   | Não         |
 | XII   | Declaração de Viabilidade       | Não         |
-| XIII  | Contratações Correlatas         | ✅ Sim      |
+| XIII  | Contratações Correlatas         | Sim         |
 
 ### Navegando entre Seções
 
 - Use as **abas numeradas** (1 a 13) na parte superior do editor
 - Ou use o **painel lateral** com a lista completa de seções
-- Seções preenchidas são indicadas com ✅
+- Secoes preenchidas sao indicadas com um icone de confirmacao
 
 ### Salvando Alterações
 
@@ -192,7 +192,7 @@ O ETP Express utiliza **Inteligência Artificial** para auxiliar na redação da
 ### 5.2 Gerando uma Seção
 
 1. Navegue até a seção desejada
-2. Clique no botão **"Gerar com IA"** (ícone de varinha mágica ✨)
+2. Clique no botao **"Gerar com IA"**
 3. Aguarde o processamento (indicador de progresso será exibido)
 4. Revise o conteúdo gerado
 5. Edite conforme necessário
@@ -405,7 +405,7 @@ R: Verifique sua conexão com a internet. Se o problema persistir, tente acessar
 ### Canais de Atendimento
 
 **Email de Suporte:**
-📧 suporte@confenge.com.br
+suporte@confenge.com.br
 
 **Horário de Atendimento:**
 Segunda a Sexta, das 8h às 18h (horário de Brasília)
