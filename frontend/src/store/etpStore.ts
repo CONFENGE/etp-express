@@ -20,6 +20,7 @@ import {
   PollingAbortedError,
 } from '@/lib/polling';
 import { logger } from '@/lib/logger';
+import { getContextualErrorMessage } from '@/lib/api-errors';
 
 interface ETFState {
   etps: ETP[];
@@ -114,7 +115,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       set({ etps, isLoading: false });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao carregar ETPs',
+        error: getContextualErrorMessage('carregar', 'ETPs', error),
         isLoading: false,
       });
     }
@@ -127,7 +128,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       set({ currentETP: etp, isLoading: false });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao carregar ETP',
+        error: getContextualErrorMessage('carregar', 'o ETP', error),
         isLoading: false,
       });
     }
@@ -145,7 +146,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       return etp;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao criar ETP',
+        error: getContextualErrorMessage('criar', 'o ETP', error),
         isLoading: false,
       });
       throw error;
@@ -163,7 +164,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       }));
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao atualizar ETP',
+        error: getContextualErrorMessage('atualizar', 'o ETP', error),
         isLoading: false,
       });
       throw error;
@@ -181,7 +182,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       }));
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao deletar ETP',
+        error: getContextualErrorMessage('excluir', 'o ETP', error),
         isLoading: false,
       });
       throw error;
@@ -219,8 +220,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       });
     } catch (error) {
       set({
-        error:
-          error instanceof Error ? error.message : 'Erro ao atualizar seção',
+        error: getContextualErrorMessage('atualizar', 'a seção', error),
         isLoading: false,
       });
       throw error;
@@ -315,14 +315,14 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         return null as unknown as AIGenerationResponse;
       }
 
-      let errorMessage = 'Erro ao gerar seção com IA';
+      // Use friendly error messages, but keep specific messages from known error types
+      let errorMessage: string;
 
-      if (error instanceof JobFailedError) {
+      if (error instanceof JobFailedError || error instanceof PollingTimeoutError) {
+        // These errors already have user-friendly messages in Portuguese
         errorMessage = error.message;
-      } else if (error instanceof PollingTimeoutError) {
-        errorMessage = error.message;
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
+      } else {
+        errorMessage = getContextualErrorMessage('gerar', 'a seção com IA', error);
       }
 
       set({
@@ -430,14 +430,14 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         return null as unknown as AIGenerationResponse;
       }
 
-      let errorMessage = 'Erro ao regenerar seção';
+      // Use friendly error messages, but keep specific messages from known error types
+      let errorMessage: string;
 
-      if (error instanceof JobFailedError) {
+      if (error instanceof JobFailedError || error instanceof PollingTimeoutError) {
+        // These errors already have user-friendly messages in Portuguese
         errorMessage = error.message;
-      } else if (error instanceof PollingTimeoutError) {
-        errorMessage = error.message;
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
+      } else {
+        errorMessage = getContextualErrorMessage('regenerar', 'a seção', error);
       }
 
       set({
@@ -466,7 +466,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       return result;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao validar ETP',
+        error: getContextualErrorMessage('validar', 'o ETP', error),
         isLoading: false,
       });
       throw error;
@@ -493,7 +493,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         throw error;
       }
       set({
-        error: error instanceof Error ? error.message : 'Erro ao exportar PDF',
+        error: getContextualErrorMessage('exportar', 'o PDF', error),
         isLoading: false,
       });
       throw error;
@@ -516,7 +516,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         throw error;
       }
       set({
-        error: error instanceof Error ? error.message : 'Erro ao exportar DOCX',
+        error: getContextualErrorMessage('exportar', 'o DOCX', error),
         isLoading: false,
       });
       throw error;
@@ -531,7 +531,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       return response;
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Erro ao exportar JSON',
+        error: getContextualErrorMessage('exportar', 'o JSON', error),
         isLoading: false,
       });
       throw error;
