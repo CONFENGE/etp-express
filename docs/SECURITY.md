@@ -77,7 +77,7 @@ Expected output:
 
 ```
 ❌ Secret detected! Commit blocked.
-   Remove the secret and try again.
+ Remove the secret and try again.
 ```
 
 ### 2. GitHub Secret Scanning (Remote)
@@ -91,10 +91,10 @@ Expected output:
 1. Navigate to repository settings: `https://github.com/tjsasakifln/etp-express/settings`
 2. Go to **Security > Code security and analysis**
 3. Enable the following features:
-   - ✅ **Secret scanning** - Detects secrets in repository
-   - ✅ **Push protection** - Blocks pushes containing secrets
-   - ✅ **Dependency graph** - Analyzes dependencies
-   - ✅ **Dependabot alerts** - Security vulnerability alerts
+ - ✅ **Secret scanning** - Detects secrets in repository
+ - ✅ **Push protection** - Blocks pushes containing secrets
+ - ✅ **Dependency graph** - Analyzes dependencies
+ - ✅ **Dependabot alerts** - Security vulnerability alerts
 
 #### Access Secret Alerts
 
@@ -144,13 +144,13 @@ Review the Gitleaks output or GitHub alert to identify:
 
 ### Step 2: Determine Severity
 
-| Secret Type                      | Severity        | Immediate Action        |
+| Secret Type | Severity | Immediate Action |
 | -------------------------------- | --------------- | ----------------------- |
-| Production API Key (OpenAI, Exa) | 🔴 **CRITICAL** | Rotate immediately      |
-| JWT_SECRET                       | 🔴 **CRITICAL** | Rotate immediately      |
-| DATABASE_URL (production)        | 🔴 **CRITICAL** | Rotate immediately      |
-| Development/Test credentials     | 🟡 **MEDIUM**   | Rotate within 24h       |
-| False positive                   | 🟢 **LOW**      | Update `.gitleaks.toml` |
+| Production API Key (OpenAI, Exa) | **CRITICAL** | Rotate immediately |
+| JWT_SECRET | **CRITICAL** | Rotate immediately |
+| DATABASE_URL (production) | **CRITICAL** | Rotate immediately |
+| Development/Test credentials | **MEDIUM** | Rotate within 24h |
+| False positive | **LOW** | Update `.gitleaks.toml` |
 
 ### Step 3: Rotate the Secret (CRITICAL)
 
@@ -158,43 +158,43 @@ Review the Gitleaks output or GitHub alert to identify:
 
 1. **Immediately rotate the secret:**
 
-   ```bash
-   # For OpenAI API Key:
-   # 1. Go to https://platform.openai.com/api-keys
-   # 2. Revoke the old key
-   # 3. Generate a new key
-   # 4. Update Railway environment variables
+ ```bash
+ # For OpenAI API Key:
+ # 1. Go to https://platform.openai.com/api-keys
+ # 2. Revoke the old key
+ # 3. Generate a new key
+ # 4. Update Railway environment variables
 
-   # For JWT_SECRET:
-   openssl rand -base64 64
-   # Update in Railway Secrets
-   ```
+ # For JWT_SECRET:
+ openssl rand -base64 64
+ # Update in Railway Secrets
+ ```
 
 2. **Remove the secret from code:**
 
-   ```bash
-   # Remove the file or line containing the secret
-   git rm <file-with-secret>
-   # OR edit the file to remove the secret
-   ```
+ ```bash
+ # Remove the file or line containing the secret
+ git rm <file-with-secret>
+ # OR edit the file to remove the secret
+ ```
 
 3. **Update environment variables:**
 
-   ```bash
-   # Railway dashboard:
-   # Settings > Variables > Add new variable
-   ```
+ ```bash
+ # Railway dashboard:
+ # Settings > Variables > Add new variable
+ ```
 
 4. **Commit the fix:**
-   ```bash
-   git add .
-   git commit -m "security: remove leaked secret and rotate credentials"
-   git push
-   ```
+ ```bash
+ git add .
+ git commit -m "security: remove leaked secret and rotate credentials"
+ git push
+ ```
 
 ### Step 4: Scrub Git History (If Needed)
 
-**⚠️ WARNING: This rewrites history and should only be done if absolutely necessary**
+**⚠ WARNING: This rewrites history and should only be done if absolutely necessary**
 
 If the secret was committed to a public repository:
 
@@ -262,8 +262,8 @@ Add the file to the allowlist:
 ```toml
 [allowlist]
 paths = [
-  '''docs/examples/api-key-example\.md$''',
-  '''tests/fixtures/fake-secrets\.ts$''',
+ '''docs/examples/api-key-example\.md$''',
+ '''tests/fixtures/fake-secrets\.ts$''',
 ]
 ```
 
@@ -272,7 +272,7 @@ Or add a specific regex to ignore:
 ```toml
 [allowlist]
 regexes = [
-  '''sk-example-not-a-real-key''',
+ '''sk-example-not-a-real-key''',
 ]
 ```
 
@@ -288,21 +288,21 @@ Procedures for rotating system secrets are fully documented in:
 
 ### Rotation Schedule
 
-| Secret         | Frequency | Calendar Reminder    |
+| Secret | Frequency | Calendar Reminder |
 | -------------- | --------- | -------------------- |
-| JWT_SECRET     | Monthly   | Day 25 of each month |
-| SESSION_SECRET | Monthly   | Day 25 of each month |
-| OPENAI_API_KEY | Quarterly | Feb, May, Aug, Nov   |
-| EXA_API_KEY    | Quarterly | Feb, May, Aug, Nov   |
-| DATABASE_URL   | On-demand | As needed            |
+| JWT_SECRET | Monthly | Day 25 of each month |
+| SESSION_SECRET | Monthly | Day 25 of each month |
+| OPENAI_API_KEY | Quarterly | Feb, May, Aug, Nov |
+| EXA_API_KEY | Quarterly | Feb, May, Aug, Nov |
+| DATABASE_URL | On-demand | As needed |
 
 ### Quick Start
 
 1. **Run the helper script:**
 
-   ```bash
-   ./scripts/rotate-secret.sh JWT_SECRET
-   ```
+ ```bash
+ ./scripts/rotate-secret.sh JWT_SECRET
+ ```
 
 2. **Follow the generated instructions**
 
@@ -417,10 +417,10 @@ If you discover a security vulnerability:
 1. **DO NOT** create a public GitHub issue
 2. **DO** email the security team: security@example.com (update this)
 3. **DO** include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Suggested fix (if any)
+ - Description of the vulnerability
+ - Steps to reproduce
+ - Potential impact
+ - Suggested fix (if any)
 
 We will respond within 48 hours and coordinate disclosure.
 

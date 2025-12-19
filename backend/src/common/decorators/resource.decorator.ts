@@ -17,13 +17,13 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * @RequireOwnership({ resourceType: ResourceType.ETP })
  * @Patch(':id')
  * async update(
- *   @Param('id') id: string,
- *   @Body() updateDto: UpdateEtpDto,
- *   @Resource() etp: Etp,  // Already validated and loaded
+ * @Param('id') id: string,
+ * @Body() updateDto: UpdateEtpDto,
+ * @Resource() etp: Etp, // Already validated and loaded
  * ) {
- *   // No need to fetch ETP again or validate ownership
- *   Object.assign(etp, updateDto);
- *   return this.etpsRepository.save(etp);
+ * // No need to fetch ETP again or validate ownership
+ * Object.assign(etp, updateDto);
+ * return this.etpsRepository.save(etp);
  * }
  * ```
  *
@@ -33,7 +33,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * @RequireOwnership({ resourceType: ResourceType.ETP })
  * @Get(':id')
  * async findOne(@Resource('id') etpId: string) {
- *   // Returns just the 'id' property of the resource
+ * // Returns just the 'id' property of the resource
  * }
  * ```
  */

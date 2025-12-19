@@ -26,10 +26,10 @@ interface RequestWithUser extends Request {
  * **Uso:**
  * ```typescript
  * @UseGuards(UserThrottlerGuard)
- * @Throttle({ default: { limit: 5, ttl: 60000 } })  // 5 req/min
+ * @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 req/min
  * @Post('generate')
  * async generate(@CurrentUser() user: User) {
- *   // Endpoint protegido contra abuse
+ * // Endpoint protegido contra abuse
  * }
  * ```
  *

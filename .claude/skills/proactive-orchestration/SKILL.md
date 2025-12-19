@@ -22,29 +22,29 @@ After EVERY user message, complete this checklist:
 
 ### AUTO-EXECUTE (Sempre, sem perguntar)
 
-| Trigger              | Command          | Deteccao                              |
+| Trigger | Command | Deteccao |
 | -------------------- | ---------------- | ------------------------------------- |
-| Session start        | `/catchup`       | Primeira mensagem ou apos /clear      |
-| Build error          | `/smart-fix`     | Saida de npm run build com erros      |
-| Type error           | `/smart-fix`     | Saida de tsc com erros                |
-| Lint error           | `/lint-fix`      | Saida de eslint com erros             |
-| Test failure         | `/smart-fix`     | Saida de npm test com FAIL            |
-| Task complete        | `/commit`        | Codigo funcionando + tests passing    |
-| Entity modified      | `/db-migrate`    | Arquivos .entity.ts editados          |
-| Pre-PR               | `/test-coverage` | Antes de criar PR                     |
-| Pre-PR               | `/security-scan` | Antes de criar PR                     |
-| Pre-deploy           | `/deploy-check`  | Antes de deploy Railway               |
-| Prod issue mentioned | `/health-check`  | Mencao a producao + problema          |
-| PR mentioned         | `/review-pr`     | Usuario menciona PR para review       |
-| Drift suspected      | `/audit-roadmap` | Inconsistencia entre issues e ROADMAP |
+| Session start | `/catchup` | Primeira mensagem ou apos /clear |
+| Build error | `/smart-fix` | Saida de npm run build com erros |
+| Type error | `/smart-fix` | Saida de tsc com erros |
+| Lint error | `/lint-fix` | Saida de eslint com erros |
+| Test failure | `/smart-fix` | Saida de npm test com FAIL |
+| Task complete | `/commit` | Codigo funcionando + tests passing |
+| Entity modified | `/db-migrate` | Arquivos .entity.ts editados |
+| Pre-PR | `/test-coverage` | Antes de criar PR |
+| Pre-PR | `/security-scan` | Antes de criar PR |
+| Pre-deploy | `/deploy-check` | Antes de deploy Railway |
+| Prod issue mentioned | `/health-check` | Mencao a producao + problema |
+| PR mentioned | `/review-pr` | Usuario menciona PR para review |
+| Drift suspected | `/audit-roadmap` | Inconsistencia entre issues e ROADMAP |
 
 ### SUGGEST (Perguntar primeiro)
 
-| Trigger         | Command         | Quando                             |
+| Trigger | Command | Quando |
 | --------------- | --------------- | ---------------------------------- |
-| Complex feature | `/brainstorm`   | Nova feature sem design claro      |
-| Multiple tasks  | `/write-plan`   | 3+ tarefas relacionadas            |
-| Plan exists     | `/execute-plan` | Plano criado, pronto para executar |
+| Complex feature | `/brainstorm` | Nova feature sem design claro |
+| Multiple tasks | `/write-plan` | 3+ tarefas relacionadas |
+| Plan exists | `/execute-plan` | Plano criado, pronto para executar |
 
 ## Integration with using-superpowers
 

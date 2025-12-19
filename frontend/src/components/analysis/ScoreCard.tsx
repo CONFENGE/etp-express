@@ -148,16 +148,16 @@ function CircularGauge({
  * @example
  * ```tsx
  * <ScoreCard
- *   overallScore={78}
- *   meetsMinimumQuality={true}
- *   verdict="Aprovado com ressalvas"
- *   dimensions={[
- *     { dimension: 'legal', score: 75, passed: true },
- *     { dimension: 'clareza', score: 82, passed: true },
- *     { dimension: 'fundamentacao', score: 70, passed: true }
- *   ]}
- *   issueSummary={{ critical: 1, important: 3, suggestion: 5 }}
- *   documentInfo={{ wordCount: 1500, sectionCount: 8 }}
+ * overallScore={78}
+ * meetsMinimumQuality={true}
+ * verdict="Aprovado com ressalvas"
+ * dimensions={[
+ * { dimension: 'legal', score: 75, passed: true },
+ * { dimension: 'clareza', score: 82, passed: true },
+ * { dimension: 'fundamentacao', score: 70, passed: true }
+ * ]}
+ * issueSummary={{ critical: 1, important: 3, suggestion: 5 }}
+ * documentInfo={{ wordCount: 1500, sectionCount: 8 }}
  * />
  * ```
  */

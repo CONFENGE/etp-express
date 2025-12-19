@@ -210,11 +210,11 @@ export class ETPAnalysisService {
     Handlebars.registerHelper('severityIcon', (severity: SeverityLevel) => {
       switch (severity) {
         case 'critical':
-          return '🚫';
+          return '';
         case 'important':
-          return '⚠️';
+          return '⚠';
         case 'suggestion':
-          return '💡';
+          return '';
         default:
           return '•';
       }
@@ -257,9 +257,9 @@ export class ETPAnalysisService {
    * @example
    * ```ts
    * const doc: ExtractedDocument = {
-   *   fullText: 'Este ETP visa a contratação de...',
-   *   sections: [...],
-   *   metadata: { wordCount: 500, pageCount: 1, sectionCount: 5 }
+   * fullText: 'Este ETP visa a contratação de...',
+   * sections: [...],
+   * metadata: { wordCount: 500, pageCount: 1, sectionCount: 5 }
    * };
    * const result = await service.analyzeDocument(doc);
    * ```
@@ -412,12 +412,12 @@ export class ETPAnalysisService {
    * @example
    * ```ts
    * const doc: ExtractedDocument = {
-   *   fullText: 'Documento completo...',
-   *   sections: [
-   *     { title: 'Justificativa', content: 'A contratação...' },
-   *     { title: 'Requisitos', content: 'Os requisitos são...' }
-   *   ],
-   *   metadata: { wordCount: 1500, pageCount: 3, sectionCount: 2 }
+   * fullText: 'Documento completo...',
+   * sections: [
+   * { title: 'Justificativa', content: 'A contratação...' },
+   * { title: 'Requisitos', content: 'Os requisitos são...' }
+   * ],
+   * metadata: { wordCount: 1500, pageCount: 3, sectionCount: 2 }
    * };
    *
    * const result = await service.convertToEtp(doc, userId, orgId);

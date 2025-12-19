@@ -185,33 +185,33 @@ export class ExportService {
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<etp>\n';
-    xml += `  <id>${this.escapeXml(etp.id)}</id>\n`;
-    xml += `  <title>${this.escapeXml(etp.title)}</title>\n`;
-    xml += `  <description>${this.escapeXml(etp.description || '')}</description>\n`;
-    xml += `  <objeto>${this.escapeXml(etp.objeto)}</objeto>\n`;
-    xml += `  <numeroProcesso>${this.escapeXml(etp.numeroProcesso || '')}</numeroProcesso>\n`;
-    xml += `  <valorEstimado>${etp.valorEstimado || 0}</valorEstimado>\n`;
-    xml += `  <status>${this.escapeXml(etp.status)}</status>\n`;
-    xml += `  <currentVersion>${etp.currentVersion}</currentVersion>\n`;
-    xml += `  <completionPercentage>${etp.completionPercentage}</completionPercentage>\n`;
-    xml += `  <createdAt>${etp.createdAt.toISOString()}</createdAt>\n`;
-    xml += `  <updatedAt>${etp.updatedAt.toISOString()}</updatedAt>\n`;
+    xml += ` <id>${this.escapeXml(etp.id)}</id>\n`;
+    xml += ` <title>${this.escapeXml(etp.title)}</title>\n`;
+    xml += ` <description>${this.escapeXml(etp.description || '')}</description>\n`;
+    xml += ` <objeto>${this.escapeXml(etp.objeto)}</objeto>\n`;
+    xml += ` <numeroProcesso>${this.escapeXml(etp.numeroProcesso || '')}</numeroProcesso>\n`;
+    xml += ` <valorEstimado>${etp.valorEstimado || 0}</valorEstimado>\n`;
+    xml += ` <status>${this.escapeXml(etp.status)}</status>\n`;
+    xml += ` <currentVersion>${etp.currentVersion}</currentVersion>\n`;
+    xml += ` <completionPercentage>${etp.completionPercentage}</completionPercentage>\n`;
+    xml += ` <createdAt>${etp.createdAt.toISOString()}</createdAt>\n`;
+    xml += ` <updatedAt>${etp.updatedAt.toISOString()}</updatedAt>\n`;
 
-    xml += '  <sections>\n';
+    xml += ' <sections>\n';
     etp.sections.forEach((section) => {
-      xml += '    <section>\n';
-      xml += `      <id>${this.escapeXml(section.id)}</id>\n`;
-      xml += `      <type>${this.escapeXml(section.type)}</type>\n`;
-      xml += `      <title>${this.escapeXml(section.title)}</title>\n`;
-      xml += `      <content><![CDATA[${section.content || ''}]]></content>\n`;
-      xml += `      <status>${this.escapeXml(section.status)}</status>\n`;
-      xml += `      <order>${section.order}</order>\n`;
-      xml += `      <createdAt>${section.createdAt.toISOString()}</createdAt>\n`;
-      xml += '    </section>\n';
+      xml += ' <section>\n';
+      xml += ` <id>${this.escapeXml(section.id)}</id>\n`;
+      xml += ` <type>${this.escapeXml(section.type)}</type>\n`;
+      xml += ` <title>${this.escapeXml(section.title)}</title>\n`;
+      xml += ` <content><![CDATA[${section.content || ''}]]></content>\n`;
+      xml += ` <status>${this.escapeXml(section.status)}</status>\n`;
+      xml += ` <order>${section.order}</order>\n`;
+      xml += ` <createdAt>${section.createdAt.toISOString()}</createdAt>\n`;
+      xml += ' </section>\n';
     });
-    xml += '  </sections>\n';
+    xml += ' </sections>\n';
 
-    xml += `  <disclaimer>${this.escapeXml(DISCLAIMER)}</disclaimer>\n`;
+    xml += ` <disclaimer>${this.escapeXml(DISCLAIMER)}</disclaimer>\n`;
     xml += '</etp>\n';
 
     return xml;

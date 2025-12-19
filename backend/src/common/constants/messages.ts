@@ -23,8 +23,8 @@
  * import { DISCLAIMER } from './common/constants/messages';
  *
  * return {
- *   content: generatedText,
- *   warning: DISCLAIMER
+ * content: generatedText,
+ * warning: DISCLAIMER
  * };
  * ```
  */

@@ -12,34 +12,34 @@ export class AddInternationalTransferConsent1763600000000 implements MigrationIn
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if internationalTransferConsentAt column already exists
     const columnExists = await queryRunner.query(`
-      SELECT column_name
-      FROM information_schema.columns
-      WHERE table_name = 'users'
-        AND column_name = 'internationalTransferConsentAt';
-    `);
+ SELECT column_name
+ FROM information_schema.columns
+ WHERE table_name = 'users'
+ AND column_name = 'internationalTransferConsentAt';
+ `);
 
     if (columnExists.length === 0) {
       await queryRunner.query(`
-        ALTER TABLE "users"
-        ADD "internationalTransferConsentAt" TIMESTAMP;
-      `);
+ ALTER TABLE "users"
+ ADD "internationalTransferConsentAt" TIMESTAMP;
+ `);
     }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Check if column exists before dropping (idempotent down)
     const columnExists = await queryRunner.query(`
-      SELECT column_name
-      FROM information_schema.columns
-      WHERE table_name = 'users'
-        AND column_name = 'internationalTransferConsentAt';
-    `);
+ SELECT column_name
+ FROM information_schema.columns
+ WHERE table_name = 'users'
+ AND column_name = 'internationalTransferConsentAt';
+ `);
 
     if (columnExists.length > 0) {
       await queryRunner.query(`
-        ALTER TABLE "users"
-        DROP COLUMN "internationalTransferConsentAt";
-      `);
+ ALTER TABLE "users"
+ DROP COLUMN "internationalTransferConsentAt";
+ `);
     }
   }
 }

@@ -323,7 +323,7 @@ export class OrchestratorService {
           hasEnrichmentWarning = true;
           if (enrichmentResult.source === 'mixed') {
             warnings.push(
-              '⚠️ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
+              '⚠ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
             );
           }
         }
@@ -334,7 +334,7 @@ export class OrchestratorService {
           sectionType: request.sectionType,
         });
         warnings.push(
-          '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
+          '⚠ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
         );
         hasEnrichmentWarning = true;
       }
@@ -402,14 +402,14 @@ export class OrchestratorService {
    * @example
    * ```ts
    * const result = await orchestratorService.generateSection({
-   *   sectionType: 'justificativa',
-   *   title: 'Justificativa da Contratação',
-   *   userInput: 'Necessidade de adquirir notebooks para equipe de TI',
-   *   context: { department: 'TI' },
-   *   etpData: {
-   *     objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
-   *     metadata: { orgao: 'Secretaria de Tecnologia' }
-   *   }
+   * sectionType: 'justificativa',
+   * title: 'Justificativa da Contratação',
+   * userInput: 'Necessidade de adquirir notebooks para equipe de TI',
+   * context: { department: 'TI' },
+   * etpData: {
+   * objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
+   * metadata: { orgao: 'Secretaria de Tecnologia' }
+   * }
    * });
    *
    * console.log(result.content); // Generated markdown content
@@ -789,7 +789,7 @@ export class OrchestratorService {
           hasEnrichmentWarning = true;
           if (enrichmentResult.source === 'mixed') {
             warnings.push(
-              '⚠️ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
+              '⚠ Dados governamentais insuficientes, complementados com contexto adicional de mercado.',
             );
           }
         }
@@ -799,7 +799,7 @@ export class OrchestratorService {
           sectionType: request.sectionType,
         });
         warnings.push(
-          '⚠️ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
+          '⚠ Fundamentação de mercado indisponível. Revise e adicione referências manualmente.',
         );
         hasEnrichmentWarning = true;
 
@@ -1139,7 +1139,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     // Add mandatory disclaimer
     const finalContent =
       content +
-      '\n\n⚠️ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
+      '\n\n⚠ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
 
     const generationTime = Date.now() - startTime;
 
@@ -1270,39 +1270,39 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
 
     const sectionSpecificQueries: Record<string, string> = {
       justificativa: `${baseQuery}
-      Inclua:
-      - Exemplos de justificativas de órgãos públicos
-      - Benefícios observados em contratações similares
-      - Dados quantitativos sobre impacto e eficiência
-      - Referências a casos de sucesso`,
+ Inclua:
+ - Exemplos de justificativas de órgãos públicos
+ - Benefícios observados em contratações similares
+ - Dados quantitativos sobre impacto e eficiência
+ - Referências a casos de sucesso`,
 
       contextualizacao: `${baseQuery}
-      Inclua:
-      - Contexto de mercado atual
-      - Tendências em contratações públicas do setor
-      - Desafios e oportunidades identificados
-      - Casos relevantes de outros órgãos`,
+ Inclua:
+ - Contexto de mercado atual
+ - Tendências em contratações públicas do setor
+ - Desafios e oportunidades identificados
+ - Casos relevantes de outros órgãos`,
 
       orcamento: `${baseQuery}
-      Inclua:
-      - Valores praticados em contratações similares
-      - Faixas de preço de mercado
-      - Referências de preços de órgãos públicos
-      - Links para processos licitatórios relacionados`,
+ Inclua:
+ - Valores praticados em contratações similares
+ - Faixas de preço de mercado
+ - Referências de preços de órgãos públicos
+ - Links para processos licitatórios relacionados`,
 
       pesquisa_mercado: `${baseQuery}
-      Inclua:
-      - Fornecedores principais no mercado
-      - Valores de referência
-      - Condições comerciais típicas
-      - Análise de mercado do setor`,
+ Inclua:
+ - Fornecedores principais no mercado
+ - Valores de referência
+ - Condições comerciais típicas
+ - Análise de mercado do setor`,
 
       especificacao_tecnica: `${baseQuery}
-      Inclua:
-      - Especificações técnicas de referência
-      - Padrões de mercado adotados
-      - Requisitos técnicos comuns em contratações similares
-      - Normas e certificações aplicáveis`,
+ Inclua:
+ - Especificações técnicas de referência
+ - Padrões de mercado adotados
+ - Requisitos técnicos comuns em contratações similares
+ - Normas e certificações aplicáveis`,
     };
 
     const query =
@@ -1527,11 +1527,11 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
           sections.push(`${index + 1}. ${contract.objeto}`);
           if (contract.valorTotal) {
             sections.push(
-              `   Valor: R$ ${contract.valorTotal.toLocaleString('pt-BR')}`,
+              ` Valor: R$ ${contract.valorTotal.toLocaleString('pt-BR')}`,
             );
           }
           if (contract.orgaoContratante?.nome) {
-            sections.push(`   Órgão: ${contract.orgaoContratante.nome}`);
+            sections.push(` Órgão: ${contract.orgaoContratante.nome}`);
           }
         });
     }
@@ -1659,8 +1659,8 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @example
    * ```ts
    * const validation = await orchestratorService.validateContent(
-   *   'Manual text content to validate...',
-   *   'justificativa'
+   * 'Manual text content to validate...',
+   * 'justificativa'
    * );
    *
    * console.log(validation.overallScore); // "85.50"

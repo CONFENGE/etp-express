@@ -108,9 +108,10 @@ export function ThemeToggle() {
               {label}
             </span>
             {theme === value && (
-              <span className="ml-auto text-apple-accent" aria-hidden="true">
-                ✓
-              </span>
+              <span
+                className="ml-auto text-apple-accent"
+                aria-hidden="true"
+              ></span>
             )}
           </DropdownMenuItem>
         ))}

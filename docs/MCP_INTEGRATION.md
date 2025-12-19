@@ -10,7 +10,7 @@ Este documento descreve a integração de Model Context Protocol (MCP) servers n
 
 ---
 
-## 📦 MCPs Instalados
+## MCPs Instalados
 
 ### 1. Sequential Thinking MCP
 **Propósito:** Resolução estruturada de problemas complexos
@@ -27,8 +27,8 @@ Este documento descreve a integração de Model Context Protocol (MCP) servers n
 #### Instalação
 ```json
 "sequential-thinking": {
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+ "command": "npx",
+ "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 }
 ```
 
@@ -60,11 +60,11 @@ Este documento descreve a integração de Model Context Protocol (MCP) servers n
 #### Instalação
 ```json
 "semgrep": {
-  "command": "uvx",
-  "args": ["semgrep-mcp"],
-  "env": {
-    "SEMGREP_APP_TOKEN": "OPCIONAL"
-  }
+ "command": "uvx",
+ "args": ["semgrep-mcp"],
+ "env": {
+ "SEMGREP_APP_TOKEN": "OPCIONAL"
+ }
 }
 ```
 
@@ -75,19 +75,19 @@ Este documento descreve a integração de Model Context Protocol (MCP) servers n
 
 #### Casos de Uso no ETP Express
 - **Milestone 3 - Quality & Security (Issues #47, #86, #87)**
-  - Code review automatizado de segurança
-  - Detecção de dados sensíveis expostos
-  - Validação de LGPD compliance
+ - Code review automatizado de segurança
+ - Detecção de dados sensíveis expostos
+ - Validação de LGPD compliance
 
 - **Milestone 4 - Refactoring (Issues #44, #50)**
-  - Identificação de `any` type usage
-  - Anti-pattern detection
-  - Code quality improvements
+ - Identificação de `any` type usage
+ - Anti-pattern detection
+ - Code quality improvements
 
 - **Milestone 6 - Audit Trimestral (Issue #40)**
-  - Auditoria de segurança
-  - Compliance validation
-  - Trend analysis de vulnerabilidades
+ - Auditoria de segurança
+ - Compliance validation
+ - Trend analysis de vulnerabilidades
 
 #### Skill Associada
 - `.claude/skills/semgrep-security.md`
@@ -96,25 +96,25 @@ Este documento descreve a integração de Model Context Protocol (MCP) servers n
 Criar `.semgrep.yml` na raiz do projeto:
 ```yaml
 rules:
-  # Security
-  - id: no-hardcoded-secrets
-    pattern: '(password|secret|token|api_key) = "..."'
-    message: "Hardcoded secrets detected"
-    severity: CRITICAL
+ # Security
+ - id: no-hardcoded-secrets
+ pattern: '(password|secret|token|api_key) = "..."'
+ message: "Hardcoded secrets detected"
+ severity: CRITICAL
 
-  # TypeScript
-  - id: no-any-type
-    pattern: ": any"
-    message: "Avoid using 'any' type"
-    severity: WARNING
+ # TypeScript
+ - id: no-any-type
+ pattern: ": any"
+ message: "Avoid using 'any' type"
+ severity: WARNING
 
-  # LGPD
-  - id: unencrypted-pii
-    patterns:
-      - pattern: 'user.$FIELD'
-        pattern-not: 'encrypted'
-    message: "Sensitive data not encrypted"
-    severity: HIGH
+ # LGPD
+ - id: unencrypted-pii
+ patterns:
+ - pattern: 'user.$FIELD'
+ pattern-not: 'encrypted'
+ message: "Sensitive data not encrypted"
+ severity: HIGH
 ```
 
 ---
@@ -135,8 +135,8 @@ rules:
 #### Instalação
 ```json
 "playwright": {
-  "command": "npx",
-  "args": ["@playwright/mcp@latest"]
+ "command": "npx",
+ "args": ["@playwright/mcp@latest"]
 }
 ```
 
@@ -147,21 +147,21 @@ rules:
 
 #### Casos de Uso no ETP Express
 - **Milestone 5 - E2E Testing (Issues #22, #23, #24)**
-  - Testes de features críticas
-  - Login flow validation
-  - ETP creation/editing workflows
-  - AI generation testing
-  - PDF export validation
+ - Testes de features críticas
+ - Login flow validation
+ - ETP creation/editing workflows
+ - AI generation testing
+ - PDF export validation
 
 - **Desenvolvimento de Features**
-  - Validação de responsividade
-  - Testes de acessibilidade (WCAG)
-  - Cross-browser validation
+ - Validação de responsividade
+ - Testes de acessibilidade (WCAG)
+ - Cross-browser validation
 
 - **QA Automation**
-  - Regression testing
-  - User journey validation
-  - Multi-device testing
+ - Regression testing
+ - User journey validation
+ - Multi-device testing
 
 #### Skill Associada
 - `.claude/skills/playwright-testing.md`
@@ -170,21 +170,21 @@ rules:
 ```
 frontend/tests/e2e/
 ├── auth/
-│   ├── login.spec.ts
-│   ├── logout.spec.ts
-│   └── password-reset.spec.ts
+│ ├── login.spec.ts
+│ ├── logout.spec.ts
+│ └── password-reset.spec.ts
 ├── etp/
-│   ├── create-etp.spec.ts
-│   ├── edit-etp.spec.ts
-│   ├── generate-sections.spec.ts
-│   └── similar-contracts.spec.ts
+│ ├── create-etp.spec.ts
+│ ├── edit-etp.spec.ts
+│ ├── generate-sections.spec.ts
+│ └── similar-contracts.spec.ts
 ├── fixtures/
-│   ├── auth.ts
-│   ├── test-data.ts
-│   └── pages.ts
+│ ├── auth.ts
+│ ├── test-data.ts
+│ └── pages.ts
 └── utils/
-    ├── assertions.ts
-    └── helpers.ts
+ ├── assertions.ts
+ └── helpers.ts
 ```
 
 ---
@@ -204,8 +204,8 @@ frontend/tests/e2e/
 #### Instalação
 ```json
 "browser": {
-  "command": "npx",
-  "args": ["@browsermcp/mcp"]
+ "command": "npx",
+ "args": ["@browsermcp/mcp"]
 }
 ```
 
@@ -216,26 +216,26 @@ frontend/tests/e2e/
 
 #### Casos de Uso no ETP Express
 - **Automação de Tarefas Repetitivas**
-  - Preenchimento de formulários
-  - Data entry em lote
-  - Processamento multi-step
+ - Preenchimento de formulários
+ - Data entry em lote
+ - Processamento multi-step
 
 - **Data Integration**
-  - Scraping de dados de fontes externas
-  - Extração estruturada de informações
-  - Pre-filling de formulários com dados extraídos
+ - Scraping de dados de fontes externas
+ - Extração estruturada de informações
+ - Pre-filling de formulários com dados extraídos
 
 - **Testes Interativos**
-  - Testes com contexto real de usuário
-  - Validação com dados e sessão reais
-  - Monitoramento de workflows
+ - Testes com contexto real de usuário
+ - Validação com dados e sessão reais
+ - Monitoramento de workflows
 
 #### Skill Associada
 - `.claude/skills/browser-automation.md`
 
 ---
 
-## 🔧 Configuração
+## Configuração
 
 ### Arquivo: claude_desktop_config.json
 
@@ -243,66 +243,66 @@ Criar ou atualizar arquivo de configuração (exemplo fornecido em `claude_deskt
 
 ```json
 {
-  "mcpServers": {
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "semgrep": {
-      "command": "uvx",
-      "args": ["semgrep-mcp"],
-      "env": {
-        "SEMGREP_APP_TOKEN": "OPCIONAL - Apenas necessário para Semgrep Cloud features"
-      }
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
-    },
-    "browser": {
-      "command": "npx",
-      "args": ["@browsermcp/mcp"]
-    }
-  }
+ "mcpServers": {
+ "sequential-thinking": {
+ "command": "npx",
+ "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+ },
+ "semgrep": {
+ "command": "uvx",
+ "args": ["semgrep-mcp"],
+ "env": {
+ "SEMGREP_APP_TOKEN": "OPCIONAL - Apenas necessário para Semgrep Cloud features"
+ }
+ },
+ "playwright": {
+ "command": "npx",
+ "args": ["@playwright/mcp@latest"]
+ },
+ "browser": {
+ "command": "npx",
+ "args": ["@browsermcp/mcp"]
+ }
+ }
 }
 ```
 
 ### Passos de Configuração
 
 1. **Fazer Copy do Arquivo Exemplo**
-   ```bash
-   cp claude_desktop_config.example.json claude_desktop_config.json
-   ```
+ ```bash
+ cp claude_desktop_config.example.json claude_desktop_config.json
+ ```
 
 2. **Instalar Dependências**
-   ```bash
-   # Sequential Thinking (via npx - sem instalação necessária)
+ ```bash
+ # Sequential Thinking (via npx - sem instalação necessária)
 
-   # Semgrep
-   pip install semgrep  # Ou uvx instala automaticamente
+ # Semgrep
+ pip install semgrep # Ou uvx instala automaticamente
 
-   # Playwright
-   npm install --save-dev @playwright/test
-   npx playwright install
+ # Playwright
+ npm install --save-dev @playwright/test
+ npx playwright install
 
-   # Browser MCP
-   # Instalar extensão do Chrome Web Store
-   ```
+ # Browser MCP
+ # Instalar extensão do Chrome Web Store
+ ```
 
 3. **Configurar MCP Servers**
-   - Editar `claude_desktop_config.json` conforme acima
-   - Adicionar variáveis de ambiente necessárias
+ - Editar `claude_desktop_config.json` conforme acima
+ - Adicionar variáveis de ambiente necessárias
 
 4. **Testar Conectividade**
-   - Executar: `npx -y @modelcontextprotocol/server-sequential-thinking`
-   - Verificar output para confirmar server rodando
+ - Executar: `npx -y @modelcontextprotocol/server-sequential-thinking`
+ - Verificar output para confirmar server rodando
 
 5. **Reiniciar Claude Code**
-   - Fechiar e reabrir para carregar nova configuração
+ - Fechiar e reabrir para carregar nova configuração
 
 ---
 
-## 📋 Skills de Uso
+## Skills de Uso
 
 Cada MCP possui uma skill associada em `.claude/skills/` documentando quando e como usar:
 
@@ -327,7 +327,7 @@ Preciso analisar a estrutura do query, indexes e plano de execução."
 
 ---
 
-## 🎯 Casos de Uso por Milestone
+## Casos de Uso por Milestone
 
 ### Milestone 3 - Quality & Security
 **Issues Relacionadas:** #47, #85, #86, #87, #100
@@ -391,7 +391,7 @@ Preciso analisar a estrutura do query, indexes e plano de execução."
 
 ---
 
-## 🚀 Boas Práticas
+## Boas Práticas
 
 ### ✅ Fazer
 - Usar MCP apropriado para contexto (não forçar)
@@ -409,7 +409,7 @@ Preciso analisar a estrutura do query, indexes e plano de execução."
 
 ---
 
-## 📊 Comparação com Abordagens Alternativas
+## Comparação com Abordagens Alternativas
 
 ### Antes (sem MCPs)
 ```
@@ -431,7 +431,7 @@ Preciso analisar a estrutura do query, indexes e plano de execução."
 
 ---
 
-## 🔗 Integração com Ferramentas Existentes
+## Integração com Ferramentas Existentes
 
 ### Com Git Workflow
 ```bash
@@ -444,14 +444,14 @@ npx husky install
 ```yaml
 # GitHub Actions example
 - name: Run Semgrep
-  run: semgrep --config=p/security-audit backend/ frontend/
+ run: semgrep --config=p/security-audit backend/ frontend/
 
 - name: Run Playwright Tests
-  run: npx playwright test
+ run: npx playwright test
 
 - name: Upload Test Reports
-  if: always()
-  uses: actions/upload-artifact@v2
+ if: always()
+ uses: actions/upload-artifact@v2
 ```
 
 ### Com Code Review (`/code-review`)
@@ -472,41 +472,41 @@ npx husky install
 
 ---
 
-## 🆘 Troubleshooting
+##  Troubleshooting
 
 ### Sequential Thinking não funciona
 ```
-✓ Verificar que npx está disponível: npx --version
-✓ Tentar executar manualmente: npx -y @modelcontextprotocol/server-sequential-thinking
-✓ Verificar logs de erro em claude_desktop_config.json
+ Verificar que npx está disponível: npx --version
+ Tentar executar manualmente: npx -y @modelcontextprotocol/server-sequential-thinking
+ Verificar logs de erro em claude_desktop_config.json
 ```
 
 ### Semgrep não detecta issues
 ```
-✓ Verificar que .semgrep.yml existe na raiz do projeto
-✓ Tentar scan manual: uvx semgrep --config=.semgrep.yml .
-✓ Verificar se rules estão válidas em YAML
-✓ Aumentar verbosidade: uvx semgrep --json --config=.semgrep.yml .
+ Verificar que .semgrep.yml existe na raiz do projeto
+ Tentar scan manual: uvx semgrep --config=.semgrep.yml .
+ Verificar se rules estão válidas em YAML
+ Aumentar verbosidade: uvx semgrep --json --config=.semgrep.yml .
 ```
 
 ### Playwright browsers não instalados
 ```
-✓ Instalar: npx playwright install
-✓ Verificar: npx playwright install --with-deps
-✓ Listar disponíveis: npx playwright install --list
+ Instalar: npx playwright install
+ Verificar: npx playwright install --with-deps
+ Listar disponíveis: npx playwright install --list
 ```
 
 ### Browser MCP não conecta
 ```
-✓ Verificar que extensão Chrome está instalada
-✓ Verificar que MCP server está rodando
-✓ Reiniciar Chrome completamente
-✓ Verificar logs em Chrome DevTools → Extensions
+ Verificar que extensão Chrome está instalada
+ Verificar que MCP server está rodando
+ Reiniciar Chrome completamente
+ Verificar logs em Chrome DevTools → Extensions
 ```
 
 ---
 
-## 📚 Recursos Adicionais
+## Recursos Adicionais
 
 ### Documentação Oficial
 - [Model Context Protocol Spec](https://modelcontextprotocol.io/)
@@ -529,7 +529,7 @@ npx husky install
 
 ---
 
-## 📝 Histórico de Mudanças
+## Histórico de Mudanças
 
 | Data | Versão | Mudanças |
 |------|--------|----------|
@@ -537,7 +537,7 @@ npx husky install
 
 ---
 
-## 👥 Contribuindo
+## Contribuindo
 
 Para adicionar novos MCPs ou melhorar integração existente:
 

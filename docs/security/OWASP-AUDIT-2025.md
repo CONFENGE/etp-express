@@ -1,21 +1,21 @@
 # OWASP Top 10 Security Audit - ETP Express
 
-**Data**: 2025-11-12  
-**Auditor**: Claude Code (Automated + Manual Code Review)  
-**Versão da Aplicação**: 1.0.0  
-**Branch**: feat/85-owasp-audit  
+**Data**: 2025-11-12 
+**Auditor**: Claude Code (Automated + Manual Code Review) 
+**Versão da Aplicação**: 1.0.0 
+**Branch**: feat/85-owasp-audit 
 
 ---
 
 ## Executive Summary
 
-**Total de Vulnerabilidades Identificadas**: 5  
-- 🔴 **Críticas**: 0  
-- 🟠 **Altas**: 2  
-- 🟡 **Médias**: 3  
-- 🟢 **Baixas**: 0  
+**Total de Vulnerabilidades Identificadas**: 5 
+- **Críticas**: 0 
+- **Altas**: 2 
+- **Médias**: 3 
+- **Baixas**: 0 
 
-**Risco Geral**: 🟡 **MÉDIO**
+**Risco Geral**: **MÉDIO**
 
 **Pontos Positivos**:
 - ✅ 0 vulnerabilidades no npm audit
@@ -29,24 +29,24 @@
 - ✅ Logging estruturado para eventos importantes
 
 **Áreas de Preocupação**:
-- ⚠️ Autorização inconsistente (findOne permite acesso cross-user)
-- ⚠️ JWT_SECRET fraco no .env.example (risco em produção)
-- ⚠️ Nenhuma sanitização contra prompt injection
-- ⚠️ Ausência de rate limiting específico no login (brute force)
-- ⚠️ Swagger exposto sem autenticação
+- ⚠ Autorização inconsistente (findOne permite acesso cross-user)
+- ⚠ JWT_SECRET fraco no .env.example (risco em produção)
+- ⚠ Nenhuma sanitização contra prompt injection
+- ⚠ Ausência de rate limiting específico no login (brute force)
+- ⚠ Swagger exposto sem autenticação
 
 ---
 
 ## Detalhamento por Categoria OWASP
 
-### A01: Broken Access Control ⚠️ WARN
+### A01: Broken Access Control ⚠ WARN
 
-**Status**: ⚠️ **PARCIALMENTE VULNERÁVEL**
+**Status**: ⚠ **PARCIALMENTE VULNERÁVEL**
 
 #### Vulnerabilidade #1: Inconsistência na Validação de Ownership
 
-**Severity**: 🟠 **HIGH**  
-**Arquivo**: `backend/src/modules/etps/etps.service.ts:183`  
+**Severity**: **HIGH** 
+**Arquivo**: `backend/src/modules/etps/etps.service.ts:183` 
 **CWE**: CWE-639 (Authorization Bypass)
 
 **Descrição**: O método `findOne` permite que qualquer usuário autenticado acesse ETPs de outros usuários.
@@ -54,8 +54,8 @@
 **Evidência**:
 ```typescript
 if (userId && etp.createdById !== userId) {
-  this.logger.warn(`User ${userId} accessed ETP ${id}`);
-  // Sem throw ForbiddenException!
+ this.logger.warn(`User ${userId} accessed ETP ${id}`);
+ // Sem throw ForbiddenException!
 }
 return etp;
 ```
@@ -64,18 +64,18 @@ return etp;
 
 **Recomendação**: Adicionar `throw new ForbiddenException()` após o log.
 
-**Prioridade**: 🔴 **ALTA**
+**Prioridade**: **ALTA**
 
 ---
 
-### A02: Cryptographic Failures ⚠️ WARN
+### A02: Cryptographic Failures ⚠ WARN
 
-**Status**: ⚠️ **PARCIALMENTE VULNERÁVEL**
+**Status**: ⚠ **PARCIALMENTE VULNERÁVEL**
 
 #### Vulnerabilidade #2: JWT_SECRET Fraco
 
-**Severity**: 🟠 **HIGH**  
-**Arquivo**: `backend/.env.example:26`  
+**Severity**: **HIGH** 
+**Arquivo**: `backend/.env.example:26` 
 **CWE**: CWE-798 (Hard-coded Credentials)
 
 **Descrição**: `.env.example` contém secret fraco que pode ser copiado para produção.
@@ -91,7 +91,7 @@ JWT_SECRET=your-super-secret-jwt-key-change-in-production
 2. Adicionar validação: `Joi.string().min(32).required()`
 3. Documentar no README
 
-**Prioridade**: 🔴 **ALTA**
+**Prioridade**: **ALTA**
 
 **Pontos Positivos**:
 - ✅ Bcrypt com 10 rounds
@@ -104,13 +104,13 @@ JWT_SECRET=your-super-secret-jwt-key-change-in-production
 
 **Status**: ✅ **PROTEGIDO**
 
-**SQL Injection**: ✅ TypeORM parameterized queries  
-**DTO Validation**: ✅ class-validator + whitelist  
+**SQL Injection**: ✅ TypeORM parameterized queries 
+**DTO Validation**: ✅ class-validator + whitelist 
 **Command Injection**: ✅ Nenhum uso de exec/eval
 
-#### ⚠️ Prompt Injection
+#### ⚠ Prompt Injection
 
-**Severity**: 🟡 **MEDIUM**  
+**Severity**: **MEDIUM** 
 **Arquivo**: `backend/src/modules/orchestrator/orchestrator.service.ts:136`
 
 **Descrição**: Inputs enviados para LLM sem sanitização.
@@ -126,7 +126,7 @@ let enrichedUserPrompt = request.userInput; // Sem sanitização!
 
 **Recomendação**: Adicionar sanitização de patterns maliciosos.
 
-**Prioridade**: 🟡 **MÉDIA**
+**Prioridade**: **MÉDIA**
 
 ---
 
@@ -134,25 +134,25 @@ let enrichedUserPrompt = request.userInput; // Sem sanitização!
 
 **Status**: ✅ **ADEQUADO**
 
-**Rate Limiting**: ✅ 100 req/60s (global)  
-**Business Logic**: ✅ Ownership validation  
-**Least Privilege**: ⚠️ Parcial (sem RBAC)
+**Rate Limiting**: ✅ 100 req/60s (global) 
+**Business Logic**: ✅ Ownership validation 
+**Least Privilege**: ⚠ Parcial (sem RBAC)
 
-#### ⚠️ Rate Limiting Não Específico no Login
+#### ⚠ Rate Limiting Não Específico no Login
 
-**Severity**: 🟡 **MEDIUM**
+**Severity**: **MEDIUM**
 
 **Descrição**: Login usa rate limit global (100 req/min). Permite 100 tentativas de senha.
 
 **Recomendação**: Adicionar `@Throttle({ limit: 5, ttl: 60000 })` no endpoint de login.
 
-**Prioridade**: 🟡 **MÉDIA**
+**Prioridade**: **MÉDIA**
 
 ---
 
-### A05: Security Misconfiguration ⚠️ WARN
+### A05: Security Misconfiguration ⚠ WARN
 
-**Status**: ⚠️ **PARCIALMENTE VULNERÁVEL**
+**Status**: ⚠ **PARCIALMENTE VULNERÁVEL**
 
 **Pontos Positivos**:
 - ✅ Helmet configurado
@@ -162,7 +162,7 @@ let enrichedUserPrompt = request.userInput; // Sem sanitização!
 
 #### Vulnerabilidade #3: Swagger Exposto
 
-**Severity**: 🟡 **MEDIUM**  
+**Severity**: **MEDIUM** 
 **Arquivo**: `backend/src/main.ts:87`
 
 **Descrição**: Swagger em `/api/docs` sem autenticação revela estrutura completa da API.
@@ -171,11 +171,11 @@ let enrichedUserPrompt = request.userInput; // Sem sanitização!
 
 ```typescript
 if (configService.get('NODE_ENV') !== 'production') {
-  SwaggerModule.setup('api/docs', app, document);
+ SwaggerModule.setup('api/docs', app, document);
 }
 ```
 
-**Prioridade**: 🟡 **MÉDIA**
+**Prioridade**: **MÉDIA**
 
 ---
 
@@ -217,9 +217,9 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 
 ---
 
-### A09: Security Logging and Monitoring Failures ⚠️ WARN
+### A09: Security Logging and Monitoring Failures ⚠ WARN
 
-**Status**: ⚠️ **PARCIALMENTE ADEQUADO**
+**Status**: ⚠ **PARCIALMENTE ADEQUADO**
 
 **Pontos Positivos**:
 - ✅ NestJS Logger
@@ -228,13 +228,13 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 
 #### Falta: Log de Login Falhado
 
-**Severity**: 🟡 **MEDIUM**
+**Severity**: **MEDIUM**
 
 **Descrição**: `validateUser` retorna `null` sem logar falhas.
 
 **Recomendação**: Adicionar `this.logger.warn('Failed login: ' + email)` antes de `return null`.
 
-**Prioridade**: 🟡 **MÉDIA**
+**Prioridade**: **MÉDIA**
 
 ---
 
@@ -249,22 +249,22 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 
 ## Priorização de Remediações
 
-### 🔴 ALTA PRIORIDADE (Issue #87)
+### ALTA PRIORIDADE (Issue #87)
 
 1. **[HIGH] Corrigir autorização no findOne**
-   - Effort: 15min | Impact: Previne vazamento cross-user
+ - Effort: 15min | Impact: Previne vazamento cross-user
 
 2. **[HIGH] Gerar JWT_SECRET forte e validar**
-   - Effort: 30min | Impact: Previne bypass de autenticação
+ - Effort: 30min | Impact: Previne bypass de autenticação
 
-### 🟡 MÉDIA PRIORIDADE (Issue #87)
+### MÉDIA PRIORIDADE (Issue #87)
 
 3. **[MEDIUM] Rate limiting no login** (Effort: 10min)
 4. **[MEDIUM] Desabilitar Swagger em prod** (Effort: 10min)
 5. **[MEDIUM] Sanitizar prompt injection** (Effort: 1h)
 6. **[MEDIUM] Logar login falhado** (Effort: 10min)
 
-### 🟢 BAIXA PRIORIDADE (Backlog M4/M5)
+### BAIXA PRIORIDADE (Backlog M4/M5)
 
 7. **[LOW] Implementar RBAC** (Effort: 4h)
 8. **[LOW] Validação de senha forte** (Effort: 30min)
@@ -274,10 +274,10 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 
 ## Métricas da Auditoria
 
-**Arquivos Auditados**: 23  
-**Linhas de Código**: ~15,000  
-**Dependências**: 1,001  
-**Vulnerabilidades**: 5 (0 críticas, 2 altas, 3 médias)  
+**Arquivos Auditados**: 23 
+**Linhas de Código**: ~15,000 
+**Dependências**: 1,001 
+**Vulnerabilidades**: 5 (0 críticas, 2 altas, 3 médias) 
 **Tempo**: ~4h
 
 ---
@@ -290,7 +290,7 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 
 ### Vulnerabilidades Corrigidas
 
-#### 1. 🟠 HIGH - Broken Access Control (A01)
+#### 1. HIGH - Broken Access Control (A01)
 
 **Vulnerabilidade**: Cross-user data access no `EtpsService.findOne()`
 
@@ -298,12 +298,12 @@ npm audit: 0 vulnerabilities (total: 1001 dependencies)
 ```typescript
 // backend/src/modules/etps/etps.service.ts:182-190
 if (userId && etp.createdById !== userId) {
-  this.logger.warn(
-    `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
-  );
-  throw new ForbiddenException(
-    'Você não tem permissão para acessar este ETP',
-  );
+ this.logger.warn(
+ `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`,
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar este ETP',
+ );
 }
 ```
 
@@ -312,7 +312,7 @@ if (userId && etp.createdById !== userId) {
 
 ---
 
-#### 2. 🟠 HIGH - Cryptographic Failures (A02)
+#### 2. HIGH - Cryptographic Failures (A02)
 
 **Vulnerabilidade**: JWT_SECRET fraco em `.env.example`
 
@@ -328,12 +328,12 @@ JWT_SECRET=CHANGE_ME_USE_openssl_rand_hex_32_TO_GENERATE_SECRET
 b) **Validação Joi** adicionada no `app.module.ts`:
 ```typescript
 JWT_SECRET: Joi.string()
-  .min(32)
-  .required()
-  .messages({
-    'string.min':
-      'JWT_SECRET must be at least 32 characters for security. Generate with: openssl rand -hex 32',
-  }),
+ .min(32)
+ .required()
+ .messages({
+ 'string.min':
+ 'JWT_SECRET must be at least 32 characters for security. Generate with: openssl rand -hex 32',
+ }),
 ```
 
 **Resultado**: ✅ Aplicação agora **recusa iniciar** se JWT_SECRET < 32 caracteres
@@ -341,7 +341,7 @@ JWT_SECRET: Joi.string()
 
 ---
 
-#### 3. 🟡 MEDIUM - Injection (A03) - Prompt Injection
+#### 3. MEDIUM - Injection (A03) - Prompt Injection
 
 **Vulnerabilidade**: Inputs para LLM sem sanitização
 
@@ -350,11 +350,11 @@ JWT_SECRET: Joi.string()
 a) **Função de sanitização** em `OrchestratorService`:
 ```typescript
 private sanitizeUserInput(input: string): string {
-  // Detecta patterns maliciosos:
-  // - "ignore previous instructions"
-  // - "system:", "assistant:", etc.
-  // - XSS patterns
-  // Remove patterns detectados e loga tentativas
+ // Detecta patterns maliciosos:
+ // - "ignore previous instructions"
+ // - "system:", "assistant:", etc.
+ // - XSS patterns
+ // Remove patterns detectados e loga tentativas
 }
 ```
 
@@ -362,9 +362,9 @@ b) **Aplicação automática** no método `generateSection()`:
 ```typescript
 const sanitizedInput = this.sanitizeUserInput(request.userInput);
 if (sanitizedInput !== request.userInput) {
-  warnings.push(
-    'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
-  );
+ warnings.push(
+ 'Input foi sanitizado para prevenir prompt injection. Conteúdo malicioso foi removido.',
+ );
 }
 ```
 
@@ -373,7 +373,7 @@ if (sanitizedInput !== request.userInput) {
 
 ---
 
-#### 4. 🟡 MEDIUM - Insecure Design (A04) - Rate Limiting Login
+#### 4. MEDIUM - Insecure Design (A04) - Rate Limiting Login
 
 **Vulnerabilidade**: Login permitia 100 tentativas/min (global rate limit)
 
@@ -389,8 +389,8 @@ async login(...) { ... }
 b) **Documentação Swagger** atualizada:
 ```typescript
 @ApiResponse({
-  status: 429,
-  description: 'Muitas tentativas de login. Tente novamente em 1 minuto.',
+ status: 429,
+ description: 'Muitas tentativas de login. Tente novamente em 1 minuto.',
 })
 ```
 
@@ -399,7 +399,7 @@ b) **Documentação Swagger** atualizada:
 
 ---
 
-#### 5. 🟡 MEDIUM - Security Misconfiguration (A05) - Swagger Exposto
+#### 5. MEDIUM - Security Misconfiguration (A05) - Swagger Exposto
 
 **Vulnerabilidade**: Swagger em `/api/docs` sem autenticação revelando estrutura da API
 
@@ -409,11 +409,11 @@ a) **Condicional por NODE_ENV** em `main.ts`:
 ```typescript
 const nodeEnv = configService.get('NODE_ENV');
 if (nodeEnv !== 'production') {
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {...});
-  console.log('📚 Swagger documentation available at ...');
+ const document = SwaggerModule.createDocument(app, config);
+ SwaggerModule.setup('api/docs', app, document, {...});
+ console.log(' Swagger documentation available at ...');
 } else {
-  console.log('🔒 Swagger documentation disabled in production for security');
+ console.log(' Swagger documentation disabled in production for security');
 }
 ```
 
@@ -426,11 +426,11 @@ if (nodeEnv !== 'production') {
 
 | # | Vulnerabilidade | Severidade | Status | Tempo |
 |---|-----------------|------------|--------|-------|
-| 1 | Broken Access Control | 🟠 HIGH | ✅ CORRIGIDO | 30min |
-| 2 | JWT_SECRET validation | 🟠 HIGH | ✅ CORRIGIDO | 45min |
-| 3 | Prompt Injection | 🟡 MEDIUM | ✅ CORRIGIDO | 2h |
-| 4 | Rate Limiting Login | 🟡 MEDIUM | ✅ CORRIGIDO | 30min |
-| 5 | Swagger Exposto | 🟡 MEDIUM | ✅ CORRIGIDO | 30min |
+| 1 | Broken Access Control | HIGH | ✅ CORRIGIDO | 30min |
+| 2 | JWT_SECRET validation | HIGH | ✅ CORRIGIDO | 45min |
+| 3 | Prompt Injection | MEDIUM | ✅ CORRIGIDO | 2h |
+| 4 | Rate Limiting Login | MEDIUM | ✅ CORRIGIDO | 30min |
+| 5 | Swagger Exposto | MEDIUM | ✅ CORRIGIDO | 30min |
 
 **Total**: 4h30min
 **Testes**: ✅ 661/661 passando (100%)
@@ -440,7 +440,7 @@ if (nodeEnv !== 'production') {
 
 ## Conclusão
 
-**Nível de Segurança (Atualizado)**: 🟢 **BOM/EXCELENTE**
+**Nível de Segurança (Atualizado)**: **BOM/EXCELENTE**
 
 O ETP Express possui base sólida de segurança (NestJS + TypeORM + bcrypt + JWT + Helmet). Todas as vulnerabilidades HIGH e MEDIUM identificadas na auditoria foram corrigidas e validadas.
 
@@ -450,13 +450,13 @@ O ETP Express possui base sólida de segurança (NestJS + TypeORM + bcrypt + JWT
 
 **Próximos Passos**:
 1. ✅ Criar issue #87 com remediações detalhadas
-2. ⏳ Implementar correções (prioridade ALTA → MÉDIA → BAIXA)
-3. ⏳ Re-executar testes de penetração
-4. ⏳ Configurar Dependabot
-5. ⏳ Auditorias trimestrais
+2. Implementar correções (prioridade ALTA → MÉDIA → BAIXA)
+3. Re-executar testes de penetração
+4. Configurar Dependabot
+5. Auditorias trimestrais
 
 ---
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+ Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>

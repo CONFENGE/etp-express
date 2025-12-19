@@ -46,9 +46,9 @@ interface UnsavedChangesDialogProps {
  * @example
  * ```tsx
  * <UnsavedChangesDialog
- *   open={isBlocking}
- *   onConfirm={proceed}
- *   onCancel={reset}
+ * open={isBlocking}
+ * onConfirm={proceed}
+ * onCancel={reset}
  * />
  * ```
  */

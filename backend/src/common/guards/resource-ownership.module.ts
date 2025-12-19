@@ -18,12 +18,12 @@ import { EtpSection } from '../../entities/etp-section.entity';
  * @example
  * ```typescript
  * @Module({
- *   imports: [
- *     ResourceOwnershipModule, // Enable @RequireOwnership() decorator
- *     TypeOrmModule.forFeature([MyEntity]),
- *   ],
- *   controllers: [MyController],
- *   providers: [MyService],
+ * imports: [
+ * ResourceOwnershipModule, // Enable @RequireOwnership() decorator
+ * TypeOrmModule.forFeature([MyEntity]),
+ * ],
+ * controllers: [MyController],
+ * providers: [MyService],
  * })
  * export class MyModule {}
  * ```

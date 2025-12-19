@@ -19,7 +19,7 @@ interface UseOnlineStatusReturn extends OnlineStatusState {
  * const { isOnline, wasOffline } = useOnlineStatus();
  *
  * if (!isOnline) {
- *   toast.error('No connection');
+ * toast.error('No connection');
  * }
  */
 export function useOnlineStatus(): UseOnlineStatusReturn {

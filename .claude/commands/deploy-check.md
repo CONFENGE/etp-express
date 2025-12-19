@@ -122,46 +122,46 @@ Verificar:
 
 ### Build Status
 
-| Componente     | Status | Detalhes   |
+| Componente | Status | Detalhes |
 | -------------- | ------ | ---------- |
-| Backend Build  | ✅/❌  | <detalhes> |
-| Frontend Build | ✅/❌  | <detalhes> |
+| Backend Build | ✅/❌ | <detalhes> |
+| Frontend Build | ✅/❌ | <detalhes> |
 
 ### Test Status
 
 | Componente | Passed | Failed | Skipped |
 | ---------- | ------ | ------ | ------- |
-| Backend    | X      | Y      | Z       |
-| Frontend   | X      | Y      | Z       |
+| Backend | X | Y | Z |
+| Frontend | X | Y | Z |
 
 ### Code Quality
 
-| Check      | Backend | Frontend |
+| Check | Backend | Frontend |
 | ---------- | ------- | -------- |
-| TypeScript | ✅/❌   | ✅/❌    |
-| ESLint     | ✅/❌   | ✅/❌    |
+| TypeScript | ✅/❌ | ✅/❌ |
+| ESLint | ✅/❌ | ✅/❌ |
 
 ### Environment Variables
 
-| Variable       | Status        |
+| Variable | Status |
 | -------------- | ------------- |
-| DATABASE_URL   | ✅ Configured |
-| JWT_SECRET     | ✅ Configured |
-| OPENAI_API_KEY | ⚠️ Missing    |
+| DATABASE_URL | ✅ Configured |
+| JWT_SECRET | ✅ Configured |
+| OPENAI_API_KEY | ⚠ Missing |
 
 ### Security
 
-| Audit    | Critico | Alto | Medio |
+| Audit | Critico | Alto | Medio |
 | -------- | ------- | ---- | ----- |
-| Backend  | 0       | X    | Y     |
-| Frontend | 0       | X    | Y     |
+| Backend | 0 | X | Y |
+| Frontend | 0 | X | Y |
 
 ### Railway Config
 
-| Setting        | Value       | Status |
+| Setting | Value | Status |
 | -------------- | ----------- | ------ |
-| Health Check   | /api/health | ✅     |
-| Restart Policy | always      | ✅     |
+| Health Check | /api/health | ✅ |
+| Restart Policy | always | ✅ |
 
 ---
 
@@ -191,9 +191,9 @@ Deploy e **BLOQUEADO** se:
 
 Deploy pode prosseguir com **WARNING** se:
 
-- ⚠️ Warnings de lint (nao errors)
-- ⚠️ Vulnerabilidades medias/baixas
-- ⚠️ Coverage abaixo do target
+- ⚠ Warnings de lint (nao errors)
+- ⚠ Vulnerabilidades medias/baixas
+- ⚠ Coverage abaixo do target
 
 ---
 
@@ -243,7 +243,7 @@ Deploy pode prosseguir com **WARNING** se:
 | Backend | 0 | 0 | 2 |
 | Frontend | 0 | 1 | 3 |
 
-⚠️ 1 vulnerabilidade alta no frontend (lodash) - recomendado corrigir
+⚠ 1 vulnerabilidade alta no frontend (lodash) - recomendado corrigir
 
 ---
 

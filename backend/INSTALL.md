@@ -6,8 +6,8 @@
 - PostgreSQL 14+
 - npm ou yarn
 - Chaves de API:
-  - OpenAI API Key
-  - Exa API Key
+ - OpenAI API Key
+ - Exa API Key
 
 ## Passo a Passo
 
@@ -41,10 +41,10 @@ CREATE DATABASE etp_express;
 
 ```bash
 docker run --name etp-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=etp_express \
-  -p 5432:5432 \
-  -d postgres:14
+ -e POSTGRES_PASSWORD=postgres \
+ -e POSTGRES_DB=etp_express \
+ -p 5432:5432 \
+ -d postgres:14
 ```
 
 ### 4. Configurar Variáveis de Ambiente
@@ -142,25 +142,25 @@ Abra: `http://localhost:3001/api/docs`
 
 ```bash
 curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@etp.gov.br",
-    "password": "Admin123!",
-    "name": "Administrador",
-    "orgao": "Teste",
-    "cargo": "Admin"
-  }'
+ -H "Content-Type: application/json" \
+ -d '{
+ "email": "admin@etp.gov.br",
+ "password": "Admin123!",
+ "name": "Administrador",
+ "orgao": "Teste",
+ "cargo": "Admin"
+ }'
 ```
 
 ### 4. Fazer Login
 
 ```bash
 curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@etp.gov.br",
-    "password": "Admin123!"
-  }'
+ -H "Content-Type: application/json" \
+ -d '{
+ "email": "admin@etp.gov.br",
+ "password": "Admin123!"
+ }'
 ```
 
 Copie o `accessToken` da resposta.
@@ -169,15 +169,15 @@ Copie o `accessToken` da resposta.
 
 ```bash
 curl -X POST http://localhost:3001/api/etps \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{
-    "title": "ETP Teste",
-    "objeto": "Contratação de serviços de teste",
-    "metadata": {
-      "orgao": "Ministério do Teste"
-    }
-  }'
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+ -d '{
+ "title": "ETP Teste",
+ "objeto": "Contratação de serviços de teste",
+ "metadata": {
+ "orgao": "Ministério do Teste"
+ }
+ }'
 ```
 
 ## Problemas Comuns
@@ -199,7 +199,7 @@ cat .env | grep DATABASE_URL
 ```bash
 # Testar API key
 curl https://api.openai.com/v1/models \
-  -H "Authorization: Bearer $OPENAI_API_KEY"
+ -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
 ### Erro: "Port 3001 already in use"
@@ -225,10 +225,10 @@ lsof -ti:3001 | xargs kill -9
 
 # Linux: Instalar dependências
 sudo apt-get install -y \
-  libnss3 \
-  libatk-bridge2.0-0 \
-  libx11-xcb1 \
-  libxcomposite1
+ libnss3 \
+ libatk-bridge2.0-0 \
+ libx11-xcb1 \
+ libxcomposite1
 
 # Mac: Instalar Chrome
 brew install --cask google-chrome
@@ -259,26 +259,26 @@ Após rodar migrations/sync, você terá estas tabelas:
 
 ```bash
 # Desenvolvimento
-npm run start:dev          # Servidor com hot reload
-npm run start:debug        # Servidor com debugger
+npm run start:dev # Servidor com hot reload
+npm run start:debug # Servidor com debugger
 
 # Build
-npm run build              # Compilar TypeScript
+npm run build # Compilar TypeScript
 
 # Testes
-npm run test               # Unit tests
-npm run test:e2e           # End-to-end tests
-npm run test:cov           # Coverage
+npm run test # Unit tests
+npm run test:e2e # End-to-end tests
+npm run test:cov # Coverage
 
 # Linting
-npm run lint               # ESLint
-npm run format             # Prettier
+npm run lint # ESLint
+npm run format # Prettier
 
 # Database
-npm run typeorm            # CLI do TypeORM
+npm run typeorm # CLI do TypeORM
 npm run migration:generate # Gerar migration
-npm run migration:run      # Rodar migrations
-npm run migration:revert   # Reverter última migration
+npm run migration:run # Rodar migrations
+npm run migration:revert # Reverter última migration
 ```
 
 ## Logs
@@ -286,20 +286,20 @@ npm run migration:revert   # Reverter última migration
 Os logs aparecem no console com formato colorido:
 
 ```
-[Nest] 12345  - 11/05/2024, 3:00:00 PM     LOG [NestApplication] Nest application successfully started
-[Nest] 12345  - 11/05/2024, 3:00:00 PM     LOG [BootstrapService]
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                             ║
-    ║   🚀 ETP EXPRESS BACKEND                                   ║
-    ║                                                             ║
-    ║   ⚠️  Sistema assistivo - Não substitui responsabilidade  ║
-    ║      administrativa. Validação humana obrigatória.         ║
-    ║                                                             ║
-    ║   📡 Server: http://localhost:3001                         ║
-    ║   📚 Docs:   http://localhost:3001/api/docs                ║
-    ║   🌍 Env:    development                                   ║
-    ║                                                             ║
-    ╚═══════════════════════════════════════════════════════════╝
+[Nest] 12345 - 11/05/2024, 3:00:00 PM LOG [NestApplication] Nest application successfully started
+[Nest] 12345 - 11/05/2024, 3:00:00 PM LOG [BootstrapService]
+ ╔═══════════════════════════════════════════════════════════╗
+ ║ ║
+ ║ ETP EXPRESS BACKEND ║
+ ║ ║
+ ║ ⚠ Sistema assistivo - Não substitui responsabilidade ║
+ ║ administrativa. Validação humana obrigatória. ║
+ ║ ║
+ ║ Server: http://localhost:3001 ║
+ ║ Docs: http://localhost:3001/api/docs ║
+ ║ Env: development ║
+ ║ ║
+ ╚═══════════════════════════════════════════════════════════╝
 ```
 
 ## Deploy em Produção

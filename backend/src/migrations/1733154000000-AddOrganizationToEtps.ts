@@ -26,9 +26,9 @@ export class AddOrganizationToEtps1733154000000 implements MigrationInterface {
     // Step 1: Add organizationId column (UUID, NOT NULL) - only if not exists
     if (!hasOrganizationIdColumn) {
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        ADD COLUMN "organizationId" UUID NOT NULL
-      `);
+ ALTER TABLE "etps"
+ ADD COLUMN "organizationId" UUID NOT NULL
+ `);
     }
 
     // Step 2: Create foreign key to organizations table (ON DELETE RESTRICT) - idempotent
@@ -38,12 +38,12 @@ export class AddOrganizationToEtps1733154000000 implements MigrationInterface {
 
     if (!hasForeignKey) {
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        ADD CONSTRAINT "FK_etps_organization"
-        FOREIGN KEY ("organizationId")
-        REFERENCES "organizations"("id")
-        ON DELETE RESTRICT
-      `);
+ ALTER TABLE "etps"
+ ADD CONSTRAINT "FK_etps_organization"
+ FOREIGN KEY ("organizationId")
+ REFERENCES "organizations"("id")
+ ON DELETE RESTRICT
+ `);
     }
 
     // Step 3: Create compound index (organizationId, createdAt) - idempotent
@@ -56,19 +56,19 @@ export class AddOrganizationToEtps1733154000000 implements MigrationInterface {
 
     if (!hasIndex) {
       await queryRunner.query(`
-        CREATE INDEX "IDX_etps_organization_createdAt"
-        ON "etps" ("organizationId", "createdAt")
-      `);
+ CREATE INDEX "IDX_etps_organization_createdAt"
+ ON "etps" ("organizationId", "createdAt")
+ `);
     }
 
     // Step 4: Remove metadata.orgao field using JSONB operations (always safe - idempotent)
     // This is a data transformation - removes 'orgao' key from JSONB metadata column
     await queryRunner.query(`
-      UPDATE "etps"
-      SET "metadata" = "metadata" - 'orgao'
-      WHERE "metadata" IS NOT NULL
-      AND "metadata" ? 'orgao'
-    `);
+ UPDATE "etps"
+ SET "metadata" = "metadata" - 'orgao'
+ WHERE "metadata" IS NOT NULL
+ AND "metadata" ? 'orgao'
+ `);
 
     // Note: No data migration needed because:
     // 1. Development environment: Can safely drop existing test data
@@ -79,20 +79,20 @@ export class AddOrganizationToEtps1733154000000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Rollback Step 3: Drop compound index
     await queryRunner.query(`
-      DROP INDEX IF EXISTS "IDX_etps_organization_createdAt"
-    `);
+ DROP INDEX IF EXISTS "IDX_etps_organization_createdAt"
+ `);
 
     // Rollback Step 2: Drop foreign key constraint
     await queryRunner.query(`
-      ALTER TABLE "etps"
-      DROP CONSTRAINT IF EXISTS "FK_etps_organization"
-    `);
+ ALTER TABLE "etps"
+ DROP CONSTRAINT IF EXISTS "FK_etps_organization"
+ `);
 
     // Rollback Step 1: Drop organizationId column
     await queryRunner.query(`
-      ALTER TABLE "etps"
-      DROP COLUMN IF EXISTS "organizationId"
-    `);
+ ALTER TABLE "etps"
+ DROP COLUMN IF EXISTS "organizationId"
+ `);
 
     // Note: Cannot rollback metadata.orgao removal without data backup
     // Rollback is destructive - organizationId data will be lost

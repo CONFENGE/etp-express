@@ -14,7 +14,7 @@ export const ROLES_KEY = 'roles';
  * @Roles(UserRole.ADMIN)
  * @Post('organizations')
  * async createOrganization() {
- *   // Only accessible by ADMIN users
+ * // Only accessible by ADMIN users
  * }
  * ```
  *
@@ -23,7 +23,7 @@ export const ROLES_KEY = 'roles';
  * @Roles(UserRole.ADMIN, UserRole.USER)
  * @Get('dashboard')
  * async getDashboard() {
- *   // Accessible by ADMIN or USER (but not VIEWER)
+ * // Accessible by ADMIN or USER (but not VIEWER)
  * }
  * ```
  */

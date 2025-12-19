@@ -161,9 +161,9 @@ class RateLimiter {
  * @example
  * ```typescript
  * const client = new GovApiClient(configService, {
- *   baseUrl: 'https://pncp.gov.br/api/consulta',
- *   source: 'pncp',
- *   timeout: 30000,
+ * baseUrl: 'https://pncp.gov.br/api/consulta',
+ * source: 'pncp',
+ * timeout: 30000,
  * });
  *
  * const response = await client.get('/v1/contratacoes', { params: { q: 'software' } });

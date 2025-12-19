@@ -268,7 +268,7 @@ describe('Sanitizer Utils', () => {
     });
 
     it('should normalize whitespace', () => {
-      const input = '  Multiple   spaces   and   newlines\n\n\n  ';
+      const input = ' Multiple spaces and newlines\n\n\n ';
       const result = sanitizeInput(input);
       expect(result.sanitized).toBe('Multiple spaces and newlines');
       expect(result.wasModified).toBe(true);

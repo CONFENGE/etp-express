@@ -16,9 +16,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
  *
  * @example
  * {
- *   institutionName: 'Prefeitura Municipal de Lages',
- *   maxUsers: 15,
- *   isActive: true
+ * institutionName: 'Prefeitura Municipal de Lages',
+ * maxUsers: 15,
+ * isActive: true
  * }
  */
 export class UpdateDomainDto {

@@ -41,8 +41,8 @@ The data subject has the right to access their personal data being processed.
 @Get('me')
 @ApiOperation({ summary: 'Obter perfil do usuario atual' })
 async getProfile(@CurrentUser('id') userId: string) {
-  const user = await this.usersService.findOne(userId);
-  return { data: user, disclaimer: DISCLAIMER };
+ const user = await this.usersService.findOne(userId);
+ return { data: user, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -92,8 +92,8 @@ The data subject has the right to correct incomplete, inaccurate, or outdated da
 @Patch(':id')
 @ApiOperation({ summary: 'Atualizar usuario' })
 async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  const user = await this.usersService.update(id, updateUserDto);
-  return { data: user, disclaimer: DISCLAIMER };
+ const user = await this.usersService.update(id, updateUserDto);
+ return { data: user, disclaimer: DISCLAIMER };
 }
 ```
 
@@ -137,8 +137,8 @@ The data subject has the right to request deletion of their personal data.
 @Delete(':id')
 @ApiOperation({ summary: 'Deletar usuario (admin only)' })
 async remove(@Param('id') id: string) {
-  await this.usersService.remove(id);
-  return { message: 'Usuario deletado com sucesso', disclaimer: DISCLAIMER };
+ await this.usersService.remove(id);
+ return { message: 'Usuario deletado com sucesso', disclaimer: DISCLAIMER };
 }
 ```
 
@@ -196,12 +196,12 @@ The data subject has the right to receive their data in a structured, commonly u
 @Get('etp/:id/json')
 @ApiOperation({ summary: 'Exportar ETP para JSON' })
 async exportJSON(@Param('id') id: string, @Res() res: Response) {
-  const jsonData = await this.exportService.exportToJSON(id);
-  res.set({
-    'Content-Type': 'application/json',
-    'Content-Disposition': `attachment; filename="ETP-${id}.json"`,
-  });
-  res.json(jsonData);
+ const jsonData = await this.exportService.exportToJSON(id);
+ res.set({
+ 'Content-Type': 'application/json',
+ 'Content-Disposition': `attachment; filename="ETP-${id}.json"`,
+ });
+ res.json(jsonData);
 }
 ```
 
@@ -265,9 +265,9 @@ The system currently:
 
 ### Remediation Required
 - [ ] Add consent fields to User entity:
-  - `consentedAt: Date`
-  - `consentVersion: string`
-  - `marketingConsent: boolean`
+ - `consentedAt: Date`
+ - `consentVersion: string`
+ - `marketingConsent: boolean`
 - [ ] Create consent recording during registration
 - [ ] Create `POST /users/me/consent/revoke` endpoint
 - [ ] Define post-revocation behavior (account deactivation vs deletion)
@@ -292,19 +292,19 @@ The system currently:
 ### Recommended Implementation Order
 
 1. **Phase 1: Critical (Week 1)**
-   - Add consent tracking to User entity
-   - Implement cascade delete or anonymization for ETPs/AuditLogs
-   - Create user data export endpoint
+ - Add consent tracking to User entity
+ - Implement cascade delete or anonymization for ETPs/AuditLogs
+ - Create user data export endpoint
 
 2. **Phase 2: High Priority (Week 2)**
-   - Add self-service account deletion
-   - Add email/password update capabilities
-   - Create consent revocation endpoint
+ - Add self-service account deletion
+ - Add email/password update capabilities
+ - Create consent revocation endpoint
 
 3. **Phase 3: Medium Priority (Week 3)**
-   - Add audit log access for users
-   - Implement bulk export features
-   - Add CSV export format
+ - Add audit log access for users
+ - Implement bulk export features
+ - Add CSV export format
 
 ---
 
@@ -343,29 +343,29 @@ etps: Etp[];
 ### Test Cases for LGPD Compliance
 
 1. **Access Tests**
-   - User can retrieve their complete profile
-   - User can export all their data
-   - Sensitive fields are properly excluded
+ - User can retrieve their complete profile
+ - User can export all their data
+ - Sensitive fields are properly excluded
 
 2. **Correction Tests**
-   - User can update all editable fields
-   - Email uniqueness is validated
-   - Password change requires current password
+ - User can update all editable fields
+ - Email uniqueness is validated
+ - Password change requires current password
 
 3. **Deletion Tests**
-   - User deletion cascades or anonymizes properly
-   - No orphaned records remain
-   - Confirmation is required
+ - User deletion cascades or anonymizes properly
+ - No orphaned records remain
+ - Confirmation is required
 
 4. **Portability Tests**
-   - Export includes all user data
-   - Format is machine-readable (JSON/CSV)
-   - Export is downloadable
+ - Export includes all user data
+ - Format is machine-readable (JSON/CSV)
+ - Export is downloadable
 
 5. **Consent Tests**
-   - Consent is recorded at registration
-   - Revocation deactivates account
-   - Re-acceptance flow works
+ - Consent is recorded at registration
+ - Revocation deactivates account
+ - Re-acceptance flow works
 
 ---
 

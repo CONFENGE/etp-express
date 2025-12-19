@@ -51,10 +51,10 @@ const sizeClasses = {
  *
  * @example
  * <EmptyState
- *   type="documents"
- *   title="Nenhum ETP encontrado"
- *   description="Comece criando seu primeiro ETP"
- *   action={{ label: "Criar ETP", onClick: () => navigate('/etps/new'), icon: PlusCircle }}
+ * type="documents"
+ * title="Nenhum ETP encontrado"
+ * description="Comece criando seu primeiro ETP"
+ * action={{ label: "Criar ETP", onClick: () => navigate('/etps/new'), icon: PlusCircle }}
  * />
  */
 export function EmptyState({

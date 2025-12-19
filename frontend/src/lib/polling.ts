@@ -70,7 +70,7 @@ export class JobFailedError extends Error {
  * ```ts
  * const controller = new AbortController();
  * const result = await pollJobStatus(jobId, (progress) => {
- *   console.log(`Progress: ${progress}%`);
+ * console.log(`Progress: ${progress}%`);
  * }, { signal: controller.signal });
  *
  * console.log(result.section); // The generated section

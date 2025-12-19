@@ -42,10 +42,10 @@ interface UseUnsavedChangesWarningReturn {
  *
  * // In your JSX:
  * {isBlocking && (
- *   <ConfirmDialog
- *     onConfirm={proceed}
- *     onCancel={reset}
- *   />
+ * <ConfirmDialog
+ * onConfirm={proceed}
+ * onCancel={reset}
+ * />
  * )}
  * ```
  */

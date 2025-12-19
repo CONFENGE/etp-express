@@ -33,18 +33,18 @@ import { GOV_DATA_SYNC_QUEUE } from './gov-data-sync.types';
  * import { GovDataSyncModule } from './modules/gov-data-sync/gov-data-sync.module';
  *
  * @Module({
- *   imports: [GovDataSyncModule],
+ * imports: [GovDataSyncModule],
  * })
  * export class AppModule {}
  *
  * // Manually trigger sync
  * @Injectable()
  * export class MyService {
- *   constructor(private readonly syncService: GovDataSyncService) {}
+ * constructor(private readonly syncService: GovDataSyncService) {}
  *
- *   async triggerSync() {
- *     await this.syncService.triggerSinapiSync('DF', '2024-12', true);
- *   }
+ * async triggerSync() {
+ * await this.syncService.triggerSinapiSync('DF', '2024-12', true);
+ * }
  * }
  * ```
  */

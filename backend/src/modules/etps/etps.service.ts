@@ -77,15 +77,15 @@ export class EtpsService {
    * @example
    * ```ts
    * const etp = await etpsService.create(
-   *   {
-   *     objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
-   *     metadata: {
-   *       unidadeRequisitante: 'Secretaria de Tecnologia',
-   *       fiscalYear: 2025
-   *     }
-   *   },
-   *   'user-uuid-123',
-   *   'org-uuid-456'
+   * {
+   * objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
+   * metadata: {
+   * unidadeRequisitante: 'Secretaria de Tecnologia',
+   * fiscalYear: 2025
+   * }
+   * },
+   * 'user-uuid-123',
+   * 'org-uuid-456'
    * );
    *
    * console.log(etp.status); // 'draft'
@@ -137,9 +137,9 @@ export class EtpsService {
    * @example
    * ```ts
    * const result = await etpsService.findAll(
-   *   { page: 1, limit: 10 },
-   *   'org-uuid-456',
-   *   'user-uuid-123'
+   * { page: 1, limit: 10 },
+   * 'org-uuid-456',
+   * 'user-uuid-123'
    * );
    *
    * console.log(result.data.length); // Up to 10 ETPs

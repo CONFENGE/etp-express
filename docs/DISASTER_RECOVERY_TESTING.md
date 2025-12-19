@@ -63,7 +63,7 @@ O script `test-restore.sh` valida:
 - ✅ Scripts `test-restore.sh` e `validate-backup.sh` criados
 - ✅ Workflow CI `backup-validation.yml` configurado
 - ✅ Documentação de disaster recovery atualizada
-- ⏸️ Teste de restore real aguardando database de produção com dados
+- Teste de restore real aguardando database de produção com dados
 
 ---
 
@@ -104,20 +104,20 @@ docker rm test-postgres
 ### Output Esperado
 
 ```
-🔄 Step 1: Gerando backup de produção...
+ Step 1: Gerando backup de produção...
 ✅ Backup criado: backups/etp_express_YYYYMMDD_HHMMSS.sql.gz
-📁 Backup: backups/etp_express_YYYYMMDD_HHMMSS.sql.gz
+ Backup: backups/etp_express_YYYYMMDD_HHMMSS.sql.gz
 
-🔄 Step 2: Restaurando em database de teste...
+ Step 2: Restaurando em database de teste...
 (SQL output)
 
-🔄 Step 3: Validando integridade de dados...
+ Step 3: Validando integridade de dados...
 
-📊 Resultados da Validação:
+ Resultados da Validação:
 ============================
-ETPs:     Prod=XX | Test=XX
+ETPs: Prod=XX | Test=XX
 Sections: Prod=YY | Test=YY
-Users:    Prod=ZZ | Test=ZZ
+Users: Prod=ZZ | Test=ZZ
 Checksum ETPs: Prod=abc123 | Test=abc123
 
 ✅ RESTORE VALIDADO COM SUCESSO
@@ -133,9 +133,9 @@ Checksum ETPs: Prod=abc123 | Test=abc123
 - **Frequência:** Toda segunda-feira 9h UTC
 - **Trigger manual:** Via GitHub Actions `workflow_dispatch`
 - **Validações:**
-  - Backup existe e tem < 24h
-  - Arquivo `.sql.gz` não está corrompido (gunzip -t)
-  - Tamanho do backup registrado
+ - Backup existe e tem < 24h
+ - Arquivo `.sql.gz` não está corrompido (gunzip -t)
+ - Tamanho do backup registrado
 
 ### Como Executar Manualmente
 

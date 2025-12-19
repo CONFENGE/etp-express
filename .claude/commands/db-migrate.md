@@ -11,14 +11,14 @@ Voce e responsavel por gerenciar migrations do banco de dados PostgreSQL usando 
 
 ## Comandos Disponiveis
 
-| Comando    | Descricao                                        |
+| Comando | Descricao |
 | ---------- | ------------------------------------------------ |
 | `generate` | Gerar migration baseada em mudancas nas entities |
-| `create`   | Criar migration vazia                            |
-| `run`      | Executar migrations pendentes                    |
-| `revert`   | Reverter ultima migration                        |
-| `show`     | Mostrar migrations executadas                    |
-| `sync`     | Sincronizar schema (APENAS DEV!)                 |
+| `create` | Criar migration vazia |
+| `run` | Executar migrations pendentes |
+| `revert` | Reverter ultima migration |
+| `show` | Mostrar migrations executadas |
+| `sync` | Sincronizar schema (APENAS DEV!) |
 
 ---
 
@@ -87,22 +87,22 @@ Prefixos recomendados:
 import { MigrationInterface, QueryRunner, Table, TableColumn } from 'typeorm';
 
 export class NomeDaMigration1705312800000 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    // Mudancas para aplicar
-    await queryRunner.addColumn(
-      'users',
-      new TableColumn({
-        name: 'role',
-        type: 'varchar',
-        default: "'user'",
-      }),
-    );
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ // Mudancas para aplicar
+ await queryRunner.addColumn(
+ 'users',
+ new TableColumn({
+ name: 'role',
+ type: 'varchar',
+ default: "'user'",
+ }),
+ );
+ }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    // Reverter mudancas
-    await queryRunner.dropColumn('users', 'role');
-  }
+ public async down(queryRunner: QueryRunner): Promise<void> {
+ // Reverter mudancas
+ await queryRunner.dropColumn('users', 'role');
+ }
 }
 ```
 
@@ -131,11 +131,11 @@ cd backend && npm run typeorm migration:run -- --dry-run
 ```markdown
 ## Migrations Status
 
-| Migration                      | Executada | Data       |
+| Migration | Executada | Data |
 | ------------------------------ | --------- | ---------- |
-| 1705312800000-CreateUsersTable | ✅        | 2025-01-15 |
-| 1705312900000-CreateEtpsTable  | ✅        | 2025-01-15 |
-| 1705313000000-AddUserRoles     | ⏳        | Pendente   |
+| 1705312800000-CreateUsersTable | ✅ | 2025-01-15 |
+| 1705312900000-CreateEtpsTable | ✅ | 2025-01-15 |
+| 1705313000000-AddUserRoles | | Pendente |
 
 **Pendentes:** 1 migration(s)
 **Executadas:** 2 migration(s)

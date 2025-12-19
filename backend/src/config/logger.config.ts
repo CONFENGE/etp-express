@@ -62,7 +62,7 @@ export function getLogLevels(nodeEnv?: string): LogLevel[] {
  * @example
  * // In main.ts
  * const app = await NestFactory.create(AppModule, {
- *   logger: createWinstonLogger(),
+ * logger: createWinstonLogger(),
  * });
  */
 export function createWinstonLogger(): WinstonLoggerService {

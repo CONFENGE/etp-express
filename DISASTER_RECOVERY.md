@@ -16,24 +16,24 @@
 ### Instruções de Configuração
 
 1. **Acesse o Railway Dashboard:**
-   - URL: https://railway.app
-   - Login com GitHub
+ - URL: https://railway.app
+ - Login com GitHub
 
 2. **Navegue até o PostgreSQL Service:**
-   - Projeto: ETP Express
-   - Service: PostgreSQL
+ - Projeto: ETP Express
+ - Service: PostgreSQL
 
 3. **Configure Backups Automáticos:**
-   - Acesse: **Settings > Backups**
-   - Configure:
-     - **Frequency:** `Daily` (3h AM UTC)
-     - **Retention:** `30 days`
-     - **Snapshot before migrations:** `Enabled`
+ - Acesse: **Settings > Backups**
+ - Configure:
+ - **Frequency:** `Daily` (3h AM UTC)
+ - **Retention:** `30 days`
+ - **Snapshot before migrations:** `Enabled`
 
 4. **Validação:**
-   - Aguarde 24h
-   - Verifique em **Backups** que snapshot foi criado
-   - Confirme tamanho do backup (deve ser > 0 bytes)
+ - Aguarde 24h
+ - Verifique em **Backups** que snapshot foi criado
+ - Confirme tamanho do backup (deve ser > 0 bytes)
 
 ### Verificação de Status de Backup
 
@@ -76,7 +76,7 @@ Backup criado: backups/etp_express_20251114_143052.sql.gz
 ./scripts/restore-db.sh backups/etp_express_YYYYMMDD_HHMMSS.sql.gz
 ```
 
-**⚠️ ATENÇÃO:** Este comando **SOBRESCREVE** o database atual!
+**⚠ ATENÇÃO:** Este comando **SOBRESCREVE** o database atual!
 
 **Confirmação obrigatória:** Digite `yes` quando solicitado.
 
@@ -91,37 +91,37 @@ Backup criado: backups/etp_express_20251114_143052.sql.gz
 **Procedimento:**
 
 1. **Acesse Railway Dashboard:**
-   - Projeto: ETP Express > PostgreSQL Service
+ - Projeto: ETP Express > PostgreSQL Service
 
 2. **Navegue até Backups:**
-   - Clique em **Backups** (menu lateral)
+ - Clique em **Backups** (menu lateral)
 
 3. **Selecione Snapshot:**
-   - Escolha o snapshot desejado (por data/hora)
-   - Verifique tamanho e timestamp
+ - Escolha o snapshot desejado (por data/hora)
+ - Verifique tamanho e timestamp
 
 4. **Execute Restore:**
-   - Clique em **Restore**
-   - Confirme ação
+ - Clique em **Restore**
+ - Confirme ação
 
 5. **Aguarde Conclusão:**
-   - Tempo estimado: 5-10 minutos
-   - Status: "Restoring..." → "Active"
+ - Tempo estimado: 5-10 minutos
+ - Status: "Restoring..." → "Active"
 
 6. **Validação Pós-Restore:**
 
-   ```bash
-   # Conectar ao database
-   psql $DATABASE_URL
+ ```bash
+ # Conectar ao database
+ psql $DATABASE_URL
 
-   # Verificar contagem de registros
-   SELECT COUNT(*) FROM etps;
-   SELECT COUNT(*) FROM users;
-   SELECT COUNT(*) FROM sections;
+ # Verificar contagem de registros
+ SELECT COUNT(*) FROM etps;
+ SELECT COUNT(*) FROM users;
+ SELECT COUNT(*) FROM sections;
 
-   # Verificar último registro
-   SELECT * FROM etps ORDER BY created_at DESC LIMIT 1;
-   ```
+ # Verificar último registro
+ SELECT * FROM etps ORDER BY created_at DESC LIMIT 1;
+ ```
 
 ---
 
@@ -175,25 +175,25 @@ SELECT * FROM audit_logs WHERE entity_type = 'ETP' AND entity_id = '<etp-id>' AN
 
 2. **Identificar backup anterior ao incidente:**
 
-   ```bash
-   ls -lh backups/etp_express_*.sql.gz
-   ```
+ ```bash
+ ls -lh backups/etp_express_*.sql.gz
+ ```
 
 3. **Restaurar apenas a row específica** (sem sobrescrever todo o DB):
 
-   ```bash
-   # Descompactar backup
-   gunzip -c backups/etp_express_YYYYMMDD_HHMMSS.sql.gz > /tmp/backup_temp.sql
+ ```bash
+ # Descompactar backup
+ gunzip -c backups/etp_express_YYYYMMDD_HHMMSS.sql.gz > /tmp/backup_temp.sql
 
-   # Extrair INSERT statement do ETP específico
-   grep -A 50 "INSERT INTO etps" /tmp/backup_temp.sql | grep '<etp-id>' > /tmp/restore_etp.sql
+ # Extrair INSERT statement do ETP específico
+ grep -A 50 "INSERT INTO etps" /tmp/backup_temp.sql | grep '<etp-id>' > /tmp/restore_etp.sql
 
-   # Executar insert no database atual
-   psql $DATABASE_URL < /tmp/restore_etp.sql
+ # Executar insert no database atual
+ psql $DATABASE_URL < /tmp/restore_etp.sql
 
-   # Limpar arquivos temporários
-   rm /tmp/backup_temp.sql /tmp/restore_etp.sql
-   ```
+ # Limpar arquivos temporários
+ rm /tmp/backup_temp.sql /tmp/restore_etp.sql
+ ```
 
 **Tempo de Recovery:** 10-15 minutos
 **RTO:** ✅ < 1 hora
@@ -222,43 +222,43 @@ psql $DATABASE_URL -c "SELECT * FROM migrations ORDER BY timestamp DESC LIMIT 5;
 
 1. **Rollback imediato do deploy:**
 
-   ```bash
-   # Rollback para versão anterior (via Railway ou Git)
-   git revert <commit-hash-da-migration>
-   git push origin master
-   ```
+ ```bash
+ # Rollback para versão anterior (via Railway ou Git)
+ git revert <commit-hash-da-migration>
+ git push origin master
+ ```
 
 2. **Restore do snapshot Railway pré-migration:**
-   - Acesse Railway Dashboard > PostgreSQL > Backups
-   - Identifique snapshot **antes** do deploy defeituoso
-   - Execute restore (ver seção "Restore de Backup Railway")
+ - Acesse Railway Dashboard > PostgreSQL > Backups
+ - Identifique snapshot **antes** do deploy defeituoso
+ - Execute restore (ver seção "Restore de Backup Railway")
 
 3. **Investigar falha na migration:**
 
-   ```bash
-   # Revisar arquivo de migration
-   cat backend/src/migrations/<migration-file>.ts
+ ```bash
+ # Revisar arquivo de migration
+ cat backend/src/migrations/<migration-file>.ts
 
-   # Testar migration em database local
-   npm run migration:run
-   ```
+ # Testar migration em database local
+ npm run migration:run
+ ```
 
 4. **Corrigir migration e testar em staging:**
 
-   ```bash
-   # Criar nova migration corrigida
-   npm run migration:generate -- -n FixBrokenMigration
+ ```bash
+ # Criar nova migration corrigida
+ npm run migration:generate -- -n FixBrokenMigration
 
-   # Testar em staging
-   DATABASE_URL=$STAGING_DATABASE_URL npm run migration:run
-   ```
+ # Testar em staging
+ DATABASE_URL=$STAGING_DATABASE_URL npm run migration:run
+ ```
 
 5. **Re-deploy após validação:**
-   ```bash
-   git add .
-   git commit -m "fix(database): correct broken migration"
-   git push origin master
-   ```
+ ```bash
+ git add .
+ git commit -m "fix(database): correct broken migration"
+ git push origin master
+ ```
 
 **Tempo de Recovery:** 30-45 minutos
 **RTO:** ✅ < 1 hora
@@ -286,62 +286,62 @@ railway logs --service postgresql | grep -i error
 **Resolução (Disaster Recovery Completo):**
 
 1. **Provisionar novo PostgreSQL service no Railway:**
-   - Railway Dashboard > New Service > PostgreSQL
-   - Nome: `postgresql-recovery`
+ - Railway Dashboard > New Service > PostgreSQL
+ - Nome: `postgresql-recovery`
 
 2. **Obter nova $DATABASE_URL:**
 
-   ```bash
-   railway variables --service postgresql-recovery
-   ```
+ ```bash
+ railway variables --service postgresql-recovery
+ ```
 
 3. **Restore do último backup válido:**
 
-   ```bash
-   # Baixar último backup manual
-   export NEW_DATABASE_URL="<nova-url-postgresql>"
+ ```bash
+ # Baixar último backup manual
+ export NEW_DATABASE_URL="<nova-url-postgresql>"
 
-   # Restore de backup local
-   gunzip -c backups/etp_express_YYYYMMDD_HHMMSS.sql | psql $NEW_DATABASE_URL
-   ```
+ # Restore de backup local
+ gunzip -c backups/etp_express_YYYYMMDD_HHMMSS.sql | psql $NEW_DATABASE_URL
+ ```
 
-   **OU restore de snapshot Railway:**
-   - Railway Dashboard > postgresql-recovery > Backups
-   - Restore do snapshot mais recente
+ **OU restore de snapshot Railway:**
+ - Railway Dashboard > postgresql-recovery > Backups
+ - Restore do snapshot mais recente
 
 4. **Atualizar $DATABASE_URL no backend:**
 
-   ```bash
-   # Railway Dashboard > Backend Service > Variables
-   # Atualizar DATABASE_URL para nova conexão
+ ```bash
+ # Railway Dashboard > Backend Service > Variables
+ # Atualizar DATABASE_URL para nova conexão
 
-   railway variables --service backend
-   railway redeploy --service backend
-   ```
+ railway variables --service backend
+ railway redeploy --service backend
+ ```
 
 5. **Verificar integridade de dados:**
 
-   ```sql
-   -- Conectar ao novo database
-   psql $NEW_DATABASE_URL
+ ```sql
+ -- Conectar ao novo database
+ psql $NEW_DATABASE_URL
 
-   -- Verificar contagens
-   SELECT
-     (SELECT COUNT(*) FROM etps) as total_etps,
-     (SELECT COUNT(*) FROM users) as total_users,
-     (SELECT COUNT(*) FROM sections) as total_sections;
+ -- Verificar contagens
+ SELECT
+ (SELECT COUNT(*) FROM etps) as total_etps,
+ (SELECT COUNT(*) FROM users) as total_users,
+ (SELECT COUNT(*) FROM sections) as total_sections;
 
-   -- Verificar datas de criação
-   SELECT MIN(created_at), MAX(created_at) FROM etps;
-   ```
+ -- Verificar datas de criação
+ SELECT MIN(created_at), MAX(created_at) FROM etps;
+ ```
 
 6. **Retomar operação:**
-   - Confirmar aplicação funcional
-   - Notificar usuários sobre restore
-   - Documentar incidente em post-mortem
+ - Confirmar aplicação funcional
+ - Notificar usuários sobre restore
+ - Documentar incidente em post-mortem
 
 7. **Remover database corrompido:**
-   - Railway Dashboard > postgresql (antigo) > Delete Service
+ - Railway Dashboard > postgresql (antigo) > Delete Service
 
 **Tempo de Recovery:** 30-45 minutos
 **RTO:** ✅ < 1 hora
@@ -353,12 +353,12 @@ railway logs --service postgresql | grep -i error
 
 ### Níveis de Severity
 
-| Severity | Descrição                         | Exemplo                                    | Tempo de Resposta |
+| Severity | Descrição | Exemplo | Tempo de Resposta |
 | -------- | --------------------------------- | ------------------------------------------ | ----------------- |
-| **P0**   | Sistema completamente fora do ar  | Database corrompido, aplicação inacessível | **15 minutos**    |
-| **P1**   | Funcionalidade crítica quebrada   | Login não funciona, geração de ETP falha   | **1 hora**        |
-| **P2**   | Funcionalidade secundária afetada | Validação de seção lenta                   | **4 horas**       |
-| **P3**   | Bug menor, não bloqueia usuário   | Typo em mensagem de erro                   | **24 horas**      |
+| **P0** | Sistema completamente fora do ar | Database corrompido, aplicação inacessível | **15 minutos** |
+| **P1** | Funcionalidade crítica quebrada | Login não funciona, geração de ETP falha | **1 hora** |
+| **P2** | Funcionalidade secundária afetada | Validação de seção lenta | **4 horas** |
+| **P3** | Bug menor, não bloqueia usuário | Typo em mensagem de erro | **24 horas** |
 
 ### Responsáveis
 
@@ -434,7 +434,7 @@ Apologies for any inconvenience caused.
 
 ## Notas Importantes
 
-### ⚠️ Avisos de Segurança
+### ⚠ Avisos de Segurança
 
 1. **NUNCA** commitar backups no Git (`.gitignore` previne isso)
 2. **SEMPRE** validar integridade de dados pós-restore
@@ -482,21 +482,21 @@ Adicionar ao cron ou GitHub Actions:
 # .github/workflows/backup-audit.yml
 name: Backup Audit
 on:
-  schedule:
-    - cron: '0 9 * * 1' # Toda segunda-feira, 9h AM UTC
+ schedule:
+ - cron: '0 9 * * 1' # Toda segunda-feira, 9h AM UTC
 
 jobs:
-  audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Check backup age
-        run: ./scripts/check-backup.sh
-      - name: Notify if backup old
-        if: failure()
-        run: |
-          echo "⚠️ ALERTA: Backup desatualizado!"
-          # Enviar notificação (Slack, email, etc.)
+ audit:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v3
+ - name: Check backup age
+ run: ./scripts/check-backup.sh
+ - name: Notify if backup old
+ if: failure()
+ run: |
+ echo "⚠ ALERTA: Backup desatualizado!"
+ # Enviar notificação (Slack, email, etc.)
 ```
 
 ---
@@ -546,23 +546,23 @@ Integridade: 100%
 O script `test-restore.sh` valida:
 
 1. **Contagem de Registros:**
-   - ETPs (produção vs teste)
-   - Sections (produção vs teste)
-   - Users (produção vs teste)
+ - ETPs (produção vs teste)
+ - Sections (produção vs teste)
+ - Users (produção vs teste)
 
 2. **Integridade de Dados:**
-   - Checksum MD5 dos IDs de ETPs
-   - Garante ordem e completude dos dados
+ - Checksum MD5 dos IDs de ETPs
+ - Garante ordem e completude dos dados
 
 3. **Proteções de Segurança:**
-   - Valida que `TEST_DATABASE_URL != DATABASE_URL`
-   - Previne sobrescrita acidental de produção
+ - Valida que `TEST_DATABASE_URL != DATABASE_URL`
+ - Previne sobrescrita acidental de produção
 
 ### Histórico de Testes
 
-| Data       | Tipo                 | RTO    | Status | Observações                                                                     |
+| Data | Tipo | RTO | Status | Observações |
 | ---------- | -------------------- | ------ | ------ | ------------------------------------------------------------------------------- |
-| 2025-11-15 | Validação de Scripts | ~7 min | ✅     | Scripts validados sintaticamente. Aguardando dados de produção para teste real. |
+| 2025-11-15 | Validação de Scripts | ~7 min | ✅ | Scripts validados sintaticamente. Aguardando dados de produção para teste real. |
 
 Para detalhes completos dos testes de restore, consulte: `docs/DISASTER_RECOVERY_TESTING.md`
 

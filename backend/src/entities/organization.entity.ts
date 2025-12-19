@@ -18,12 +18,12 @@ import { Etp } from './etp.entity';
  *
  * @example
  * {
- *   id: '123e4567-e89b-12d3-a456-426614174000',
- *   name: 'Prefeitura de Lages',
- *   cnpj: '12.345.678/0001-90',
- *   domainWhitelist: ['lages.sc.gov.br', 'camaralages.sc.gov.br'],
- *   isActive: true,
- *   stripeCustomerId: 'cus_...'
+ * id: '123e4567-e89b-12d3-a456-426614174000',
+ * name: 'Prefeitura de Lages',
+ * cnpj: '12.345.678/0001-90',
+ * domainWhitelist: ['lages.sc.gov.br', 'camaralages.sc.gov.br'],
+ * isActive: true,
+ * stripeCustomerId: 'cus_...'
  * }
  */
 @Entity('organizations')
