@@ -30,7 +30,7 @@ Todas as verificações de criptografia foram realizadas e o sistema **ETP Expre
 **Implementação:**
 
 - Railway fornece **HTTPS automático** com certificado SSL válido para todos os serviços
-- URL de produção: `https://etp-express.up.railway.app`
+- URL de produção: `https://etp-express-frontend-production.up.railway.app`
 - Certificado gerenciado automaticamente pela plataforma Railway
 - TLS 1.2+ habilitado
 
@@ -256,8 +256,8 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
  - SSL: **Habilitado** (NODE_ENV=production)
 
 - [x] **HTTPS obrigatório** ✅
- - Railway: HTTPS automático com certificado válido
- - URL: `https://etp-express.up.railway.app`
+  - Railway: HTTPS automático com certificado válido
+  - URL: `https://etp-express-frontend-production.up.railway.app`
 
 - [x] **HSTS habilitado** ✅
  - Helmet v7.2.0: `app.use(helmet())`
