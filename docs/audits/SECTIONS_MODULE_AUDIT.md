@@ -1,4 +1,4 @@
-# 📋 Auditoria do Módulo Sections
+# Auditoria do Módulo Sections
 
 **Issue:** #79 - Auditar módulo Sections contra ARCHITECTURE.md
 **Data:** 2025-11-30
@@ -7,13 +7,13 @@
 
 ---
 
-## 🎯 Objetivo
+## Objetivo
 
 Verificar se o módulo **Sections** (seções do ETP, controller, service, entity) está implementado conforme especificado no `ARCHITECTURE.md`.
 
 ---
 
-## 📊 Resumo Executivo
+## Resumo Executivo
 
 | Aspecto                     | Conformidade | Status |
 | --------------------------- | ------------ | ------ |
@@ -29,9 +29,9 @@ Verificar se o módulo **Sections** (seções do ETP, controller, service, entit
 
 ---
 
-## 1️⃣ Auditoria do Modelo Section (Entity)
+## 1. Auditoria do Modelo Section (Entity)
 
-### 📘 Especificação ARCHITECTURE.md (linhas 293-305)
+### Especificação ARCHITECTURE.md (linhas 293-305)
 
 ```sql
 CREATE TABLE etp_sections (
@@ -48,7 +48,7 @@ CREATE TABLE etp_sections (
 );
 ```
 
-### 🔍 Implementação Real (etp-section.entity.ts)
+### Implementação Real (etp-section.entity.ts)
 
 ```typescript
 @Entity('etp_sections')

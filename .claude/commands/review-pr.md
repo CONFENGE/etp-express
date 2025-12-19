@@ -244,7 +244,7 @@ gh pr list --state open --json number,title,labels,createdAt,additions,deletions
 PR_NUMBER=<selected>
 PR_TITLE=<title>
 
-echo "🎯 Selected PR #$PR_NUMBER: $PR_TITLE"
+echo "Selected PR #$PR_NUMBER: $PR_TITLE"
 echo "   Score: <total_score> points"
 echo "   Reason: <selection_rationale>"
 ```
@@ -253,7 +253,7 @@ echo "   Reason: <selection_rationale>"
 
 ```bash
 # Manual validation (until automated scripts exist)
-echo "📋 Validating PR #$PR_NUMBER against 8 criteria categories..."
+echo "Validating PR #$PR_NUMBER against 8 criteria categories..."
 
 # Check each category manually:
 # 1. Code Quality Gates
@@ -280,7 +280,7 @@ echo "✅ PR #$PR_NUMBER achieved perfect score (100/100)"
 ```bash
 # Check if auto-fixable issues exist
 if [ -n "$(git status --porcelain)" ]; then
-    echo "🔧 Applying auto-fixes..."
+    echo "Applying auto-fixes..."
 
     # Checkout PR branch
     gh pr checkout $PR_NUMBER
@@ -296,11 +296,11 @@ if [ -n "$(git status --porcelain)" ]; then
     git commit -m "chore: apply automated fixes (review-pr)"
     git push
 
-    # ℹ️  CI/CD Note: Este commit acionará workflows apenas se tocar arquivos TypeScript
+    # CI/CD Note: Este commit acionará workflows apenas se tocar arquivos TypeScript
     # Path filters: commits apenas de formatação em docs NÃO acionam CI/CD
 
     # Wait for tests
-    echo "⏳ Waiting for tests to re-run (cache NPM reduz tempo em ~60%)..."
+    echo "Waiting for tests to re-run (cache NPM reduz tempo em ~60%)..."
     npm test
 
     if [ $? -ne 0 ]; then
@@ -317,7 +317,7 @@ fi
 ### Step 4: Merge PR
 
 ```bash
-echo "🚀 Merging PR #$PR_NUMBER to master..."
+echo "Merging PR #$PR_NUMBER to master..."
 
 # Merge using merge commit strategy (preserves history)
 gh pr merge $PR_NUMBER --merge --delete-branch
@@ -330,9 +330,9 @@ echo "✅ Merged successfully (commit: $MERGE_SHA)"
 ### Step 5: Post-Merge Validation
 
 ```bash
-echo "🛡️ Running post-merge validation (3 layers)..."
+echo "Running post-merge validation (3 layers)..."
 
-# ℹ️  CI/CD Optimization Note:
+# CI/CD Optimization Note:
 # - Cache NPM is enabled: First run ~2min, subsequent runs ~30s (cache hit)
 # - Path filters active: Commits apenas docs NÃO acionam workflows
 # - See .github/SLASH_COMMANDS.md for optimization details
@@ -344,7 +344,7 @@ cd ../frontend && npm run build && npm test
 
 if [ $? -ne 0 ]; then
     echo "❌ POST-MERGE VALIDATION FAILED (Layer 1)"
-    echo "🔄 Executing automatic rollback..."
+    echo "Executing automatic rollback..."
 
     # Rollback
     git revert $MERGE_SHA --no-edit -m 1
@@ -377,21 +377,21 @@ echo "==========================================================================
 echo "✅ PR #$PR_NUMBER SUCCESSFULLY MERGED AND VALIDATED"
 echo "================================================================================"
 echo ""
-echo "📊 Summary:"
+echo "Summary:"
 echo "   - PR Number: #$PR_NUMBER"
 echo "   - Title: $PR_TITLE"
 echo "   - Validation Score: 100/100 (Perfect)"
 echo "   - Merge Commit: $MERGE_SHA"
 echo "   - Post-Merge Validation: ✅ PASSED"
 echo ""
-echo "🎉 The merge is complete and production-safe!"
+echo "The merge is complete and production-safe!"
 echo ""
 
 # Close issue if PR closes one
 ISSUE_NUMBER=$(gh pr view $PR_NUMBER --json body -q .body | grep -oP 'Closes #\K\d+' | head -1)
 
 if [ -n "$ISSUE_NUMBER" ]; then
-    echo "📝 Closing linked issue #$ISSUE_NUMBER..."
+    echo "Closing linked issue #$ISSUE_NUMBER..."
     gh issue close $ISSUE_NUMBER --comment "Resolved by PR #$PR_NUMBER (automated merge via /review-pr)"
     echo "✅ Issue #$ISSUE_NUMBER closed"
 fi

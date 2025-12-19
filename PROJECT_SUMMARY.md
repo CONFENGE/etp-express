@@ -1,10 +1,10 @@
-# 📊 SUMÁRIO EXECUTIVO - ETP EXPRESS
+# SUMÁRIO EXECUTIVO - ETP EXPRESS
 
 > **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
 ---
 
-## 🎯 VISÃO GERAL
+## VISÃO GERAL
 
 **ETP Express** é um sistema wrapper de LLM (Large Language Model) para elaboração assistida de Estudos Técnicos Preliminares (ETP) conforme **Lei 14.133/2021**, utilizando:
 
@@ -15,18 +15,18 @@
 
 ---
 
-## 📈 ESTATÍSTICAS DO PROJETO
+## ESTATÍSTICAS DO PROJETO
 
 ### Arquivos Criados
 
-| Categoria | Quantidade | Descrição |
-|-----------|------------|-----------|
-| **Backend** | 64 arquivos | NestJS + TypeORM + PostgreSQL |
-| **Frontend** | 62 arquivos | React + TypeScript + Vite |
-| **Configuração** | 13 arquivos | ENV, Railway, TS configs |
-| **Documentação** | 7 arquivos | README, Architecture, Deploy, Roadmap, etc |
-| **Schema** | 1 arquivo | PostgreSQL completo |
-| **TOTAL** | **147 arquivos** | Sistema completo end-to-end |
+| Categoria        | Quantidade       | Descrição                                  |
+| ---------------- | ---------------- | ------------------------------------------ |
+| **Backend**      | 64 arquivos      | NestJS + TypeORM + PostgreSQL              |
+| **Frontend**     | 62 arquivos      | React + TypeScript + Vite                  |
+| **Configuração** | 13 arquivos      | ENV, Railway, TS configs                   |
+| **Documentação** | 7 arquivos       | README, Architecture, Deploy, Roadmap, etc |
+| **Schema**       | 1 arquivo        | PostgreSQL completo                        |
+| **TOTAL**        | **147 arquivos** | Sistema completo end-to-end                |
 
 ### Linhas de Código (Estimativa)
 
@@ -37,6 +37,7 @@
 - **TOTAL**: **~21.200 linhas**
 
 ### Documentation Artifacts Created (Since 2025-11-12)
+
 - **Security**: 2 files (~600 lines) - SECURITY.md, SECRET_ROTATION_PROCEDURES.md
 - **LGPD Compliance**: 4 files (~800 lines) - Data mapping, encryption audit, rights compliance
 - **Operations**: 4 files (~500 lines) - Incident response, disaster recovery, monitoring
@@ -44,11 +45,12 @@
 
 ---
 
-## 🏗️ ARQUITETURA IMPLEMENTADA
+## ARQUITETURA IMPLEMENTADA
 
 ### Stack Tecnológico
 
 #### Backend
+
 ```typescript
 Framework:    NestJS 10.3
 Language:     TypeScript 5.3
@@ -61,6 +63,7 @@ Docs:         Swagger/OpenAPI
 ```
 
 #### Frontend
+
 ```typescript
 Framework:    React 18
 Language:     TypeScript 5.3
@@ -73,6 +76,7 @@ Icons:        Lucide React
 ```
 
 #### Integrações
+
 ```
 OpenAI:       GPT-4-turbo (geração de conteúdo)
 Perplexity:   pplx-7b-online (busca web)
@@ -145,11 +149,12 @@ Railway:      Deploy e hosting
    - Status: PoC validated (#211-#212), ready for M5 production
 
 10. **API Resilience & Circuit Breakers**
-   - Circuit breaker pattern (Opossum library)
-   - Exponential backoff retry logic
-   - Proactive health checks (30s intervals)
-   - Graceful degradation when providers fail
-   - Status: 5/5 resilience patterns implemented (#206-#210)
+
+- Circuit breaker pattern (Opossum library)
+- Exponential backoff retry logic
+- Proactive health checks (30s intervals)
+- Graceful degradation when providers fail
+- Status: 5/5 resilience patterns implemented (#206-#210)
 
 ### ✅ UX/UI Features
 
@@ -277,6 +282,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\
 ### Railway Configuration
 
 **3 Serviços**:
+
 1. **PostgreSQL Database** (managed)
 2. **Backend** (NestJS)
 3. **Frontend** (React/Vite)
@@ -284,6 +290,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\
 ### Variáveis de Ambiente Necessárias
 
 #### Backend
+
 ```bash
 NODE_ENV=production
 PORT=${{PORT}}
@@ -296,6 +303,7 @@ CORS_ORIGINS=https://frontend.railway.app
 ```
 
 #### Frontend
+
 ```bash
 VITE_API_URL=https://backend.railway.app/api
 VITE_APP_NAME=ETP Express
@@ -313,6 +321,7 @@ VITE_APP_NAME=ETP Express
 ## 📊 ENDPOINTS DA API
 
 ### Autenticação
+
 ```
 POST   /api/auth/register          # Registro
 POST   /api/auth/login             # Login
@@ -320,6 +329,7 @@ GET    /api/auth/me                # Usuário atual
 ```
 
 ### ETPs
+
 ```
 GET    /api/etps                   # Listar ETPs
 POST   /api/etps                   # Criar ETP
@@ -329,6 +339,7 @@ DELETE /api/etps/:id               # Deletar ETP
 ```
 
 ### Seções (IA)
+
 ```
 POST   /api/sections/etp/:id/generate     # ⭐ Gerar com IA
 POST   /api/sections/:id/regenerate       # Regenerar
@@ -337,12 +348,14 @@ PATCH  /api/sections/:id                  # Atualizar
 ```
 
 ### Busca
+
 ```
 GET    /api/search/similar-contracts?q=...     # Busca Perplexity
 GET    /api/search/legal-references?topic=...
 ```
 
 ### Export
+
 ```
 GET    /api/export/etp/:id/pdf     # Exportar PDF
 GET    /api/export/etp/:id/json    # Exportar JSON
@@ -350,6 +363,7 @@ GET    /api/export/etp/:id/xml     # Exportar XML
 ```
 
 ### Versionamento
+
 ```
 POST   /api/versions/etp/:id                # Criar snapshot
 GET    /api/versions/compare/:id1/:id2      # Diff versões
@@ -357,6 +371,7 @@ POST   /api/versions/:id/restore            # Restaurar versão
 ```
 
 ### Analytics
+
 ```
 POST   /api/analytics/track        # Registrar evento
 GET    /api/analytics/dashboard    # Dashboard
@@ -438,6 +453,7 @@ O sistema utiliza LLMs que podem:
 ### Responsabilidade
 
 **O sistema NÃO substitui**:
+
 - Responsabilidade administrativa
 - Análise jurídica especializada
 - Decisão técnica de servidores
@@ -595,6 +611,7 @@ O **ETP Express** é um sistema completo, production-ready, que:
 ✅ **Escala** conforme necessário
 
 **Total de 145 arquivos** criados, cobrindo:
+
 - Backend completo (NestJS)
 - Frontend completo (React)
 - Sistema de IA (5 agentes)
@@ -603,6 +620,7 @@ O **ETP Express** é um sistema completo, production-ready, que:
 - Documentação (6 docs)
 
 **O projeto está PRONTO para**:
+
 1. ✅ Instalação local
 2. ✅ Desenvolvimento
 3. ✅ Testes
@@ -624,6 +642,7 @@ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações 
 **Status**: 🚀 **EM DESENVOLVIMENTO ACELERADO - 70% concluído**
 
 ### Progresso por Milestone
+
 - **M1 (Foundation - Testes)**: 100% ✅ (35/35 concluídas) - COMPLETO 2025-11-20
 - **M2 (CI/CD)**: 100% ✅ (12/12 concluídas) - COMPLETO 2025-11-21
 - **M3 (Quality & Security)**: 94% ⚡ (52/55 concluídas) - ETA 2025-11-28
@@ -632,6 +651,7 @@ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações 
 - **M6 (Maintenance)**: 10% 📅 (1/10 concluídas) - Recurring
 
 ### Métricas de Velocidade
+
 - **Issues Fechadas (última semana):** 47 issues
 - **Velocidade Média:** 6.7 issues/dia (134% acima da meta)
 - **Issues Restantes:** 53 (30%)

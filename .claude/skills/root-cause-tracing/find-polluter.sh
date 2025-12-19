@@ -14,7 +14,7 @@ fi
 POLLUTION_CHECK="$1"
 TEST_PATTERN="$2"
 
-echo "🔍 Searching for test that creates: $POLLUTION_CHECK"
+echo "Searching for test that creates: $POLLUTION_CHECK"
 echo "Test pattern: $TEST_PATTERN"
 echo ""
 
@@ -44,7 +44,7 @@ for TEST_FILE in $TEST_FILES; do
   # Check if pollution appeared
   if [ -e "$POLLUTION_CHECK" ]; then
     echo ""
-    echo "🎯 FOUND POLLUTER!"
+    echo "FOUND POLLUTER!"
     echo "   Test: $TEST_FILE"
     echo "   Created: $POLLUTION_CHECK"
     echo ""

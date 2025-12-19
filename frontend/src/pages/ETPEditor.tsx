@@ -138,7 +138,7 @@ export function ETPEditor() {
       celebrate();
 
       // Success toast
-      success('Parabéns! Seu ETP está 100% completo! 🎉');
+      success('Parabéns! Seu ETP está 100% completo!');
 
       // Demo user conversion banner (#475)
       if (isDemoUser) {

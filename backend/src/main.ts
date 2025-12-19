@@ -36,7 +36,7 @@ async function bootstrap() {
 
   const isProduction = process.env.NODE_ENV === 'production';
   logger.log(
-    `📋 Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
+    `Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
   );
 
   // Enable graceful shutdown hooks (#607)
@@ -59,7 +59,7 @@ async function bootstrap() {
 
   if (nodeEnv === 'production' && !corsOriginsRaw) {
     logger.error(
-      '❌ CORS_ORIGINS must be defined in production environment. ' +
+      'CORS_ORIGINS must be defined in production environment. ' +
         'Set CORS_ORIGINS=https://your-frontend-url.railway.app in Railway variables.',
     );
     throw new Error(
@@ -70,9 +70,9 @@ async function bootstrap() {
   const corsOrigins = corsOriginsRaw?.split(',') || ['http://localhost:5173'];
 
   if (nodeEnv !== 'production') {
-    logger.log(`🔧 CORS configured for development: ${corsOrigins.join(', ')}`);
+    logger.log(`CORS configured for development: ${corsOrigins.join(', ')}`);
   } else {
-    logger.log(`🔒 CORS configured for production: ${corsOrigins.join(', ')}`);
+    logger.log(`CORS configured for production: ${corsOrigins.join(', ')}`);
   }
 
   app.enableCors({
@@ -113,7 +113,7 @@ async function bootstrap() {
     .setTitle('ETP Express API')
     .setDescription(
       `
-      🚨 **${DISCLAIMER}**
+      **${DISCLAIMER}**
 
       API para o sistema ETP Express - Wrapper de LLM para elaboração assistida de Estudos Técnicos Preliminares (Lei 14.133/2021).
 
@@ -152,10 +152,10 @@ async function bootstrap() {
       },
     });
     logger.log(
-      `📚 Swagger documentation available at http://localhost:${configService.get('PORT') || 3001}/api/docs`,
+      `Swagger documentation available at http://localhost:${configService.get('PORT') || 3001}/api/docs`,
     );
   } else {
-    logger.log('🔒 Swagger documentation disabled in production for security');
+    logger.log('Swagger documentation disabled in production for security');
   }
 
   const port = configService.get('PORT') || 3001;
@@ -165,14 +165,14 @@ async function bootstrap() {
   logger.log(`
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                             ║
-    ║   🚀 ETP EXPRESS BACKEND                                   ║
+    ║   ETP EXPRESS BACKEND                                       ║
     ║                                                             ║
     ║   ⚠️  Sistema assistivo - Não substitui responsabilidade  ║
     ║      administrativa. Validação humana obrigatória.         ║
     ║                                                             ║
-    ║   📡 Server: http://localhost:${port}                      ║
-    ║   📚 Docs:   http://localhost:${port}/api/docs             ║
-    ║   🌍 Env:    ${configService.get('NODE_ENV')}             ║
+    ║   Server: http://localhost:${port}                         ║
+    ║   Docs:   http://localhost:${port}/api/docs                ║
+    ║   Env:    ${configService.get('NODE_ENV')}                ║
     ║                                                             ║
     ╚═══════════════════════════════════════════════════════════╝
   `);

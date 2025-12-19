@@ -1,4 +1,4 @@
-# 📊 Production Monitoring & Observability
+# Production Monitoring & Observability
 
 **Status:** ✅ Implementado
 **Última atualização:** 2025-11-15
@@ -17,7 +17,7 @@ O ETP Express possui infraestrutura completa de observability em produção para
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ### Stack de Monitoring
 
@@ -65,7 +65,7 @@ O ETP Express possui infraestrutura completa de observability em produção para
 
 ---
 
-## 🚨 Error Tracking (Sentry)
+## Error Tracking (Sentry)
 
 ### Configuração
 
@@ -109,7 +109,7 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 ---
 
-## 📈 Application Metrics
+## Application Metrics
 
 ### Endpoint: `/api/metrics`
 
@@ -151,7 +151,7 @@ uptime_seconds 3600
 
 ---
 
-## 🔔 Alerting
+## Alerting
 
 ### Sentry Alerts
 
@@ -202,7 +202,7 @@ Configurar no Railway Dashboard → Settings → Webhooks:
 
 ---
 
-## 📊 Dashboards
+## Dashboards
 
 ### 1. Railway Metrics (Infrastructure)
 
@@ -231,7 +231,7 @@ Configurar no Railway Dashboard → Settings → Webhooks:
 
 ---
 
-## 🚀 Setup Completo
+## Setup Completo
 
 ### 1. Criar conta Sentry
 
@@ -273,7 +273,7 @@ curl https://etp-express.up.railway.app/api/metrics
 
 ---
 
-## 📖 Runbooks de Alerta
+## Runbooks de Alerta
 
 ### Alert: High Error Rate (>10 errors/min)
 
@@ -336,7 +336,7 @@ curl https://etp-express.up.railway.app/api/metrics
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Sentry não recebe erros
 
@@ -382,7 +382,7 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 
 ---
 
-## 📚 Referências
+## Referências
 
 - [Sentry NestJS Docs](https://docs.sentry.io/platforms/node/guides/nestjs/)
 - [Sentry React Docs](https://docs.sentry.io/platforms/javascript/guides/react/)

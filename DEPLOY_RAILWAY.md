@@ -1,4 +1,4 @@
-# 🚀 GUIA DE DEPLOY - RAILWAY
+# GUIA DE DEPLOY - RAILWAY
 
 > **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
@@ -6,7 +6,7 @@ Este guia detalha o processo completo de deploy do ETP Express na Railway.
 
 ---
 
-## 📋 PRÉ-REQUISITOS
+## PRÉ-REQUISITOS
 
 1. **Conta Railway**
    - Criar conta em: https://railway.app
@@ -22,7 +22,7 @@ Este guia detalha o processo completo de deploy do ETP Express na Railway.
 
 ---
 
-## 🏗️ ARQUITETURA NO RAILWAY
+## ARQUITETURA NO RAILWAY
 
 O ETP Express usa **3 serviços separados**:
 
@@ -35,7 +35,7 @@ Railway Project: etp-express
 
 ---
 
-## 📦 PASSO 1: CRIAR PROJETO NO RAILWAY
+## PASSO 1: CRIAR PROJETO NO RAILWAY
 
 ### 1.1 Via Dashboard Railway
 
@@ -59,7 +59,7 @@ railway init
 
 ---
 
-## 🗄️ PASSO 2: CRIAR DATABASE (PostgreSQL)
+## PASSO 2: CRIAR DATABASE (PostgreSQL)
 
 ### 2.1 Adicionar PostgreSQL
 
@@ -101,7 +101,7 @@ railway connect postgres
 
 ---
 
-## ⚙️ PASSO 3: DEPLOY DO BACKEND
+## PASSO 3: DEPLOY DO BACKEND
 
 ### 3.1 Adicionar Serviço Backend
 
@@ -178,7 +178,7 @@ Após deploy bem-sucedido:
 
 ---
 
-## 🎨 PASSO 4: DEPLOY DO FRONTEND
+## PASSO 4: DEPLOY DO FRONTEND
 
 ### 4.1 Adicionar Serviço Frontend
 
@@ -239,7 +239,7 @@ Você deve ver:
 
 ---
 
-## 🔗 PASSO 5: VERIFICAÇÃO FINAL
+## PASSO 5: VERIFICAÇÃO FINAL
 
 ### 5.1 Teste de Conectividade
 
@@ -301,7 +301,7 @@ requestTimeout = 120
 
 ---
 
-## 🔒 PASSO 6: SEGURANÇA E OTIMIZAÇÕES
+## PASSO 6: SEGURANÇA E OTIMIZAÇÕES
 
 ### 6.1 Domínio Customizado (Opcional)
 
@@ -443,7 +443,7 @@ Sentry já está configurado no projeto e captura erros automaticamente. Para al
 3. Railway faz backups automáticos diariamente
 4. Retenção: 7 dias (plano Hobby)
 
-> **📚 Documentação Completa de Disaster Recovery:** Consulte [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) para procedimentos detalhados de backup, restore e cenários de recuperação.
+> **Documentação Completa de Disaster Recovery:** Consulte [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) para procedimentos detalhados de backup, restore e cenários de recuperação.
 
 ### 6.5 Horizontal Scaling (Múltiplas Réplicas)
 

@@ -131,7 +131,7 @@ desenvolvimento nacional sustentável.
 };
 
 async function seedLegislation() {
-  console.log('🌱 Starting legislation seed script...');
+  console.log('Starting legislation seed script...');
 
   // Create DataSource
   const dataSource = new DataSource({
@@ -161,7 +161,7 @@ async function seedLegislation() {
 
     if (existing) {
       console.log(
-        '⚠️  Lei 14.133/2021 already exists in database. Skipping seed.',
+        '⚠️ Lei 14.133/2021 already exists in database. Skipping seed.',
       );
       await dataSource.destroy();
       return;
@@ -179,7 +179,7 @@ async function seedLegislation() {
       isActive: true,
     });
 
-    console.log('📝 Creating legislation entry...');
+    console.log('Creating legislation entry...');
 
     // Save without embedding first
     const savedLegislation = await legislationRepository.save(legislation);
@@ -189,7 +189,7 @@ async function seedLegislation() {
     );
 
     // Generate and update embedding
-    console.log('🧮 Generating OpenAI embedding...');
+    console.log('Generating OpenAI embedding...');
 
     const configService = new ConfigService();
     const ragService = new RAGService(legislationRepository, configService);
@@ -197,30 +197,30 @@ async function seedLegislation() {
     const indexed = await ragService.indexLegislation(savedLegislation);
 
     console.log('✅ Embedding generated and saved');
-    console.log('\n📊 Summary:');
+    console.log('\nSummary:');
     console.log(`   ID: ${indexed.id}`);
     console.log(`   Reference: ${indexed.getFormattedReference()}`);
     console.log(`   Title: ${indexed.title}`);
     console.log(`   Articles: ${indexed.articles?.length || 0}`);
     console.log(`   Has embedding: ${!!indexed.embedding}`);
 
-    console.log('\n🎉 Seed completed successfully!');
+    console.log('\nSeed completed successfully!');
   } catch (error) {
-    console.error('❌ Error during seed:', error);
+    console.error('Error during seed:', error);
     throw error;
   } finally {
     await dataSource.destroy();
-    console.log('🔌 Database connection closed');
+    console.log('Database connection closed');
   }
 }
 
 // Run seed
 seedLegislation()
   .then(() => {
-    console.log('\n✨ All done!');
+    console.log('\nAll done!');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n💥 Fatal error:', error);
+    console.error('\nFatal error:', error);
     process.exit(1);
   });

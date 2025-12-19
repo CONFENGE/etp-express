@@ -5,7 +5,7 @@ Seu trabalho é escolher **uma única issue** do backlog e tratá-la até a cria
 
 ---
 
-## 🎯 OBJETIVO GERAL
+## OBJETIVO GERAL
 
 Selecionar e implementar a próxima issue **executável** do repositório ETP Express, criando uma PR pronta para review. O merge e fechamento são responsabilidade do `/review-pr`.
 
@@ -18,7 +18,7 @@ Selecionar e implementar a próxima issue **executável** do repositório ETP Ex
 
 ---
 
-## 1️⃣ SELEÇÃO DA ISSUE (Algoritmo Determinístico)
+## 1. SELEÇÃO DA ISSUE (Algoritmo Determinístico)
 
 ### Passo 1: Consultar ROADMAP.md
 
@@ -81,7 +81,7 @@ gh issue list --state open --json number,title,labels,milestone,updatedAt --limi
 ### Output da Seleção
 
 ```
-🟢 ISSUE SELECIONADA: #<número> – <título>
+ISSUE SELECIONADA: #<número> – <título>
    Prioridade: Px
    Milestone: Mx
    Tempo estimado: X h
@@ -91,7 +91,7 @@ gh issue list --state open --json number,title,labels,milestone,updatedAt --limi
 
 ---
 
-## 2️⃣ GOVERNANÇA (Checagem Pré-Execução)
+## 2. GOVERNANÇA (Checagem Pré-Execução)
 
 ### Buscar Detalhes da Issue
 
@@ -116,15 +116,15 @@ A issue **DEVE** conter todos os elementos abaixo:
 **NÃO prossiga com a implementação. Execute primeiro o rewrite:**
 
 ```markdown
-## 🎯 Objetivo
+## Objetivo
 
 <Objetivo claro e mensurável da issue>
 
-## 📋 Contexto
+## Contexto
 
 <Por que precisamos desta mudança? Qual problema resolve?>
 
-## 🔧 Solução Técnica
+## Solução Técnica
 
 <Passo a passo técnico da implementação>
 
@@ -138,11 +138,11 @@ A issue **DEVE** conter todos os elementos abaixo:
 - [ ] Critério 3
       ...
 
-## 📊 Estimativa
+## Estimativa
 
 **Esforço:** <X horas> (1–8h, atômico)
 
-## 🔗 Dependências
+## Dependências
 
 - **Bloqueada por:** #<issue-id> ou Nenhum
 - **Bloqueia:** #<issue-id> ou Nenhum
@@ -157,7 +157,7 @@ gh issue edit <número> --body "<conteúdo-reescrito>"
 
 ---
 
-## 2️⃣.5 VALIDAÇÃO DE ATOMICIDADE (CRÍTICO)
+## 2.5 VALIDAÇÃO DE ATOMICIDADE (CRÍTICO)
 
 ### Critério de Atomicidade
 
@@ -171,7 +171,7 @@ Uma issue é **ATÔMICA** se atende TODOS os requisitos:
 
 ### Se Issue NÃO é Atômica → DESMEMBRAR
 
-**🚫 NÃO EXECUTE issues não-atômicas. Primeiro, quebre em sub-issues.**
+**NÃO EXECUTE issues não-atômicas. Primeiro, quebre em sub-issues.**
 
 #### Identificar Necessidade de Desmembramento
 
@@ -253,7 +253,7 @@ Adicionar comentário no parent linkando as sub-issues:
 
 ```bash
 gh issue comment <parent-id> --body "$(cat <<EOF
-## 🔄 Issue Desmembrada em Sub-Issues Atômicas
+## Issue Desmembrada em Sub-Issues Atômicas
 
 Esta issue foi quebrada nas seguintes sub-issues executáveis:
 
@@ -285,7 +285,7 @@ Após desmembramento, **REEXECUTE** o algoritmo de seleção (passo 1️⃣) par
 
 ---
 
-## 3️⃣ EXECUÇÃO (Desenvolvimento Completo)
+## 3. EXECUÇÃO (Desenvolvimento Completo)
 
 ### 3.1 Criar Branch
 
@@ -308,7 +308,7 @@ Exemplo: `feat/42-configure-jest`
 ### 3.3 Testes (OBRIGATÓRIO)
 
 ```bash
-# ℹ️  CI/CD Optimization Note:
+# CI/CD Optimization Note:
 # - Cache NPM ativo: Primeira execução ~2min, subsequentes ~30s (cache hit)
 # - Testes locais usam mesmo cache que CI/CD
 # - Path filters: Commits apenas docs NÃO acionam workflows
@@ -347,7 +347,7 @@ npm run test:coverage                      # Cobertura
 
 ---
 
-## 4️⃣ PULL REQUEST (Padrão ETP Express)
+## 4. PULL REQUEST (Padrão ETP Express)
 
 ### 4.1 Commit Semântico
 
@@ -399,7 +399,7 @@ EOF
 
 ### 4.3 Aguardar CI/CD (Otimizado com Cache + Path Filters)
 
-**ℹ️ Otimizações Ativas:**
+**Otimizações Ativas:**
 
 - **Cache NPM**: Workflows executam ~60% mais rápido (cache hit)
 - **Cache Playwright**: Browsers não reinstalados (economiza 3-4 min)
@@ -456,7 +456,7 @@ Próximo comando: /review-pr
 
 ---
 
-## 5️⃣ RESPONSABILIDADE DO /review-pr
+## 5. RESPONSABILIDADE DO /review-pr
 
 **Esta fase é executada pelo comando `/review-pr`**
 
@@ -470,7 +470,7 @@ O fechamento da issue (Execution Note + `gh issue close`) é responsabilidade do
 
 ---
 
-## 6️⃣ PARADA E ESPERA
+## 6. PARADA E ESPERA
 
 **FINALIZE O CICLO AQUI**
 
@@ -486,7 +486,7 @@ Após criar a PR, o ciclo do `/pick-next-issue` está **COMPLETO**.
 
 ---
 
-## 📋 CHECKLIST FINAL (verificar antes de declarar completo)
+## CHECKLIST FINAL (verificar antes de declarar completo)
 
 - [ ] Issue selecionada seguiu algoritmo determinístico
 - [ ] Governança validada ou rewrite feito
@@ -503,19 +503,19 @@ Após criar a PR, o ciclo do `/pick-next-issue` está **COMPLETO**.
 
 ---
 
-## 🔧 PARÂMETROS FIXOS DO ETP EXPRESS
+## PARÂMETROS FIXOS DO ETP EXPRESS
 
-- ⏱️ **Tamanho atômico**: 1–8 horas por issue (**obrigatório** - issues maiores devem ser desmembradas)
-- 🧪 **Testes obrigatórios**: Sempre adicionar testes para código novo ou modificado
-- 📝 **Documentação completa**: File Location + Acceptance Criteria + Technical Approach
-- 🔒 **Segurança**: Validação de vulnerabilidades OWASP Top 10
-- 📦 **Commits semânticos**: Conventional Commits obrigatório
-- 🎯 **Milestones**: Seguir ordem M1→M2→M3→M4→M5→M6
-- 🔴 **Respeitar prioridades**: P0 > P1 > P2 > P3 (sem exceções)
+- **Tamanho atômico**: 1–8 horas por issue (**obrigatório** - issues maiores devem ser desmembradas)
+- **Testes obrigatórios**: Sempre adicionar testes para código novo ou modificado
+- **Documentação completa**: File Location + Acceptance Criteria + Technical Approach
+- **Segurança**: Validação de vulnerabilidades OWASP Top 10
+- **Commits semânticos**: Conventional Commits obrigatório
+- **Milestones**: Seguir ordem M1→M2→M3→M4→M5→M6
+- **Respeitar prioridades**: P0 > P1 > P2 > P3 (sem exceções)
 
 ---
 
-## 🎓 REFERÊNCIAS DO PROJETO
+## REFERÊNCIAS DO PROJETO
 
 ### Documentação Estratégica
 
@@ -571,7 +571,7 @@ gh issue list --state open --json number,title,labels,milestone
 
 ---
 
-## ⚠️ AVISOS IMPORTANTES
+## AVISOS IMPORTANTES
 
 1. **NÃO execute merge de PR** - O merge é responsabilidade exclusiva do `/review-pr`
 2. **NÃO feche issues manualmente** - O fechamento é feito pelo `/review-pr` após merge

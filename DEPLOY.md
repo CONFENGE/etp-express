@@ -2,7 +2,7 @@
 
 Este documento descreve o processo completo de deploy do ETP Express em Railway, incluindo backend (NestJS), frontend (React/Vite) e PostgreSQL.
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 1. **Conta Railway**: https://railway.app (gratuita com $5/mês de créditos)
 2. **Repositório GitHub**: Conectado ao Railway
@@ -11,7 +11,7 @@ Este documento descreve o processo completo de deploy do ETP Express em Railway,
    - Exa API Key (opcional, para busca web avançada)
 4. **Domínio personalizado** (opcional, mas recomendado)
 
-## 🚀 Processo de Deploy
+## Processo de Deploy
 
 ### 1. Criar Projeto Railway
 
