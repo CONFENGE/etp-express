@@ -318,11 +318,18 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       // Use friendly error messages, but keep specific messages from known error types
       let errorMessage: string;
 
-      if (error instanceof JobFailedError || error instanceof PollingTimeoutError) {
+      if (
+        error instanceof JobFailedError ||
+        error instanceof PollingTimeoutError
+      ) {
         // These errors already have user-friendly messages in Portuguese
         errorMessage = error.message;
       } else {
-        errorMessage = getContextualErrorMessage('gerar', 'a seção com IA', error);
+        errorMessage = getContextualErrorMessage(
+          'gerar',
+          'a seção com IA',
+          error,
+        );
       }
 
       set({
@@ -433,7 +440,10 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       // Use friendly error messages, but keep specific messages from known error types
       let errorMessage: string;
 
-      if (error instanceof JobFailedError || error instanceof PollingTimeoutError) {
+      if (
+        error instanceof JobFailedError ||
+        error instanceof PollingTimeoutError
+      ) {
         // These errors already have user-friendly messages in Portuguese
         errorMessage = error.message;
       } else {

@@ -53,11 +53,13 @@ const ERROR_PATTERNS: Array<{ pattern: RegExp; message: string }> = [
   // AI/External service errors
   {
     pattern: /exa\s*(api)?|search\s*service/i,
-    message: 'Serviço de pesquisa temporariamente indisponível. Tente novamente em instantes.',
+    message:
+      'Serviço de pesquisa temporariamente indisponível. Tente novamente em instantes.',
   },
   {
     pattern: /openai|gpt|llm|completion/i,
-    message: 'Serviço de IA temporariamente indisponível. Tente novamente em instantes.',
+    message:
+      'Serviço de IA temporariamente indisponível. Tente novamente em instantes.',
   },
   {
     pattern: /rate\s*limit|too\s*many\s*requests|throttl/i,
@@ -113,10 +115,7 @@ const DEFAULT_ERROR_MESSAGE = 'Ocorreu um erro inesperado. Tente novamente.';
  * }
  * ```
  */
-export function getApiErrorMessage(
-  error: unknown,
-  context?: string,
-): string {
+export function getApiErrorMessage(error: unknown, context?: string): string {
   // Handle null/undefined
   if (!error) {
     return context

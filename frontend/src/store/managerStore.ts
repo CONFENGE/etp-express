@@ -100,7 +100,11 @@ export const useManagerStore = create<ManagerState>((set, get) => ({
       set({ quota: response });
     } catch (error) {
       set({
-        error: getContextualErrorMessage('carregar', 'informações de cota', error),
+        error: getContextualErrorMessage(
+          'carregar',
+          'informações de cota',
+          error,
+        ),
       });
     }
   },

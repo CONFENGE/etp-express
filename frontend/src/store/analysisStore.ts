@@ -129,7 +129,11 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
       return details;
     } catch (error) {
       set({
-        error: getContextualErrorMessage('obter', 'os detalhes da análise', error),
+        error: getContextualErrorMessage(
+          'obter',
+          'os detalhes da análise',
+          error,
+        ),
       });
 
       logger.error('Failed to get analysis details', error, { analysisId });
