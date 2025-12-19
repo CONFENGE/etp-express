@@ -332,7 +332,7 @@ export class AuthService {
 
     if (!organization) {
       throw new BadRequestException(
-        `Domínio de email "${emailDomain}" não autorizado. Contate comercial@etpexpress.com.br para cadastrar sua organização.`,
+        `Domínio de email "${emailDomain}" não autorizado. Contate comercial@confenge.com.br para cadastrar sua organização.`,
       );
     }
 

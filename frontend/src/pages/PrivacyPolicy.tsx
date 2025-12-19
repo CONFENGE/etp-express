@@ -62,7 +62,7 @@ export function PrivacyPolicy() {
                 <p className="font-semibold">Contato para Proteção de Dados:</p>
                 <p className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  privacidade@etpexpress.com.br
+                  privacidade@confenge.com.br
                 </p>
               </div>
             </CardContent>
@@ -398,7 +398,7 @@ export function PrivacyPolicy() {
                 </p>
                 <p className="flex items-center gap-2 font-semibold">
                   <Mail className="h-4 w-4" />
-                  privacidade@etpexpress.com.br
+                  privacidade@confenge.com.br
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
                   Prazo de resposta: 15 dias úteis
@@ -451,7 +451,7 @@ export function PrivacyPolicy() {
                 </p>
                 <p className="flex items-center gap-2 font-semibold">
                   <Mail className="h-4 w-4" />
-                  privacidade@etpexpress.com.br
+                  privacidade@confenge.com.br
                 </p>
               </div>
               <Separator />

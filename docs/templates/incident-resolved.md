@@ -141,7 +141,7 @@ Para evitar recorrência deste problema, implementamos:
 
 - **Sistema está disponível agora** - você pode retomar o trabalho normalmente
 - Não é necessária nenhuma ação de sua parte
-- Se encontrar qualquer problema, por favor nos contate: suporte@etpexpress.com
+- Se encontrar qualquer problema, por favor nos contate: suporte@confenge.com.br
 
 ---
 
