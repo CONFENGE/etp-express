@@ -71,12 +71,17 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-md" aria-describedby="welcome-description">
+      <DialogContent
+        className="sm:max-w-md"
+        aria-describedby="welcome-description"
+      >
         <DialogHeader className="text-center sm:text-center">
           <div className="flex justify-center mb-4">
             <Welcome className="w-32 h-32" />
           </div>
-          <DialogTitle className="text-xl">Bem-vindo ao ETP Express!</DialogTitle>
+          <DialogTitle className="text-xl">
+            Bem-vindo ao ETP Express!
+          </DialogTitle>
           <DialogDescription id="welcome-description" className="text-base">
             Simplifique a elaboracao de Estudos Tecnicos Preliminares com
             assistencia inteligente, em conformidade com a Lei 14.133/2021.
@@ -89,7 +94,11 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
               <PlusCircle className="mr-2 h-4 w-4" />
               Criar meu primeiro ETP
             </Button>
-            <Button variant="outline" onClick={handleOpenManual} className="w-full">
+            <Button
+              variant="outline"
+              onClick={handleOpenManual}
+              className="w-full"
+            >
               <BookOpen className="mr-2 h-4 w-4" />
               Ler o manual do usuario
             </Button>
