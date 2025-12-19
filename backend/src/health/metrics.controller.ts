@@ -11,7 +11,7 @@ import { MetricsService } from './metrics.service';
  *
  * Uso:
  * ```bash
- * curl https://etp-express.up.railway.app/api/metrics
+ * curl https://etp-express-backend-production.up.railway.app/api/metrics
  * ```
  *
  * Integração com Railway:
