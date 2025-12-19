@@ -25,25 +25,25 @@ import { PncpService } from './pncp.service';
  * ```typescript
  * // Import in your feature module
  * @Module({
- *   imports: [PncpModule],
- *   providers: [MyService],
+ * imports: [PncpModule],
+ * providers: [MyService],
  * })
  * export class MyModule {}
  *
  * // Use in your service
  * @Injectable()
  * export class MyService {
- *   constructor(private pncpService: PncpService) {}
+ * constructor(private pncpService: PncpService) {}
  *
- *   async findContracts(query: string) {
- *     return this.pncpService.search(query);
- *   }
+ * async findContracts(query: string) {
+ * return this.pncpService.search(query);
+ * }
  * }
  * ```
  */
 @Module({
-  imports: [GovApiModule, ConfigModule],
-  providers: [PncpService],
-  exports: [PncpService],
+ imports: [GovApiModule, ConfigModule],
+ providers: [PncpService],
+ exports: [PncpService],
 })
 export class PncpModule {}

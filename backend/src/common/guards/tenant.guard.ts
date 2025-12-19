@@ -1,9 +1,9 @@
 import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Logger,
+ Injectable,
+ CanActivate,
+ ExecutionContext,
+ ForbiddenException,
+ Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
@@ -40,65 +40,65 @@ import { AuditService } from '../../modules/audit/audit.service';
  */
 @Injectable()
 export class TenantGuard implements CanActivate {
-  private readonly logger = new Logger(TenantGuard.name);
+ private readonly logger = new Logger(TenantGuard.name);
 
-  constructor(
-    private reflector: Reflector,
-    private auditService: AuditService,
-  ) {}
+ constructor(
+ private reflector: Reflector,
+ private auditService: AuditService,
+ ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Skip tenant check for public routes (login, register, health)
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+ async canActivate(context: ExecutionContext): Promise<boolean> {
+ // Skip tenant check for public routes (login, register, health)
+ const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+ context.getHandler(),
+ context.getClass(),
+ ]);
 
-    if (isPublic) {
-      return true;
-    }
+ if (isPublic) {
+ return true;
+ }
 
-    // Extract user from request (populated by JwtAuthGuard)
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+ // Extract user from request (populated by JwtAuthGuard)
+ const request = context.switchToHttp().getRequest();
+ const user = request.user;
 
-    // If no user, allow (JwtAuthGuard will handle authentication)
-    if (!user) {
-      return true;
-    }
+ // If no user, allow (JwtAuthGuard will handle authentication)
+ if (!user) {
+ return true;
+ }
 
-    // Check if user's organization is active
-    if (!user.organization) {
-      this.logger.error(
-        `User ${user.id} has no organization relation (eager loading failed?)`,
-      );
-      throw new ForbiddenException(
-        'Access denied: Organization information unavailable',
-      );
-    }
+ // Check if user's organization is active
+ if (!user.organization) {
+ this.logger.error(
+ `User ${user.id} has no organization relation (eager loading failed?)`,
+ );
+ throw new ForbiddenException(
+ 'Access denied: Organization information unavailable',
+ );
+ }
 
-    // KILL SWITCH: Block if organization is suspended
-    if (!user.organization.isActive) {
-      // Log blocked access attempt (audit trail)
-      await this.auditService.logTenantBlocked(user.id, {
-        organizationId: user.organization.id,
-        organizationName: user.organization.name,
-        ip: request.ip,
-        userAgent: request.headers['user-agent'],
-        route: request.url,
-        method: request.method,
-      });
+ // KILL SWITCH: Block if organization is suspended
+ if (!user.organization.isActive) {
+ // Log blocked access attempt (audit trail)
+ await this.auditService.logTenantBlocked(user.id, {
+ organizationId: user.organization.id,
+ organizationName: user.organization.name,
+ ip: request.ip,
+ userAgent: request.headers['user-agent'],
+ route: request.url,
+ method: request.method,
+ });
 
-      this.logger.warn(
-        `Tenant access BLOCKED: User ${user.id} (${user.email}) from suspended organization ${user.organization.name} attempted to access ${request.method} ${request.url}`,
-      );
+ this.logger.warn(
+ `Tenant access BLOCKED: User ${user.id} (${user.email}) from suspended organization ${user.organization.name} attempted to access ${request.method} ${request.url}`,
+ );
 
-      throw new ForbiddenException(
-        'Access denied: Your organization has been suspended. Contact support.',
-      );
-    }
+ throw new ForbiddenException(
+ 'Access denied: Your organization has been suspended. Contact support.',
+ );
+ }
 
-    // Organization is active - allow access
-    return true;
-  }
+ // Organization is active - allow access
+ return true;
+ }
 }

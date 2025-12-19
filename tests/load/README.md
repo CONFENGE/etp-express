@@ -2,7 +2,7 @@
 
 Testes de carga usando [k6](https://k6.io/) para validar performance e escalabilidade do sistema.
 
-## 📦 Instalação
+## Instalação
 
 ### Windows (Chocolatey)
 
@@ -33,22 +33,22 @@ sudo apt-get install k6
 docker pull grafana/k6:latest
 ```
 
-## 🎯 Estrutura de Testes
+## Estrutura de Testes
 
 ```
 tests/load/
-├── README.md                         # Este arquivo
-├── config.js                         # Configurações globais e profiles
-├── auth-login.js                     # Load test: POST /auth/login
-├── etp-create.js                     # Load test: POST /etps
-├── section-generate.js               # Load test: POST /sections/etp/:id/generate
-├── run-progressive-load-test.sh      # Script automatizado (Bash/macOS/Linux)
-├── run-progressive-load-test.ps1     # Script automatizado (PowerShell/Windows)
-├── RESULTS_TEMPLATE.md               # Template de relatório de resultados
-└── results/                          # Outputs dos testes (gitignored)
+├── README.md # Este arquivo
+├── config.js # Configurações globais e profiles
+├── auth-login.js # Load test: POST /auth/login
+├── etp-create.js # Load test: POST /etps
+├── section-generate.js # Load test: POST /sections/etp/:id/generate
+├── run-progressive-load-test.sh # Script automatizado (Bash/macOS/Linux)
+├── run-progressive-load-test.ps1 # Script automatizado (PowerShell/Windows)
+├── RESULTS_TEMPLATE.md # Template de relatório de resultados
+└── results/ # Outputs dos testes (gitignored)
 ```
 
-## 🚀 Execução Rápida
+## Execução Rápida
 
 ### Progressive Load Test (Issue #89) - Recomendado
 
@@ -108,19 +108,19 @@ K6_PROFILE=load k6 run tests/load/auth-login.js
 K6_PROFILE=stress k6 run tests/load/auth-login.js
 ```
 
-## 🔑 Configuração de Ambiente
+## Configuração de Ambiente
 
 ### Variáveis de Ambiente
 
-| Variável          | Descrição                                       | Padrão                  |
+| Variável | Descrição | Padrão |
 | ----------------- | ----------------------------------------------- | ----------------------- |
-| `BASE_URL`        | URL base da API                                 | `http://localhost:3000` |
-| `K6_ENV`          | Ambiente (local/staging/production)             | `local`                 |
-| `K6_PROFILE`      | Profile de carga (smoke/load/stress/spike/soak) | `smoke`                 |
-| `K6_ACCESS_TOKEN` | Token JWT para autenticação                     | -                       |
-| `K6_ETP_ID`       | ID do ETP para testes de seções                 | -                       |
-| `TEST_EMAIL`      | Email do usuário de teste                       | `testuser@example.com`  |
-| `TEST_PASSWORD`   | Senha do usuário de teste                       | `Test@1234`             |
+| `BASE_URL` | URL base da API | `http://localhost:3000` |
+| `K6_ENV` | Ambiente (local/staging/production) | `local` |
+| `K6_PROFILE` | Profile de carga (smoke/load/stress/spike/soak) | `smoke` |
+| `K6_ACCESS_TOKEN` | Token JWT para autenticação | - |
+| `K6_ETP_ID` | ID do ETP para testes de seções | - |
+| `TEST_EMAIL` | Email do usuário de teste | `testuser@example.com` |
+| `TEST_PASSWORD` | Senha do usuário de teste | `Test@1234` |
 
 ### Exemplo de Uso
 
@@ -133,7 +133,7 @@ TEST_PASSWORD=Test@1234 \
 k6 run tests/load/auth-login.js
 ```
 
-## 📊 Profiles de Carga
+## Profiles de Carga
 
 ### Smoke Test
 
@@ -170,7 +170,7 @@ k6 run tests/load/auth-login.js
 - **VUs:** 10 (constante)
 - **Uso:** Validar estabilidade prolongada
 
-## 📈 Métricas Reportadas
+## Métricas Reportadas
 
 ### Métricas HTTP (padrão k6)
 
@@ -189,7 +189,7 @@ k6 run tests/load/auth-login.js
 - `section_generate_errors`: Taxa de erro de geração de seções
 - `llm_calls_total`: Total de chamadas LLM (contador)
 
-## 🎨 Outputs e Visualização
+## Outputs e Visualização
 
 ### Output no Terminal (padrão)
 
@@ -221,7 +221,7 @@ k6 run --out influxdb=http://localhost:8086/k6 tests/load/auth-login.js
 K6_CLOUD_TOKEN=<token> k6 run --out cloud tests/load/auth-login.js
 ```
 
-## 🛠️ Casos de Uso Práticos
+## Casos de Uso Práticos
 
 ### 1. Validar Performance Antes de Deploy
 
@@ -232,10 +232,10 @@ k6 run tests/load/etp-create.js
 
 # Validar thresholds (exit code 0 se passou)
 if k6 run tests/load/auth-login.js; then
-  echo "✅ Performance OK"
+ echo "✅ Performance OK"
 else
-  echo "❌ Performance degradada - deploy bloqueado"
-  exit 1
+ echo "❌ Performance degradada - deploy bloqueado"
+ exit 1
 fi
 ```
 
@@ -244,9 +244,9 @@ fi
 ```bash
 # 1. Login via curl
 TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Test@1234"}' \
-  | jq -r '.access_token')
+ -H "Content-Type: application/json" \
+ -d '{"email":"test@example.com","password":"Test@1234"}' \
+ | jq -r '.access_token')
 
 # 2. Usar token em teste
 K6_ACCESS_TOKEN="$TOKEN" k6 run tests/load/etp-create.js
@@ -257,20 +257,20 @@ K6_ACCESS_TOKEN="$TOKEN" k6 run tests/load/etp-create.js
 ```bash
 # 1. Obter token
 TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Test@1234"}' \
-  | jq -r '.access_token')
+ -H "Content-Type: application/json" \
+ -d '{"email":"test@example.com","password":"Test@1234"}' \
+ | jq -r '.access_token')
 
 # 2. Criar ETP
 ETP_ID=$(curl -s -X POST http://localhost:3000/api/etps \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{"title":"Load Test ETP","description":"ETP para teste"}' \
-  | jq -r '.id')
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer $TOKEN" \
+ -d '{"title":"Load Test ETP","description":"ETP para teste"}' \
+ | jq -r '.id')
 
 # 3. Testar geração de seções
 K6_ACCESS_TOKEN="$TOKEN" K6_ETP_ID="$ETP_ID" \
-  k6 run --vus 1 --duration 1m tests/load/section-generate.js
+ k6 run --vus 1 --duration 1m tests/load/section-generate.js
 ```
 
 ### 4. Comparar Performance Entre Versões
@@ -288,7 +288,7 @@ k6 run --out json=results/feature.json tests/load/auth-login.js
 k6 inspect results/baseline.json results/feature.json
 ```
 
-## 🚨 Thresholds e SLAs
+## Thresholds e SLAs
 
 Os testes estão configurados com os seguintes SLAs:
 
@@ -312,11 +312,11 @@ Os testes estão configurados com os seguintes SLAs:
 
 **Se um threshold falhar, o k6 retorna exit code 99.**
 
-## ⚠️ Avisos Importantes
+## ⚠ Avisos Importantes
 
 ### Custos OpenAI
 
-- ⚠️ **section-generate.js** gera custos reais de API OpenAI (~$0.01-0.05 por request)
+- ⚠ **section-generate.js** gera custos reais de API OpenAI (~$0.01-0.05 por request)
 - Use `--vus 1 --duration 1m` para testes iniciais
 - Monitore custos no dashboard OpenAI
 
@@ -332,14 +332,14 @@ Os testes estão configurados com os seguintes SLAs:
 - Use staging para validações
 - Considere impacto em custos de infra (Railway/OpenAI)
 
-## 📚 Referências
+## Referências
 
 - [k6 Documentation](https://k6.io/docs/)
 - [k6 Examples](https://k6.io/docs/examples/)
 - [Grafana Cloud k6](https://grafana.com/products/cloud/k6/)
 - [Best Practices](https://k6.io/docs/testing-guides/test-types/)
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Para adicionar novos testes:
 
@@ -349,7 +349,7 @@ Para adicionar novos testes:
 4. Documentar no README
 5. Validar com smoke test antes de commit
 
-## 📝 Changelog
+## Changelog
 
 - **2025-11-29**: Progressive load test automation scripts + results template - Issue #89
 - **2025-11-29**: Setup inicial k6 + 3 scripts base (auth, etps, sections) - Issue #88

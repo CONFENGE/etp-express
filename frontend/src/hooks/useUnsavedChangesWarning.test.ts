@@ -4,269 +4,269 @@ import { useUnsavedChangesWarning } from './useUnsavedChangesWarning';
 
 // Mock react-router-dom
 const mockBlocker = {
-  state: 'unblocked' as 'unblocked' | 'blocked' | 'proceeding',
-  proceed: vi.fn(),
-  reset: vi.fn(),
-  location: undefined,
+ state: 'unblocked' as 'unblocked' | 'blocked' | 'proceeding',
+ proceed: vi.fn(),
+ reset: vi.fn(),
+ location: undefined,
 };
 
 vi.mock('react-router-dom', () => ({
-  useBlocker: vi.fn((callback: unknown) => {
-    // Store the callback for testing
-    (mockBlocker as unknown as { _callback: unknown })._callback = callback;
-    return mockBlocker;
-  }),
+ useBlocker: vi.fn((callback: unknown) => {
+ // Store the callback for testing
+ (mockBlocker as unknown as { _callback: unknown })._callback = callback;
+ return mockBlocker;
+ }),
 }));
 
 describe('useUnsavedChangesWarning', () => {
-  let addEventListenerSpy: ReturnType<typeof vi.spyOn>;
-  let removeEventListenerSpy: ReturnType<typeof vi.spyOn>;
+ let addEventListenerSpy: ReturnType<typeof vi.spyOn>;
+ let removeEventListenerSpy: ReturnType<typeof vi.spyOn>;
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockBlocker.state = 'unblocked';
-    mockBlocker.proceed.mockClear();
-    mockBlocker.reset.mockClear();
+ beforeEach(() => {
+ vi.clearAllMocks();
+ mockBlocker.state = 'unblocked';
+ mockBlocker.proceed.mockClear();
+ mockBlocker.reset.mockClear();
 
-    addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-    removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-  });
+ addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+ removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+ });
 
-  afterEach(() => {
-    addEventListenerSpy.mockRestore();
-    removeEventListenerSpy.mockRestore();
-  });
+ afterEach(() => {
+ addEventListenerSpy.mockRestore();
+ removeEventListenerSpy.mockRestore();
+ });
 
-  describe('Initial State', () => {
-    it('should return isBlocking as false when not blocking', () => {
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: false }),
-      );
+ describe('Initial State', () => {
+ it('should return isBlocking as false when not blocking', () => {
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: false }),
+ );
 
-      expect(result.current.isBlocking).toBe(false);
-    });
+ expect(result.current.isBlocking).toBe(false);
+ });
 
-    it('should return isBlocking as true when blocker is blocked', () => {
-      mockBlocker.state = 'blocked';
+ it('should return isBlocking as true when blocker is blocked', () => {
+ mockBlocker.state = 'blocked';
 
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      expect(result.current.isBlocking).toBe(true);
-    });
-  });
+ expect(result.current.isBlocking).toBe(true);
+ });
+ });
 
-  describe('Browser Navigation Blocking', () => {
-    it('should add beforeunload listener when dirty', () => {
-      renderHook(() => useUnsavedChangesWarning({ isDirty: true }));
+ describe('Browser Navigation Blocking', () => {
+ it('should add beforeunload listener when dirty', () => {
+ renderHook(() => useUnsavedChangesWarning({ isDirty: true }));
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'beforeunload',
-        expect.any(Function),
-      );
-    });
+ expect(addEventListenerSpy).toHaveBeenCalledWith(
+ 'beforeunload',
+ expect.any(Function),
+ );
+ });
 
-    it('should add beforeunload listener when not dirty', () => {
-      renderHook(() => useUnsavedChangesWarning({ isDirty: false }));
+ it('should add beforeunload listener when not dirty', () => {
+ renderHook(() => useUnsavedChangesWarning({ isDirty: false }));
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'beforeunload',
-        expect.any(Function),
-      );
-    });
+ expect(addEventListenerSpy).toHaveBeenCalledWith(
+ 'beforeunload',
+ expect.any(Function),
+ );
+ });
 
-    it('should remove beforeunload listener on unmount', () => {
-      const { unmount } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ it('should remove beforeunload listener on unmount', () => {
+ const { unmount } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      unmount();
+ unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'beforeunload',
-        expect.any(Function),
-      );
-    });
+ expect(removeEventListenerSpy).toHaveBeenCalledWith(
+ 'beforeunload',
+ expect.any(Function),
+ );
+ });
 
-    it('should prevent unload and set returnValue when dirty', () => {
-      renderHook(() => useUnsavedChangesWarning({ isDirty: true }));
+ it('should prevent unload and set returnValue when dirty', () => {
+ renderHook(() => useUnsavedChangesWarning({ isDirty: true }));
 
-      // Get the beforeunload handler
-      const handler = addEventListenerSpy.mock.calls.find(
-        (call) => call[0] === 'beforeunload',
-      )?.[1] as EventListener;
+ // Get the beforeunload handler
+ const handler = addEventListenerSpy.mock.calls.find(
+ (call) => call[0] === 'beforeunload',
+ )?.[1] as EventListener;
 
-      const event = new Event('beforeunload') as BeforeUnloadEvent;
-      Object.defineProperty(event, 'preventDefault', {
-        value: vi.fn(),
-        writable: true,
-      });
-      Object.defineProperty(event, 'returnValue', {
-        value: '',
-        writable: true,
-      });
+ const event = new Event('beforeunload') as BeforeUnloadEvent;
+ Object.defineProperty(event, 'preventDefault', {
+ value: vi.fn(),
+ writable: true,
+ });
+ Object.defineProperty(event, 'returnValue', {
+ value: '',
+ writable: true,
+ });
 
-      const result = handler(event);
+ const result = handler(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(event.returnValue).toBe(
-        'Você tem alterações não salvas. Deseja sair mesmo assim?',
-      );
-      expect(result).toBe(
-        'Você tem alterações não salvas. Deseja sair mesmo assim?',
-      );
-    });
+ expect(event.preventDefault).toHaveBeenCalled();
+ expect(event.returnValue).toBe(
+ 'Você tem alterações não salvas. Deseja sair mesmo assim?',
+ );
+ expect(result).toBe(
+ 'Você tem alterações não salvas. Deseja sair mesmo assim?',
+ );
+ });
 
-    it('should not prevent unload when not dirty', () => {
-      renderHook(() => useUnsavedChangesWarning({ isDirty: false }));
+ it('should not prevent unload when not dirty', () => {
+ renderHook(() => useUnsavedChangesWarning({ isDirty: false }));
 
-      // Get the beforeunload handler
-      const handler = addEventListenerSpy.mock.calls.find(
-        (call) => call[0] === 'beforeunload',
-      )?.[1] as EventListener;
+ // Get the beforeunload handler
+ const handler = addEventListenerSpy.mock.calls.find(
+ (call) => call[0] === 'beforeunload',
+ )?.[1] as EventListener;
 
-      const event = new Event('beforeunload') as BeforeUnloadEvent;
-      Object.defineProperty(event, 'preventDefault', {
-        value: vi.fn(),
-        writable: true,
-      });
-      Object.defineProperty(event, 'returnValue', {
-        value: '',
-        writable: true,
-      });
+ const event = new Event('beforeunload') as BeforeUnloadEvent;
+ Object.defineProperty(event, 'preventDefault', {
+ value: vi.fn(),
+ writable: true,
+ });
+ Object.defineProperty(event, 'returnValue', {
+ value: '',
+ writable: true,
+ });
 
-      handler(event);
+ handler(event);
 
-      expect(event.preventDefault).not.toHaveBeenCalled();
-    });
+ expect(event.preventDefault).not.toHaveBeenCalled();
+ });
 
-    it('should use custom message in beforeunload', () => {
-      const customMessage = 'Custom warning message';
-      renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true, message: customMessage }),
-      );
+ it('should use custom message in beforeunload', () => {
+ const customMessage = 'Custom warning message';
+ renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true, message: customMessage }),
+ );
 
-      const handler = addEventListenerSpy.mock.calls.find(
-        (call) => call[0] === 'beforeunload',
-      )?.[1] as EventListener;
+ const handler = addEventListenerSpy.mock.calls.find(
+ (call) => call[0] === 'beforeunload',
+ )?.[1] as EventListener;
 
-      const event = new Event('beforeunload') as BeforeUnloadEvent;
-      Object.defineProperty(event, 'preventDefault', {
-        value: vi.fn(),
-        writable: true,
-      });
-      Object.defineProperty(event, 'returnValue', {
-        value: '',
-        writable: true,
-      });
+ const event = new Event('beforeunload') as BeforeUnloadEvent;
+ Object.defineProperty(event, 'preventDefault', {
+ value: vi.fn(),
+ writable: true,
+ });
+ Object.defineProperty(event, 'returnValue', {
+ value: '',
+ writable: true,
+ });
 
-      const result = handler(event);
+ const result = handler(event);
 
-      expect(event.returnValue).toBe(customMessage);
-      expect(result).toBe(customMessage);
-    });
-  });
+ expect(event.returnValue).toBe(customMessage);
+ expect(result).toBe(customMessage);
+ });
+ });
 
-  describe('proceed and reset', () => {
-    it('should call blocker.proceed when proceed is called', () => {
-      mockBlocker.state = 'blocked';
+ describe('proceed and reset', () => {
+ it('should call blocker.proceed when proceed is called', () => {
+ mockBlocker.state = 'blocked';
 
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      act(() => {
-        result.current.proceed();
-      });
+ act(() => {
+ result.current.proceed();
+ });
 
-      expect(mockBlocker.proceed).toHaveBeenCalled();
-    });
+ expect(mockBlocker.proceed).toHaveBeenCalled();
+ });
 
-    it('should not call blocker.proceed when not blocked', () => {
-      mockBlocker.state = 'unblocked';
+ it('should not call blocker.proceed when not blocked', () => {
+ mockBlocker.state = 'unblocked';
 
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      act(() => {
-        result.current.proceed();
-      });
+ act(() => {
+ result.current.proceed();
+ });
 
-      expect(mockBlocker.proceed).not.toHaveBeenCalled();
-    });
+ expect(mockBlocker.proceed).not.toHaveBeenCalled();
+ });
 
-    it('should call blocker.reset when reset is called', () => {
-      mockBlocker.state = 'blocked';
+ it('should call blocker.reset when reset is called', () => {
+ mockBlocker.state = 'blocked';
 
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      act(() => {
-        result.current.reset();
-      });
+ act(() => {
+ result.current.reset();
+ });
 
-      expect(mockBlocker.reset).toHaveBeenCalled();
-    });
+ expect(mockBlocker.reset).toHaveBeenCalled();
+ });
 
-    it('should not call blocker.reset when not blocked', () => {
-      mockBlocker.state = 'unblocked';
+ it('should not call blocker.reset when not blocked', () => {
+ mockBlocker.state = 'unblocked';
 
-      const { result } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      act(() => {
-        result.current.reset();
-      });
+ act(() => {
+ result.current.reset();
+ });
 
-      expect(mockBlocker.reset).not.toHaveBeenCalled();
-    });
-  });
+ expect(mockBlocker.reset).not.toHaveBeenCalled();
+ });
+ });
 
-  describe('Hook Stability', () => {
-    it('should maintain stable proceed reference', () => {
-      const { result, rerender } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ describe('Hook Stability', () => {
+ it('should maintain stable proceed reference', () => {
+ const { result, rerender } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      const proceedRef = result.current.proceed;
+ const proceedRef = result.current.proceed;
 
-      rerender();
+ rerender();
 
-      expect(result.current.proceed).toBe(proceedRef);
-    });
+ expect(result.current.proceed).toBe(proceedRef);
+ });
 
-    it('should maintain stable reset reference', () => {
-      const { result, rerender } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ it('should maintain stable reset reference', () => {
+ const { result, rerender } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      const resetRef = result.current.reset;
+ const resetRef = result.current.reset;
 
-      rerender();
+ rerender();
 
-      expect(result.current.reset).toBe(resetRef);
-    });
-  });
+ expect(result.current.reset).toBe(resetRef);
+ });
+ });
 
-  describe('State Transitions', () => {
-    it('should update isBlocking when blocker state changes', () => {
-      mockBlocker.state = 'unblocked';
+ describe('State Transitions', () => {
+ it('should update isBlocking when blocker state changes', () => {
+ mockBlocker.state = 'unblocked';
 
-      const { result, rerender } = renderHook(() =>
-        useUnsavedChangesWarning({ isDirty: true }),
-      );
+ const { result, rerender } = renderHook(() =>
+ useUnsavedChangesWarning({ isDirty: true }),
+ );
 
-      expect(result.current.isBlocking).toBe(false);
+ expect(result.current.isBlocking).toBe(false);
 
-      // Simulate blocker becoming blocked
-      mockBlocker.state = 'blocked';
-      rerender();
+ // Simulate blocker becoming blocked
+ mockBlocker.state = 'blocked';
+ rerender();
 
-      expect(result.current.isBlocking).toBe(true);
-    });
-  });
+ expect(result.current.isBlocking).toBe(true);
+ });
+ });
 });

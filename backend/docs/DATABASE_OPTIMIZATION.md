@@ -1,4 +1,4 @@
-# 🚀 Database Performance Optimization Guide
+# Database Performance Optimization Guide
 
 > **Issue #108** - Production Tuning & Performance Best Practices
 
@@ -8,17 +8,17 @@
 
 ---
 
-## 📊 Executive Summary
+## Executive Summary
 
 This document outlines the database performance optimizations implemented in ETP Express to support **100+ concurrent users** with response times meeting production SLAs.
 
 ### Performance Targets (SLAs)
 
-| Endpoint                | Target (p95) | Status |
+| Endpoint | Target (p95) | Status |
 |-------------------------|--------------|--------|
-| `GET /api/etps`         | < 200ms      | ✅     |
-| `GET /api/sections/:id` | < 100ms      | ✅     |
-| `GET /api/dashboard`    | < 500ms      | ✅     |
+| `GET /api/etps` | < 200ms | ✅ |
+| `GET /api/sections/:id` | < 100ms | ✅ |
+| `GET /api/dashboard` | < 500ms | ✅ |
 | `POST /api/sections/generate` | < 5s (AI call) | ✅ |
 
 ### Optimizations Implemented
@@ -30,7 +30,7 @@ This document outlines the database performance optimizations implemented in ETP
 
 ---
 
-## 1️⃣ Connection Pooling Configuration
+## Connection Pooling Configuration
 
 ### Production Settings (Railway)
 
@@ -39,10 +39,10 @@ Railway PostgreSQL has `max_connections=100` by default. Our pool configuration:
 ```typescript
 // app.module.ts
 extra: {
-  max: 50,                    // Production: 50 connections (leaves 50 for backups/workers)
-  min: 10,                    // Always maintain 10 warm connections
-  idleTimeoutMillis: 30000,   // Close idle connections after 30s
-  connectionTimeoutMillis: 5000, // Fail fast if pool exhausted
+ max: 50, // Production: 50 connections (leaves 50 for backups/workers)
+ min: 10, // Always maintain 10 warm connections
+ idleTimeoutMillis: 30000, // Close idle connections after 30s
+ connectionTimeoutMillis: 5000, // Fail fast if pool exhausted
 }
 ```
 
@@ -58,7 +58,7 @@ DB_RETRY_ATTEMPTS=3
 DB_RETRY_DELAY=1000
 
 # Development (local)
-DB_POOL_MAX=10  # Lower for local dev
+DB_POOL_MAX=10 # Lower for local dev
 ```
 
 ### Benefits
@@ -80,43 +80,43 @@ curl http://localhost:3001/api/metrics | grep database_connections
 
 ---
 
-## 2️⃣ Performance Indexes
+## Performance Indexes
 
 ### Created Indexes (Migration 1763341020330)
 
 #### Core Indexes (Required)
 
 1. **`idx_etps_created_by`**
-   - **Column:** `etps.created_by` (FK to users)
-   - **Usage:** Dashboard queries, user-specific ETP lists
-   - **Impact:** GET `/api/etps?userId=...` — ~500ms → ~50ms
+ - **Column:** `etps.created_by` (FK to users)
+ - **Usage:** Dashboard queries, user-specific ETP lists
+ - **Impact:** GET `/api/etps?userId=...` — ~500ms → ~50ms
 
 2. **`idx_etp_sections_etp_id`**
-   - **Column:** `etp_sections.etp_id` (FK to etps)
-   - **Usage:** Listing all sections of an ETP
-   - **Impact:** GET `/api/sections/etp/:id` — ~300ms → ~30ms
+ - **Column:** `etp_sections.etp_id` (FK to etps)
+ - **Usage:** Listing all sections of an ETP
+ - **Impact:** GET `/api/sections/etp/:id` — ~300ms → ~30ms
 
 3. **`idx_etp_versions_etp_id`**
-   - **Column:** `etp_versions.etp_id` (FK to etps)
-   - **Usage:** Version history queries
-   - **Impact:** GET `/api/versions/etp/:id` — ~200ms → ~20ms
+ - **Column:** `etp_versions.etp_id` (FK to etps)
+ - **Usage:** Version history queries
+ - **Impact:** GET `/api/versions/etp/:id` — ~200ms → ~20ms
 
 #### Composite Indexes (Bonus)
 
 4. **`idx_etp_sections_etp_order`**
-   - **Columns:** `etp_sections (etp_id, order)`
-   - **Usage:** Ordered section retrieval (common in UI)
-   - **Impact:** Sorting sections within an ETP (~2x faster)
+ - **Columns:** `etp_sections (etp_id, order)`
+ - **Usage:** Ordered section retrieval (common in UI)
+ - **Impact:** Sorting sections within an ETP (~2x faster)
 
 5. **`idx_etps_status`**
-   - **Column:** `etps.status`
-   - **Usage:** Dashboard filtering by status (draft, completed, etc.)
-   - **Impact:** Status-based queries ~3x faster
+ - **Column:** `etps.status`
+ - **Usage:** Dashboard filtering by status (draft, completed, etc.)
+ - **Impact:** Status-based queries ~3x faster
 
 6. **`idx_etps_created_by_status`**
-   - **Columns:** `etps (created_by, status)`
-   - **Usage:** Combined filters (most common dashboard query)
-   - **Impact:** `?userId=...&status=draft` — ~10x faster
+ - **Columns:** `etps (created_by, status)`
+ - **Usage:** Combined filters (most common dashboard query)
+ - **Impact:** `?userId=...&status=draft` — ~10x faster
 
 ### Zero-Downtime Index Creation
 
@@ -124,7 +124,7 @@ All indexes created with `CONCURRENTLY` keyword:
 
 ```sql
 CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_etps_created_by"
-  ON "etps" ("created_by");
+ ON "etps" ("created_by");
 ```
 
 **Benefits:**
@@ -140,10 +140,10 @@ railway run psql $DATABASE_URL
 
 # In psql
 SELECT
-  schemaname,
-  tablename,
-  indexname,
-  indexdef
+ schemaname,
+ tablename,
+ indexname,
+ indexdef
 FROM pg_indexes
 WHERE tablename IN ('etps', 'etp_sections', 'etp_versions')
 ORDER BY tablename, indexname;
@@ -153,7 +153,7 @@ Expected output: **6 indexes** listed above.
 
 ---
 
-## 3️⃣ N+1 Query Prevention
+## N+1 Query Prevention
 
 ### Audit Results
 
@@ -165,8 +165,8 @@ Expected output: **6 indexes** listed above.
 ```typescript
 // ✅ OPTIMIZED - Uses leftJoinAndSelect
 const queryBuilder = this.etpsRepository
-  .createQueryBuilder('etp')
-  .leftJoinAndSelect('etp.createdBy', 'user'); // Eager loads user in 1 query
+ .createQueryBuilder('etp')
+ .leftJoinAndSelect('etp.createdBy', 'user'); // Eager loads user in 1 query
 
 // Result: 1 query total (JOIN)
 ```
@@ -175,8 +175,8 @@ const queryBuilder = this.etpsRepository
 ```typescript
 // ✅ OPTIMIZED - Uses relations array
 const etp = await this.etpsRepository.findOne({
-  where: { id },
-  relations: ['createdBy', 'sections', 'versions'], // 1 query with JOINs
+ where: { id },
+ relations: ['createdBy', 'sections', 'versions'], // 1 query with JOINs
 });
 
 // Result: 1 query total (3 JOINs)
@@ -186,8 +186,8 @@ const etp = await this.etpsRepository.findOne({
 ```typescript
 // ✅ OPTIMIZED
 const section = await this.sectionsRepository.findOne({
-  where: { id },
-  relations: ['etp'], // Eager loads parent ETP
+ where: { id },
+ relations: ['etp'], // Eager loads parent ETP
 });
 
 // Result: 1 query total
@@ -201,7 +201,7 @@ const section = await this.sectionsRepository.findOne({
 
 ---
 
-## 4️⃣ Slow Query Monitoring
+## Slow Query Monitoring
 
 ### PostgreSQL Configuration
 
@@ -212,9 +212,9 @@ Navigate to: **Railway > Database > Settings > Advanced Config**
 Add custom PostgreSQL parameters:
 
 ```ini
-log_min_duration_statement = 1000   # Log queries > 1 second
-log_statement = 'mod'                # Log all DDL/DML statements
-log_duration = on                    # Include duration in logs
+log_min_duration_statement = 1000 # Log queries > 1 second
+log_statement = 'mod' # Log all DDL/DML statements
+log_duration = on # Include duration in logs
 ```
 
 #### View Slow Queries
@@ -225,9 +225,9 @@ railway logs --service postgresql
 
 # Or via pg_stat_statements (if enabled)
 SELECT
-  query,
-  mean_exec_time,
-  calls
+ query,
+ mean_exec_time,
+ calls
 FROM pg_stat_statements
 ORDER BY mean_exec_time DESC
 LIMIT 10;
@@ -250,7 +250,7 @@ WHERE created_by = 'user-uuid-123' AND status = 'draft';
 
 ---
 
-## 5️⃣ Performance Benchmarks
+## Performance Benchmarks
 
 ### Test Environment
 
@@ -260,13 +260,13 @@ WHERE created_by = 'user-uuid-123' AND status = 'draft';
 
 ### Results (Before vs After)
 
-| Metric                | Before | After  | Improvement |
+| Metric | Before | After | Improvement |
 |-----------------------|--------|--------|-------------|
-| GET /api/etps (p95)   | 847ms  | 62ms   | **13.7x faster** |
-| GET /api/sections/:id | 421ms  | 28ms   | **15x faster** |
-| GET /api/dashboard    | 1,230ms | 387ms | **3.2x faster** |
-| Connection errors     | 12%    | 0.1%   | **120x reduction** |
-| Pool exhaustion       | Yes    | No     | ✅ Eliminated |
+| GET /api/etps (p95) | 847ms | 62ms | **13.7x faster** |
+| GET /api/sections/:id | 421ms | 28ms | **15x faster** |
+| GET /api/dashboard | 1,230ms | 387ms | **3.2x faster** |
+| Connection errors | 12% | 0.1% | **120x reduction** |
+| Pool exhaustion | Yes | No | ✅ Eliminated |
 
 ### Load Testing Script
 
@@ -285,61 +285,61 @@ artillery quick --count 100 --num 50 http://localhost:3001/api/etps
 
 ---
 
-## 6️⃣ Production Monitoring
+## Production Monitoring
 
 ### Key Metrics to Track
 
 1. **Database Connections** (`/api/metrics`)
-   ```
-   database_connections_active    # Should be < 50
-   database_connections_total     # Should be < 70
-   database_connections_max = 100
-   ```
+ ```
+ database_connections_active # Should be < 50
+ database_connections_total # Should be < 70
+ database_connections_max = 100
+ ```
 
 2. **Query Performance** (Railway Dashboard)
-   - Slow queries (> 1s): **Target: 0 per hour**
-   - Average query time: **Target: < 50ms**
-   - Connection timeouts: **Target: < 0.1%**
+ - Slow queries (> 1s): **Target: 0 per hour**
+ - Average query time: **Target: < 50ms**
+ - Connection timeouts: **Target: < 0.1%**
 
 3. **Pool Health**
-   ```bash
-   # Check pool utilization
-   curl http://localhost:3001/api/metrics | grep database_connections_active
+ ```bash
+ # Check pool utilization
+ curl http://localhost:3001/api/metrics | grep database_connections_active
 
-   # Alert if active > 45 (90% utilization)
-   ```
+ # Alert if active > 45 (90% utilization)
+ ```
 
 ### Alerting Rules (Sentry/Railway)
 
 ```yaml
 # Railway Webhooks (future implementation)
 alerts:
-  - name: "High DB Connection Usage"
-    condition: database_connections_active > 45
-    action: notify_slack
+ - name: "High DB Connection Usage"
+ condition: database_connections_active > 45
+ action: notify_slack
 
-  - name: "Slow Query Detected"
-    condition: query_duration > 1000ms
-    action: log_to_sentry
+ - name: "Slow Query Detected"
+ condition: query_duration > 1000ms
+ action: log_to_sentry
 
-  - name: "Connection Pool Exhausted"
-    condition: connection_timeout_errors > 0
-    action: page_oncall
+ - name: "Connection Pool Exhausted"
+ condition: connection_timeout_errors > 0
+ action: page_oncall
 ```
 
 ---
 
-## 7️⃣ Future Optimizations (Not Implemented)
+## Future Optimizations (Not Implemented)
 
 ### Read Replicas (if needed)
 ```typescript
 // TypeORM supports read replicas natively
 replication: {
-  master: { url: process.env.DATABASE_URL },
-  slaves: [
-    { url: process.env.DATABASE_READ_REPLICA_1 },
-    { url: process.env.DATABASE_READ_REPLICA_2 },
-  ]
+ master: { url: process.env.DATABASE_URL },
+ slaves: [
+ { url: process.env.DATABASE_READ_REPLICA_1 },
+ { url: process.env.DATABASE_READ_REPLICA_2 },
+ ]
 }
 ```
 
@@ -357,7 +357,7 @@ async findAll() { ... }
 
 ---
 
-## 8️⃣ Troubleshooting
+## Troubleshooting
 
 ### Issue: "Connection Pool Exhausted"
 
@@ -403,7 +403,7 @@ EXPLAIN ANALYZE <your-slow-query>;
 
 ---
 
-## 9️⃣ Deployment Checklist
+## Deployment Checklist
 
 Before deploying to production:
 
@@ -418,7 +418,7 @@ Before deploying to production:
 
 ---
 
-## 🔟 References
+## References
 
 - **TypeORM Connection Pooling:** https://typeorm.io/data-source-options#common-data-source-options
 - **PostgreSQL pg_stat_statements:** https://www.postgresql.org/docs/current/pgstatstatements.html
@@ -427,7 +427,7 @@ Before deploying to production:
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 ### 2025-11-16 - Initial Implementation (#108)
 

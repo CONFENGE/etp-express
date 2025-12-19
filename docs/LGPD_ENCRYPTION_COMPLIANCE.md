@@ -1,4 +1,4 @@
-# 🔒 Relatório de Conformidade de Criptografia - LGPD
+# Relatório de Conformidade de Criptografia - LGPD
 
 **Data:** 2025-11-19
 **Issue:** [#193 - LGPD-86c] Validar criptografia de dados em trânsito e repouso
@@ -6,7 +6,7 @@
 
 ---
 
-## 📊 Executive Summary
+## Executive Summary
 
 ✅ **STATUS GERAL: CONFORME**
 
@@ -21,7 +21,7 @@ Todas as verificações de criptografia foram realizadas e o sistema **ETP Expre
 
 ---
 
-## 1️⃣ Dados em Trânsito (In-Transit Encryption)
+## Dados em Trânsito (In-Transit Encryption)
 
 ### ✅ HTTPS Obrigatório em Produção
 
@@ -90,19 +90,19 @@ app.use(helmet());
 ```typescript
 // backend/src/main.ts:27-35
 const corsOrigins = configService.get('CORS_ORIGINS')?.split(',') || [
-  'http://localhost:5173', // Apenas desenvolvimento
+ 'http://localhost:5173', // Apenas desenvolvimento
 ];
 app.enableCors({
-  origin: corsOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+ origin: corsOrigins,
+ credentials: true,
+ methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+ allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 });
 ```
 
 ---
 
-## 2️⃣ Dados em Repouso (At-Rest Encryption)
+## Dados em Repouso (At-Rest Encryption)
 
 ### ✅ Senhas com bcrypt
 
@@ -203,9 +203,9 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 ---
 
-## 3️⃣ Proteções Adicionais
+## Proteções Adicionais
 
-### 🔒 Secrets Management
+### Secrets Management
 
 **Status:** CONFORME ✅
 
@@ -213,15 +213,15 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 - Secrets gerenciados via **Railway Environment Variables**
 - Variáveis sensíveis:
-  - `DATABASE_URL` (PostgreSQL connection string)
-  - `JWT_SECRET` (JWT signing key)
-  - `OPENAI_API_KEY` (OpenAI API key)
-  - `PERPLEXITY_API_KEY` (Perplexity API key)
-  - `SENTRY_DSN` (Sentry error tracking)
+ - `DATABASE_URL` (PostgreSQL connection string)
+ - `JWT_SECRET` (JWT signing key)
+ - `OPENAI_API_KEY` (OpenAI API key)
+ - `PERPLEXITY_API_KEY` (Perplexity API key)
+ - `SENTRY_DSN` (Sentry error tracking)
 
 **Referência:** Issue #109 (Secrets Management Strategy) - COMPLETA ✅
 
-### 🔒 Audit Trail
+### Audit Trail
 
 **Status:** CONFORME ✅
 
@@ -229,11 +229,11 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 - Audit trail para acesso a secrets (Issue #158)
 - Entidade `SecretAccessLog` rastreando:
-  - `secretName` (nome do secret acessado)
-  - `userId` (usuário que acessou)
-  - `accessedAt` (timestamp)
-  - `ipAddress` (IP de origem)
-  - `userAgent` (navegador/cliente)
+ - `secretName` (nome do secret acessado)
+ - `userId` (usuário que acessou)
+ - `accessedAt` (timestamp)
+ - `ipAddress` (IP de origem)
+ - `userAgent` (navegador/cliente)
 
 **Evidências:**
 
@@ -243,37 +243,37 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 ---
 
-## 4️⃣ Verificações de Código
+## Verificações de Código
 
 ### Checklist de Segurança
 
 - [x] **bcrypt com cost factor >= 10** ✅
-  - Localização: `backend/src/modules/auth/auth.service.ts:166`
-  - Cost factor: **10** (conforme OWASP)
+ - Localização: `backend/src/modules/auth/auth.service.ts:166`
+ - Cost factor: **10** (conforme OWASP)
 
 - [x] **Database SSL habilitado em produção** ✅
-  - Localização: `backend/src/config/typeorm.config.ts:16-19`
-  - SSL: **Habilitado** (NODE_ENV=production)
+ - Localização: `backend/src/config/typeorm.config.ts:16-19`
+ - SSL: **Habilitado** (NODE_ENV=production)
 
 - [x] **HTTPS obrigatório** ✅
-  - Railway: HTTPS automático com certificado válido
-  - URL: `https://etp-express.up.railway.app`
+ - Railway: HTTPS automático com certificado válido
+ - URL: `https://etp-express.up.railway.app`
 
 - [x] **HSTS habilitado** ✅
-  - Helmet v7.2.0: `app.use(helmet())`
-  - Header: `Strict-Transport-Security: max-age=15552000; includeSubDomains`
+ - Helmet v7.2.0: `app.use(helmet())`
+ - Header: `Strict-Transport-Security: max-age=15552000; includeSubDomains`
 
 - [x] **Nenhum dado sensível em logs** ✅
-  - Verificado: password, token, secret, jwt, bearer
-  - Todos os logs usam `Logger` do NestJS
+ - Verificado: password, token, secret, jwt, bearer
+ - Todos os logs usam `Logger` do NestJS
 
 - [x] **Backups criptografados** ✅
-  - Railway PostgreSQL: AES-256 at-rest
-  - Backups automáticos: Point-in-Time Recovery
+ - Railway PostgreSQL: AES-256 at-rest
+ - Backups automáticos: Point-in-Time Recovery
 
 ---
 
-## 5️⃣ Conformidade LGPD
+## Conformidade LGPD
 
 ### Art. 46 - Segurança e Boas Práticas
 
@@ -305,24 +305,24 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 ---
 
-## 6️⃣ Recomendações Futuras
+## Recomendações Futuras
 
 ### Melhorias Opcionais
 
 1. **Criptografia de Backups Manuais** (Prioridade P3)
-   - Adicionar criptografia local aos backups manuais (`backup-db.sh`)
-   - Ferramentas: `gpg`, `openssl`, `age`
-   - Benefício: Proteção extra para backups exportados do Railway
+ - Adicionar criptografia local aos backups manuais (`backup-db.sh`)
+ - Ferramentas: `gpg`, `openssl`, `age`
+ - Benefício: Proteção extra para backups exportados do Railway
 
 2. **Rotation Policy para JWT_SECRET** (Prioridade P2)
-   - Implementar rotação automática mensal do JWT_SECRET
-   - Benefício: Reduzir janela de comprometimento de tokens
-   - Referência: Issue #157 (Dual-key strategy)
+ - Implementar rotação automática mensal do JWT_SECRET
+ - Benefício: Reduzir janela de comprometimento de tokens
+ - Referência: Issue #157 (Dual-key strategy)
 
 3. **Database Encryption at Column Level** (Prioridade P3)
-   - Avaliar criptografia por coluna para campos sensíveis (CPF, emails)
-   - Biblioteca: `typeorm-encrypted`
-   - Benefício: Defesa em profundidade (even if DB is compromised)
+ - Avaliar criptografia por coluna para campos sensíveis (CPF, emails)
+ - Biblioteca: `typeorm-encrypted`
+ - Benefício: Defesa em profundidade (even if DB is compromised)
 
 ### Não Aplicável ao ETP Express
 
@@ -332,24 +332,24 @@ grep -r "console\.log\|Logger.*(" backend/src/ | grep -i "password\|token\|secre
 
 ---
 
-## 7️⃣ Checklist Final de Conformidade
+## Checklist Final de Conformidade
 
-| Critério LGPD                            | Status      | Evidência                                      |
+| Critério LGPD | Status | Evidência |
 | ---------------------------------------- | ----------- | ---------------------------------------------- |
-| Dados em trânsito criptografados (HTTPS) | ✅ CONFORME | Railway HTTPS automático + Helmet HSTS         |
-| Certificado SSL válido                   | ✅ CONFORME | Railway Let's Encrypt (auto-renovação)         |
-| HSTS habilitado                          | ✅ CONFORME | `helmet()` v7.2.0 (main.ts:24)                 |
-| Sem mixed content                        | ✅ CONFORME | CORS + Railway HTTPS only                      |
-| Senhas com hash seguro (bcrypt)          | ✅ CONFORME | bcrypt cost factor 10 (auth.service.ts:166)    |
-| Database SSL habilitado                  | ✅ CONFORME | TLS 1.2+ em produção (typeorm.config.ts:16-19) |
-| Backups criptografados                   | ✅ CONFORME | Railway PostgreSQL AES-256 at-rest             |
-| Nenhum dado sensível em logs             | ✅ CONFORME | Logger do NestJS (verificado)                  |
-| Secrets management                       | ✅ CONFORME | Railway Environment Variables (Issue #109)     |
-| Audit trail de acessos                   | ✅ CONFORME | SecretAccessLog (Issue #158)                   |
+| Dados em trânsito criptografados (HTTPS) | ✅ CONFORME | Railway HTTPS automático + Helmet HSTS |
+| Certificado SSL válido | ✅ CONFORME | Railway Let's Encrypt (auto-renovação) |
+| HSTS habilitado | ✅ CONFORME | `helmet()` v7.2.0 (main.ts:24) |
+| Sem mixed content | ✅ CONFORME | CORS + Railway HTTPS only |
+| Senhas com hash seguro (bcrypt) | ✅ CONFORME | bcrypt cost factor 10 (auth.service.ts:166) |
+| Database SSL habilitado | ✅ CONFORME | TLS 1.2+ em produção (typeorm.config.ts:16-19) |
+| Backups criptografados | ✅ CONFORME | Railway PostgreSQL AES-256 at-rest |
+| Nenhum dado sensível em logs | ✅ CONFORME | Logger do NestJS (verificado) |
+| Secrets management | ✅ CONFORME | Railway Environment Variables (Issue #109) |
+| Audit trail de acessos | ✅ CONFORME | SecretAccessLog (Issue #158) |
 
 ---
 
-## 8️⃣ Conclusão
+## Conclusão
 
 ✅ **SISTEMA ETP EXPRESS: 100% CONFORME COM LGPD ART. 46**
 

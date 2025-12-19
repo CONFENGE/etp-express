@@ -44,20 +44,20 @@ For each task:
 
 ```
 Task tool (general-purpose):
-  description: "Implement Task N: [task name]"
-  prompt: |
-    You are implementing Task N from [plan-file].
+ description: "Implement Task N: [task name]"
+ prompt: |
+ You are implementing Task N from [plan-file].
 
-    Read that task carefully. Your job is to:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
-    3. Verify implementation works
-    4. Commit your work
-    5. Report back
+ Read that task carefully. Your job is to:
+ 1. Implement exactly what the task specifies
+ 2. Write tests (following TDD if task says to)
+ 3. Verify implementation works
+ 4. Commit your work
+ 5. Report back
 
-    Work from: [directory]
+ Work from: [directory]
 
-    Report: What you implemented, what you tested, test results, files changed, any issues
+ Report: What you implemented, what you tested, test results, files changed, any issues
 ```
 
 **Subagent reports back** with summary of work.
@@ -68,13 +68,13 @@ Task tool (general-purpose):
 
 ```
 Task tool (superpowers:code-reviewer):
-  Use template at requesting-code-review/code-reviewer.md
+ Use template at requesting-code-review/code-reviewer.md
 
-  WHAT_WAS_IMPLEMENTED: [from subagent's report]
-  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [commit before task]
-  HEAD_SHA: [current commit]
-  DESCRIPTION: [task summary]
+ WHAT_WAS_IMPLEMENTED: [from subagent's report]
+ PLAN_OR_REQUIREMENTS: Task N from [plan-file]
+ BASE_SHA: [commit before task]
+ HEAD_SHA: [current commit]
+ DESCRIPTION: [task summary]
 ```
 
 **Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment

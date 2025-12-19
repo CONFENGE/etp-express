@@ -32,4 +32,4 @@ stripeCustomerId: string | null;
 
 ## Prioridade
 
-🔴 **CRÍTICA** - Bloqueia deploy em produção
+ **CRÍTICA** - Bloqueia deploy em produção

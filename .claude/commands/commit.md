@@ -31,18 +31,18 @@ Identifique:
 
 ### 3. Classificar Tipo de Commit
 
-| Tipo       | Quando Usar                              |
+| Tipo | Quando Usar |
 | ---------- | ---------------------------------------- |
-| `feat`     | Nova funcionalidade                      |
-| `fix`      | Correcao de bug                          |
+| `feat` | Nova funcionalidade |
+| `fix` | Correcao de bug |
 | `refactor` | Refatoracao sem mudanca de comportamento |
-| `test`     | Adicao ou correcao de testes             |
-| `docs`     | Documentacao                             |
-| `chore`    | Tarefas de manutencao                    |
-| `perf`     | Melhoria de performance                  |
-| `security` | Correcao de vulnerabilidade              |
-| `style`    | Formatacao, espacos, etc.                |
-| `ci`       | Mudancas em CI/CD                        |
+| `test` | Adicao ou correcao de testes |
+| `docs` | Documentacao |
+| `chore` | Tarefas de manutencao |
+| `perf` | Melhoria de performance |
+| `security` | Correcao de vulnerabilidade |
+| `style` | Formatacao, espacos, etc. |
+| `ci` | Mudancas em CI/CD |
 
 ### 4. Identificar Escopo
 

@@ -12,35 +12,35 @@ Esta skill e ativada automaticamente quando voce edita arquivos em `backend/src/
 
 ```
 backend/src/modules/<modulo>/
-├── <modulo>.module.ts       # Definicao do modulo
-├── <modulo>.controller.ts   # Endpoints REST
-├── <modulo>.service.ts      # Business logic
+├── <modulo>.module.ts # Definicao do modulo
+├── <modulo>.controller.ts # Endpoints REST
+├── <modulo>.service.ts # Business logic
 ├── dto/
-│   ├── create-<modulo>.dto.ts
-│   └── update-<modulo>.dto.ts
+│ ├── create-<modulo>.dto.ts
+│ └── update-<modulo>.dto.ts
 ├── entities/
-│   └── <modulo>.entity.ts
-└── <modulo>.spec.ts         # Testes unitarios
+│ └── <modulo>.entity.ts
+└── <modulo>.spec.ts # Testes unitarios
 ```
 
 ### Controllers
 
 ```typescript
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards,
-  HttpCode,
-  HttpStatus,
+ Controller,
+ Get,
+ Post,
+ Body,
+ Param,
+ UseGuards,
+ HttpCode,
+ HttpStatus,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
+ ApiTags,
+ ApiOperation,
+ ApiResponse,
+ ApiBearerAuth,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -49,22 +49,22 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('modulo')
 export class ModuloController {
-  constructor(private readonly service: ModuloService) {}
+ constructor(private readonly service: ModuloService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Listar todos' })
-  @ApiResponse({ status: 200, description: 'Lista retornada' })
-  async findAll() {
-    return this.service.findAll();
-  }
+ @Get()
+ @ApiOperation({ summary: 'Listar todos' })
+ @ApiResponse({ status: 200, description: 'Lista retornada' })
+ async findAll() {
+ return this.service.findAll();
+ }
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar novo' })
-  @ApiResponse({ status: 201, description: 'Criado com sucesso' })
-  async create(@Body() dto: CreateModuloDto) {
-    return this.service.create(dto);
-  }
+ @Post()
+ @HttpCode(HttpStatus.CREATED)
+ @ApiOperation({ summary: 'Criar novo' })
+ @ApiResponse({ status: 201, description: 'Criado com sucesso' })
+ async create(@Body() dto: CreateModuloDto) {
+ return this.service.create(dto);
+ }
 }
 ```
 
@@ -77,25 +77,25 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ModuloService {
-  private readonly logger = new Logger(ModuloService.name);
+ private readonly logger = new Logger(ModuloService.name);
 
-  constructor(
-    @InjectRepository(ModuloEntity)
-    private readonly repository: Repository<ModuloEntity>,
-  ) {}
+ constructor(
+ @InjectRepository(ModuloEntity)
+ private readonly repository: Repository<ModuloEntity>,
+ ) {}
 
-  async findAll(): Promise<ModuloEntity[]> {
-    this.logger.log('Buscando todos os registros');
-    return this.repository.find();
-  }
+ async findAll(): Promise<ModuloEntity[]> {
+ this.logger.log('Buscando todos os registros');
+ return this.repository.find();
+ }
 
-  async findOne(id: string): Promise<ModuloEntity> {
-    const entity = await this.repository.findOne({ where: { id } });
-    if (!entity) {
-      throw new NotFoundException(`Registro ${id} nao encontrado`);
-    }
-    return entity;
-  }
+ async findOne(id: string): Promise<ModuloEntity> {
+ const entity = await this.repository.findOne({ where: { id } });
+ if (!entity) {
+ throw new NotFoundException(`Registro ${id} nao encontrado`);
+ }
+ return entity;
+ }
 }
 ```
 
@@ -103,33 +103,33 @@ export class ModuloService {
 
 ```typescript
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsUUID,
-  MaxLength,
-  MinLength,
+ IsString,
+ IsNotEmpty,
+ IsOptional,
+ IsUUID,
+ MaxLength,
+ MinLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateModuloDto {
-  @ApiProperty({ description: 'Nome do modulo', example: 'Modulo Exemplo' })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(100)
-  name: string;
+ @ApiProperty({ description: 'Nome do modulo', example: 'Modulo Exemplo' })
+ @IsString()
+ @IsNotEmpty()
+ @MinLength(3)
+ @MaxLength(100)
+ name: string;
 
-  @ApiPropertyOptional({ description: 'Descricao opcional' })
-  @IsString()
-  @IsOptional()
-  @MaxLength(500)
-  description?: string;
+ @ApiPropertyOptional({ description: 'Descricao opcional' })
+ @IsString()
+ @IsOptional()
+ @MaxLength(500)
+ description?: string;
 
-  @ApiProperty({ description: 'ID da organizacao' })
-  @IsUUID()
-  @IsNotEmpty()
-  organizationId: string;
+ @ApiProperty({ description: 'ID da organizacao' })
+ @IsUUID()
+ @IsNotEmpty()
+ organizationId: string;
 }
 ```
 
@@ -137,26 +137,26 @@ export class CreateModuloDto {
 
 ```typescript
 import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
+ Injectable,
+ CanActivate,
+ ExecutionContext,
+ ForbiddenException,
 } from '@nestjs/common';
 
 @Injectable()
 export class OrganizationGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    const organizationId =
-      request.params.organizationId || request.body.organizationId;
+ canActivate(context: ExecutionContext): boolean {
+ const request = context.switchToHttp().getRequest();
+ const user = request.user;
+ const organizationId =
+ request.params.organizationId || request.body.organizationId;
 
-    if (user.organizationId !== organizationId) {
-      throw new ForbiddenException('Acesso negado a esta organizacao');
-    }
+ if (user.organizationId !== organizationId) {
+ throw new ForbiddenException('Acesso negado a esta organizacao');
+ }
 
-    return true;
-  }
+ return true;
+ }
 }
 ```
 
@@ -164,35 +164,35 @@ export class OrganizationGuard implements CanActivate {
 
 ```typescript
 import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  Logger,
+ ExceptionFilter,
+ Catch,
+ ArgumentsHost,
+ HttpException,
+ Logger,
 } from '@nestjs/common';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(HttpExceptionFilter.name);
+ private readonly logger = new Logger(HttpExceptionFilter.name);
 
-  catch(exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
-    const status = exception.getStatus();
+ catch(exception: HttpException, host: ArgumentsHost) {
+ const ctx = host.switchToHttp();
+ const response = ctx.getResponse();
+ const request = ctx.getRequest();
+ const status = exception.getStatus();
 
-    this.logger.error(
-      `${request.method} ${request.url} - ${status}`,
-      exception.stack,
-    );
+ this.logger.error(
+ `${request.method} ${request.url} - ${status}`,
+ exception.stack,
+ );
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      message: exception.message,
-    });
-  }
+ response.status(status).json({
+ statusCode: status,
+ timestamp: new Date().toISOString(),
+ path: request.url,
+ message: exception.message,
+ });
+ }
 }
 ```
 
@@ -204,48 +204,48 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 describe('ModuloService', () => {
-  let service: ModuloService;
-  let repository: Repository<ModuloEntity>;
+ let service: ModuloService;
+ let repository: Repository<ModuloEntity>;
 
-  const mockRepository = {
-    find: jest.fn(),
-    findOne: jest.fn(),
-    save: jest.fn(),
-    delete: jest.fn(),
-  };
+ const mockRepository = {
+ find: jest.fn(),
+ findOne: jest.fn(),
+ save: jest.fn(),
+ delete: jest.fn(),
+ };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ModuloService,
-        {
-          provide: getRepositoryToken(ModuloEntity),
-          useValue: mockRepository,
-        },
-      ],
-    }).compile();
+ beforeEach(async () => {
+ const module: TestingModule = await Test.createTestingModule({
+ providers: [
+ ModuloService,
+ {
+ provide: getRepositoryToken(ModuloEntity),
+ useValue: mockRepository,
+ },
+ ],
+ }).compile();
 
-    service = module.get<ModuloService>(ModuloService);
-    repository = module.get<Repository<ModuloEntity>>(
-      getRepositoryToken(ModuloEntity),
-    );
-  });
+ service = module.get<ModuloService>(ModuloService);
+ repository = module.get<Repository<ModuloEntity>>(
+ getRepositoryToken(ModuloEntity),
+ );
+ });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+ it('should be defined', () => {
+ expect(service).toBeDefined();
+ });
 
-  describe('findAll', () => {
-    it('should return array of entities', async () => {
-      const expected = [{ id: '1', name: 'Test' }];
-      mockRepository.find.mockResolvedValue(expected);
+ describe('findAll', () => {
+ it('should return array of entities', async () => {
+ const expected = [{ id: '1', name: 'Test' }];
+ mockRepository.find.mockResolvedValue(expected);
 
-      const result = await service.findAll();
+ const result = await service.findAll();
 
-      expect(result).toEqual(expected);
-      expect(mockRepository.find).toHaveBeenCalled();
-    });
-  });
+ expect(result).toEqual(expected);
+ expect(mockRepository.find).toHaveBeenCalled();
+ });
+ });
 });
 ```
 

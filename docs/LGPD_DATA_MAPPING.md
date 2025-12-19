@@ -45,12 +45,12 @@ Este documento mapeia o ciclo de vida completo dos dados pessoais no sistema ETP
 
 ```mermaid
 flowchart TD
-    A[Frontend: Formulário de Registro] -->|POST /api/auth/register| B[Backend: AuthController]
-    B --> C[Validação: RegisterDto]
-    C --> D[Hash da senha: bcrypt]
-    D --> E[Criação do User no PostgreSQL]
-    E --> F[Geração JWT token]
-    F --> G[Retorno ao frontend]
+ A[Frontend: Formulário de Registro] -->|POST /api/auth/register| B[Backend: AuthController]
+ B --> C[Validação: RegisterDto]
+ C --> D[Hash da senha: bcrypt]
+ D --> E[Criação do User no PostgreSQL]
+ E --> F[Geração JWT token]
+ F --> G[Retorno ao frontend]
 ```
 
 **Dados coletados:**
@@ -66,11 +66,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Frontend: Login] -->|POST /api/auth/login| B[Backend: AuthController]
-    B --> C[Validação de credenciais]
-    C --> D[Atualização lastLoginAt]
-    D --> E[Geração JWT token]
-    E --> F[Log de analytics]
+ A[Frontend: Login] -->|POST /api/auth/login| B[Backend: AuthController]
+ B --> C[Validação de credenciais]
+ C --> D[Atualização lastLoginAt]
+ D --> E[Geração JWT token]
+ E --> F[Log de analytics]
 ```
 
 **Dados processados:**
@@ -83,12 +83,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Frontend: Editor de ETP] -->|POST/PUT /api/etps| B[Backend: EtpsController]
-    B --> C[Validação]
-    C --> D[Associação ao userId]
-    D --> E[Persistência PostgreSQL]
-    E --> F[Audit log]
-    F --> G[Analytics event]
+ A[Frontend: Editor de ETP] -->|POST/PUT /api/etps| B[Backend: EtpsController]
+ B --> C[Validação]
+ C --> D[Associação ao userId]
+ D --> E[Persistência PostgreSQL]
+ E --> F[Audit log]
+ F --> G[Analytics event]
 ```
 
 **Dados coletados:**
@@ -100,14 +100,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Frontend: Gerar Seção] -->|POST /api/sections/generate| B[Backend: SectionsController]
-    B --> C[OrchestratorService]
-    C -->|Contexto do ETP| D[OpenAI API]
-    C -->|Pesquisa de contratos| E[Perplexity API]
-    D --> F[Resposta da IA]
-    E --> F
-    F --> G[Persistência da seção]
-    G --> H[Audit log]
+ A[Frontend: Gerar Seção] -->|POST /api/sections/generate| B[Backend: SectionsController]
+ B --> C[OrchestratorService]
+ C -->|Contexto do ETP| D[OpenAI API]
+ C -->|Pesquisa de contratos| E[Perplexity API]
+ D --> F[Resposta da IA]
+ E --> F
+ F --> G[Persistência da seção]
+ G --> H[Audit log]
 ```
 
 **Dados enviados a terceiros:**
@@ -202,10 +202,10 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Usuário solicita exclusão] --> B{Existe endpoint?}
-    B -->|Não| C[Processo manual via DBA]
-    C --> D[DELETE cascata]
-    D --> E[Dados permanentemente removidos]
+ A[Usuário solicita exclusão] --> B{Existe endpoint?}
+ B -->|Não| C[Processo manual via DBA]
+ C --> D[DELETE cascata]
+ D --> E[Dados permanentemente removidos]
 ```
 
 **Status atual:** ❌ Não há endpoint de self-service para exclusão de conta.
@@ -227,10 +227,10 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[Brasil: Usuário] -->|HTTPS| B[USA: Railway]
-    B -->|Internal| C[USA: PostgreSQL]
-    B -->|API Call| D[USA: OpenAI]
-    B -->|API Call| E[USA: Perplexity]
+ A[Brasil: Usuário] -->|HTTPS| B[USA: Railway]
+ B -->|Internal| C[USA: PostgreSQL]
+ B -->|API Call| D[USA: OpenAI]
+ B -->|API Call| E[USA: Perplexity]
 ```
 
 ### 7.2 Conformidade LGPD Art. 33
@@ -239,7 +239,7 @@ flowchart LR
 |-----------|--------|-----------------|
 | Consentimento específico | ❌ | Implementar no registro |
 | País com proteção adequada | ❌ (USA não é) | Cláusulas contratuais padrão |
-| Cláusulas contratuais padrão | ⚠️ | Verificar ToS dos provedores |
+| Cláusulas contratuais padrão | ⚠ | Verificar ToS dos provedores |
 | Cooperação jurídica internacional | N/A | Não aplicável |
 
 ---

@@ -75,8 +75,8 @@ Este hook pode ser ativado adicionando ao `settings.local.json`:
 
 ```json
 {
-  "hooks": {
-    "sessionStart": ".claude/hooks/SessionStart.md"
-  }
+ "hooks": {
+ "sessionStart": ".claude/hooks/SessionStart.md"
+ }
 }
 ```

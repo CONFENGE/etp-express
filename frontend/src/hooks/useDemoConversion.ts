@@ -5,9 +5,9 @@ import { useAuthStore } from '@/store/authStore';
  * Trigger events that should show the conversion banner for demo users.
  */
 export type DemoConversionTrigger =
-  | 'ai_generation'
-  | 'etp_completion'
-  | 'pdf_export';
+ | 'ai_generation'
+ | 'etp_completion'
+ | 'pdf_export';
 
 const SESSION_KEY = 'demo-banner-dismissed';
 
@@ -36,77 +36,77 @@ const SESSION_KEY = 'demo-banner-dismissed';
  * ```
  */
 export function useDemoConversion() {
-  const { user } = useAuthStore();
-  const [showBanner, setShowBanner] = useState(false);
-  const [lastTrigger, setLastTrigger] = useState<DemoConversionTrigger | null>(
-    null,
-  );
+ const { user } = useAuthStore();
+ const [showBanner, setShowBanner] = useState(false);
+ const [lastTrigger, setLastTrigger] = useState<DemoConversionTrigger | null>(
+ null,
+ );
 
-  const isDemoUser = user?.role === 'demo';
+ const isDemoUser = user?.role === 'demo';
 
-  // Check if banner was recently dismissed in this session
-  const wasDismissedRecently = useCallback(() => {
-    try {
-      const dismissedAt = sessionStorage.getItem(SESSION_KEY);
-      if (!dismissedAt) return false;
+ // Check if banner was recently dismissed in this session
+ const wasDismissedRecently = useCallback(() => {
+ try {
+ const dismissedAt = sessionStorage.getItem(SESSION_KEY);
+ if (!dismissedAt) return false;
 
-      // Consider "recently" as within the last 5 minutes
-      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-      return parseInt(dismissedAt, 10) > fiveMinutesAgo;
-    } catch {
-      // sessionStorage might not be available
-      return false;
-    }
-  }, []);
+ // Consider "recently" as within the last 5 minutes
+ const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+ return parseInt(dismissedAt, 10) > fiveMinutesAgo;
+ } catch {
+ // sessionStorage might not be available
+ return false;
+ }
+ }, []);
 
-  /**
-   * Trigger the banner to show after a specific event.
-   * Only shows for demo users and if not recently dismissed.
-   */
-  const triggerBanner = useCallback(
-    (trigger: DemoConversionTrigger) => {
-      if (!isDemoUser) return;
-      if (wasDismissedRecently()) return;
+ /**
+ * Trigger the banner to show after a specific event.
+ * Only shows for demo users and if not recently dismissed.
+ */
+ const triggerBanner = useCallback(
+ (trigger: DemoConversionTrigger) => {
+ if (!isDemoUser) return;
+ if (wasDismissedRecently()) return;
 
-      setLastTrigger(trigger);
-      setShowBanner(true);
-    },
-    [isDemoUser, wasDismissedRecently],
-  );
+ setLastTrigger(trigger);
+ setShowBanner(true);
+ },
+ [isDemoUser, wasDismissedRecently],
+ );
 
-  /**
-   * Dismiss the banner and prevent it from showing again
-   * until the next trigger event (after a cooldown period).
-   */
-  const dismissBanner = useCallback(() => {
-    setShowBanner(false);
-    setLastTrigger(null);
+ /**
+ * Dismiss the banner and prevent it from showing again
+ * until the next trigger event (after a cooldown period).
+ */
+ const dismissBanner = useCallback(() => {
+ setShowBanner(false);
+ setLastTrigger(null);
 
-    try {
-      sessionStorage.setItem(SESSION_KEY, Date.now().toString());
-    } catch {
-      // sessionStorage might not be available
-    }
-  }, []);
+ try {
+ sessionStorage.setItem(SESSION_KEY, Date.now().toString());
+ } catch {
+ // sessionStorage might not be available
+ }
+ }, []);
 
-  // Reset banner state when user changes
-  useEffect(() => {
-    if (!isDemoUser) {
-      setShowBanner(false);
-      setLastTrigger(null);
-    }
-  }, [isDemoUser]);
+ // Reset banner state when user changes
+ useEffect(() => {
+ if (!isDemoUser) {
+ setShowBanner(false);
+ setLastTrigger(null);
+ }
+ }, [isDemoUser]);
 
-  return {
-    /** Whether the banner should be shown */
-    showBanner,
-    /** The event that triggered the banner (for analytics) */
-    lastTrigger,
-    /** Whether the current user is a demo user */
-    isDemoUser,
-    /** Trigger the banner to show after an event */
-    triggerBanner,
-    /** Dismiss the banner */
-    dismissBanner,
-  };
+ return {
+ /** Whether the banner should be shown */
+ showBanner,
+ /** The event that triggered the banner (for analytics) */
+ lastTrigger,
+ /** Whether the current user is a demo user */
+ isDemoUser,
+ /** Trigger the banner to show after an event */
+ triggerBanner,
+ /** Dismiss the banner */
+ dismissBanner,
+ };
 }

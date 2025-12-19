@@ -13,14 +13,14 @@ import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
  * - Cargo (position) is optional
  */
 export class CreateDomainUserDto {
-  @IsEmail({}, { message: 'Email must be a valid email address' })
-  email: string;
+ @IsEmail({}, { message: 'Email must be a valid email address' })
+ email: string;
 
-  @IsString()
-  @MinLength(2, { message: 'Name must be at least 2 characters' })
-  name: string;
+ @IsString()
+ @MinLength(2, { message: 'Name must be at least 2 characters' })
+ name: string;
 
-  @IsOptional()
-  @IsString()
-  cargo?: string;
+ @IsOptional()
+ @IsString()
+ cargo?: string;
 }

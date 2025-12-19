@@ -40,7 +40,7 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 
 **Verificação:** Todos os testes confirmam funcionamento normal
 
-### 🔒 Segurança dos Dados
+### Segurança dos Dados
 
 [Incluir SEMPRE informação sobre dados]
 
@@ -48,12 +48,12 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 ✅ **Todos os dados estão seguros.** Não houve perda de informações. ETPs criados/editados antes do incidente foram preservados.
 
 **Opção 2 (com perda - se aplicável):**
-⚠️ **Impacto em dados:** [Descrever claramente o que foi perdido]
+⚠ **Impacto em dados:** [Descrever claramente o que foi perdido]
 
 - Exemplo: "ETPs criados entre 14h30 e 15h00 podem ter sido perdidos"
 - Exemplo: "Edições feitas nas últimas 2 horas podem não ter sido salvas"
 
-### 🛡️ Medidas Preventivas
+### Medidas Preventivas
 
 Para evitar recorrência deste problema, implementamos:
 
@@ -61,7 +61,7 @@ Para evitar recorrência deste problema, implementamos:
 - [Medida preventiva 2]
 - [Medida preventiva 3]
 
-### 📋 Próximos Passos
+### Próximos Passos
 
 - **Sistema está disponível agora** - você pode retomar o trabalho normalmente
 - [Se houve perda de dados] Recomendamos revisar ETPs editados durante o período do incidente
@@ -86,7 +86,7 @@ O problema reportado às [HH:MM] foi resolvido.
 **Root Cause:** [Causa raiz simplificada]
 **Resolução:** [O que foi feito]
 **Status:** Sistema normalizado
-**Dados:** ✅ Seguros / ⚠️ [Descrição de impacto]
+**Dados:** ✅ Seguros / ⚠ [Descrição de impacto]
 
 Sistema está disponível para uso normal.
 
@@ -125,11 +125,11 @@ O problema técnico que afetava o sistema foi **completamente resolvido**.
 - ✅ Geração de seções funcional
 - ✅ Exportação de PDFs funcional
 
-### 🔒 Segurança dos Dados
+### Segurança dos Dados
 
 ✅ **Todos os dados estão seguros.** Não houve perda de informações. Todos os ETPs criados e editados antes do incidente (15h20) foram preservados integralmente.
 
-### 🛡️ Medidas Preventivas
+### Medidas Preventivas
 
 Para evitar recorrência deste problema, implementamos:
 
@@ -137,7 +137,7 @@ Para evitar recorrência deste problema, implementamos:
 - Procedimento de rollback automático em caso de falhas similares
 - Backup automático adicional antes de atualizações de infraestrutura
 
-### 📋 Próximos Passos
+### Próximos Passos
 
 - **Sistema está disponível agora** - você pode retomar o trabalho normalmente
 - Não é necessária nenhuma ação de sua parte
@@ -175,7 +175,7 @@ Atenciosamente,
 - Smoke tests finais passando
 - Incident Commander aprovar comunicação
 
-**⚠️ NÃO enviar se:**
+**⚠ NÃO enviar se:**
 
 - Sistema ainda instável
 - Root cause não identificada

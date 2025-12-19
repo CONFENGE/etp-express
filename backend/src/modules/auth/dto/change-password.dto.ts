@@ -19,28 +19,28 @@ import { ApiProperty } from '@nestjs/swagger';
  * @see AuthService.changePassword
  */
 export class ChangePasswordDto {
-  @ApiProperty({
-    description: 'Current password for validation',
-    example: 'OldPassword123!',
-  })
-  @IsString()
-  @MinLength(1, { message: 'Senha atual é obrigatória' })
-  oldPassword: string;
+ @ApiProperty({
+ description: 'Current password for validation',
+ example: 'OldPassword123!',
+ })
+ @IsString()
+ @MinLength(1, { message: 'Senha atual é obrigatória' })
+ oldPassword: string;
 
-  @ApiProperty({
-    description:
-      'New password with complexity requirements: min 8 chars, uppercase, lowercase, number, special char',
-    example: 'NewSecurePass456!',
-  })
-  @IsString()
-  @MinLength(8, { message: 'Nova senha deve ter no mínimo 8 caracteres' })
-  @MaxLength(128, { message: 'Nova senha deve ter no máximo 128 caracteres' })
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-    {
-      message:
-        'Nova senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
-    },
-  )
-  newPassword: string;
+ @ApiProperty({
+ description:
+ 'New password with complexity requirements: min 8 chars, uppercase, lowercase, number, special char',
+ example: 'NewSecurePass456!',
+ })
+ @IsString()
+ @MinLength(8, { message: 'Nova senha deve ter no mínimo 8 caracteres' })
+ @MaxLength(128, { message: 'Nova senha deve ter no máximo 128 caracteres' })
+ @Matches(
+ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+ {
+ message:
+ 'Nova senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
+ },
+ )
+ newPassword: string;
 }

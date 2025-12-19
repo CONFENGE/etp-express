@@ -34,14 +34,14 @@ Don't test:
 
 ## TDD Mapping for Skill Testing
 
-| TDD Phase        | Skill Testing            | What You Do                                  |
+| TDD Phase | Skill Testing | What You Do |
 | ---------------- | ------------------------ | -------------------------------------------- |
-| **RED**          | Baseline test            | Run scenario WITHOUT skill, watch agent fail |
-| **Verify RED**   | Capture rationalizations | Document exact failures verbatim             |
-| **GREEN**        | Write skill              | Address specific baseline failures           |
-| **Verify GREEN** | Pressure test            | Run scenario WITH skill, verify compliance   |
-| **REFACTOR**     | Plug holes               | Find new rationalizations, add counters      |
-| **Stay GREEN**   | Re-verify                | Test again, ensure still compliant           |
+| **RED** | Baseline test | Run scenario WITHOUT skill, watch agent fail |
+| **Verify RED** | Capture rationalizations | Document exact failures verbatim |
+| **GREEN** | Write skill | Address specific baseline failures |
+| **Verify GREEN** | Pressure test | Run scenario WITH skill, verify compliance |
+| **REFACTOR** | Plug holes | Find new rationalizations, add counters |
+| **Stay GREEN** | Re-verify | Test again, ensure still compliant |
 
 Same cycle as code TDD, different test format.
 
@@ -138,15 +138,15 @@ Forces explicit choice.
 
 ### Pressure Types
 
-| Pressure       | Example                                    |
+| Pressure | Example |
 | -------------- | ------------------------------------------ |
-| **Time**       | Emergency, deadline, deploy window closing |
-| **Sunk cost**  | Hours of work, "waste" to delete           |
-| **Authority**  | Senior says skip it, manager overrides     |
-| **Economic**   | Job, promotion, company survival at stake  |
+| **Time** | Emergency, deadline, deploy window closing |
+| **Sunk cost** | Hours of work, "waste" to delete |
+| **Authority** | Senior says skip it, manager overrides |
+| **Economic** | Job, promotion, company survival at stake |
 | **Exhaustion** | End of day, already tired, want to go home |
-| **Social**     | Looking dogmatic, seeming inflexible       |
-| **Pragmatic**  | "Being pragmatic vs dogmatic"              |
+| **Social** | Looking dogmatic, seeming inflexible |
+| **Pragmatic** | "Being pragmatic vs dogmatic" |
 
 **Best tests combine 3+ pressures.**
 
@@ -266,18 +266,18 @@ it crystal clear that Option A was the only acceptable answer?
 **Three possible responses:**
 
 1. **"The skill WAS clear, I chose to ignore it"**
-   - Not documentation problem
-   - Need stronger foundational principle
-   - Add "Violating letter is violating spirit"
+ - Not documentation problem
+ - Need stronger foundational principle
+ - Add "Violating letter is violating spirit"
 
 2. **"The skill should have said X"**
-   - Documentation problem
-   - Add their suggestion verbatim
+ - Documentation problem
+ - Add their suggestion verbatim
 
 3. **"I didn't see section Y"**
-   - Organization problem
-   - Make key points more prominent
-   - Add foundational principle early
+ - Organization problem
+ - Make key points more prominent
+ - Add foundational principle early
 
 ## When Skill is Bulletproof
 
@@ -379,14 +379,14 @@ Tests pass once ≠ bulletproof.
 
 ## Quick Reference (TDD Cycle)
 
-| TDD Phase        | Skill Testing                   | Success Criteria                       |
+| TDD Phase | Skill Testing | Success Criteria |
 | ---------------- | ------------------------------- | -------------------------------------- |
-| **RED**          | Run scenario without skill      | Agent fails, document rationalizations |
-| **Verify RED**   | Capture exact wording           | Verbatim documentation of failures     |
-| **GREEN**        | Write skill addressing failures | Agent now complies with skill          |
-| **Verify GREEN** | Re-test scenarios               | Agent follows rule under pressure      |
-| **REFACTOR**     | Close loopholes                 | Add counters for new rationalizations  |
-| **Stay GREEN**   | Re-verify                       | Agent still complies after refactoring |
+| **RED** | Run scenario without skill | Agent fails, document rationalizations |
+| **Verify RED** | Capture exact wording | Verbatim documentation of failures |
+| **GREEN** | Write skill addressing failures | Agent now complies with skill |
+| **Verify GREEN** | Re-test scenarios | Agent follows rule under pressure |
+| **REFACTOR** | Close loopholes | Add counters for new rationalizations |
+| **Stay GREEN** | Re-verify | Agent still complies after refactoring |
 
 ## The Bottom Line
 

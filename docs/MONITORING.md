@@ -21,46 +21,46 @@ O ETP Express possui infraestrutura completa de observability em produção para
 
 ### Stack de Monitoring
 
-| Componente                 | Tecnologia                       | Função                                |
+| Componente | Tecnologia | Função |
 | -------------------------- | -------------------------------- | ------------------------------------- |
-| **Error Tracking**         | Sentry                           | Captura exceptions backend + frontend |
-| **Infrastructure Metrics** | Railway Metrics                  | CPU, Memory, Network (built-in)       |
-| **Application Metrics**    | Custom `/api/metrics`            | DB connections, queries, uptime       |
-| **Alerting**               | Sentry Alerts + Railway Webhooks | Slack/Email notifications             |
-| **Dashboards**             | Sentry + Railway UI              | Real-time visibility                  |
+| **Error Tracking** | Sentry | Captura exceptions backend + frontend |
+| **Infrastructure Metrics** | Railway Metrics | CPU, Memory, Network (built-in) |
+| **Application Metrics** | Custom `/api/metrics` | DB connections, queries, uptime |
+| **Alerting** | Sentry Alerts + Railway Webhooks | Slack/Email notifications |
+| **Dashboards** | Sentry + Railway UI | Real-time visibility |
 
 ### Diagrama de Fluxo
 
 ```
 ┌─────────────┐
-│   Backend   │──┐
-│   (NestJS)  │  │
-└─────────────┘  │
-                  │  Exceptions
-┌─────────────┐  │  ↓
-│  Frontend   │──┼────────────→  ┌──────────┐
-│   (React)   │  │               │  Sentry  │
-└─────────────┘  │               └──────────┘
-                  │                     │
-                  │                     │ Alerts
-                  │                     ↓
-                  │               ┌──────────┐
-                  │               │  Slack   │
-                  │               │ #alerts  │
-                  │               └──────────┘
-                  │
-┌─────────────┐  │  Metrics
-│  PostgreSQL │──┤  ↓
-└─────────────┘  │  ┌──────────────────┐
-                  └→ │ /api/metrics     │
-                     │ (Prometheus fmt) │
-                     └──────────────────┘
-                              │
-                              ↓
-                     ┌──────────────────┐
-                     │ Railway Metrics  │
-                     │    Dashboard     │
-                     └──────────────────┘
+│ Backend │──┐
+│ (NestJS) │ │
+└─────────────┘ │
+ │ Exceptions
+┌─────────────┐ │ ↓
+│ Frontend │──┼────────────→ ┌──────────┐
+│ (React) │ │ │ Sentry │
+└─────────────┘ │ └──────────┘
+ │ │
+ │ │ Alerts
+ │ ↓
+ │ ┌──────────┐
+ │ │ Slack │
+ │ │ #alerts │
+ │ └──────────┘
+ │
+┌─────────────┐ │ Metrics
+│ PostgreSQL │──┤ ↓
+└─────────────┘ │ ┌──────────────────┐
+ └→ │ /api/metrics │
+ │ (Prometheus fmt) │
+ └──────────────────┘
+ │
+ ↓
+ ┌──────────────────┐
+ │ Railway Metrics │
+ │ Dashboard │
+ └──────────────────┘
 ```
 
 ---
@@ -119,16 +119,16 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 ### Métricas Coletadas
 
-| Métrica                       | Tipo    | Descrição                       |
+| Métrica | Tipo | Descrição |
 | ----------------------------- | ------- | ------------------------------- |
-| `database_connections_active` | Gauge   | Conexões ativas no PostgreSQL   |
-| `database_connections_total`  | Gauge   | Total de conexões abertas       |
-| `database_connections_max`    | Gauge   | Máximo permitido (Railway: 100) |
-| `memory_usage_bytes`          | Gauge   | Heap memory usada               |
-| `memory_limit_bytes`          | Gauge   | Heap memory total               |
-| `memory_rss_bytes`            | Gauge   | Resident Set Size               |
-| `uptime_seconds`              | Counter | Uptime do processo Node.js      |
-| `process_id`                  | Gauge   | PID do processo                 |
+| `database_connections_active` | Gauge | Conexões ativas no PostgreSQL |
+| `database_connections_total` | Gauge | Total de conexões abertas |
+| `database_connections_max` | Gauge | Máximo permitido (Railway: 100) |
+| `memory_usage_bytes` | Gauge | Heap memory usada |
+| `memory_limit_bytes` | Gauge | Heap memory total |
+| `memory_rss_bytes` | Gauge | Resident Set Size |
+| `uptime_seconds` | Counter | Uptime do processo Node.js |
+| `process_id` | Gauge | PID do processo |
 
 ### Exemplo de Response
 
@@ -239,8 +239,8 @@ Configurar no Railway Dashboard → Settings → Webhooks:
 # 1. Acessar https://sentry.io/signup/
 # 2. Criar organização "ETP Express"
 # 3. Criar 2 projetos:
-#    - etp-express-backend (platform: Node.js)
-#    - etp-express-frontend (platform: React)
+# - etp-express-backend (platform: Node.js)
+# - etp-express-frontend (platform: React)
 # 4. Copiar DSNs
 ```
 
@@ -285,9 +285,9 @@ curl https://etp-express.up.railway.app/api/metrics
 1. Acessar [Sentry Dashboard](https://sentry.io) → ver stack trace completo
 2. Executar `railway logs -f` para logs real-time
 3. Identificar root cause:
-   - API externa down? (OpenAI, Exa)
-   - Database timeout?
-   - Bug de código?
+ - API externa down? (OpenAI, Exa)
+ - Database timeout?
+ - Bug de código?
 4. Se crítico: Executar rollback (ver `INCIDENT_RESPONSE.md`)
 5. Se não crítico: Criar hotfix PR
 
@@ -312,12 +312,12 @@ curl https://etp-express.up.railway.app/api/metrics
 
 1. Verificar logs do Railway: `railway logs -f`
 2. Identificar causa:
-   - Build error? → Corrigir código
-   - Health check fail? → Ver `/api/health` endpoint
-   - Timeout? → Aumentar timeout no `.railway.toml`
+ - Build error? → Corrigir código
+ - Health check fail? → Ver `/api/health` endpoint
+ - Timeout? → Aumentar timeout no `.railway.toml`
 3. Opções:
-   - Corrigir localmente → Push fix
-   - Rollback: `./scripts/rollback.sh`
+ - Corrigir localmente → Push fix
+ - Rollback: `./scripts/rollback.sh`
 
 ### Alert: Memory > 85%
 
@@ -328,9 +328,9 @@ curl https://etp-express.up.railway.app/api/metrics
 
 1. Executar `curl /api/metrics/json` → ver memory_usage_bytes
 2. Verificar memory leak:
-   - Conexões DB não fechadas?
-   - Event listeners não removidos?
-   - Cache sem TTL?
+ - Conexões DB não fechadas?
+ - Event listeners não removidos?
+ - Cache sem TTL?
 3. Restart temporário: `railway restart`
 4. Investigar root cause e criar fix permanente
 

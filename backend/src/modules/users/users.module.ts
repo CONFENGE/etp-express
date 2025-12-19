@@ -11,22 +11,22 @@ import { AuditLog } from '../../entities/audit-log.entity';
 import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Etp, AnalyticsEvent, AuditLog]),
-    EmailModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION', '7d'),
-        },
-      }),
-    }),
-  ],
-  controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
+ imports: [
+ TypeOrmModule.forFeature([User, Etp, AnalyticsEvent, AuditLog]),
+ EmailModule,
+ JwtModule.registerAsync({
+ imports: [ConfigModule],
+ inject: [ConfigService],
+ useFactory: async (configService: ConfigService) => ({
+ secret: configService.get<string>('JWT_SECRET'),
+ signOptions: {
+ expiresIn: configService.get<string>('JWT_EXPIRATION', '7d'),
+ },
+ }),
+ }),
+ ],
+ controllers: [UsersController],
+ providers: [UsersService],
+ exports: [UsersService],
 })
 export class UsersModule {}

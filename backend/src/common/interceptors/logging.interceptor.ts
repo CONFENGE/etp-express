@@ -1,8 +1,8 @@
 import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
+ Injectable,
+ NestInterceptor,
+ ExecutionContext,
+ CallHandler,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -14,10 +14,10 @@ import { getRequestId } from '../context/request-context';
  * Extended Request interface with user context
  */
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id?: string;
-    organizationId?: string;
-  };
+ user?: {
+ id?: string;
+ organizationId?: string;
+ };
 }
 
 /**
@@ -45,95 +45,95 @@ interface AuthenticatedRequest extends Request {
  */
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger: WinstonLoggerService;
+ private readonly logger: WinstonLoggerService;
 
-  constructor() {
-    this.logger = new WinstonLoggerService();
-    this.logger.setContext('HTTP');
-  }
+ constructor() {
+ this.logger = new WinstonLoggerService();
+ this.logger.setContext('HTTP');
+ }
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const ctx = context.switchToHttp();
-    const request = ctx.getRequest<AuthenticatedRequest>();
-    const response = ctx.getResponse<Response>();
-    const { method, url, ip } = request;
+ intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+ const ctx = context.switchToHttp();
+ const request = ctx.getRequest<AuthenticatedRequest>();
+ const response = ctx.getResponse<Response>();
+ const { method, url, ip } = request;
 
-    const startTime = Date.now();
-    const userAgent = request.get('user-agent') || '';
+ const startTime = Date.now();
+ const userAgent = request.get('user-agent') || '';
 
-    // Extract user context if authenticated
-    const userId = request.user?.id;
-    const organizationId = request.user?.organizationId;
+ // Extract user context if authenticated
+ const userId = request.user?.id;
+ const organizationId = request.user?.organizationId;
 
-    // Get request ID from AsyncLocalStorage context (#653)
-    const requestId = getRequestId();
+ // Get request ID from AsyncLocalStorage context (#653)
+ const requestId = getRequestId();
 
-    // Log incoming request
-    this.logger.logRequest({
-      method,
-      path: url,
-      ip: this.sanitizeIp(ip),
-      userAgent: this.truncateUserAgent(userAgent),
-      userId,
-      organizationId,
-      requestId,
-    });
+ // Log incoming request
+ this.logger.logRequest({
+ method,
+ path: url,
+ ip: this.sanitizeIp(ip),
+ userAgent: this.truncateUserAgent(userAgent),
+ userId,
+ organizationId,
+ requestId,
+ });
 
-    return next.handle().pipe(
-      tap({
-        next: () => {
-          const durationMs = Date.now() - startTime;
-          const { statusCode } = response;
+ return next.handle().pipe(
+ tap({
+ next: () => {
+ const durationMs = Date.now() - startTime;
+ const { statusCode } = response;
 
-          // Log successful response
-          this.logger.logResponse({
-            method,
-            path: url,
-            statusCode,
-            durationMs,
-            userId,
-            organizationId,
-            requestId,
-          });
-        },
-        error: (error: Error & { status?: number }) => {
-          const durationMs = Date.now() - startTime;
+ // Log successful response
+ this.logger.logResponse({
+ method,
+ path: url,
+ statusCode,
+ durationMs,
+ userId,
+ organizationId,
+ requestId,
+ });
+ },
+ error: (error: Error & { status?: number }) => {
+ const durationMs = Date.now() - startTime;
 
-          // Log error response
-          this.logger.logError({
-            method,
-            path: url,
-            durationMs,
-            error: error.message,
-            stack: error.stack,
-            statusCode: error.status,
-            userId,
-            organizationId,
-            requestId,
-          });
-        },
-      }),
-    );
-  }
+ // Log error response
+ this.logger.logError({
+ method,
+ path: url,
+ durationMs,
+ error: error.message,
+ stack: error.stack,
+ statusCode: error.status,
+ userId,
+ organizationId,
+ requestId,
+ });
+ },
+ }),
+ );
+ }
 
-  /**
-   * Sanitize IP address for logging
-   * Removes IPv6 prefix from IPv4 addresses
-   */
-  private sanitizeIp(ip: string | undefined): string | undefined {
-    if (!ip) return undefined;
-    // Remove ::ffff: prefix from IPv4 addresses mapped to IPv6
-    return ip.replace(/^::ffff:/, '');
-  }
+ /**
+ * Sanitize IP address for logging
+ * Removes IPv6 prefix from IPv4 addresses
+ */
+ private sanitizeIp(ip: string | undefined): string | undefined {
+ if (!ip) return undefined;
+ // Remove ::ffff: prefix from IPv4 addresses mapped to IPv6
+ return ip.replace(/^::ffff:/, '');
+ }
 
-  /**
-   * Truncate long user agent strings to prevent log bloat
-   */
-  private truncateUserAgent(userAgent: string): string {
-    const maxLength = 200;
-    if (userAgent.length > maxLength) {
-      return userAgent.substring(0, maxLength) + '...';
-    }
-    return userAgent;
-  }
+ /**
+ * Truncate long user agent strings to prevent log bloat
+ */
+ private truncateUserAgent(userAgent: string): string {
+ const maxLength = 200;
+ if (userAgent.length > maxLength) {
+ return userAgent.substring(0, maxLength) + '...';
+ }
+ return userAgent;
+ }
 }

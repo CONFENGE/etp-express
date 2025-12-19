@@ -9,88 +9,88 @@ import { SectionTemplate } from '@/types/etp';
 import { Save } from 'lucide-react';
 
 interface SectionFormProps {
-  template: SectionTemplate;
-  defaultValues?: Record<string, unknown>;
-  onSave: (data: Record<string, unknown>) => void;
-  isLoading?: boolean;
+ template: SectionTemplate;
+ defaultValues?: Record<string, unknown>;
+ onSave: (data: Record<string, unknown>) => void;
+ isLoading?: boolean;
 }
 
 // Memoized component to prevent unnecessary re-renders (#457)
 export const SectionForm = memo(function SectionForm({
-  template,
-  defaultValues,
-  onSave,
-  isLoading,
+ template,
+ defaultValues,
+ onSave,
+ isLoading,
 }: SectionFormProps) {
-  // Memoize default values to prevent useForm re-initialization (#457)
-  const memoizedDefaultValues = useMemo(
-    () => defaultValues || {},
-    [defaultValues],
-  );
+ // Memoize default values to prevent useForm re-initialization (#457)
+ const memoizedDefaultValues = useMemo(
+ () => defaultValues || {},
+ [defaultValues],
+ );
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: memoizedDefaultValues,
-  });
+ const { register, handleSubmit } = useForm({
+ defaultValues: memoizedDefaultValues,
+ });
 
-  // Memoize the submit handler wrapper (#457)
-  const onSubmit = useCallback(
-    (data: Record<string, unknown>) => {
-      onSave(data);
-    },
-    [onSave],
-  );
+ // Memoize the submit handler wrapper (#457)
+ const onSubmit = useCallback(
+ (data: Record<string, unknown>) => {
+ onSave(data);
+ },
+ [onSave],
+ );
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {template.fields.map((field) => (
-        <div key={field.name} className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label htmlFor={field.name}>
-              {field.label}
-              {field.required && (
-                <span className="text-destructive ml-1">*</span>
-              )}
-            </Label>
-            {field.helpText && <HelpTooltip content={field.helpText} />}
-          </div>
+ return (
+ <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+ {template.fields.map((field) => (
+ <div key={field.name} className="space-y-2">
+ <div className="flex items-center gap-2">
+ <Label htmlFor={field.name}>
+ {field.label}
+ {field.required && (
+ <span className="text-destructive ml-1">*</span>
+ )}
+ </Label>
+ {field.helpText && <HelpTooltip content={field.helpText} />}
+ </div>
 
-          {field.type === 'textarea' ? (
-            <Textarea
-              id={field.name}
-              placeholder={field.placeholder}
-              rows={6}
-              {...register(field.name, { required: field.required })}
-            />
-          ) : field.type === 'select' && field.options ? (
-            <select
-              id={field.name}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-              {...register(field.name, { required: field.required })}
-            >
-              <option value="">Selecione...</option>
-              {field.options.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <Input
-              id={field.name}
-              type={field.type}
-              placeholder={field.placeholder}
-              {...register(field.name, { required: field.required })}
-            />
-          )}
-        </div>
-      ))}
+ {field.type === 'textarea' ? (
+ <Textarea
+ id={field.name}
+ placeholder={field.placeholder}
+ rows={6}
+ {...register(field.name, { required: field.required })}
+ />
+ ) : field.type === 'select' && field.options ? (
+ <select
+ id={field.name}
+ className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+ {...register(field.name, { required: field.required })}
+ >
+ <option value="">Selecione...</option>
+ {field.options.map((option) => (
+ <option key={option} value={option}>
+ {option}
+ </option>
+ ))}
+ </select>
+ ) : (
+ <Input
+ id={field.name}
+ type={field.type}
+ placeholder={field.placeholder}
+ {...register(field.name, { required: field.required })}
+ />
+ )}
+ </div>
+ ))}
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isLoading}>
-          <Save className="mr-2 h-4 w-4" />
-          {isLoading ? 'Salvando...' : 'Salvar Seção'}
-        </Button>
-      </div>
-    </form>
-  );
+ <div className="flex justify-end">
+ <Button type="submit" disabled={isLoading}>
+ <Save className="mr-2 h-4 w-4" />
+ {isLoading ? 'Salvando...' : 'Salvar Seção'}
+ </Button>
+ </div>
+ </form>
+ );
 });

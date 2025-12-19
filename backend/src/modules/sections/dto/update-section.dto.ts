@@ -3,23 +3,23 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SectionStatus } from '../../../entities/etp-section.entity';
 
 export class UpdateSectionDto {
-  @ApiPropertyOptional({ example: 'Título atualizado da seção' })
-  @IsOptional()
-  @IsString()
-  title?: string;
+ @ApiPropertyOptional({ example: 'Título atualizado da seção' })
+ @IsOptional()
+ @IsString()
+ title?: string;
 
-  @ApiPropertyOptional({ example: 'Conteúdo atualizado da seção...' })
-  @IsOptional()
-  @IsString()
-  content?: string;
+ @ApiPropertyOptional({ example: 'Conteúdo atualizado da seção...' })
+ @IsOptional()
+ @IsString()
+ content?: string;
 
-  @ApiPropertyOptional({ example: 'Input do usuário atualizado...' })
-  @IsOptional()
-  @IsString()
-  userInput?: string;
+ @ApiPropertyOptional({ example: 'Input do usuário atualizado...' })
+ @IsOptional()
+ @IsString()
+ userInput?: string;
 
-  @ApiPropertyOptional({ enum: SectionStatus })
-  @IsOptional()
-  @IsEnum(SectionStatus)
-  status?: SectionStatus;
+ @ApiPropertyOptional({ enum: SectionStatus })
+ @IsOptional()
+ @IsEnum(SectionStatus)
+ status?: SectionStatus;
 }

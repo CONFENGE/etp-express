@@ -22,9 +22,9 @@ import { Organization } from '../../entities/organization.entity';
  * @see SystemAdminService
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([AuthorizedDomain, User, Organization])],
-  controllers: [SystemAdminController],
-  providers: [SystemAdminService],
-  exports: [SystemAdminService],
+ imports: [TypeOrmModule.forFeature([AuthorizedDomain, User, Organization])],
+ controllers: [SystemAdminController],
+ providers: [SystemAdminService],
+ exports: [SystemAdminService],
 })
 export class SystemAdminModule {}

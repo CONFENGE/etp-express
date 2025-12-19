@@ -1,4 +1,4 @@
-# 🔍 Validação End-to-End Deploy Railway - Execution Report
+# Validação End-to-End Deploy Railway - Execution Report
 
 **Data:** 2025-12-04 10:40 UTC
 **Issue:** #390 - [P1] Validação End-to-End Deploy Railway
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Objetivo da Validação
+## Objetivo da Validação
 
 Executar validação end-to-end completa do deploy production no Railway após resolução de #388 (NODE_ENV) para garantir que todos os componentes críticos estejam funcionais e estáveis.
 
@@ -19,7 +19,7 @@ Executar validação end-to-end completa do deploy production no Railway após r
 
 ---
 
-## 📋 Resultados por Fase
+## Resultados por Fase
 
 ### ✅ Fase 1: Backend Health (PARCIAL)
 
@@ -30,14 +30,14 @@ Executar validação end-to-end completa do deploy production no Railway após r
 - **Content-Type:** `text/plain; charset=utf-8`
 - **Response Body:** `OK`
 
-**⚠️ DISCREPÂNCIA ENCONTRADA:**
+**⚠ DISCREPÂNCIA ENCONTRADA:**
 
 - **Esperado:** JSON estruturado `{ status, timestamp, database, redis }` conforme `HealthService.check()` (backend/src/health/health.service.ts:40-60)
 - **Recebido:** Texto simples "OK"
 - **Impacto:** Impossível validar critérios:
-  - `status: "ok"`
-  - `database: "up"`
-  - `redis: "up"`
+ - `status: "ok"`
+ - `database: "up"`
+ - `redis: "up"`
 
 **Ação Requerida:** Criar issue para investigar discrepância entre código-fonte e deploy production.
 
@@ -135,19 +135,19 @@ Validações planejadas (NÃO EXECUTADAS):
 
 ---
 
-## 🐛 Problemas Críticos Encontrados
+## Problemas Críticos Encontrados
 
 ### P0-1: Backend Crash - Migration pgvector
 
-**Severidade:** 🔴 BLOCKER (P0)
+**Severidade:** BLOCKER (P0)
 **Arquivo:** `backend/src/migrations/1732474900000-CreateLegislationTable.ts:42`
 **Problema:**
 
 ```typescript
 {
-  name: 'embedding',
-  type: 'vector(1536)',  // ❌ Requer extensão pgvector
-  isNullable: true,
+ name: 'embedding',
+ type: 'vector(1536)', // ❌ Requer extensão pgvector
+ isNullable: true,
 }
 ```
 
@@ -173,7 +173,7 @@ Validações planejadas (NÃO EXECUTADAS):
 
 ### P0-2: Health Endpoint JSON Response Mismatch
 
-**Severidade:** 🟡 MEDIUM (P2)
+**Severidade:** MEDIUM (P2)
 **Arquivo:** `backend/src/health/health.controller.ts:74` e `backend/src/health/health.service.ts:40`
 **Problema:**
 
@@ -218,7 +218,7 @@ Validações planejadas (NÃO EXECUTADAS):
 
 ### Frontend
 
-- [ ] ⚠️ Frontend carrega - **PARCIAL** (200 OK mas não testado interativamente)
+- [ ] ⚠ Frontend carrega - **PARCIAL** (200 OK mas não testado interativamente)
 - [ ] ❌ Login flow funcional - **NÃO TESTADO**
 - [ ] ❌ ETP editor carrega sem erros - **NÃO TESTADO**
 - [ ] ❌ Export PDF funcional - **NÃO TESTADO**
@@ -233,62 +233,62 @@ Validações planejadas (NÃO EXECUTADAS):
 
 - [x] ✅ Execution Note criada com resultados detalhados - **COMPLETO** (este documento)
 - [x] ✅ Problemas encontrados documentados - **COMPLETO**
-- [ ] ⏳ ROADMAP.md atualizado com status da validação - **PENDENTE**
+- [ ] ROADMAP.md atualizado com status da validação - **PENDENTE**
 
 ---
 
-## 📊 Resumo Executivo
+## Resumo Executivo
 
 **Taxa de Sucesso:** 0% (0/16 critérios validados com sucesso)
 
 **Bloqueadores Críticos:**
 
-1. 🔴 **P0:** Backend crashando devido a migration pgvector (#387)
-2. 🟡 **P2:** Health endpoint retornando formato incorreto
+1. **P0:** Backend crashando devido a migration pgvector (#387)
+2. **P2:** Health endpoint retornando formato incorreto
 
 **Próximos Passos Recomendados:**
 
-### 🚨 Ação Imediata (P0)
+### Ação Imediata (P0)
 
 1. **Opção A (Workaround Rápido - 30 min):**
-   - Renomear `1732474900000-CreateLegislationTable.ts` para `.disabled`
-   - Redeploy backend no Railway
-   - Validar que backend sobe sem crash
-   - **Trade-off:** Funcionalidade RAG/Legislation quebrada temporariamente
+ - Renomear `1732474900000-CreateLegislationTable.ts` para `.disabled`
+ - Redeploy backend no Railway
+ - Validar que backend sobe sem crash
+ - **Trade-off:** Funcionalidade RAG/Legislation quebrada temporariamente
 
 2. **Opção B (Solução Definitiva - 6-8h):**
-   - Executar issue #387 (migração PostgreSQL para template pgvector)
-   - **Trade-off:** Tempo maior, mas resolve definitivamente
+ - Executar issue #387 (migração PostgreSQL para template pgvector)
+ - **Trade-off:** Tempo maior, mas resolve definitivamente
 
 **Recomendação:** Opção A (workaround) para restaurar funcionalidade básica HOJE, seguido de Opção B em paralelo.
 
-### 🔧 Issues Atômicas a Criar
+### Issues Atômicas a Criar
 
 1. **#XXX - [P0][HOTFIX] Desabilitar migration CreateLegislationTable para restaurar backend**
-   - Estimativa: 30 min
-   - Bloqueia: Nenhuma
-   - Desbloqueada por: Nenhuma
-   - Tipo: Hotfix
+ - Estimativa: 30 min
+ - Bloqueia: Nenhuma
+ - Desbloqueada por: Nenhuma
+ - Tipo: Hotfix
 
 2. **#XXX - [P2] Investigar discrepância Health endpoint (JSON vs text/plain)**
-   - Estimativa: 1h
-   - Bloqueia: Observabilidade completa
-   - Desbloqueada por: Backend funcional (#XXX)
-   - Tipo: Bug
+ - Estimativa: 1h
+ - Bloqueia: Observabilidade completa
+ - Desbloqueada por: Backend funcional (#XXX)
+ - Tipo: Bug
 
 3. **#XXX - [P1] Revalidar deploy Railway após hotfix CreateLegislationTable**
-   - Estimativa: 2h
-   - Bloqueia: Nenhuma
-   - Desbloqueada por: #XXX (hotfix migration)
-   - Tipo: Validation
+ - Estimativa: 2h
+ - Bloqueia: Nenhuma
+ - Desbloqueada por: #XXX (hotfix migration)
+ - Tipo: Validation
 
 ---
 
-## 🔗 Dependências e Relacionamentos
+## Dependências e Relacionamentos
 
 **Issue #390 (esta validação):**
 
-- **Bloqueada por:** ✅ #388 (NODE_ENV resolvido), ⚠️ #387 (pgvector - AINDA BLOQUEIA)
+- **Bloqueada por:** ✅ #388 (NODE_ENV resolvido), ⚠ #387 (pgvector - AINDA BLOQUEIA)
 - **Bloqueia:** Issues futuras de features (deploy não funcional)
 - **Relacionada:** #387 (root cause do crash)
 
@@ -299,18 +299,18 @@ Validações planejadas (NÃO EXECUTADAS):
 
 ---
 
-## 📚 Referências
+## Referências
 
 - **Issue Original:** #390 - [P1] Validação End-to-End Deploy Railway
 - **Bloqueador:** #387 - [P0] Migrar PostgreSQL para versão com suporte a pgvector
 - **Arquivos Analisados:**
-  - `backend/src/health/health.controller.ts`
-  - `backend/src/health/health.service.ts`
-  - `backend/src/migrations/1732474900000-CreateLegislationTable.ts`
+ - `backend/src/health/health.controller.ts`
+ - `backend/src/health/health.service.ts`
+ - `backend/src/migrations/1732474900000-CreateLegislationTable.ts`
 - **Logs Railway:** `railway logs --service etp-express-backend`
 - **Endpoints Testados:**
-  - `https://etp-express-backend.railway.app/health` (200 OK - formato incorreto)
-  - `https://etp-express-frontend.railway.app` (200 OK)
+ - `https://etp-express-backend.railway.app/health` (200 OK - formato incorreto)
+ - `https://etp-express-frontend.railway.app` (200 OK)
 
 ---
 

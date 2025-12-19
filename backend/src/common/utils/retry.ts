@@ -13,42 +13,42 @@ import { Logger } from '@nestjs/common';
  * Configuration options for retry behavior
  */
 export interface RetryOptions {
-  /** Maximum number of retry attempts (default: 3) */
-  maxRetries: number;
-  /** Base delay in milliseconds for exponential backoff (default: 1000ms) */
-  baseDelay: number;
-  /** Maximum delay cap in milliseconds (default: 10000ms) */
-  maxDelay: number;
-  /** Error codes/messages that should trigger a retry */
-  retryableErrors: string[];
-  /** Optional logger instance for retry logging */
-  logger?: Logger;
-  /** Operation name for logging (default: 'operation') */
-  operationName?: string;
+ /** Maximum number of retry attempts (default: 3) */
+ maxRetries: number;
+ /** Base delay in milliseconds for exponential backoff (default: 1000ms) */
+ baseDelay: number;
+ /** Maximum delay cap in milliseconds (default: 10000ms) */
+ maxDelay: number;
+ /** Error codes/messages that should trigger a retry */
+ retryableErrors: string[];
+ /** Optional logger instance for retry logging */
+ logger?: Logger;
+ /** Operation name for logging (default: 'operation') */
+ operationName?: string;
 }
 
 /**
  * Default retry configuration optimized for external API calls
  */
 export const DEFAULT_RETRY_OPTIONS: RetryOptions = {
-  maxRetries: 3,
-  baseDelay: 1000,
-  maxDelay: 10000,
-  retryableErrors: [
-    'ETIMEDOUT',
-    'ECONNRESET',
-    'ECONNREFUSED',
-    'ENOTFOUND',
-    'rate_limit',
-    'rate_limit_exceeded',
-    '429',
-    '500',
-    '502',
-    '503',
-    '504',
-    'timeout',
-    'network error',
-  ],
+ maxRetries: 3,
+ baseDelay: 1000,
+ maxDelay: 10000,
+ retryableErrors: [
+ 'ETIMEDOUT',
+ 'ECONNRESET',
+ 'ECONNREFUSED',
+ 'ENOTFOUND',
+ 'rate_limit',
+ 'rate_limit_exceeded',
+ '429',
+ '500',
+ '502',
+ '503',
+ '504',
+ 'timeout',
+ 'network error',
+ ],
 };
 
 /**
@@ -56,7 +56,7 @@ export const DEFAULT_RETRY_OPTIONS: RetryOptions = {
  * @param ms Milliseconds to sleep
  */
 async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+ return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -70,13 +70,13 @@ async function sleep(ms: number): Promise<void> {
  * @returns Calculated delay in milliseconds
  */
 export function calculateBackoff(
-  attempt: number,
-  options: Pick<RetryOptions, 'baseDelay' | 'maxDelay'>,
+ attempt: number,
+ options: Pick<RetryOptions, 'baseDelay' | 'maxDelay'>,
 ): number {
-  const exponential = options.baseDelay * Math.pow(2, attempt);
-  // Add 10% random jitter to prevent thundering herd
-  const jitter = Math.random() * 0.1 * exponential;
-  return Math.min(exponential + jitter, options.maxDelay);
+ const exponential = options.baseDelay * Math.pow(2, attempt);
+ // Add 10% random jitter to prevent thundering herd
+ const jitter = Math.random() * 0.1 * exponential;
+ return Math.min(exponential + jitter, options.maxDelay);
 }
 
 /**
@@ -87,28 +87,28 @@ export function calculateBackoff(
  * @returns True if the error is retryable
  */
 export function isRetryableError(
-  error: unknown,
-  retryableErrors: string[],
+ error: unknown,
+ retryableErrors: string[],
 ): boolean {
-  if (!error) return false;
+ if (!error) return false;
 
-  const errorObj = error as Record<string, unknown>;
-  const errorCode = String(errorObj.code || '').toLowerCase();
-  const errorMessage = String(errorObj.message || '').toLowerCase();
-  const errorStatus = String(errorObj.status || errorObj.statusCode || '');
-  const responseStatus = String(
-    (errorObj.response as Record<string, unknown>)?.status || '',
-  );
+ const errorObj = error as Record<string, unknown>;
+ const errorCode = String(errorObj.code || '').toLowerCase();
+ const errorMessage = String(errorObj.message || '').toLowerCase();
+ const errorStatus = String(errorObj.status || errorObj.statusCode || '');
+ const responseStatus = String(
+ (errorObj.response as Record<string, unknown>)?.status || '',
+ );
 
-  return retryableErrors.some((pattern) => {
-    const lowerPattern = pattern.toLowerCase();
-    return (
-      errorCode.includes(lowerPattern) ||
-      errorMessage.includes(lowerPattern) ||
-      errorStatus === pattern ||
-      responseStatus === pattern
-    );
-  });
+ return retryableErrors.some((pattern) => {
+ const lowerPattern = pattern.toLowerCase();
+ return (
+ errorCode.includes(lowerPattern) ||
+ errorMessage.includes(lowerPattern) ||
+ errorStatus === pattern ||
+ responseStatus === pattern
+ );
+ });
 }
 
 /**
@@ -126,66 +126,66 @@ export function isRetryableError(
  * @example
  * ```typescript
  * const result = await withRetry(
- *   () => this.openai.chat.completions.create(request),
- *   {
- *     maxRetries: 3,
- *     baseDelay: 1000,
- *     maxDelay: 8000,
- *     retryableErrors: ['ETIMEDOUT', '429'],
- *     logger: this.logger,
- *     operationName: 'OpenAI completion'
- *   }
+ * () => this.openai.chat.completions.create(request),
+ * {
+ * maxRetries: 3,
+ * baseDelay: 1000,
+ * maxDelay: 8000,
+ * retryableErrors: ['ETIMEDOUT', '429'],
+ * logger: this.logger,
+ * operationName: 'OpenAI completion'
+ * }
  * );
  * ```
  */
 export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: Partial<RetryOptions> = {},
+ fn: () => Promise<T>,
+ options: Partial<RetryOptions> = {},
 ): Promise<T> {
-  const config: RetryOptions = { ...DEFAULT_RETRY_OPTIONS, ...options };
-  const {
-    maxRetries,
-    retryableErrors,
-    logger,
-    operationName = 'operation',
-  } = config;
+ const config: RetryOptions = { ...DEFAULT_RETRY_OPTIONS, ...options };
+ const {
+ maxRetries,
+ retryableErrors,
+ logger,
+ operationName = 'operation',
+ } = config;
 
-  let lastError: Error | undefined;
+ let lastError: Error | undefined;
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error as Error;
+ for (let attempt = 0; attempt <= maxRetries; attempt++) {
+ try {
+ return await fn();
+ } catch (error) {
+ lastError = error as Error;
 
-      // Check if error is retryable
-      if (!isRetryableError(error, retryableErrors)) {
-        logger?.debug(
-          `[${operationName}] Non-retryable error encountered: ${(error as Error).message}`,
-        );
-        throw error;
-      }
+ // Check if error is retryable
+ if (!isRetryableError(error, retryableErrors)) {
+ logger?.debug(
+ `[${operationName}] Non-retryable error encountered: ${(error as Error).message}`,
+ );
+ throw error;
+ }
 
-      // Check if we have retries left
-      if (attempt < maxRetries) {
-        const delay = calculateBackoff(attempt, config);
+ // Check if we have retries left
+ if (attempt < maxRetries) {
+ const delay = calculateBackoff(attempt, config);
 
-        logger?.warn(
-          `[${operationName}] Attempt ${attempt + 1}/${maxRetries + 1} failed: ${(error as Error).message}. ` +
-            `Retrying in ${Math.round(delay)}ms...`,
-        );
+ logger?.warn(
+ `[${operationName}] Attempt ${attempt + 1}/${maxRetries + 1} failed: ${(error as Error).message}. ` +
+ `Retrying in ${Math.round(delay)}ms...`,
+ );
 
-        await sleep(delay);
-      } else {
-        logger?.error(
-          `[${operationName}] All ${maxRetries + 1} attempts exhausted. Last error: ${(error as Error).message}`,
-        );
-      }
-    }
-  }
+ await sleep(delay);
+ } else {
+ logger?.error(
+ `[${operationName}] All ${maxRetries + 1} attempts exhausted. Last error: ${(error as Error).message}`,
+ );
+ }
+ }
+ }
 
-  // All retries exhausted, throw the last error
-  throw lastError;
+ // All retries exhausted, throw the last error
+ throw lastError;
 }
 
 /**
@@ -199,19 +199,19 @@ export async function withRetry<T>(
  * @example
  * ```typescript
  * const openAIRetry = createRetryWrapper({
- *   maxRetries: 3,
- *   logger: this.logger,
- *   operationName: 'OpenAI API'
+ * maxRetries: 3,
+ * logger: this.logger,
+ * operationName: 'OpenAI API'
  * });
  *
  * const result = await openAIRetry(() => this.callAPI());
  * ```
  */
 export function createRetryWrapper(defaultOptions: Partial<RetryOptions>) {
-  return <T>(
-    fn: () => Promise<T>,
-    overrideOptions: Partial<RetryOptions> = {},
-  ): Promise<T> => {
-    return withRetry(fn, { ...defaultOptions, ...overrideOptions });
-  };
+ return <T>(
+ fn: () => Promise<T>,
+ overrideOptions: Partial<RetryOptions> = {},
+ ): Promise<T> => {
+ return withRetry(fn, { ...defaultOptions, ...overrideOptions });
+ };
 }

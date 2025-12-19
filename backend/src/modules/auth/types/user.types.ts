@@ -13,19 +13,19 @@ import { User } from '../../../entities/user.entity';
  * @example
  * ```ts
  * const safeUser: UserWithoutPassword = {
- *   id: '123',
- *   email: 'user@example.com',
- *   name: 'João Silva',
- *   role: UserRole.USER,
- *   cargo: 'Analista',
- *   organizationId: 'org-uuid',
- *   organization: { ... },
- *   isActive: true,
- *   lastLoginAt: new Date(),
- *   createdAt: new Date(),
- *   updatedAt: new Date(),
- *   etps: [],
- *   auditLogs: []
+ * id: '123',
+ * email: 'user@example.com',
+ * name: 'João Silva',
+ * role: UserRole.USER,
+ * cargo: 'Analista',
+ * organizationId: 'org-uuid',
+ * organization: { ... },
+ * isActive: true,
+ * lastLoginAt: new Date(),
+ * createdAt: new Date(),
+ * updatedAt: new Date(),
+ * etps: [],
+ * auditLogs: []
  * };
  * ```
  */
@@ -44,24 +44,24 @@ export type UserWithoutPassword = Omit<User, 'password'>;
  * @example
  * ```ts
  * const payload: JwtPayload = {
- *   sub: 'user-uuid',
- *   email: 'user@lages.sc.gov.br',
- *   name: 'João Silva',
- *   role: 'user',
- *   organizationId: 'org-uuid',
- *   mustChangePassword: false
+ * sub: 'user-uuid',
+ * email: 'user@lages.sc.gov.br',
+ * name: 'João Silva',
+ * role: 'user',
+ * organizationId: 'org-uuid',
+ * mustChangePassword: false
  * };
  * ```
  */
 export interface JwtPayload {
-  sub: string;
-  email: string;
-  name: string;
-  role: string;
-  organizationId: string;
-  /**
-   * Indicates if user must change password on next action.
-   * True for new users created by Domain Managers (M8: Gestão de Domínios).
-   */
-  mustChangePassword: boolean;
+ sub: string;
+ email: string;
+ name: string;
+ role: string;
+ organizationId: string;
+ /**
+ * Indicates if user must change password on next action.
+ * True for new users created by Domain Managers (M8: Gestão de Domínios).
+ */
+ mustChangePassword: boolean;
 }

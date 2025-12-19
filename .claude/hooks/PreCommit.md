@@ -59,8 +59,8 @@ O commit e **BLOQUEADO** se:
 
 O commit **PROSSEGUE** com warnings se:
 
-- ⚠️ ESLint warnings (nao errors)
-- ⚠️ Formatting corrigido automaticamente
+- ⚠ ESLint warnings (nao errors)
+- ⚠ Formatting corrigido automaticamente
 
 ---
 
@@ -95,7 +95,7 @@ git commit --no-verify -m "mensagem"
 [PreCommit] Verificando...
 [PreCommit] ✅ Prettier OK
 [PreCommit] ❌ ESLint FALHOU
-  src/service.ts:42 - @typescript-eslint/no-explicit-any
+ src/service.ts:42 - @typescript-eslint/no-explicit-any
 
 [PreCommit] Commit BLOQUEADO. Corrija os erros acima.
 ```

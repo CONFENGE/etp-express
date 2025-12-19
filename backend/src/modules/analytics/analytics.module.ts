@@ -5,9 +5,9 @@ import { AnalyticsController } from './analytics.controller';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AnalyticsEvent])],
-  controllers: [AnalyticsController],
-  providers: [AnalyticsService],
-  exports: [AnalyticsService],
+ imports: [TypeOrmModule.forFeature([AnalyticsEvent])],
+ controllers: [AnalyticsController],
+ providers: [AnalyticsService],
+ exports: [AnalyticsService],
 })
 export class AnalyticsModule {}

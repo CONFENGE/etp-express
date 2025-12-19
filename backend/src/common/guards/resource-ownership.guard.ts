@@ -1,18 +1,18 @@
 import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  NotFoundException,
-  Logger,
+ Injectable,
+ CanActivate,
+ ExecutionContext,
+ ForbiddenException,
+ NotFoundException,
+ Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  OWNERSHIP_KEY,
-  OwnershipConfig,
-  ResourceType,
+ OWNERSHIP_KEY,
+ OwnershipConfig,
+ ResourceType,
 } from '../decorators/require-ownership.decorator';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
@@ -58,168 +58,168 @@ import { EtpSection } from '../../entities/etp-section.entity';
  */
 @Injectable()
 export class ResourceOwnershipGuard implements CanActivate {
-  private readonly logger = new Logger(ResourceOwnershipGuard.name);
+ private readonly logger = new Logger(ResourceOwnershipGuard.name);
 
-  constructor(
-    private reflector: Reflector,
-    @InjectRepository(Etp)
-    private etpRepository: Repository<Etp>,
-    @InjectRepository(EtpSection)
-    private sectionRepository: Repository<EtpSection>,
-  ) {}
+ constructor(
+ private reflector: Reflector,
+ @InjectRepository(Etp)
+ private etpRepository: Repository<Etp>,
+ @InjectRepository(EtpSection)
+ private sectionRepository: Repository<EtpSection>,
+ ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Get ownership configuration from decorator metadata
-    const config = this.reflector.getAllAndOverride<OwnershipConfig>(
-      OWNERSHIP_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+ async canActivate(context: ExecutionContext): Promise<boolean> {
+ // Get ownership configuration from decorator metadata
+ const config = this.reflector.getAllAndOverride<OwnershipConfig>(
+ OWNERSHIP_KEY,
+ [context.getHandler(), context.getClass()],
+ );
 
-    // If no @RequireOwnership decorator, skip validation
-    if (!config) {
-      return true;
-    }
+ // If no @RequireOwnership decorator, skip validation
+ if (!config) {
+ return true;
+ }
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+ const request = context.switchToHttp().getRequest();
+ const user = request.user;
 
-    // If no user, allow (JwtAuthGuard will handle authentication)
-    if (!user) {
-      return true;
-    }
+ // If no user, allow (JwtAuthGuard will handle authentication)
+ if (!user) {
+ return true;
+ }
 
-    // Extract resource ID from params
-    const idParam = config.idParam ?? 'id';
-    const resourceId = request.params[idParam];
+ // Extract resource ID from params
+ const idParam = config.idParam ?? 'id';
+ const resourceId = request.params[idParam];
 
-    if (!resourceId) {
-      this.logger.error(
-        `Resource ID not found in params.${idParam} for ${config.resourceType}`,
-      );
-      throw new NotFoundException(
-        `Resource ID not provided in parameter '${idParam}'`,
-      );
-    }
+ if (!resourceId) {
+ this.logger.error(
+ `Resource ID not found in params.${idParam} for ${config.resourceType}`,
+ );
+ throw new NotFoundException(
+ `Resource ID not provided in parameter '${idParam}'`,
+ );
+ }
 
-    // Fetch and validate resource based on type
-    const validateOwnership = config.validateOwnership ?? true;
-    const resource = await this.fetchAndValidateResource(
-      config.resourceType,
-      resourceId,
-      user.organizationId,
-      validateOwnership ? user.id : undefined,
-    );
+ // Fetch and validate resource based on type
+ const validateOwnership = config.validateOwnership ?? true;
+ const resource = await this.fetchAndValidateResource(
+ config.resourceType,
+ resourceId,
+ user.organizationId,
+ validateOwnership ? user.id : undefined,
+ );
 
-    // Inject validated resource into request for downstream use
-    request.resource = resource;
+ // Inject validated resource into request for downstream use
+ request.resource = resource;
 
-    return true;
-  }
+ return true;
+ }
 
-  /**
-   * Fetches resource from database and validates ownership.
-   *
-   * @param resourceType - Type of resource to fetch
-   * @param resourceId - Resource unique identifier
-   * @param organizationId - User's organization ID for tenancy validation
-   * @param userId - User ID for ownership validation (optional)
-   * @returns Validated resource entity
-   * @throws {NotFoundException} If resource not found
-   * @throws {ForbiddenException} If organization or ownership validation fails
-   */
-  private async fetchAndValidateResource(
-    resourceType: ResourceType,
-    resourceId: string,
-    organizationId: string,
-    userId?: string,
-  ): Promise<Etp | EtpSection> {
-    switch (resourceType) {
-      case ResourceType.ETP:
-        return this.validateEtp(resourceId, organizationId, userId);
-      case ResourceType.SECTION:
-        return this.validateSection(resourceId, organizationId, userId);
-      default:
-        throw new Error(`Unsupported resource type: ${resourceType}`);
-    }
-  }
+ /**
+ * Fetches resource from database and validates ownership.
+ *
+ * @param resourceType - Type of resource to fetch
+ * @param resourceId - Resource unique identifier
+ * @param organizationId - User's organization ID for tenancy validation
+ * @param userId - User ID for ownership validation (optional)
+ * @returns Validated resource entity
+ * @throws {NotFoundException} If resource not found
+ * @throws {ForbiddenException} If organization or ownership validation fails
+ */
+ private async fetchAndValidateResource(
+ resourceType: ResourceType,
+ resourceId: string,
+ organizationId: string,
+ userId?: string,
+ ): Promise<Etp | EtpSection> {
+ switch (resourceType) {
+ case ResourceType.ETP:
+ return this.validateEtp(resourceId, organizationId, userId);
+ case ResourceType.SECTION:
+ return this.validateSection(resourceId, organizationId, userId);
+ default:
+ throw new Error(`Unsupported resource type: ${resourceType}`);
+ }
+ }
 
-  /**
-   * Validates ETP ownership and tenancy.
-   */
-  private async validateEtp(
-    etpId: string,
-    organizationId: string,
-    userId?: string,
-  ): Promise<Etp> {
-    const etp = await this.etpRepository.findOne({
-      where: { id: etpId },
-      relations: ['createdBy'],
-    });
+ /**
+ * Validates ETP ownership and tenancy.
+ */
+ private async validateEtp(
+ etpId: string,
+ organizationId: string,
+ userId?: string,
+ ): Promise<Etp> {
+ const etp = await this.etpRepository.findOne({
+ where: { id: etpId },
+ relations: ['createdBy'],
+ });
 
-    if (!etp) {
-      throw new NotFoundException(`ETP com ID ${etpId} não encontrado`);
-    }
+ if (!etp) {
+ throw new NotFoundException(`ETP com ID ${etpId} não encontrado`);
+ }
 
-    // Multi-Tenancy: Validate organizationId (MT-05)
-    if (etp.organizationId !== organizationId) {
-      this.logger.warn(
-        `IDOR attempt: Organization ${organizationId} attempted to access ETP ${etpId} from organization ${etp.organizationId}`,
-      );
-      throw new ForbiddenException(
-        'Você não tem permissão para acessar este ETP',
-      );
-    }
+ // Multi-Tenancy: Validate organizationId (MT-05)
+ if (etp.organizationId !== organizationId) {
+ this.logger.warn(
+ `IDOR attempt: Organization ${organizationId} attempted to access ETP ${etpId} from organization ${etp.organizationId}`,
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar este ETP',
+ );
+ }
 
-    // Ownership validation (if required)
-    if (userId && etp.createdById !== userId) {
-      this.logger.warn(
-        `Ownership violation: User ${userId} attempted to access ETP ${etpId} owned by ${etp.createdById}`,
-      );
-      throw new ForbiddenException(
-        'Você não tem permissão para acessar este ETP',
-      );
-    }
+ // Ownership validation (if required)
+ if (userId && etp.createdById !== userId) {
+ this.logger.warn(
+ `Ownership violation: User ${userId} attempted to access ETP ${etpId} owned by ${etp.createdById}`,
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar este ETP',
+ );
+ }
 
-    return etp;
-  }
+ return etp;
+ }
 
-  /**
-   * Validates Section ownership and tenancy via parent ETP.
-   */
-  private async validateSection(
-    sectionId: string,
-    organizationId: string,
-    userId?: string,
-  ): Promise<EtpSection> {
-    const section = await this.sectionRepository.findOne({
-      where: { id: sectionId },
-      relations: ['etp', 'etp.createdBy'],
-    });
+ /**
+ * Validates Section ownership and tenancy via parent ETP.
+ */
+ private async validateSection(
+ sectionId: string,
+ organizationId: string,
+ userId?: string,
+ ): Promise<EtpSection> {
+ const section = await this.sectionRepository.findOne({
+ where: { id: sectionId },
+ relations: ['etp', 'etp.createdBy'],
+ });
 
-    if (!section) {
-      throw new NotFoundException(`Seção com ID ${sectionId} não encontrada`);
-    }
+ if (!section) {
+ throw new NotFoundException(`Seção com ID ${sectionId} não encontrada`);
+ }
 
-    // Multi-Tenancy: Validate via parent ETP's organizationId
-    if (section.etp.organizationId !== organizationId) {
-      this.logger.warn(
-        `IDOR attempt: Organization ${organizationId} attempted to access Section ${sectionId} from organization ${section.etp.organizationId}`,
-      );
-      throw new ForbiddenException(
-        'Você não tem permissão para acessar esta seção',
-      );
-    }
+ // Multi-Tenancy: Validate via parent ETP's organizationId
+ if (section.etp.organizationId !== organizationId) {
+ this.logger.warn(
+ `IDOR attempt: Organization ${organizationId} attempted to access Section ${sectionId} from organization ${section.etp.organizationId}`,
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar esta seção',
+ );
+ }
 
-    // Ownership validation via parent ETP (if required)
-    if (userId && section.etp.createdById !== userId) {
-      this.logger.warn(
-        `Ownership violation: User ${userId} attempted to access Section ${sectionId} owned by ${section.etp.createdById}`,
-      );
-      throw new ForbiddenException(
-        'Você não tem permissão para acessar esta seção',
-      );
-    }
+ // Ownership validation via parent ETP (if required)
+ if (userId && section.etp.createdById !== userId) {
+ this.logger.warn(
+ `Ownership violation: User ${userId} attempted to access Section ${sectionId} owned by ${section.etp.createdById}`,
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar esta seção',
+ );
+ }
 
-    return section;
-  }
+ return section;
+ }
 }

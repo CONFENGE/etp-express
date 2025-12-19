@@ -7,16 +7,16 @@ import { IsString, MinLength, IsOptional, IsBoolean } from 'class-validator';
  * Only name, cargo (position), and active status can be modified.
  */
 export class UpdateDomainUserDto {
-  @IsOptional()
-  @IsString()
-  @MinLength(2, { message: 'Name must be at least 2 characters' })
-  name?: string;
+ @IsOptional()
+ @IsString()
+ @MinLength(2, { message: 'Name must be at least 2 characters' })
+ name?: string;
 
-  @IsOptional()
-  @IsString()
-  cargo?: string;
+ @IsOptional()
+ @IsString()
+ cargo?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+ @IsOptional()
+ @IsBoolean()
+ isActive?: boolean;
 }

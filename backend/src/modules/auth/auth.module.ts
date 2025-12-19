@@ -13,25 +13,25 @@ import { EmailModule } from '../email/email.module';
 import { PasswordReset } from '../../entities/password-reset.entity';
 
 @Module({
-  imports: [
-    UsersModule,
-    OrganizationsModule,
-    EmailModule,
-    PassportModule,
-    TypeOrmModule.forFeature([PasswordReset]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION', '7d'),
-        },
-      }),
-    }),
-  ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
-  exports: [AuthService],
+ imports: [
+ UsersModule,
+ OrganizationsModule,
+ EmailModule,
+ PassportModule,
+ TypeOrmModule.forFeature([PasswordReset]),
+ JwtModule.registerAsync({
+ imports: [ConfigModule],
+ inject: [ConfigService],
+ useFactory: async (configService: ConfigService) => ({
+ secret: configService.get<string>('JWT_SECRET'),
+ signOptions: {
+ expiresIn: configService.get<string>('JWT_EXPIRATION', '7d'),
+ },
+ }),
+ }),
+ ],
+ controllers: [AuthController],
+ providers: [AuthService, JwtStrategy, LocalStrategy],
+ exports: [AuthService],
 })
 export class AuthModule {}

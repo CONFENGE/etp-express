@@ -104,14 +104,14 @@ O ETP deve conter, quando couber:
 
 ```typescript
 const requiredSections = [
-  'descricaoNecessidade',
-  'areaRequisitante',
-  'requisitosContratacao',
-  'estimativaQuantidade',
-  'levantamentoMercado',
-  'estimativaValor',
-  'descricaoSolucao',
-  'posicionamentoConclusivo',
+ 'descricaoNecessidade',
+ 'areaRequisitante',
+ 'requisitosContratacao',
+ 'estimativaQuantidade',
+ 'levantamentoMercado',
+ 'estimativaValor',
+ 'descricaoSolucao',
+ 'posicionamentoConclusivo',
 ];
 ```
 
@@ -119,18 +119,18 @@ const requiredSections = [
 
 ```typescript
 const validations = {
-  descricaoNecessidade: {
-    minLength: 100,
-    mustContain: ['problema', 'necessidade', 'objetivo'],
-  },
-  estimativaValor: {
-    mustHave: ['fonte', 'data', 'valor'],
-    maxAge: 180, // dias
-  },
-  levantamentoMercado: {
-    minFornecedores: 3,
-    mustHavePrices: true,
-  },
+ descricaoNecessidade: {
+ minLength: 100,
+ mustContain: ['problema', 'necessidade', 'objetivo'],
+ },
+ estimativaValor: {
+ mustHave: ['fonte', 'data', 'valor'],
+ maxAge: 180, // dias
+ },
+ levantamentoMercado: {
+ minFornecedores: 3,
+ mustHavePrices: true,
+ },
 };
 ```
 
@@ -184,9 +184,9 @@ A estimativa de precos foi realizada conforme Art. 23 da Lei 14.133/2021, utiliz
 
 ### 6.2 Precos de Referencia
 
-| Item | Descricao | Qtd | Valor Unit. | Fonte   | Data         |
+| Item | Descricao | Qtd | Valor Unit. | Fonte | Data |
 | ---- | --------- | --- | ----------- | ------- | ------------ |
-| 1    | [Item]    | [N] | R$ [X]      | [Fonte] | [DD/MM/AAAA] |
+| 1 | [Item] | [N] | R$ [X] | [Fonte] | [DD/MM/AAAA] |
 
 ### 6.3 Valor Total Estimado
 
@@ -205,40 +205,40 @@ R$ [VALOR] ([VALOR POR EXTENSO])
 
 ```typescript
 function validateEtpCompliance(etp: Etp): ComplianceResult {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+ const errors: string[] = [];
+ const warnings: string[] = [];
 
-  // Verificar campos obrigatorios
-  for (const section of requiredSections) {
-    if (!etp.sections[section] || etp.sections[section].content.length < 50) {
-      errors.push(
-        `Secao "${section}" e obrigatoria e deve ter conteudo substantivo`,
-      );
-    }
-  }
+ // Verificar campos obrigatorios
+ for (const section of requiredSections) {
+ if (!etp.sections[section] || etp.sections[section].content.length < 50) {
+ errors.push(
+ `Secao "${section}" e obrigatoria e deve ter conteudo substantivo`,
+ );
+ }
+ }
 
-  // Verificar estimativa de valor
-  if (etp.estimativaValor) {
-    const priceDate = new Date(etp.estimativaValor.date);
-    const daysSince =
-      (Date.now() - priceDate.getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSince > 180) {
-      warnings.push(
-        'Estimativa de precos com mais de 180 dias - recomenda-se atualizacao',
-      );
-    }
-  }
+ // Verificar estimativa de valor
+ if (etp.estimativaValor) {
+ const priceDate = new Date(etp.estimativaValor.date);
+ const daysSince =
+ (Date.now() - priceDate.getTime()) / (1000 * 60 * 60 * 24);
+ if (daysSince > 180) {
+ warnings.push(
+ 'Estimativa de precos com mais de 180 dias - recomenda-se atualizacao',
+ );
+ }
+ }
 
-  // Verificar levantamento de mercado
-  if (etp.fornecedores && etp.fornecedores.length < 3) {
-    warnings.push('Recomenda-se consulta a pelo menos 3 fornecedores');
-  }
+ // Verificar levantamento de mercado
+ if (etp.fornecedores && etp.fornecedores.length < 3) {
+ warnings.push('Recomenda-se consulta a pelo menos 3 fornecedores');
+ }
 
-  return {
-    valid: errors.length === 0,
-    errors,
-    warnings,
-  };
+ return {
+ valid: errors.length === 0,
+ errors,
+ warnings,
+ };
 }
 ```
 
@@ -248,14 +248,14 @@ function validateEtpCompliance(etp: Etp): ComplianceResult {
 
 ### Glossario
 
-| Termo   | Definicao                            |
+| Termo | Definicao |
 | ------- | ------------------------------------ |
-| **ETP** | Estudo Tecnico Preliminar            |
-| **TR**  | Termo de Referencia                  |
-| **PB**  | Projeto Basico                       |
+| **ETP** | Estudo Tecnico Preliminar |
+| **TR** | Termo de Referencia |
+| **PB** | Projeto Basico |
 | **DFD** | Documento de Formalizacao de Demanda |
-| **ARP** | Ata de Registro de Precos            |
-| **SRP** | Sistema de Registro de Precos        |
+| **ARP** | Ata de Registro de Precos |
+| **SRP** | Sistema de Registro de Precos |
 
 ### Referencias Legais
 

@@ -2,29 +2,29 @@ import { useEffect, useCallback, useState } from 'react';
 import { useBlocker, type BlockerFunction } from 'react-router-dom';
 
 interface UseUnsavedChangesWarningOptions {
-  /**
-   * Whether there are unsaved changes
-   */
-  isDirty: boolean;
-  /**
-   * Custom message for the browser beforeunload dialog (browser may ignore this)
-   */
-  message?: string;
+ /**
+ * Whether there are unsaved changes
+ */
+ isDirty: boolean;
+ /**
+ * Custom message for the browser beforeunload dialog (browser may ignore this)
+ */
+ message?: string;
 }
 
 interface UseUnsavedChangesWarningReturn {
-  /**
-   * Whether a navigation is being blocked
-   */
-  isBlocking: boolean;
-  /**
-   * Proceed with the blocked navigation
-   */
-  proceed: () => void;
-  /**
-   * Cancel the blocked navigation and stay on the page
-   */
-  reset: () => void;
+ /**
+ * Whether a navigation is being blocked
+ */
+ isBlocking: boolean;
+ /**
+ * Proceed with the blocked navigation
+ */
+ proceed: () => void;
+ /**
+ * Cancel the blocked navigation and stay on the page
+ */
+ reset: () => void;
 }
 
 /**
@@ -42,62 +42,62 @@ interface UseUnsavedChangesWarningReturn {
  *
  * // In your JSX:
  * {isBlocking && (
- *   <ConfirmDialog
- *     onConfirm={proceed}
- *     onCancel={reset}
- *   />
+ * <ConfirmDialog
+ * onConfirm={proceed}
+ * onCancel={reset}
+ * />
  * )}
  * ```
  */
 export function useUnsavedChangesWarning({
-  isDirty,
-  message = 'Você tem alterações não salvas. Deseja sair mesmo assim?',
+ isDirty,
+ message = 'Você tem alterações não salvas. Deseja sair mesmo assim?',
 }: UseUnsavedChangesWarningOptions): UseUnsavedChangesWarningReturn {
-  const [isBlocking, setIsBlocking] = useState(false);
+ const [isBlocking, setIsBlocking] = useState(false);
 
-  // Block React Router navigation
-  const shouldBlock = useCallback<BlockerFunction>(
-    ({ currentLocation, nextLocation }) =>
-      isDirty && currentLocation.pathname !== nextLocation.pathname,
-    [isDirty],
-  );
-  const blocker = useBlocker(shouldBlock);
+ // Block React Router navigation
+ const shouldBlock = useCallback<BlockerFunction>(
+ ({ currentLocation, nextLocation }) =>
+ isDirty && currentLocation.pathname !== nextLocation.pathname,
+ [isDirty],
+ );
+ const blocker = useBlocker(shouldBlock);
 
-  // Sync blocker state to local state for UI
-  useEffect(() => {
-    setIsBlocking(blocker.state === 'blocked');
-  }, [blocker.state]);
+ // Sync blocker state to local state for UI
+ useEffect(() => {
+ setIsBlocking(blocker.state === 'blocked');
+ }, [blocker.state]);
 
-  // Block browser navigation (tab close, refresh, etc.)
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault();
-        // Note: Modern browsers ignore custom messages and show their own
-        e.returnValue = message;
-        return message;
-      }
-    };
+ // Block browser navigation (tab close, refresh, etc.)
+ useEffect(() => {
+ const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+ if (isDirty) {
+ e.preventDefault();
+ // Note: Modern browsers ignore custom messages and show their own
+ e.returnValue = message;
+ return message;
+ }
+ };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty, message]);
+ window.addEventListener('beforeunload', handleBeforeUnload);
+ return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+ }, [isDirty, message]);
 
-  const proceed = useCallback(() => {
-    if (blocker.state === 'blocked') {
-      blocker.proceed();
-    }
-  }, [blocker]);
+ const proceed = useCallback(() => {
+ if (blocker.state === 'blocked') {
+ blocker.proceed();
+ }
+ }, [blocker]);
 
-  const reset = useCallback(() => {
-    if (blocker.state === 'blocked') {
-      blocker.reset();
-    }
-  }, [blocker]);
+ const reset = useCallback(() => {
+ if (blocker.state === 'blocked') {
+ blocker.reset();
+ }
+ }, [blocker]);
 
-  return {
-    isBlocking,
-    proceed,
-    reset,
-  };
+ return {
+ isBlocking,
+ proceed,
+ reset,
+ };
 }

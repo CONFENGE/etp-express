@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Secure Coding Practices](#1-secure-coding-practices)
 2. [Secret Management Best Practices](#2-secret-management-best-practices)
@@ -33,8 +33,8 @@ Falha em restringir o que usuários autenticados podem fazer. Atacantes podem ac
 // ❌ VULNERÁVEL - Sem verificação de autorização
 @Get('etps/:id')
 async getEtp(@Param('id') id: string) {
-  return this.etpService.findOne(id);
-  // Qualquer usuário autenticado pode acessar qualquer ETP!
+ return this.etpService.findOne(id);
+ // Qualquer usuário autenticado pode acessar qualquer ETP!
 }
 ```
 
@@ -45,17 +45,17 @@ async getEtp(@Param('id') id: string) {
 @Get('etps/:id')
 @UseGuards(JwtAuthGuard)
 async getEtp(
-  @Param('id') id: string,
-  @Request() req
+ @Param('id') id: string,
+ @Request() req
 ) {
-  const etp = await this.etpService.findOne(id);
+ const etp = await this.etpService.findOne(id);
 
-  // Verificar se usuário é dono ou tem permissão
-  if (etp.userId !== req.user.id && !req.user.isAdmin) {
-    throw new ForbiddenException('Acesso negado');
-  }
+ // Verificar se usuário é dono ou tem permissão
+ if (etp.userId !== req.user.id && !req.user.isAdmin) {
+ throw new ForbiddenException('Acesso negado');
+ }
 
-  return etp;
+ return etp;
 }
 ```
 
@@ -64,17 +64,17 @@ async getEtp(
 ```typescript
 // Teste de autorização
 it('should deny access to ETP from different user', async () => {
-  const user1 = await createUser('user1@example.com');
-  const user2 = await createUser('user2@example.com');
+ const user1 = await createUser('user1@example.com');
+ const user2 = await createUser('user2@example.com');
 
-  const etp = await createEtp(user1.id);
+ const etp = await createEtp(user1.id);
 
-  // Tentar acessar ETP do user1 como user2
-  await expect(
-    request(app.getHttpServer())
-      .get(`/etps/${etp.id}`)
-      .set('Authorization', `Bearer ${user2Token}`),
-  ).rejects.toThrow(ForbiddenException);
+ // Tentar acessar ETP do user1 como user2
+ await expect(
+ request(app.getHttpServer())
+ .get(`/etps/${etp.id}`)
+ .set('Authorization', `Bearer ${user2Token}`),
+ ).rejects.toThrow(ForbiddenException);
 });
 ```
 
@@ -90,10 +90,10 @@ Falha em proteger dados sensíveis usando criptografia adequada. Inclui senhas e
 ```typescript
 // ❌ VULNERÁVEL - Senha em texto plano
 async createUser(email: string, password: string) {
-  return this.userRepository.save({
-    email,
-    password, // Armazenando senha em texto plano!
-  });
+ return this.userRepository.save({
+ email,
+ password, // Armazenando senha em texto plano!
+ });
 }
 ```
 
@@ -104,17 +104,17 @@ async createUser(email: string, password: string) {
 import * as bcrypt from 'bcrypt';
 
 async createUser(email: string, password: string) {
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+ const salt = await bcrypt.genSalt(10);
+ const hashedPassword = await bcrypt.hash(password, salt);
 
-  return this.userRepository.save({
-    email,
-    password: hashedPassword, // Senha hasheada
-  });
+ return this.userRepository.save({
+ email,
+ password: hashedPassword, // Senha hasheada
+ });
 }
 
 async validatePassword(plainPassword: string, hashedPassword: string) {
-  return bcrypt.compare(plainPassword, hashedPassword);
+ return bcrypt.compare(plainPassword, hashedPassword);
 }
 ```
 
@@ -122,12 +122,12 @@ async validatePassword(plainPassword: string, hashedPassword: string) {
 
 ```typescript
 it('should hash passwords before storing', async () => {
-  const password = 'MySecurePassword123!';
-  const user = await authService.createUser('test@example.com', password);
+ const password = 'MySecurePassword123!';
+ const user = await authService.createUser('test@example.com', password);
 
-  // Password no DB nunca deve ser igual ao plaintext
-  expect(user.password).not.toBe(password);
-  expect(user.password).toMatch(/^\$2[aby]\$\d{2}\$/); // bcrypt hash pattern
+ // Password no DB nunca deve ser igual ao plaintext
+ expect(user.password).not.toBe(password);
+ expect(user.password).toMatch(/^\$2[aby]\$\d{2}\$/); // bcrypt hash pattern
 });
 ```
 
@@ -136,17 +136,17 @@ it('should hash passwords before storing', async () => {
 ```typescript
 // backend/src/main.ts
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+ const app = await NestFactory.create(AppModule);
 
-  // Forçar HTTPS em produção
-  if (process.env.NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-      if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(`https://${req.headers.host}${req.url}`);
-      }
-      next();
-    });
-  }
+ // Forçar HTTPS em produção
+ if (process.env.NODE_ENV === 'production') {
+ app.use((req, res, next) => {
+ if (req.headers['x-forwarded-proto'] !== 'https') {
+ return res.redirect(`https://${req.headers.host}${req.url}`);
+ }
+ next();
+ });
+ }
 }
 ```
 
@@ -162,9 +162,9 @@ Dados não validados são enviados para interpretadores (SQL, OS, LDAP). Atacant
 ```typescript
 // ❌ VULNERÁVEL - Query string concatenada
 async findUserByEmail(email: string) {
-  const query = `SELECT * FROM users WHERE email = '${email}'`;
-  return this.db.raw(query);
-  // Vulnerável a SQL injection: email = "' OR '1'='1"
+ const query = `SELECT * FROM users WHERE email = '${email}'`;
+ return this.db.raw(query);
+ // Vulnerável a SQL injection: email = "' OR '1'='1"
 }
 ```
 
@@ -173,17 +173,17 @@ async findUserByEmail(email: string) {
 ```typescript
 // ✅ SEGURO - Prepared statements (parameterized query)
 async findUserByEmail(email: string) {
-  return this.userRepository.findOne({
-    where: { email }, // TypeORM usa prepared statements automaticamente
-  });
+ return this.userRepository.findOne({
+ where: { email }, // TypeORM usa prepared statements automaticamente
+ });
 }
 
 // ✅ SEGURO - Query builder com parâmetros
 async searchUsers(searchTerm: string) {
-  return this.userRepository
-    .createQueryBuilder('user')
-    .where('user.email LIKE :search', { search: `%${searchTerm}%` })
-    .getMany();
+ return this.userRepository
+ .createQueryBuilder('user')
+ .where('user.email LIKE :search', { search: `%${searchTerm}%` })
+ .getMany();
 }
 ```
 
@@ -192,21 +192,21 @@ async searchUsers(searchTerm: string) {
 ```tsx
 // ❌ VULNERÁVEL - dangerouslySetInnerHTML sem sanitização
 function UserProfile({ userBio }) {
-  return <div dangerouslySetInnerHTML={{ __html: userBio }} />;
-  // Se userBio = "<script>alert('XSS')</script>", executa!
+ return <div dangerouslySetInnerHTML={{ __html: userBio }} />;
+ // Se userBio = "<script>alert('XSS')</script>", executa!
 }
 
 // ✅ SEGURO - Renderização escaped automaticamente
 function UserProfile({ userBio }) {
-  return <div>{userBio}</div>; // React escapa automaticamente
+ return <div>{userBio}</div>; // React escapa automaticamente
 }
 
 // ✅ SEGURO - Sanitização com DOMPurify
 import DOMPurify from 'dompurify';
 
 function UserProfile({ userBio }) {
-  const sanitizedBio = DOMPurify.sanitize(userBio);
-  return <div dangerouslySetInnerHTML={{ __html: sanitizedBio }} />;
+ const sanitizedBio = DOMPurify.sanitize(userBio);
+ return <div dangerouslySetInnerHTML={{ __html: sanitizedBio }} />;
 }
 ```
 
@@ -214,12 +214,12 @@ function UserProfile({ userBio }) {
 
 ```typescript
 it('should prevent SQL injection', async () => {
-  const maliciousEmail = "' OR '1'='1 --";
-  const result = await authService.findUserByEmail(maliciousEmail);
+ const maliciousEmail = "' OR '1'='1 --";
+ const result = await authService.findUserByEmail(maliciousEmail);
 
-  // Deve retornar null (nenhum usuário encontrado)
-  // NÃO deve retornar todos os usuários
-  expect(result).toBeNull();
+ // Deve retornar null (nenhum usuário encontrado)
+ // NÃO deve retornar todos os usuários
+ expect(result).toBeNull();
 });
 ```
 
@@ -235,17 +235,17 @@ Falhas de design arquitetural que não podem ser corrigidas apenas com implement
 ```typescript
 // ❌ VULNERÁVEL - Password reset sem token expiration
 interface PasswordResetToken {
-  userId: string;
-  token: string;
-  // Sem campo de expiração!
+ userId: string;
+ token: string;
+ // Sem campo de expiração!
 }
 
 async resetPassword(token: string, newPassword: string) {
-  const resetToken = await this.findResetToken(token);
-  if (!resetToken) throw new UnauthorizedException();
+ const resetToken = await this.findResetToken(token);
+ if (!resetToken) throw new UnauthorizedException();
 
-  // Token nunca expira - pode ser usado indefinidamente!
-  await this.updatePassword(resetToken.userId, newPassword);
+ // Token nunca expira - pode ser usado indefinidamente!
+ await this.updatePassword(resetToken.userId, newPassword);
 }
 ```
 
@@ -254,24 +254,24 @@ async resetPassword(token: string, newPassword: string) {
 ```typescript
 // ✅ SEGURO - Token com expiração + limite de tentativas
 interface PasswordResetToken {
-  userId: string;
-  token: string;
-  expiresAt: Date; // ✅ Expiração em 1 hora
-  attempts: number; // ✅ Contador de tentativas
-  used: boolean; // ✅ Single-use token
+ userId: string;
+ token: string;
+ expiresAt: Date; // ✅ Expiração em 1 hora
+ attempts: number; // ✅ Contador de tentativas
+ used: boolean; // ✅ Single-use token
 }
 
 async resetPassword(token: string, newPassword: string) {
-  const resetToken = await this.findResetToken(token);
+ const resetToken = await this.findResetToken(token);
 
-  if (!resetToken) throw new UnauthorizedException('Token inválido');
-  if (resetToken.used) throw new UnauthorizedException('Token já utilizado');
-  if (resetToken.expiresAt < new Date()) throw new UnauthorizedException('Token expirado');
-  if (resetToken.attempts >= 3) throw new UnauthorizedException('Tentativas excedidas');
+ if (!resetToken) throw new UnauthorizedException('Token inválido');
+ if (resetToken.used) throw new UnauthorizedException('Token já utilizado');
+ if (resetToken.expiresAt < new Date()) throw new UnauthorizedException('Token expirado');
+ if (resetToken.attempts >= 3) throw new UnauthorizedException('Tentativas excedidas');
 
-  // Marcar token como usado (single-use)
-  await this.markTokenAsUsed(resetToken.id);
-  await this.updatePassword(resetToken.userId, newPassword);
+ // Marcar token como usado (single-use)
+ await this.markTokenAsUsed(resetToken.id);
+ await this.updatePassword(resetToken.userId, newPassword);
 }
 ```
 
@@ -299,8 +299,8 @@ Configurações inseguras de framework, servidor, banco de dados, ou serviços e
 ```typescript
 // ❌ VULNERÁVEL - CORS aberto para qualquer origem
 app.enableCors({
-  origin: '*', // Permite qualquer domínio!
-  credentials: true,
+ origin: '*', // Permite qualquer domínio!
+ credentials: true,
 });
 
 // ❌ VULNERÁVEL - Sem rate limiting
@@ -315,45 +315,45 @@ import helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+ const app = await NestFactory.create(AppModule);
 
-  // Helmet.js - Security headers
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'"],
-        },
-      },
-      hsts: {
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: true,
-      },
-    }),
-  );
+ // Helmet.js - Security headers
+ app.use(
+ helmet({
+ contentSecurityPolicy: {
+ directives: {
+ defaultSrc: ["'self'"],
+ scriptSrc: ["'self'", "'unsafe-inline'"],
+ },
+ },
+ hsts: {
+ maxAge: 31536000,
+ includeSubDomains: true,
+ preload: true,
+ },
+ }),
+ );
 
-  // CORS restrito
-  app.enableCors({
-    origin: process.env.FRONTEND_URL, // Apenas frontend autorizado
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  });
+ // CORS restrito
+ app.enableCors({
+ origin: process.env.FRONTEND_URL, // Apenas frontend autorizado
+ credentials: true,
+ methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+ });
 
-  // Rate Limiting global
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100, // 100 requisições por IP
-      message: 'Muitas requisições. Tente novamente em 15 minutos.',
-    }),
-  );
+ // Rate Limiting global
+ app.use(
+ rateLimit({
+ windowMs: 15 * 60 * 1000, // 15 minutos
+ max: 100, // 100 requisições por IP
+ message: 'Muitas requisições. Tente novamente em 15 minutos.',
+ }),
+ );
 
-  // Desabilitar stack traces em produção
-  if (process.env.NODE_ENV === 'production') {
-    app.useGlobalFilters(new ProductionExceptionFilter());
-  }
+ // Desabilitar stack traces em produção
+ if (process.env.NODE_ENV === 'production') {
+ app.useGlobalFilters(new ProductionExceptionFilter());
+ }
 }
 ```
 
@@ -381,10 +381,10 @@ Uso de bibliotecas, frameworks ou dependências com vulnerabilidades conhecidas 
 ```json
 // ❌ VULNERÁVEL - Dependências desatualizadas
 {
-  "dependencies": {
-    "express": "4.16.0", // CVE-2022-24999 (vulnerável)
-    "jsonwebtoken": "8.5.0" // CVE-2022-23529 (vulnerável)
-  }
+ "dependencies": {
+ "express": "4.16.0", // CVE-2022-24999 (vulnerável)
+ "jsonwebtoken": "8.5.0" // CVE-2022-23529 (vulnerável)
+ }
 }
 ```
 
@@ -393,10 +393,10 @@ Uso de bibliotecas, frameworks ou dependências com vulnerabilidades conhecidas 
 ```json
 // ✅ SEGURO - Dependências atualizadas
 {
-  "dependencies": {
-    "express": "^4.19.0", // Versão segura
-    "jsonwebtoken": "^9.0.2" // Versão segura
-  }
+ "dependencies": {
+ "express": "^4.19.0", // Versão segura
+ "jsonwebtoken": "^9.0.2" // Versão segura
+ }
 }
 ```
 
@@ -424,15 +424,15 @@ npm outdated
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: 'npm'
-    directory: '/backend'
-    schedule:
-      interval: 'weekly'
-    open-pull-requests-limit: 5
-    # Auto-merge security patches
-    labels:
-      - 'dependencies'
-      - 'security'
+ - package-ecosystem: 'npm'
+ directory: '/backend'
+ schedule:
+ interval: 'weekly'
+ open-pull-requests-limit: 5
+ # Auto-merge security patches
+ labels:
+ - 'dependencies'
+ - 'security'
 ```
 
 ---
@@ -447,8 +447,8 @@ Falhas em autenticação e gerenciamento de sessão. Inclui senhas fracas, crede
 ```typescript
 // ❌ VULNERÁVEL - Sem validação de senha forte
 async register(email: string, password: string) {
-  // Aceita senhas como "123" ou "password"
-  return this.authService.createUser(email, password);
+ // Aceita senhas como "123" ou "password"
+ return this.authService.createUser(email, password);
 }
 
 // ❌ VULNERÁVEL - JWT sem expiração
@@ -463,34 +463,34 @@ const token = this.jwtService.sign({ userId: user.id });
 import { IsStrongPassword } from 'class-validator';
 
 class RegisterDto {
-  @IsEmail()
-  email: string;
+ @IsEmail()
+ email: string;
 
-  @IsStrongPassword(
-    {
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-    },
-    {
-      message:
-        'Senha deve ter 8+ caracteres, maiúsculas, minúsculas, números e símbolos',
-    },
-  )
-  password: string;
+ @IsStrongPassword(
+ {
+ minLength: 8,
+ minLowercase: 1,
+ minUppercase: 1,
+ minNumbers: 1,
+ minSymbols: 1,
+ },
+ {
+ message:
+ 'Senha deve ter 8+ caracteres, maiúsculas, minúsculas, números e símbolos',
+ },
+ )
+ password: string;
 }
 
 // ✅ SEGURO - JWT com expiração
 const accessToken = this.jwtService.sign(
-  { userId: user.id },
-  { expiresIn: '15m' }, // Expira em 15 minutos
+ { userId: user.id },
+ { expiresIn: '15m' }, // Expira em 15 minutos
 );
 
 const refreshToken = this.jwtService.sign(
-  { userId: user.id, type: 'refresh' },
-  { expiresIn: '7d' }, // Expira em 7 dias
+ { userId: user.id, type: 'refresh' },
+ { expiresIn: '7d' }, // Expira em 7 dias
 );
 ```
 
@@ -501,16 +501,16 @@ const refreshToken = this.jwtService.sign(
 import * as rateLimit from 'express-rate-limit';
 
 const loginRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // 5 tentativas de login
-  skipSuccessfulRequests: true, // Não conta logins bem-sucedidos
-  message: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
+ windowMs: 15 * 60 * 1000, // 15 minutos
+ max: 5, // 5 tentativas de login
+ skipSuccessfulRequests: true, // Não conta logins bem-sucedidos
+ message: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
 });
 
 @Post('login')
 @UseGuards(loginRateLimiter)
 async login(@Body() loginDto: LoginDto) {
-  return this.authService.login(loginDto);
+ return this.authService.login(loginDto);
 }
 ```
 
@@ -526,9 +526,9 @@ Falha em verificar integridade de software, dados ou CI/CD pipeline. Inclui supp
 ```typescript
 // ❌ VULNERÁVEL - Desserialização insegura
 async processWebhook(payload: string) {
-  const data = JSON.parse(payload);
-  // Se payload contém __proto__, pode poluir prototype!
-  Object.assign({}, data);
+ const data = JSON.parse(payload);
+ // Se payload contém __proto__, pode poluir prototype!
+ Object.assign({}, data);
 }
 ```
 
@@ -539,27 +539,27 @@ async processWebhook(payload: string) {
 import { validate } from 'class-validator';
 
 class WebhookPayloadDto {
-  @IsString()
-  eventType: string;
+ @IsString()
+ eventType: string;
 
-  @IsObject()
-  data: Record<string, any>;
+ @IsObject()
+ data: Record<string, any>;
 }
 
 async processWebhook(payload: string) {
-  const parsed = JSON.parse(payload);
+ const parsed = JSON.parse(payload);
 
-  // Validar estrutura
-  const dto = Object.assign(new WebhookPayloadDto(), parsed);
-  const errors = await validate(dto);
+ // Validar estrutura
+ const dto = Object.assign(new WebhookPayloadDto(), parsed);
+ const errors = await validate(dto);
 
-  if (errors.length > 0) {
-    throw new BadRequestException('Payload inválido');
-  }
+ if (errors.length > 0) {
+ throw new BadRequestException('Payload inválido');
+ }
 
-  // Processar apenas campos conhecidos (whitelist)
-  const { eventType, data } = dto;
-  return this.handleEvent(eventType, data);
+ // Processar apenas campos conhecidos (whitelist)
+ const { eventType, data } = dto;
+ return this.handleEvent(eventType, data);
 }
 ```
 
@@ -568,9 +568,9 @@ async processWebhook(payload: string) {
 ```html
 <!-- ✅ SEGURO - Verificar integridade de CDN -->
 <script
-  src="https://cdn.example.com/library.js"
-  integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxVD3E0JvdYrpDMHc9JuQXsWPCkZGvZ"
-  crossorigin="anonymous"
+ src="https://cdn.example.com/library.js"
+ integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxVD3E0JvdYrpDMHc9JuQXsWPCkZGvZ"
+ crossorigin="anonymous"
 ></script>
 ```
 
@@ -581,24 +581,24 @@ async processWebhook(payload: string) {
 name: Deploy
 
 on:
-  push:
-    branches: [main]
+ push:
+ branches: [main]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+ deploy:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v3
 
-      # ✅ Verificar lock file (prevenir dependency confusion)
-      - name: Validate package-lock.json
-        run: |
-          npm ci --prefer-offline
-          git diff --exit-code package-lock.json
+ # ✅ Verificar lock file (prevenir dependency confusion)
+ - name: Validate package-lock.json
+ run: |
+ npm ci --prefer-offline
+ git diff --exit-code package-lock.json
 
-      # ✅ Auditar vulnerabilidades antes de deploy
-      - name: Security audit
-        run: npm audit --audit-level=high
+ # ✅ Auditar vulnerabilidades antes de deploy
+ - name: Security audit
+ run: npm audit --audit-level=high
 ```
 
 ---
@@ -614,10 +614,10 @@ Falta de logging adequado de eventos de segurança. Dificulta detecção de brea
 // ❌ VULNERÁVEL - Sem logging de tentativas de login
 @Post('login')
 async login(@Body() loginDto: LoginDto) {
-  const user = await this.authService.validateUser(loginDto);
-  if (!user) throw new UnauthorizedException();
-  return this.authService.generateToken(user);
-  // Nenhum log! Não sabemos quem tentou logar
+ const user = await this.authService.validateUser(loginDto);
+ if (!user) throw new UnauthorizedException();
+ return this.authService.generateToken(user);
+ // Nenhum log! Não sabemos quem tentou logar
 }
 ```
 
@@ -629,33 +629,33 @@ import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
+ private readonly logger = new Logger(AuthService.name);
 
-  async login(loginDto: LoginDto, ipAddress: string) {
-    const user = await this.validateUser(loginDto);
+ async login(loginDto: LoginDto, ipAddress: string) {
+ const user = await this.validateUser(loginDto);
 
-    if (!user) {
-      // ✅ Log de falha de autenticação
-      this.logger.warn({
-        message: 'Login failed - Invalid credentials',
-        email: loginDto.email,
-        ipAddress,
-        timestamp: new Date().toISOString(),
-      });
-      throw new UnauthorizedException();
-    }
+ if (!user) {
+ // ✅ Log de falha de autenticação
+ this.logger.warn({
+ message: 'Login failed - Invalid credentials',
+ email: loginDto.email,
+ ipAddress,
+ timestamp: new Date().toISOString(),
+ });
+ throw new UnauthorizedException();
+ }
 
-    // ✅ Log de sucesso
-    this.logger.log({
-      message: 'Login successful',
-      userId: user.id,
-      email: user.email,
-      ipAddress,
-      timestamp: new Date().toISOString(),
-    });
+ // ✅ Log de sucesso
+ this.logger.log({
+ message: 'Login successful',
+ userId: user.id,
+ email: user.email,
+ ipAddress,
+ timestamp: new Date().toISOString(),
+ });
 
-    return this.generateToken(user);
-  }
+ return this.generateToken(user);
+ }
 }
 ```
 
@@ -664,25 +664,25 @@ export class AuthService {
 ```typescript
 // Security Events to Log
 const SECURITY_EVENTS = {
-  // Authentication
-  LOGIN_SUCCESS: 'login.success',
-  LOGIN_FAILED: 'login.failed',
-  LOGOUT: 'logout',
-  PASSWORD_RESET_REQUEST: 'password.reset.request',
-  PASSWORD_CHANGED: 'password.changed',
+ // Authentication
+ LOGIN_SUCCESS: 'login.success',
+ LOGIN_FAILED: 'login.failed',
+ LOGOUT: 'logout',
+ PASSWORD_RESET_REQUEST: 'password.reset.request',
+ PASSWORD_CHANGED: 'password.changed',
 
-  // Authorization
-  ACCESS_DENIED: 'access.denied',
-  PRIVILEGE_ESCALATION_ATTEMPT: 'privilege.escalation.attempt',
+ // Authorization
+ ACCESS_DENIED: 'access.denied',
+ PRIVILEGE_ESCALATION_ATTEMPT: 'privilege.escalation.attempt',
 
-  // Data Access
-  SENSITIVE_DATA_ACCESS: 'data.sensitive.access',
-  BULK_DATA_EXPORT: 'data.bulk.export',
+ // Data Access
+ SENSITIVE_DATA_ACCESS: 'data.sensitive.access',
+ BULK_DATA_EXPORT: 'data.bulk.export',
 
-  // Administrative
-  USER_CREATED: 'user.created',
-  USER_DELETED: 'user.deleted',
-  PERMISSION_CHANGED: 'permission.changed',
+ // Administrative
+ USER_CREATED: 'user.created',
+ USER_DELETED: 'user.deleted',
+ PERMISSION_CHANGED: 'permission.changed',
 };
 ```
 
@@ -691,17 +691,17 @@ const SECURITY_EVENTS = {
 ```typescript
 // ❌ NÃO LOGAR - Dados sensíveis
 this.logger.log({
-  message: 'User login',
-  password: loginDto.password, // NUNCA!
-  creditCard: user.creditCard, // NUNCA!
-  ssn: user.ssn, // NUNCA!
+ message: 'User login',
+ password: loginDto.password, // NUNCA!
+ creditCard: user.creditCard, // NUNCA!
+ ssn: user.ssn, // NUNCA!
 });
 
 // ✅ LOGAR - Apenas metadados
 this.logger.log({
-  message: 'User login',
-  userId: user.id,
-  timestamp: new Date().toISOString(),
+ message: 'User login',
+ userId: user.id,
+ timestamp: new Date().toISOString(),
 });
 ```
 
@@ -718,10 +718,10 @@ Aplicação busca recurso remoto sem validar URL fornecida pelo usuário. Atacan
 // ❌ VULNERÁVEL - Fetch sem validação de URL
 @Post('fetch-url')
 async fetchUrl(@Body('url') url: string) {
-  const response = await fetch(url);
-  // Atacante pode usar: http://169.254.169.254/latest/meta-data/iam/security-credentials/
-  // Vazamento de AWS credentials!
-  return response.json();
+ const response = await fetch(url);
+ // Atacante pode usar: http://169.254.169.254/latest/meta-data/iam/security-credentials/
+ // Vazamento de AWS credentials!
+ return response.json();
 }
 ```
 
@@ -732,38 +732,38 @@ async fetchUrl(@Body('url') url: string) {
 import { URL } from 'url';
 
 const ALLOWED_DOMAINS = [
-  'api.perplexity.ai',
-  'api.openai.com',
+ 'api.perplexity.ai',
+ 'api.openai.com',
 ];
 
 @Post('fetch-url')
 async fetchUrl(@Body('url') url: string) {
-  let parsedUrl: URL;
+ let parsedUrl: URL;
 
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    throw new BadRequestException('URL inválida');
-  }
+ try {
+ parsedUrl = new URL(url);
+ } catch {
+ throw new BadRequestException('URL inválida');
+ }
 
-  // ✅ Validar protocolo (apenas HTTPS)
-  if (parsedUrl.protocol !== 'https:') {
-    throw new BadRequestException('Apenas HTTPS permitido');
-  }
+ // ✅ Validar protocolo (apenas HTTPS)
+ if (parsedUrl.protocol !== 'https:') {
+ throw new BadRequestException('Apenas HTTPS permitido');
+ }
 
-  // ✅ Validar domínio (whitelist)
-  if (!ALLOWED_DOMAINS.includes(parsedUrl.hostname)) {
-    throw new BadRequestException('Domínio não autorizado');
-  }
+ // ✅ Validar domínio (whitelist)
+ if (!ALLOWED_DOMAINS.includes(parsedUrl.hostname)) {
+ throw new BadRequestException('Domínio não autorizado');
+ }
 
-  // ✅ Bloquear IPs privados
-  const ipPattern = /^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|169\.254\.)/;
-  if (ipPattern.test(parsedUrl.hostname)) {
-    throw new BadRequestException('Acesso a IP privado negado');
-  }
+ // ✅ Bloquear IPs privados
+ const ipPattern = /^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|127\.|169\.254\.)/;
+ if (ipPattern.test(parsedUrl.hostname)) {
+ throw new BadRequestException('Acesso a IP privado negado');
+ }
 
-  const response = await fetch(parsedUrl.toString());
-  return response.json();
+ const response = await fetch(parsedUrl.toString());
+ return response.json();
 }
 ```
 
@@ -815,16 +815,16 @@ JWT_SECRET=random-32-byte-string
 ```typescript
 // backend/src/config/configuration.ts
 export default () => ({
-  database: {
-    url: process.env.DATABASE_URL,
-  },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY,
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: '15m',
-  },
+ database: {
+ url: process.env.DATABASE_URL,
+ },
+ openai: {
+ apiKey: process.env.OPENAI_API_KEY,
+ },
+ jwt: {
+ secret: process.env.JWT_SECRET,
+ expiresIn: '15m',
+ },
 });
 ```
 
@@ -856,10 +856,10 @@ NEW_JWT_SECRET=$(openssl rand -base64 32)
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
-    hooks:
-      - id: gitleaks
+ - repo: https://github.com/gitleaks/gitleaks
+ rev: v8.18.0
+ hooks:
+ - id: gitleaks
 ```
 
 **✅ CI/CD secret scanning (GitHub Actions):**
@@ -871,15 +871,15 @@ name: Security Scan
 on: [push, pull_request]
 
 jobs:
-  gitleaks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ gitleaks:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v3
+ with:
+ fetch-depth: 0
+ - uses: gitleaks/gitleaks-action@v2
+ env:
+ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Dual-Key Strategy (Implemented #158)
@@ -889,12 +889,12 @@ jobs:
 ```typescript
 // Aceitar tanto chave antiga quanto nova durante transição
 const validApiKeys = [
-  process.env.OPENAI_API_KEY, // Chave atual
-  process.env.OPENAI_API_KEY_NEW, // Chave nova (se existir)
+ process.env.OPENAI_API_KEY, // Chave atual
+ process.env.OPENAI_API_KEY_NEW, // Chave nova (se existir)
 ].filter(Boolean);
 
 function validateApiKey(key: string): boolean {
-  return validApiKeys.includes(key);
+ return validApiKeys.includes(key);
 }
 ```
 
@@ -968,20 +968,20 @@ gh pr merge 123 --squash
 ```json
 // P0 - Merge imediatamente
 {
-  "package": "jsonwebtoken",
-  "current": "8.5.1",
-  "latest": "9.0.0",
-  "severity": "CRITICAL",
-  "cve": "CVE-2022-23529"
+ "package": "jsonwebtoken",
+ "current": "8.5.1",
+ "latest": "9.0.0",
+ "severity": "CRITICAL",
+ "cve": "CVE-2022-23529"
 }
 
 // P3 - Merge quando possível
 {
-  "package": "typescript",
-  "current": "5.0.0",
-  "latest": "5.0.1",
-  "severity": "LOW",
-  "cve": null
+ "package": "typescript",
+ "current": "5.0.0",
+ "latest": "5.0.1",
+ "severity": "LOW",
+ "cve": null
 }
 ```
 
@@ -1183,8 +1183,8 @@ Query SQL concatenada em `/api/users/search` (falta de prepared statements)
 # Revogar API key IMEDIATAMENTE no dashboard da OpenAI
 # Remover do GitHub
 git filter-branch --force --index-filter \
-  "git rm --cached --ignore-unmatch .env" \
-  --prune-empty --tag-name-filter cat -- --all
+ "git rm --cached --ignore-unmatch .env" \
+ --prune-empty --tag-name-filter cat -- --all
 
 # 2. Assessment
 # Verificar logs da OpenAI (usage)
@@ -1288,7 +1288,7 @@ SELECT * FROM audit_logs WHERE event_type = 'sql.error';
 
 ### Secrets & Configuration
 
-- [ ] **Secrets hardcoded?** 🚩 (RED FLAG - REJECT PR)
+- [ ] **Secrets hardcoded?** (RED FLAG - REJECT PR)
 - [ ] **Variáveis de ambiente usadas?** (`process.env.API_KEY`)
 - [ ] **.env no .gitignore?** (verificar)
 
@@ -1333,11 +1333,11 @@ SELECT * FROM audit_logs WHERE event_type = 'sql.error';
 ```typescript
 // Coletar dados desnecessários
 interface User {
-  email: string;
-  password: string;
-  cpf: string; // ❌ Necessário?
-  motherName: string; // ❌ Necessário?
-  birthDate: Date; // ❌ Necessário?
+ email: string;
+ password: string;
+ cpf: string; // ❌ Necessário?
+ motherName: string; // ❌ Necessário?
+ birthDate: Date; // ❌ Necessário?
 }
 ```
 
@@ -1346,9 +1346,9 @@ interface User {
 ```typescript
 // Coletar apenas essencial
 interface User {
-  email: string;
-  password: string;
-  organizationId: string; // Necessário para multitenancy
+ email: string;
+ password: string;
+ organizationId: string; // Necessário para multitenancy
 }
 ```
 
@@ -1363,33 +1363,33 @@ interface User {
 ```tsx
 // frontend/src/components/Auth/RegisterForm.tsx
 function RegisterForm() {
-  const [acceptedLGPD, setAcceptedLGPD] = useState(false);
+ const [acceptedLGPD, setAcceptedLGPD] = useState(false);
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input type="email" name="email" required />
-      <input type="password" name="password" required />
+ return (
+ <form onSubmit={handleSubmit}>
+ <input type="email" name="email" required />
+ <input type="password" name="password" required />
 
-      {/* ✅ Checkbox de consentimento LGPD */}
-      <label>
-        <input
-          type="checkbox"
-          checked={acceptedLGPD}
-          onChange={(e) => setAcceptedLGPD(e.target.checked)}
-          required
-        />
-        Li e concordo com a{' '}
-        <a href="/privacy-policy" target="_blank">
-          Política de Privacidade
-        </a>{' '}
-        e com o tratamento dos meus dados conforme LGPD.
-      </label>
+ {/* ✅ Checkbox de consentimento LGPD */}
+ <label>
+ <input
+ type="checkbox"
+ checked={acceptedLGPD}
+ onChange={(e) => setAcceptedLGPD(e.target.checked)}
+ required
+ />
+ Li e concordo com a{' '}
+ <a href="/privacy-policy" target="_blank">
+ Política de Privacidade
+ </a>{' '}
+ e com o tratamento dos meus dados conforme LGPD.
+ </label>
 
-      <button type="submit" disabled={!acceptedLGPD}>
-        Cadastrar
-      </button>
-    </form>
-  );
+ <button type="submit" disabled={!acceptedLGPD}>
+ Cadastrar
+ </button>
+ </form>
+ );
 }
 ```
 
@@ -1405,40 +1405,40 @@ function RegisterForm() {
 // Soft delete permite rollback e compliance (retenção mínima)
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+ @PrimaryGeneratedColumn('uuid')
+ id: string;
 
-  @Column()
-  email: string;
+ @Column()
+ email: string;
 
-  @DeleteDateColumn() // ✅ Soft delete (nullable timestamp)
-  deletedAt?: Date;
+ @DeleteDateColumn() // ✅ Soft delete (nullable timestamp)
+ deletedAt?: Date;
 }
 
 // Marcar usuário como deletado
 async deleteUser(userId: string) {
-  await this.userRepository.softDelete(userId);
+ await this.userRepository.softDelete(userId);
 
-  // Log de auditoria (LGPD Art. 37)
-  this.logger.log({
-    event: 'user.deleted',
-    userId,
-    requestedBy: userId,
-    timestamp: new Date().toISOString(),
-  });
+ // Log de auditoria (LGPD Art. 37)
+ this.logger.log({
+ event: 'user.deleted',
+ userId,
+ requestedBy: userId,
+ timestamp: new Date().toISOString(),
+ });
 }
 
 // Hard delete após 30 dias (período de graça)
 @Cron('0 0 * * *') // Daily
 async purgeDeletedUsers() {
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+ const thirtyDaysAgo = new Date();
+ thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  await this.userRepository
-    .createQueryBuilder()
-    .delete()
-    .where('deletedAt < :date', { date: thirtyDaysAgo })
-    .execute();
+ await this.userRepository
+ .createQueryBuilder()
+ .delete()
+ .where('deletedAt < :date', { date: thirtyDaysAgo })
+ .execute();
 }
 ```
 
@@ -1576,15 +1576,15 @@ Implementamos medidas de segurança (criptografia TLS, pseudonimização) para p
 
 ---
 
-## 📚 Changelog
+## Changelog
 
-| Version | Date       | Changes                                                                                                                                           |
+| Version | Date | Changes |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0     | 2025-11-26 | Initial release - OWASP Top 10 (2023), Secret Management, Dependency Security, Incident Response, Code Review Checklist, LGPD, Training Resources |
+| 1.0 | 2025-11-26 | Initial release - OWASP Top 10 (2023), Secret Management, Dependency Security, Incident Response, Code Review Checklist, LGPD, Training Resources |
 
 ---
 
-## 📞 Contact
+## Contact
 
 **Security Questions:**
 security@confenge.com.br
@@ -1594,4 +1594,4 @@ See `SECURITY.md` (Vulnerability Disclosure Policy)
 
 ---
 
-**🛡️ Remember: Security is not a feature, it's a mindset. Code defensively, validate everything, trust no one.**
+** Remember: Security is not a feature, it's a mindset. Code defensively, validate everything, trust no one.**

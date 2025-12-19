@@ -184,8 +184,8 @@
 <!-- Decisões pendentes, trade-offs a discutir -->
 
 - [ ] **Q1:** [Pergunta aberta]
-  - **Opções:** A, B, C
-  - **Recommendation:** [Se houver]
+ - **Opções:** A, B, C
+ - **Recommendation:** [Se houver]
 
 - [ ] **Q2:** [Pergunta aberta]
 
@@ -196,9 +196,9 @@
 ### Fases de Implementação
 
 1. **Phase 1:** [Nome] (X horas)
-   - Tasks: [Lista]
+ - Tasks: [Lista]
 2. **Phase 2:** [Nome] (Y horas)
-   - Tasks: [Lista]
+ - Tasks: [Lista]
 
 **Total Estimado:** X+Y horas
 
@@ -206,10 +206,10 @@
 
 ## 11. Risks & Mitigations
 
-| Risco     | Probabilidade    | Impacto          | Mitigação            |
+| Risco | Probabilidade | Impacto | Mitigação |
 | --------- | ---------------- | ---------------- | -------------------- |
 | [Risco 1] | Alta/Média/Baixa | Alto/Médio/Baixo | [Plano de mitigação] |
-| [Risco 2] | ...              | ...              | ...                  |
+| [Risco 2] | ... | ... | ... |
 
 ---
 

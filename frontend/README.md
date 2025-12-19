@@ -19,18 +19,18 @@ Interface web moderna para o sistema de elaboração de Estudos Técnicos Prelim
 
 ```
 src/
-├── components/         # Componentes React
-│   ├── ui/            # Componentes base (shadcn/ui)
-│   ├── layout/        # Layout components
-│   ├── etp/           # Componentes específicos de ETP
-│   ├── common/        # Componentes compartilhados
-│   └── search/        # Componentes de busca
-├── pages/             # Páginas/rotas
-├── store/             # Zustand stores
-├── hooks/             # React hooks customizados
-├── lib/               # Utilitários e configurações
-├── types/             # TypeScript types
-└── main.tsx           # Entry point
+├── components/ # Componentes React
+│ ├── ui/ # Componentes base (shadcn/ui)
+│ ├── layout/ # Layout components
+│ ├── etp/ # Componentes específicos de ETP
+│ ├── common/ # Componentes compartilhados
+│ └── search/ # Componentes de busca
+├── pages/ # Páginas/rotas
+├── store/ # Zustand stores
+├── hooks/ # React hooks customizados
+├── lib/ # Utilitários e configurações
+├── types/ # TypeScript types
+└── main.tsx # Entry point
 ```
 
 ## Instalação

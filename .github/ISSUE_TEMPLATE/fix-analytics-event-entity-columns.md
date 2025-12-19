@@ -33,4 +33,4 @@ userId: string;
 
 ## Prioridade
 
-🟡 **ALTA** - Prevenir futuros crashes em deploy
+ **ALTA** - Prevenir futuros crashes em deploy

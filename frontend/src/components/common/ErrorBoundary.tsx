@@ -2,88 +2,88 @@ import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+ Card,
+ CardContent,
+ CardFooter,
+ CardHeader,
+ CardTitle,
 } from '@/components/ui/card';
 import { logger } from '@/lib/logger';
 
 interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+ children: ReactNode;
+ fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
+ hasError: boolean;
+ error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-    error: null,
-  };
+ public state: State = {
+ hasError: false,
+ error: null,
+ };
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
-  }
+ public static getDerivedStateFromError(error: Error): State {
+ return { hasError: true, error };
+ }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.error('Uncaught error in ErrorBoundary', error, {
-      componentStack: errorInfo.componentStack,
-    });
-  }
+ public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+ logger.error('Uncaught error in ErrorBoundary', error, {
+ componentStack: errorInfo.componentStack,
+ });
+ }
 
-  private handleReset = () => {
-    this.setState({ hasError: false, error: null });
-    // Note: Using window.location.href here is intentional.
-    // ErrorBoundary is a class component and cannot use navigate() hook.
-    // Full page reload is acceptable for critical error recovery.
-    window.location.href = '/';
-  };
+ private handleReset = () => {
+ this.setState({ hasError: false, error: null });
+ // Note: Using window.location.href here is intentional.
+ // ErrorBoundary is a class component and cannot use navigate() hook.
+ // Full page reload is acceptable for critical error recovery.
+ window.location.href = '/';
+ };
 
-  public render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
+ public render() {
+ if (this.state.hasError) {
+ if (this.props.fallback) {
+ return this.props.fallback;
+ }
 
-      return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-                <CardTitle>Algo deu errado</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Ocorreu um erro inesperado. Por favor, tente novamente.
-              </p>
-              {this.state.error && (
-                <details className="text-xs bg-muted p-3 rounded-md">
-                  <summary className="cursor-pointer font-medium mb-2">
-                    Detalhes do erro
-                  </summary>
-                  <pre className="whitespace-pre-wrap break-words">
-                    {this.state.error.message}
-                  </pre>
-                </details>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button onClick={this.handleReset} className="w-full">
-                Voltar para o início
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      );
-    }
+ return (
+ <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+ <Card className="w-full max-w-md">
+ <CardHeader>
+ <div className="flex items-center gap-3">
+ <AlertTriangle className="h-6 w-6 text-destructive" />
+ <CardTitle>Algo deu errado</CardTitle>
+ </div>
+ </CardHeader>
+ <CardContent>
+ <p className="text-sm text-muted-foreground mb-4">
+ Ocorreu um erro inesperado. Por favor, tente novamente.
+ </p>
+ {this.state.error && (
+ <details className="text-xs bg-muted p-3 rounded-md">
+ <summary className="cursor-pointer font-medium mb-2">
+ Detalhes do erro
+ </summary>
+ <pre className="whitespace-pre-wrap break-words">
+ {this.state.error.message}
+ </pre>
+ </details>
+ )}
+ </CardContent>
+ <CardFooter>
+ <Button onClick={this.handleReset} className="w-full">
+ Voltar para o início
+ </Button>
+ </CardFooter>
+ </Card>
+ </div>
+ );
+ }
 
-    return this.props.children;
-  }
+ return this.props.children;
+ }
 }
