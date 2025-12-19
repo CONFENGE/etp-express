@@ -14,7 +14,7 @@ export const CONFIG = {
 
   // Test credentials (use test user in staging/production)
   testUser: {
-    email: __ENV.TEST_USER_EMAIL || 'admin@etpexpress.com.br',
+    email: __ENV.TEST_USER_EMAIL || 'admin@confenge.com.br',
     password: __ENV.TEST_USER_PASSWORD || 'Admin@123',
   },
 

@@ -555,7 +555,7 @@ describe('AuthService', () => {
           BadRequestException,
         );
         await expect(service.register(unauthorizedDto)).rejects.toThrow(
-          'Domínio de email "unauthorized-domain.com" não autorizado. Contate comercial@etpexpress.com.br para cadastrar sua organização.',
+          'Domínio de email "unauthorized-domain.com" não autorizado. Contate comercial@confenge.com.br para cadastrar sua organização.',
         );
         expect(mockOrganizationsService.findByDomain).toHaveBeenCalledWith(
           'unauthorized-domain.com',

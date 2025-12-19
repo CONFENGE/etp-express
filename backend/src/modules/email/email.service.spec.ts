@@ -16,8 +16,8 @@ describe('EmailService', () => {
         SMTP_USER: undefined,
         SMTP_PASSWORD: undefined,
         FRONTEND_URL: 'http://localhost:5173',
-        SUPPORT_EMAIL: 'suporte@etpexpress.com',
-        SMTP_FROM: '"ETP Express" <noreply@etpexpress.com>',
+        SUPPORT_EMAIL: 'suporte@confenge.com.br',
+        SMTP_FROM: '"ETP Express" <noreply@confenge.com.br>',
       };
       return config[key] ?? defaultValue;
     }),

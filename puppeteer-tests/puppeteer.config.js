@@ -119,7 +119,7 @@ module.exports = {
    * ⚠️  NÃO use credenciais reais em testes automatizados
    */
   testUser: {
-    email: process.env.E2E_TEST_EMAIL || 'test@etpexpress.com',
+    email: process.env.E2E_TEST_EMAIL || 'test@confenge.com.br',
     password: process.env.E2E_TEST_PASSWORD || 'Test@123456',
     name: 'Test User',
   },

@@ -231,7 +231,7 @@ Você possui direitos garantidos pela LGPD, incluindo:
 - Portabilidade e anonimização
 - Revogação de consentimento
 
-Para exercê-los, entre em contato: **privacidade@etpexpress.com.br**
+Para exercê-los, entre em contato: **privacidade@confenge.com.br**
 
 ---
 
@@ -323,12 +323,12 @@ Estes Termos foram elaborados em conformidade com:
 
 Para dúvidas, sugestões ou reclamações sobre estes Termos de Uso:
 
-**Email:** suporte@etpexpress.com.br
+**Email:** suporte@confenge.com.br
 
 **Assuntos específicos:**
 
-- Privacidade e LGPD: privacidade@etpexpress.com.br
-- Problemas técnicos: suporte@etpexpress.com.br
+- Privacidade e LGPD: privacidade@confenge.com.br
+- Problemas técnicos: suporte@confenge.com.br
 
 **Prazo de resposta:** Até 15 dias úteis
 

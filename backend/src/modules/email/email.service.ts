@@ -93,7 +93,7 @@ export class EmailService {
     );
     const supportEmail = this.configService.get<string>(
       'SUPPORT_EMAIL',
-      'suporte@etpexpress.com',
+      'suporte@confenge.com.br',
     );
 
     const templatePath = path.join(
@@ -114,7 +114,7 @@ export class EmailService {
     const mailOptions = {
       from: this.configService.get<string>(
         'SMTP_FROM',
-        '"ETP Express" <noreply@etpexpress.com>',
+        '"ETP Express" <noreply@confenge.com.br>',
       ),
       to: user.email,
       subject: 'Confirmação de exclusão de conta - ETP Express',
@@ -187,7 +187,7 @@ export class EmailService {
     );
     const supportEmail = this.configService.get<string>(
       'SUPPORT_EMAIL',
-      'suporte@etpexpress.com',
+      'suporte@confenge.com.br',
     );
 
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
@@ -209,7 +209,7 @@ export class EmailService {
     const mailOptions = {
       from: this.configService.get<string>(
         'SMTP_FROM',
-        '"ETP Express" <noreply@etpexpress.com>',
+        '"ETP Express" <noreply@confenge.com.br>',
       ),
       to: email,
       subject: 'Redefinir senha - ETP Express',

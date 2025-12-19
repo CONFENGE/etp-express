@@ -519,7 +519,7 @@ Gerado em runtime:
 | `viewport.width`    | `1920`                  | -                    | Largura do browser                 |
 | `viewport.height`   | `1080`                  | -                    | Altura do browser                  |
 | `testTimeout`       | `60000` (60s)           | -                    | Timeout padrão por teste           |
-| `testUser.email`    | `test@etpexpress.com`   | `E2E_TEST_EMAIL`     | Usuário padrão para testes         |
+| `testUser.email`    | `test@confenge.com.br`  | `E2E_TEST_EMAIL`     | Usuário padrão para testes         |
 | `testUser.password` | `Test@123456`           | `E2E_TEST_PASSWORD`  | Senha padrão para testes           |
 
 ### Helpers Disponíveis (utils/setup.ts)
@@ -566,7 +566,7 @@ describe('Login Flow E2E', () => {
   test('deve fazer login com credenciais válidas', async () => {
     try {
       await page.goto('http://localhost:5173/login');
-      await page.type('#email', 'test@etpexpress.com');
+      await page.type('#email', 'test@confenge.com.br');
       await page.type('#password', 'Test@123456');
       await page.click('button[type="submit"]');
       await page.waitForNavigation();
