@@ -76,8 +76,8 @@ export function Sidebar() {
               Dica
             </h3>
             <p className="text-xs text-a11y-secondary">
-              Use o botão "Gerar com IA" para acelerar a criação das seções do
-              ETP.
+              Use o botao "Gerar Sugestao" para criar sugestoes de conteudo para
+              cada secao.
             </p>
           </div>
         </aside>
