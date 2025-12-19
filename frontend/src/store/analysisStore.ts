@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/lib/api';
 import { logger } from '@/lib/logger';
+import { getContextualErrorMessage } from '@/lib/api-errors';
 import {
   AnalysisResponse,
   AnalysisDetailsResponse,
@@ -98,11 +99,8 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
 
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erro ao analisar documento';
-
       set({
-        error: errorMessage,
+        error: getContextualErrorMessage('analisar', 'o documento', error),
         status: 'failed',
         uploadProgress: 0,
       });
@@ -130,12 +128,9 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
 
       return details;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Erro ao obter detalhes da análise';
-
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('obter', 'os detalhes da análise', error),
+      });
 
       logger.error('Failed to get analysis details', error, { analysisId });
       throw error;
@@ -173,10 +168,9 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
 
       logger.info('Analysis report downloaded', { analysisId, pdfFilename });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erro ao baixar relatório';
-
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('baixar', 'o relatório', error),
+      });
 
       logger.error('Failed to download report', error, { analysisId });
       throw error;
@@ -213,10 +207,9 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
 
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erro ao converter para ETP';
-
-      set({ error: errorMessage });
+      set({
+        error: getContextualErrorMessage('converter', 'para ETP', error),
+      });
 
       logger.error('Failed to convert to ETP', error, { analysisId });
       throw error;
