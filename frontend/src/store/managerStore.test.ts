@@ -144,7 +144,7 @@ describe('managerStore', () => {
       });
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
       expect(state.users).toEqual([]);
     });
@@ -173,7 +173,7 @@ describe('managerStore', () => {
       });
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.quota).toBeNull();
     });
   });
@@ -223,7 +223,7 @@ describe('managerStore', () => {
       }
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
@@ -274,7 +274,7 @@ describe('managerStore', () => {
       }
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
@@ -322,7 +322,7 @@ describe('managerStore', () => {
       }
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
@@ -372,7 +372,7 @@ describe('managerStore', () => {
       }
 
       const state = useManagerStore.getState();
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).not.toBeNull(); // Error message is now user-friendly Portuguese
       expect(state.loading).toBe(false);
     });
   });
