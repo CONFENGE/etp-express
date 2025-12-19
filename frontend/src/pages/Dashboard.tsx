@@ -15,6 +15,7 @@ import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
 import { SkeletonRecentItems } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { WelcomeModal } from '@/components/common/WelcomeModal';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -43,6 +44,7 @@ export function Dashboard() {
 
   return (
     <MainLayout>
+      <WelcomeModal />
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
