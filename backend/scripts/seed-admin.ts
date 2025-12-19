@@ -13,6 +13,10 @@ import { Legislation } from '../src/entities/legislation.entity';
 import { SectionTemplate } from '../src/entities/section-template.entity';
 import { SecretAccessLog } from '../src/entities/secret-access-log.entity';
 import { SimilarContract } from '../src/entities/similar-contract.entity';
+import { GovContract } from '../src/entities/gov-contract.entity';
+import { PasswordReset } from '../src/entities/password-reset.entity';
+import { SicroItem } from '../src/entities/sicro-item.entity';
+import { SinapiItem } from '../src/entities/sinapi-item.entity';
 
 config();
 
@@ -94,6 +98,10 @@ async function seedAdmin(): Promise<void> {
       SectionTemplate,
       SecretAccessLog,
       SimilarContract,
+      GovContract,
+      PasswordReset,
+      SicroItem,
+      SinapiItem,
     ],
     synchronize: false,
     logging: false,
