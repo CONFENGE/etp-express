@@ -46,25 +46,25 @@ O módulo ETPs está **implementado conforme especificado no ARCHITECTURE.md**, 
 
 ```sql
 CREATE TABLE etps (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id),
-  title VARCHAR(500) NOT NULL,
-  object TEXT,
-  status VARCHAR(50) DEFAULT 'draft', -- draft, complete, exported
-  current_version INT DEFAULT 1,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id UUID REFERENCES users(id),
+ title VARCHAR(500) NOT NULL,
+ object TEXT,
+ status VARCHAR(50) DEFAULT 'draft', -- draft, complete, exported
+ current_version INT DEFAULT 1,
+ created_at TIMESTAMP DEFAULT NOW(),
+ updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
 **ARCHITECTURE.md - Seção 5.2 ETPs Endpoints:**
 
 ```
-GET    /api/etps                   # Listar ETPs do usuário
-POST   /api/etps                   # Criar novo ETP
-GET    /api/etps/:id               # Obter ETP específico
-PATCH  /api/etps/:id               # Atualizar metadados
-DELETE /api/etps/:id               # Deletar ETP
+GET /api/etps # Listar ETPs do usuário
+POST /api/etps # Criar novo ETP
+GET /api/etps/:id # Obter ETP específico
+PATCH /api/etps/:id # Atualizar metadados
+DELETE /api/etps/:id # Deletar ETP
 ```
 
 ### 2.2 Componentes Auditados
@@ -98,41 +98,41 @@ DELETE /api/etps/:id               # Deletar ETP
 ```typescript
 @Entity('etps')
 export class Etp {
-  @PrimaryGeneratedColumn('uuid')
-  id: string; // ✅
+ @PrimaryGeneratedColumn('uuid')
+ id: string; // ✅
 
-  @ManyToOne(() => User, (user) => user.etps, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'created_by' })
-  createdBy: User; // ✅ FK user_id
+ @ManyToOne(() => User, (user) => user.etps, {
+ eager: true,
+ onDelete: 'CASCADE',
+ })
+ @JoinColumn({ name: 'created_by' })
+ createdBy: User; // ✅ FK user_id
 
-  @Column()
-  title: string; // ✅
+ @Column()
+ title: string; // ✅
 
-  @Column()
-  objeto: string; // ⚠️ 'objeto' vs 'object' (spec)
+ @Column()
+ objeto: string; // ⚠ 'objeto' vs 'object' (spec)
 
-  @Column({ type: 'enum', enum: EtpStatus, default: EtpStatus.DRAFT })
-  status: EtpStatus; // ✅ (com enum estendido)
+ @Column({ type: 'enum', enum: EtpStatus, default: EtpStatus.DRAFT })
+ status: EtpStatus; // ✅ (com enum estendido)
 
-  @Column({ default: 1 })
-  currentVersion: number; // ✅
+ @Column({ default: 1 })
+ currentVersion: number; // ✅
 
-  @CreateDateColumn()
-  createdAt: Date; // ✅
+ @CreateDateColumn()
+ createdAt: Date; // ✅
 
-  @UpdateDateColumn()
-  updatedAt: Date; // ✅
+ @UpdateDateColumn()
+ updatedAt: Date; // ✅
 }
 ```
 
 **Avaliação:** ✅ **Conforme com desvio menor**
 
 - **Desvio #1:** Campo `object` implementado como `objeto` (português).
-  - **Impacto:** Baixo - nomenclatura consistente com domínio brasileiro (Lei 14.133/2021)
-  - **Recomendação:** Documentar no ARCHITECTURE.md que a implementação usa nomenclatura em português para campos de domínio legal brasileiro.
+ - **Impacto:** Baixo - nomenclatura consistente com domínio brasileiro (Lei 14.133/2021)
+ - **Recomendação:** Documentar no ARCHITECTURE.md que a implementação usa nomenclatura em português para campos de domínio legal brasileiro.
 
 ---
 
@@ -148,11 +148,11 @@ status VARCHAR(50) DEFAULT 'draft', -- draft, complete, exported
 
 ```typescript
 export enum EtpStatus {
-  DRAFT = 'draft', // ✅ Especificado
-  IN_PROGRESS = 'in_progress', // Adicional
-  REVIEW = 'review', // Adicional
-  COMPLETED = 'completed', // ✅ Equivale a 'complete'
-  ARCHIVED = 'archived', // Adicional
+ DRAFT = 'draft', // ✅ Especificado
+ IN_PROGRESS = 'in_progress', // Adicional
+ REVIEW = 'review', // Adicional
+ COMPLETED = 'completed', // ✅ Equivale a 'complete'
+ ARCHIVED = 'archived', // Adicional
 }
 ```
 
@@ -168,7 +168,7 @@ Estados adicionais melhoram workflow tracking e UX:
 
 ```sql
 status VARCHAR(50) DEFAULT 'draft',
-  -- draft, in_progress, review, completed, archived
+ -- draft, in_progress, review, completed, archived
 ```
 
 ---
@@ -189,12 +189,12 @@ valorEstimado: number; // Valor estimado da contratação
 
 @Column({ type: 'jsonb', nullable: true })
 metadata: {
-  orgao?: string;
-  unidadeRequisitante?: string;
-  responsavelTecnico?: string;
-  fundamentacaoLegal?: string[];
-  tags?: string[];
-  [key: string]: unknown;
+ orgao?: string;
+ unidadeRequisitante?: string;
+ responsavelTecnico?: string;
+ fundamentacaoLegal?: string[];
+ tags?: string[];
+ [key: string]: unknown;
 }; // Metadados flexíveis (JSONB)
 
 @Column({ type: 'float', default: 0 })
@@ -220,8 +220,8 @@ Campos atendem requisitos práticos de elaboração de ETPs conforme Lei 14.133/
 
 ```typescript
 @ManyToOne(() => User, (user) => user.etps, {
-  eager: true,
-  onDelete: 'CASCADE'
+ eager: true,
+ onDelete: 'CASCADE'
 })
 createdBy: User; // ✅ user_id FK
 
@@ -251,13 +251,13 @@ Todos relacionamentos especificados no ARCHITECTURE.md § 4.1 estão implementad
 
 **Especificação (ARCHITECTURE.md § 5.2):**
 
-| Endpoint        | Método | Descrição              | Status       |
+| Endpoint | Método | Descrição | Status |
 | --------------- | ------ | ---------------------- | ------------ |
-| `/api/etps`     | GET    | Listar ETPs do usuário | ✅ Linha 82  |
-| `/api/etps`     | POST   | Criar novo ETP         | ✅ Linha 59  |
-| `/api/etps/:id` | GET    | Obter ETP específico   | ✅ Linha 122 |
-| `/api/etps/:id` | PATCH  | Atualizar metadados    | ✅ Linha 146 |
-| `/api/etps/:id` | DELETE | Deletar ETP            | ✅ Linha 200 |
+| `/api/etps` | GET | Listar ETPs do usuário | ✅ Linha 82 |
+| `/api/etps` | POST | Criar novo ETP | ✅ Linha 59 |
+| `/api/etps/:id` | GET | Obter ETP específico | ✅ Linha 122 |
+| `/api/etps/:id` | PATCH | Atualizar metadados | ✅ Linha 146 |
+| `/api/etps/:id` | DELETE | Deletar ETP | ✅ Linha 200 |
 
 **Avaliação:** ✅ **Conforme - 100% dos endpoints especificados implementados**
 
@@ -270,15 +270,15 @@ Todos relacionamentos especificados no ARCHITECTURE.md § 4.1 estão implementad
 ```typescript
 @Get('statistics')
 async getStatistics(@CurrentUser('id') userId: string) // Linha 101
-  → Retorna agregações (total, byStatus, averageCompletion)
+ → Retorna agregações (total, byStatus, averageCompletion)
 
 @Patch(':id/status')
 async updateStatus(
-  @Param('id') id: string,
-  @Body('status') status: EtpStatus, // Linha 175
-  @CurrentUser('id') userId: string,
+ @Param('id') id: string,
+ @Body('status') status: EtpStatus, // Linha 175
+ @CurrentUser('id') userId: string,
 )
-  → Atualização dedicada de status (workflow transitions)
+ → Atualização dedicada de status (workflow transitions)
 ```
 
 **Avaliação:** **Além da especificação (positivo)**
@@ -289,8 +289,8 @@ async updateStatus(
 **Recomendação #3:** Documentar endpoints adicionais no ARCHITECTURE.md § 5.2:
 
 ```
-GET    /api/etps/statistics           # Estatísticas agregadas
-PATCH  /api/etps/:id/status           # Atualizar workflow status
+GET /api/etps/statistics # Estatísticas agregadas
+PATCH /api/etps/:id/status # Atualizar workflow status
 ```
 
 ---
@@ -305,13 +305,13 @@ PATCH  /api/etps/:id/status           # Atualizar workflow status
 
 ```typescript
 @Controller('etps')
-@UseGuards(JwtAuthGuard)    // ✅ JWT global no controller
-@ApiBearerAuth()            // ✅ Swagger doc
+@UseGuards(JwtAuthGuard) // ✅ JWT global no controller
+@ApiBearerAuth() // ✅ Swagger doc
 export class EtpsController {
-  @Post()
-  async create(
-    @CurrentUser('id') userId: string, // ✅ Extração JWT payload
-  ) { ... }
+ @Post()
+ async create(
+ @CurrentUser('id') userId: string, // ✅ Extração JWT payload
+ ) { ... }
 }
 ```
 
@@ -334,11 +334,11 @@ import { DISCLAIMER } from '../../common/constants/messages';
 
 @Post()
 async create(...) {
-  const etp = await this.etpsService.create(...);
-  return {
-    data: etp,
-    disclaimer: DISCLAIMER // ✅ Sempre presente
-  };
+ const etp = await this.etpsService.create(...);
+ return {
+ data: etp,
+ disclaimer: DISCLAIMER // ✅ Sempre presente
+ };
 }
 ```
 
@@ -361,14 +361,14 @@ Texto do disclaimer: _"O ETP Express pode cometer erros. Lembre-se de verificar 
 **Implementação:**
 
 ```typescript
-@ApiTags('etps')                    // ✅ Agrupamento
-@ApiBearerAuth()                    // ✅ Auth requirement
+@ApiTags('etps') // ✅ Agrupamento
+@ApiBearerAuth() // ✅ Auth requirement
 export class EtpsController {
-  @Post()
-  @ApiOperation({ summary: 'Criar novo ETP' })           // ✅
-  @ApiResponse({ status: 201, description: '...' })     // ✅
-  @ApiResponse({ status: 401, description: '...' })     // ✅
-  async create(...) { ... }
+ @Post()
+ @ApiOperation({ summary: 'Criar novo ETP' }) // ✅
+ @ApiResponse({ status: 201, description: '...' }) // ✅
+ @ApiResponse({ status: 401, description: '...' }) // ✅
+ async create(...) { ... }
 }
 ```
 
@@ -422,13 +422,13 @@ Todos endpoints documentados com:
 
 **Implementação:**
 
-| Operação    | Método                          | Linha | Status |
+| Operação | Método | Linha | Status |
 | ----------- | ------------------------------- | ----- | ------ |
-| Create      | `create(createDto, userId)`     | 88    | ✅     |
-| Read        | `findOne(id, userId)`           | 168   | ✅     |
-| Read (list) | `findAll(pagination, userId)`   | 129   | ✅     |
-| Update      | `update(id, updateDto, userId)` | 210   | ✅     |
-| Delete      | `remove(id, userId)`            | 328   | ✅     |
+| Create | `create(createDto, userId)` | 88 | ✅ |
+| Read | `findOne(id, userId)` | 168 | ✅ |
+| Read (list) | `findAll(pagination, userId)` | 129 | ✅ |
+| Update | `update(id, updateDto, userId)` | 210 | ✅ |
+| Delete | `remove(id, userId)` | 328 | ✅ |
 
 **Avaliação:** ✅ **Conforme - 100% CRUD implementado**
 
@@ -444,23 +444,23 @@ Todos endpoints documentados com:
 
 ```typescript
 async findOne(id: string, userId?: string): Promise<Etp> {
-  const etp = await this.etpsRepository.findOne({ where: { id } });
+ const etp = await this.etpsRepository.findOne({ where: { id } });
 
-  if (!etp) {
-    throw new NotFoundException(`ETP com ID ${id} não encontrado`);
-  }
+ if (!etp) {
+ throw new NotFoundException(`ETP com ID ${id} não encontrado`);
+ }
 
-  // ✅ Ownership check
-  if (userId && etp.createdById !== userId) {
-    this.logger.warn(
-      `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`
-    );
-    throw new ForbiddenException(
-      'Você não tem permissão para acessar este ETP'
-    );
-  }
+ // ✅ Ownership check
+ if (userId && etp.createdById !== userId) {
+ this.logger.warn(
+ `User ${userId} attempted to access ETP ${id} owned by ${etp.createdById}`
+ );
+ throw new ForbiddenException(
+ 'Você não tem permissão para acessar este ETP'
+ );
+ }
 
-  return etp;
+ return etp;
 }
 ```
 
@@ -489,16 +489,16 @@ Ownership verificado em:
 
 ```typescript
 async findAll(paginationDto: PaginationDto, userId?: string) {
-  const { page = 1, limit = 10 } = paginationDto; // ✅ Default sensatos
-  const skip = (page - 1) * limit;               // ✅ Cálculo correto
+ const { page = 1, limit = 10 } = paginationDto; // ✅ Default sensatos
+ const skip = (page - 1) * limit; // ✅ Cálculo correto
 
-  const [etps, total] = await queryBuilder
-    .orderBy('etp.updatedAt', 'DESC')  // ✅ Mais recentes primeiro
-    .skip(skip)
-    .take(limit)
-    .getManyAndCount();
+ const [etps, total] = await queryBuilder
+ .orderBy('etp.updatedAt', 'DESC') // ✅ Mais recentes primeiro
+ .skip(skip)
+ .take(limit)
+ .getManyAndCount();
 
-  return createPaginatedResult(etps, total, page, limit); // ✅ Helper
+ return createPaginatedResult(etps, total, page, limit); // ✅ Helper
 }
 ```
 
@@ -508,13 +508,13 @@ Retorna estrutura padronizada:
 
 ```json
 {
-  "data": [...],
-  "meta": {
-    "total": 42,
-    "page": 1,
-    "limit": 10,
-    "totalPages": 5
-  }
+ "data": [...],
+ "meta": {
+ "total": 42,
+ "page": 1,
+ "limit": 10,
+ "totalPages": 5
+ }
 }
 ```
 
@@ -526,12 +526,12 @@ Retorna estrutura padronizada:
 
 ```typescript
 this.logger.log({
-  event: 'etp_section_generated',
-  etpId: etp.id,
-  sectionCode: 'IV',
-  llmProvider: 'openai',
-  tokensUsed: 1250,
-  latencyMs: 3400,
+ event: 'etp_section_generated',
+ etpId: etp.id,
+ sectionCode: 'IV',
+ llmProvider: 'openai',
+ tokensUsed: 1250,
+ latencyMs: 3400,
 });
 ```
 
@@ -541,9 +541,9 @@ this.logger.log({
 private readonly logger = new Logger(EtpsService.name); // ✅ NestJS Logger
 
 async create(...) {
-  const savedEtp = await this.etpsRepository.save(etp);
-  this.logger.log(`ETP created: ${savedEtp.id} by user ${userId}`); // ✅
-  return savedEtp;
+ const savedEtp = await this.etpsRepository.save(etp);
+ this.logger.log(`ETP created: ${savedEtp.id} by user ${userId}`); // ✅
+ return savedEtp;
 }
 ```
 
@@ -575,26 +575,26 @@ Logs estruturados em:
  * (sections with status 'generated', 'reviewed', or 'approved') / (total sections) * 100
  */
 async updateCompletionPercentage(id: string): Promise<void> {
-  const etp = await this.etpsRepository.findOne({
-    where: { id },
-    relations: ['sections'],
-  });
+ const etp = await this.etpsRepository.findOne({
+ where: { id },
+ relations: ['sections'],
+ });
 
-  if (!etp) return;
+ if (!etp) return;
 
-  const totalSections = etp.sections.length;
-  if (totalSections === 0) {
-    etp.completionPercentage = 0;
-  } else {
-    const completedSections = etp.sections.filter(
-      (s) => s.status === 'generated' ||
-            s.status === 'reviewed' ||
-            s.status === 'approved',
-    ).length;
-    etp.completionPercentage = (completedSections / totalSections) * 100;
-  }
+ const totalSections = etp.sections.length;
+ if (totalSections === 0) {
+ etp.completionPercentage = 0;
+ } else {
+ const completedSections = etp.sections.filter(
+ (s) => s.status === 'generated' ||
+ s.status === 'reviewed' ||
+ s.status === 'approved',
+ ).length;
+ etp.completionPercentage = (completedSections / totalSections) * 100;
+ }
 
-  await this.etpsRepository.save(etp);
+ await this.etpsRepository.save(etp);
 }
 ```
 
@@ -619,34 +619,34 @@ Completion Tracking:
 
 ```typescript
 async getStatistics(userId?: string) {
-  const queryBuilder = this.etpsRepository.createQueryBuilder('etp');
+ const queryBuilder = this.etpsRepository.createQueryBuilder('etp');
 
-  if (userId) {
-    queryBuilder.where('etp.createdById = :userId', { userId });
-  }
+ if (userId) {
+ queryBuilder.where('etp.createdById = :userId', { userId });
+ }
 
-  const total = await queryBuilder.getCount();
+ const total = await queryBuilder.getCount();
 
-  const byStatus = await queryBuilder
-    .select('etp.status', 'status')
-    .addSelect('COUNT(*)', 'count')
-    .groupBy('etp.status')
-    .getRawMany();
+ const byStatus = await queryBuilder
+ .select('etp.status', 'status')
+ .addSelect('COUNT(*)', 'count')
+ .groupBy('etp.status')
+ .getRawMany();
 
-  const avgCompletion = await queryBuilder
-    .select('AVG(etp.completionPercentage)', 'avgCompletion')
-    .getRawOne();
+ const avgCompletion = await queryBuilder
+ .select('AVG(etp.completionPercentage)', 'avgCompletion')
+ .getRawOne();
 
-  return {
-    total,
-    byStatus: byStatus.reduce((acc, item) => {
-      acc[item.status] = parseInt(item.count);
-      return acc;
-    }, {}),
-    averageCompletion: parseFloat(
-      avgCompletion?.avgCompletion || '0',
-    ).toFixed(2),
-  };
+ return {
+ total,
+ byStatus: byStatus.reduce((acc, item) => {
+ acc[item.status] = parseInt(item.count);
+ return acc;
+ }, {}),
+ averageCompletion: parseFloat(
+ avgCompletion?.avgCompletion || '0',
+ ).toFixed(2),
+ };
 }
 ```
 
@@ -656,13 +656,13 @@ Retorna métricas essenciais para dashboard:
 
 ```json
 {
-  "total": 15,
-  "byStatus": {
-    "draft": 5,
-    "in_progress": 8,
-    "completed": 2
-  },
-  "averageCompletion": "67.50"
+ "total": 15,
+ "byStatus": {
+ "draft": 5,
+ "in_progress": 8,
+ "completed": 2
+ },
+ "averageCompletion": "67.50"
 }
 ```
 
@@ -705,14 +705,14 @@ Cada método possui JSDoc extensivo com:
  * @example
  * ```ts
  * const etp = await etpsService.create(
- *   {
- *     objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
- *     metadata: {
- *       orgao: 'Secretaria de Tecnologia',
- *       fiscalYear: 2025
- *     }
- *   },
- *   'user-uuid-123'
+ * {
+ * objeto: 'Aquisição de 50 Notebooks Dell Latitude 5420',
+ * metadata: {
+ * orgao: 'Secretaria de Tecnologia',
+ * fiscalYear: 2025
+ * }
+ * },
+ * 'user-uuid-123'
  * );
  *
  * console.log(etp.status); // 'draft'
@@ -740,44 +740,44 @@ async create(createEtpDto: CreateEtpDto, userId: string): Promise<Etp> { ... }
 
 ```typescript
 export class CreateEtpDto {
-  @ApiProperty({ example: 'ETP - Contratação de Serviços de TI' })
-  @IsString()
-  title: string; // ✅
+ @ApiProperty({ example: 'ETP - Contratação de Serviços de TI' })
+ @IsString()
+ title: string; // ✅
 
-  @ApiPropertyOptional({
-    example: 'Estudo técnico para contratação de desenvolvimento de software',
-  })
-  @IsOptional()
-  @IsString()
-  description?: string; // ✅
+ @ApiPropertyOptional({
+ example: 'Estudo técnico para contratação de desenvolvimento de software',
+ })
+ @IsOptional()
+ @IsString()
+ description?: string; // ✅
 
-  @ApiProperty({
-    example: 'Contratação de empresa especializada em desenvolvimento de sistemas web',
-  })
-  @IsString()
-  objeto: string; // ✅
+ @ApiProperty({
+ example: 'Contratação de empresa especializada em desenvolvimento de sistemas web',
+ })
+ @IsString()
+ objeto: string; // ✅
 
-  @ApiPropertyOptional({ example: '2023/001234' })
-  @IsOptional()
-  @IsString()
-  numeroProcesso?: string; // ⭐ Adicional
+ @ApiPropertyOptional({ example: '2023/001234' })
+ @IsOptional()
+ @IsString()
+ numeroProcesso?: string; // Adicional
 
-  @ApiPropertyOptional({ example: 500000.0 })
-  @IsOptional()
-  @IsNumber()
-  valorEstimado?: number; // ⭐ Adicional
+ @ApiPropertyOptional({ example: 500000.0 })
+ @IsOptional()
+ @IsNumber()
+ valorEstimado?: number; // Adicional
 
-  @ApiPropertyOptional({
-    example: {
-      orgao: 'Ministério da Economia',
-      unidadeRequisitante: 'Secretaria de Tecnologia',
-      responsavelTecnico: 'João Silva',
-      tags: ['TI', 'Desenvolvimento'],
-    },
-  })
-  @IsOptional()
-  @IsObject()
-  metadata?: { ... }; // ⭐ Adicional
+ @ApiPropertyOptional({
+ example: {
+ orgao: 'Ministério da Economia',
+ unidadeRequisitante: 'Secretaria de Tecnologia',
+ responsavelTecnico: 'João Silva',
+ tags: ['TI', 'Desenvolvimento'],
+ },
+ })
+ @IsOptional()
+ @IsObject()
+ metadata?: { ... }; // Adicional
 }
 ```
 
@@ -796,17 +796,17 @@ export class CreateEtpDto {
 
 ```typescript
 export class UpdateEtpDto {
-  @ApiPropertyOptional({ ... })
-  @IsOptional()
-  @IsString()
-  title?: string;
+ @ApiPropertyOptional({ ... })
+ @IsOptional()
+ @IsString()
+ title?: string;
 
-  @ApiPropertyOptional({ enum: EtpStatus })
-  @IsOptional()
-  @IsEnum(EtpStatus) // ✅ Validação de enum
-  status?: EtpStatus;
+ @ApiPropertyOptional({ enum: EtpStatus })
+ @IsOptional()
+ @IsEnum(EtpStatus) // ✅ Validação de enum
+ status?: EtpStatus;
 
-  // ... demais campos opcionais
+ // ... demais campos opcionais
 }
 ```
 
@@ -836,16 +836,16 @@ export class UpdateEtpDto {
 
 ```typescript
 describe('create', () => {
-  it('should create a new ETP');
-  it('should return ETP with createdById from CurrentUser decorator');
-  it('should include disclaimer in response');
+ it('should create a new ETP');
+ it('should return ETP with createdById from CurrentUser decorator');
+ it('should include disclaimer in response');
 });
 
 describe('findOne', () => {
-  it('should return a single ETP by ID');
-  it('should throw NotFoundException when ETP not found');
-  it('should throw ForbiddenException when user does not own the ETP'); // ✅ Security
-  it('should include disclaimer in response');
+ it('should return a single ETP by ID');
+ it('should throw NotFoundException when ETP not found');
+ it('should throw ForbiddenException when user does not own the ETP'); // ✅ Security
+ it('should include disclaimer in response');
 });
 ```
 
@@ -876,18 +876,18 @@ Testa:
 
 ```typescript
 describe('findOne', () => {
-  it('should return ETP with all relations');
-  it('should throw NotFoundException when ETP not found');
-  it(
-    'should throw ForbiddenException when user attempts to access ETP owned by another user',
-  );
-  it('should not log warning when user accesses own ETP'); // ✅ Security detail
+ it('should return ETP with all relations');
+ it('should throw NotFoundException when ETP not found');
+ it(
+ 'should throw ForbiddenException when user attempts to access ETP owned by another user',
+ );
+ it('should not log warning when user accesses own ETP'); // ✅ Security detail
 });
 
 describe('updateCompletionPercentage', () => {
-  it('should set completion to 0% when ETP has no sections');
-  it('should calculate completion percentage based on section status'); // ✅ Business logic
-  it('should return early when ETP not found'); // ✅ Edge case
+ it('should set completion to 0% when ETP has no sections');
+ it('should calculate completion percentage based on section status'); // ✅ Business logic
+ it('should return early when ETP not found'); // ✅ Edge case
 });
 ```
 
@@ -904,38 +904,38 @@ Testa:
 
 ## 4. MATRIZ DE CONFORMIDADE
 
-| Componente                      | Especificado | Implementado | Status      | Notas                                               |
+| Componente | Especificado | Implementado | Status | Notas |
 | ------------------------------- | ------------ | ------------ | ----------- | --------------------------------------------------- |
-| **Entity (Etp)**                |
-| Campos obrigatórios             | ✅           | ✅           | ✅ CONFORME | id, title, objeto, status, currentVersion           |
-| Relacionamentos                 | ✅           | ✅           | ✅ CONFORME | User, Sections, Versions, AuditLogs                 |
-| Campos adicionais               | ❌           | ✅           | ADICIONAL   | numeroProcesso, valorEstimado, completionPercentage |
-| Enum EtpStatus                  | Parcial (3)  | Completo (5) | ADICIONAL   | draft, in_progress, review, completed, archived     |
+| **Entity (Etp)** |
+| Campos obrigatórios | ✅ | ✅ | ✅ CONFORME | id, title, objeto, status, currentVersion |
+| Relacionamentos | ✅ | ✅ | ✅ CONFORME | User, Sections, Versions, AuditLogs |
+| Campos adicionais | ❌ | ✅ | ADICIONAL | numeroProcesso, valorEstimado, completionPercentage |
+| Enum EtpStatus | Parcial (3) | Completo (5) | ADICIONAL | draft, in_progress, review, completed, archived |
 | **Controller (EtpsController)** |
-| GET /api/etps                   | ✅           | ✅           | ✅ CONFORME | Paginação implementada                              |
-| POST /api/etps                  | ✅           | ✅           | ✅ CONFORME |                                                     |
-| GET /api/etps/:id               | ✅           | ✅           | ✅ CONFORME |                                                     |
-| PATCH /api/etps/:id             | ✅           | ✅           | ✅ CONFORME |                                                     |
-| DELETE /api/etps/:id            | ✅           | ✅           | ✅ CONFORME |                                                     |
-| GET /api/etps/statistics        | ❌           | ✅           | ADICIONAL   | Dashboard metrics                                   |
-| PATCH /api/etps/:id/status      | ❌           | ✅           | ADICIONAL   | Workflow transition                                 |
-| JWT Auth (JwtAuthGuard)         | ✅           | ✅           | ✅ CONFORME | Todos endpoints protegidos                          |
-| DISCLAIMER transparency         | ✅           | ✅           | ✅ CONFORME | 100% das respostas                                  |
-| Swagger/OpenAPI docs            | ✅           | ✅           | ✅ CONFORME |                                                     |
-| **Service (EtpsService)**       |
-| CRUD operations                 | ✅           | ✅           | ✅ CONFORME | Create, Read, Update, Delete                        |
-| Ownership verification          | ✅           | ✅           | ✅ CONFORME | Todas write operations                              |
-| Paginação                       | ✅           | ✅           | ✅ CONFORME |                                                     |
-| Logging estruturado             | ✅           | ✅           | ✅ CONFORME | NestJS Logger                                       |
-| Completion % auto-update        | ❌           | ✅           | ADICIONAL   | Chamado por SectionsService                         |
-| Statistics aggregation          | ❌           | ✅           | ADICIONAL   | Total, byStatus, avgCompletion                      |
-| **DTOs**                        |
-| CreateEtpDto validation         | ✅           | ✅           | ✅ CONFORME | class-validator                                     |
-| UpdateEtpDto validation         | ✅           | ✅           | ✅ CONFORME | class-validator                                     |
-| Swagger docs                    | ✅           | ✅           | ✅ CONFORME | ApiProperty decorators                              |
-| **Testes**                      |
-| Controller tests (70%+)         | ✅           | ✅           | ✅ CONFORME | 467 linhas, ~100% coverage                          |
-| Service tests (80%+)            | ✅           | ✅           | ✅ CONFORME | 426 linhas, ~100% coverage                          |
+| GET /api/etps | ✅ | ✅ | ✅ CONFORME | Paginação implementada |
+| POST /api/etps | ✅ | ✅ | ✅ CONFORME | |
+| GET /api/etps/:id | ✅ | ✅ | ✅ CONFORME | |
+| PATCH /api/etps/:id | ✅ | ✅ | ✅ CONFORME | |
+| DELETE /api/etps/:id | ✅ | ✅ | ✅ CONFORME | |
+| GET /api/etps/statistics | ❌ | ✅ | ADICIONAL | Dashboard metrics |
+| PATCH /api/etps/:id/status | ❌ | ✅ | ADICIONAL | Workflow transition |
+| JWT Auth (JwtAuthGuard) | ✅ | ✅ | ✅ CONFORME | Todos endpoints protegidos |
+| DISCLAIMER transparency | ✅ | ✅ | ✅ CONFORME | 100% das respostas |
+| Swagger/OpenAPI docs | ✅ | ✅ | ✅ CONFORME | |
+| **Service (EtpsService)** |
+| CRUD operations | ✅ | ✅ | ✅ CONFORME | Create, Read, Update, Delete |
+| Ownership verification | ✅ | ✅ | ✅ CONFORME | Todas write operations |
+| Paginação | ✅ | ✅ | ✅ CONFORME | |
+| Logging estruturado | ✅ | ✅ | ✅ CONFORME | NestJS Logger |
+| Completion % auto-update | ❌ | ✅ | ADICIONAL | Chamado por SectionsService |
+| Statistics aggregation | ❌ | ✅ | ADICIONAL | Total, byStatus, avgCompletion |
+| **DTOs** |
+| CreateEtpDto validation | ✅ | ✅ | ✅ CONFORME | class-validator |
+| UpdateEtpDto validation | ✅ | ✅ | ✅ CONFORME | class-validator |
+| Swagger docs | ✅ | ✅ | ✅ CONFORME | ApiProperty decorators |
+| **Testes** |
+| Controller tests (70%+) | ✅ | ✅ | ✅ CONFORME | 467 linhas, ~100% coverage |
+| Service tests (80%+) | ✅ | ✅ | ✅ CONFORME | 426 linhas, ~100% coverage |
 
 **Legenda:**
 
@@ -1000,11 +1000,11 @@ status VARCHAR(50) DEFAULT 'draft', -- draft, complete, exported
 
 ```typescript
 export enum EtpStatus {
-  DRAFT = 'draft', // ✅ Especificado
-  IN_PROGRESS = 'in_progress', // ❌ Não documentado
-  REVIEW = 'review', // ❌ Não documentado
-  COMPLETED = 'completed', // ✅ ~complete
-  ARCHIVED = 'archived', // ❌ Não documentado
+ DRAFT = 'draft', // ✅ Especificado
+ IN_PROGRESS = 'in_progress', // ❌ Não documentado
+ REVIEW = 'review', // ❌ Não documentado
+ COMPLETED = 'completed', // ✅ ~complete
+ ARCHIVED = 'archived', // ❌ Não documentado
 }
 ```
 
@@ -1019,9 +1019,9 @@ Atualizar ARCHITECTURE.md § 4.1:
 
 ```sql
 status VARCHAR(50) DEFAULT 'draft',
-  -- States: draft, in_progress, review, completed, archived
-  -- Workflow: draft → in_progress → review → completed
-  -- Soft delete: archived (LGPD compliance)
+ -- States: draft, in_progress, review, completed, archived
+ -- Workflow: draft → in_progress → review → completed
+ -- Soft delete: archived (LGPD compliance)
 ```
 
 ---
@@ -1038,15 +1038,15 @@ Atualizar `ARCHITECTURE.md § 4.1` para documentar enum completo:
 
 ```sql
 CREATE TABLE etps (
-  ...
-  status VARCHAR(50) DEFAULT 'draft',
-    -- Estados do workflow:
-    -- - draft: inicial, seções sendo criadas
-    -- - in_progress: trabalho ativo, seções em geração
-    -- - review: pronto para revisão técnica
-    -- - completed: finalizado, pronto para export
-    -- - archived: soft delete (LGPD compliance)
-  ...
+ ...
+ status VARCHAR(50) DEFAULT 'draft',
+ -- Estados do workflow:
+ -- - draft: inicial, seções sendo criadas
+ -- - in_progress: trabalho ativo, seções em geração
+ -- - review: pronto para revisão técnica
+ -- - completed: finalizado, pronto para export
+ -- - archived: soft delete (LGPD compliance)
+ ...
 );
 ```
 
@@ -1064,13 +1064,13 @@ Adicionar ao `ARCHITECTURE.md § 4.1`:
 
 ```sql
 CREATE TABLE etps (
-  ...
-  -- Campos adicionais (além da spec MVP):
-  numero_processo VARCHAR(100),          -- Rastreabilidade administrativa
-  valor_estimado DECIMAL(15, 2),         -- Lei 14.133/2021 Art. 18 § 1º VII
-  completion_percentage FLOAT DEFAULT 0, -- Progress tracking (UX)
-  metadata JSONB,                        -- Contexto organizacional flexível
-  ...
+ ...
+ -- Campos adicionais (além da spec MVP):
+ numero_processo VARCHAR(100), -- Rastreabilidade administrativa
+ valor_estimado DECIMAL(15, 2), -- Lei 14.133/2021 Art. 18 § 1º VII
+ completion_percentage FLOAT DEFAULT 0, -- Progress tracking (UX)
+ metadata JSONB, -- Contexto organizacional flexível
+ ...
 );
 ```
 
@@ -1089,16 +1089,16 @@ Adicionar ao `ARCHITECTURE.md § 5.2`:
 ```
 ### 5.2.1 ETPs - CRUD Operations
 
-GET    /api/etps                   # Listar ETPs do usuário (paginado)
-POST   /api/etps                   # Criar novo ETP
-GET    /api/etps/:id               # Obter ETP específico
-PATCH  /api/etps/:id               # Atualizar metadados
-DELETE /api/etps/:id               # Deletar ETP
+GET /api/etps # Listar ETPs do usuário (paginado)
+POST /api/etps # Criar novo ETP
+GET /api/etps/:id # Obter ETP específico
+PATCH /api/etps/:id # Atualizar metadados
+DELETE /api/etps/:id # Deletar ETP
 
 ### 5.2.2 ETPs - Extended Features
 
-GET    /api/etps/statistics        # Estatísticas agregadas (total, byStatus, avgCompletion)
-PATCH  /api/etps/:id/status        # Atualizar workflow status (dedicated endpoint)
+GET /api/etps/statistics # Estatísticas agregadas (total, byStatus, avgCompletion)
+PATCH /api/etps/:id/status # Atualizar workflow status (dedicated endpoint)
 ```
 
 **Benefício:** API docs completas, frontend developers têm referência completa.
@@ -1151,14 +1151,14 @@ completionPercentage = (sections_completed / total_sections) \* 100
 
 **Status Geral:** ✅ **92.3% CONFORME** (12/13 componentes auditados conforme especificação)
 
-| Categoria  | Conforme | Adicional | Desvio | Total  |
+| Categoria | Conforme | Adicional | Desvio | Total |
 | ---------- | -------- | --------- | ------ | ------ |
-| Entity     | 3        | 2         | 1      | 6      |
-| Controller | 6        | 2         | 0      | 8      |
-| Service    | 5        | 2         | 0      | 7      |
-| DTOs       | 2        | 0         | 0      | 2      |
-| Testes     | 2        | 0         | 0      | 2      |
-| **TOTAL**  | **18**   | **6**     | **1**  | **25** |
+| Entity | 3 | 2 | 1 | 6 |
+| Controller | 6 | 2 | 0 | 8 |
+| Service | 5 | 2 | 0 | 7 |
+| DTOs | 2 | 0 | 0 | 2 |
+| Testes | 2 | 0 | 0 | 2 |
+| **TOTAL** | **18** | **6** | **1** | **25** |
 
 **Porcentagem de conformidade:** 18 / (18 + 1) = **94.7%**
 
@@ -1171,7 +1171,7 @@ completionPercentage = (sections_completed / total_sections) \* 100
 3. ✅ **Documentação:** JSDoc exemplar com ~43% documentation ratio
 4. ✅ **Testes:** Cobertura de 100% (controller e service)
 5. ✅ **Auditabilidade:** Logging estruturado para todas operações críticas
-6. ⭐ **UX Superior:** Completion percentage, statistics, workflow states granulares
+6. **UX Superior:** Completion percentage, statistics, workflow states granulares
 
 ---
 

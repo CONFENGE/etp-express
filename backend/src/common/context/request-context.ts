@@ -78,8 +78,8 @@ export function getRequestStartTime(): number | undefined {
  * @example
  * ```typescript
  * runInRequestContext({ requestId: 'abc-123' }, async () => {
- *   // All async operations here will have access to requestId
- *   await someService.doSomething();
+ * // All async operations here will have access to requestId
+ * await someService.doSomething();
  * });
  * ```
  */

@@ -24,19 +24,19 @@
 
 **Todos os horários em UTC-3 (Brasília)**
 
-| Horário | Evento                                                     | Responsável | Ação             |
+| Horário | Evento | Responsável | Ação |
 | ------- | ---------------------------------------------------------- | ----------- | ---------------- |
-| 15:20   | 🚨 **Incident Start** - Database connection errors começam | Sistema     | N/A              |
-| 15:22   | Alert disparado no Slack #alerts-production                | Monitoring  | N/A              |
-| 15:23   | First Responder acknowledges alert                         | [Nome]      | Triage inicial   |
-| 15:25   | Root cause identified: PostgreSQL service crashed          | [Nome]      | Diagnóstico      |
-| 15:27   | Decision: Restart PostgreSQL service                       | [Nome]      | Mitigação        |
-| 15:30   | PostgreSQL restart completo                                | Railway     | N/A              |
-| 15:32   | Health checks passing                                      | [Nome]      | Verificação      |
-| 15:35   | Smoke tests passing (endpoints críticos OK)                | [Nome]      | Validação        |
-| 15:40   | Full system validation                                     | [Nome]      | Testes completos |
-| 15:45   | All-clear declared                                         | [Nome]      | N/A              |
-| 16:05   | 🎉 **Incident End** - Users notified of resolution         | [Nome]      | Comunicação      |
+| 15:20 | **Incident Start** - Database connection errors começam | Sistema | N/A |
+| 15:22 | Alert disparado no Slack #alerts-production | Monitoring | N/A |
+| 15:23 | First Responder acknowledges alert | [Nome] | Triage inicial |
+| 15:25 | Root cause identified: PostgreSQL service crashed | [Nome] | Diagnóstico |
+| 15:27 | Decision: Restart PostgreSQL service | [Nome] | Mitigação |
+| 15:30 | PostgreSQL restart completo | Railway | N/A |
+| 15:32 | Health checks passing | [Nome] | Verificação |
+| 15:35 | Smoke tests passing (endpoints críticos OK) | [Nome] | Validação |
+| 15:40 | Full system validation | [Nome] | Testes completos |
+| 15:45 | All-clear declared | [Nome] | N/A |
+| 16:05 | **Incident End** - Users notified of resolution | [Nome] | Comunicação |
 
 **Total duration:** 45 minutos (detection to resolution)
 **MTTR (Mean Time To Resolution):** 45 minutos
@@ -49,28 +49,28 @@
 ### Users Affected
 
 - **Total users impacted:** [Número ou %]
-  - Exemplo: "120 usuários ativos no momento do incidente (100%)"
-  - Exemplo: "~30% da base de usuários (estimativa baseada em horário)"
+ - Exemplo: "120 usuários ativos no momento do incidente (100%)"
+ - Exemplo: "~30% da base de usuários (estimativa baseada em horário)"
 
 ### Functionality Impact
 
 - ❌ **Completamente indisponível:**
-  - Login
-  - Acesso a ETPs existentes
-  - Criação de novos ETPs
-  - Geração de seções
-  - Exportação de PDFs
+ - Login
+ - Acesso a ETPs existentes
+ - Criação de novos ETPs
+ - Geração de seções
+ - Exportação de PDFs
 
-- ⚠️ **Parcialmente indisponível:** [Se aplicável]
-  - N/A
+- ⚠ **Parcialmente indisponível:** [Se aplicável]
+ - N/A
 
 - ✅ **Sem impacto:** [Se aplicável]
-  - N/A (sistema completamente fora do ar)
+ - N/A (sistema completamente fora do ar)
 
 ### Data Impact
 
-- **Data loss:** ❌ Não / ⚠️ Sim (detalhar abaixo)
-- **Data corruption:** ❌ Não / ⚠️ Sim (detalhar abaixo)
+- **Data loss:** ❌ Não / ⚠ Sim (detalhar abaixo)
+- **Data corruption:** ❌ Não / ⚠ Sim (detalhar abaixo)
 
 **Detalhes:**
 
@@ -157,7 +157,7 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 
 ### O que tivemos sorte
 
-🍀 **Lucky breaks:**
+ **Lucky breaks:**
 
 1. Incidente ocorreu durante horário comercial (equipe disponível)
 2. No backup restore foi necessário (PostgreSQL recovery foi simples restart)
@@ -199,16 +199,16 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 
 ## Action Items
 
-| #   | Action Item                           | Owner  | Priority | Due Date   | Status         |
+| # | Action Item | Owner | Priority | Due Date | Status |
 | --- | ------------------------------------- | ------ | -------- | ---------- | -------------- |
-| 1   | Re-adicionar índice `sections.etp_id` | [Nome] | P0       | DD/MM/YYYY | ✅ Done        |
-| 2   | Deploy hotfix com índice              | [Nome] | P0       | DD/MM/YYYY | ✅ Done        |
-| 3   | Implementar alert memory > 80%        | [Nome] | P1       | DD/MM/YYYY | 🔄 In Progress |
-| 4   | Adicionar slow query logging          | [Nome] | P1       | DD/MM/YYYY | 📋 To Do       |
-| 5   | Load testing com 20+ users            | [Nome] | P1       | DD/MM/YYYY | 📋 To Do       |
-| 6   | Migration review checklist            | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
-| 7   | Upgrade PostgreSQL plan               | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
-| 8   | Implement APM (query monitoring)      | [Nome] | P2       | DD/MM/YYYY | 📋 To Do       |
+| 1 | Re-adicionar índice `sections.etp_id` | [Nome] | P0 | DD/MM/YYYY | ✅ Done |
+| 2 | Deploy hotfix com índice | [Nome] | P0 | DD/MM/YYYY | ✅ Done |
+| 3 | Implementar alert memory > 80% | [Nome] | P1 | DD/MM/YYYY | In Progress |
+| 4 | Adicionar slow query logging | [Nome] | P1 | DD/MM/YYYY | To Do |
+| 5 | Load testing com 20+ users | [Nome] | P1 | DD/MM/YYYY | To Do |
+| 6 | Migration review checklist | [Nome] | P2 | DD/MM/YYYY | To Do |
+| 7 | Upgrade PostgreSQL plan | [Nome] | P2 | DD/MM/YYYY | To Do |
+| 8 | Implement APM (query monitoring) | [Nome] | P2 | DD/MM/YYYY | To Do |
 
 ---
 
@@ -237,10 +237,10 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 
 ### SLA Performance
 
-| Metric                             | Target   | Actual | Met?   |
+| Metric | Target | Actual | Met? |
 | ---------------------------------- | -------- | ------ | ------ |
-| MTTD (Mean Time To Detection)      | < 5 min  | 2 min  | ✅ Yes |
-| MTTR (Mean Time To Resolution)     | < 1 hour | 45 min | ✅ Yes |
+| MTTD (Mean Time To Detection) | < 5 min | 2 min | ✅ Yes |
+| MTTR (Mean Time To Resolution) | < 1 hour | 45 min | ✅ Yes |
 | Communication (first notification) | < 30 min | 20 min | ✅ Yes |
 
 ### Incident Severity Justification
@@ -271,7 +271,7 @@ Fatores que contribuíram para o incidente ou agravaram o impacto:
 ### Related Incidents
 
 - **Previous similar incidents:** [Listar se houver]
-  - Exemplo: "2025-10-15 - Database timeout (P2) - diferente root cause mas sintomas similares"
+ - Exemplo: "2025-10-15 - Database timeout (P2) - diferente root cause mas sintomas similares"
 - **Pattern identified:** [Se aplicável]
 
 ### References
@@ -322,15 +322,15 @@ EXPLAIN ANALYZE SELECT * FROM sections WHERE etp_id IN (1,2,3,...,50);
 
 ```
 15:20 ──────┬─── Incident Start (DB crash)
-            │
+ │
 15:22 ──────┼─── Alert fired
-            │
+ │
 15:25 ──────┼─── Root cause identified
-            │
+ │
 15:30 ──────┼─── DB restarted (mitigation)
-            │
+ │
 15:45 ──────┴─── All-clear declared
-            │
+ │
 16:05 ──────────── Users notified (resolution)
 
 Total: 45 minutes (MTTR)

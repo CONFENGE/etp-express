@@ -1,4 +1,4 @@
-# 🔐 Auditoria de Criptografia - LGPD
+# Auditoria de Criptografia - LGPD
 
 **Data da Auditoria:** 2025-11-21
 **Auditor:** Sistema Automatizado
@@ -8,7 +8,7 @@
 
 ---
 
-## 📋 Sumário Executivo
+## Sumário Executivo
 
 **Status Geral:** ✅ **100% CONFORME**
 
@@ -24,7 +24,7 @@ O sistema ETP Express implementa corretamente criptografia de dados sensíveis e
 
 ---
 
-## 1️⃣ Criptografia em Trânsito
+## Criptografia em Trânsito
 
 ### 1.1 HTTPS Forçado (Railway)
 
@@ -117,7 +117,7 @@ app.use(helmet());
 
 ---
 
-## 2️⃣ Criptografia em Repouso
+## Criptografia em Repouso
 
 ### 2.1 Senhas (bcrypt)
 
@@ -205,7 +205,7 @@ Railway PostgreSQL **criptografa dados em repouso** por padrão.
 
 ---
 
-## 3️⃣ APIs Externas (OpenAI, Perplexity)
+## APIs Externas (OpenAI, Perplexity)
 
 ### 3.1 OpenAI API
 
@@ -218,7 +218,7 @@ SDK oficial OpenAI usa **HTTPS** por padrão.
 
 ```typescript
 this.openai = new OpenAI({
-  apiKey: this.configService.get<string>('OPENAI_API_KEY'),
+ apiKey: this.configService.get<string>('OPENAI_API_KEY'),
 });
 ```
 
@@ -255,18 +255,18 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
 ---
 
-## 4️⃣ Avaliação de Conformidade
+## Avaliação de Conformidade
 
 ### 4.1 Checklist LGPD Art. 46
 
-| Requisito                             | Status | Evidência                     |
+| Requisito | Status | Evidência |
 | ------------------------------------- | ------ | ----------------------------- |
-| Criptografia de dados em trânsito     | ✅     | HTTPS forçado (Railway)       |
-| SSL na comunicação com banco de dados | ✅     | TypeORM ssl: true em produção |
-| Criptografia de dados em repouso      | ✅     | Railway PostgreSQL AES-256    |
-| Hash de senhas                        | ✅     | bcrypt cost factor 10         |
-| Proteção de secrets (JWT)             | ✅     | Railway Secrets + rotação     |
-| APIs externas via TLS                 | ✅     | OpenAI e Perplexity HTTPS     |
+| Criptografia de dados em trânsito | ✅ | HTTPS forçado (Railway) |
+| SSL na comunicação com banco de dados | ✅ | TypeORM ssl: true em produção |
+| Criptografia de dados em repouso | ✅ | Railway PostgreSQL AES-256 |
+| Hash de senhas | ✅ | bcrypt cost factor 10 |
+| Proteção de secrets (JWT) | ✅ | Railway Secrets + rotação |
+| APIs externas via TLS | ✅ | OpenAI e Perplexity HTTPS |
 
 **Score:** **6/6** ✅
 
@@ -274,55 +274,55 @@ private readonly apiUrl = 'https://api.perplexity.ai/chat/completions';
 
 ### 4.2 Boas Práticas (OWASP)
 
-| Prática                          | Status | Implementação      |
+| Prática | Status | Implementação |
 | -------------------------------- | ------ | ------------------ |
-| Password hashing (bcrypt)        | ✅     | Cost factor 10     |
-| TLS/SSL forçado                  | ✅     | Railway + TypeORM  |
-| Secrets em variáveis de ambiente | ✅     | Railway Secrets    |
-| Headers de segurança (Helmet)    | ✅     | Helmet.js          |
-| Token expiration                 | ✅     | JWT 7 dias         |
-| Certificados válidos             | ✅     | Railway auto-renew |
+| Password hashing (bcrypt) | ✅ | Cost factor 10 |
+| TLS/SSL forçado | ✅ | Railway + TypeORM |
+| Secrets em variáveis de ambiente | ✅ | Railway Secrets |
+| Headers de segurança (Helmet) | ✅ | Helmet.js |
+| Token expiration | ✅ | JWT 7 dias |
+| Certificados válidos | ✅ | Railway auto-renew |
 
 **Score:** **6/6** ✅
 
 ---
 
-## 5️⃣ Riscos Identificados
+## Riscos Identificados
 
 ### 5.1 Riscos Baixos (Mitigados)
 
-| Risco                                  | Severidade   | Mitigação                                                     | Status       |
+| Risco | Severidade | Mitigação | Status |
 | -------------------------------------- | ------------ | ------------------------------------------------------------- | ------------ |
 | ~~`rejectUnauthorized: false` no SSL~~ | ✅ Resolvido | Corrigido em #598 - SSL com validação completa de certificado | ✅ Corrigido |
-| JWT expiration 7 dias                  | 🟡 Baixa     | Trade-off UX vs Segurança (configurável)                      | ✅ Aceito    |
-| Secrets em logs (potencial)            | 🟡 Baixa     | Sentry configurado para não capturar headers Auth             | ✅ Mitigado  |
+| JWT expiration 7 dias | Baixa | Trade-off UX vs Segurança (configurável) | ✅ Aceito |
+| Secrets em logs (potencial) | Baixa | Sentry configurado para não capturar headers Auth | ✅ Mitigado |
 
 **Nenhum risco ALTO ou MÉDIO identificado.**
 
 ---
 
-## 6️⃣ Recomendações Futuras
+## Recomendações Futuras
 
 ### 6.1 Melhorias Opcionais (Não-Bloqueantes)
 
 1. **Rotação Automática de JWT Secret (#157)**
-   - Status: ✅ Implementado (dual-key strategy)
-   - Melhoria: Automatizar via GitHub Actions (#223)
+ - Status: ✅ Implementado (dual-key strategy)
+ - Melhoria: Automatizar via GitHub Actions (#223)
 
 2. **Certificate Pinning (APIs Externas)**
-   - Severidade: Baixa
-   - Benefício: Protege contra MITM attacks
-   - Esforço: Médio (requer manutenção de fingerprints)
+ - Severidade: Baixa
+ - Benefício: Protege contra MITM attacks
+ - Esforço: Médio (requer manutenção de fingerprints)
 
 3. **Encryption at Application Level**
-   - Severidade: Baixa
-   - Benefício: Camada extra de proteção (além do DB)
-   - Use Case: Campos ultra-sensíveis (CPF, telefone)
-   - Esforço: Alto (requer key management)
+ - Severidade: Baixa
+ - Benefício: Camada extra de proteção (além do DB)
+ - Use Case: Campos ultra-sensíveis (CPF, telefone)
+ - Esforço: Alto (requer key management)
 
 ---
 
-## 7️⃣ Conclusão
+## Conclusão
 
 ### Status Final: ✅ **100% CONFORME COM LGPD ART. 46**
 
@@ -339,37 +339,37 @@ O sistema ETP Express implementa corretamente todos os requisitos de **criptogra
 
 ---
 
-## 📚 Referências Legais
+## Referências Legais
 
 1. **LGPD Lei 13.709/2018:**
-   - **Art. 46:** "Os agentes de tratamento devem adotar medidas de segurança, técnicas e administrativas aptas a proteger os dados pessoais de acessos não autorizados e de situações acidentais ou ilícitas..."
-   - **Art. 46, I:** "utilização de criptografia"
-   - **Art. 46, II:** "controles de acesso aos dados"
+ - **Art. 46:** "Os agentes de tratamento devem adotar medidas de segurança, técnicas e administrativas aptas a proteger os dados pessoais de acessos não autorizados e de situações acidentais ou ilícitas..."
+ - **Art. 46, I:** "utilização de criptografia"
+ - **Art. 46, II:** "controles de acesso aos dados"
 
 2. **OWASP Top 10 (2023):**
-   - A02:2021 - Cryptographic Failures
-   - A05:2021 - Security Misconfiguration
-   - A07:2021 - Identification and Authentication Failures
+ - A02:2021 - Cryptographic Failures
+ - A05:2021 - Security Misconfiguration
+ - A07:2021 - Identification and Authentication Failures
 
 3. **NIST SP 800-52 Rev. 2:**
-   - Guidelines for TLS Implementations
+ - Guidelines for TLS Implementations
 
 ---
 
-## 📊 Metadados da Auditoria
+## Metadados da Auditoria
 
-| Campo                  | Valor                  |
+| Campo | Valor |
 | ---------------------- | ---------------------- |
-| **Data:**              | 2025-11-21             |
-| **Auditor:**           | Sistema Automatizado   |
-| **Issue:**             | #263                   |
-| **Parent:**            | #86                    |
-| **Milestone:**         | M3: Quality & Security |
-| **Score:**             | 100% (6/6 controles)   |
-| **Riscos Altos:**      | 0                      |
-| **Riscos Médios:**     | 0                      |
-| **Riscos Baixos:**     | 3 (mitigados)          |
-| **Conformidade LGPD:** | ✅ Art. 46             |
+| **Data:** | 2025-11-21 |
+| **Auditor:** | Sistema Automatizado |
+| **Issue:** | #263 |
+| **Parent:** | #86 |
+| **Milestone:** | M3: Quality & Security |
+| **Score:** | 100% (6/6 controles) |
+| **Riscos Altos:** | 0 |
+| **Riscos Médios:** | 0 |
+| **Riscos Baixos:** | 3 (mitigados) |
+| **Conformidade LGPD:** | ✅ Art. 46 |
 
 ---
 

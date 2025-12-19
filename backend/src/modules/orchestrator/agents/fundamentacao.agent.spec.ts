@@ -20,25 +20,25 @@ describe('FundamentacaoAgent', () => {
     it('should detect all 4 mandatory elements when present', async () => {
       // Arrange
       const contentWithAllElements = `
-        A necessidade desta contratação surge da carência de sistemas modernos
-        que atendam às demandas crescentes do órgão público. A infraestrutura
-        tecnológica atual não suporta o volume de operações necessárias, gerando
-        deficiências significativas na prestação do serviço.
+ A necessidade desta contratação surge da carência de sistemas modernos
+ que atendam às demandas crescentes do órgão público. A infraestrutura
+ tecnológica atual não suporta o volume de operações necessárias, gerando
+ deficiências significativas na prestação do serviço.
 
-        O interesse público é evidente, pois beneficiará 10.000 cidadãos que
-        dependem diariamente dos serviços prestados pelo órgão. A sociedade
-        como um todo será impactada positivamente com a modernização.
+ O interesse público é evidente, pois beneficiará 10.000 cidadãos que
+ dependem diariamente dos serviços prestados pelo órgão. A sociedade
+ como um todo será impactada positivamente com a modernização.
 
-        Os benefícios esperados incluem melhoria de 50% na eficiência operacional,
-        redução de custos com manutenção corretiva, ganho de produtividade das
-        equipes e aprimoramento significativo da qualidade dos serviços prestados
-        à população.
+ Os benefícios esperados incluem melhoria de 50% na eficiência operacional,
+ redução de custos com manutenção corretiva, ganho de produtividade das
+ equipes e aprimoramento significativo da qualidade dos serviços prestados
+ à população.
 
-        Os riscos de não contratar incluem impacto negativo na prestação de
-        serviços essenciais, possíveis problemas de continuidade operacional e
-        consequências graves para o atendimento à população, com prejuízos
-        mensuráveis na qualidade do serviço público.
-      `;
+ Os riscos de não contratar incluem impacto negativo na prestação de
+ serviços essenciais, possíveis problemas de continuidade operacional e
+ consequências graves para o atendimento à população, com prejuízos
+ mensuráveis na qualidade do serviço público.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(
@@ -58,9 +58,9 @@ describe('FundamentacaoAgent', () => {
     it('should calculate score correctly based on present elements (2/4 = 50%)', async () => {
       // Arrange
       const contentPartial = `
-        A necessidade desta contratação é urgente e imediata.
-        Os benefícios incluem redução de custos operacionais.
-      `;
+ A necessidade desta contratação é urgente e imediata.
+ Os benefícios incluem redução de custos operacionais.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(contentPartial);
@@ -77,11 +77,11 @@ describe('FundamentacaoAgent', () => {
     it('should detect quantitative data (numbers) in content', async () => {
       // Arrange
       const contentWithNumbers = `
-        A necessidade surge da demanda de 10.000 usuários.
-        O interesse público beneficiará 500 cidadãos diariamente.
-        Os benefícios incluem economia de R$ 100.000 e redução de 30% no prazo.
-        Os riscos incluem problemas em 50% dos processos.
-      `;
+ A necessidade surge da demanda de 10.000 usuários.
+ O interesse público beneficiará 500 cidadãos diariamente.
+ Os benefícios incluem economia de R$ 100.000 e redução de 30% no prazo.
+ Os riscos incluem problemas em 50% dos processos.
+ `;
 
       // Act
       const result: FundamentacaoResult =
@@ -99,11 +99,11 @@ describe('FundamentacaoAgent', () => {
     it('should suggest adding quantitative data when numbers are missing', async () => {
       // Arrange
       const contentWithoutNumbers = `
-        A necessidade desta contratação é evidente.
-        O interesse público será atendido com a sociedade beneficiada.
-        Os benefícios incluem melhoria de processos.
-        Os riscos incluem problemas operacionais.
-      `;
+ A necessidade desta contratação é evidente.
+ O interesse público será atendido com a sociedade beneficiada.
+ Os benefícios incluem melhoria de processos.
+ Os riscos incluem problemas operacionais.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(
@@ -121,11 +121,11 @@ describe('FundamentacaoAgent', () => {
       // Arrange
       const shortContent = 'Necessidade urgente de contratação.'; // < 100 palavras
       const longContent = `
-        A necessidade desta contratação é fundamental para o órgão.
-        ${'O interesse público será atendido através desta ação. '.repeat(20)}
-        Os benefícios esperados são significativos e mensuráveis.
-        Os riscos de não realizar a contratação são elevados.
-      `; // > 100 palavras
+ A necessidade desta contratação é fundamental para o órgão.
+ ${'O interesse público será atendido através desta ação. '.repeat(20)}
+ Os benefícios esperados são significativos e mensuráveis.
+ Os riscos de não realizar a contratação são elevados.
+ `; // > 100 palavras
 
       // Act
       const resultShort: FundamentacaoResult =
@@ -144,8 +144,8 @@ describe('FundamentacaoAgent', () => {
     it('should provide suggestions for missing elements', async () => {
       // Arrange
       const contentMissingElements = `
-        Este é um texto genérico sem elementos específicos da fundamentação.
-      `;
+ Este é um texto genérico sem elementos específicos da fundamentação.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(
@@ -194,12 +194,12 @@ describe('FundamentacaoAgent', () => {
     it('should handle very long text', async () => {
       // Arrange
       const veryLongContent = `
-        A necessidade desta contratação é fundamental.
-        ${'O interesse público da sociedade e cidadãos será atendido. '.repeat(1000)}
-        Os benefícios e vantagens esperados são significativos.
-        Os riscos e problemas de não contratar são elevados.
-        Dados quantitativos: 10.000 usuários.
-      `;
+ A necessidade desta contratação é fundamental.
+ ${'O interesse público da sociedade e cidadãos será atendido. '.repeat(1000)}
+ Os benefícios e vantagens esperados são significativos.
+ Os riscos e problemas de não contratar são elevados.
+ Dados quantitativos: 10.000 usuários.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(veryLongContent);
@@ -217,11 +217,11 @@ describe('FundamentacaoAgent', () => {
     it('should detect alternative keywords for each element', async () => {
       // Arrange
       const contentWithAlternatives = `
-        A demanda surge da deficiência nos sistemas atuais.
-        A comunidade será beneficiada com esta ação.
-        As vantagens incluem ganho de eficiência e aprimoramento dos processos.
-        As consequências de não contratar afetarão negativamente o serviço.
-      `;
+ A demanda surge da deficiência nos sistemas atuais.
+ A comunidade será beneficiada com esta ação.
+ As vantagens incluem ganho de eficiência e aprimoramento dos processos.
+ As consequências de não contratar afetarão negativamente o serviço.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(
@@ -239,11 +239,11 @@ describe('FundamentacaoAgent', () => {
     it('should be case-insensitive when detecting keywords', async () => {
       // Arrange
       const contentMixedCase = `
-        A NECESSIDADE desta contratação é URGENTE.
-        O INTERESSE PÚBLICO será atendido.
-        Os BENEFÍCIOS esperados são SIGNIFICATIVOS.
-        Os RISCOS de não contratar são ELEVADOS.
-      `;
+ A NECESSIDADE desta contratação é URGENTE.
+ O INTERESSE PÚBLICO será atendido.
+ Os BENEFÍCIOS esperados são SIGNIFICATIVOS.
+ Os RISCOS de não contratar são ELEVADOS.
+ `;
 
       // Act
       const result: FundamentacaoResult = await agent.analyze(contentMixedCase);

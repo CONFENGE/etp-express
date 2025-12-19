@@ -420,8 +420,8 @@ describe('ExaService', () => {
       // Note: search() is deprecated and calls searchSimple() which uses 'auto' type
       // Cache key includes type: hash('auto:5:lei 14.133/2021')
       await service.search('Lei 14.133/2021');
-      await service.search('  LEI 14.133/2021  ');
-      await service.search('lei    14.133/2021');
+      await service.search(' LEI 14.133/2021 ');
+      await service.search('lei 14.133/2021');
 
       // All 3 queries should normalize to same key and only call API once
       // Note: Due to retry logic that might be invoked in edge cases,
@@ -539,7 +539,7 @@ describe('ExaService', () => {
       const result = await service.search('test disclaimer');
 
       expect(result.summary).toContain('indisponível');
-      expect(result.summary).toContain('⚠️');
+      expect(result.summary).toContain('⚠');
     }, 30000);
   });
 

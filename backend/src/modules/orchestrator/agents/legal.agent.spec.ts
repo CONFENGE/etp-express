@@ -20,12 +20,12 @@ describe('LegalAgent', () => {
     it('should detect reference to Lei 14.133/2021', async () => {
       // Arrange
       const contentWithLegalReference = `
-        Este ETP está fundamentado na Lei 14.133/2021, artigo 18.
-        A justificativa da contratação é garantir a modernização dos sistemas.
-        O objeto da contratação é o desenvolvimento de software.
-        A necessidade surge da obsolescência dos sistemas atuais.
-        O valor estimado é de R$ 100.000,00.
-      `;
+ Este ETP está fundamentado na Lei 14.133/2021, artigo 18.
+ A justificativa da contratação é garantir a modernização dos sistemas.
+ O objeto da contratação é o desenvolvimento de software.
+ A necessidade surge da obsolescência dos sistemas atuais.
+ O valor estimado é de R$ 100.000,00.
+ `;
 
       // Act
       const result: LegalValidationResult = await agent.validate(
@@ -46,16 +46,16 @@ describe('LegalAgent', () => {
     it('should return score > 70 for text with adequate legal foundation', async () => {
       // Arrange
       const completeContent = `
-        Conforme previsto na Lei 14.133/2021, especialmente no artigo 18,
-        apresenta-se a justificativa para esta contratação.
+ Conforme previsto na Lei 14.133/2021, especialmente no artigo 18,
+ apresenta-se a justificativa para esta contratação.
 
-        O objeto da contratação consiste no desenvolvimento de sistema integrado.
-        A necessidade surge da modernização tecnológica requerida pelo órgão.
-        O valor estimado, baseado em pesquisa de mercado, é de R$ 150.000,00.
+ O objeto da contratação consiste no desenvolvimento de sistema integrado.
+ A necessidade surge da modernização tecnológica requerida pelo órgão.
+ O valor estimado, baseado em pesquisa de mercado, é de R$ 150.000,00.
 
-        A contratação visa atender aos requisitos técnicos estabelecidos pela
-        IN SEGES/ME nº 40/2020, garantindo conformidade legal.
-      `;
+ A contratação visa atender aos requisitos técnicos estabelecidos pela
+ IN SEGES/ME nº 40/2020, garantindo conformidade legal.
+ `;
 
       // Act
       const result: LegalValidationResult =
@@ -71,9 +71,9 @@ describe('LegalAgent', () => {
     it('should return score < 50 for text without legal foundation', async () => {
       // Arrange
       const incompleteContent = `
-        Precisamos de um sistema novo.
-        O sistema atual está desatualizado.
-      `;
+ Precisamos de um sistema novo.
+ O sistema atual está desatualizado.
+ `;
 
       // Act
       const result: LegalValidationResult =
@@ -112,12 +112,12 @@ describe('LegalAgent', () => {
     it('should handle very long text', async () => {
       // Arrange
       const veryLongContent = `
-        Lei 14.133/2021 estabelece as diretrizes para licitações.
-        ${'A justificativa da contratação é fundamental. '.repeat(1000)}
-        O objeto da contratação precisa ser bem definido.
-        A necessidade da contratação deve ser demonstrada.
-        O valor estimado deve seguir pesquisa de mercado.
-      `;
+ Lei 14.133/2021 estabelece as diretrizes para licitações.
+ ${'A justificativa da contratação é fundamental. '.repeat(1000)}
+ O objeto da contratação precisa ser bem definido.
+ A necessidade da contratação deve ser demonstrada.
+ O valor estimado deve seguir pesquisa de mercado.
+ `;
 
       // Act
       const result: LegalValidationResult =
@@ -133,12 +133,12 @@ describe('LegalAgent', () => {
     it('should add technical requirements recommendation for requisitos context', async () => {
       // Arrange
       const contentWithRequirements = `
-        Lei 14.133/2021 orienta este documento.
-        Justificativa: necessidade de modernização.
-        O objeto é a aquisição de software.
-        Requisitos funcionais devem ser especificados.
-        Valor estimado: R$ 50.000,00.
-      `;
+ Lei 14.133/2021 orienta este documento.
+ Justificativa: necessidade de modernização.
+ O objeto é a aquisição de software.
+ Requisitos funcionais devem ser especificados.
+ Valor estimado: R$ 50.000,00.
+ `;
       const context = { type: 'requisitos' };
 
       // Act
@@ -238,7 +238,7 @@ describe('LegalAgent', () => {
       expect(systemPrompt).toContain('IN SEGES/ME nº 65/2021');
       expect(systemPrompt).toContain('validação jurídica');
       expect(systemPrompt).toContain(
-        '⚠️ Este conteúdo requer validação jurídica antes do uso oficial.',
+        '⚠ Este conteúdo requer validação jurídica antes do uso oficial.',
       );
     });
   });

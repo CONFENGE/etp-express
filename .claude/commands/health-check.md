@@ -11,10 +11,10 @@ Voce e responsavel por verificar o health dos servicos ETP Express em producao.
 
 ## Endpoints a Verificar
 
-| Servico        | URL                                                              | Esperado   |
+| Servico | URL | Esperado |
 | -------------- | ---------------------------------------------------------------- | ---------- |
 | Backend Health | https://etp-express-backend-production.up.railway.app/api/health | 200 + JSON |
-| Frontend       | https://etp-express-frontend-production.up.railway.app           | 200 + HTML |
+| Frontend | https://etp-express-frontend-production.up.railway.app | 200 + HTML |
 
 ---
 
@@ -30,12 +30,12 @@ Esperado:
 
 ```json
 {
-  "status": "ok",
-  "timestamp": "2025-01-15T14:30:00.000Z",
-  "services": {
-    "database": "up",
-    "redis": "up"
-  }
+ "status": "ok",
+ "timestamp": "2025-01-15T14:30:00.000Z",
+ "services": {
+ "database": "up",
+ "redis": "up"
+ }
 }
 ```
 
@@ -56,7 +56,7 @@ curl -s -w "Time: %{time_total}s\n" -o /dev/null https://etp-express-backend-pro
 Thresholds:
 
 - ✅ < 500ms - Excelente
-- ⚠️ 500ms - 2s - Aceitavel
+- ⚠ 500ms - 2s - Aceitavel
 - ❌ > 2s - Lento
 
 ### 4. Railway Services Status
@@ -86,32 +86,32 @@ Usar MCP Railway para verificar:
 
 ### Service Status
 
-| Servico     | Status | Response Time | Detalhes            |
+| Servico | Status | Response Time | Detalhes |
 | ----------- | ------ | ------------- | ------------------- |
-| Backend API | ✅/❌  | Xms           | <detalhes>          |
-| Frontend    | ✅/❌  | Xms           | <detalhes>          |
-| Database    | ✅/❌  | -             | Via health endpoint |
-| Redis       | ✅/❌  | -             | Via health endpoint |
+| Backend API | ✅/❌ | Xms | <detalhes> |
+| Frontend | ✅/❌ | Xms | <detalhes> |
+| Database | ✅/❌ | - | Via health endpoint |
+| Redis | ✅/❌ | - | Via health endpoint |
 
 ### Deployment Info
 
-| Servico  | Ultimo Deploy | Status     |
+| Servico | Ultimo Deploy | Status |
 | -------- | ------------- | ---------- |
-| Backend  | <data>        | ✅ Running |
-| Frontend | <data>        | ✅ Running |
+| Backend | <data> | ✅ Running |
+| Frontend | <data> | ✅ Running |
 
 ### Response Times
 
-| Endpoint     | Time | Status   |
+| Endpoint | Time | Status |
 | ------------ | ---- | -------- |
-| /api/health  | Xms  | ✅/⚠️/❌ |
-| / (frontend) | Xms  | ✅/⚠️/❌ |
+| /api/health | Xms | ✅/⚠/❌ |
+| / (frontend) | Xms | ✅/⚠/❌ |
 
 ### Recent Errors
 
-| Timestamp | Servico | Erro                   |
+| Timestamp | Servico | Erro |
 | --------- | ------- | ---------------------- |
-| -         | -       | Nenhum erro recente ✅ |
+| - | - | Nenhum erro recente ✅ |
 
 ---
 
@@ -121,7 +121,7 @@ Usar MCP Railway para verificar:
 
 ou
 
-⚠️ **DEGRADED PERFORMANCE** - <detalhes>
+⚠ **DEGRADED PERFORMANCE** - <detalhes>
 
 ou
 
@@ -134,20 +134,20 @@ ou
 
 ### Por Servico
 
-| Condicao                 | Status         |
+| Condicao | Status |
 | ------------------------ | -------------- |
-| HTTP 200 + response < 2s | ✅ Healthy     |
-| HTTP 200 + response > 2s | ⚠️ Slow        |
-| HTTP 5xx                 | ❌ Error       |
-| Timeout (>30s)           | ❌ Unreachable |
+| HTTP 200 + response < 2s | ✅ Healthy |
+| HTTP 200 + response > 2s | ⚠ Slow |
+| HTTP 5xx | ❌ Error |
+| Timeout (>30s) | ❌ Unreachable |
 
 ### Overall
 
-| Condicao          | Status         |
+| Condicao | Status |
 | ----------------- | -------------- |
 | Todos servicos ✅ | ✅ Operational |
-| Algum servico ⚠️  | ⚠️ Degraded    |
-| Algum servico ❌  | ❌ Outage      |
+| Algum servico ⚠ | ⚠ Degraded |
+| Algum servico ❌ | ❌ Outage |
 
 ---
 

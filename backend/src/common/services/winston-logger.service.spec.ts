@@ -152,7 +152,7 @@ describe('WinstonLoggerService', () => {
           path: '/api/etps',
           durationMs: 12,
           error: 'Not found',
-          stack: 'Error: Not found\n    at ...',
+          stack: 'Error: Not found\n at ...',
           statusCode: 404,
         }),
       ).not.toThrow();

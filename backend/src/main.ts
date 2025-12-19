@@ -113,20 +113,20 @@ async function bootstrap() {
     .setTitle('ETP Express API')
     .setDescription(
       `
-      **${DISCLAIMER}**
+ **${DISCLAIMER}**
 
-      API para o sistema ETP Express - Wrapper de LLM para elaboração assistida de Estudos Técnicos Preliminares (Lei 14.133/2021).
+ API para o sistema ETP Express - Wrapper de LLM para elaboração assistida de Estudos Técnicos Preliminares (Lei 14.133/2021).
 
-      ## Características
-      - Geração de conteúdo via OpenAI GPT-4
-      - Busca de contratações similares via Exa AI
-      - Sistema de subagentes especializados
-      - Versionamento e auditoria completos
-      - Export para PDF, JSON e XML
+ ## Características
+ - Geração de conteúdo via OpenAI GPT-4
+ - Busca de contratações similares via Exa AI
+ - Sistema de subagentes especializados
+ - Versionamento e auditoria completos
+ - Export para PDF, JSON e XML
 
-      ## Autenticação
-      Utilize JWT Bearer token no header: \`Authorization: Bearer <token>\`
-    `,
+ ## Autenticação
+ Utilize JWT Bearer token no header: \`Authorization: Bearer <token>\`
+ `,
     )
     .setVersion('1.0.0')
     .addTag('auth', 'Autenticação e gestão de usuários')
@@ -163,19 +163,19 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                             ║
-    ║   ETP EXPRESS BACKEND                                       ║
-    ║                                                             ║
-    ║   ⚠️  Sistema assistivo - Não substitui responsabilidade  ║
-    ║      administrativa. Validação humana obrigatória.         ║
-    ║                                                             ║
-    ║   Server: http://localhost:${port}                         ║
-    ║   Docs:   http://localhost:${port}/api/docs                ║
-    ║   Env:    ${configService.get('NODE_ENV')}                ║
-    ║                                                             ║
-    ╚═══════════════════════════════════════════════════════════╝
-  `);
+ ╔═══════════════════════════════════════════════════════════╗
+ ║ ║
+ ║ ETP EXPRESS BACKEND ║
+ ║ ║
+ ║ ⚠ Sistema assistivo - Não substitui responsabilidade ║
+ ║ administrativa. Validação humana obrigatória. ║
+ ║ ║
+ ║ Server: http://localhost:${port} ║
+ ║ Docs: http://localhost:${port}/api/docs ║
+ ║ Env: ${configService.get('NODE_ENV')} ║
+ ║ ║
+ ╚═══════════════════════════════════════════════════════════╝
+ `);
 }
 
 bootstrap();

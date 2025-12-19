@@ -95,13 +95,13 @@ grep -rn "RateLimit\|throttle" backend/src --include="*.ts"
 
 ## Classificacao de Severidade
 
-| Severidade  | Descricao                                  | Acao                             |
+| Severidade | Descricao | Acao |
 | ----------- | ------------------------------------------ | -------------------------------- |
-| **CRITICO** | Exploravel remotamente, impacto alto       | Parar tudo, corrigir AGORA       |
-| **ALTO**    | Exploravel, impacto significativo          | Corrigir antes do proximo deploy |
-| **MEDIO**   | Exploravel com condicoes, impacto moderado | Corrigir no sprint atual         |
-| **BAIXO**   | Difícil explorar, impacto limitado         | Backlog de seguranca             |
-| **INFO**    | Melhoria recomendada                       | Nice to have                     |
+| **CRITICO** | Exploravel remotamente, impacto alto | Parar tudo, corrigir AGORA |
+| **ALTO** | Exploravel, impacto significativo | Corrigir antes do proximo deploy |
+| **MEDIO** | Exploravel com condicoes, impacto moderado | Corrigir no sprint atual |
+| **BAIXO** | Difícil explorar, impacto limitado | Backlog de seguranca |
+| **INFO** | Melhoria recomendada | Nice to have |
 
 ---
 
@@ -117,37 +117,37 @@ grep -rn "RateLimit\|throttle" backend/src --include="*.ts"
 
 | Severidade | Quantidade |
 | ---------- | ---------- |
-| Critico    | X          |
-| Alto       | X          |
-| Medio      | X          |
-| Baixo      | X          |
-| Info       | X          |
+| Critico | X |
+| Alto | X |
+| Medio | X |
+| Baixo | X |
+| Info | X |
 
 ### Vulnerabilidades de Dependencias
 
 #### Backend
 
-| Pacote | Versao  | Severidade | CVE           | Correcao               |
+| Pacote | Versao | Severidade | CVE | Correcao |
 | ------ | ------- | ---------- | ------------- | ---------------------- |
-| lodash | 4.17.20 | Alto       | CVE-2021-XXXX | Atualizar para 4.17.21 |
+| lodash | 4.17.20 | Alto | CVE-2021-XXXX | Atualizar para 4.17.21 |
 
 #### Frontend
 
-| Pacote | Versao | Severidade | CVE           | Correcao              |
+| Pacote | Versao | Severidade | CVE | Correcao |
 | ------ | ------ | ---------- | ------------- | --------------------- |
-| axios  | 0.21.0 | Medio      | CVE-2021-XXXX | Atualizar para 0.21.1 |
+| axios | 0.21.0 | Medio | CVE-2021-XXXX | Atualizar para 0.21.1 |
 
 ### Secrets Detectados
 
-| Arquivo | Linha | Tipo | Status              |
+| Arquivo | Linha | Tipo | Status |
 | ------- | ----- | ---- | ------------------- |
-| -       | -     | -    | Nenhum detectado ✅ |
+| - | - | - | Nenhum detectado ✅ |
 
 ### Findings OWASP
 
-| ID  | Categoria | Arquivo       | Linha | Descricao          | Severidade |
+| ID | Categoria | Arquivo | Linha | Descricao | Severidade |
 | --- | --------- | ------------- | ----- | ------------------ | ---------- |
-| 1   | A01       | controller.ts | 42    | Endpoint sem guard | Alto       |
+| 1 | A01 | controller.ts | 42 | Endpoint sem guard | Alto |
 
 ### Recomendacoes
 
@@ -191,7 +191,7 @@ npm audit fix --force
 | Info | 8 |
 
 ✅ Nenhuma vulnerabilidade critica encontrada
-⚠️ 2 vulnerabilidades de alta severidade requerem atencao
+⚠ 2 vulnerabilidades de alta severidade requerem atencao
 
 ### Recomendacoes
 

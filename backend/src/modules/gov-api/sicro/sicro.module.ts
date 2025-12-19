@@ -24,18 +24,18 @@ import { SicroService } from './sicro.service';
  * import { SicroModule } from '../gov-api/sicro';
  *
  * @Module({
- *   imports: [SicroModule],
+ * imports: [SicroModule],
  * })
  * export class MyFeatureModule {}
  *
  * // In your service
  * @Injectable()
  * export class MyService {
- *   constructor(private readonly sicroService: SicroService) {}
+ * constructor(private readonly sicroService: SicroService) {}
  *
- *   async findRoadConstructionCosts(query: string) {
- *     return this.sicroService.search(query, { uf: 'DF' });
- *   }
+ * async findRoadConstructionCosts(query: string) {
+ * return this.sicroService.search(query, { uf: 'DF' });
+ * }
  * }
  * ```
  */

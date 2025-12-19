@@ -7,10 +7,10 @@ Este documento descreve como configurar Redis no ETP Express para suportar proce
 ## Arquitetura
 
 ```
-┌─────────────┐     ┌──────────┐     ┌──────────────┐
-│  Backend    │────▶│  Redis   │◀────│  BullMQ      │
-│  NestJS     │     │  Cache   │     │  Queue       │
-└─────────────┘     └──────────┘     └──────────────┘
+┌─────────────┐ ┌──────────┐ ┌──────────────┐
+│ Backend │────│ Redis │────│ BullMQ │
+│ NestJS │ │ Cache │ │ Queue │
+└─────────────┘ └──────────┘ └──────────────┘
 ```
 
 ### Casos de Uso
@@ -62,10 +62,10 @@ curl http://localhost:3001/health
 
 # Resposta esperada:
 {
-  "status": "healthy",
-  "timestamp": "2025-12-03T12:00:00.000Z",
-  "database": "connected",
-  "redis": "connected"  # ← Confirma Redis conectado
+ "status": "healthy",
+ "timestamp": "2025-12-03T12:00:00.000Z",
+ "database": "connected",
+ "redis": "connected" # ← Confirma Redis conectado
 }
 ```
 
@@ -95,10 +95,10 @@ curl https://etp-express-backend-production.up.railway.app/health
 
 # Resposta esperada:
 {
-  "status": "healthy",
-  "timestamp": "2025-12-03T12:00:00.000Z",
-  "database": "connected",
-  "redis": "connected"  # ← Confirma Redis conectado no Railway
+ "status": "healthy",
+ "timestamp": "2025-12-03T12:00:00.000Z",
+ "database": "connected",
+ "redis": "connected" # ← Confirma Redis conectado no Railway
 }
 ```
 
@@ -107,9 +107,9 @@ curl https://etp-express-backend-production.up.railway.app/health
 ### Novos Arquivos
 
 - **`backend/src/config/redis.config.ts`**: Configuração NestJS para Redis
-  - Parse automático de `REDIS_URL`
-  - Configurações otimizadas para BullMQ
-  - Fallback para localhost em desenvolvimento
+ - Parse automático de `REDIS_URL`
+ - Configurações otimizadas para BullMQ
+ - Fallback para localhost em desenvolvimento
 
 ### Arquivos Modificados
 
@@ -127,9 +127,9 @@ O health check Redis está integrado ao endpoint `/health`:
 ```typescript
 // GET /health
 {
-  "status": "healthy",
-  "database": "connected",
-  "redis": "connected" | "not_configured"
+ "status": "healthy",
+ "database": "connected",
+ "redis": "connected" | "not_configured"
 }
 ```
 
@@ -147,12 +147,12 @@ constructor(private configService: ConfigService) {}
 
 const redisConfig = this.configService.get('redis');
 // {
-//   host: 'localhost',
-//   port: 6379,
-//   password: undefined,
-//   db: 0,
-//   maxRetriesPerRequest: null,
-//   enableReadyCheck: false
+// host: 'localhost',
+// port: 6379,
+// password: undefined,
+// db: 0,
+// maxRetriesPerRequest: null,
+// enableReadyCheck: false
 // }
 ```
 
@@ -161,18 +161,18 @@ const redisConfig = this.configService.get('redis');
 Com Redis configurado, as seguintes issues podem ser implementadas:
 
 1. **#220 - Implementar BullMQ para geração de seções**
-   - Criar queue `section-generation`
-   - Processar jobs assíncronos
-   - Retry logic
+ - Criar queue `section-generation`
+ - Processar jobs assíncronos
+ - Retry logic
 
 2. **#221 - API de status de jobs**
-   - Endpoint `GET /jobs/:jobId/status`
-   - Retornar progresso, posição na fila, ETA
+ - Endpoint `GET /jobs/:jobId/status`
+ - Retornar progresso, posição na fila, ETA
 
 3. **#222 - UX assíncrona para geração de seções**
-   - Frontend polling de status
-   - Progress bar real-time
-   - Notificações push
+ - Frontend polling de status
+ - Progress bar real-time
+ - Notificações push
 
 ## Troubleshooting
 
@@ -215,8 +215,8 @@ tail -f /usr/local/var/log/redis.log
 - ✅ Redis rodando em rede privada (Railway internal network)
 - ✅ Senha gerada automaticamente pelo Railway
 - ✅ Conexão via SSL/TLS (Railway default)
-- ⚠️ **TODO:** Implementar rate limiting em endpoints de queue
-- ⚠️ **TODO:** Monitorar uso de memória Redis (alertas em >80%)
+- ⚠ **TODO:** Implementar rate limiting em endpoints de queue
+- ⚠ **TODO:** Monitorar uso de memória Redis (alertas em >80%)
 
 ## Monitoramento
 

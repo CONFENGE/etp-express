@@ -114,16 +114,16 @@ export interface UseBreadcrumbResult {
  *
  * // With custom current page label
  * const { items } = useBreadcrumb({
- *   currentPageLabel: domain?.name || 'Carregando...',
+ * currentPageLabel: domain?.name || 'Carregando...',
  * });
  *
  * // Full custom items
  * const { items } = useBreadcrumb({
- *   customItems: [
- *     { label: 'Administração', href: '/admin' },
- *     { label: 'Domínios', href: '/admin/domains' },
- *     { label: 'example.com' },
- *   ],
+ * customItems: [
+ * { label: 'Administração', href: '/admin' },
+ * { label: 'Domínios', href: '/admin/domains' },
+ * { label: 'example.com' },
+ * ],
  * });
  * ```
  */

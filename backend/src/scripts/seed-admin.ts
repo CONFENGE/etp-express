@@ -110,12 +110,12 @@ async function seedAdmin(): Promise<void> {
     );
 
     console.log('\nSummary:');
-    console.log('   Admin Organization:', adminResult.organizationStatus);
-    console.log('   Admin User:', adminResult.userStatus);
-    console.log('   Admin Domain:', adminResult.domainStatus);
-    console.log('   Demo Organization:', demoResult.organizationStatus);
-    console.log('   Demo User:', demoResult.userStatus);
-    console.log('   Demo Domain:', demoResult.domainStatus);
+    console.log(' Admin Organization:', adminResult.organizationStatus);
+    console.log(' Admin User:', adminResult.userStatus);
+    console.log(' Admin Domain:', adminResult.domainStatus);
+    console.log(' Demo Organization:', demoResult.organizationStatus);
+    console.log(' Demo User:', demoResult.userStatus);
+    console.log(' Demo Domain:', demoResult.domainStatus);
 
     console.log('\nSeed completed successfully!');
   } catch (error) {

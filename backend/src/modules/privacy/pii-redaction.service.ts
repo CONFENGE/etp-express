@@ -76,7 +76,7 @@ export class PIIRedactionService {
    *
    * @example
    * const { redacted, findings } = service.redact(
-   *   "Contato: joao.silva@gov.br, CPF 123.456.789-00"
+   * "Contato: joao.silva@gov.br, CPF 123.456.789-00"
    * );
    * // redacted: "Contato: [EMAIL_REDACTED], CPF [CPF_REDACTED]"
    * // findings: [{ type: 'email', count: 1 }, { type: 'cpf', count: 1 }]

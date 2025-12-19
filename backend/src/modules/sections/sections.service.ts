@@ -151,15 +151,15 @@ export class SectionsService {
    * @example
    * ```ts
    * const section = await sectionsService.generateSection(
-   *   'etp-uuid-123',
-   *   {
-   *     type: 'justificativa',
-   *     title: 'Justificativa da Contratação',
-   *     userInput: 'Necessidade de modernizar infraestrutura de TI',
-   *     context: { department: 'TI' }
-   *   },
-   *   'user-uuid-456',
-   *   'org-uuid-789'
+   * 'etp-uuid-123',
+   * {
+   * type: 'justificativa',
+   * title: 'Justificativa da Contratação',
+   * userInput: 'Necessidade de modernizar infraestrutura de TI',
+   * context: { department: 'TI' }
+   * },
+   * 'user-uuid-456',
+   * 'org-uuid-789'
    * );
    *
    * console.log(section.status); // 'generating'

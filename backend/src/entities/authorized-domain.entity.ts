@@ -27,11 +27,11 @@ import { Organization } from './organization.entity';
  *
  * @example
  * {
- *   id: '123e4567-e89b-12d3-a456-426614174000',
- *   domain: 'lages.sc.gov.br',
- *   institutionName: 'Prefeitura de Lages',
- *   maxUsers: 10,
- *   isActive: true
+ * id: '123e4567-e89b-12d3-a456-426614174000',
+ * domain: 'lages.sc.gov.br',
+ * institutionName: 'Prefeitura de Lages',
+ * maxUsers: 10,
+ * isActive: true
  * }
  */
 @Entity('authorized_domains')

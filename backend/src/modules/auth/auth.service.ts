@@ -208,8 +208,8 @@ export class AuthService {
    * @example
    * ```ts
    * const response = await authService.login({
-   *   email: 'user@example.com',
-   *   password: 'securePassword123'
+   * email: 'user@example.com',
+   * password: 'securePassword123'
    * });
    * console.log(response.accessToken); // JWT token
    * ```
@@ -290,10 +290,10 @@ export class AuthService {
    * @example
    * ```ts
    * const response = await authService.register({
-   *   email: 'newuser@lages.sc.gov.br',
-   *   password: 'securePassword123',
-   *   name: 'João Silva',
-   *   cargo: 'Analista'
+   * email: 'newuser@lages.sc.gov.br',
+   * password: 'securePassword123',
+   * name: 'João Silva',
+   * cargo: 'Analista'
    * });
    * // User is created with organizationId from 'lages.sc.gov.br' domain
    * ```
@@ -465,9 +465,9 @@ export class AuthService {
    * @example
    * ```ts
    * const result = await authService.changePassword(
-   *   'user-uuid',
-   *   { oldPassword: 'OldPass123!', newPassword: 'NewPass456!' },
-   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * 'user-uuid',
+   * { oldPassword: 'OldPass123!', newPassword: 'NewPass456!' },
+   * { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
    * );
    * ```
    */
@@ -578,8 +578,8 @@ export class AuthService {
    * @example
    * ```ts
    * await authService.forgotPassword(
-   *   { email: 'user@example.com' },
-   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * { email: 'user@example.com' },
+   * { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
    * );
    * ```
    */
@@ -675,8 +675,8 @@ export class AuthService {
    * @example
    * ```ts
    * await authService.resetPassword(
-   *   { token: 'abc123...', newPassword: 'NewSecure123!' },
-   *   { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
+   * { token: 'abc123...', newPassword: 'NewSecure123!' },
+   * { ip: '192.168.1.1', userAgent: 'Mozilla/5.0...' }
    * );
    * ```
    */

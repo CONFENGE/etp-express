@@ -27,8 +27,8 @@ const alertVariants = cva(
  *
  * @example
  * <Alert variant="warning">
- *   <AlertTitle>Warning</AlertTitle>
- *   <AlertDescription>This is a warning message.</AlertDescription>
+ * <AlertTitle>Warning</AlertTitle>
+ * <AlertDescription>This is a warning message.</AlertDescription>
  * </Alert>
  */
 const Alert = React.forwardRef<

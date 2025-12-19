@@ -22,111 +22,111 @@ Backend completo em NestJS para o sistema ETP Express - Sistema assistivo de ela
 C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 │
 ├── src/
-│   ├── main.ts                          # Bootstrap da aplicação
-│   ├── app.module.ts                    # Módulo principal
-│   ├── app.controller.ts                # Controller raiz
-│   ├── app.service.ts                   # Service raiz
-│   │
-│   ├── common/                          # Utilitários compartilhados
-│   │   ├── filters/
-│   │   │   └── http-exception.filter.ts # Filtro global de exceções
-│   │   ├── interceptors/
-│   │   │   └── logging.interceptor.ts   # Interceptor de logging
-│   │   ├── decorators/
-│   │   │   ├── current-user.decorator.ts # Decorator para obter usuário atual
-│   │   │   └── public.decorator.ts      # Decorator para rotas públicas
-│   │   ├── guards/
-│   │   │   └── jwt-auth.guard.ts        # Guard de autenticação JWT
-│   │   └── dto/
-│   │       └── pagination.dto.ts        # DTOs de paginação
-│   │
-│   ├── entities/                        # Entidades TypeORM
-│   │   ├── user.entity.ts               # Usuários do sistema
-│   │   ├── etp.entity.ts                # ETPs (documento principal)
-│   │   ├── etp-section.entity.ts        # Seções dos ETPs
-│   │   ├── etp-version.entity.ts        # Versionamento
-│   │   ├── audit-log.entity.ts          # Logs de auditoria
-│   │   ├── similar-contract.entity.ts   # Contratações similares
-│   │   ├── analytics-event.entity.ts    # Eventos de telemetria
-│   │   └── section-template.entity.ts   # Templates de seções
-│   │
-│   └── modules/                         # Módulos funcionais
-│       │
-│       ├── auth/                        # Autenticação & Autorização
-│       │   ├── auth.module.ts
-│       │   ├── auth.controller.ts
-│       │   ├── auth.service.ts
-│       │   ├── strategies/
-│       │   │   ├── jwt.strategy.ts      # Estratégia JWT
-│       │   │   └── local.strategy.ts    # Estratégia Local
-│       │   └── dto/
-│       │       ├── register.dto.ts
-│       │       └── login.dto.ts
-│       │
-│       ├── users/                       # Gestão de Usuários
-│       │   ├── users.module.ts
-│       │   ├── users.controller.ts
-│       │   ├── users.service.ts
-│       │   └── dto/
-│       │       ├── create-user.dto.ts
-│       │       └── update-user.dto.ts
-│       │
-│       ├── etps/                        # Gestão de ETPs
-│       │   ├── etps.module.ts
-│       │   ├── etps.controller.ts
-│       │   ├── etps.service.ts
-│       │   └── dto/
-│       │       ├── create-etp.dto.ts
-│       │       └── update-etp.dto.ts
-│       │
-│       ├── sections/                    # Gestão de Seções
-│       │   ├── sections.module.ts
-│       │   ├── sections.controller.ts
-│       │   ├── sections.service.ts
-│       │   └── dto/
-│       │       ├── generate-section.dto.ts
-│       │       └── update-section.dto.ts
-│       │
-│       ├── orchestrator/                # Sistema de Orquestração de IA
-│       │   ├── orchestrator.module.ts
-│       │   ├── orchestrator.service.ts  # Orquestrador principal
-│       │   ├── llm/
-│       │   │   └── openai.service.ts    # Wrapper OpenAI
-│       │   └── agents/                  # Subagentes especializados
-│       │       ├── legal.agent.ts       # Agente de conformidade legal
-│       │       ├── fundamentacao.agent.ts # Agente de fundamentação
-│       │       ├── clareza.agent.ts     # Agente de clareza
-│       │       ├── simplificacao.agent.ts # Agente de simplificação
-│       │       └── anti-hallucination.agent.ts # Agente anti-alucinação
-│       │
-│       ├── search/                      # Busca de Contratações Similares
-│       │   ├── search.module.ts
-│       │   ├── search.controller.ts
-│       │   ├── search.service.ts
-│       │   └── exa/
-│       │       └── exa.service.ts       # Integração Exa AI
-│       │
-│       ├── export/                      # Exportação de Documentos
-│       │   ├── export.module.ts
-│       │   ├── export.controller.ts
-│       │   ├── export.service.ts
-│       │   └── templates/
-│       │       └── etp-template.hbs     # Template Handlebars para PDF
-│       │
-│       ├── versions/                    # Versionamento de ETPs
-│       │   ├── versions.module.ts
-│       │   ├── versions.controller.ts
-│       │   └── versions.service.ts
-│       │
-│       └── analytics/                   # Telemetria e Analytics
-│           ├── analytics.module.ts
-│           ├── analytics.controller.ts
-│           └── analytics.service.ts
+│ ├── main.ts # Bootstrap da aplicação
+│ ├── app.module.ts # Módulo principal
+│ ├── app.controller.ts # Controller raiz
+│ ├── app.service.ts # Service raiz
+│ │
+│ ├── common/ # Utilitários compartilhados
+│ │ ├── filters/
+│ │ │ └── http-exception.filter.ts # Filtro global de exceções
+│ │ ├── interceptors/
+│ │ │ └── logging.interceptor.ts # Interceptor de logging
+│ │ ├── decorators/
+│ │ │ ├── current-user.decorator.ts # Decorator para obter usuário atual
+│ │ │ └── public.decorator.ts # Decorator para rotas públicas
+│ │ ├── guards/
+│ │ │ └── jwt-auth.guard.ts # Guard de autenticação JWT
+│ │ └── dto/
+│ │ └── pagination.dto.ts # DTOs de paginação
+│ │
+│ ├── entities/ # Entidades TypeORM
+│ │ ├── user.entity.ts # Usuários do sistema
+│ │ ├── etp.entity.ts # ETPs (documento principal)
+│ │ ├── etp-section.entity.ts # Seções dos ETPs
+│ │ ├── etp-version.entity.ts # Versionamento
+│ │ ├── audit-log.entity.ts # Logs de auditoria
+│ │ ├── similar-contract.entity.ts # Contratações similares
+│ │ ├── analytics-event.entity.ts # Eventos de telemetria
+│ │ └── section-template.entity.ts # Templates de seções
+│ │
+│ └── modules/ # Módulos funcionais
+│ │
+│ ├── auth/ # Autenticação & Autorização
+│ │ ├── auth.module.ts
+│ │ ├── auth.controller.ts
+│ │ ├── auth.service.ts
+│ │ ├── strategies/
+│ │ │ ├── jwt.strategy.ts # Estratégia JWT
+│ │ │ └── local.strategy.ts # Estratégia Local
+│ │ └── dto/
+│ │ ├── register.dto.ts
+│ │ └── login.dto.ts
+│ │
+│ ├── users/ # Gestão de Usuários
+│ │ ├── users.module.ts
+│ │ ├── users.controller.ts
+│ │ ├── users.service.ts
+│ │ └── dto/
+│ │ ├── create-user.dto.ts
+│ │ └── update-user.dto.ts
+│ │
+│ ├── etps/ # Gestão de ETPs
+│ │ ├── etps.module.ts
+│ │ ├── etps.controller.ts
+│ │ ├── etps.service.ts
+│ │ └── dto/
+│ │ ├── create-etp.dto.ts
+│ │ └── update-etp.dto.ts
+│ │
+│ ├── sections/ # Gestão de Seções
+│ │ ├── sections.module.ts
+│ │ ├── sections.controller.ts
+│ │ ├── sections.service.ts
+│ │ └── dto/
+│ │ ├── generate-section.dto.ts
+│ │ └── update-section.dto.ts
+│ │
+│ ├── orchestrator/ # Sistema de Orquestração de IA
+│ │ ├── orchestrator.module.ts
+│ │ ├── orchestrator.service.ts # Orquestrador principal
+│ │ ├── llm/
+│ │ │ └── openai.service.ts # Wrapper OpenAI
+│ │ └── agents/ # Subagentes especializados
+│ │ ├── legal.agent.ts # Agente de conformidade legal
+│ │ ├── fundamentacao.agent.ts # Agente de fundamentação
+│ │ ├── clareza.agent.ts # Agente de clareza
+│ │ ├── simplificacao.agent.ts # Agente de simplificação
+│ │ └── anti-hallucination.agent.ts # Agente anti-alucinação
+│ │
+│ ├── search/ # Busca de Contratações Similares
+│ │ ├── search.module.ts
+│ │ ├── search.controller.ts
+│ │ ├── search.service.ts
+│ │ └── exa/
+│ │ └── exa.service.ts # Integração Exa AI
+│ │
+│ ├── export/ # Exportação de Documentos
+│ │ ├── export.module.ts
+│ │ ├── export.controller.ts
+│ │ ├── export.service.ts
+│ │ └── templates/
+│ │ └── etp-template.hbs # Template Handlebars para PDF
+│ │
+│ ├── versions/ # Versionamento de ETPs
+│ │ ├── versions.module.ts
+│ │ ├── versions.controller.ts
+│ │ └── versions.service.ts
+│ │
+│ └── analytics/ # Telemetria e Analytics
+│ ├── analytics.module.ts
+│ ├── analytics.controller.ts
+│ └── analytics.service.ts
 │
-├── package.json                         # Dependências do projeto
-├── tsconfig.json                        # Configuração TypeScript
-├── .env.example                         # Variáveis de ambiente
-└── BACKEND_STRUCTURE.md                 # Esta documentação
+├── package.json # Dependências do projeto
+├── tsconfig.json # Configuração TypeScript
+├── .env.example # Variáveis de ambiente
+└── BACKEND_STRUCTURE.md # Esta documentação
 ```
 
 ---
@@ -245,7 +245,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - Tracking de completion percentage
 - Associação com usuário criador
 
-### 3. Sistema de Orquestração de IA ⭐
+### 3. Sistema de Orquestração de IA 
 
 **5 Subagentes Especializados:**
 
@@ -259,10 +259,10 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 
 - Analisa qualidade da fundamentação
 - Verifica presença de elementos essenciais:
-  - Necessidade
-  - Interesse público
-  - Benefícios esperados
-  - Riscos de não contratar
+ - Necessidade
+ - Interesse público
+ - Benefícios esperados
+ - Riscos de não contratar
 
 #### c) **Clareza Agent**
 
@@ -278,7 +278,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 - Simplifica frases complexas
 - Converte nominalizações em verbos
 
-#### e) **Anti-Hallucination Agent** 🔒
+#### e) **Anti-Hallucination Agent** 
 
 - **CRÍTICO**: Previne invenção de fatos
 - Detecta referências a leis/normas específicas
@@ -353,7 +353,7 @@ C:\Users\tj_sa\OneDrive\CONFENGE\Vision\Git Projects\ETP Express\backend\
 
 ### Sections
 
-- `POST /api/sections/etp/:etpId/generate` - **Gerar seção com IA** ⭐
+- `POST /api/sections/etp/:etpId/generate` - **Gerar seção com IA** 
 - `GET /api/sections/etp/:etpId` - Listar seções
 - `GET /api/sections/:id` - Obter seção
 - `PATCH /api/sections/:id` - Atualizar seção
@@ -510,19 +510,19 @@ Todos os endpoints retornam:
 
 ```json
 {
-  "@nestjs/common": "^10.3.0",
-  "@nestjs/typeorm": "^10.0.1",
-  "@nestjs/jwt": "^10.2.0",
-  "@nestjs/passport": "^10.0.3",
-  "typeorm": "^0.3.19",
-  "pg": "^8.11.3",
-  "passport-jwt": "^4.0.1",
-  "bcrypt": "^5.1.1",
-  "openai": "^4.24.1",
-  "puppeteer": "^21.7.0",
-  "handlebars": "^4.7.8",
-  "class-validator": "^0.14.0",
-  "class-transformer": "^0.5.1"
+ "@nestjs/common": "^10.3.0",
+ "@nestjs/typeorm": "^10.0.1",
+ "@nestjs/jwt": "^10.2.0",
+ "@nestjs/passport": "^10.0.3",
+ "typeorm": "^0.3.19",
+ "pg": "^8.11.3",
+ "passport-jwt": "^4.0.1",
+ "bcrypt": "^5.1.1",
+ "openai": "^4.24.1",
+ "puppeteer": "^21.7.0",
+ "handlebars": "^4.7.8",
+ "class-validator": "^0.14.0",
+ "class-transformer": "^0.5.1"
 }
 ```
 

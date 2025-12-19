@@ -23,7 +23,7 @@ import { UserRole } from '../../../entities/user.entity';
  * @Controller('system-admin')
  * @UseGuards(JwtAuthGuard, SystemAdminGuard)
  * export class SystemAdminController {
- *   // All endpoints require SYSTEM_ADMIN role
+ * // All endpoints require SYSTEM_ADMIN role
  * }
  * ```
  */

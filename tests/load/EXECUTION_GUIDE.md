@@ -44,7 +44,7 @@ k6 version
 
 ```bash
 cd backend
-npm install  # If first time
+npm install # If first time
 npm run start:dev
 ```
 
@@ -62,22 +62,22 @@ If you don't have a test user yet:
 ```bash
 # Option 1: Via API (requires existing admin user)
 curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "testuser@example.com",
-    "password": "Test@1234",
-    "name": "Test User"
-  }'
+ -H "Content-Type: application/json" \
+ -d '{
+ "email": "testuser@example.com",
+ "password": "Test@1234",
+ "name": "Test User"
+ }'
 
 # Option 2: Via database (PostgreSQL)
 psql -d etp_express -c "
 INSERT INTO users (email, password, name, created_at, updated_at)
 VALUES (
-  'testuser@example.com',
-  '<bcrypt_hashed_password>',
-  'Test User',
-  NOW(),
-  NOW()
+ 'testuser@example.com',
+ '<bcrypt_hashed_password>',
+ 'Test User',
+ NOW(),
+ NOW()
 );
 "
 ```
@@ -86,11 +86,11 @@ VALUES (
 
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "testuser@example.com",
-    "password": "Test@1234"
-  }'
+ -H "Content-Type: application/json" \
+ -d '{
+ "email": "testuser@example.com",
+ "password": "Test@1234"
+ }'
 # Should return: {"access_token":"eyJ..."}
 ```
 
@@ -135,11 +135,11 @@ If you prefer to run tests individually:
 
 ```bash
 TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"testuser@example.com","password":"Test@1234"}' \
-  | jq -r '.access_token')
+ -H "Content-Type: application/json" \
+ -d '{"email":"testuser@example.com","password":"Test@1234"}' \
+ | jq -r '.access_token')
 
-echo $TOKEN  # Verify token exists
+echo $TOKEN # Verify token exists
 ```
 
 #### Step 2: Run Individual Test Scenarios
@@ -149,49 +149,49 @@ echo $TOKEN  # Verify token exists
 ```bash
 # Auth test
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 10 --duration 5m \
-  --out json=tests/load/results/auth_baseline.json \
-  tests/load/auth-login.js
+ --out json=tests/load/results/auth_baseline.json \
+ tests/load/auth-login.js
 
 # ETP create test
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 10 --duration 5m \
-  --out json=tests/load/results/etp_baseline.json \
-  tests/load/etp-create.js
+ --out json=tests/load/results/etp_baseline.json \
+ tests/load/etp-create.js
 ```
 
 **Scenario 2: Medium Load (50 VUs × 10 min)**
 
 ```bash
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 50 --duration 10m \
-  --out json=tests/load/results/auth_medium.json \
-  tests/load/auth-login.js
+ --out json=tests/load/results/auth_medium.json \
+ tests/load/auth-login.js
 
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 50 --duration 10m \
-  --out json=tests/load/results/etp_medium.json \
-  tests/load/etp-create.js
+ --out json=tests/load/results/etp_medium.json \
+ tests/load/etp-create.js
 ```
 
 **Scenario 3: High Load (100 VUs × 15 min)**
 
 ```bash
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 100 --duration 15m \
-  --out json=tests/load/results/auth_high.json \
-  tests/load/auth-login.js
+ --out json=tests/load/results/auth_high.json \
+ tests/load/auth-login.js
 
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 100 --duration 15m \
-  --out json=tests/load/results/etp_high.json \
-  tests/load/etp-create.js
+ --out json=tests/load/results/etp_high.json \
+ tests/load/etp-create.js
 ```
 
 **Scenario 4: Peak Stress (200 VUs × 10 min)**
 
 ```bash
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 200 --duration 10m \
-  --out json=tests/load/results/auth_peak.json \
-  tests/load/auth-login.js
+ --out json=tests/load/results/auth_peak.json \
+ tests/load/auth-login.js
 
 K6_ACCESS_TOKEN="$TOKEN" k6 run --vus 200 --duration 10m \
-  --out json=tests/load/results/etp_peak.json \
-  tests/load/etp-create.js
+ --out json=tests/load/results/etp_peak.json \
+ tests/load/etp-create.js
 ```
 
 ---
@@ -230,12 +230,12 @@ jq '.metrics.http_reqs.values.count' tests/load/results/auth_baseline.json | tai
 
 ### Key Metrics to Review
 
-| Metric          | Threshold                     | What It Means                 |
+| Metric | Threshold | What It Means |
 | --------------- | ----------------------------- | ----------------------------- |
-| **p95 latency** | < 500ms (auth), < 1.5s (CRUD) | 95% of requests faster than   |
-| **p99 latency** | < 1s (auth), < 3s (CRUD)      | 99% of requests faster than   |
-| **Error rate**  | < 5%                          | Percentage of failed requests |
-| **Throughput**  | -                             | Requests per second           |
+| **p95 latency** | < 500ms (auth), < 1.5s (CRUD) | 95% of requests faster than |
+| **p99 latency** | < 1s (auth), < 3s (CRUD) | 99% of requests faster than |
+| **Error rate** | < 5% | Percentage of failed requests |
+| **Throughput** | - | Requests per second |
 
 ### Identifying Breaking Point
 
@@ -250,7 +250,7 @@ The breaking point is where:
 
 - 10 VUs: Error rate 0.1%, p95 300ms ✅
 - 50 VUs: Error rate 1.2%, p95 450ms ✅
-- 100 VUs: Error rate 3.8%, p95 800ms ⚠️
+- 100 VUs: Error rate 3.8%, p95 800ms ⚠
 - 200 VUs: Error rate 12%, p95 2.5s ❌ **← Breaking point**
 
 **Conclusion:** System can handle ~150 VUs before degradation.
@@ -261,23 +261,23 @@ The breaking point is where:
 
 1. Copy template:
 
-   ```bash
-   cp tests/load/RESULTS_TEMPLATE.md tests/load/results/results_$(date +%Y%m%d).md
-   ```
+ ```bash
+ cp tests/load/RESULTS_TEMPLATE.md tests/load/results/results_$(date +%Y%m%d).md
+ ```
 
 2. Fill in each section:
-   - **Executive Summary:** High-level findings
-   - **Test Scenarios:** Detailed metrics for each scenario
-   - **Bottlenecks:** Identified performance issues
-   - **Capacity Analysis:** Breaking point and recommendations
-   - **Database Performance:** Connection pool, query analysis
-   - **External APIs:** OpenAI/Perplexity performance
-   - **Recommendations:** Prioritized action items
+ - **Executive Summary:** High-level findings
+ - **Test Scenarios:** Detailed metrics for each scenario
+ - **Bottlenecks:** Identified performance issues
+ - **Capacity Analysis:** Breaking point and recommendations
+ - **Database Performance:** Connection pool, query analysis
+ - **External APIs:** OpenAI/Perplexity performance
+ - **Recommendations:** Prioritized action items
 
 3. Include raw outputs:
-   - Attach JSON files to report
-   - Reference specific metrics
-   - Include screenshots if helpful
+ - Attach JSON files to report
+ - Reference specific metrics
+ - Include screenshots if helpful
 
 ---
 
@@ -299,8 +299,8 @@ npm run start:dev
 ```bash
 # Verify user exists
 curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"testuser@example.com","password":"Test@1234"}'
+ -H "Content-Type: application/json" \
+ -d '{"email":"testuser@example.com","password":"Test@1234"}'
 
 # Check environment variables
 echo $TEST_EMAIL
@@ -311,8 +311,8 @@ echo $TEST_PASSWORD
 
 ```bash
 # Verify k6 is installed
-which k6  # Linux/macOS
-where k6  # Windows
+which k6 # Linux/macOS
+where k6 # Windows
 
 # Install if missing (see Prerequisites)
 ```
@@ -322,17 +322,17 @@ where k6  # Windows
 **Common causes:**
 
 1. **Rate limiting:** Backend rate limit is 5 req/min per user
-   - **Solution:** Temporarily disable rate limiting or use multiple test users
+ - **Solution:** Temporarily disable rate limiting or use multiple test users
 2. **Database connections:** Connection pool saturated
-   - **Solution:** Increase pool size in backend config
+ - **Solution:** Increase pool size in backend config
 3. **OpenAI rate limits:** LLM API quota exceeded
-   - **Solution:** Use lower VUs for section-generate tests
+ - **Solution:** Use lower VUs for section-generate tests
 
 ### Out of Memory
 
 ```bash
 # Reduce VUs or duration
-k6 run --vus 50 --duration 5m tests/load/auth-login.js  # Instead of 200 VUs
+k6 run --vus 50 --duration 5m tests/load/auth-login.js # Instead of 200 VUs
 
 # Or split tests into smaller chunks
 ```
@@ -351,10 +351,10 @@ k6 run --vus 50 --duration 5m tests/load/auth-login.js  # Instead of 200 VUs
 
 ### During Tests
 
-1. 📊 Monitor system resources (CPU, RAM, DB connections)
-2. 📝 Take notes on observed behavior
-3. 🚨 Be ready to stop tests if system crashes
-4. 💰 Monitor OpenAI costs (section-generate tests)
+1. Monitor system resources (CPU, RAM, DB connections)
+2. Take notes on observed behavior
+3. Be ready to stop tests if system crashes
+4. Monitor OpenAI costs (section-generate tests)
 
 ### After Tests
 
@@ -403,19 +403,19 @@ Running load tests may increase:
 After completing progressive load tests:
 
 1. **Issue #90:** Analyze bottlenecks
-   - Deep-dive profiling
-   - CPU/memory analysis
-   - Database query optimization
+ - Deep-dive profiling
+ - CPU/memory analysis
+ - Database query optimization
 
 2. **Issue #91:** Implement optimizations
-   - Fix identified bottlenecks
-   - Re-run load tests to validate
-   - Document performance improvements
+ - Fix identified bottlenecks
+ - Re-run load tests to validate
+ - Document performance improvements
 
 3. **Documentation:**
-   - Update ARCHITECTURE.md with capacity limits
-   - Add performance recommendations to README
-   - Document known limitations
+ - Update ARCHITECTURE.md with capacity limits
+ - Add performance recommendations to README
+ - Document known limitations
 
 ---
 

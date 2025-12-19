@@ -97,12 +97,12 @@ global.localStorage = localStorageMock as Storage;
 // problemas com timers internos do Radix UI no CI.
 //
 // Exemplo de uso:
-//   const { promise, resolve } = createDeferredPromise<User[]>();
-//   vi.mocked(api.get).mockReturnValue(promise);
-//   render(<Component />);
-//   expect(screen.getByText('Loading...')).toBeInTheDocument();
-//   resolve(mockData); // Resolve para permitir cleanup
-//   await waitFor(() => expect(screen.getByText('Done')).toBeInTheDocument());
+// const { promise, resolve } = createDeferredPromise<User[]>();
+// vi.mocked(api.get).mockReturnValue(promise);
+// render(<Component />);
+// expect(screen.getByText('Loading...')).toBeInTheDocument();
+// resolve(mockData); // Resolve para permitir cleanup
+// await waitFor(() => expect(screen.getByText('Done')).toBeInTheDocument());
 // =============================================================================
 export function createDeferredPromise<T>(): {
   promise: Promise<T>;

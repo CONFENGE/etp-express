@@ -29,7 +29,7 @@ let navigateInstance: NavigateFunction | null = null;
  * ```typescript
  * const navigate = useNavigate();
  * useEffect(() => {
- *   setNavigate(navigate);
+ * setNavigate(navigate);
  * }, [navigate]);
  * ```
  */

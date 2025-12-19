@@ -251,11 +251,11 @@ describe('AntiHallucinationAgent', () => {
 
     it('deve ter score mínimo de 0', async () => {
       const massiveViolationContent = `
-        Lei 8.666, Lei 14.133, Decreto 10.024, Decreto 11.462,
-        artigo 23, art. 5º, art. 10, artigo 15,
-        certamente, sem dúvida, é fato que, todos sabem,
-        comprovadamente superior, indiscutivelmente melhor
-      `;
+ Lei 8.666, Lei 14.133, Decreto 10.024, Decreto 11.462,
+ artigo 23, art. 5º, art. 10, artigo 15,
+ certamente, sem dúvida, é fato que, todos sabem,
+ comprovadamente superior, indiscutivelmente melhor
+ `;
       const result = await agent.check(massiveViolationContent);
 
       expect(result.score).toBeGreaterThanOrEqual(0);
@@ -264,9 +264,9 @@ describe('AntiHallucinationAgent', () => {
 
     it('deve considerar verified = false quando score < 70', async () => {
       const problematicContent = `
-        Lei 8.666, Lei 14.133, Decreto 10.024,
-        artigo 23, art. 5º, certamente correto
-      `;
+ Lei 8.666, Lei 14.133, Decreto 10.024,
+ artigo 23, art. 5º, certamente correto
+ `;
       const result = await agent.check(problematicContent);
 
       expect(result.score).toBeLessThan(70);
@@ -344,7 +344,7 @@ describe('AntiHallucinationAgent', () => {
     it('deve conter aviso de verificação', async () => {
       const prompt = await agent.generateSafetyPrompt();
 
-      expect(prompt).toContain('⚠️');
+      expect(prompt).toContain('⚠');
       expect(prompt.toLowerCase()).toContain('verificadas');
     });
   });

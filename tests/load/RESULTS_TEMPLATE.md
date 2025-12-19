@@ -11,13 +11,13 @@
 
 ## Executive Summary
 
-| Metric                        | Value       | Status   |
+| Metric | Value | Status |
 | ----------------------------- | ----------- | -------- | ------- | --- |
-| **Total Tests Executed**      | 4 scenarios | ✅       |
-| **Total Requests**            | [X,XXX]     | -        |
-| **Total Duration**            | 40 minutes  | ✅       |
-| **Breaking Point Identified** | [XXX VUs]   | ⚠️       |
-| **System Stability**          | [Stable     | Degraded | Failed] | -   |
+| **Total Tests Executed** | 4 scenarios | ✅ |
+| **Total Requests** | [X,XXX] | - |
+| **Total Duration** | 40 minutes | ✅ |
+| **Breaking Point Identified** | [XXX VUs] | ⚠ |
+| **System Stability** | [Stable | Degraded | Failed] | - |
 
 **Key Finding:** [One-sentence summary of the most critical finding]
 
@@ -31,25 +31,25 @@
 
 #### Auth Login Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 250ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 500ms | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 1s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 250ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 500ms | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 1s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 #### ETP Create Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 750ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 1.5s  | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 3s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 750ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 1.5s | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 3s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 **Observations:**
 
@@ -70,25 +70,25 @@
 
 #### Auth Login Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 250ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 500ms | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 1s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 250ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 500ms | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 1s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 #### ETP Create Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 750ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 1.5s  | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 3s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 750ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 1.5s | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 3s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 **Observations:**
 
@@ -109,25 +109,25 @@
 
 #### Auth Login Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 250ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 500ms | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 1s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 250ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 500ms | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 1s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 #### ETP Create Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 750ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 1.5s  | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 3s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 750ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 1.5s | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 3s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 **Observations:**
 
@@ -140,7 +140,7 @@
 - Memory: [XX] MB peak
 - DB Connections: [XX]/[MAX]
 
-⚠️ **Degradation Indicators:**
+⚠ **Degradation Indicators:**
 
 - [List any signs of degradation]
 
@@ -152,25 +152,25 @@
 
 #### Auth Login Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 250ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 500ms | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 1s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 250ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 500ms | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 1s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 #### ETP Create Results
 
-| Metric             | Target  | Actual     | Status |
+| Metric | Target | Actual | Status |
 | ------------------ | ------- | ---------- | ------ |
-| **Total Requests** | -       | [XXX]      | -      |
-| **p50 Latency**    | < 750ms | [XXX]ms    | ✅/❌  |
-| **p95 Latency**    | < 1.5s  | [XXX]ms    | ✅/❌  |
-| **p99 Latency**    | < 3s    | [XXX]ms    | ✅/❌  |
-| **Error Rate**     | < 5%    | [X.XX]%    | ✅/❌  |
-| **Throughput**     | -       | [XX] req/s | -      |
+| **Total Requests** | - | [XXX] | - |
+| **p50 Latency** | < 750ms | [XXX]ms | ✅/❌ |
+| **p95 Latency** | < 1.5s | [XXX]ms | ✅/❌ |
+| **p99 Latency** | < 3s | [XXX]ms | ✅/❌ |
+| **Error Rate** | < 5% | [X.XX]% | ✅/❌ |
+| **Throughput** | - | [XX] req/s | - |
 
 **Observations:**
 
@@ -183,7 +183,7 @@
 - Memory: [XX] MB peak
 - DB Connections: [XX]/[MAX]
 
-🔴 **System Failures:**
+ **System Failures:**
 
 - [List any crashes, timeouts, or critical errors]
 
@@ -194,29 +194,29 @@
 ### Critical Issues (P0)
 
 1. **[Bottleneck Name]**
-   - **Symptom:** [What manifests]
-   - **Threshold:** [When it occurs]
-   - **Impact:** [How severe]
-   - **Root Cause:** [Why it happens]
-   - **Fix Priority:** P0
+ - **Symptom:** [What manifests]
+ - **Threshold:** [When it occurs]
+ - **Impact:** [How severe]
+ - **Root Cause:** [Why it happens]
+ - **Fix Priority:** P0
 
 ### High Priority Issues (P1)
 
 1. **[Bottleneck Name]**
-   - **Symptom:** [What manifests]
-   - **Threshold:** [When it occurs]
-   - **Impact:** [How severe]
-   - **Root Cause:** [Why it happens]
-   - **Fix Priority:** P1
+ - **Symptom:** [What manifests]
+ - **Threshold:** [When it occurs]
+ - **Impact:** [How severe]
+ - **Root Cause:** [Why it happens]
+ - **Fix Priority:** P1
 
 ### Medium Priority Issues (P2)
 
 1. **[Bottleneck Name]**
-   - **Symptom:** [What manifests]
-   - **Threshold:** [When it occurs]
-   - **Impact:** [How severe]
-   - **Root Cause:** [Why it happens]
-   - **Fix Priority:** P2
+ - **Symptom:** [What manifests]
+ - **Threshold:** [When it occurs]
+ - **Impact:** [How severe]
+ - **Root Cause:** [Why it happens]
+ - **Fix Priority:** P2
 
 ---
 
@@ -234,11 +234,11 @@
 
 ### Recommended Limits
 
-| Scenario                      | Recommended Max VUs | Margin of Safety         |
+| Scenario | Recommended Max VUs | Margin of Safety |
 | ----------------------------- | ------------------- | ------------------------ |
-| **Production (conservative)** | [XX] VUs            | 40% below breaking point |
-| **Production (optimal)**      | [XX] VUs            | 20% below breaking point |
-| **Absolute maximum**          | [XX] VUs            | Breaking point           |
+| **Production (conservative)** | [XX] VUs | 40% below breaking point |
+| **Production (optimal)** | [XX] VUs | 20% below breaking point |
+| **Absolute maximum** | [XX] VUs | Breaking point |
 
 ---
 
@@ -246,12 +246,12 @@
 
 ### Connection Pool Analysis
 
-| Scenario          | Active Connections | Max Pool Size | Utilization |
+| Scenario | Active Connections | Max Pool Size | Utilization |
 | ----------------- | ------------------ | ------------- | ----------- |
-| Baseline (10 VUs) | [XX]               | [XX]          | [XX]%       |
-| Medium (50 VUs)   | [XX]               | [XX]          | [XX]%       |
-| High (100 VUs)    | [XX]               | [XX]          | [XX]%       |
-| Peak (200 VUs)    | [XX]               | [XX]          | [XX]%       |
+| Baseline (10 VUs) | [XX] | [XX] | [XX]% |
+| Medium (50 VUs) | [XX] | [XX] | [XX]% |
+| High (100 VUs) | [XX] | [XX] | [XX]% |
+| Peak (200 VUs) | [XX] | [XX] | [XX]% |
 
 ### Query Performance
 
@@ -274,24 +274,24 @@
 
 ### OpenAI API
 
-| Metric              | Value       | Status   |
+| Metric | Value | Status |
 | ------------------- | ----------- | -------- |
-| **Total LLM Calls** | [XXX]       | -        |
-| **Average Latency** | [XX]s       | ✅/⚠️/❌ |
-| **p95 Latency**     | [XX]s       | ✅/⚠️/❌ |
-| **Rate Limit Hit**  | [Yes/No]    | ✅/❌    |
-| **API Errors**      | [XX] ([X]%) | ✅/❌    |
-| **Estimated Cost**  | $[XX.XX]    | -        |
+| **Total LLM Calls** | [XXX] | - |
+| **Average Latency** | [XX]s | ✅/⚠/❌ |
+| **p95 Latency** | [XX]s | ✅/⚠/❌ |
+| **Rate Limit Hit** | [Yes/No] | ✅/❌ |
+| **API Errors** | [XX] ([X]%) | ✅/❌ |
+| **Estimated Cost** | $[XX.XX] | - |
 
 ### Perplexity API
 
-| Metric              | Value       | Status   |
+| Metric | Value | Status |
 | ------------------- | ----------- | -------- |
-| **Total Calls**     | [XXX]       | -        |
-| **Average Latency** | [XX]s       | ✅/⚠️/❌ |
-| **p95 Latency**     | [XX]s       | ✅/⚠️/❌ |
-| **Rate Limit Hit**  | [Yes/No]    | ✅/❌    |
-| **API Errors**      | [XX] ([X]%) | ✅/❌    |
+| **Total Calls** | [XXX] | - |
+| **Average Latency** | [XX]s | ✅/⚠/❌ |
+| **p95 Latency** | [XX]s | ✅/⚠/❌ |
+| **Rate Limit Hit** | [Yes/No] | ✅/❌ |
+| **API Errors** | [XX] ([X]%) | ✅/❌ |
 
 **Recommendations:**
 
@@ -305,28 +305,28 @@
 ### Immediate Actions (P0)
 
 1. **[Action 1]**
-   - **Why:** [Justification]
-   - **Expected Impact:** [Benefit]
-   - **Estimated Effort:** [Hours]
+ - **Why:** [Justification]
+ - **Expected Impact:** [Benefit]
+ - **Estimated Effort:** [Hours]
 
 2. **[Action 2]**
-   - **Why:** [Justification]
-   - **Expected Impact:** [Benefit]
-   - **Estimated Effort:** [Hours]
+ - **Why:** [Justification]
+ - **Expected Impact:** [Benefit]
+ - **Estimated Effort:** [Hours]
 
 ### Short-term Improvements (P1)
 
 1. **[Action 1]**
-   - **Why:** [Justification]
-   - **Expected Impact:** [Benefit]
-   - **Estimated Effort:** [Hours]
+ - **Why:** [Justification]
+ - **Expected Impact:** [Benefit]
+ - **Estimated Effort:** [Hours]
 
 ### Long-term Optimizations (P2)
 
 1. **[Action 1]**
-   - **Why:** [Justification]
-   - **Expected Impact:** [Benefit]
-   - **Estimated Effort:** [Hours]
+ - **Why:** [Justification]
+ - **Expected Impact:** [Benefit]
+ - **Estimated Effort:** [Hours]
 
 ---
 

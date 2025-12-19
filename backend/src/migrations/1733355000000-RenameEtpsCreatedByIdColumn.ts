@@ -31,9 +31,9 @@ export class RenameEtpsCreatedByIdColumn1733355000000 implements MigrationInterf
       );
       if (hasFkCreatedById) {
         await queryRunner.query(`
-          ALTER TABLE "etps"
-          DROP CONSTRAINT IF EXISTS "FK_etps_createdById"
-        `);
+ ALTER TABLE "etps"
+ DROP CONSTRAINT IF EXISTS "FK_etps_createdById"
+ `);
       }
 
       // Step 2: Drop index (if exists)
@@ -42,30 +42,30 @@ export class RenameEtpsCreatedByIdColumn1733355000000 implements MigrationInterf
       );
       if (hasIdxCreatedById) {
         await queryRunner.query(`
-          DROP INDEX IF EXISTS "IDX_etps_createdById"
-        `);
+ DROP INDEX IF EXISTS "IDX_etps_createdById"
+ `);
       }
 
       // Step 3: Rename column createdById → created_by
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        RENAME COLUMN "createdById" TO "created_by"
-      `);
+ ALTER TABLE "etps"
+ RENAME COLUMN "createdById" TO "created_by"
+ `);
 
       // Step 4: Recreate foreign key constraint with new column name
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        ADD CONSTRAINT "FK_etps_created_by"
-        FOREIGN KEY ("created_by")
-        REFERENCES "users"("id")
-        ON DELETE NO ACTION
-      `);
+ ALTER TABLE "etps"
+ ADD CONSTRAINT "FK_etps_created_by"
+ FOREIGN KEY ("created_by")
+ REFERENCES "users"("id")
+ ON DELETE NO ACTION
+ `);
 
       // Step 5: Recreate index with new column name
       await queryRunner.query(`
-        CREATE INDEX "IDX_etps_created_by"
-        ON "etps" ("created_by")
-      `);
+ CREATE INDEX "IDX_etps_created_by"
+ ON "etps" ("created_by")
+ `);
     }
   }
 
@@ -79,35 +79,35 @@ export class RenameEtpsCreatedByIdColumn1733355000000 implements MigrationInterf
     if (hasCreatedBy) {
       // Step 1: Drop FK constraint
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        DROP CONSTRAINT IF EXISTS "FK_etps_created_by"
-      `);
+ ALTER TABLE "etps"
+ DROP CONSTRAINT IF EXISTS "FK_etps_created_by"
+ `);
 
       // Step 2: Drop index
       await queryRunner.query(`
-        DROP INDEX IF EXISTS "IDX_etps_created_by"
-      `);
+ DROP INDEX IF EXISTS "IDX_etps_created_by"
+ `);
 
       // Step 3: Rename column back
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        RENAME COLUMN "created_by" TO "createdById"
-      `);
+ ALTER TABLE "etps"
+ RENAME COLUMN "created_by" TO "createdById"
+ `);
 
       // Step 4: Recreate FK with old name
       await queryRunner.query(`
-        ALTER TABLE "etps"
-        ADD CONSTRAINT "FK_etps_createdById"
-        FOREIGN KEY ("createdById")
-        REFERENCES "users"("id")
-        ON DELETE NO ACTION
-      `);
+ ALTER TABLE "etps"
+ ADD CONSTRAINT "FK_etps_createdById"
+ FOREIGN KEY ("createdById")
+ REFERENCES "users"("id")
+ ON DELETE NO ACTION
+ `);
 
       // Step 5: Recreate index with old name
       await queryRunner.query(`
-        CREATE INDEX "IDX_etps_createdById"
-        ON "etps" ("createdById")
-      `);
+ CREATE INDEX "IDX_etps_createdById"
+ ON "etps" ("createdById")
+ `);
     }
   }
 }

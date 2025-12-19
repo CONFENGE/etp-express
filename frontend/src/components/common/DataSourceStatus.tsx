@@ -193,12 +193,12 @@ function StatusBadge({
  * @example
  * ```tsx
  * <DataSourceStatus
- *   status={SearchStatus.PARTIAL}
- *   sources={[
- *     { name: 'pncp', status: SearchStatus.SUCCESS, resultCount: 10 },
- *     { name: 'comprasgov', status: SearchStatus.SERVICE_UNAVAILABLE, error: 'Timeout' },
- *   ]}
- *   onRetry={() => refetch()}
+ * status={SearchStatus.PARTIAL}
+ * sources={[
+ * { name: 'pncp', status: SearchStatus.SUCCESS, resultCount: 10 },
+ * { name: 'comprasgov', status: SearchStatus.SERVICE_UNAVAILABLE, error: 'Timeout' },
+ * ]}
+ * onRetry={() => refetch()}
  * />
  * ```
  */

@@ -54,21 +54,21 @@ We take the security of ETP Express seriously. If you discover a security vulner
 
 We are committed to responding to security reports promptly:
 
-| Stage                  | Timeline                                                  |
+| Stage | Timeline |
 | ---------------------- | --------------------------------------------------------- |
-| **Acknowledgment**     | Within **48 hours** of report submission                  |
+| **Acknowledgment** | Within **48 hours** of report submission |
 | **Initial Assessment** | Within **7 days** (CVSS scoring, severity classification) |
-| **Status Updates**     | Every **7 days** until resolution                         |
-| **Fix Implementation** | Based on severity (see SLA table below)                   |
+| **Status Updates** | Every **7 days** until resolution |
+| **Fix Implementation** | Based on severity (see SLA table below) |
 
 ### Fix SLA by Severity
 
-| Severity     | CVSS Score | Time to Fix     | Time to Patch Release | Examples                                                                                 |
+| Severity | CVSS Score | Time to Fix | Time to Patch Release | Examples |
 | ------------ | ---------- | --------------- | --------------------- | ---------------------------------------------------------------------------------------- |
-| **CRITICAL** | 9.0 - 10.0 | **7 days**      | **24 hours**          | Remote Code Execution (RCE), SQL Injection with data exfiltration, Authentication bypass |
-| **HIGH**     | 7.0 - 8.9  | **30 days**     | **7 days**            | Cross-Site Scripting (XSS), Authorization bypass, Sensitive data exposure                |
-| **MEDIUM**   | 4.0 - 6.9  | **90 days**     | **30 days**           | Cross-Site Request Forgery (CSRF), Information disclosure, Weak cryptography             |
-| **LOW**      | 0.1 - 3.9  | **Best effort** | **Best effort**       | Minor information leakage, Non-exploitable bugs                                          |
+| **CRITICAL** | 9.0 - 10.0 | **7 days** | **24 hours** | Remote Code Execution (RCE), SQL Injection with data exfiltration, Authentication bypass |
+| **HIGH** | 7.0 - 8.9 | **30 days** | **7 days** | Cross-Site Scripting (XSS), Authorization bypass, Sensitive data exposure |
+| **MEDIUM** | 4.0 - 6.9 | **90 days** | **30 days** | Cross-Site Request Forgery (CSRF), Information disclosure, Weak cryptography |
+| **LOW** | 0.1 - 3.9 | **Best effort** | **Best effort** | Minor information leakage, Non-exploitable bugs |
 
 **CVSS Calculator:** https://www.first.org/cvss/calculator/3.1
 
@@ -108,10 +108,10 @@ If you follow the guidelines above, we commit to:
 
 We provide security patches for the following versions:
 
-| Version      | Supported | Status                                                        |
+| Version | Supported | Status |
 | ------------ | --------- | ------------------------------------------------------------- |
-| 1.x (latest) | ✅ Yes    | **Active development** - Security patches released within SLA |
-| < 1.0        | ❌ No     | **End of Life (EOL)** - No security patches                   |
+| 1.x (latest) | ✅ Yes | **Active development** - Security patches released within SLA |
+| < 1.0 | ❌ No | **End of Life (EOL)** - No security patches |
 
 ### Security Update Policy
 

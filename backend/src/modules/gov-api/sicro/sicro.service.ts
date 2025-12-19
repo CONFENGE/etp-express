@@ -64,8 +64,8 @@ const DEFAULT_PAGE_SIZE = 50;
  *
  * // Search for road construction services
  * const results = await service.search('terraplanagem', {
- *   uf: 'DF',
- *   mesReferencia: '2024-01',
+ * uf: 'DF',
+ * mesReferencia: '2024-01',
  * });
  *
  * // Get specific item by code

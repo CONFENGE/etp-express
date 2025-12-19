@@ -71,8 +71,8 @@ const CACHE_TTL_SECONDS = 3600;
  *
  * // Search for software-related bids
  * const results = await service.search('software', {
- *   startDate: new Date('2024-01-01'),
- *   uf: 'DF',
+ * startDate: new Date('2024-01-01'),
+ * uf: 'DF',
  * });
  *
  * // Get specific bid by ID

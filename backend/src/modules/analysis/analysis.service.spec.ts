@@ -89,14 +89,14 @@ describe('ETPAnalysisService', () => {
     it('should execute all agents in parallel and return consolidated result', async () => {
       // Arrange
       const document = createMockDocument(`
-        Este ETP está fundamentado na Lei 14.133/2021.
-        A justificativa da contratação é a necessidade de modernização.
-        O objeto é o desenvolvimento de software.
-        O valor estimado é de R$ 100.000,00.
-        O benefício esperado é a melhoria da eficiência.
-        O risco de não contratar é a obsolescência.
-        A sociedade será beneficiada com serviços melhores.
-      `);
+ Este ETP está fundamentado na Lei 14.133/2021.
+ A justificativa da contratação é a necessidade de modernização.
+ O objeto é o desenvolvimento de software.
+ O valor estimado é de R$ 100.000,00.
+ O benefício esperado é a melhoria da eficiência.
+ O risco de não contratar é a obsolescência.
+ A sociedade será beneficiada com serviços melhores.
+ `);
 
       const legalSpy = jest.spyOn(legalAgent, 'validate');
       const clarezaSpy = jest.spyOn(clarezaAgent, 'analyze');
@@ -120,23 +120,23 @@ describe('ETPAnalysisService', () => {
       // Arrange
       const wellFormedDocument = createMockDocument(
         `
-        Conforme Lei 14.133/2021, artigo 18, apresenta-se este Estudo Técnico Preliminar.
+ Conforme Lei 14.133/2021, artigo 18, apresenta-se este Estudo Técnico Preliminar.
 
-        Justificativa: A contratação é necessária para atender à demanda de modernização
-        dos sistemas de informação do órgão.
+ Justificativa: A contratação é necessária para atender à demanda de modernização
+ dos sistemas de informação do órgão.
 
-        O objeto da contratação consiste no desenvolvimento de software integrado.
+ O objeto da contratação consiste no desenvolvimento de software integrado.
 
-        A necessidade surge da obsolescência dos sistemas atuais, que não atendem às
-        demandas da sociedade por serviços públicos eficientes.
+ A necessidade surge da obsolescência dos sistemas atuais, que não atendem às
+ demandas da sociedade por serviços públicos eficientes.
 
-        Os benefícios esperados incluem melhoria de eficiência e redução de custos.
+ Os benefícios esperados incluem melhoria de eficiência e redução de custos.
 
-        O risco de não contratar é a continuidade de problemas operacionais que afetam
-        a prestação de serviços ao cidadão.
+ O risco de não contratar é a continuidade de problemas operacionais que afetam
+ a prestação de serviços ao cidadão.
 
-        O valor estimado, baseado em pesquisa de mercado, é de R$ 200.000,00.
-        `,
+ O valor estimado, baseado em pesquisa de mercado, é de R$ 200.000,00.
+ `,
         200,
       );
 
@@ -154,9 +154,9 @@ describe('ETPAnalysisService', () => {
       // Arrange
       const poorDocument = createMockDocument(
         `
-        Precisamos de um sistema.
-        O atual não funciona bem.
-        `,
+ Precisamos de um sistema.
+ O atual não funciona bem.
+ `,
         20,
       );
 
@@ -490,7 +490,7 @@ describe('ETPAnalysisService', () => {
       const document = createMockDocument('Test content', 100, [
         { title: 'Justificativa', content: 'Conteúdo válido...' },
         { title: 'Seção Vazia', content: '' },
-        { title: 'Seção Só Espaços', content: '   ' },
+        { title: 'Seção Só Espaços', content: ' ' },
         { title: 'Requisitos', content: 'Mais conteúdo válido...' },
       ]);
 

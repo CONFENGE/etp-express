@@ -26,25 +26,25 @@ export interface FundamentacaoResult {
  * by validating the presence of 4 critical elements required by Art. 18 of Lei 14.133/2021:
  *
  * 1. **NECESSIDADE**: Why is this procurement necessary?
- *    - What problem will be solved?
- *    - What demand will be met?
- *    - What deficiency will be addressed?
+ * - What problem will be solved?
+ * - What demand will be met?
+ * - What deficiency will be addressed?
  *
  * 2. **INTERESSE PÚBLICO**: How does this benefit society?
- *    - Who will be benefited?
- *    - What is the impact on public service delivery?
- *    - How does it align with public policies?
+ * - Who will be benefited?
+ * - What is the impact on public service delivery?
+ * - How does it align with public policies?
  *
  * 3. **BENEFÍCIOS**: What are the expected gains?
- *    - Process improvements
- *    - Resource savings
- *    - Efficiency increases
- *    - Service quality enhancements
+ * - Process improvements
+ * - Resource savings
+ * - Efficiency increases
+ * - Service quality enhancements
  *
  * 4. **RISCOS**: What happens if we don't procure?
- *    - Negative impacts
- *    - Potential harm
- *    - Compromised activities
+ * - Negative impacts
+ * - Potential harm
+ * - Compromised activities
  *
  * The agent also checks for:
  * - Presence of quantitative data (numbers strengthen argumentation)
@@ -81,7 +81,7 @@ export class FundamentacaoAgent {
    * @example
    * ```ts
    * const result = await fundamentacaoAgent.analyze(
-   *   'A contratação é necessária para atender 50 mil cidadãos. O benefício será...'
+   * 'A contratação é necessária para atender 50 mil cidadãos. O benefício será...'
    * );
    * console.log(result.score); // 75 (3 out of 4 elements present)
    * console.log(result.hasNecessidade); // true
@@ -214,25 +214,25 @@ Sua função é garantir que a fundamentação seja COMPLETA, CLARA e CONVINCENT
 Uma boa fundamentação deve conter:
 
 1. NECESSIDADE: Por que esta contratação é necessária?
-   - Qual problema será resolvido?
-   - Qual demanda será atendida?
-   - Qual carência será suprida?
+ - Qual problema será resolvido?
+ - Qual demanda será atendida?
+ - Qual carência será suprida?
 
 2. INTERESSE PÚBLICO: Como isso beneficia a sociedade?
-   - Quem será beneficiado?
-   - Qual o impacto na prestação do serviço público?
-   - Como se alinha com políticas públicas?
+ - Quem será beneficiado?
+ - Qual o impacto na prestação do serviço público?
+ - Como se alinha com políticas públicas?
 
 3. BENEFÍCIOS: Quais são os ganhos esperados?
-   - Melhoria de processos
-   - Economia de recursos
-   - Aumento de eficiência
-   - Qualidade do serviço
+ - Melhoria de processos
+ - Economia de recursos
+ - Aumento de eficiência
+ - Qualidade do serviço
 
 4. RISCOS: O que acontece se não contratar?
-   - Impactos negativos
-   - Prejuízos potenciais
-   - Comprometimento de atividades
+ - Impactos negativos
+ - Prejuízos potenciais
+ - Comprometimento de atividades
 
 SEMPRE inclua dados quantitativos quando possível (números, percentuais, prazos).
 

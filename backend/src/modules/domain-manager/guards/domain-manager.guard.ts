@@ -25,7 +25,7 @@ import { UserRole } from '../../../entities/user.entity';
  * @Controller('domain-manager')
  * @UseGuards(JwtAuthGuard, DomainManagerGuard)
  * export class DomainManagerController {
- *   // All endpoints require DOMAIN_MANAGER role
+ * // All endpoints require DOMAIN_MANAGER role
  * }
  * ```
  */

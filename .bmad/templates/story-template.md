@@ -33,31 +33,31 @@
 ### Backend
 
 ```
-📁 backend/src/
-  ├── 📄 path/to/controller.ts (MODIFY)
-  ├── 📄 path/to/service.ts (MODIFY)
-  ├── 📄 path/to/repository.ts (MODIFY)
-  ├── 📄 path/__tests__/service.spec.ts (CREATE)
-  └── 📄 migrations/YYYYMMDDHHMMSS-Name.ts (CREATE)
+ backend/src/
+ ├── path/to/controller.ts (MODIFY)
+ ├── path/to/service.ts (MODIFY)
+ ├── path/to/repository.ts (MODIFY)
+ ├── path/__tests__/service.spec.ts (CREATE)
+ └── migrations/YYYYMMDDHHMMSS-Name.ts (CREATE)
 ```
 
 ### Frontend
 
 ```
-📁 frontend/src/
-  ├── 📄 path/to/component.tsx (MODIFY)
-  ├── 📄 path/to/hook.ts (CREATE)
-  ├── 📄 path/__tests__/component.test.tsx (MODIFY)
-  └── 📄 path/__tests__/hook.test.ts (CREATE)
+ frontend/src/
+ ├── path/to/component.tsx (MODIFY)
+ ├── path/to/hook.ts (CREATE)
+ ├── path/__tests__/component.test.tsx (MODIFY)
+ └── path/__tests__/hook.test.ts (CREATE)
 ```
 
 ### Documentation
 
 ```
-📁 docs/
-  ├── 📄 ROADMAP.md (UPDATE)
-  ├── 📄 architecture/ADR-XXX.md (CREATE - se decisão arquitetural)
-  └── 📄 CHANGELOG.md (UPDATE)
+ docs/
+ ├── ROADMAP.md (UPDATE)
+ ├── architecture/ADR-XXX.md (CREATE - se decisão arquitetural)
+ └── CHANGELOG.md (UPDATE)
 ```
 
 ---
@@ -96,13 +96,13 @@ cd frontend && npm install <package-name>
 ```typescript
 // Pseudocode / Implementation guidance
 export class ServiceName {
-  async methodName(params: ParamsType): Promise<ReturnType> {
-    // TODO: Implement logic
-    // 1. Validate input
-    // 2. Apply business rules
-    // 3. Call repository
-    // 4. Return result
-  }
+ async methodName(params: ParamsType): Promise<ReturnType> {
+ // TODO: Implement logic
+ // 1. Validate input
+ // 2. Apply business rules
+ // 3. Call repository
+ // 4. Return result
+ }
 }
 ```
 
@@ -119,13 +119,13 @@ export class ServiceName {
 ```typescript
 @Controller('resource')
 export class ControllerName {
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateDto) {
-    // TODO: Implement endpoint
-    // 1. Extract params
-    // 2. Call service
-    // 3. Return response
-  }
+ @Patch(':id')
+ async update(@Param('id') id: string, @Body() dto: UpdateDto) {
+ // TODO: Implement endpoint
+ // 1. Extract params
+ // 2. Call service
+ // 3. Return response
+ }
 }
 ```
 
@@ -142,11 +142,11 @@ export class ControllerName {
 ```typescript
 @EntityRepository(EntityName)
 export class RepositoryName extends Repository<EntityName> {
-  async findWithRelations(id: string): Promise<EntityName> {
-    // TODO: Implement query
-    // Use QueryBuilder for complex queries
-    // Use relations: [] for simple eager loading
-  }
+ async findWithRelations(id: string): Promise<EntityName> {
+ // TODO: Implement query
+ // Use QueryBuilder for complex queries
+ // Use relations: [] for simple eager loading
+ }
 }
 ```
 
@@ -160,13 +160,13 @@ npm run migration:generate -- NomeDaMigration
 
 ```typescript
 export class NomeDaMigration1234567890 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    // TODO: Implement UP migration
-  }
+ public async up(queryRunner: QueryRunner): Promise<void> {
+ // TODO: Implement UP migration
+ }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    // TODO: Implement DOWN migration (rollback)
-  }
+ public async down(queryRunner: QueryRunner): Promise<void> {
+ // TODO: Implement DOWN migration (rollback)
+ }
 }
 ```
 
@@ -180,19 +180,19 @@ export class NomeDaMigration1234567890 implements MigrationInterface {
 
 ```typescript
 export const useCustomHook = (params: Params) => {
-  const [state, setState] = useState<StateType>(initialState);
+ const [state, setState] = useState<StateType>(initialState);
 
-  useEffect(() => {
-    // TODO: Implement effect logic
-    // 1. Setup
-    // 2. Side effects
-    // 3. Cleanup return function
-    return () => {
-      // Cleanup (IMPORTANT for unmount scenarios)
-    };
-  }, [dependencies]);
+ useEffect(() => {
+ // TODO: Implement effect logic
+ // 1. Setup
+ // 2. Side effects
+ // 3. Cleanup return function
+ return () => {
+ // Cleanup (IMPORTANT for unmount scenarios)
+ };
+ }, [dependencies]);
 
-  return { state, actions };
+ return { state, actions };
 };
 ```
 
@@ -208,17 +208,17 @@ export const useCustomHook = (params: Params) => {
 
 ```typescript
 export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
-  // TODO: Implement component
-  // 1. State management (useState, useStore)
-  // 2. Effects (useEffect)
-  // 3. Event handlers
-  // 4. Render JSX
+ // TODO: Implement component
+ // 1. State management (useState, useStore)
+ // 2. Effects (useEffect)
+ // 3. Event handlers
+ // 4. Render JSX
 
-  return (
-    <div>
-      {/* TODO: Implement UI */}
-    </div>
-  );
+ return (
+ <div>
+ {/* TODO: Implement UI */}
+ </div>
+ );
 };
 ```
 
@@ -234,14 +234,14 @@ export const ComponentName: React.FC<Props> = ({ prop1, prop2 }) => {
 
 ```typescript
 interface StoreState {
-  // TODO: Define state shape
+ // TODO: Define state shape
 }
 
 export const useStoreName = create<StoreState>((set, get) => ({
-  // TODO: Implement store
-  // 1. Initial state
-  // 2. Actions (mutations)
-  // 3. Selectors (if complex)
+ // TODO: Implement store
+ // 1. Initial state
+ // 2. Actions (mutations)
+ // 3. Selectors (if complex)
 }));
 ```
 
@@ -255,33 +255,33 @@ export const useStoreName = create<StoreState>((set, get) => ({
 
 ```typescript
 describe('ServiceName', () => {
-  let service: ServiceName;
+ let service: ServiceName;
 
-  beforeEach(() => {
-    // Setup test dependencies
-  });
+ beforeEach(() => {
+ // Setup test dependencies
+ });
 
-  describe('methodName', () => {
-    it('should handle success case', async () => {
-      // Arrange
-      const input = ...;
-      const expected = ...;
+ describe('methodName', () => {
+ it('should handle success case', async () => {
+ // Arrange
+ const input = ...;
+ const expected = ...;
 
-      // Act
-      const result = await service.methodName(input);
+ // Act
+ const result = await service.methodName(input);
 
-      // Assert
-      expect(result).toEqual(expected);
-    });
+ // Assert
+ expect(result).toEqual(expected);
+ });
 
-    it('should handle error case', async () => {
-      // Test error scenario
-    });
+ it('should handle error case', async () => {
+ // Test error scenario
+ });
 
-    it('should handle edge case', async () => {
-      // Test edge case
-    });
-  });
+ it('should handle edge case', async () => {
+ // Test edge case
+ });
+ });
 });
 ```
 
@@ -293,24 +293,24 @@ describe('ServiceName', () => {
 
 ```typescript
 describe('ComponentName', () => {
-  it('should render correctly', () => {
-    render(<ComponentName {...props} />);
-    expect(screen.getByRole('button')).toBeInTheDocument();
-  });
+ it('should render correctly', () => {
+ render(<ComponentName {...props} />);
+ expect(screen.getByRole('button')).toBeInTheDocument();
+ });
 
-  it('should handle user interaction', async () => {
-    const user = userEvent.setup();
-    render(<ComponentName {...props} />);
+ it('should handle user interaction', async () => {
+ const user = userEvent.setup();
+ render(<ComponentName {...props} />);
 
-    await user.click(screen.getByRole('button'));
+ await user.click(screen.getByRole('button'));
 
-    expect(mockCallback).toHaveBeenCalled();
-  });
+ expect(mockCallback).toHaveBeenCalled();
+ });
 
-  it('should handle loading state', () => {
-    render(<ComponentName {...props} isLoading={true} />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-  });
+ it('should handle loading state', () => {
+ render(<ComponentName {...props} isLoading={true} />);
+ expect(screen.getByRole('progressbar')).toBeInTheDocument();
+ });
 });
 ```
 
@@ -322,9 +322,9 @@ describe('ComponentName', () => {
 
 ```typescript
 describe('Endpoint E2E', () => {
-  it('should complete full flow', async () => {
-    // Full integration test
-  });
+ it('should complete full flow', async () => {
+ // Full integration test
+ });
 });
 ```
 
@@ -334,16 +334,16 @@ describe('Endpoint E2E', () => {
 
 ```typescript
 test.describe('Feature Name', () => {
-  test('should complete user flow', async ({ page }) => {
-    // Navigate
-    await page.goto('/path');
+ test('should complete user flow', async ({ page }) => {
+ // Navigate
+ await page.goto('/path');
 
-    // Interact
-    await page.click('button');
+ // Interact
+ await page.click('button');
 
-    // Assert
-    await expect(page.locator('.result')).toBeVisible();
-  });
+ // Assert
+ await expect(page.locator('.result')).toBeVisible();
+ });
 });
 ```
 
@@ -351,9 +351,9 @@ test.describe('Feature Name', () => {
 
 ```typescript
 test('should pass axe accessibility tests', async ({ page }) => {
-  await page.goto('/path');
-  const results = await new AxeBuilder({ page }).analyze();
-  expect(results.violations).toEqual([]);
+ await page.goto('/path');
+ const results = await new AxeBuilder({ page }).analyze();
+ expect(results.violations).toEqual([]);
 });
 ```
 
@@ -463,13 +463,13 @@ git push origin feat/XXX-short-description
 
 ```bash
 gh pr create --title "feat(module): Implement Feature X" --body "$(cat <<'EOF'
-## 🎯 Objetivo
+## Objetivo
 [Descrição]
 
-## 📋 Contexto
+## Contexto
 Closes #XXX
 
-## 🔧 Mudanças
+## Mudanças
 - Change 1
 - Change 2
 
@@ -478,7 +478,7 @@ Closes #XXX
 - [x] E2E tests
 - [x] Accessibility tests
 
-## 📊 Métricas
+## Métricas
 - Coverage: 78%/76%
 - Build: ✅ Passing
 EOF

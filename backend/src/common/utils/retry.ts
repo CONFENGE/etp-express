@@ -126,15 +126,15 @@ export function isRetryableError(
  * @example
  * ```typescript
  * const result = await withRetry(
- *   () => this.openai.chat.completions.create(request),
- *   {
- *     maxRetries: 3,
- *     baseDelay: 1000,
- *     maxDelay: 8000,
- *     retryableErrors: ['ETIMEDOUT', '429'],
- *     logger: this.logger,
- *     operationName: 'OpenAI completion'
- *   }
+ * () => this.openai.chat.completions.create(request),
+ * {
+ * maxRetries: 3,
+ * baseDelay: 1000,
+ * maxDelay: 8000,
+ * retryableErrors: ['ETIMEDOUT', '429'],
+ * logger: this.logger,
+ * operationName: 'OpenAI completion'
+ * }
  * );
  * ```
  */
@@ -199,9 +199,9 @@ export async function withRetry<T>(
  * @example
  * ```typescript
  * const openAIRetry = createRetryWrapper({
- *   maxRetries: 3,
- *   logger: this.logger,
- *   operationName: 'OpenAI API'
+ * maxRetries: 3,
+ * logger: this.logger,
+ * operationName: 'OpenAI API'
  * });
  *
  * const result = await openAIRetry(() => this.callAPI());

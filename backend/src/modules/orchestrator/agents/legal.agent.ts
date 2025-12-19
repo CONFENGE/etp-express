@@ -70,8 +70,8 @@ export class LegalAgent {
    * @example
    * ```ts
    * const result = await legalAgent.validate(
-   *   'Este ETP está fundamentado na Lei 14.133/2021...',
-   *   { type: 'justificativa' }
+   * 'Este ETP está fundamentado na Lei 14.133/2021...',
+   * { type: 'justificativa' }
    * );
    * console.log(result.isCompliant); // true/false
    * console.log(result.score); // 85
@@ -173,8 +173,8 @@ export class LegalAgent {
    * @example
    * ```ts
    * const enriched = await legalAgent.enrichWithLegalContext(
-   *   'Descreva a justificativa para contratar notebooks',
-   *   'justificativa'
+   * 'Descreva a justificativa para contratar notebooks',
+   * 'justificativa'
    * );
    * // Returns: original prompt + "\n\n[CONTEXTO LEGAL]\nConforme Art. 18..."
    * ```
@@ -220,7 +220,7 @@ export class LegalAgent {
    * - Be conservative when uncertain
    * - Signal need for legal review when appropriate
    *
-   * Includes mandatory disclaimer: "⚠️ Este conteúdo requer validação jurídica..."
+   * Includes mandatory disclaimer: "⚠ Este conteúdo requer validação jurídica..."
    *
    * @returns System prompt string with legal compliance instructions
    */
@@ -239,6 +239,6 @@ IMPORTANTE:
 - Quando incerto, seja conservador
 - Sinalize necessidade de revisão jurídica quando apropriado
 
-Adicione ao final: "⚠️ Este conteúdo requer validação jurídica antes do uso oficial."`;
+Adicione ao final: "⚠ Este conteúdo requer validação jurídica antes do uso oficial."`;
   }
 }

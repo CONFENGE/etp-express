@@ -14,10 +14,10 @@ Este documento avalia oportunidades de aplicação de **anonimização** e **pse
 
 ### 1.1 Definições (LGPD)
 
-| Conceito            | Definição                                      | Exemplo                                 | Status LGPD                          |
+| Conceito | Definição | Exemplo | Status LGPD |
 | ------------------- | ---------------------------------------------- | --------------------------------------- | ------------------------------------ |
-| **Anonimização**    | Remoção **irreversível** de identificadores    | Agregar "1.234 usuários ativos" sem IDs | ❌ Não é mais dado pessoal (Art. 12) |
-| **Pseudonimização** | Substituição de identificadores por **tokens** | userId → hash SHA-256                   | ⚠️ Ainda é dado pessoal (Art. 13)    |
+| **Anonimização** | Remoção **irreversível** de identificadores | Agregar "1.234 usuários ativos" sem IDs | ❌ Não é mais dado pessoal (Art. 12) |
+| **Pseudonimização** | Substituição de identificadores por **tokens** | userId → hash SHA-256 | ⚠ Ainda é dado pessoal (Art. 13) |
 
 ### 1.2 Princípios Aplicáveis
 
@@ -47,21 +47,21 @@ Este documento avalia oportunidades de aplicação de **anonimização** e **pse
 **Recomendações:**
 
 - ✅ **Manter implementação atual** - está conforme LGPD
-- ⚠️ **Expandir patterns** - Adicionar detecção de nomes próprios (regex) e endereços completos
-- ⚠️ **Auditar logs** - Verificar se warnings de PII não estão vazando valores
+- ⚠ **Expandir patterns** - Adicionar detecção de nomes próprios (regex) e endereços completos
+- ⚠ **Auditar logs** - Verificar se warnings de PII não estão vazando valores
 
 **Código atual (OrchestratorService):**
 
 ```typescript
 // Linha 172-183
 const { redacted: sanitizedPrompt, findings: piiFindings } =
-  this.piiRedactionService.redact(enrichedUserPrompt);
+ this.piiRedactionService.redact(enrichedUserPrompt);
 
 if (piiFindings.length > 0) {
-  this.logger.warn('PII detected and redacted before LLM call', {
-    section: request.sectionType,
-    findings: piiFindings, // ✅ Não loga os valores, apenas tipos
-  });
+ this.logger.warn('PII detected and redacted before LLM call', {
+ section: request.sectionType,
+ findings: piiFindings, // ✅ Não loga os valores, apenas tipos
+ });
 }
 ```
 
@@ -80,11 +80,11 @@ if (piiFindings.length > 0) {
 ```typescript
 // Linha 129-136 - searchSimilarContracts
 const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
-    Inclua informações sobre:
-    - Órgãos que realizaram contratações similares
-    - Valores praticados
-    - Modalidades utilizadas
-    - Links para processos ou documentos relacionados
+ Inclua informações sobre:
+ - Órgãos que realizaram contratações similares
+ - Valores praticados
+ - Modalidades utilizadas
+ - Links para processos ou documentos relacionados
 ```
 
 **Possível vazamento:**
@@ -105,7 +105,7 @@ const query = `Busque informações sobre contratações públicas similares a: 
 
 ### 2.2 Analytics Agregados
 
-#### ⚠️ Analytics Events - STATUS: NECESSITA MELHORIA
+#### ⚠ Analytics Events - STATUS: NECESSITA MELHORIA
 
 **Tabela:** `analytics_events`
 **Dados armazenados:**
@@ -121,11 +121,11 @@ const query = `Busque informações sobre contratações públicas similares a: 
 
 **Oportunidades de Anonimização:**
 
-| Dado        | Ação                             | Quando       | Benefício                                     |
+| Dado | Ação | Quando | Benefício |
 | ----------- | -------------------------------- | ------------ | --------------------------------------------- |
-| `userId`    | **Anonimizar** (SET NULL)        | Após 90 dias | Métricas agregadas sem rastreio individual    |
-| `ipAddress` | **Pseudonimizar** (hash SHA-256) | Após 30 dias | Análise geográfica sem IP real                |
-| `sessionId` | **Anonimizar** (SET NULL)        | Após 60 dias | Preserva contagem de sessões, remove rastreio |
+| `userId` | **Anonimizar** (SET NULL) | Após 90 dias | Métricas agregadas sem rastreio individual |
+| `ipAddress` | **Pseudonimizar** (hash SHA-256) | Após 30 dias | Análise geográfica sem IP real |
+| `sessionId` | **Anonimizar** (SET NULL) | Após 60 dias | Preserva contagem de sessões, remove rastreio |
 
 **Exemplo de implementação:**
 
@@ -133,17 +133,17 @@ const query = `Busque informações sobre contratações públicas similares a: 
 -- Anonimizar analytics após 90 dias (job semanal)
 UPDATE analytics_events
 SET
-  user_id = NULL,
-  session_id = NULL
+ user_id = NULL,
+ session_id = NULL
 WHERE created_at < NOW() - INTERVAL '90 days'
-  AND user_id IS NOT NULL;
+ AND user_id IS NOT NULL;
 
 -- Pseudonimizar IPs após 30 dias
 UPDATE analytics_events
 SET ip_address = ENCODE(SHA256(ip_address::bytea), 'hex')
 WHERE created_at < NOW() - INTERVAL '30 days'
-  AND ip_address IS NOT NULL
-  AND LENGTH(ip_address) < 64; -- Evita re-hash
+ AND ip_address IS NOT NULL
+ AND LENGTH(ip_address) < 64; -- Evita re-hash
 ```
 
 **Métricas preservadas após anonimização:**
@@ -181,12 +181,12 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 
 **Análise de conformidade:**
 
-| Aspecto                     | Status             | Justificativa                          |
+| Aspecto | Status | Justificativa |
 | --------------------------- | ------------------ | -------------------------------------- |
-| Armazenar `userId`          | ✅ **JUSTIFICADO** | LGPD Art. 7º, II - Obrigação legal     |
-| Armazenar `ipAddress`       | ✅ **JUSTIFICADO** | Segurança e investigação de incidentes |
-| Armazenar `changes` (JSONB) | ⚠️ **ATENÇÃO**     | Pode conter dados sensíveis            |
-| Retenção 90 dias            | ✅ **ADEQUADO**    | Período razoável para auditoria        |
+| Armazenar `userId` | ✅ **JUSTIFICADO** | LGPD Art. 7º, II - Obrigação legal |
+| Armazenar `ipAddress` | ✅ **JUSTIFICADO** | Segurança e investigação de incidentes |
+| Armazenar `changes` (JSONB) | ⚠ **ATENÇÃO** | Pode conter dados sensíveis |
+| Retenção 90 dias | ✅ **ADEQUADO** | Período razoável para auditoria |
 
 **Oportunidade de Pseudonimização (OPCIONAL):**
 
@@ -195,39 +195,39 @@ WHERE created_at < NOW() - INTERVAL '30 days'
 // Exemplo: se `changes.before.email` ou `changes.after.email` existir
 
 interface AuditChanges {
-  before?: {
-    email?: string;
-    password?: string; // Nunca deve estar aqui (já hasheado)
-    [key: string]: unknown;
-  };
-  after?: {
-    email?: string;
-    [key: string]: unknown;
-  };
-  metadata?: unknown;
+ before?: {
+ email?: string;
+ password?: string; // Nunca deve estar aqui (já hasheado)
+ [key: string]: unknown;
+ };
+ after?: {
+ email?: string;
+ [key: string]: unknown;
+ };
+ metadata?: unknown;
 }
 
 // Pseudonimizar emails no audit log
 function pseudonymizeAuditChanges(changes: AuditChanges): AuditChanges {
-  const pseudonymized = { ...changes };
+ const pseudonymized = { ...changes };
 
-  if (pseudonymized.before?.email) {
-    pseudonymized.before.email = hashEmail(pseudonymized.before.email);
-  }
+ if (pseudonymized.before?.email) {
+ pseudonymized.before.email = hashEmail(pseudonymized.before.email);
+ }
 
-  if (pseudonymized.after?.email) {
-    pseudonymized.after.email = hashEmail(pseudonymized.after.email);
-  }
+ if (pseudonymized.after?.email) {
+ pseudonymized.after.email = hashEmail(pseudonymized.after.email);
+ }
 
-  return pseudonymized;
+ return pseudonymized;
 }
 ```
 
 **Recomendações:**
 
 1. ✅ **Manter userId e ipAddress** - Justificado por obrigação legal
-2. ⚠️ **[P3]** Pseudonimizar emails em `changes` (hash SHA-256 com salt)
-3. ⚠️ **[P3]** Implementar limpeza automática após 90 dias (DELETE CASCADE)
+2. ⚠ **[P3]** Pseudonimizar emails em `changes` (hash SHA-256 com salt)
+3. ⚠ **[P3]** Implementar limpeza automática após 90 dias (DELETE CASCADE)
 4. ✅ **[P1]** Garantir que senhas **nunca** apareçam em `changes` (validar com testes)
 
 **Issue sugerida:** #272 - Validar ausência de dados sensíveis em audit_logs.changes
@@ -255,8 +255,8 @@ this.logger.error('Failed to create user', { userId: user.id });
 
 // ✅ SEGURO - Stack trace sanitizada
 this.logger.error('Validation failed', {
-  errors: error.validationErrors,
-  // NÃO loga o DTO completo
+ errors: error.validationErrors,
+ // NÃO loga o DTO completo
 });
 ```
 
@@ -273,24 +273,24 @@ this.logger.error('Validation failed', {
 // logger.interceptor.ts
 @Injectable()
 export class PIILoggerInterceptor implements NestInterceptor {
-  constructor(private piiRedactionService: PIIRedactionService) {}
+ constructor(private piiRedactionService: PIIRedactionService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const logger = new Logger(context.getClass().name);
+ intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+ const logger = new Logger(context.getClass().name);
 
-    // Override logger methods to sanitize
-    const originalError = logger.error.bind(logger);
-    logger.error = (...args) => {
-      const sanitizedArgs = args.map((arg) =>
-        typeof arg === 'string'
-          ? this.piiRedactionService.redact(arg).redacted
-          : arg,
-      );
-      originalError(...sanitizedArgs);
-    };
+ // Override logger methods to sanitize
+ const originalError = logger.error.bind(logger);
+ logger.error = (...args) => {
+ const sanitizedArgs = args.map((arg) =>
+ typeof arg === 'string'
+ ? this.piiRedactionService.redact(arg).redacted
+ : arg,
+ );
+ originalError(...sanitizedArgs);
+ };
 
-    return next.handle();
-  }
+ return next.handle();
+ }
 }
 ```
 
@@ -302,32 +302,32 @@ export class PIILoggerInterceptor implements NestInterceptor {
 
 ### 3.1 Classificação por Prioridade
 
-| Prioridade       | Issue    | Ação                                  | Impacto LGPD                         | Esforço |
+| Prioridade | Issue | Ação | Impacto LGPD | Esforço |
 | ---------------- | -------- | ------------------------------------- | ------------------------------------ | ------- |
-| ~~P1 - CRÍTICO~~ | ~~#270~~ | ~~Sanitizar queries Exa~~             | ✅ Já implementado na migração       | -       |
-| **P1 - CRÍTICO** | #273     | Sanitizar logs de aplicação           | Alto - Vazamento em logs             | 4h      |
-| **P1 - ALTO**    | #272     | Validar audit_logs.changes            | Médio - Dados sensíveis em auditoria | 2h      |
-| **P2 - MÉDIO**   | #271     | Anonimizar analytics após 90 dias     | Médio - Minimização de dados         | 6h      |
-| **P3 - BAIXO**   | -        | Expandir patterns PIIRedactionService | Baixo - Melhoria incremental         | 2h      |
+| ~~P1 - CRÍTICO~~ | ~~#270~~ | ~~Sanitizar queries Exa~~ | ✅ Já implementado na migração | - |
+| **P1 - CRÍTICO** | #273 | Sanitizar logs de aplicação | Alto - Vazamento em logs | 4h |
+| **P1 - ALTO** | #272 | Validar audit_logs.changes | Médio - Dados sensíveis em auditoria | 2h |
+| **P2 - MÉDIO** | #271 | Anonimizar analytics após 90 dias | Médio - Minimização de dados | 6h |
+| **P3 - BAIXO** | - | Expandir patterns PIIRedactionService | Baixo - Melhoria incremental | 2h |
 
 ### 3.2 Dados Identificados para Anonimização
 
-| Dado                         | Localização     | Técnica                                   | Implementação      |
+| Dado | Localização | Técnica | Implementação |
 | ---------------------------- | --------------- | ----------------------------------------- | ------------------ |
-| `analytics_events.userId`    | Após 90 dias    | **Anonimização** (SET NULL)               | Job cron semanal   |
-| `analytics_events.sessionId` | Após 60 dias    | **Anonimização** (SET NULL)               | Job cron semanal   |
-| `analytics_events.ipAddress` | Após 30 dias    | **Pseudonimização** (SHA-256)             | Job cron semanal   |
-| Queries Perplexity           | Antes de enviar | **Pseudonimização** (PIIRedactionService) | Código imediato    |
-| Logs de aplicação            | Antes de logar  | **Pseudonimização** (PIIRedactionService) | Interceptor global |
+| `analytics_events.userId` | Após 90 dias | **Anonimização** (SET NULL) | Job cron semanal |
+| `analytics_events.sessionId` | Após 60 dias | **Anonimização** (SET NULL) | Job cron semanal |
+| `analytics_events.ipAddress` | Após 30 dias | **Pseudonimização** (SHA-256) | Job cron semanal |
+| Queries Perplexity | Antes de enviar | **Pseudonimização** (PIIRedactionService) | Código imediato |
+| Logs de aplicação | Antes de logar | **Pseudonimização** (PIIRedactionService) | Interceptor global |
 
 ### 3.3 Dados que NÃO Devem Ser Anonimizados
 
-| Dado                    | Justificativa                | Base Legal                             |
+| Dado | Justificativa | Base Legal |
 | ----------------------- | ---------------------------- | -------------------------------------- |
-| `audit_logs.userId`     | Obrigação legal de auditoria | LGPD Art. 7º, II                       |
-| `audit_logs.ipAddress`  | Segurança e investigação     | LGPD Art. 7º, IX (legítimo interesse)  |
-| `users.email`           | Autenticação e comunicação   | LGPD Art. 7º, V (execução de contrato) |
-| `users.password` (hash) | Autenticação                 | LGPD Art. 7º, V (execução de contrato) |
+| `audit_logs.userId` | Obrigação legal de auditoria | LGPD Art. 7º, II |
+| `audit_logs.ipAddress` | Segurança e investigação | LGPD Art. 7º, IX (legítimo interesse) |
+| `users.email` | Autenticação e comunicação | LGPD Art. 7º, V (execução de contrato) |
+| `users.password` (hash) | Autenticação | LGPD Art. 7º, V (execução de contrato) |
 
 ---
 
@@ -344,28 +344,28 @@ export class PIILoggerInterceptor implements NestInterceptor {
 ```sql
 -- Criar tabela de analytics agregados (dados anonimizados)
 CREATE TABLE analytics_monthly_aggregates (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  month DATE NOT NULL, -- Primeiro dia do mês
-  event_type VARCHAR(100) NOT NULL,
-  event_name VARCHAR(100) NOT NULL,
-  total_events INTEGER NOT NULL,
-  unique_sessions INTEGER NOT NULL, -- Contagem, não IDs
-  avg_duration_ms INTEGER,
-  success_rate DECIMAL(5,2),
-  top_user_agents JSONB, -- Array de user agents mais comuns
-  geographic_distribution JSONB, -- IP pseudonimizado agrupado por região
-  created_at TIMESTAMP DEFAULT NOW()
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ month DATE NOT NULL, -- Primeiro dia do mês
+ event_type VARCHAR(100) NOT NULL,
+ event_name VARCHAR(100) NOT NULL,
+ total_events INTEGER NOT NULL,
+ unique_sessions INTEGER NOT NULL, -- Contagem, não IDs
+ avg_duration_ms INTEGER,
+ success_rate DECIMAL(5,2),
+ top_user_agents JSONB, -- Array de user agents mais comuns
+ geographic_distribution JSONB, -- IP pseudonimizado agrupado por região
+ created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- View materializada para dashboard (sempre usa dados agregados)
 CREATE MATERIALIZED VIEW analytics_dashboard AS
 SELECT
-  DATE_TRUNC('month', created_at) AS month,
-  event_type,
-  COUNT(*) AS total_events,
-  COUNT(DISTINCT session_id) AS unique_sessions,
-  AVG(CAST(properties->>'duration' AS INTEGER)) AS avg_duration,
-  SUM(CASE WHEN properties->>'success' = 'true' THEN 1 ELSE 0 END)::DECIMAL / COUNT(*) * 100 AS success_rate
+ DATE_TRUNC('month', created_at) AS month,
+ event_type,
+ COUNT(*) AS total_events,
+ COUNT(DISTINCT session_id) AS unique_sessions,
+ AVG(CAST(properties->>'duration' AS INTEGER)) AS avg_duration,
+ SUM(CASE WHEN properties->>'success' = 'true' THEN 1 ELSE 0 END)::DECIMAL / COUNT(*) * 100 AS success_rate
 FROM analytics_events
 WHERE created_at >= NOW() - INTERVAL '13 months' -- Últimos 13 meses
 GROUP BY DATE_TRUNC('month', created_at), event_type;
@@ -392,37 +392,37 @@ GROUP BY DATE_TRUNC('month', created_at), event_type;
 // ip-anonymization.service.ts
 @Injectable()
 export class IPAnonymizationService {
-  /**
-   * Pseudonimiza IP preservando análise geográfica
-   *
-   * @example
-   * pseudonymize("192.168.1.100") → "192.168.0.0/16" (hash preserva subnet)
-   */
-  pseudonymize(ip: string): string {
-    // IPv4: Zerar último octeto + hash
-    if (ip.includes('.')) {
-      const parts = ip.split('.');
-      const subnet = `${parts[0]}.${parts[1]}.0.0/16`;
-      return createHash('sha256').update(ip).digest('hex').substring(0, 16);
-    }
+ /**
+ * Pseudonimiza IP preservando análise geográfica
+ *
+ * @example
+ * pseudonymize("192.168.1.100") → "192.168.0.0/16" (hash preserva subnet)
+ */
+ pseudonymize(ip: string): string {
+ // IPv4: Zerar último octeto + hash
+ if (ip.includes('.')) {
+ const parts = ip.split('.');
+ const subnet = `${parts[0]}.${parts[1]}.0.0/16`;
+ return createHash('sha256').update(ip).digest('hex').substring(0, 16);
+ }
 
-    // IPv6: Preservar apenas /48 prefix
-    if (ip.includes(':')) {
-      const prefix = ip.split(':').slice(0, 3).join(':');
-      return createHash('sha256').update(ip).digest('hex').substring(0, 32);
-    }
+ // IPv6: Preservar apenas /48 prefix
+ if (ip.includes(':')) {
+ const prefix = ip.split(':').slice(0, 3).join(':');
+ return createHash('sha256').update(ip).digest('hex').substring(0, 32);
+ }
 
-    return createHash('sha256').update(ip).digest('hex');
-  }
+ return createHash('sha256').update(ip).digest('hex');
+ }
 
-  /**
-   * Extrai região do IP antes de pseudonimizar
-   */
-  async extractRegionBeforePseudonymization(ip: string): Promise<string> {
-    // Integração com MaxMind GeoIP ou similar
-    // Armazena apenas: "BR-SP" (país-estado)
-    return 'BR-SP'; // Placeholder
-  }
+ /**
+ * Extrai região do IP antes de pseudonimizar
+ */
+ async extractRegionBeforePseudonymization(ip: string): Promise<string> {
+ // Integração com MaxMind GeoIP ou similar
+ // Armazena apenas: "BR-SP" (país-estado)
+ return 'BR-SP'; // Placeholder
+ }
 }
 ```
 
@@ -432,40 +432,40 @@ export class IPAnonymizationService {
 // analytics-anonymization.job.ts
 @Injectable()
 export class AnalyticsAnonymizationJob {
-  @Cron('0 2 * * 0') // Domingo, 2h AM
-  async anonymizeOldAnalytics() {
-    // 1. Extrair regiões antes de pseudonimizar IPs (30 dias)
-    const ipsToAnonymize = await this.analyticsRepository.find({
-      where: {
-        createdAt: LessThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
-        ipAddress: Not(IsNull()),
-      },
-    });
+ @Cron('0 2 * * 0') // Domingo, 2h AM
+ async anonymizeOldAnalytics() {
+ // 1. Extrair regiões antes de pseudonimizar IPs (30 dias)
+ const ipsToAnonymize = await this.analyticsRepository.find({
+ where: {
+ createdAt: LessThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
+ ipAddress: Not(IsNull()),
+ },
+ });
 
-    for (const event of ipsToAnonymize) {
-      const region = await this.ipService.extractRegionBeforePseudonymization(
-        event.ipAddress,
-      );
-      event.properties = { ...event.properties, region };
-      event.ipAddress = this.ipService.pseudonymize(event.ipAddress);
-    }
+ for (const event of ipsToAnonymize) {
+ const region = await this.ipService.extractRegionBeforePseudonymization(
+ event.ipAddress,
+ );
+ event.properties = { ...event.properties, region };
+ event.ipAddress = this.ipService.pseudonymize(event.ipAddress);
+ }
 
-    await this.analyticsRepository.save(ipsToAnonymize);
+ await this.analyticsRepository.save(ipsToAnonymize);
 
-    // 2. Anonimizar userIds (90 dias)
-    await this.analyticsRepository.update(
-      {
-        createdAt: LessThan(new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)),
-        userId: Not(IsNull()),
-      },
-      {
-        userId: null,
-        sessionId: null,
-      },
-    );
+ // 2. Anonimizar userIds (90 dias)
+ await this.analyticsRepository.update(
+ {
+ createdAt: LessThan(new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)),
+ userId: Not(IsNull()),
+ },
+ {
+ userId: null,
+ sessionId: null,
+ },
+ );
 
-    this.logger.log('Analytics anonymization job completed');
-  }
+ this.logger.log('Analytics anonymization job completed');
+ }
 }
 ```
 
@@ -488,16 +488,16 @@ export class AnalyticsAnonymizationJob {
 ```typescript
 // backend/src/modules/orchestrator/orchestrator.service.ts:172-183
 const { redacted: sanitizedPrompt, findings: piiFindings } =
-  this.piiRedactionService.redact(enrichedUserPrompt);
+ this.piiRedactionService.redact(enrichedUserPrompt);
 
 if (piiFindings.length > 0) {
-  this.logger.warn('PII detected and redacted before LLM call', {
-    section: request.sectionType,
-    findings: piiFindings,
-  });
-  warnings.push(
-    'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
-  );
+ this.logger.warn('PII detected and redacted before LLM call', {
+ section: request.sectionType,
+ findings: piiFindings,
+ });
+ warnings.push(
+ 'Informações pessoais foram detectadas e sanitizadas antes do processamento.',
+ );
 }
 ```
 
@@ -514,15 +514,15 @@ if (piiFindings.length > 0) {
 
 **Recomendações futuras:**
 
-- ⚠️ **[P3]** Adicionar detecção de nomes próprios (contexto: "Nome: João Silva")
-- ⚠️ **[P3]** Adicionar detecção de endereços completos
-- ⚠️ **[P3]** Adicionar detecção de placas de veículos
+- ⚠ **[P3]** Adicionar detecção de nomes próprios (contexto: "Nome: João Silva")
+- ⚠ **[P3]** Adicionar detecção de endereços completos
+- ⚠ **[P3]** Adicionar detecção de placas de veículos
 
 ---
 
 ### 5.2 Perplexity - STATUS ATUAL
 
-⚠️ **NECESSITA IMPLEMENTAÇÃO**
+⚠ **NECESSITA IMPLEMENTAÇÃO**
 
 **Problema identificado:**
 
@@ -534,17 +534,17 @@ if (piiFindings.length > 0) {
 ```typescript
 // backend/src/modules/search/perplexity/perplexity.service.ts:129-136
 async searchSimilarContracts(
-  objeto: string,
-  _filters?: Record<string, unknown>,
+ objeto: string,
+ _filters?: Record<string, unknown>,
 ): Promise<PerplexityResponse> {
-  const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
-    Inclua informações sobre:
-    - Órgãos que realizaram contratações similares
-    - Valores praticados
-    - Modalidades utilizadas
-    - Links para processos ou documentos relacionados`;
+ const query = `Busque informações sobre contratações públicas similares a: "${objeto}".
+ Inclua informações sobre:
+ - Órgãos que realizaram contratações similares
+ - Valores praticados
+ - Modalidades utilizadas
+ - Links para processos ou documentos relacionados`;
 
-  return this.search(query); // ❌ Não sanitiza "objeto"
+ return this.search(query); // ❌ Não sanitiza "objeto"
 }
 ```
 
@@ -554,28 +554,28 @@ async searchSimilarContracts(
 // Modificar PerplexityService para sanitizar queries
 @Injectable()
 export class PerplexityService {
-  constructor(
-    private configService: ConfigService,
-    private piiRedactionService: PIIRedactionService, // Injetar
-  ) {}
+ constructor(
+ private configService: ConfigService,
+ private piiRedactionService: PIIRedactionService, // Injetar
+ ) {}
 
-  async searchSimilarContracts(
-    objeto: string,
-    _filters?: Record<string, unknown>,
-  ): Promise<PerplexityResponse> {
-    // Sanitizar "objeto" antes de incluir na query
-    const { redacted: sanitizedObjeto } =
-      this.piiRedactionService.redact(objeto);
+ async searchSimilarContracts(
+ objeto: string,
+ _filters?: Record<string, unknown>,
+ ): Promise<PerplexityResponse> {
+ // Sanitizar "objeto" antes de incluir na query
+ const { redacted: sanitizedObjeto } =
+ this.piiRedactionService.redact(objeto);
 
-    const query = `Busque informações sobre contratações públicas similares a: "${sanitizedObjeto}".
-      Inclua informações sobre:
-      - Órgãos que realizaram contratações similares
-      - Valores praticados
-      - Modalidades utilizadas
-      - Links para processos ou documentos relacionados`;
+ const query = `Busque informações sobre contratações públicas similares a: "${sanitizedObjeto}".
+ Inclua informações sobre:
+ - Órgãos que realizaram contratações similares
+ - Valores praticados
+ - Modalidades utilizadas
+ - Links para processos ou documentos relacionados`;
 
-    return this.search(query);
-  }
+ return this.search(query);
+ }
 }
 ```
 
@@ -588,31 +588,31 @@ export class PerplexityService {
 ### 6.1 Critérios de Aceitação (Issue #268)
 
 - [x] **Identificar dados que podem ser anonimizados**
-  - ✅ `analytics_events.userId` (após 90 dias)
-  - ✅ `analytics_events.sessionId` (após 60 dias)
+ - ✅ `analytics_events.userId` (após 90 dias)
+ - ✅ `analytics_events.sessionId` (após 60 dias)
 
 - [x] **Identificar dados que devem ser pseudonimizados**
-  - ✅ `analytics_events.ipAddress` (após 30 dias)
-  - ✅ Queries Perplexity (antes de enviar)
-  - ✅ Logs de aplicação (antes de logar)
+ - ✅ `analytics_events.ipAddress` (após 30 dias)
+ - ✅ Queries Perplexity (antes de enviar)
+ - ✅ Logs de aplicação (antes de logar)
 
 - [x] **Verificar dados enviados para APIs externas**
-  - ✅ OpenAI: Sanitizado via `PIIRedactionService` ✅
-  - ⚠️ Perplexity: **NÃO sanitizado** - Issue #270 criada
+ - ✅ OpenAI: Sanitizado via `PIIRedactionService` ✅
+ - ⚠ Perplexity: **NÃO sanitizado** - Issue #270 criada
 
 - [x] **Documentar recomendações em LGPD_AUDIT.md**
-  - ✅ Este documento
+ - ✅ Este documento
 
 ---
 
 ## 7. Issues Relacionadas
 
-| Issue | Título                            | Prioridade | Esforço | Descrição                                                     |
+| Issue | Título | Prioridade | Esforço | Descrição |
 | ----- | --------------------------------- | ---------- | ------- | ------------------------------------------------------------- |
-| #270  | Sanitizar queries Perplexity      | P1         | 2h      | Aplicar `PIIRedactionService` antes de enviar para Perplexity |
-| #271  | Anonimizar analytics após 90 dias | P2         | 6h      | Implementar job cron de anonimização automática               |
-| #272  | Validar audit_logs.changes        | P1         | 2h      | Garantir ausência de dados sensíveis em audit logs            |
-| #273  | Sanitizar logs de aplicação       | P1         | 4h      | Implementar interceptor global de sanitização                 |
+| #270 | Sanitizar queries Perplexity | P1 | 2h | Aplicar `PIIRedactionService` antes de enviar para Perplexity |
+| #271 | Anonimizar analytics após 90 dias | P2 | 6h | Implementar job cron de anonimização automática |
+| #272 | Validar audit_logs.changes | P1 | 2h | Garantir ausência de dados sensíveis em audit logs |
+| #273 | Sanitizar logs de aplicação | P1 | 4h | Implementar interceptor global de sanitização |
 
 **Total estimado:** 14 horas
 
@@ -638,9 +638,9 @@ export class PerplexityService {
 
 ## 9. Histórico de Atualizações
 
-| Data       | Versão | Autor                        | Descrição                   |
+| Data | Versão | Autor | Descrição |
 | ---------- | ------ | ---------------------------- | --------------------------- |
-| 2025-11-22 | 1.0    | Claude (Engenheiro-Executor) | Versão inicial - Issue #268 |
+| 2025-11-22 | 1.0 | Claude (Engenheiro-Executor) | Versão inicial - Issue #268 |
 
 ---
 
