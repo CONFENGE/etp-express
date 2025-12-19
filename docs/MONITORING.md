@@ -114,7 +114,7 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 ### Endpoint: `/api/metrics`
 
 **Formato:** Prometheus text format
-**URL:** https://etp-express.up.railway.app/api/metrics
+**URL:** https://etp-express-backend-production.up.railway.app/api/metrics
 **Endpoint JSON:** `/api/metrics/json`
 
 ### Métricas Coletadas
@@ -263,11 +263,11 @@ VITE_SENTRY_DSN=<frontend-dsn>
 git push origin master
 
 # Validar error tracking
-curl -X POST https://etp-express.up.railway.app/api/debug/sentry-test
+curl -X POST https://etp-express-backend-production.up.railway.app/api/debug/sentry-test
 # → Verificar erro no Sentry em <30s
 
 # Validar métricas
-curl https://etp-express.up.railway.app/api/metrics
+curl https://etp-express-backend-production.up.railway.app/api/metrics
 # → Ver métricas em formato Prometheus
 ```
 
@@ -351,7 +351,7 @@ curl https://etp-express.up.railway.app/api/metrics
 
 ```bash
 # Backend: Testar endpoint de debug
-curl -X GET https://etp-express.up.railway.app/api/debug/sentry-test
+curl -X GET https://etp-express-backend-production.up.railway.app/api/debug/sentry-test
 
 # Frontend: Abrir console e verificar
 console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor

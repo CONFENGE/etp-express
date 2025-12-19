@@ -707,11 +707,11 @@ DATABASE_URL=${{Postgres.DATABASE_URL}}
 JWT_SECRET=${{secrets.JWT_SECRET}}
 OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
 EXA_API_KEY=${{secrets.EXA_API_KEY}}
-FRONTEND_URL=https://etp-express.up.railway.app
-CORS_ORIGINS=https://etp-express.up.railway.app
+FRONTEND_URL=https://etp-express-frontend-production.up.railway.app
+CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
 
 # Frontend
-VITE_API_URL=https://etp-express-backend.up.railway.app
+VITE_API_URL=https://etp-express-backend-production.up.railway.app
 VITE_APP_NAME="ETP Express"
 ```
 
