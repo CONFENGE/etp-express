@@ -723,11 +723,11 @@ railway init
 # Adicionar API keys, DATABASE_URL, CORS, etc
 ```
 
-**URLs de exemplo**:
+**URLs de produção**:
 
-- Backend: `https://etp-express-backend.up.railway.app`
-- Frontend: `https://etp-express-frontend.up.railway.app`
-- Swagger: `https://etp-express-backend.up.railway.app/api/docs`
+- Backend: `https://etp-express-backend-production.up.railway.app`
+- Frontend: `https://etp-express-frontend-production.up.railway.app`
+- Swagger: `https://etp-express-backend-production.up.railway.app/api/docs`
 
 ---
 

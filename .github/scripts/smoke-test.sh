@@ -55,22 +55,22 @@ check_json_field() {
 }
 
 echo "=== 1. Backend Health Check ==="
-check_endpoint "https://etp-express-backend.railway.app/api/health" "Backend Health"
+check_endpoint "https://etp-express-backend-production.up.railway.app/api/health" "Backend Health"
 
 if [ $? -eq 0 ]; then
-    check_json_field "https://etp-express-backend.railway.app/api/health" "status" "ok" "Status"
-    check_json_field "https://etp-express-backend.railway.app/api/health" "database" "up" "Database"
-    check_json_field "https://etp-express-backend.railway.app/api/health" "redis" "up" "Redis"
+    check_json_field "https://etp-express-backend-production.up.railway.app/api/health" "status" "ok" "Status"
+    check_json_field "https://etp-express-backend-production.up.railway.app/api/health" "database" "up" "Database"
+    check_json_field "https://etp-express-backend-production.up.railway.app/api/health" "redis" "up" "Redis"
 fi
 echo ""
 
 echo "=== 2. Frontend Load ==="
-check_endpoint "https://etp-express-frontend.railway.app" "Frontend"
+check_endpoint "https://etp-express-frontend-production.up.railway.app" "Frontend"
 echo ""
 
 echo "=== 3. Response Time ==="
 echo -n "Medindo latência backend... "
-time_total=$(curl -w "%{time_total}\n" -o /dev/null -s https://etp-express-backend.railway.app/api/health)
+time_total=$(curl -w "%{time_total}\n" -o /dev/null -s https://etp-express-backend-production.up.railway.app/api/health)
 time_ms=$(echo "$time_total * 1000" | bc)
 time_ms_int=${time_ms%.*}
 

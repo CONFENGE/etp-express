@@ -141,8 +141,8 @@ OPENAI_TEMPERATURE=0.7
 EXA_API_KEY=exa-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Frontend URL (será preenchido após deploy do frontend)
-FRONTEND_URL=https://etp-express-frontend.up.railway.app
-CORS_ORIGINS=https://etp-express-frontend.up.railway.app
+FRONTEND_URL=https://etp-express-frontend-production.up.railway.app
+CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
 
 # Rate Limiting
 RATE_LIMIT_TTL=60
@@ -213,7 +213,7 @@ VITE_APP_NAME=ETP Express
 1. Clique no serviço `etp-express-frontend`
 2. Vá em **"Settings"** → **"Domains"**
 3. Clique **"Generate Domain"**
-4. Anote a URL: `https://etp-express-frontend.up.railway.app`
+4. Anote a URL: `https://etp-express-frontend-production.up.railway.app`
 
 ### 4.5 Atualizar CORS no Backend
 
@@ -222,14 +222,14 @@ VITE_APP_NAME=ETP Express
 1. Volte ao serviço `etp-express-backend`
 2. Em **"Variables"**, atualize:
    ```bash
-   FRONTEND_URL=https://etp-express-frontend.up.railway.app
-   CORS_ORIGINS=https://etp-express-frontend.up.railway.app
+   FRONTEND_URL=https://etp-express-frontend-production.up.railway.app
+   CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
    ```
 3. O serviço reiniciará automaticamente
 
 ### 4.6 Verificar Deploy
 
-Acesse: `https://etp-express-frontend.up.railway.app`
+Acesse: `https://etp-express-frontend-production.up.railway.app`
 
 Você deve ver:
 
@@ -243,7 +243,7 @@ Você deve ver:
 
 ### 5.1 Teste de Conectividade
 
-1. Acesse o frontend: `https://etp-express-frontend.up.railway.app`
+1. Acesse o frontend: `https://etp-express-frontend-production.up.railway.app`
 2. Registre um novo usuário
 3. Faça login
 4. Crie um ETP de teste
@@ -267,7 +267,7 @@ Clique no serviço → Aba "Logs"
 - Backend: `https://etp-express-backend-production.up.railway.app/api`
 - Backend Info: `https://etp-express-backend-production.up.railway.app/api/info`
 - Swagger: `https://etp-express-backend-production.up.railway.app/api/docs`
-- Frontend: `https://etp-express-frontend.up.railway.app`
+- Frontend: `https://etp-express-frontend-production.up.railway.app`
 
 ### 5.4 Timeout Configuration
 
@@ -394,7 +394,7 @@ Para alertas baseados em taxa de erro, use o endpoint `/api/health/metrics`:
 
 ```bash
 # Verificar métricas do backend
-curl https://etp-express-backend.railway.app/api/health/metrics
+curl https://etp-express-backend-production.up.railway.app/api/health/metrics
 ```
 
 Resposta esperada:

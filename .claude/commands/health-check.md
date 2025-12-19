@@ -11,10 +11,10 @@ Voce e responsavel por verificar o health dos servicos ETP Express em producao.
 
 ## Endpoints a Verificar
 
-| Servico        | URL                                                | Esperado   |
-| -------------- | -------------------------------------------------- | ---------- |
-| Backend Health | https://etp-express-backend.railway.app/api/health | 200 + JSON |
-| Frontend       | https://etp-express-frontend.railway.app           | 200 + HTML |
+| Servico        | URL                                                              | Esperado   |
+| -------------- | ---------------------------------------------------------------- | ---------- |
+| Backend Health | https://etp-express-backend-production.up.railway.app/api/health | 200 + JSON |
+| Frontend       | https://etp-express-frontend-production.up.railway.app           | 200 + HTML |
 
 ---
 
@@ -23,7 +23,7 @@ Voce e responsavel por verificar o health dos servicos ETP Express em producao.
 ### 1. Backend Health Check
 
 ```bash
-curl -s -w "\n%{http_code}" https://etp-express-backend.railway.app/api/health
+curl -s -w "\n%{http_code}" https://etp-express-backend-production.up.railway.app/api/health
 ```
 
 Esperado:
@@ -42,7 +42,7 @@ Esperado:
 ### 2. Frontend Availability
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}" https://etp-express-frontend.railway.app
+curl -s -o /dev/null -w "%{http_code}" https://etp-express-frontend-production.up.railway.app
 ```
 
 Esperado: `200`
@@ -50,7 +50,7 @@ Esperado: `200`
 ### 3. API Response Time
 
 ```bash
-curl -s -w "Time: %{time_total}s\n" -o /dev/null https://etp-express-backend.railway.app/api/health
+curl -s -w "Time: %{time_total}s\n" -o /dev/null https://etp-express-backend-production.up.railway.app/api/health
 ```
 
 Thresholds:
