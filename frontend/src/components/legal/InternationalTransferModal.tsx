@@ -81,9 +81,7 @@ export function InternationalTransferModal({
             <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
               <Search className="h-5 w-5 text-purple-500 mt-0.5" />
               <div>
-                <p className="font-medium text-sm">
-                  Exa (Estados Unidos)
-                </p>
+                <p className="font-medium text-sm">Exa (Estados Unidos)</p>
                 <p className="text-xs text-muted-foreground">
                   Pesquisa de fundamentação legal e técnica
                 </p>
