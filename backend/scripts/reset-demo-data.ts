@@ -74,7 +74,7 @@ const SAMPLE_ETPS = [
 ];
 
 async function resetDemoData(): Promise<void> {
-  console.log('🔄 Starting demo data reset script...');
+  console.log('Starting demo data reset script...');
   console.log(`   Timestamp: ${new Date().toISOString()}`);
 
   const dataSource = new DataSource({
@@ -105,7 +105,7 @@ async function resetDemoData(): Promise<void> {
 
     if (!demoOrg) {
       console.error(
-        `❌ Demo organization not found (CNPJ: ${DEMO_ORGANIZATION_CNPJ})`,
+        `Demo organization not found (CNPJ: ${DEMO_ORGANIZATION_CNPJ})`,
       );
       console.log(
         '   Please run seed:admin first to create demo organization.',
@@ -113,9 +113,7 @@ async function resetDemoData(): Promise<void> {
       process.exit(1);
     }
 
-    console.log(
-      `📍 Demo organization found: ${demoOrg.name} (ID: ${demoOrg.id})`,
-    );
+    console.log(`Demo organization found: ${demoOrg.name} (ID: ${demoOrg.id})`);
 
     // 2. Find demo user
     const demoUser = await userRepository.findOne({
@@ -123,12 +121,12 @@ async function resetDemoData(): Promise<void> {
     });
 
     if (!demoUser) {
-      console.error(`❌ Demo user not found for organization ${demoOrg.id}`);
+      console.error(`Demo user not found for organization ${demoOrg.id}`);
       console.log('   Please run seed:admin first to create demo user.');
       process.exit(1);
     }
 
-    console.log(`👤 Demo user found: ${demoUser.email} (ID: ${demoUser.id})`);
+    console.log(`Demo user found: ${demoUser.email} (ID: ${demoUser.id})`);
 
     // Start transaction
     const queryRunner = dataSource.createQueryRunner();
@@ -143,7 +141,7 @@ async function resetDemoData(): Promise<void> {
       });
 
       const etpIds = demoEtps.map((etp) => etp.id);
-      console.log(`📋 Found ${etpIds.length} ETPs to delete`);
+      console.log(`Found ${etpIds.length} ETPs to delete`);
 
       let deletedAuditLogs = 0;
       let deletedVersions = 0;
@@ -156,32 +154,32 @@ async function resetDemoData(): Promise<void> {
           etpId: In(etpIds),
         });
         deletedAuditLogs = auditLogsResult.affected || 0;
-        console.log(`   🗑️  Deleted ${deletedAuditLogs} audit logs`);
+        console.log(`   Deleted ${deletedAuditLogs} audit logs`);
 
         // 5. Delete versions
         const versionsResult = await queryRunner.manager.delete(EtpVersion, {
           etpId: In(etpIds),
         });
         deletedVersions = versionsResult.affected || 0;
-        console.log(`   🗑️  Deleted ${deletedVersions} versions`);
+        console.log(`   Deleted ${deletedVersions} versions`);
 
         // 6. Delete sections
         const sectionsResult = await queryRunner.manager.delete(EtpSection, {
           etpId: In(etpIds),
         });
         deletedSections = sectionsResult.affected || 0;
-        console.log(`   🗑️  Deleted ${deletedSections} sections`);
+        console.log(`   Deleted ${deletedSections} sections`);
 
         // 7. Delete ETPs
         const etpsResult = await queryRunner.manager.delete(Etp, {
           organizationId: demoOrg.id,
         });
         deletedEtps = etpsResult.affected || 0;
-        console.log(`   🗑️  Deleted ${deletedEtps} ETPs`);
+        console.log(`   Deleted ${deletedEtps} ETPs`);
       }
 
       // 8. Recreate sample ETPs
-      console.log('\n📝 Creating sample ETPs...');
+      console.log('\nCreating sample ETPs...');
       let createdEtps = 0;
 
       for (const sampleEtp of SAMPLE_ETPS) {
@@ -199,37 +197,37 @@ async function resetDemoData(): Promise<void> {
 
       await queryRunner.commitTransaction();
 
-      console.log('\n📊 Summary:');
+      console.log('\nSummary:');
       console.log(`   Deleted ETPs: ${deletedEtps}`);
       console.log(`   Deleted Sections: ${deletedSections}`);
       console.log(`   Deleted Versions: ${deletedVersions}`);
       console.log(`   Deleted Audit Logs: ${deletedAuditLogs}`);
       console.log(`   Created ETPs: ${createdEtps}`);
 
-      console.log('\n🎉 Demo data reset completed successfully!');
+      console.log('\nDemo data reset completed successfully!');
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.error('❌ Transaction rolled back due to error:', error.message);
+      console.error('Transaction rolled back due to error:', error.message);
       throw error;
     } finally {
       await queryRunner.release();
     }
   } catch (error) {
-    console.error('❌ Error during demo reset:', error);
+    console.error('Error during demo reset:', error);
     throw error;
   } finally {
     await dataSource.destroy();
-    console.log('🔌 Database connection closed');
+    console.log('Database connection closed');
   }
 }
 
 // Run script
 resetDemoData()
   .then(() => {
-    console.log('\n✨ All done!');
+    console.log('\nAll done!');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n💥 Fatal error:', error);
+    console.error('\nFatal error:', error);
     process.exit(1);
   });

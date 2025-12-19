@@ -1,4 +1,4 @@
-# 📋 CHANGELOG
+# CHANGELOG
 
 Todas as mudanças notáveis do **ETP Express** serão documentadas aqui.
 
@@ -9,11 +9,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
-### 🔄 Em Desenvolvimento (v1.0.0 - Planejada para Q1 2026)
+### Em Desenvolvimento (v1.0.0 - Planejada para Q1 2026)
 
 Trabalho em progresso para alcançar qualidade de produção:
 
-#### 🔒 Security & Infrastructure (2025-12-05)
+#### Security & Infrastructure (2025-12-05)
 
 - ✅ #413 - Fix HIGH severity jws vulnerability + Update Railway domain (PR #415)
   - **Security Fix:** Upgraded `jws` from 3.2.2 to 3.2.3 (CVE Score: 7.5 HIGH)
@@ -24,7 +24,7 @@ Trabalho em progresso para alcançar qualidade de produção:
   - Zero vulnerabilities after fix (`npm audit --omit=dev`)
   - All 882 tests passing ✅
 
-#### ⚡ Async Processing & Performance (2025-12-04 to 2025-12-05)
+#### Async Processing & Performance (2025-12-04 to 2025-12-05)
 
 - ✅ #221 - Unit Tests for Job Status Polling API (PR #417)
   - **Test Coverage Completion** para endpoint `GET /sections/jobs/:jobId` implementado em PR #416
@@ -69,7 +69,7 @@ Trabalho em progresso para alcançar qualidade de produção:
   - 77/77 testes passando no módulo sections (incluindo 9 novos testes do processor)
   - Coverage: 98.81% no módulo sections
 
-#### 🏢 Multi-Tenancy B2G (2025-12-01)
+#### Multi-Tenancy B2G (2025-12-01)
 
 - ✅ #354 - Infraestrutura de Organizations para Multi-Tenancy B2G (PR #360)
   - **MT-01** - Primeira issue da cadeia de Multi-Tenancy

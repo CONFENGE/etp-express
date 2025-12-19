@@ -58,8 +58,8 @@ Para criar um backup manual imediato:
 **Output esperado:**
 
 ```
-🔄 Iniciando backup manual...
-✅ Backup criado: backups/etp_express_20251114_143052.sql.gz
+Iniciando backup manual...
+Backup criado: backups/etp_express_20251114_143052.sql.gz
 ```
 
 **Localização:** `backups/etp_express_YYYYMMDD_HHMMSS.sql.gz`
@@ -136,16 +136,16 @@ Para garantir que backups estão sendo executados:
 **Output esperado (backup recente):**
 
 ```
-✅ Backup recente encontrado
-📁 Arquivo: backups/etp_express_20251114_143052.sql.gz
-🕒 Idade: 2 horas
+Backup recente encontrado
+Arquivo: backups/etp_express_20251114_143052.sql.gz
+Idade: 2 horas
 ```
 
 **Output de falha (backup antigo):**
 
 ```
-⚠️  Último backup tem mais de 24h!
-📁 Arquivo: backups/etp_express_20251113_030000.sql.gz
+Último backup tem mais de 24h!
+Arquivo: backups/etp_express_20251113_030000.sql.gz
 ```
 
 ---
@@ -380,7 +380,7 @@ railway logs --service postgresql | grep -i error
 ### Template 1: Incident in Progress
 
 ```
-🚨 INCIDENT REPORT
+INCIDENT REPORT
 
 Status: INVESTIGATING / IN PROGRESS / RESOLVED
 Severity: P0 / P1 / P2 / P3
@@ -406,7 +406,7 @@ Contact: [Nome do Incident Commander]
 ### Template 2: Incident Resolved
 
 ```
-✅ INCIDENT RESOLVED
+INCIDENT RESOLVED
 
 Incident ID: [ID]
 Duration: [Tempo total de downtime]
@@ -441,7 +441,7 @@ Apologies for any inconvenience caused.
 3. **NUNCA** executar restore em produção sem confirmação explícita
 4. **SEMPRE** testar restore em staging antes de produção (quando possível)
 
-### 📋 Checklist Pré-Restore
+### Checklist Pré-Restore
 
 - [ ] Confirmar horário exato do incidente
 - [ ] Identificar último backup válido (anterior ao incidente)
@@ -530,8 +530,8 @@ docker rm test-postgres
 **Output esperado:**
 
 ```
-✅ RESTORE VALIDADO COM SUCESSO
-✅ Integridade: 100%
+RESTORE VALIDADO COM SUCESSO
+Integridade: 100%
 ```
 
 ### Validação Semanal Automatizada

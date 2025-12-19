@@ -118,7 +118,7 @@ You are acting as a **System Architect** specialized in:
 6. **Comment on Issue**
 
    ```bash
-   gh issue comment <NUMBER> --body "🏗️ Tech Spec created: [View Spec](../../../docs/tech-specs/issue-<NUMBER>-tech-spec.md)"
+   gh issue comment <NUMBER> --body "Tech Spec created: [View Spec](../../../docs/tech-specs/issue-<NUMBER>-tech-spec.md)"
    ```
 
 7. **Summary for User**

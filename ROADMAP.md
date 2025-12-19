@@ -6,7 +6,7 @@
 
 ---
 
-## 🚨 SPRINT GO-LIVE DEFINITIVO (41 issues)
+## SPRINT GO-LIVE DEFINITIVO (41 issues)
 
 **Criado:** 2025-12-18 | **Objetivo:** Resolver todas as deficiencias que corroem credibilidade do sistema
 
@@ -75,7 +75,7 @@
 
 ---
 
-## 🛡️ Hardening & Refactoring (5 issues restantes)
+## Hardening & Refactoring (5 issues restantes)
 
 **Origem:** Análise de segurança externa (dez/2024)
 **Validação:** Codebase auditado, 2 pontos já implementados, 18 issues criadas

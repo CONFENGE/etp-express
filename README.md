@@ -1,4 +1,4 @@
-# 🚀 ETP EXPRESS
+# ETP EXPRESS
 
 > **⚠️ O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**
 
@@ -19,11 +19,11 @@ Sistema assistivo para elaboração de **Estudos Técnicos Preliminares (ETP)** 
 
 ---
 
-## 📋 SOBRE O PROJETO
+## SOBRE O PROJETO
 
 O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para auxiliar servidores públicos, consultores e agentes de contratação na elaboração de Estudos Técnicos Preliminares, conforme exigido pelo **Art. 18 §1º da Lei 14.133/2021**.
 
-### ⚡ Diferenciais
+### Diferenciais
 
 - **Sistema de Subagentes**: 5 agentes especializados trabalhando em pipeline
 - **Anti-Hallucination**: Mitigação ativa de alucinações e invenção de fatos
@@ -42,7 +42,7 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 - **1,879 Testes Automatizados**: 78% backend, 76% frontend, zero erros TypeScript
 - **Auditorias Arquiteturais**: Orchestrator (95%), User (92%), Sections (83%)
 
-### 🎯 Funcionalidades Core
+### Funcionalidades Core
 
 1. ✅ Formulário guiado para preenchimento das 13 seções do ETP
 2. ✅ Geração assistida por IA (GPT-4) com validação multi-agente
@@ -54,7 +54,7 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 
 ---
 
-## 🏗️ ARQUITETURA
+## ARQUITETURA
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -110,7 +110,7 @@ Generated Content + Warnings + References
 
 ---
 
-## 🚀 QUICK START
+## QUICK START
 
 ### Pré-requisitos
 
@@ -163,7 +163,7 @@ npm run dev
 4. Faça login
 5. Crie seu primeiro ETP!
 
-### 🔒 Configuração de Segurança (Gitleaks)
+### Configuração de Segurança (Gitleaks)
 
 Para proteger contra vazamento de secrets (API keys, senhas, tokens), instale o **Gitleaks**:
 
@@ -204,7 +204,7 @@ O pre-commit hook detectará automaticamente o Gitleaks e escaneará seus commit
 
 ---
 
-## 🐳 DESENVOLVIMENTO LOCAL COM DOCKER (RECOMENDADO)
+## DESENVOLVIMENTO LOCAL COM DOCKER (RECOMENDADO)
 
 ### Pré-requisitos
 
@@ -422,7 +422,7 @@ docker system df
 
 ---
 
-## 🔄 CI/CD E GITHUB ACTIONS
+## CI/CD E GITHUB ACTIONS
 
 **M2 (Issues #18-#20, #252-#257)**
 
@@ -455,7 +455,7 @@ docker system df
 
 ---
 
-## 🧪 E2E TESTS (PUPPETEER)
+## E2E TESTS (PUPPETEER)
 
 **M5 (Issue #22)** - Infraestrutura completa de testes end-to-end com Puppeteer + Jest.
 
@@ -679,15 +679,15 @@ curl http://localhost:5173
 
 ### Referências
 
-- 📚 [Documentação Puppeteer](https://pptr.dev/)
-- 📚 [Jest Documentation](https://jestjs.io/docs/getting-started)
-- 🔗 [Issue #22 - Configure Puppeteer E2E](https://github.com/tjsasakifln/etp-express/issues/22)
-- 🔗 [Issue #23 - E2E Critical Flow Tests](https://github.com/tjsasakifln/etp-express/issues/23)
-- 🔗 [Issue #24 - Accessibility Tests (Axe-core)](https://github.com/tjsasakifln/etp-express/issues/24)
+- [Documentação Puppeteer](https://pptr.dev/)
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [Issue #22 - Configure Puppeteer E2E](https://github.com/tjsasakifln/etp-express/issues/22)
+- [Issue #23 - E2E Critical Flow Tests](https://github.com/tjsasakifln/etp-express/issues/23)
+- [Issue #24 - Accessibility Tests (Axe-core)](https://github.com/tjsasakifln/etp-express/issues/24)
 
 ---
 
-## 📦 DEPLOY EM PRODUÇÃO (RAILWAY)
+## DEPLOY EM PRODUÇÃO (RAILWAY)
 
 Consulte o guia completo: **[DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)**
 
@@ -731,7 +731,7 @@ railway init
 
 ---
 
-## 📚 ESTRUTURA DO PROJETO
+## ESTRUTURA DO PROJETO
 
 ```
 ETP Express/
@@ -746,7 +746,7 @@ ETP Express/
 │   │       ├── users/         # Usuários
 │   │       ├── etps/          # ETPs
 │   │       ├── sections/      # Seções
-│   │       ├── orchestrator/  # ⭐ Sistema de IA
+│   │       ├── orchestrator/  # Sistema de IA
 │   │       ├── rag/           # RAG + pgvector (Lei 14.133)
 │   │       ├── search/        # Busca Perplexity
 │   │       ├── export/        # Exportação PDF/JSON/XML/DOCX
@@ -781,7 +781,7 @@ ETP Express/
 
 ---
 
-## ⚡ PERFORMANCE E OTIMIZAÇÕES
+## PERFORMANCE E OTIMIZAÇÕES
 
 **Implementações M4 (Issues #339-#343)**
 
@@ -831,7 +831,7 @@ ETP Express/
 
 ---
 
-## 🔑 VARIÁVEIS DE AMBIENTE
+## VARIÁVEIS DE AMBIENTE
 
 ### Backend (.env)
 
@@ -862,7 +862,7 @@ VITE_APP_NAME=ETP Express
 
 ---
 
-## 🛠️ COMANDOS ÚTEIS
+## COMANDOS ÚTEIS
 
 ### Backend
 
@@ -907,20 +907,20 @@ npm run lint
 
 ---
 
-## 📖 DOCUMENTAÇÃO
+## DOCUMENTAÇÃO
 
-| Documento                                                      | Descrição                                            |
-| -------------------------------------------------------------- | ---------------------------------------------------- |
-| [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                      |
-| [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)             | 🏗️ **Infrastructure as Code - Docker, Railway, DR**  |
-| [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)                 |
-| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | 🚨 **Playbook de resposta a incidentes em produção** |
-| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime                    |
-| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md)                 | Backup e disaster recovery procedures                |
-| [docs/MONITORING.md](./docs/MONITORING.md)                     | Monitoramento e alertas com Sentry                   |
-| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql)                   | Schema completo do banco                             |
-| [backend/README.md](./backend/README.md)                       | Documentação do backend                              |
-| [frontend/README.md](./frontend/README.md)                     | Documentação do frontend                             |
+| Documento                                                      | Descrição                                         |
+| -------------------------------------------------------------- | ------------------------------------------------- |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                   |
+| [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)             | **Infrastructure as Code - Docker, Railway, DR**  |
+| [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)              |
+| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | **Playbook de resposta a incidentes em produção** |
+| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime                 |
+| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md)                 | Backup e disaster recovery procedures             |
+| [docs/MONITORING.md](./docs/MONITORING.md)                     | Monitoramento e alertas com Sentry                |
+| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql)                   | Schema completo do banco                          |
+| [backend/README.md](./backend/README.md)                       | Documentação do backend                           |
+| [frontend/README.md](./frontend/README.md)                     | Documentação do frontend                          |
 
 ### Auditorias Arquiteturais
 
@@ -940,7 +940,7 @@ npm run lint
 
 ---
 
-## 🎓 GUIA DE USO
+## GUIA DE USO
 
 ### Para Servidores Públicos
 
@@ -1003,7 +1003,7 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 
 ---
 
-## 🔒 SEGURANÇA E PRIVACIDADE
+## SEGURANÇA E PRIVACIDADE
 
 ### Dados Processados
 
@@ -1053,7 +1053,7 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 
 ---
 
-## 📊 MONITORAMENTO E ANALYTICS
+## MONITORAMENTO E ANALYTICS
 
 ### Métricas Coletadas (Telemetria)
 
@@ -1079,7 +1079,7 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 
 ---
 
-## 🤝 CONTRIBUINDO
+## CONTRIBUINDO
 
 Este é um projeto assistivo para benefício público. Contribuições são bem-vindas!
 
@@ -1176,7 +1176,7 @@ npm run test:all      # Na raiz do projeto
 
 ---
 
-## 📝 LICENÇA
+## LICENÇA
 
 **LICENÇA PROPRIETÁRIA**
 
@@ -1189,7 +1189,7 @@ Este software é propriedade exclusiva da CONFENGE. É expressamente proibido co
 
 ---
 
-## 📞 SUPORTE
+## SUPORTE
 
 ### Problemas Técnicos
 
@@ -1211,7 +1211,7 @@ Este software é propriedade exclusiva da CONFENGE. É expressamente proibido co
 
 ---
 
-## 🎯 ROADMAP
+## ROADMAP
 
 **Ultima Atualizacao**: 2025-12-14 | [ROADMAP.md completo](./ROADMAP.md)
 
@@ -1238,7 +1238,7 @@ M9: ███████░░░░░░░░░░░░░  7/16  (44%)  �
 - ✅ Cache LLM (80% economia)
 - ✅ Paralelização 4-5x speedup
 
-### 📚 M5: E2E Testing & Documentation (75%)
+### M5: E2E Testing & Documentation (75%)
 
 - ✅ E2E critical flow tests (Playwright)
 - ✅ Accessibility tests (WCAG 2.1 AA)
@@ -1246,7 +1246,7 @@ M9: ███████░░░░░░░░░░░░░  7/16  (44%)  �
 - [ ] Staged rollout, Production SLA
 - [ ] Load testing k6 (100 users)
 
-### 🔄 M6: Maintenance (81%)
+### M6: Maintenance (81%)
 
 - ✅ Redis + BullMQ async processing
 - ✅ Async UX polling frontend
@@ -1278,7 +1278,7 @@ M9: ███████░░░░░░░░░░░░░  7/16  (44%)  �
 
 ---
 
-### 🚀 Próximas Features (Pós M6)
+### Próximas Features (Pós M6)
 
 #### Versão 1.1
 
@@ -1301,7 +1301,7 @@ M9: ███████░░░░░░░░░░░░░  7/16  (44%)  �
 
 ---
 
-## 🌟 AGRADECIMENTOS
+## AGRADECIMENTOS
 
 Este projeto foi criado para auxiliar servidores públicos na elaboração de ETPs conforme a **Lei 14.133/2021**, contribuindo para:
 

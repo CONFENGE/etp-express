@@ -1,6 +1,6 @@
 # Auditoria LGPD - Anonimização e Pseudonimização de Dados
 
-## 📋 Objetivo
+## Objetivo
 
 Este documento avalia oportunidades de aplicação de **anonimização** e **pseudonimização** de dados pessoais no sistema ETP Express, visando reduzir riscos de privacidade e fortalecer a conformidade com a LGPD.
 

@@ -29,7 +29,7 @@ Your job is to detect ALL discrepancies and provide actionable reconciliation st
 **Output format:**
 
 ```
-📊 ISSUE COUNT AUDIT
+ISSUE COUNT AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ROADMAP.md:        98 issues
 GitHub (actual):   103 issues
@@ -64,7 +64,7 @@ BREAKDOWN:
 **Output format:**
 
 ```
-📈 MILESTONE PROGRESS AUDIT
+MILESTONE PROGRESS AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Milestone | ROADMAP    | GitHub     | Sync | Issues                  |
@@ -104,7 +104,7 @@ CRITICAL ISSUES:
 **Output format:**
 
 ```
-🔍 ISSUE STATE AUDIT (Detailed)
+ISSUE STATE AUDIT (Detailed)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 DISCREPANCIES FOUND: 8
@@ -151,7 +151,7 @@ M5 (6% claimed, SHOULD BE 12%):
 **Output format:**
 
 ```
-👻 PHANTOM REFERENCES AUDIT
+PHANTOM REFERENCES AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 CRITICAL: 14 phantom issues detected!
@@ -184,7 +184,7 @@ Line 891: "Blocked by #999"
 **Output format:**
 
 ```
-🆕 ORPHAN ISSUES AUDIT
+ORPHAN ISSUES AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
@@ -237,7 +237,7 @@ FOUND: 5 orphan issues (exist in GitHub, missing in ROADMAP)
 **Output format:**
 
 ```
-⏱️  VELOCITY & ETA AUDIT
+VELOCITY & ETA AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ACTUAL VELOCITY (Last 7 days):
@@ -286,7 +286,7 @@ M4 (15% → 100%):
 **Output format:**
 
 ```
-📝 DOCUMENTATION CONSISTENCY AUDIT
+DOCUMENTATION CONSISTENCY AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 HEADER SECTION:
@@ -332,7 +332,7 @@ MILESTONE SUMMARIES:
 
 ```
 ═══════════════════════════════════════════════════
-🎯 ROADMAP AUDIT - EXECUTIVE SUMMARY
+ROADMAP AUDIT - EXECUTIVE SUMMARY
 ═══════════════════════════════════════════════════
 
 Audit Date: 2025-11-18
@@ -352,7 +352,7 @@ IMPACT:
 └─ Milestone ETAs: Conservative (can accelerate by 2-3 weeks)
 
 ═══════════════════════════════════════════════════
-🔧 REQUIRED ACTIONS (Priority Order)
+REQUIRED ACTIONS (Priority Order)
 ═══════════════════════════════════════════════════
 
 P0 - CRITICAL (Fix immediately):
@@ -376,7 +376,7 @@ P2 - MEDIUM (Optional improvements):
 [ ] 11. Create AUDIT_HISTORY.md to track drift over time
 
 ═══════════════════════════════════════════════════
-📊 UPDATED METRICS SNAPSHOT
+UPDATED METRICS SNAPSHOT
 ═══════════════════════════════════════════════════
 
 Total Issues: 103 (was 98, +5 discovered)
@@ -471,7 +471,7 @@ Line 891:
 + [x] #85 - OWASP Security Audit ✅ (PR #133)
 ```
 
-**ℹ️ CI/CD Optimization Note:**
+**CI/CD Optimization Note:**
 
 - Commits que modificam **apenas ROADMAP.md** NÃO acionam workflows de CI/CD
 - Path filters estão ativos: apenas código TypeScript/TSX aciona lint/tests
