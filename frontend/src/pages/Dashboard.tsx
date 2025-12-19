@@ -65,7 +65,7 @@ export function Dashboard() {
                 <EmptyState
                   type="welcome"
                   title="Crie seu primeiro ETP"
-                  description="O ETP Express ajuda você a criar Estudos Técnicos Preliminares de forma rápida e estruturada. Comece agora e simplifique seu trabalho."
+                  description="Crie Estudos Tecnicos Preliminares estruturados e em conformidade com a Lei 14.133/2021."
                   size="lg"
                 />
 
@@ -106,12 +106,12 @@ export function Dashboard() {
             <Card className="bg-muted/30">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Sugestões inteligentes
+                  Sugestoes contextuais
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  Receba sugestões contextualizadas para cada seção do seu ETP.
+                  Receba sugestoes para cada secao do seu ETP.
                 </p>
               </CardContent>
             </Card>

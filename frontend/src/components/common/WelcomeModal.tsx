@@ -83,8 +83,8 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
             Bem-vindo ao ETP Express!
           </DialogTitle>
           <DialogDescription id="welcome-description" className="text-base">
-            Simplifique a elaboracao de Estudos Tecnicos Preliminares com
-            assistencia inteligente, em conformidade com a Lei 14.133/2021.
+            Elabore Estudos Tecnicos Preliminares em conformidade com a Lei
+            14.133/2021.
           </DialogDescription>
         </DialogHeader>
 

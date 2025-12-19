@@ -111,7 +111,7 @@ describe('ETPEditorContent', () => {
     expect(textarea).toBeInTheDocument();
   });
 
-  it('should render "Gerar com IA" button when onGenerateSection is provided', () => {
+  it('should render "Gerar Sugestao" button when onGenerateSection is provided', () => {
     const onGenerateSection = vi.fn();
 
     render(
@@ -126,7 +126,7 @@ describe('ETPEditorContent', () => {
     );
 
     const generateButtons = screen.getAllByRole('button', {
-      name: /gerar com ia/i,
+      name: /gerar sugestao/i,
     });
     expect(generateButtons.length).toBeGreaterThan(0);
   });
@@ -147,14 +147,14 @@ describe('ETPEditorContent', () => {
     );
 
     const generateButton = screen.getAllByRole('button', {
-      name: /gerar com ia/i,
+      name: /gerar sugestao/i,
     })[0];
     await user.click(generateButton);
 
     expect(onGenerateSection).toHaveBeenCalledWith(1);
   });
 
-  it('should not render "Gerar com IA" button when onGenerateSection is not provided', () => {
+  it('should not render "Gerar Sugestao" button when onGenerateSection is not provided', () => {
     render(
       <Tabs defaultValue="1">
         <ETPEditorContent
@@ -166,7 +166,7 @@ describe('ETPEditorContent', () => {
     );
 
     const generateButtons = screen.queryAllByRole('button', {
-      name: /gerar com ia/i,
+      name: /gerar sugestao/i,
     });
     expect(generateButtons).toHaveLength(0);
   });

@@ -181,7 +181,7 @@ vi.mock('@/components/etp/ETPEditorContent', () => ({
             onChange={(e) => onContentChange(e.target.value)}
             placeholder={`Digite o conteúdo da seção ${sections[0].title}...`}
           />
-          <button role="button">Gerar com IA</button>
+          <button role="button">Gerar Sugestao</button>
         </div>
       )}
     </div>
@@ -591,11 +591,11 @@ describe('ETPEditor', () => {
   });
 
   /**
-   * Teste 6: Botão "Gerar com IA" está presente
-   * Nota: Como não há AIGenerationPanel no código atual,
-   * este teste apenas valida que o botão existe.
+   * Teste 6: Botao "Gerar Sugestao" esta presente
+   * Nota: Como nao ha AIGenerationPanel no codigo atual,
+   * este teste apenas valida que o botao existe.
    */
-  it('exibe botão "Gerar com IA"', async () => {
+  it('exibe botao "Gerar Sugestao"', async () => {
     render(
       <BrowserRouter>
         <ETPEditor />
@@ -605,14 +605,14 @@ describe('ETPEditor', () => {
     // Aguarda templates carregarem
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /Gerar com IA/i }),
+        screen.getByRole('button', { name: /Gerar Sugestao/i }),
       ).toBeInTheDocument();
     });
 
-    // Verifica que o botão "Gerar com IA" existe
-    const aiButton = screen.getByRole('button', { name: /Gerar com IA/i });
+    // Verifica que o botao "Gerar Sugestao" existe
+    const aiButton = screen.getByRole('button', { name: /Gerar Sugestao/i });
     expect(aiButton).toBeInTheDocument();
-    expect(aiButton).toHaveTextContent('Gerar com IA');
+    expect(aiButton).toHaveTextContent('Gerar Sugestao');
   });
 
   /**
