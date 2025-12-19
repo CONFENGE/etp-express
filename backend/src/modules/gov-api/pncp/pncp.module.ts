@@ -42,8 +42,8 @@ import { PncpService } from './pncp.service';
  * ```
  */
 @Module({
- imports: [GovApiModule, ConfigModule],
- providers: [PncpService],
- exports: [PncpService],
+  imports: [GovApiModule, ConfigModule],
+  providers: [PncpService],
+  exports: [PncpService],
 })
 export class PncpModule {}

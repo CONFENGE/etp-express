@@ -11,16 +11,16 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 import { EtpsModule } from '../etps/etps.module';
 
 @Module({
- imports: [
- TypeOrmModule.forFeature([EtpSection, Etp]),
- BullModule.registerQueue({
- name: 'sections',
- }),
- OrchestratorModule,
- EtpsModule,
- ],
- controllers: [SectionsController],
- providers: [SectionsService, SectionsProcessor, SectionProgressService],
- exports: [SectionsService, SectionProgressService],
+  imports: [
+    TypeOrmModule.forFeature([EtpSection, Etp]),
+    BullModule.registerQueue({
+      name: 'sections',
+    }),
+    OrchestratorModule,
+    EtpsModule,
+  ],
+  controllers: [SectionsController],
+  providers: [SectionsService, SectionsProcessor, SectionProgressService],
+  exports: [SectionsService, SectionProgressService],
 })
 export class SectionsModule {}

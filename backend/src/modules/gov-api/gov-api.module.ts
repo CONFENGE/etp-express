@@ -75,8 +75,8 @@ import { GovApiMetricsService } from './gov-api-metrics.service';
  */
 @Global()
 @Module({
- imports: [ConfigModule],
- providers: [GovApiCache, GovApiMetricsService],
- exports: [GovApiCache, GovApiMetricsService],
+  imports: [ConfigModule],
+  providers: [GovApiCache, GovApiMetricsService],
+  exports: [GovApiCache, GovApiMetricsService],
 })
 export class GovApiModule {}

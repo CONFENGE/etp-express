@@ -1,182 +1,182 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
- loadSectionTemplates,
- getSectionTemplates,
- clearTemplatesCache,
+  loadSectionTemplates,
+  getSectionTemplates,
+  clearTemplatesCache,
 } from './section-templates';
 import type { SectionTemplate } from '../types/etp';
 
 // Mock logger to prevent actual Sentry calls
 vi.mock('./logger', () => ({
- logger: {
- error: vi.fn(),
- warn: vi.fn(),
- info: vi.fn(),
- debug: vi.fn(),
- },
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
 }));
 
 describe('section-templates', () => {
- const mockTemplates: SectionTemplate[] = [
- {
- number: 1,
- title: 'Introdução',
- description: 'Descrição da seção 1',
- requiredWords: 100,
- aiPrompt: 'Gere a introdução',
- },
- {
- number: 2,
- title: 'Desenvolvimento',
- description: 'Descrição da seção 2',
- requiredWords: 200,
- aiPrompt: 'Gere o desenvolvimento',
- },
- ];
+  const mockTemplates: SectionTemplate[] = [
+    {
+      number: 1,
+      title: 'Introdução',
+      description: 'Descrição da seção 1',
+      requiredWords: 100,
+      aiPrompt: 'Gere a introdução',
+    },
+    {
+      number: 2,
+      title: 'Desenvolvimento',
+      description: 'Descrição da seção 2',
+      requiredWords: 200,
+      aiPrompt: 'Gere o desenvolvimento',
+    },
+  ];
 
- const mockFetch = vi.fn();
+  const mockFetch = vi.fn();
 
- beforeEach(() => {
- // Clear cache before each test
- clearTemplatesCache();
+  beforeEach(() => {
+    // Clear cache before each test
+    clearTemplatesCache();
 
- // Reset fetch mock
- global.fetch = mockFetch;
- mockFetch.mockReset();
- });
+    // Reset fetch mock
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
+  });
 
- describe('loadSectionTemplates', () => {
- it('should load templates from JSON file', async () => {
- // Mock successful fetch
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+  describe('loadSectionTemplates', () => {
+    it('should load templates from JSON file', async () => {
+      // Mock successful fetch
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- const templates = await loadSectionTemplates();
+      const templates = await loadSectionTemplates();
 
- expect(templates).toEqual(mockTemplates);
- expect(global.fetch).toHaveBeenCalledWith('/data/section-templates.json');
- expect(global.fetch).toHaveBeenCalledTimes(1);
- });
+      expect(templates).toEqual(mockTemplates);
+      expect(global.fetch).toHaveBeenCalledWith('/data/section-templates.json');
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
 
- it('should cache templates after first load', async () => {
- // Mock successful fetch
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+    it('should cache templates after first load', async () => {
+      // Mock successful fetch
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- // First call - should fetch
- const templates1 = await loadSectionTemplates();
- expect(templates1).toEqual(mockTemplates);
- expect(global.fetch).toHaveBeenCalledTimes(1);
+      // First call - should fetch
+      const templates1 = await loadSectionTemplates();
+      expect(templates1).toEqual(mockTemplates);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
 
- // Second call - should return cached
- const templates2 = await loadSectionTemplates();
- expect(templates2).toEqual(mockTemplates);
- expect(global.fetch).toHaveBeenCalledTimes(1); // No additional fetch
- });
+      // Second call - should return cached
+      const templates2 = await loadSectionTemplates();
+      expect(templates2).toEqual(mockTemplates);
+      expect(global.fetch).toHaveBeenCalledTimes(1); // No additional fetch
+    });
 
- it('should return cached templates on subsequent calls', async () => {
- // Mock successful fetch
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+    it('should return cached templates on subsequent calls', async () => {
+      // Mock successful fetch
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- await loadSectionTemplates();
+      await loadSectionTemplates();
 
- // Subsequent calls should not fetch again
- const templates = await loadSectionTemplates();
- expect(templates).toEqual(mockTemplates);
- expect(global.fetch).toHaveBeenCalledTimes(1);
- });
+      // Subsequent calls should not fetch again
+      const templates = await loadSectionTemplates();
+      expect(templates).toEqual(mockTemplates);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
 
- it('should handle fetch errors gracefully', async () => {
- const errorMessage = 'Network error';
- mockFetch.mockRejectedValueOnce(new Error(errorMessage));
+    it('should handle fetch errors gracefully', async () => {
+      const errorMessage = 'Network error';
+      mockFetch.mockRejectedValueOnce(new Error(errorMessage));
 
- // Import mocked logger
- const { logger } = await import('./logger');
+      // Import mocked logger
+      const { logger } = await import('./logger');
 
- await expect(loadSectionTemplates()).rejects.toThrow(errorMessage);
- expect(logger.error).toHaveBeenCalledWith(
- 'Error loading section templates',
- expect.any(Error),
- );
- });
+      await expect(loadSectionTemplates()).rejects.toThrow(errorMessage);
+      expect(logger.error).toHaveBeenCalledWith(
+        'Error loading section templates',
+        expect.any(Error),
+      );
+    });
 
- it('should throw error when response is not ok', async () => {
- mockFetch.mockResolvedValueOnce({
- ok: false,
- statusText: 'Not Found',
- });
+    it('should throw error when response is not ok', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        statusText: 'Not Found',
+      });
 
- await expect(loadSectionTemplates()).rejects.toThrow(
- 'Failed to load section templates: Not Found',
- );
- });
- });
+      await expect(loadSectionTemplates()).rejects.toThrow(
+        'Failed to load section templates: Not Found',
+      );
+    });
+  });
 
- describe('getSectionTemplates', () => {
- it('should return empty array when templates not loaded', () => {
- const templates = getSectionTemplates();
- expect(templates).toEqual([]);
- });
+  describe('getSectionTemplates', () => {
+    it('should return empty array when templates not loaded', () => {
+      const templates = getSectionTemplates();
+      expect(templates).toEqual([]);
+    });
 
- it('should return cached templates after load', async () => {
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+    it('should return cached templates after load', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- await loadSectionTemplates();
+      await loadSectionTemplates();
 
- const templates = getSectionTemplates();
- expect(templates).toEqual(mockTemplates);
- });
- });
+      const templates = getSectionTemplates();
+      expect(templates).toEqual(mockTemplates);
+    });
+  });
 
- describe('clearTemplatesCache', () => {
- it('should clear the cached templates', async () => {
- // Load templates first
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+  describe('clearTemplatesCache', () => {
+    it('should clear the cached templates', async () => {
+      // Load templates first
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- await loadSectionTemplates();
- expect(getSectionTemplates()).toEqual(mockTemplates);
+      await loadSectionTemplates();
+      expect(getSectionTemplates()).toEqual(mockTemplates);
 
- // Clear cache
- clearTemplatesCache();
+      // Clear cache
+      clearTemplatesCache();
 
- // Should return empty array after clearing
- expect(getSectionTemplates()).toEqual([]);
- });
+      // Should return empty array after clearing
+      expect(getSectionTemplates()).toEqual([]);
+    });
 
- it('should allow reloading after cache clear', async () => {
- // First load
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+    it('should allow reloading after cache clear', async () => {
+      // First load
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- await loadSectionTemplates();
- expect(global.fetch).toHaveBeenCalledTimes(1);
+      await loadSectionTemplates();
+      expect(global.fetch).toHaveBeenCalledTimes(1);
 
- // Clear cache
- clearTemplatesCache();
+      // Clear cache
+      clearTemplatesCache();
 
- // Second load should fetch again
- mockFetch.mockResolvedValueOnce({
- ok: true,
- json: async () => mockTemplates,
- });
+      // Second load should fetch again
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockTemplates,
+      });
 
- await loadSectionTemplates();
- expect(global.fetch).toHaveBeenCalledTimes(2);
- });
- });
+      await loadSectionTemplates();
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+  });
 });

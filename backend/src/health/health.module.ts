@@ -29,13 +29,13 @@ import { GovApiModule } from '../modules/gov-api/gov-api.module';
  * @see https://github.com/CONFENGE/etp-express/issues/699
  */
 @Module({
- imports: [
- TypeOrmModule.forFeature([User]),
- OrchestratorModule,
- SearchModule,
- GovApiModule,
- ],
- controllers: [HealthController, MetricsController],
- providers: [HealthService, MetricsService],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    OrchestratorModule,
+    SearchModule,
+    GovApiModule,
+  ],
+  controllers: [HealthController, MetricsController],
+  providers: [HealthService, MetricsService],
 })
 export class HealthModule {}

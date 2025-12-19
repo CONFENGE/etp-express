@@ -25,148 +25,148 @@ import { GovApiMetricsService } from '../modules/gov-api/gov-api-metrics.service
  */
 @Injectable()
 export class MetricsService {
- constructor(
- @InjectDataSource() private dataSource: DataSource,
- @Optional() private govApiMetrics?: GovApiMetricsService,
- ) {}
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @Optional() private govApiMetrics?: GovApiMetricsService,
+  ) {}
 
- /**
- * Coleta todas as métricas da aplicação
- *
- * @returns Object com métricas em formato key-value
- */
- async getMetrics(): Promise<Record<string, number>> {
- const [dbMetrics, memoryMetrics, processMetrics] = await Promise.all([
- this.getDatabaseMetrics(),
- this.getMemoryMetrics(),
- this.getProcessMetrics(),
- ]);
+  /**
+   * Coleta todas as métricas da aplicação
+   *
+   * @returns Object com métricas em formato key-value
+   */
+  async getMetrics(): Promise<Record<string, number>> {
+    const [dbMetrics, memoryMetrics, processMetrics] = await Promise.all([
+      this.getDatabaseMetrics(),
+      this.getMemoryMetrics(),
+      this.getProcessMetrics(),
+    ]);
 
- return {
- ...dbMetrics,
- ...memoryMetrics,
- ...processMetrics,
- };
- }
+    return {
+      ...dbMetrics,
+      ...memoryMetrics,
+      ...processMetrics,
+    };
+  }
 
- /**
- * Formata métricas para formato Prometheus
- *
- * Formato:
- * ```
- * # HELP metric_name Description
- * # TYPE metric_name gauge
- * metric_name{label="value"} 123
- * ```
- *
- * @returns String em formato Prometheus
- */
- async getPrometheusMetrics(): Promise<string> {
- const metrics = await this.getMetrics();
- const lines: string[] = [];
+  /**
+   * Formata métricas para formato Prometheus
+   *
+   * Formato:
+   * ```
+   * # HELP metric_name Description
+   * # TYPE metric_name gauge
+   * metric_name{label="value"} 123
+   * ```
+   *
+   * @returns String em formato Prometheus
+   */
+  async getPrometheusMetrics(): Promise<string> {
+    const metrics = await this.getMetrics();
+    const lines: string[] = [];
 
- // Header
- lines.push('# ETP Express Application Metrics');
- lines.push('# Generated: ' + new Date().toISOString());
- lines.push('');
+    // Header
+    lines.push('# ETP Express Application Metrics');
+    lines.push('# Generated: ' + new Date().toISOString());
+    lines.push('');
 
- // Database metrics
- lines.push(
- '# HELP database_connections_active Active database connections',
- );
- lines.push('# TYPE database_connections_active gauge');
- lines.push(
- `database_connections_active ${metrics.database_connections_active}`,
- );
- lines.push('');
+    // Database metrics
+    lines.push(
+      '# HELP database_connections_active Active database connections',
+    );
+    lines.push('# TYPE database_connections_active gauge');
+    lines.push(
+      `database_connections_active ${metrics.database_connections_active}`,
+    );
+    lines.push('');
 
- lines.push('# HELP database_connections_max Maximum database connections');
- lines.push('# TYPE database_connections_max gauge');
- lines.push(`database_connections_max ${metrics.database_connections_max}`);
- lines.push('');
+    lines.push('# HELP database_connections_max Maximum database connections');
+    lines.push('# TYPE database_connections_max gauge');
+    lines.push(`database_connections_max ${metrics.database_connections_max}`);
+    lines.push('');
 
- // Memory metrics
- lines.push('# HELP memory_usage_bytes Memory heap used in bytes');
- lines.push('# TYPE memory_usage_bytes gauge');
- lines.push(`memory_usage_bytes ${metrics.memory_usage_bytes}`);
- lines.push('');
+    // Memory metrics
+    lines.push('# HELP memory_usage_bytes Memory heap used in bytes');
+    lines.push('# TYPE memory_usage_bytes gauge');
+    lines.push(`memory_usage_bytes ${metrics.memory_usage_bytes}`);
+    lines.push('');
 
- lines.push('# HELP memory_limit_bytes Memory heap total in bytes');
- lines.push('# TYPE memory_limit_bytes gauge');
- lines.push(`memory_limit_bytes ${metrics.memory_limit_bytes}`);
- lines.push('');
+    lines.push('# HELP memory_limit_bytes Memory heap total in bytes');
+    lines.push('# TYPE memory_limit_bytes gauge');
+    lines.push(`memory_limit_bytes ${metrics.memory_limit_bytes}`);
+    lines.push('');
 
- // Process metrics
- lines.push('# HELP uptime_seconds Process uptime in seconds');
- lines.push('# TYPE uptime_seconds counter');
- lines.push(`uptime_seconds ${metrics.uptime_seconds}`);
- lines.push('');
+    // Process metrics
+    lines.push('# HELP uptime_seconds Process uptime in seconds');
+    lines.push('# TYPE uptime_seconds counter');
+    lines.push(`uptime_seconds ${metrics.uptime_seconds}`);
+    lines.push('');
 
- // Government API metrics (if available)
- if (this.govApiMetrics) {
- const govApiOutput = this.govApiMetrics.getPrometheusMetrics();
- lines.push(govApiOutput);
- }
+    // Government API metrics (if available)
+    if (this.govApiMetrics) {
+      const govApiOutput = this.govApiMetrics.getPrometheusMetrics();
+      lines.push(govApiOutput);
+    }
 
- return lines.join('\n');
- }
+    return lines.join('\n');
+  }
 
- /**
- * Métricas do banco de dados PostgreSQL
- */
- private async getDatabaseMetrics(): Promise<Record<string, number>> {
- try {
- // Conexões ativas
- const activeConnectionsResult = await this.dataSource.query(
- `SELECT count(*) as active FROM pg_stat_activity WHERE state = $1`,
- ['active'],
- );
+  /**
+   * Métricas do banco de dados PostgreSQL
+   */
+  private async getDatabaseMetrics(): Promise<Record<string, number>> {
+    try {
+      // Conexões ativas
+      const activeConnectionsResult = await this.dataSource.query(
+        `SELECT count(*) as active FROM pg_stat_activity WHERE state = $1`,
+        ['active'],
+      );
 
- // Total de conexões
- const totalConnectionsResult = await this.dataSource.query(
- `SELECT count(*) as total FROM pg_stat_activity`,
- );
+      // Total de conexões
+      const totalConnectionsResult = await this.dataSource.query(
+        `SELECT count(*) as total FROM pg_stat_activity`,
+      );
 
- return {
- database_connections_active: parseInt(
- activeConnectionsResult[0]?.active || '0',
- ),
- database_connections_total: parseInt(
- totalConnectionsResult[0]?.total || '0',
- ),
- database_connections_max: 100, // Railway default max_connections
- };
- } catch {
- // Se queries falharem, retornar zeros
- return {
- database_connections_active: 0,
- database_connections_total: 0,
- database_connections_max: 100,
- };
- }
- }
+      return {
+        database_connections_active: parseInt(
+          activeConnectionsResult[0]?.active || '0',
+        ),
+        database_connections_total: parseInt(
+          totalConnectionsResult[0]?.total || '0',
+        ),
+        database_connections_max: 100, // Railway default max_connections
+      };
+    } catch {
+      // Se queries falharem, retornar zeros
+      return {
+        database_connections_active: 0,
+        database_connections_total: 0,
+        database_connections_max: 100,
+      };
+    }
+  }
 
- /**
- * Métricas de memória do processo Node.js
- */
- private getMemoryMetrics(): Record<string, number> {
- const memUsage = process.memoryUsage();
+  /**
+   * Métricas de memória do processo Node.js
+   */
+  private getMemoryMetrics(): Record<string, number> {
+    const memUsage = process.memoryUsage();
 
- return {
- memory_usage_bytes: memUsage.heapUsed,
- memory_limit_bytes: memUsage.heapTotal,
- memory_rss_bytes: memUsage.rss,
- memory_external_bytes: memUsage.external,
- };
- }
+    return {
+      memory_usage_bytes: memUsage.heapUsed,
+      memory_limit_bytes: memUsage.heapTotal,
+      memory_rss_bytes: memUsage.rss,
+      memory_external_bytes: memUsage.external,
+    };
+  }
 
- /**
- * Métricas do processo Node.js
- */
- private getProcessMetrics(): Record<string, number> {
- return {
- uptime_seconds: Math.floor(process.uptime()),
- process_id: process.pid,
- };
- }
+  /**
+   * Métricas do processo Node.js
+   */
+  private getProcessMetrics(): Record<string, number> {
+    return {
+      uptime_seconds: Math.floor(process.uptime()),
+      process_id: process.pid,
+    };
+  }
 }

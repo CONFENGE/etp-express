@@ -20,28 +20,28 @@ import { ApiProperty } from '@nestjs/swagger';
  * @see AuthService.resetPassword
  */
 export class ResetPasswordDto {
- @ApiProperty({
- description: 'Password reset token received via email',
- example: 'a1b2c3d4e5f6...',
- })
- @IsString({ message: 'Token é obrigatório' })
- @MinLength(1, { message: 'Token é obrigatório' })
- token: string;
+  @ApiProperty({
+    description: 'Password reset token received via email',
+    example: 'a1b2c3d4e5f6...',
+  })
+  @IsString({ message: 'Token é obrigatório' })
+  @MinLength(1, { message: 'Token é obrigatório' })
+  token: string;
 
- @ApiProperty({
- description:
- 'New password with complexity requirements: min 8 chars, uppercase, lowercase, number, special char',
- example: 'NewSecurePass456!',
- })
- @IsString()
- @MinLength(8, { message: 'Senha deve ter no mínimo 8 caracteres' })
- @MaxLength(128, { message: 'Senha deve ter no máximo 128 caracteres' })
- @Matches(
- /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
- {
- message:
- 'Senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
- },
- )
- newPassword: string;
+  @ApiProperty({
+    description:
+      'New password with complexity requirements: min 8 chars, uppercase, lowercase, number, special char',
+    example: 'NewSecurePass456!',
+  })
+  @IsString()
+  @MinLength(8, { message: 'Senha deve ter no mínimo 8 caracteres' })
+  @MaxLength(128, { message: 'Senha deve ter no máximo 128 caracteres' })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+    {
+      message:
+        'Senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
+    },
+  )
+  newPassword: string;
 }

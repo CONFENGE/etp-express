@@ -29,4 +29,4 @@
  * ```
  */
 export const DISCLAIMER =
- 'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.';
+  'O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.';

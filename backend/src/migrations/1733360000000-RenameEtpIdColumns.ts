@@ -25,115 +25,115 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - etp_versions: etpId → etp_id
  */
 export class RenameEtpIdColumns1733360000000 implements MigrationInterface {
- name = 'RenameEtpIdColumns1733360000000';
+  name = 'RenameEtpIdColumns1733360000000';
 
- public async up(queryRunner: QueryRunner): Promise<void> {
- // === FIX etp_sections TABLE ===
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // === FIX etp_sections TABLE ===
 
- // Check if column exists in camelCase (for idempotency)
- const sectionsTable = await queryRunner.getTable('etp_sections');
- const hasEtpId = sectionsTable?.columns.some((col) => col.name === 'etpId');
+    // Check if column exists in camelCase (for idempotency)
+    const sectionsTable = await queryRunner.getTable('etp_sections');
+    const hasEtpId = sectionsTable?.columns.some((col) => col.name === 'etpId');
 
- if (hasEtpId) {
- // Drop existing FK constraint (if exists)
- await queryRunner.query(
- `ALTER TABLE "etp_sections" DROP CONSTRAINT IF EXISTS "FK_etp_sections_etpId"`,
- );
+    if (hasEtpId) {
+      // Drop existing FK constraint (if exists)
+      await queryRunner.query(
+        `ALTER TABLE "etp_sections" DROP CONSTRAINT IF EXISTS "FK_etp_sections_etpId"`,
+      );
 
- // Rename column: etpId → etp_id
- await queryRunner.query(
- `ALTER TABLE "etp_sections" RENAME COLUMN "etpId" TO "etp_id"`,
- );
+      // Rename column: etpId → etp_id
+      await queryRunner.query(
+        `ALTER TABLE "etp_sections" RENAME COLUMN "etpId" TO "etp_id"`,
+      );
 
- // Recreate FK constraint with correct column name
- await queryRunner.query(`
+      // Recreate FK constraint with correct column name
+      await queryRunner.query(`
  ALTER TABLE "etp_sections"
  ADD CONSTRAINT "FK_etp_sections_etp_id"
  FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
  `);
- }
+    }
 
- // === FIX etp_versions TABLE ===
+    // === FIX etp_versions TABLE ===
 
- // Check if column exists in camelCase (for idempotency)
- const versionsTable = await queryRunner.getTable('etp_versions');
- const hasVersionsEtpId = versionsTable?.columns.some(
- (col) => col.name === 'etpId',
- );
+    // Check if column exists in camelCase (for idempotency)
+    const versionsTable = await queryRunner.getTable('etp_versions');
+    const hasVersionsEtpId = versionsTable?.columns.some(
+      (col) => col.name === 'etpId',
+    );
 
- if (hasVersionsEtpId) {
- // Drop existing FK constraint (if exists)
- await queryRunner.query(
- `ALTER TABLE "etp_versions" DROP CONSTRAINT IF EXISTS "FK_etp_versions_etpId"`,
- );
+    if (hasVersionsEtpId) {
+      // Drop existing FK constraint (if exists)
+      await queryRunner.query(
+        `ALTER TABLE "etp_versions" DROP CONSTRAINT IF EXISTS "FK_etp_versions_etpId"`,
+      );
 
- // Rename column: etpId → etp_id
- await queryRunner.query(
- `ALTER TABLE "etp_versions" RENAME COLUMN "etpId" TO "etp_id"`,
- );
+      // Rename column: etpId → etp_id
+      await queryRunner.query(
+        `ALTER TABLE "etp_versions" RENAME COLUMN "etpId" TO "etp_id"`,
+      );
 
- // Recreate FK constraint with correct column name
- await queryRunner.query(`
+      // Recreate FK constraint with correct column name
+      await queryRunner.query(`
  ALTER TABLE "etp_versions"
  ADD CONSTRAINT "FK_etp_versions_etp_id"
  FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
  `);
- }
- }
+    }
+  }
 
- public async down(queryRunner: QueryRunner): Promise<void> {
- // === ROLLBACK etp_sections TABLE ===
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // === ROLLBACK etp_sections TABLE ===
 
- // Check if column exists in snake_case
- const sectionsTable = await queryRunner.getTable('etp_sections');
- const hasEtpIdSnake = sectionsTable?.columns.some(
- (col) => col.name === 'etp_id',
- );
+    // Check if column exists in snake_case
+    const sectionsTable = await queryRunner.getTable('etp_sections');
+    const hasEtpIdSnake = sectionsTable?.columns.some(
+      (col) => col.name === 'etp_id',
+    );
 
- if (hasEtpIdSnake) {
- // Drop FK constraint
- await queryRunner.query(
- `ALTER TABLE "etp_sections" DROP CONSTRAINT IF EXISTS "FK_etp_sections_etp_id"`,
- );
+    if (hasEtpIdSnake) {
+      // Drop FK constraint
+      await queryRunner.query(
+        `ALTER TABLE "etp_sections" DROP CONSTRAINT IF EXISTS "FK_etp_sections_etp_id"`,
+      );
 
- // Rename column back: etp_id → etpId
- await queryRunner.query(
- `ALTER TABLE "etp_sections" RENAME COLUMN "etp_id" TO "etpId"`,
- );
+      // Rename column back: etp_id → etpId
+      await queryRunner.query(
+        `ALTER TABLE "etp_sections" RENAME COLUMN "etp_id" TO "etpId"`,
+      );
 
- // Recreate FK constraint with camelCase column name
- await queryRunner.query(`
+      // Recreate FK constraint with camelCase column name
+      await queryRunner.query(`
  ALTER TABLE "etp_sections"
  ADD CONSTRAINT "FK_etp_sections_etpId"
  FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
  `);
- }
+    }
 
- // === ROLLBACK etp_versions TABLE ===
+    // === ROLLBACK etp_versions TABLE ===
 
- // Check if column exists in snake_case
- const versionsTable = await queryRunner.getTable('etp_versions');
- const hasVersionsEtpIdSnake = versionsTable?.columns.some(
- (col) => col.name === 'etp_id',
- );
+    // Check if column exists in snake_case
+    const versionsTable = await queryRunner.getTable('etp_versions');
+    const hasVersionsEtpIdSnake = versionsTable?.columns.some(
+      (col) => col.name === 'etp_id',
+    );
 
- if (hasVersionsEtpIdSnake) {
- // Drop FK constraint
- await queryRunner.query(
- `ALTER TABLE "etp_versions" DROP CONSTRAINT IF EXISTS "FK_etp_versions_etp_id"`,
- );
+    if (hasVersionsEtpIdSnake) {
+      // Drop FK constraint
+      await queryRunner.query(
+        `ALTER TABLE "etp_versions" DROP CONSTRAINT IF EXISTS "FK_etp_versions_etp_id"`,
+      );
 
- // Rename column back: etp_id → etpId
- await queryRunner.query(
- `ALTER TABLE "etp_versions" RENAME COLUMN "etp_id" TO "etpId"`,
- );
+      // Rename column back: etp_id → etpId
+      await queryRunner.query(
+        `ALTER TABLE "etp_versions" RENAME COLUMN "etp_id" TO "etpId"`,
+      );
 
- // Recreate FK constraint with camelCase column name
- await queryRunner.query(`
+      // Recreate FK constraint with camelCase column name
+      await queryRunner.query(`
  ALTER TABLE "etp_versions"
  ADD CONSTRAINT "FK_etp_versions_etpId"
  FOREIGN KEY ("etpId") REFERENCES "etps"("id") ON DELETE CASCADE
  `);
- }
- }
+    }
+  }
 }

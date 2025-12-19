@@ -22,16 +22,16 @@ export { FundamentacaoResult } from '../agents/fundamentacao.agent';
  * during the orchestration pipeline.
  */
 export interface ParallelValidationResults {
- /** Legal compliance validation result */
- legalValidation: import('../agents/legal.agent').LegalValidationResult;
- /** Argumentation quality validation result (nullable for non-fundamentacao sections) */
- fundamentacaoValidation:
- | import('../agents/fundamentacao.agent').FundamentacaoResult
- | null;
- /** Clarity and readability validation result */
- clarezaValidation: import('../agents/clareza.agent').ClarezaResult;
- /** Anti-hallucination check result */
- hallucinationCheck: import('../agents/anti-hallucination.agent').HallucinationCheckResult;
+  /** Legal compliance validation result */
+  legalValidation: import('../agents/legal.agent').LegalValidationResult;
+  /** Argumentation quality validation result (nullable for non-fundamentacao sections) */
+  fundamentacaoValidation:
+    | import('../agents/fundamentacao.agent').FundamentacaoResult
+    | null;
+  /** Clarity and readability validation result */
+  clarezaValidation: import('../agents/clareza.agent').ClarezaResult;
+  /** Anti-hallucination check result */
+  hallucinationCheck: import('../agents/anti-hallucination.agent').HallucinationCheckResult;
 }
 
 /**
@@ -42,10 +42,10 @@ export interface ParallelValidationResults {
  * used to determine if automatic simplification was applied.
  */
 export interface PostProcessingResult {
- /** The processed content (possibly simplified) */
- content: string;
- /** Simplification analysis result with score and suggestions */
- simplificationResult: import('../agents/simplificacao.agent').SimplificacaoResult;
+  /** The processed content (possibly simplified) */
+  content: string;
+  /** Simplification analysis result with score and suggestions */
+  simplificationResult: import('../agents/simplificacao.agent').SimplificacaoResult;
 }
 
 /**
@@ -56,12 +56,12 @@ export interface PostProcessingResult {
  * containing the generated content and metadata.
  */
 export interface LLMResponse {
- /** Generated text content */
- content: string;
- /** Number of tokens used in the response */
- tokens: number;
- /** Model identifier used for generation */
- model: string;
+  /** Generated text content */
+  content: string;
+  /** Number of tokens used in the response */
+  tokens: number;
+  /** Model identifier used for generation */
+  model: string;
 }
 
 /**
@@ -72,10 +72,10 @@ export interface LLMResponse {
  * into a single summary for the final result.
  */
 export interface ValidationSummary {
- /** Whether all validation checks passed */
- isValid: boolean;
- /** Warning messages from all agents */
- warnings: string[];
- /** Error messages (critical issues) */
- errors: string[];
+  /** Whether all validation checks passed */
+  isValid: boolean;
+  /** Warning messages from all agents */
+  warnings: string[];
+  /** Error messages (critical issues) */
+  errors: string[];
 }

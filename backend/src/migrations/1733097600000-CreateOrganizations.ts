@@ -13,11 +13,11 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Part of issue #354 (MT-01) - Infrastructure de Dados (Schema Organization)
  */
 export class CreateOrganizations1733097600000 implements MigrationInterface {
- name = 'CreateOrganizations1733097600000';
+  name = 'CreateOrganizations1733097600000';
 
- public async up(queryRunner: QueryRunner): Promise<void> {
- // Check if table exists
- const tableExists = await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Check if table exists
+    const tableExists = await queryRunner.query(`
  SELECT EXISTS (
  SELECT FROM information_schema.tables
  WHERE table_schema = 'public'
@@ -25,9 +25,9 @@ export class CreateOrganizations1733097600000 implements MigrationInterface {
  );
  `);
 
- if (!tableExists[0].exists) {
- // Create organizations table
- await queryRunner.query(`
+    if (!tableExists[0].exists) {
+      // Create organizations table
+      await queryRunner.query(`
  CREATE TABLE "organizations" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
@@ -42,40 +42,40 @@ export class CreateOrganizations1733097600000 implements MigrationInterface {
  );
  `);
 
- // Create GIN index on domainWhitelist for efficient domain lookup
- // Used by OrganizationsService.findByDomain() in AuthService.register
- await queryRunner.query(`
+      // Create GIN index on domainWhitelist for efficient domain lookup
+      // Used by OrganizationsService.findByDomain() in AuthService.register
+      await queryRunner.query(`
  CREATE INDEX "IDX_organizations_domainWhitelist"
  ON "organizations" USING GIN ("domainWhitelist");
  `);
 
- // Create index on isActive for filtering active organizations
- await queryRunner.query(`
+      // Create index on isActive for filtering active organizations
+      await queryRunner.query(`
  CREATE INDEX "IDX_organizations_isActive"
  ON "organizations" ("isActive");
  `);
 
- // Create index on createdAt for ordering
- await queryRunner.query(`
+      // Create index on createdAt for ordering
+      await queryRunner.query(`
  CREATE INDEX "IDX_organizations_createdAt"
  ON "organizations" ("createdAt" DESC);
  `);
- }
- }
+    }
+  }
 
- public async down(queryRunner: QueryRunner): Promise<void> {
- // Drop indexes
- await queryRunner.query(
- `DROP INDEX IF EXISTS "IDX_organizations_createdAt";`,
- );
- await queryRunner.query(
- `DROP INDEX IF EXISTS "IDX_organizations_isActive";`,
- );
- await queryRunner.query(
- `DROP INDEX IF EXISTS "IDX_organizations_domainWhitelist";`,
- );
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Drop indexes
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_organizations_createdAt";`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_organizations_isActive";`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_organizations_domainWhitelist";`,
+    );
 
- // Drop table
- await queryRunner.query(`DROP TABLE IF EXISTS "organizations";`);
- }
+    // Drop table
+    await queryRunner.query(`DROP TABLE IF EXISTS "organizations";`);
+  }
 }

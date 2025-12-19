@@ -6,9 +6,9 @@ import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
 
 @Module({
- imports: [TypeOrmModule.forFeature([Etp, EtpSection])],
- controllers: [ExportController],
- providers: [ExportService],
- exports: [ExportService],
+  imports: [TypeOrmModule.forFeature([Etp, EtpSection])],
+  controllers: [ExportController],
+  providers: [ExportService],
+  exports: [ExportService],
 })
 export class ExportModule {}

@@ -13,10 +13,10 @@ import { ApiProperty } from '@nestjs/swagger';
  * @see AuthService.forgotPassword
  */
 export class ForgotPasswordDto {
- @ApiProperty({
- description: 'Email address to send password reset instructions',
- example: 'usuario@exemplo.gov.br',
- })
- @IsEmail({}, { message: 'Email inválido' })
- email: string;
+  @ApiProperty({
+    description: 'Email address to send password reset instructions',
+    example: 'usuario@exemplo.gov.br',
+  })
+  @IsEmail({}, { message: 'Email inválido' })
+  email: string;
 }

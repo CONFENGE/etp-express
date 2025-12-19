@@ -20,27 +20,27 @@ import { Public } from './common/decorators/public.decorator';
 @ApiTags('health')
 @Controller({ version: VERSION_NEUTRAL })
 export class AppController {
- constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {}
 
- /**
- * Health check endpoint for monitoring and load balancers.
- *
- * @returns Health status object with timestamp and status
- */
- @Get()
- @ApiOperation({ summary: 'Health check endpoint' })
- getHealth() {
- return this.appService.getHealth();
- }
+  /**
+   * Health check endpoint for monitoring and load balancers.
+   *
+   * @returns Health status object with timestamp and status
+   */
+  @Get()
+  @ApiOperation({ summary: 'Health check endpoint' })
+  getHealth() {
+    return this.appService.getHealth();
+  }
 
- /**
- * System information endpoint for diagnostics.
- *
- * @returns System information including version, environment, and uptime
- */
- @Get('info')
- @ApiOperation({ summary: 'System information' })
- getInfo() {
- return this.appService.getInfo();
- }
+  /**
+   * System information endpoint for diagnostics.
+   *
+   * @returns System information including version, environment, and uptime
+   */
+  @Get('info')
+  @ApiOperation({ summary: 'System information' })
+  getInfo() {
+    return this.appService.getInfo();
+  }
 }

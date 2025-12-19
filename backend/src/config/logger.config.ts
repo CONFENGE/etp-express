@@ -29,10 +29,10 @@ export type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
  * as these may log sensitive data (request bodies, tokens, etc.)
  */
 export const LOG_LEVELS: Record<string, LogLevel[]> = {
- production: ['error', 'warn'],
- staging: ['error', 'warn', 'log'],
- development: ['error', 'warn', 'log', 'debug', 'verbose'],
- test: ['error', 'warn'],
+  production: ['error', 'warn'],
+  staging: ['error', 'warn', 'log'],
+  development: ['error', 'warn', 'log', 'debug', 'verbose'],
+  test: ['error', 'warn'],
 };
 
 /**
@@ -50,8 +50,8 @@ export const LOG_LEVELS: Record<string, LogLevel[]> = {
  * getLogLevels('development') // ['error', 'warn', 'log', 'debug', 'verbose']
  */
 export function getLogLevels(nodeEnv?: string): LogLevel[] {
- const env = nodeEnv ?? process.env.NODE_ENV ?? 'development';
- return LOG_LEVELS[env] ?? LOG_LEVELS.development;
+  const env = nodeEnv ?? process.env.NODE_ENV ?? 'development';
+  return LOG_LEVELS[env] ?? LOG_LEVELS.development;
 }
 
 /**
@@ -66,9 +66,9 @@ export function getLogLevels(nodeEnv?: string): LogLevel[] {
  * });
  */
 export function createWinstonLogger(): WinstonLoggerService {
- const logger = new WinstonLoggerService();
- logger.setContext('NestJS');
- return logger;
+  const logger = new WinstonLoggerService();
+  logger.setContext('NestJS');
+  return logger;
 }
 
 /**
@@ -77,5 +77,5 @@ export function createWinstonLogger(): WinstonLoggerService {
  * @returns true if JSON format should be used (production)
  */
 export function isJsonLoggingEnabled(): boolean {
- return process.env.NODE_ENV === 'production';
+  return process.env.NODE_ENV === 'production';
 }
