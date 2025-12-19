@@ -59,7 +59,7 @@ describe('WelcomeModal', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/simplifique a elaboracao de estudos tecnicos/i),
+          screen.getByText(/elabore estudos tecnicos preliminares/i),
         ).toBeInTheDocument();
       });
     });

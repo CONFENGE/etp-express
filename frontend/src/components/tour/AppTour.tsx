@@ -86,14 +86,13 @@ const tourSteps: Step[] = [
     target: 'body',
     content: (
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">Pronto para começar!</h2>
+        <h2 className="text-xl font-bold mb-2">Pronto para comecar!</h2>
         <p className="text-muted-foreground mb-3">
-          Ao editar um ETP, use o botão <strong>"Gerar com IA"</strong> para
-          acelerar a criação das seções. O sistema vai pesquisar informações
-          relevantes e gerar conteúdo automaticamente.
+          Ao editar um ETP, use o botao <strong>"Gerar Sugestao"</strong> para
+          criar sugestoes de conteudo para cada secao.
         </p>
         <p className="text-xs text-muted-foreground">
-          Você pode reiniciar este tour a qualquer momento nas configurações.
+          Reinicie este tour nas configuracoes quando quiser.
         </p>
       </div>
     ),
