@@ -21,8 +21,8 @@ describe('Design Tokens - Apple HIG', () => {
         --surface-elevated: #ffffff;
         --text-primary: #1d1d1f;
         --text-secondary: #636366;
-        --text-tertiary: #aeaeb2;
-        --text-quaternary: #c7c7cc;
+        --text-tertiary: #8e8e93;
+        --text-quaternary: #a1a1a6;
         --apple-accent: #007aff;
         --apple-accent-hover: #0056b3;
         --apple-accent-active: #004494;
@@ -68,7 +68,7 @@ describe('Design Tokens - Apple HIG', () => {
         --space-10: 40px;
         --space-12: 48px;
         --space-16: 64px;
-        --font-size-xs: 11px;
+        --font-size-xs: 12px;
         --font-size-sm: 13px;
         --font-size-base: 15px;
         --font-size-md: 17px;
@@ -194,13 +194,13 @@ describe('Design Tokens - Apple HIG', () => {
 
     it('should define text-tertiary color', () => {
       expect(rootStyles.getPropertyValue('--text-tertiary').trim()).toBe(
-        '#aeaeb2',
+        '#8e8e93',
       );
     });
 
     it('should define text-quaternary color', () => {
       expect(rootStyles.getPropertyValue('--text-quaternary').trim()).toBe(
-        '#c7c7cc',
+        '#a1a1a6',
       );
     });
   });
