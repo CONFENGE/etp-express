@@ -10,9 +10,16 @@ import { PrivacyModule } from '../privacy/privacy.module';
 import { RAGModule } from '../rag/rag.module';
 import { SearchModule } from '../search/search.module';
 import { GovApiModule } from '../gov-api/gov-api.module';
+import { GovSearchModule } from '../gov-api/gov-search/gov-search.module';
 
 @Module({
-  imports: [PrivacyModule, RAGModule, SearchModule, GovApiModule],
+  imports: [
+    PrivacyModule,
+    RAGModule,
+    SearchModule,
+    GovApiModule,
+    GovSearchModule,
+  ],
   providers: [
     OrchestratorService,
     OpenAIService,
