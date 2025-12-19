@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, Search, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Search, MoreVertical, Edit, Trash2, X } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,6 +89,10 @@ export function ETPs() {
     );
   }, [etps, search, hiddenEtpIds]);
 
+  const handleClearSearch = () => {
+    setSearch('');
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -133,20 +137,28 @@ export function ETPs() {
                 }
                 description={
                   search
-                    ? 'Tente ajustar sua busca ou criar um novo ETP'
+                    ? `Nenhum ETP corresponde a "${search}". Verifique o termo ou crie um novo estudo.`
                     : 'Comece criando seu primeiro Estudo Técnico Preliminar'
                 }
-                action={
-                  search
-                    ? undefined
-                    : {
-                        label: 'Criar ETP',
-                        onClick: () => navigate('/etps/new'),
-                        icon: PlusCircle,
-                      }
-                }
+                action={{
+                  label: search ? 'Limpar busca' : 'Criar ETP',
+                  onClick: search ? handleClearSearch : () => navigate('/etps/new'),
+                  icon: search ? X : PlusCircle,
+                  variant: search ? 'outline' : 'default',
+                }}
                 size="md"
               />
+              {search && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    variant="default"
+                    onClick={() => navigate('/etps/new')}
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Criar novo ETP
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         ) : (
