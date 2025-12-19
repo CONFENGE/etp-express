@@ -1,6 +1,6 @@
 # Security Policy
 
-## 🔒 Reporting a Vulnerability
+## Reporting a Vulnerability
 
 We take the security of ETP Express seriously. If you discover a security vulnerability, please report it to us responsibly.
 
@@ -50,7 +50,7 @@ We take the security of ETP Express seriously. If you discover a security vulner
 
 ---
 
-## ⏱️ Response Timeline
+## Response Timeline
 
 We are committed to responding to security reports promptly:
 
@@ -74,7 +74,7 @@ We are committed to responding to security reports promptly:
 
 ---
 
-## 🛡️ Safe Harbor
+## Safe Harbor
 
 We support responsible security research and will not pursue legal action against researchers who:
 
@@ -104,7 +104,7 @@ If you follow the guidelines above, we commit to:
 
 ---
 
-## 📦 Supported Versions
+## Supported Versions
 
 We provide security patches for the following versions:
 
@@ -122,7 +122,7 @@ We provide security patches for the following versions:
 
 ---
 
-## 🏆 Hall of Fame
+## Hall of Fame
 
 We publicly acknowledge security researchers who help us improve ETP Express security:
 
@@ -143,7 +143,7 @@ _Awaiting first security report! Be the first to contribute._
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **OWASP Top 10 (2023):** https://owasp.org/Top10/
 - **LGPD Compliance:** See `docs/LGPD_*.md` for our Brazilian data protection compliance
@@ -152,7 +152,7 @@ _Awaiting first security report! Be the first to contribute._
 
 ---
 
-## 🔗 Contact
+## Contact
 
 - **Security Email:** security@confenge.com.br
 - **General Support:** Via GitHub Issues (for non-security bugs)
@@ -165,4 +165,4 @@ _Awaiting first security report! Be the first to contribute._
 
 ---
 
-_Thank you for helping keep ETP Express and our users safe!_ 🙏
+_Thank you for helping keep ETP Express and our users safe!_

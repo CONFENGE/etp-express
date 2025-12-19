@@ -1,10 +1,10 @@
-# 🏗️ INFRASTRUCTURE - ETP Express
+# INFRASTRUCTURE - ETP Express
 
 **Última atualização:** 2025-11-15
 **Status:** Infrastructure as Code completa
 **Versão:** 1.0
 
-## 📋 Índice
+## Índice
 
 - [Visão Geral](#visão-geral)
 - [Arquitetura](#arquitetura)

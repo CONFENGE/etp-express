@@ -135,7 +135,7 @@ EOF
 Todos os commits devem terminar com a assinatura Claude Code:
 
 ```
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
@@ -147,7 +147,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 Commit criado com sucesso:
 
-📝 feat(backend): add JWT refresh token endpoint
+feat(backend): add JWT refresh token endpoint
 
 Arquivos incluidos:
 - backend/src/auth/auth.service.ts

@@ -26,12 +26,12 @@ O módulo ETPs está **implementado conforme especificado no ARCHITECTURE.md**, 
 
 **Recursos Além da Especificação:**
 
-- ⭐ Endpoint de estatísticas agregadas (GET /statistics)
-- ⭐ Endpoint dedicado para update de status (PATCH /:id/status)
-- ⭐ Cálculo automático de completion percentage
-- ⭐ Enum de status estendido (5 estados vs 3 na spec)
-- ⭐ Campos adicionais: numeroProcesso, valorEstimado, completionPercentage
-- ⭐ Paginação configurável (limite + offset)
+- Endpoint de estatísticas agregadas (GET /statistics)
+- Endpoint dedicado para update de status (PATCH /:id/status)
+- Cálculo automático de completion percentage
+- Enum de status estendido (5 estados vs 3 na spec)
+- Campos adicionais: numeroProcesso, valorEstimado, completionPercentage
+- Paginação configurável (limite + offset)
 
 **Desvios Identificados:** 2 (não-conformidades menores)
 **Recomendações:** 4 (melhorias sugeridas)
@@ -136,7 +136,7 @@ export class Etp {
 
 ---
 
-#### 3.1.2 Enum EtpStatus ⭐ ALÉM DA ESPECIFICAÇÃO
+#### 3.1.2 Enum EtpStatus - ALÉM DA ESPECIFICAÇÃO
 
 **Especificação (ARCHITECTURE.md § 4.1):**
 
@@ -149,14 +149,14 @@ status VARCHAR(50) DEFAULT 'draft', -- draft, complete, exported
 ```typescript
 export enum EtpStatus {
   DRAFT = 'draft', // ✅ Especificado
-  IN_PROGRESS = 'in_progress', // ⭐ Adicional
-  REVIEW = 'review', // ⭐ Adicional
+  IN_PROGRESS = 'in_progress', // Adicional
+  REVIEW = 'review', // Adicional
   COMPLETED = 'completed', // ✅ Equivale a 'complete'
-  ARCHIVED = 'archived', // ⭐ Adicional
+  ARCHIVED = 'archived', // Adicional
 }
 ```
 
-**Avaliação:** ⭐ **Além da especificação (positivo)**
+**Avaliação:** **Além da especificação (positivo)**
 
 Estados adicionais melhoram workflow tracking e UX:
 
@@ -173,19 +173,19 @@ status VARCHAR(50) DEFAULT 'draft',
 
 ---
 
-#### 3.1.3 Campos Adicionais ⭐ ALÉM DA ESPECIFICAÇÃO
+#### 3.1.3 Campos Adicionais - ALÉM DA ESPECIFICAÇÃO
 
 **Campos não documentados no ARCHITECTURE.md:**
 
 ```typescript
 @Column({ type: 'text', nullable: true })
-description: string; // ⭐ Descrição textual expandida
+description: string; // Descrição textual expandida
 
 @Column({ nullable: true })
-numeroProcesso: string; // ⭐ Número do processo administrativo
+numeroProcesso: string; // Número do processo administrativo
 
 @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-valorEstimado: number; // ⭐ Valor estimado da contratação
+valorEstimado: number; // Valor estimado da contratação
 
 @Column({ type: 'jsonb', nullable: true })
 metadata: {
@@ -195,13 +195,13 @@ metadata: {
   fundamentacaoLegal?: string[];
   tags?: string[];
   [key: string]: unknown;
-}; // ⭐ Metadados flexíveis (JSONB)
+}; // Metadados flexíveis (JSONB)
 
 @Column({ type: 'float', default: 0 })
-completionPercentage: number; // ⭐ % de completude (calculado auto)
+completionPercentage: number; // % de completude (calculado auto)
 ```
 
-**Avaliação:** ⭐ **Além da especificação (positivo)**
+**Avaliação:** **Além da especificação (positivo)**
 
 Campos atendem requisitos práticos de elaboração de ETPs conforme Lei 14.133/2021:
 
@@ -263,7 +263,7 @@ Todos relacionamentos especificados no ARCHITECTURE.md § 4.1 estão implementad
 
 ---
 
-#### 3.2.2 Endpoints Adicionais ⭐ ALÉM DA ESPECIFICAÇÃO
+#### 3.2.2 Endpoints Adicionais - ALÉM DA ESPECIFICAÇÃO
 
 **Endpoints não documentados no ARCHITECTURE.md:**
 
@@ -281,7 +281,7 @@ async updateStatus(
   → Atualização dedicada de status (workflow transitions)
 ```
 
-**Avaliação:** ⭐ **Além da especificação (positivo)**
+**Avaliação:** **Além da especificação (positivo)**
 
 - **GET /statistics**: essencial para dashboard e analytics (UX superior)
 - **PATCH /:id/status**: separação de concern (status ≠ metadados genéricos)
@@ -559,7 +559,7 @@ Logs estruturados em:
 
 ---
 
-#### 3.3.5 Completion Percentage Auto-Update ⭐ ALÉM DA ESPECIFICAÇÃO
+#### 3.3.5 Completion Percentage Auto-Update - ALÉM DA ESPECIFICAÇÃO
 
 **Especificação:** Não documentado no ARCHITECTURE.md
 
@@ -598,7 +598,7 @@ async updateCompletionPercentage(id: string): Promise<void> {
 }
 ```
 
-**Avaliação:** ⭐ **Além da especificação (positivo)**
+**Avaliação:** **Além da especificação (positivo)**
 
 Fornece UX superior ao usuário (progress bar em dashboard). Chamado automaticamente pelo `SectionsService` sempre que seções mudam de estado.
 
@@ -613,7 +613,7 @@ Completion Tracking:
 
 ---
 
-#### 3.3.6 Statistics Aggregation ⭐ ALÉM DA ESPECIFICAÇÃO
+#### 3.3.6 Statistics Aggregation - ALÉM DA ESPECIFICAÇÃO
 
 **Implementação:**
 
@@ -650,7 +650,7 @@ async getStatistics(userId?: string) {
 }
 ```
 
-**Avaliação:** ⭐ **Além da especificação (positivo)**
+**Avaliação:** **Além da especificação (positivo)**
 
 Retorna métricas essenciais para dashboard:
 
@@ -904,43 +904,43 @@ Testa:
 
 ## 4. MATRIZ DE CONFORMIDADE
 
-| Componente                      | Especificado | Implementado | Status       | Notas                                               |
-| ------------------------------- | ------------ | ------------ | ------------ | --------------------------------------------------- |
+| Componente                      | Especificado | Implementado | Status      | Notas                                               |
+| ------------------------------- | ------------ | ------------ | ----------- | --------------------------------------------------- |
 | **Entity (Etp)**                |
-| Campos obrigatórios             | ✅           | ✅           | ✅ CONFORME  | id, title, objeto, status, currentVersion           |
-| Relacionamentos                 | ✅           | ✅           | ✅ CONFORME  | User, Sections, Versions, AuditLogs                 |
-| Campos adicionais               | ❌           | ✅           | ⭐ ADICIONAL | numeroProcesso, valorEstimado, completionPercentage |
-| Enum EtpStatus                  | Parcial (3)  | Completo (5) | ⭐ ADICIONAL | draft, in_progress, review, completed, archived     |
+| Campos obrigatórios             | ✅           | ✅           | ✅ CONFORME | id, title, objeto, status, currentVersion           |
+| Relacionamentos                 | ✅           | ✅           | ✅ CONFORME | User, Sections, Versions, AuditLogs                 |
+| Campos adicionais               | ❌           | ✅           | ADICIONAL   | numeroProcesso, valorEstimado, completionPercentage |
+| Enum EtpStatus                  | Parcial (3)  | Completo (5) | ADICIONAL   | draft, in_progress, review, completed, archived     |
 | **Controller (EtpsController)** |
-| GET /api/etps                   | ✅           | ✅           | ✅ CONFORME  | Paginação implementada                              |
-| POST /api/etps                  | ✅           | ✅           | ✅ CONFORME  |                                                     |
-| GET /api/etps/:id               | ✅           | ✅           | ✅ CONFORME  |                                                     |
-| PATCH /api/etps/:id             | ✅           | ✅           | ✅ CONFORME  |                                                     |
-| DELETE /api/etps/:id            | ✅           | ✅           | ✅ CONFORME  |                                                     |
-| GET /api/etps/statistics        | ❌           | ✅           | ⭐ ADICIONAL | Dashboard metrics                                   |
-| PATCH /api/etps/:id/status      | ❌           | ✅           | ⭐ ADICIONAL | Workflow transition                                 |
-| JWT Auth (JwtAuthGuard)         | ✅           | ✅           | ✅ CONFORME  | Todos endpoints protegidos                          |
-| DISCLAIMER transparency         | ✅           | ✅           | ✅ CONFORME  | 100% das respostas                                  |
-| Swagger/OpenAPI docs            | ✅           | ✅           | ✅ CONFORME  |                                                     |
+| GET /api/etps                   | ✅           | ✅           | ✅ CONFORME | Paginação implementada                              |
+| POST /api/etps                  | ✅           | ✅           | ✅ CONFORME |                                                     |
+| GET /api/etps/:id               | ✅           | ✅           | ✅ CONFORME |                                                     |
+| PATCH /api/etps/:id             | ✅           | ✅           | ✅ CONFORME |                                                     |
+| DELETE /api/etps/:id            | ✅           | ✅           | ✅ CONFORME |                                                     |
+| GET /api/etps/statistics        | ❌           | ✅           | ADICIONAL   | Dashboard metrics                                   |
+| PATCH /api/etps/:id/status      | ❌           | ✅           | ADICIONAL   | Workflow transition                                 |
+| JWT Auth (JwtAuthGuard)         | ✅           | ✅           | ✅ CONFORME | Todos endpoints protegidos                          |
+| DISCLAIMER transparency         | ✅           | ✅           | ✅ CONFORME | 100% das respostas                                  |
+| Swagger/OpenAPI docs            | ✅           | ✅           | ✅ CONFORME |                                                     |
 | **Service (EtpsService)**       |
-| CRUD operations                 | ✅           | ✅           | ✅ CONFORME  | Create, Read, Update, Delete                        |
-| Ownership verification          | ✅           | ✅           | ✅ CONFORME  | Todas write operations                              |
-| Paginação                       | ✅           | ✅           | ✅ CONFORME  |                                                     |
-| Logging estruturado             | ✅           | ✅           | ✅ CONFORME  | NestJS Logger                                       |
-| Completion % auto-update        | ❌           | ✅           | ⭐ ADICIONAL | Chamado por SectionsService                         |
-| Statistics aggregation          | ❌           | ✅           | ⭐ ADICIONAL | Total, byStatus, avgCompletion                      |
+| CRUD operations                 | ✅           | ✅           | ✅ CONFORME | Create, Read, Update, Delete                        |
+| Ownership verification          | ✅           | ✅           | ✅ CONFORME | Todas write operations                              |
+| Paginação                       | ✅           | ✅           | ✅ CONFORME |                                                     |
+| Logging estruturado             | ✅           | ✅           | ✅ CONFORME | NestJS Logger                                       |
+| Completion % auto-update        | ❌           | ✅           | ADICIONAL   | Chamado por SectionsService                         |
+| Statistics aggregation          | ❌           | ✅           | ADICIONAL   | Total, byStatus, avgCompletion                      |
 | **DTOs**                        |
-| CreateEtpDto validation         | ✅           | ✅           | ✅ CONFORME  | class-validator                                     |
-| UpdateEtpDto validation         | ✅           | ✅           | ✅ CONFORME  | class-validator                                     |
-| Swagger docs                    | ✅           | ✅           | ✅ CONFORME  | ApiProperty decorators                              |
+| CreateEtpDto validation         | ✅           | ✅           | ✅ CONFORME | class-validator                                     |
+| UpdateEtpDto validation         | ✅           | ✅           | ✅ CONFORME | class-validator                                     |
+| Swagger docs                    | ✅           | ✅           | ✅ CONFORME | ApiProperty decorators                              |
 | **Testes**                      |
-| Controller tests (70%+)         | ✅           | ✅           | ✅ CONFORME  | 467 linhas, ~100% coverage                          |
-| Service tests (80%+)            | ✅           | ✅           | ✅ CONFORME  | 426 linhas, ~100% coverage                          |
+| Controller tests (70%+)         | ✅           | ✅           | ✅ CONFORME | 467 linhas, ~100% coverage                          |
+| Service tests (80%+)            | ✅           | ✅           | ✅ CONFORME | 426 linhas, ~100% coverage                          |
 
 **Legenda:**
 
 - ✅ CONFORME: Implementado conforme especificação
-- ⭐ ADICIONAL: Implementado além da especificação (positivo)
+- ADICIONAL: Implementado além da especificação (positivo)
 - ❌ DESVIO: Não conforme ou ausente
 
 **Resumo:**
@@ -955,7 +955,7 @@ Testa:
 
 ### 5.1 Desvio #1: Nomenclatura de Campo `object` → `objeto`
 
-**Severidade:** 🟡 BAIXA
+**Severidade:** BAIXA
 
 **Especificação (ARCHITECTURE.md § 4.1):**
 
@@ -988,7 +988,7 @@ objeto TEXT, -- 'object' in English
 
 ### 5.2 Desvio #2: Enum EtpStatus Estendido (Não-Documentado)
 
-**Severidade:** 🟡 BAIXA
+**Severidade:** BAIXA
 
 **Especificação (ARCHITECTURE.md § 4.1):**
 
@@ -1030,7 +1030,7 @@ status VARCHAR(50) DEFAULT 'draft',
 
 ### 6.1 Recomendação #1: Documentar Enum EtpStatus Completo
 
-**Prioridade:** 🟡 MÉDIA
+**Prioridade:** MÉDIA
 
 **Ação:**
 
@@ -1056,7 +1056,7 @@ CREATE TABLE etps (
 
 ### 6.2 Recomendação #2: Documentar Campos Adicionais
 
-**Prioridade:** 🟡 MÉDIA
+**Prioridade:** MÉDIA
 
 **Ação:**
 
@@ -1080,7 +1080,7 @@ CREATE TABLE etps (
 
 ### 6.3 Recomendação #3: Documentar Endpoints Adicionais
 
-**Prioridade:** 🟡 MÉDIA
+**Prioridade:** MÉDIA
 
 **Ação:**
 
@@ -1107,7 +1107,7 @@ PATCH  /api/etps/:id/status        # Atualizar workflow status (dedicated endpoi
 
 ### 6.4 Recomendação #4: Documentar Feature de Completion Percentage
 
-**Prioridade:** 🟢 BAIXA (Nice to have)
+**Prioridade:** BAIXA (Nice to have)
 
 **Ação:**
 
@@ -1183,10 +1183,10 @@ completionPercentage = (sections_completed / total_sections) \* 100
 
 **Recomendadas (para M5 - Documentation milestone):**
 
-1. 🟡 Atualizar ARCHITECTURE.md com enum EtpStatus completo (Rec #1)
-2. 🟡 Documentar campos adicionais no schema SQL (Rec #2)
-3. 🟡 Atualizar endpoints REST com features adicionais (Rec #3)
-4. 🟢 Criar seção "UX Features" para completion tracking (Rec #4)
+1. Atualizar ARCHITECTURE.md com enum EtpStatus completo (Rec #1)
+2. Documentar campos adicionais no schema SQL (Rec #2)
+3. Atualizar endpoints REST com features adicionais (Rec #3)
+4. Criar seção "UX Features" para completion tracking (Rec #4)
 
 ---
 
