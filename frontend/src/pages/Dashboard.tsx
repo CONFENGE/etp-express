@@ -149,7 +149,10 @@ export function Dashboard() {
         {isLoading ? (
           <SkeletonStats />
         ) : (
-          <div className="grid gap-4 md:grid-cols-3" data-tour="dashboard-stats">
+          <div
+            className="grid gap-4 md:grid-cols-3"
+            data-tour="dashboard-stats"
+          >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -182,7 +185,9 @@ export function Dashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Concluídos
+                </CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
