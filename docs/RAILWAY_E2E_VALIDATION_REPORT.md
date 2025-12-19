@@ -2,8 +2,8 @@
 
 **Date:** 2025-12-04
 **Environment:** Production (Railway)
-**Backend URL:** https://etp-express-backend.railway.app
-**Frontend URL:** https://etp-express-frontend.railway.app
+**Backend URL:** https://etp-express-backend-production.up.railway.app
+**Frontend URL:** https://etp-express-frontend-production.up.railway.app
 
 ---
 
@@ -26,7 +26,7 @@
 **Analysis:**
 
 ```bash
-$ curl -v https://etp-express-backend.railway.app/health
+$ curl -v https://etp-express-backend-production.up.railway.app/health
 < HTTP/1.1 200 OK
 < content-type: text/plain; charset=utf-8
 < Content-Length: 2
@@ -96,7 +96,7 @@ railway logs --service etp-express-backend | grep -i "bullmq\|worker\|redis"
 **Test Command:**
 
 ```bash
-curl -X POST "https://etp-express-backend.railway.app/auth/login" \
+curl -X POST "https://etp-express-backend-production.up.railway.app/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"test"}'
 ```
@@ -111,7 +111,7 @@ curl -X POST "https://etp-express-backend.railway.app/auth/login" \
 **Test Command:**
 
 ```bash
-curl "https://etp-express-backend.railway.app/etps"
+curl "https://etp-express-backend-production.up.railway.app/etps"
 ```
 
 **Expected:** HTTP 401 (Unauthorized - auth required)
@@ -135,7 +135,7 @@ curl "https://etp-express-backend.railway.app/etps"
 
 ### 3.1 Frontend Load
 
-**URL Tested:** https://etp-express-frontend.railway.app
+**URL Tested:** https://etp-express-frontend-production.up.railway.app
 **Status:** ⏳ **PENDING BROWSER VALIDATION**
 
 **Validation Steps:**

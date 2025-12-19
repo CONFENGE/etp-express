@@ -52,14 +52,14 @@ describe('CORS Configuration Validation (#599)', () => {
     it('should pass validation when CORS_ORIGINS is defined in production', () => {
       const config = {
         NODE_ENV: 'production',
-        CORS_ORIGINS: 'https://etp-express-frontend.railway.app',
+        CORS_ORIGINS: 'https://etp-express-frontend-production.up.railway.app',
       };
 
       const result = corsSchema.validate(config);
 
       expect(result.error).toBeUndefined();
       expect(result.value.CORS_ORIGINS).toBe(
-        'https://etp-express-frontend.railway.app',
+        'https://etp-express-frontend-production.up.railway.app',
       );
     });
 
@@ -67,14 +67,14 @@ describe('CORS Configuration Validation (#599)', () => {
       const config = {
         NODE_ENV: 'production',
         CORS_ORIGINS:
-          'https://etp-express-frontend.railway.app,https://admin.example.com',
+          'https://etp-express-frontend-production.up.railway.app,https://admin.example.com',
       };
 
       const result = corsSchema.validate(config);
 
       expect(result.error).toBeUndefined();
       expect(result.value.CORS_ORIGINS).toContain(
-        'https://etp-express-frontend.railway.app',
+        'https://etp-express-frontend-production.up.railway.app',
       );
     });
   });
