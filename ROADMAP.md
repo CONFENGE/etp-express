@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-18 | **Progresso:** 385/448 (85.9%) | **Deploy:** 🔴 ISSUES P0 | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-18 | **Progresso:** 389/448 (86.8%) | **Deploy:** 🔴 ISSUES P0 | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -10,20 +10,20 @@
 
 **Criado:** 2025-12-18 | **Objetivo:** Resolver todas as deficiencias que corroem credibilidade do sistema
 
-### P0 - BLOQUEADORES CRITICOS (10 issues)
+### P0 - BLOQUEADORES CRITICOS (6 open / 10 total)
 
-| #    | Issue                                                          | Status |
-| ---- | -------------------------------------------------------------- | ------ |
-| #777 | Fix health endpoint 404 - verificar HealthModule registration  | OPEN   |
-| #778 | Executar seed:admin em producao Railway                        | OPEN   |
-| #779 | Renovar/verificar EXA_API_KEY em Railway                       | OPEN   |
-| #780 | Configurar variaveis SMTP em Railway                           | OPEN   |
-| #781 | Configurar SENTRY_DSN backend e frontend                       | OPEN   |
-| #782 | Atualizar emails de @etpexpress.com para @confenge.com.br      | OPEN   |
-| #783 | Atualizar URLs de producao em documentacao                     | OPEN   |
-| #784 | Remover emoticons do AppTour.tsx                               | OPEN   |
-| #785 | Remover emoticons do MANUAL_USUARIO.md                         | OPEN   |
-| #786 | Auditar e remover emoticons decorativos de arquivos do projeto | OPEN   |
+| #        | Issue                                                             | Status  |
+| -------- | ----------------------------------------------------------------- | ------- |
+| ~~#777~~ | ~~Fix health endpoint 404 - verificar HealthModule registration~~ | ✅ DONE |
+| #778     | Executar seed:admin em producao Railway                           | OPEN    |
+| #779     | Renovar/verificar EXA_API_KEY em Railway                          | OPEN    |
+| #780     | Configurar variaveis SMTP em Railway                              | OPEN    |
+| #781     | Configurar SENTRY_DSN backend e frontend                          | OPEN    |
+| ~~#782~~ | ~~Atualizar emails de @etpexpress.com para @confenge.com.br~~     | ✅ DONE |
+| #783     | Atualizar URLs de producao em documentacao                        | OPEN    |
+| ~~#784~~ | ~~Remover emoticons do AppTour.tsx~~                              | ✅ DONE |
+| ~~#785~~ | ~~Remover emoticons do MANUAL_USUARIO.md~~                        | ✅ DONE |
+| #786     | Auditar e remover emoticons decorativos de arquivos do projeto    | OPEN    |
 
 ### P1 - UX CRITICO (11 issues)
 
@@ -147,11 +147,11 @@
 ## Milestones
 
 ```
-M1: Foundation          ████████████████████ 36/36  100%
+M1: Foundation          ████████████████████ 35/35  100%
 M2: CI/CD Pipeline      ████████████████████ 18/18  100%
-M3: Quality & Security  ████████████████████ 61/61  100%
-M4: Refactoring & Perf  ████████████████████ 45/45  100%
-M5: E2E & Docs          █████████████████░░░ 26/30   87%
+M3: Quality & Security  ████████████████████ 60/60  100%
+M4: Refactoring & Perf  ████████████████████ 44/44  100%
+M5: E2E & Docs          █████████████████░░░ 25/29   86%
 M6: Maintenance         ██████████████████░░ 77/85   91%
 M7: Multi-Tenancy B2G   ████████████████████  6/6   100%
 M8: Domínios Instit.    ████████████████████ 24/24  100%  ✅ COMPLETE
@@ -319,7 +319,7 @@ M9: Export/Import       ██████████████████�
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 87% (26/30, 4 open)
+### M5 - E2E & Docs - 86% (25/29, 4 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -519,28 +519,28 @@ M9: Export/Import       ██████████████████�
 
 ## Milestones Completos
 
-M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 206 issues**
+M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/44), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 203 issues**
 
 ---
 
 ## Métricas
 
-| Métrica           | Valor  |
-| ----------------- | ------ |
-| Issues Totais     | 448    |
-| Issues Abertas    | 63     |
-| Issues Fechadas   | 385    |
-| Progresso         | 85.9%  |
-| Velocidade        | 12/dia |
-| Backend Coverage  | 78%    |
-| Frontend Coverage | 76%    |
-| Testes            | 1879   |
-| P0 Go-Live        | 10     |
-| P1 Go-Live        | 11     |
-| P2 Go-Live        | 10     |
-| P3 Go-Live        | 10     |
-| P2 Gov-API        | 1      |
-| v1.1 Backlog      | 7      |
+| Métrica           | Valor    |
+| ----------------- | -------- |
+| Issues Totais     | 448      |
+| Issues Abertas    | 59       |
+| Issues Fechadas   | 389      |
+| Progresso         | 86.8%    |
+| Velocidade        | 12.7/dia |
+| Backend Coverage  | 78%      |
+| Frontend Coverage | 76%      |
+| Testes            | 1879     |
+| P0 Go-Live        | 10       |
+| P1 Go-Live        | 11       |
+| P2 Go-Live        | 10       |
+| P3 Go-Live        | 10       |
+| P2 Gov-API        | 1        |
+| v1.1 Backlog      | 7        |
 
 ---
 
