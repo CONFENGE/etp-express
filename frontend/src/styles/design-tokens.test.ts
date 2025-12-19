@@ -77,16 +77,20 @@ describe('Design Tokens - Apple HIG', () => {
         --font-size-2xl: 28px;
         --font-size-3xl: 34px;
         --font-size-4xl: 40px;
-        --line-height-tight: 1.2;
+        --line-height-tight: 1.25;
+        --line-height-snug: 1.4;
         --line-height-normal: 1.5;
-        --line-height-relaxed: 1.75;
+        --line-height-relaxed: 1.6;
+        --line-height-loose: 1.8;
         --font-weight-regular: 400;
         --font-weight-medium: 500;
         --font-weight-semibold: 600;
         --font-weight-bold: 700;
-        --letter-spacing-tight: -0.02em;
-        --letter-spacing-normal: 0;
-        --letter-spacing-wide: 0.02em;
+        --letter-spacing-tighter: -0.03em;
+        --letter-spacing-tight: -0.015em;
+        --letter-spacing-normal: 0.01em;
+        --letter-spacing-wide: 0.025em;
+        --letter-spacing-wider: 0.05em;
         --duration-instant: 100ms;
         --duration-fast: 150ms;
         --duration-apple: 200ms;
@@ -351,6 +355,48 @@ describe('Design Tokens - Apple HIG', () => {
     it('should define font-weight-semibold (600)', () => {
       expect(rootStyles.getPropertyValue('--font-weight-semibold').trim()).toBe(
         '600',
+      );
+    });
+
+    it('should define line-height-tight (1.25) for headings', () => {
+      expect(rootStyles.getPropertyValue('--line-height-tight').trim()).toBe(
+        '1.25',
+      );
+    });
+
+    it('should define line-height-snug (1.4) for subheadings', () => {
+      expect(rootStyles.getPropertyValue('--line-height-snug').trim()).toBe(
+        '1.4',
+      );
+    });
+
+    it('should define line-height-relaxed (1.6) for body text', () => {
+      expect(rootStyles.getPropertyValue('--line-height-relaxed').trim()).toBe(
+        '1.6',
+      );
+    });
+
+    it('should define line-height-loose (1.8) for long-form content', () => {
+      expect(rootStyles.getPropertyValue('--line-height-loose').trim()).toBe(
+        '1.8',
+      );
+    });
+
+    it('should define letter-spacing-normal (0.01em) for improved legibility', () => {
+      expect(
+        rootStyles.getPropertyValue('--letter-spacing-normal').trim(),
+      ).toBe('0.01em');
+    });
+
+    it('should define letter-spacing-tight (-0.015em) for headlines', () => {
+      expect(rootStyles.getPropertyValue('--letter-spacing-tight').trim()).toBe(
+        '-0.015em',
+      );
+    });
+
+    it('should define letter-spacing-wide (0.025em) for small text', () => {
+      expect(rootStyles.getPropertyValue('--letter-spacing-wide').trim()).toBe(
+        '0.025em',
       );
     });
   });
