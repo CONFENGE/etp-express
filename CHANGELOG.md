@@ -13,6 +13,27 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### Go-Live B2G (2025-12-20)
+
+- ✅ #741 - Go-Live deploy automation scripts (PR #854)
+  - **Scripts de automacao para deploy final B2G**
+  - `scripts/pre-deploy-validation.sh`: Valida todos pre-requisitos antes do deploy
+    - Verifica issues P0/P1 no GitHub
+    - Testa health check do backend e frontend
+    - Valida infraestrutura Railway
+    - Executa npm audit para seguranca
+    - Gera relatorio de validacao em Markdown
+  - `scripts/go-live-deploy.sh`: Orquestra o processo completo de Go-Live
+    - Suporte a dry-run para validacao sem deploy
+    - Backup automatico do database
+    - Deploy sequencial backend + frontend
+    - Smoke tests pos-deploy
+    - Geracao de relatorio final
+    - Instrucoes de rollback documentadas
+  - `docs/EARLY_ADOPTERS_EMAIL.md`: Templates de email para notificacao
+  - `DEPLOY_RAILWAY.md`: Nova secao 8 "Go-Live Final (B2G)"
+  - Closes #741
+
 #### Security & Infrastructure (2025-12-05)
 
 - ✅ #413 - Fix HIGH severity jws vulnerability + Update Railway domain (PR #415)

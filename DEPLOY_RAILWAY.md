@@ -1408,6 +1408,173 @@ CORS_ORIGINS=https://etp-express-frontend-production.up.railway.app
 
 ---
 
+## PASSO 8: GO-LIVE FINAL (B2G)
+
+> **Status:** Documentado na Issue #741
+> **Uso:** Deploy final antes do lancamento comercial B2G
+> **Scripts:** `scripts/go-live-deploy.sh`, `scripts/pre-deploy-validation.sh`
+
+### 8.1 Pre-Requisitos Go-Live
+
+Antes de executar o Go-Live, confirme que todas as issues bloqueantes estao fechadas:
+
+```bash
+# Verificar issues P0/P1 do milestone Go-Live
+gh issue list --label "go-live" --label "priority/P0" --state open
+gh issue list --label "go-live" --label "priority/P1" --state open
+```
+
+**Criterios de Prontidao:**
+
+| Criterio | Verificacao |
+|----------|-------------|
+| Issues P0 | 0 abertas |
+| Issues P1 Go-Live | 0 abertas |
+| Backend replicas | 2+ ativas |
+| Health check | 200 OK |
+| Load test P95 | < 3s |
+| Sentry erros 24h | 0 criticos |
+| Smoke test | 100% PASS |
+
+### 8.2 Processo de Go-Live
+
+**Horario Recomendado:** 22h-6h (baixo uso)
+
+#### Opcao A: Script Automatizado (Recomendado)
+
+```bash
+# 1. Validacao pre-deploy
+./scripts/pre-deploy-validation.sh
+
+# 2. Se validacao passou, executar Go-Live
+./scripts/go-live-deploy.sh
+
+# Ou dry-run primeiro para verificar
+./scripts/go-live-deploy.sh --dry-run
+```
+
+#### Opcao B: Execucao Manual
+
+```bash
+# 1. Backup do database
+./scripts/backup-db.sh backup-pre-golive-$(date +%Y%m%d).sql
+
+# 2. Validar environment
+./scripts/validate-env.sh
+
+# 3. Deploy backend
+./scripts/deploy.sh etp-express-backend
+
+# 4. Aguardar health check (max 5 min)
+watch -n 5 'curl -s https://etp-express-backend-production.up.railway.app/api/health | jq'
+
+# 5. Deploy frontend (apos backend healthy)
+railway up --service etp-express-frontend
+
+# 6. Validacao pos-deploy
+./scripts/validate-railway-deploy.sh
+```
+
+### 8.3 Validacao Pos-Deploy
+
+Apos deploy bem-sucedido, executar validacao completa:
+
+```bash
+# Script automatizado
+./scripts/validate-railway-deploy.sh
+
+# Ou checklist manual em .github/SMOKE_TEST.md
+```
+
+**Itens Criticos:**
+
+- [ ] Backend health: 200 OK
+- [ ] Frontend carrega: < 3s
+- [ ] Login funciona com admin
+- [ ] Criar ETP: sucesso
+- [ ] Gerar secao AI: sucesso em < 60s
+- [ ] Export PDF/DOCX: arquivos validos
+- [ ] Sentry: zero erros criticos
+
+### 8.4 Comunicacao Early Adopters
+
+Apos validacao completa, notificar early adopters:
+
+```bash
+# Template disponivel em:
+cat docs/EARLY_ADOPTERS_EMAIL.md
+```
+
+**Canais:**
+
+1. Email corporativo (template em `docs/EARLY_ADOPTERS_EMAIL.md`)
+2. WhatsApp/Teams (notificacao curta)
+
+### 8.5 Monitoramento 24h (Issue #742)
+
+Apos Go-Live, iniciar monitoramento ativo:
+
+**Dashboard de Monitoramento:**
+
+- Railway Observability: CPU, Memory, Network
+- Sentry: Error rate, exceptions
+- Logs: `railway logs --service=etp-express-backend --tail 100`
+
+**Metricas a Observar:**
+
+| Metrica | Threshold Aceitavel | Acao se Exceder |
+|---------|---------------------|-----------------|
+| Response P95 | < 3s | Investigar queries/LLM |
+| Error rate | < 1% | Verificar Sentry |
+| CPU | < 80% | Escalar replicas |
+| Memory | < 85% | Verificar memory leaks |
+| Uptime | 99.9% | Investigar crashes |
+
+### 8.6 Rollback (Se Necessario)
+
+Se problemas criticos forem detectados:
+
+```bash
+# 1. Rollback do deploy
+./scripts/rollback.sh
+
+# 2. Restaurar database (se necessario)
+./scripts/restore-db.sh backup-pre-golive-YYYYMMDD.sql
+
+# 3. Notificar equipe
+# Documentar causa no GitHub issue
+```
+
+**Criterios para Rollback:**
+
+- Error rate > 5% por 15+ minutos
+- Funcionalidade core quebrada (login, criar ETP, export)
+- Dados corrompidos ou perdidos
+- Performance degradada (P95 > 10s) sustentada
+
+### 8.7 Checklist Final Go-Live
+
+Antes de declarar Go-Live completo:
+
+- [ ] Deploy executado em horario de baixo uso
+- [ ] Backend deploy completo (health 200 OK)
+- [ ] Frontend deploy completo (200 OK)
+- [ ] Smoke test 100% PASS
+- [ ] 2+ replicas backend ativas e saudaveis
+- [ ] Zero erros criticos em Sentry
+- [ ] Early adopters notificados
+- [ ] Backup pre-deploy criado e validado
+- [ ] Monitoramento 24h iniciado (#742)
+
+**Referencias:**
+
+- Issue #741: Deploy final validado
+- Issue #742: Monitoramento 24h pos-deploy
+- Template email: `docs/EARLY_ADOPTERS_EMAIL.md`
+- Scripts: `scripts/go-live-deploy.sh`, `scripts/pre-deploy-validation.sh`
+
+---
+
 ## RECURSOS ADICIONAIS
 
 ### Documentação Railway
@@ -1551,5 +1718,5 @@ Todo conteúdo gerado deve ser **revisado criticamente** antes de uso oficial.
 
 ---
 
-**Última atualização**: 2025-12-17
-**Versão do guia**: 2.2.0
+**Ultima atualizacao**: 2025-12-20
+**Versao do guia**: 2.3.0 (Go-Live B2G)
