@@ -9,6 +9,7 @@ import * as Joi from 'joi';
 
 // Middleware
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+import { RequestMetricsMiddleware } from './common/middleware/request-metrics.middleware';
 
 // Configuration
 import redisConfig from './config/redis.config';
@@ -231,12 +232,15 @@ import { RolesGuard } from './common/guards/roles.guard';
 })
 export class AppModule implements NestModule {
   /**
-   * Configure middleware for request processing (#653)
+   * Configure middleware for request processing (#653, #802)
    *
-   * RequestIdMiddleware runs FIRST to establish request context
-   * before any other middleware or guards execute.
+   * Middleware execution order:
+   * 1. RequestIdMiddleware - Establish request context with unique ID
+   * 2. RequestMetricsMiddleware - Collect performance metrics
    */
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestIdMiddleware).forRoutes('*'); // Apply to all routes
+    consumer
+      .apply(RequestIdMiddleware, RequestMetricsMiddleware)
+      .forRoutes('*'); // Apply to all routes
   }
 }

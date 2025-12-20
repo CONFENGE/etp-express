@@ -1,8 +1,8 @@
 # Production Monitoring & Observability
 
 **Status:** ✅ Implementado
-**Última atualização:** 2025-11-15
-**Versão:** 1.0
+**Última atualização:** 2025-12-20
+**Versão:** 1.1
 
 ## Visão Geral
 
@@ -119,22 +119,48 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 ### Métricas Coletadas
 
+#### Database Metrics
+
 | Métrica | Tipo | Descrição |
 | ----------------------------- | ------- | ------------------------------- |
 | `database_connections_active` | Gauge | Conexões ativas no PostgreSQL |
 | `database_connections_total` | Gauge | Total de conexões abertas |
 | `database_connections_max` | Gauge | Máximo permitido (Railway: 100) |
+
+#### Memory Metrics
+
+| Métrica | Tipo | Descrição |
+| ---------------------- | ----- | --------------------- |
 | `memory_usage_bytes` | Gauge | Heap memory usada |
 | `memory_limit_bytes` | Gauge | Heap memory total |
 | `memory_rss_bytes` | Gauge | Resident Set Size |
+| `memory_external_bytes`| Gauge | External memory |
+
+#### Process Metrics
+
+| Métrica | Tipo | Descrição |
+| ---------------- | ------- | ----------------------- |
 | `uptime_seconds` | Counter | Uptime do processo Node.js |
 | `process_id` | Gauge | PID do processo |
+
+#### Request Metrics (#802)
+
+| Métrica | Tipo | Descrição |
+| ----------------------- | ----- | ---------------------------------- |
+| `request_count_total` | Gauge | Total de requests no sliding window (5 min) |
+| `response_time_p50_ms` | Gauge | 50th percentile response time (ms) |
+| `response_time_p95_ms` | Gauge | 95th percentile response time (ms) |
+| `response_time_p99_ms` | Gauge | 99th percentile response time (ms) |
+| `error_rate_percent` | Gauge | Porcentagem de respostas 5xx |
+| `requests_per_second` | Gauge | Taxa de requests por segundo |
+
+**Nota:** Request metrics usam um sliding window de 5 minutos para cálculo de percentis e error rate.
 
 ### Exemplo de Response
 
 ```
 # ETP Express Application Metrics
-# Generated: 2025-11-15T10:30:00Z
+# Generated: 2025-12-20T10:30:00Z
 
 # HELP database_connections_active Active database connections
 # TYPE database_connections_active gauge
@@ -147,6 +173,30 @@ memory_usage_bytes 45678901
 # HELP uptime_seconds Process uptime in seconds
 # TYPE uptime_seconds counter
 uptime_seconds 3600
+
+# HELP request_count_total Total requests in sliding window
+# TYPE request_count_total gauge
+request_count_total 1500
+
+# HELP response_time_p50_ms 50th percentile response time
+# TYPE response_time_p50_ms gauge
+response_time_p50_ms 45
+
+# HELP response_time_p95_ms 95th percentile response time
+# TYPE response_time_p95_ms gauge
+response_time_p95_ms 120
+
+# HELP response_time_p99_ms 99th percentile response time
+# TYPE response_time_p99_ms gauge
+response_time_p99_ms 250
+
+# HELP error_rate_percent Percentage of 5xx responses
+# TYPE error_rate_percent gauge
+error_rate_percent 0.50
+
+# HELP requests_per_second Request rate (requests/second)
+# TYPE requests_per_second gauge
+requests_per_second 5.00
 ```
 
 ---
@@ -397,4 +447,4 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 2. Adicionar custom business metrics (ETPs criados/dia, tempo médio de geração)
 3. Configurar distributed tracing com OpenTelemetry
 
-**Última revisão:** 2025-11-15
+**Última revisão:** 2025-12-20
