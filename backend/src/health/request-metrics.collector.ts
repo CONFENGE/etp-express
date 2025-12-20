@@ -87,7 +87,9 @@ export class RequestMetricsCollector {
       };
     }
 
-    const responseTimes = this.metrics.map((m) => m.responseTimeMs).sort((a, b) => a - b);
+    const responseTimes = this.metrics
+      .map((m) => m.responseTimeMs)
+      .sort((a, b) => a - b);
     const errorCount = this.metrics.filter((m) => m.statusCode >= 500).length;
     const windowSeconds = this.windowMs / 1000;
 
