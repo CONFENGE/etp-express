@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { REFERENCE_WARNING_MESSAGE } from '@/lib/constants';
@@ -19,9 +19,16 @@ export function SimilarContractsPanel({
       </CardHeader>
       <CardContent>
         {contracts.length === 0 ? (
-          <p className="text-xs text-muted-foreground">
-            Nenhuma contratação similar encontrada ainda.
-          </p>
+          <div className="flex flex-col items-center py-6 text-center">
+            <Search className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm font-medium mb-1">
+              Nenhuma contratação similar encontrada
+            </p>
+            <p className="text-xs text-muted-foreground max-w-[200px]">
+              Preencha mais detalhes do objeto para encontrar referências de
+              contratações anteriores.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             <div className="p-2 bg-yellow-50 border border-yellow-200 rounded-md">
