@@ -26,19 +26,21 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 ### Diferenciais
 
 - **Sistema de Subagentes**: 5 agentes especializados trabalhando em pipeline
-- **Anti-Hallucination**: Mitigação ativa de alucinações e invenção de fatos
-- **Busca Inteligente**: Integração com Perplexity AI para contratações similares
-- **Versionamento Completo**: Histórico com diff e restauração de versões
-- **Export Profissional**: PDF, JSON, XML e DOCX com disclaimers obrigatórios
-- **Import & Análise**: Upload PDF/DOCX para análise e conversão em ETP
-- **Analytics de UX**: Telemetria para melhoria contínua
-- **Cache LLM Inteligente**: OpenAI (24h TTL) + Perplexity (7d TTL) - economia ~80% custos
-- **Circuit Breaker Resiliente**: Opossum para OpenAI/Perplexity - degradação graciosa
+- **Anti-Hallucination**: Mitigacao ativa de alucinacoes e invencao de fatos
+- **Busca Inteligente**: Integracao com Exa AI para contratacoes similares
+- **APIs Governamentais**: PNCP, Compras.gov.br, SINAPI, SICRO como fontes primarias
+- **Versionamento Completo**: Historico com diff e restauracao de versoes
+- **Export Profissional**: PDF, JSON, XML e DOCX com disclaimers obrigatorios
+- **Import & Analise**: Upload PDF/DOCX para analise e conversao em ETP
+- **SSE/Streaming**: Feedback em tempo real durante geracao de secoes
+- **Analytics de UX**: Telemetria para melhoria continua
+- **Cache LLM Inteligente**: OpenAI (24h TTL) + Exa (7d TTL) - economia ~80% custos
+- **Circuit Breaker Resiliente**: Opossum para OpenAI/Exa - degradacao graciosa
 - **RAG com pgvector**: Fact-checking contra Lei 14.133/2021 vetorizada
-- **Performance Otimizada**: 4-5x speedup paralelização, 75% redução queries DB
+- **Performance Otimizada**: 4-5x speedup paralelizacao, 75% reducao queries DB
 - **LGPD 100% Compliance**: Export/delete completo, audit trail, soft delete
 - **Zero-Downtime Deployment**: Blue-green deployment Railway, health checks
-- **CI/CD Otimizado**: GitHub Actions cache, -68% redução CI minutes
+- **CI/CD Otimizado**: GitHub Actions cache, -68% reducao CI minutes
 - **1,879 Testes Automatizados**: 78% backend, 76% frontend, zero erros TypeScript
 - **Auditorias Arquiteturais**: Orchestrator (95%), User (92%), Sections (83%)
 
@@ -69,8 +71,9 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 │ │
 │ Backend (NestJS 11.1.9 + TypeScript) │
 │ ├── TypeORM + PostgreSQL │
-│ ├── OpenAI GPT-4 (geração + cache 24h TTL) │
-│ ├── Perplexity AI (busca + cache 7d TTL) │
+│ ├── OpenAI GPT-4 (geracao + cache 24h TTL) │
+│ ├── Exa AI (busca + cache 7d TTL) │
+│ ├── Gov-APIs (PNCP, SINAPI, SICRO) │
 │ ├── pgvector (RAG Lei 14.133/2021) │
 │ ├── Opossum (Circuit Breaker) │
 │ ├── node-cache (LLM response caching) │
@@ -94,15 +97,15 @@ User Input
 Orchestrator
  ↓
 ┌─────────────────────┐
-│ 1. Legal Agent │ → Valida coerência legal (Lei 14.133)
+│ 1. Legal Agent │ → Valida coerencia legal (Lei 14.133)
 ├─────────────────────┤
-│ 2. Fundamentação │ → Busca contratações similares
+│ 2. Fundamentacao │ → Busca contratacoes (Gov-APIs + Exa)
 ├─────────────────────┤
 │ 3. Clareza │ → Revisa legibilidade (Flesch index)
 ├─────────────────────┤
-│ 4. Simplificação │ → Remove jargão burocrático
+│ 4. Simplificacao │ → Remove jargao burocratico
 ├─────────────────────┤
-│ 5. Anti-Hallucination│ → Previne invenção de fatos
+│ 5. Anti-Hallucination│ → Previne invencao de fatos
 └─────────────────────┘
  ↓
 Generated Content + Warnings + References
@@ -112,12 +115,12 @@ Generated Content + Warnings + References
 
 ## QUICK START
 
-### Pré-requisitos
+### Pre-requisitos
 
 - Node.js 20+ LTS
 - PostgreSQL 15+
 - OpenAI API Key
-- Perplexity API Key
+- Exa API Key
 
 ### Instalação Local
 
@@ -257,12 +260,12 @@ docker-compose up -d
 
 ### URLs de Acesso
 
-| Serviço | URL | Descrição |
+| Serviço         | URL                            | Descrição             |
 | --------------- | ------------------------------ | --------------------- |
-| **Frontend** | http://localhost:5173 | Interface do usuário |
-| **Backend API** | http://localhost:3001 | API REST |
-| **API Docs** | http://localhost:3001/api/docs | Swagger Documentation |
-| **PostgreSQL** | localhost:5432 | Database (interno) |
+| **Frontend**    | http://localhost:5173          | Interface do usuário  |
+| **Backend API** | http://localhost:3001          | API REST              |
+| **API Docs**    | http://localhost:3001/api/docs | Swagger Documentation |
+| **PostgreSQL**  | localhost:5432                 | Database (interno)    |
 
 ### Comandos Docker Úteis
 
@@ -323,25 +326,25 @@ As variáveis de ambiente são gerenciadas via arquivo `.env` na raiz do projeto
 
 **Variáveis OBRIGATÓRIAS:**
 
-| Variável | Descrição | Exemplo |
+| Variável            | Descrição                            | Exemplo                         |
 | ------------------- | ------------------------------------ | ------------------------------- |
-| `OPENAI_API_KEY` | OpenAI API Key (obrigatória) | `sk-proj-...` |
-| `POSTGRES_PASSWORD` | Senha do PostgreSQL | `<auto-gerado por setup-local>` |
-| `JWT_SECRET` | Secret para assinatura de tokens JWT | `<auto-gerado por setup-local>` |
+| `OPENAI_API_KEY`    | OpenAI API Key (obrigatória)         | `sk-proj-...`                   |
+| `POSTGRES_PASSWORD` | Senha do PostgreSQL                  | `<auto-gerado por setup-local>` |
+| `JWT_SECRET`        | Secret para assinatura de tokens JWT | `<auto-gerado por setup-local>` |
 
 **Variáveis OPCIONAIS:**
 
-| Variável | Descrição | Default |
-| ------------------------- | ------------------------------- | -------------- |
-| `PERPLEXITY_API_KEY` | Perplexity API (busca avançada) | ` ` (disabled) |
-| `SENTRY_DSN` | Sentry error tracking | ` ` (disabled) |
-| `NODE_ENV` | Node environment | `development` |
-| `BACKEND_PORT` | Backend port | `3001` |
-| `FRONTEND_PORT` | Frontend port | `5173` |
-| `DB_POOL_MIN` | Connection pool mínimo | `5` |
-| `DB_POOL_MAX` | Connection pool máximo | `20` |
-| `DB_POOL_ACQUIRE_TIMEOUT` | Timeout aquisição (ms) | `30000` |
-| `DB_POOL_IDLE_TIMEOUT` | Timeout idle (ms) | `10000` |
+| Variável                  | Descrição                | Default        |
+| ------------------------- | ------------------------ | -------------- |
+| `EXA_API_KEY`             | Exa API (busca avancada) | ` ` (disabled) |
+| `SENTRY_DSN`              | Sentry error tracking    | ` ` (disabled) |
+| `NODE_ENV`                | Node environment         | `development`  |
+| `BACKEND_PORT`            | Backend port             | `3001`         |
+| `FRONTEND_PORT`           | Frontend port            | `5173`         |
+| `DB_POOL_MIN`             | Connection pool mínimo   | `5`            |
+| `DB_POOL_MAX`             | Connection pool máximo   | `20`           |
+| `DB_POOL_ACQUIRE_TIMEOUT` | Timeout aquisição (ms)   | `30000`        |
+| `DB_POOL_IDLE_TIMEOUT`    | Timeout idle (ms)        | `10000`        |
 
 **Validação:**
 
@@ -451,7 +454,7 @@ docker system df
 - Pós: ~4000 min/mês (~10 min/ciclo cache HIT)
 - ROI: 2h implementação → 131h/mês economizadas
 
- [ROADMAP.md - CI/CD](./ROADMAP.md#-otimização-de-infraestrutura)
+[ROADMAP.md - CI/CD](./ROADMAP.md#-otimização-de-infraestrutura)
 
 ---
 
@@ -510,17 +513,17 @@ Gerado em runtime:
 
 ### Configuração (puppeteer.config.js)
 
-| Configuração | Padrão | Variável de Ambiente | Descrição |
+| Configuração        | Padrão                  | Variável de Ambiente | Descrição                          |
 | ------------------- | ----------------------- | -------------------- | ---------------------------------- |
-| `baseUrl` | `http://localhost:5173` | `E2E_BASE_URL` | URL da aplicação |
-| `headless` | `true` | `E2E_HEADLESS=false` | Modo headless (true para CI) |
-| `devtools` | `false` | `E2E_DEVTOOLS=true` | Abrir DevTools (debug) |
-| `slowMo` | `0` | `E2E_SLOW_MO=250` | Slow motion (ms) para debug visual |
-| `viewport.width` | `1920` | - | Largura do browser |
-| `viewport.height` | `1080` | - | Altura do browser |
-| `testTimeout` | `60000` (60s) | - | Timeout padrão por teste |
-| `testUser.email` | `test@confenge.com.br` | `E2E_TEST_EMAIL` | Usuário padrão para testes |
-| `testUser.password` | `Test@123456` | `E2E_TEST_PASSWORD` | Senha padrão para testes |
+| `baseUrl`           | `http://localhost:5173` | `E2E_BASE_URL`       | URL da aplicação                   |
+| `headless`          | `true`                  | `E2E_HEADLESS=false` | Modo headless (true para CI)       |
+| `devtools`          | `false`                 | `E2E_DEVTOOLS=true`  | Abrir DevTools (debug)             |
+| `slowMo`            | `0`                     | `E2E_SLOW_MO=250`    | Slow motion (ms) para debug visual |
+| `viewport.width`    | `1920`                  | -                    | Largura do browser                 |
+| `viewport.height`   | `1080`                  | -                    | Altura do browser                  |
+| `testTimeout`       | `60000` (60s)           | -                    | Timeout padrão por teste           |
+| `testUser.email`    | `test@confenge.com.br`  | `E2E_TEST_EMAIL`     | Usuário padrão para testes         |
+| `testUser.password` | `Test@123456`           | `E2E_TEST_PASSWORD`  | Senha padrão para testes           |
 
 ### Helpers Disponíveis (utils/setup.ts)
 
@@ -553,31 +556,31 @@ await teardownBrowser(browser);
 import { setupBrowser, teardownBrowser, login } from './utils/setup';
 
 describe('Login Flow E2E', () => {
- let browser, page;
+  let browser, page;
 
- beforeEach(async () => {
- ({ browser, page } = await setupBrowser());
- });
+  beforeEach(async () => {
+    ({ browser, page } = await setupBrowser());
+  });
 
- afterEach(async () => {
- await teardownBrowser(browser);
- });
+  afterEach(async () => {
+    await teardownBrowser(browser);
+  });
 
- test('deve fazer login com credenciais válidas', async () => {
- try {
- await page.goto('http://localhost:5173/login');
- await page.type('#email', 'test@confenge.com.br');
- await page.type('#password', 'Test@123456');
- await page.click('button[type="submit"]');
- await page.waitForNavigation();
+  test('deve fazer login com credenciais válidas', async () => {
+    try {
+      await page.goto('http://localhost:5173/login');
+      await page.type('#email', 'test@confenge.com.br');
+      await page.type('#password', 'Test@123456');
+      await page.click('button[type="submit"]');
+      await page.waitForNavigation();
 
- // Validações
- expect(page.url()).toContain('/dashboard');
- } catch (error) {
- await takeScreenshotOnFailure(page, 'login-valid-credentials');
- throw error;
- }
- }, 60000);
+      // Validações
+      expect(page.url()).toContain('/dashboard');
+    } catch (error) {
+      await takeScreenshotOnFailure(page, 'login-valid-credentials');
+      throw error;
+    }
+  }, 60000);
 });
 ```
 
@@ -696,11 +699,14 @@ Consulte o guia completo: **[DEPLOY_RAILWAY.md](./DEPLOY_RAILWAY.md)**
 1. **Railway CLI**: `npm i -g @railway/cli`
 2. **Token**: `railway login` ou `export RAILWAY_TOKEN=...`
 3. **Variáveis obrigatórias**:
- - `OPENAI_API_KEY`
- - `JWT_SECRET` (gerar: `openssl rand -base64 32`)
+
+- `OPENAI_API_KEY`
+- `JWT_SECRET` (gerar: `openssl rand -base64 32`)
+
 4. **Connection pooling** (recomendado):
- - `DB_POOL_MIN=5`
- - `DB_POOL_MAX=20`
+
+- `DB_POOL_MIN=5`
+- `DB_POOL_MAX=20`
 
 ---
 
@@ -748,7 +754,7 @@ ETP Express/
 │ │ ├── sections/ # Seções
 │ │ ├── orchestrator/ # Sistema de IA
 │ │ ├── rag/ # RAG + pgvector (Lei 14.133)
-│ │ ├── search/ # Busca Perplexity
+│ │ ├── search/ # Busca Exa + Gov-APIs
 │ │ ├── export/ # Exportação PDF/JSON/XML/DOCX
 │ │ ├── document-extraction/ # Extração texto (PDF/DOCX)
 │ │ ├── versions/ # Versionamento
@@ -793,10 +799,10 @@ ETP Express/
 - Latência: 25s redução (5-30s → <5s cache HIT)
 - Hit rate: 80-90% produção
 
-**Perplexity Cache (TTL 7d)**:
+**Exa Cache (TTL 7d)**:
 
 - Hit rate: 70%
-- Graceful degradation se indisponível
+- Graceful degradation se indisponivel
 
 ### Paralelização de Agentes
 
@@ -820,14 +826,14 @@ ETP Express/
 
 ### Métricas (Antes vs Depois)
 
-| Métrica | Antes | Depois | Melhoria |
+| Métrica          | Antes  | Depois | Melhoria |
 | ---------------- | ------ | ------ | -------- |
-| Latência geração | 60s | 35s | -42% |
-| Cache hit OpenAI | 0% | 80-90% | +80-90% |
-| Queries/request | 15 | 5.7 | -62% |
-| Cost reduction | $50/1k | $10/1k | -80% |
+| Latência geração | 60s    | 35s    | -42%     |
+| Cache hit OpenAI | 0%     | 80-90% | +80-90%  |
+| Queries/request  | 15     | 5.7    | -62%     |
+| Cost reduction   | $50/1k | $10/1k | -80%     |
 
- [PERFORMANCE_BOTTLENECK_ANALYSIS.md](./PERFORMANCE_BOTTLENECK_ANALYSIS.md)
+[PERFORMANCE_BOTTLENECK_ANALYSIS.md](./PERFORMANCE_BOTTLENECK_ANALYSIS.md)
 
 ---
 
@@ -841,7 +847,7 @@ NODE_ENV=production
 DATABASE_URL=postgresql://...
 JWT_SECRET=seu-secret-aqui
 OPENAI_API_KEY=sk-proj-...
-PERPLEXITY_API_KEY=pplx-...
+EXA_API_KEY=exa-...
 
 # URLs
 FRONTEND_URL=https://seu-frontend.railway.app
@@ -909,28 +915,28 @@ npm run lint
 
 ## DOCUMENTAÇÃO
 
-| Documento | Descrição |
+| Documento                                                      | Descrição                                         |
 | -------------------------------------------------------------- | ------------------------------------------------- |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Arquitetura completa do sistema |
-| [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md) | **Infrastructure as Code - Docker, Railway, DR** |
-| [DEPLOY.md](./DEPLOY.md) | Guia de deploy em produção (Railway) |
-| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md) | **Playbook de resposta a incidentes em produção** |
-| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime |
-| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md) | Backup e disaster recovery procedures |
-| [docs/MONITORING.md](./docs/MONITORING.md) | Monitoramento e alertas com Sentry |
-| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql) | Schema completo do banco |
-| [backend/README.md](./backend/README.md) | Documentação do backend |
-| [frontend/README.md](./frontend/README.md) | Documentação do frontend |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                   |
+| [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)             | **Infrastructure as Code - Docker, Railway, DR**  |
+| [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)              |
+| [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | **Playbook de resposta a incidentes em produção** |
+| [docs/ZERO_DOWNTIME_DEPLOY.md](./docs/ZERO_DOWNTIME_DEPLOY.md) | Estratégia de deploy sem downtime                 |
+| [DISASTER_RECOVERY.md](./DISASTER_RECOVERY.md)                 | Backup e disaster recovery procedures             |
+| [docs/MONITORING.md](./docs/MONITORING.md)                     | Monitoramento e alertas com Sentry                |
+| [DATABASE_SCHEMA.sql](./DATABASE_SCHEMA.sql)                   | Schema completo do banco                          |
+| [backend/README.md](./backend/README.md)                       | Documentação do backend                           |
+| [frontend/README.md](./frontend/README.md)                     | Documentação do frontend                          |
 
 ### Auditorias Arquiteturais
 
 **M4 (Issues #78-#81)** - Validação contra [ARCHITECTURE.md](./ARCHITECTURE.md)
 
-| Módulo | Conformidade | Status | Relatório | Data |
+| Módulo           | Conformidade | Status                   | Relatório                                                                  | Data       |
 | ---------------- | ------------ | ------------------------ | -------------------------------------------------------------------------- | ---------- |
-| **Orchestrator** | 95% | ✅ **Aprovado produção** | [ORCHESTRATOR_MODULE_AUDIT.md](./docs/audits/ORCHESTRATOR_MODULE_AUDIT.md) | 2025-11-30 |
-| **User** | 92% | ⚠ Aprovado (cond. RBAC) | [USER_MODULE_AUDIT.md](./docs/audits/USER_MODULE_AUDIT.md) | 2025-11-30 |
-| **Sections** | 83% | ⚠ Recomendações | [SECTIONS_MODULE_AUDIT.md](./docs/audits/SECTIONS_MODULE_AUDIT.md) | 2025-11-30 |
+| **Orchestrator** | 95%          | ✅ **Aprovado produção** | [ORCHESTRATOR_MODULE_AUDIT.md](./docs/audits/ORCHESTRATOR_MODULE_AUDIT.md) | 2025-11-30 |
+| **User**         | 92%          | ⚠ Aprovado (cond. RBAC)  | [USER_MODULE_AUDIT.md](./docs/audits/USER_MODULE_AUDIT.md)                 | 2025-11-30 |
+| **Sections**     | 83%          | ⚠ Recomendações          | [SECTIONS_MODULE_AUDIT.md](./docs/audits/SECTIONS_MODULE_AUDIT.md)         | 2025-11-30 |
 
 **Highlights**:
 
@@ -1037,13 +1043,13 @@ O sistema utiliza **LLMs (Large Language Models)** que podem:
 
 #### Mapeamento de Dados
 
-| Dado | Finalidade | Base Legal | Retenção | Transfer. |
+| Dado          | Finalidade    | Base Legal | Retenção     | Transfer.            |
 | ------------- | ------------- | ---------- | ------------ | -------------------- |
-| Email | Autenticação | Art. 7º, V | Até exclusão | Não |
-| Nome | Identificação | Art. 7º, V | Até exclusão | Não |
-| Conteúdo ETPs | Geração IA | Art. 7º, I | Até exclusão | **Sim** (OpenAI-EUA) |
+| Email         | Autenticação  | Art. 7º, V | Até exclusão | Não                  |
+| Nome          | Identificação | Art. 7º, V | Até exclusão | Não                  |
+| Conteúdo ETPs | Geração IA    | Art. 7º, I | Até exclusão | **Sim** (OpenAI-EUA) |
 
- Documentação LGPD:
+Documentação LGPD:
 
 - [LGPD_DATA_MAPPING.md](./docs/LGPD_DATA_MAPPING.md)
 - [LGPD_COMPLIANCE_REPORT.md](./docs/LGPD_COMPLIANCE_REPORT.md)
@@ -1110,16 +1116,16 @@ npm run test:all
 
 Usamos [Conventional Commits](https://www.conventionalcommits.org/) para histórico padronizado:
 
-| Tipo | Descrição |
+| Tipo       | Descrição                                   |
 | ---------- | ------------------------------------------- |
-| `feat` | Nova funcionalidade |
-| `fix` | Correção de bug |
-| `docs` | Apenas documentação |
-| `test` | Adição/correção de testes |
+| `feat`     | Nova funcionalidade                         |
+| `fix`      | Correção de bug                             |
+| `docs`     | Apenas documentação                         |
+| `test`     | Adição/correção de testes                   |
 | `refactor` | Refatoração (sem mudança de funcionalidade) |
-| `perf` | Melhoria de performance |
-| `chore` | Tarefas de manutenção (deps, configs) |
-| `security` | Correção de vulnerabilidade |
+| `perf`     | Melhoria de performance                     |
+| `chore`    | Tarefas de manutenção (deps, configs)       |
+| `security` | Correção de vulnerabilidade                 |
 
 **Formato:** `tipo(escopo): descrição (#issue)`
 
@@ -1213,20 +1219,20 @@ Este software é propriedade exclusiva da CONFENGE. É expressamente proibido co
 
 ## ROADMAP
 
-**Ultima Atualizacao**: 2025-12-14 | [ROADMAP.md completo](./ROADMAP.md)
+**Ultima Atualizacao**: 2025-12-20 | [ROADMAP.md completo](./ROADMAP.md)
 
-### Progresso Global: 89.4% (329/368 issues)
+### Progresso Global: 91.1% (408/448 issues)
 
 ```
-M1: ████████████████████ 36/36 (100%) ✅ Foundation
+M1: ████████████████████ 35/35 (100%) ✅ Foundation
 M2: ████████████████████ 18/18 (100%) ✅ CI/CD Pipeline
-M3: ████████████████████ 61/61 (100%) ✅ Quality & Security
-M4: ████████████████████ 45/45 (100%) ✅ Refactoring & Performance
-M5: ███████████████░░░░░ 24/32 (75%) E2E & Documentation
-M6: ████████████████░░░░ 70/86 (81%) Maintenance
+M3: ████████████████████ 60/60 (100%) ✅ Quality & Security
+M4: ████████████████████ 44/44 (100%) ✅ Refactoring & Performance
+M5: █████████████████░░░ 25/29 (86%) E2E & Documentation
+M6: ██████████████████░░ 77/85 (91%) Maintenance
 M7: ████████████████████ 6/6 (100%) ✅ Multi-Tenancy B2G
 M8: ████████████████████ 24/24 (100%) ✅ Domain Management
-M9: ███████░░░░░░░░░░░░░ 7/16 (44%) Export/Import Sprint
+M9: ████████████████████ 16/16 (100%) ✅ Export/Import Sprint
 ```
 
 ### ✅ M1-M4: Foundation, CI/CD, Quality, Performance (100%)
@@ -1238,28 +1244,28 @@ M9: ███████░░░░░░░░░░░░░ 7/16 (44%) Expo
 - ✅ Cache LLM (80% economia)
 - ✅ Paralelização 4-5x speedup
 
-### M5: E2E Testing & Documentation (75%)
+### M5: E2E Testing & Documentation (86%)
 
 - ✅ E2E critical flow tests (Playwright)
 - ✅ Accessibility tests (WCAG 2.1 AA)
 - ✅ Frontend logging service (Sentry)
+- ✅ Load testing k6 (100 users)
 - [ ] Staged rollout, Production SLA
-- [ ] Load testing k6 (100 users)
 
-### M6: Maintenance (81%)
+### M6: Maintenance (91%)
 
 - ✅ Redis + BullMQ async processing
 - ✅ Async UX polling frontend
 - ✅ UX Enterprise Polish (breadcrumbs, skeleton, confetti)
+- ✅ N+1 query fix, LLM cache memory leak fix
 - [ ] pgvector migration (#387)
-- [ ] Performance: N+1 queries, memory leak
 
 ### ✅ M7: Multi-Tenancy B2G (100%)
 
 - ✅ Column-based isolation (organizationId)
 - ✅ TenantGuard + RolesGuard
 - ✅ Domain whitelist registration
-- ✅ Kill switch para organizações
+- ✅ Kill switch para organizacoes
 
 ### ✅ M8: Domain Management (100%)
 
@@ -1267,14 +1273,14 @@ M9: ███████░░░░░░░░░░░░░ 7/16 (44%) Expo
 - ✅ Domain CRUD + AssignManager
 - ✅ Authorization policies
 
-### M9: Export/Import (44%) - Sprint Intensivo
+### ✅ M9: Export/Import (100%)
 
 - ✅ Export DOCX (docx library)
 - ✅ Document text extraction (mammoth, pdf-parse)
-- [ ] ETPAnalysisService (AI agents)
-- [ ] Frontend Import & Analysis page
+- ✅ ETPAnalysisService (AI agents)
+- ✅ Frontend Import & Analysis page
 
- [ROADMAP.md](./ROADMAP.md) para detalhes completos
+[ROADMAP.md](./ROADMAP.md) para detalhes completos
 
 ---
 
@@ -1323,7 +1329,7 @@ A responsabilidade final é sempre do servidor/agente público responsável.
 
 ---
 
-**Ultima atualizacao**: 2025-12-14
+**Ultima atualizacao**: 2025-12-20
 **Versao**: 1.0.0 (Production Ready)
-**Progresso**: 89.4% (329/368 issues concluidas)
-**Milestones**: M1-M4 ✅ | M5 (75%) | M6 (81%) | M7-M8 ✅ | M9 (44%)
+**Progresso**: 91.1% (408/448 issues concluidas)
+**Milestones**: M1-M4 ✅ | M5 (86%) | M6 (91%) | M7-M9 ✅
