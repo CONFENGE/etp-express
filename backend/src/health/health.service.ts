@@ -114,39 +114,114 @@ export class HealthService {
   /**
    * Verifica se a aplicação está pronta para receber tráfego
    *
-   * Diferente de liveness: valida que migrations completaram.
-   * Retorna status "starting" durante migrations para evitar falsos-positivos.
+   * Executa verificações completas de todas as dependências:
+   * - Database: Conectividade PostgreSQL
+   * - Migrations: Status de migrations TypeORM
+   * - Redis: Conectividade (se configurado)
+   * - Providers: Estado dos circuit breakers (OpenAI, Exa)
    *
-   * @returns {Promise<object>} Status de readiness
+   * @returns {Promise<object>} Status de readiness detalhado
    */
   async checkReadiness() {
-    const dbHealth = await this.checkDatabase();
+    const timestamp = new Date().toISOString();
 
+    // Verificar database
+    const dbHealth = await this.checkDatabase();
     if (!dbHealth) {
       return {
         status: 'not_ready',
         reason: 'database_disconnected',
-        timestamp: new Date().toISOString(),
+        timestamp,
+        components: {
+          database: { status: 'unhealthy' },
+          migrations: { status: 'unknown' },
+          redis: { status: 'unknown' },
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
+        },
       };
     }
 
-    // Verificar se há migrations pendentes
+    // Verificar migrations
     const migrationsPending = await this.checkPendingMigrations();
-
     if (migrationsPending) {
       return {
         status: 'starting',
         reason: 'migrations_in_progress',
-        database: 'connected',
-        timestamp: new Date().toISOString(),
+        timestamp,
+        components: {
+          database: { status: 'healthy' },
+          migrations: { status: 'pending' },
+          redis: { status: 'unknown' },
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
+        },
       };
     }
 
+    // Verificar Redis
+    const redisHealth = await this.checkRedis();
+    const redisUrl = this.configService.get<string>('REDIS_URL');
+    const redisStatus = !redisUrl
+      ? { status: 'not_configured' as const }
+      : redisHealth
+        ? { status: 'healthy' as const }
+        : { status: 'unhealthy' as const };
+
+    // Se Redis está configurado e offline, retornar not_ready
+    if (redisUrl && !redisHealth) {
+      return {
+        status: 'not_ready',
+        reason: 'redis_disconnected',
+        timestamp,
+        components: {
+          database: { status: 'healthy' },
+          migrations: { status: 'completed' },
+          redis: redisStatus,
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
+        },
+      };
+    }
+
+    // Verificar circuit breakers (não fazemos ping, apenas verificamos estado)
+    const openaiCircuit = this.openaiService.getCircuitState();
+    const exaCircuit = this.exaService.getCircuitState();
+
+    const openaiStatus = {
+      status: openaiCircuit.opened
+        ? ('degraded' as const)
+        : ('healthy' as const),
+      circuitOpen: openaiCircuit.opened,
+    };
+
+    const exaStatus = {
+      status: exaCircuit.opened ? ('degraded' as const) : ('healthy' as const),
+      circuitOpen: exaCircuit.opened,
+    };
+
+    // Determinar status geral
+    const hasDegradedProvider = openaiCircuit.opened || exaCircuit.opened;
+    const overallStatus = hasDegradedProvider ? 'degraded' : 'ready';
+
     return {
-      status: 'ready',
-      timestamp: new Date().toISOString(),
-      database: 'connected',
-      migrations: 'completed',
+      status: overallStatus,
+      timestamp,
+      components: {
+        database: { status: 'healthy' },
+        migrations: { status: 'completed' },
+        redis: redisStatus,
+        providers: {
+          openai: openaiStatus,
+          exa: exaStatus,
+        },
+      },
     };
   }
 

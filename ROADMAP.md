@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 407/448 (90.8%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 409/448 (91.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -41,20 +41,20 @@
 | ~~#796~~ | ~~Remover linguagem AI-like das interfaces~~       | ✅ DONE |
 | ~~#797~~ | ~~Revisar empty states com CTAs claros~~           | ✅ DONE |
 
-### P2 - OPERACIONAL (5 open / 10 total)
+### P2 - OPERACIONAL (6 open / 10 total)
 
-| #        | Issue                                               | Status      |
-| -------- | --------------------------------------------------- | ----------- |
-| #798     | Criar MANUAL_TESTER.md para gestores e testadores   | OPEN        |
-| #799     | Criar TROUBLESHOOTING.md com problemas comuns       | OPEN        |
-| ~~#800~~ | ~~Exportar documentacao OpenAPI/Swagger~~           | PR #842     |
-| #801     | Criar OPS_RUNBOOK.md com procedimentos operacionais | OPEN        |
-| #802     | Configurar dashboard de metricas em Railway         | OPEN        |
-| ~~#803~~ | ~~Adicionar endpoint /api/health/ready~~            | PR #840     |
-| ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/*~~ | ✅ DONE     |
-| ~~#805~~ | ~~Criar script de verificacao de security headers~~ | PR #841     |
-| #806     | Executar re-teste completo pos-correcoes P0         | OPEN        |
-| ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~     | PR #843     |
+| #        | Issue                                                | Status  |
+| -------- | ---------------------------------------------------- | ------- |
+| #798     | Criar MANUAL_TESTER.md para gestores e testadores    | OPEN    |
+| #799     | Criar TROUBLESHOOTING.md com problemas comuns        | OPEN    |
+| #800     | Exportar documentacao OpenAPI/Swagger                | OPEN    |
+| #801     | Criar OPS_RUNBOOK.md com procedimentos operacionais  | OPEN    |
+| #802     | Configurar dashboard de metricas em Railway          | OPEN    |
+| ~~#803~~ | ~~Adicionar endpoint /api/health/ready~~             | ✅ DONE |
+| ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/\*~~ | ✅ DONE |
+| ~~#805~~ | ~~Criar script de verificacao de security headers~~  | ✅ DONE |
+| #806     | Executar re-teste completo pos-correcoes P0          | OPEN    |
+| ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~      | ✅ DONE |
 
 ### P3 - FUTURO (10 issues)
 
@@ -528,16 +528,16 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 448      |
-| Issues Abertas    | 46       |
-| Issues Fechadas   | 402      |
-| Progresso         | 89.7%    |
-| Velocidade        | 12.7/dia |
+| Issues Abertas    | 40       |
+| Issues Fechadas   | 409      |
+| Progresso         | 91.3%    |
+| Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1879     |
 | P0 Go-Live        | 0 ✅     |
-| P1 Go-Live        | 4        |
-| P2 Go-Live        | 10       |
+| P1 Go-Live        | 0 ✅     |
+| P2 Go-Live        | 6        |
 | P3 Go-Live        | 10       |
 | P2 Gov-API        | 1        |
 | v1.1 Backlog      | 7        |
