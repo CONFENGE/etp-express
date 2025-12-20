@@ -344,7 +344,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 | ~~#454~~ | ~~N+1 query fix~~ | ✅ PR #689 |
 | ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 |
 | ~~#457~~ | ~~useCallback/useMemo~~ | ✅ CLOSED 2025-12-18 |
-| #459 | Eager loading User | P3 |
+| ~~#459~~ | ~~Eager loading User~~ | ✅ DONE PR #855 |
 | #461 | Bundle lazy loading | P3 |
 
 **Infrastructure:**
