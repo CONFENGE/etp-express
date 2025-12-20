@@ -1,0 +1,145 @@
+name: Security - Headers Validation
+
+on:
+  # Run on push to master (after deploy)
+  push:
+    branches: [master]
+    paths:
+      - 'backend/src/main.ts'
+      - 'backend/src/app.module.ts'
+      - '.github/workflows/security-headers.yml'
+      - 'scripts/check-security-headers.sh'
+
+  # Run on PRs that modify security-related files
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/src/main.ts'
+      - 'backend/src/app.module.ts'
+      - '.github/workflows/security-headers.yml'
+      - 'scripts/check-security-headers.sh'
+
+  # Run daily at 8 AM UTC to catch config changes
+  schedule:
+    - cron: '0 8 * * *'
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL to check (default: production)'
+        required: false
+        type: string
+
+env:
+  PRODUCTION_BACKEND_URL: 'https://etp-express-backend-production.up.railway.app'
+  PRODUCTION_FRONTEND_URL: 'https://etp-express-frontend-production.up.railway.app'
+
+jobs:
+  check-security-headers:
+    name: Validate Security Headers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x scripts/check-security-headers.sh
+
+      - name: Check Backend Security Headers
+        id: backend-headers
+        continue-on-error: true
+        run: |
+          echo "## Backend Security Headers" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          URL="${{ inputs.url || env.PRODUCTION_BACKEND_URL }}"
+          echo "Checking: $URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          OUTPUT=$(bash scripts/check-security-headers.sh "$URL" 2>&1) || true
+          EXIT_CODE=$?
+
+          # Add output to summary
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Set output for later steps
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "backend_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Backend headers validation passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "backend_status=failure" >> $GITHUB_OUTPUT
+            echo "❌ Backend headers validation failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check Frontend Security Headers
+        id: frontend-headers
+        continue-on-error: true
+        run: |
+          echo "## Frontend Security Headers" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Checking: ${{ env.PRODUCTION_FRONTEND_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          OUTPUT=$(bash scripts/check-security-headers.sh "${{ env.PRODUCTION_FRONTEND_URL }}" 2>&1) || true
+          EXIT_CODE=$?
+
+          # Add output to summary
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Set output for later steps
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "frontend_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Frontend headers validation passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "frontend_status=failure" >> $GITHUB_OUTPUT
+            echo "❌ Frontend headers validation failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.backend-headers.outputs.backend_status }}" == "success" ]; then
+            echo "| Backend | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Backend | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.frontend-headers.outputs.frontend_status }}" == "success" ]; then
+            echo "| Frontend | ✅ Pass |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Frontend | ❌ Fail |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### References" >> $GITHUB_STEP_SUMMARY
+          echo "- [OWASP Secure Headers](https://owasp.org/www-project-secure-headers/)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Mozilla Observatory](https://observatory.mozilla.org/)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if required headers missing
+        if: steps.backend-headers.outputs.backend_status == 'failure' || steps.frontend-headers.outputs.frontend_status == 'failure'
+        run: |
+          echo ""
+          echo "❌ Security headers validation failed!"
+          echo ""
+          echo "Required security headers are missing from production."
+          echo "Please review the output above and configure the missing headers."
+          echo ""
+          echo "For NestJS backend, ensure helmet middleware is configured in main.ts:"
+          echo ""
+          echo "  import helmet from 'helmet';"
+          echo "  app.use(helmet());"
+          echo ""
+          exit 1
