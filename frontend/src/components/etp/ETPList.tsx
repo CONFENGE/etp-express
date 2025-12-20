@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { FileText } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -13,21 +13,30 @@ import { Button } from '@/components/ui/button';
 import { ETP } from '@/types/etp';
 import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
+import { EmptyState } from '@/components/common/EmptyState';
 
 interface ETPListProps {
   etps: ETP[];
 }
 
 export function ETPList({ etps }: ETPListProps) {
+  const navigate = useNavigate();
+
   if (etps.length === 0) {
     return (
       <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Nenhum ETP encontrado</h3>
-          <p className="text-sm text-muted-foreground">
-            Comece criando seu primeiro Estudo Técnico Preliminar
-          </p>
+        <CardContent>
+          <EmptyState
+            type="documents"
+            title="Nenhum ETP encontrado"
+            description="Comece criando seu primeiro Estudo Técnico Preliminar para organizar suas contratações."
+            action={{
+              label: 'Criar ETP',
+              onClick: () => navigate('/etps/new'),
+              icon: PlusCircle,
+            }}
+            size="md"
+          />
         </CardContent>
       </Card>
     );
