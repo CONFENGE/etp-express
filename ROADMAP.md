@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 355/392 (90.6%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 362/393 (92.1%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -41,7 +41,7 @@
 | ~~#796~~ | ~~Remover linguagem AI-like das interfaces~~       | ✅ DONE |
 | ~~#797~~ | ~~Revisar empty states com CTAs claros~~           | ✅ DONE |
 
-### P2 - OPERACIONAL (4 open / 10 total)
+### P2 - OPERACIONAL (0 open / 10 total) ✅ COMPLETO
 
 | #        | Issue                                                   | Status  |
 | -------- | ------------------------------------------------------- | ------- |
@@ -49,11 +49,11 @@
 | ~~#799~~ | ~~Criar TROUBLESHOOTING.md com problemas comuns~~       | ✅ DONE |
 | ~~#800~~ | ~~Exportar documentacao OpenAPI/Swagger~~               | ✅ DONE |
 | ~~#801~~ | ~~Criar OPS_RUNBOOK.md com procedimentos operacionais~~ | ✅ DONE |
-| #802     | Configurar dashboard de metricas em Railway             | OPEN    |
+| ~~#802~~ | ~~Configurar dashboard de metricas em Railway~~         | ✅ DONE |
 | ~~#803~~ | ~~Adicionar endpoint /api/health/ready~~                | ✅ DONE |
 | ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/\*~~    | ✅ DONE |
 | ~~#805~~ | ~~Criar script de verificacao de security headers~~     | ✅ DONE |
-| #806     | Executar re-teste completo pos-correcoes P0             | OPEN    |
+| ~~#806~~ | ~~Executar re-teste completo pos-correcoes P0~~         | ✅ DONE |
 | ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~         | ✅ DONE |
 
 ### P3 - FUTURO (10 issues)
