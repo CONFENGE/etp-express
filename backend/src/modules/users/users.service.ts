@@ -74,6 +74,31 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Finds a user by ID with organization relation loaded.
+   *
+   * @remarks
+   * Use this method when you need access to user.organization data.
+   * For queries that only need user data, use findOne() instead
+   * to avoid unnecessary JOINs.
+   *
+   * @param id - User ID (UUID)
+   * @returns User entity with organization relation populated
+   * @throws {NotFoundException} If user not found
+   */
+  async findOneWithOrganization(id: string): Promise<User> {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['organization'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { email } });
   }

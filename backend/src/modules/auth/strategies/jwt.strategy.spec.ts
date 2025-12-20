@@ -18,6 +18,7 @@ describe('JwtStrategy', () => {
 
   const mockUsersService = {
     findOne: jest.fn(),
+    findOneWithOrganization: jest.fn(),
   };
 
   const mockOrganization = {
@@ -97,26 +98,29 @@ describe('JwtStrategy', () => {
 
     it('should return user data when token payload is valid', async () => {
       // Arrange
-      mockUsersService.findOne.mockResolvedValue(mockUser);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(mockUser);
 
       // Act
       const result = await strategy.validate(mockRequest, mockPayload);
 
       // Assert
-      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
-      expect(usersService.findOne).toHaveBeenCalledTimes(1);
+      expect(usersService.findOneWithOrganization).toHaveBeenCalledWith(
+        mockPayload.sub,
+      );
+      expect(usersService.findOneWithOrganization).toHaveBeenCalledTimes(1);
       expect(result).toEqual({
         id: mockUser.id,
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
         organizationId: mockUser.organizationId,
+        organization: mockOrganization,
       });
     });
 
     it('should throw UnauthorizedException when user is not found', async () => {
       // Arrange
-      mockUsersService.findOne.mockResolvedValue(null);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(null);
 
       // Act & Assert
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
@@ -125,13 +129,15 @@ describe('JwtStrategy', () => {
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         'Usuário inválido ou inativo',
       );
-      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+      expect(usersService.findOneWithOrganization).toHaveBeenCalledWith(
+        mockPayload.sub,
+      );
     });
 
     it('should throw UnauthorizedException when user is inactive', async () => {
       // Arrange
       const inactiveUser = { ...mockUser, isActive: false };
-      mockUsersService.findOne.mockResolvedValue(inactiveUser);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(inactiveUser);
 
       // Act & Assert
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
@@ -140,7 +146,9 @@ describe('JwtStrategy', () => {
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         'Usuário inválido ou inativo',
       );
-      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+      expect(usersService.findOneWithOrganization).toHaveBeenCalledWith(
+        mockPayload.sub,
+      );
     });
   });
 
