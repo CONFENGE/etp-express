@@ -48,6 +48,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
   const mockUsersService = {
     findOne: jest.fn(),
+    findOneWithOrganization: jest.fn(),
   };
 
   /**
@@ -83,7 +84,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
       usersService = module.get<UsersService>(UsersService);
 
       jest.clearAllMocks();
-      mockUsersService.findOne.mockResolvedValue(mockUser);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(mockUser);
     });
 
     it('should be defined', () => {
@@ -98,13 +99,16 @@ describe('JwtStrategy - Dual-Key Support', () => {
       // For validate(), we just need to verify it returns correct user data
       const result = await strategy.validate(mockRequest, mockPayload);
 
-      expect(usersService.findOne).toHaveBeenCalledWith(mockPayload.sub);
+      expect(usersService.findOneWithOrganization).toHaveBeenCalledWith(
+        mockPayload.sub,
+      );
       expect(result).toEqual({
         id: mockUser.id,
         email: mockUser.email,
         name: mockUser.name,
         role: mockUser.role,
         organizationId: mockUser.organizationId,
+        organization: mockOrganization,
       });
     });
 
@@ -124,6 +128,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
         name: mockUser.name,
         role: mockUser.role,
         organizationId: mockUser.organizationId,
+        organization: mockOrganization,
       });
     });
 
@@ -178,7 +183,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
       usersService = module.get<UsersService>(UsersService);
 
       jest.clearAllMocks();
-      mockUsersService.findOne.mockResolvedValue(mockUser);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(mockUser);
     });
 
     it('should accept token signed with primary secret', async () => {
@@ -189,6 +194,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
       const result = await strategy.validate(mockRequest, mockPayload);
       expect(result.id).toBe(mockUser.id);
+      expect(result.organization).toEqual(mockOrganization);
     });
 
     it('should reject token signed with any other secret', () => {
@@ -268,7 +274,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
     });
 
     it('should throw UnauthorizedException when user is not found', async () => {
-      mockUsersService.findOne.mockResolvedValue(null);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(null);
 
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         UnauthorizedException,
@@ -280,7 +286,7 @@ describe('JwtStrategy - Dual-Key Support', () => {
 
     it('should throw UnauthorizedException when user is inactive', async () => {
       const inactiveUser = { ...mockUser, isActive: false };
-      mockUsersService.findOne.mockResolvedValue(inactiveUser);
+      mockUsersService.findOneWithOrganization.mockResolvedValue(inactiveUser);
 
       await expect(strategy.validate(mockRequest, mockPayload)).rejects.toThrow(
         UnauthorizedException,
