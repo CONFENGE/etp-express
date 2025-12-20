@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 354/392 (90.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 355/392 (90.6%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -41,7 +41,7 @@
 | ~~#796~~ | ~~Remover linguagem AI-like das interfaces~~       | ✅ DONE |
 | ~~#797~~ | ~~Revisar empty states com CTAs claros~~           | ✅ DONE |
 
-### P2 - OPERACIONAL (6 open / 10 total)
+### P2 - OPERACIONAL (5 open / 10 total)
 
 | #        | Issue                                                | Status  |
 | -------- | ---------------------------------------------------- | ------- |
@@ -54,7 +54,7 @@
 | ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/\*~~ | ✅ DONE |
 | ~~#805~~ | ~~Criar script de verificacao de security headers~~  | ✅ DONE |
 | #806     | Executar re-teste completo pos-correcoes P0          | OPEN    |
-| #807     | Documentar processo de validacao pre-deploy          | OPEN    |
+| ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~      | ✅ DONE |
 
 ### P3 - FUTURO (10 issues)
 
@@ -530,7 +530,7 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | ----------------- | -------- |
 | Issues Totais     | 392      |
 | Issues Abertas    | 38       |
-| Issues Fechadas   | 354      |
+| Issues Fechadas   | 355      |
 | Progresso         | 90.3%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
@@ -538,7 +538,7 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Testes            | 1879     |
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
-| P2 Go-Live        | 6        |
+| P2 Go-Live        | 5        |
 | P3 Go-Live        | 10       |
 | P2 Gov-API        | 1        |
 | v1.1 Backlog      | 7        |
