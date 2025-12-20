@@ -473,14 +473,7 @@ export class EtpsService {
     userId: string,
     organizationId: string,
   ): Promise<Etp> {
-    const etp = await this.findOne(id, organizationId);
-
-    // Check ownership
-    if (etp.createdById !== userId) {
-      throw new ForbiddenException(
-        'Você não tem permissão para editar este ETP',
-      );
-    }
+    const etp = await this.findOneMinimal(id, organizationId, userId);
 
     Object.assign(etp, updateEtpDto);
 
@@ -514,13 +507,7 @@ export class EtpsService {
     userId: string,
     organizationId: string,
   ): Promise<Etp> {
-    const etp = await this.findOne(id, organizationId);
-
-    if (etp.createdById !== userId) {
-      throw new ForbiddenException(
-        'Você não tem permissão para alterar o status deste ETP',
-      );
-    }
+    const etp = await this.findOneMinimal(id, organizationId, userId);
 
     etp.status = status;
 
@@ -600,13 +587,7 @@ export class EtpsService {
     userId: string,
     organizationId: string,
   ): Promise<void> {
-    const etp = await this.findOne(id, organizationId);
-
-    if (etp.createdById !== userId) {
-      throw new ForbiddenException(
-        'Você não tem permissão para deletar este ETP',
-      );
-    }
+    const etp = await this.findOneMinimal(id, organizationId, userId);
 
     await this.etpsRepository.remove(etp);
     this.logger.log(`ETP deleted: ${id} by user ${userId}`);
