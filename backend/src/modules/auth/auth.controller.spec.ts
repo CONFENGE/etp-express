@@ -451,20 +451,18 @@ describe('AuthController', () => {
       );
 
       // Alternative: Check method has @Throttle decorator applied
-      const hasThrottleDecorator =
-        Reflect.getMetadataKeys(AuthController.prototype.login).some((key) =>
-          key.toString().includes('THROTTLER'),
-        );
+      const hasThrottleDecorator = Reflect.getMetadataKeys(
+        AuthController.prototype.login,
+      ).some((key) => key.toString().includes('THROTTLER'));
 
       expect(hasThrottleDecorator).toBe(true);
     });
 
     it('should have rate limiting on register: 3 requests per hour', () => {
       // Verify @Throttle decorator is present on register method
-      const hasThrottleDecorator =
-        Reflect.getMetadataKeys(AuthController.prototype.register).some((key) =>
-          key.toString().includes('THROTTLER'),
-        );
+      const hasThrottleDecorator = Reflect.getMetadataKeys(
+        AuthController.prototype.register,
+      ).some((key) => key.toString().includes('THROTTLER'));
 
       expect(hasThrottleDecorator).toBe(true);
     });
@@ -498,10 +496,9 @@ describe('AuthController', () => {
 
     it('should NOT have rate limiting on /me endpoint (authenticated only)', () => {
       // /me should not have throttling - it's protected by JWT
-      const hasThrottleDecorator =
-        Reflect.getMetadataKeys(AuthController.prototype.getMe).some((key) =>
-          key.toString().includes('THROTTLER'),
-        );
+      const hasThrottleDecorator = Reflect.getMetadataKeys(
+        AuthController.prototype.getMe,
+      ).some((key) => key.toString().includes('THROTTLER'));
 
       expect(hasThrottleDecorator).toBe(false);
     });
