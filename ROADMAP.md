@@ -528,17 +528,17 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 392      |
-| Issues Abertas    | 38       |
-| Issues Fechadas   | 355      |
-| Progresso         | 90.3%    |
+| Issues Totais     | 393      |
+| Issues Abertas    | 31       |
+| Issues Fechadas   | 362      |
+| Progresso         | 92.1%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1879     |
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
-| P2 Go-Live        | 5        |
+| P2 Go-Live        | 0 ✅     |
 | P3 Go-Live        | 10       |
 | P2 Gov-API        | 1        |
 | v1.1 Backlog      | 7        |
