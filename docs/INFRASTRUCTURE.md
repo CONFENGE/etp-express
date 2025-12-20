@@ -320,7 +320,7 @@ docker build -t etp-frontend:prod --target production ./frontend
 
 4. **OpenAI API** (⚠ REQUIRED!)
  - `OPENAI_API_KEY` (obter em: https://platform.openai.com/api-keys)
- - `OPENAI_MODEL` (default: gpt-4-turbo-preview)
+ - `OPENAI_MODEL` (default: gpt-4.1-nano)
 
 5. **Exa API** (opcional)
  - `EXA_API_KEY`

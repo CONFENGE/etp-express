@@ -133,7 +133,7 @@ JWT_EXPIRATION=7d
 
 # OpenAI
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_MODEL=gpt-4.1-nano
 OPENAI_MAX_TOKENS=4000
 OPENAI_TEMPERATURE=0.7
 
