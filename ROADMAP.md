@@ -46,7 +46,7 @@
 | #        | Issue                                                | Status  |
 | -------- | ---------------------------------------------------- | ------- |
 | #798     | Criar MANUAL_TESTER.md para gestores e testadores    | OPEN    |
-| #799     | Criar TROUBLESHOOTING.md com problemas comuns        | OPEN    |
+| ~~#799~~ | ~~Criar TROUBLESHOOTING.md com problemas comuns~~    | ✅ DONE |
 | ~~#800~~ | ~~Exportar documentacao OpenAPI/Swagger~~            | ✅ DONE |
 | #801     | Criar OPS_RUNBOOK.md com procedimentos operacionais  | OPEN    |
 | #802     | Configurar dashboard de metricas em Railway          | OPEN    |
