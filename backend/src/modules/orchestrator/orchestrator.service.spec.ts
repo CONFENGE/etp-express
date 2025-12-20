@@ -10,6 +10,7 @@ import { PIIRedactionService } from '../privacy/pii-redaction.service';
 import { ExaService } from '../search/exa/exa.service';
 import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { OutputValidatorService } from './validators/output-validator';
 
 /**
  * Integration tests for OrchestratorService
@@ -258,6 +259,13 @@ describe('OrchestratorService', () => {
         {
           provide: GovSearchService,
           useValue: createMockGovSearchService(),
+        },
+        {
+          provide: OutputValidatorService,
+          useValue: {
+            validateOutput: jest.fn().mockReturnValue({ valid: true }),
+            getMaxRetries: jest.fn().mockReturnValue(2),
+          },
         },
         {
           provide: PIIRedactionService,
@@ -1247,6 +1255,13 @@ describe('OrchestratorService', () => {
             provide: GovSearchService,
             useValue: createMockGovSearchService(),
           },
+          {
+            provide: OutputValidatorService,
+            useValue: {
+              validateOutput: jest.fn().mockReturnValue({ valid: true }),
+              getMaxRetries: jest.fn().mockReturnValue(2),
+            },
+          },
         ],
       }).compile();
 
@@ -1346,6 +1361,13 @@ describe('OrchestratorService', () => {
           {
             provide: GovSearchService,
             useValue: govSearchService,
+          },
+          {
+            provide: OutputValidatorService,
+            useValue: {
+              validateOutput: jest.fn().mockReturnValue({ valid: true }),
+              getMaxRetries: jest.fn().mockReturnValue(2),
+            },
           },
         ],
       }).compile();
