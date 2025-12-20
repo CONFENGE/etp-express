@@ -137,7 +137,7 @@
 
 | #        | Issue                                | Benefício                            |
 | -------- | ------------------------------------ | ------------------------------------ |
-| #656     | Validação estruturada saída LLM      | Detectar outputs maliciosos          |
+| ~~#656~~ | ~~Validação estruturada saída LLM~~  | ✅ DONE (2025-12-20)                 |
 | ~~#657~~ | ~~Documentar PgBouncer para escala~~ | ✅ DONE (2025-12-18)                 |
 | #759     | Rich Text (WYSIWYG) formulários      | Tabelas, listas, formatação avançada |
 | #760     | Documentar agentes determinísticos   | Clareza arquitetural (Regex vs LLM)  |
