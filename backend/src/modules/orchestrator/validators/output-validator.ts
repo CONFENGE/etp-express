@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  SectionSchema,
   AI_LEAKAGE_PATTERNS,
   getSchemaForSection,
 } from '../schemas/section-schemas';
@@ -300,7 +299,9 @@ export class OutputValidatorService {
     }
 
     // Check for repeated sentences
-    const sentences = output.split(/[.!?]+/).filter((s) => s.trim().length > 20);
+    const sentences = output
+      .split(/[.!?]+/)
+      .filter((s) => s.trim().length > 20);
     const uniqueSentences = new Set(
       sentences.map((s) => s.trim().toLowerCase()),
     );
