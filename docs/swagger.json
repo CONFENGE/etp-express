@@ -1,0 +1,484 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ETP Express API",
+    "description": "**O ETP Express pode cometer erros. Lembre-se de verificar todas as informações antes de realizar qualquer encaminhamento.**\n\nAPI para o sistema ETP Express - Wrapper de LLM para elaboracao assistida de Estudos Tecnicos Preliminares (Lei 14.133/2021).\n\n## Caracteristicas\n- Geracao de conteudo via OpenAI GPT-4\n- Busca de contratacoes similares via Exa AI\n- Sistema de subagentes especializados\n- Versionamento e auditoria completos\n- Export para PDF, JSON e XML\n\n## Autenticacao\nUtilize JWT Bearer token no header: `Authorization: Bearer <token>`",
+    "version": "1.0.0",
+    "contact": {
+      "name": "ETP Express Team",
+      "email": "suporte@confenge.com.br"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "API Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Autenticacao e gestao de usuarios"
+    },
+    {
+      "name": "etps",
+      "description": "Gestao de ETPs"
+    },
+    {
+      "name": "sections",
+      "description": "Secoes dos ETPs"
+    },
+    {
+      "name": "versions",
+      "description": "Versionamento"
+    },
+    {
+      "name": "export",
+      "description": "Exportacao (PDF, JSON, XML)"
+    },
+    {
+      "name": "search",
+      "description": "Busca de contratacoes similares"
+    },
+    {
+      "name": "analytics",
+      "description": "Telemetria e analytics"
+    },
+    {
+      "name": "health",
+      "description": "Health checks e status"
+    },
+    {
+      "name": "analysis",
+      "description": "Analise e conversao de documentos"
+    },
+    {
+      "name": "organizations",
+      "description": "Gestao de organizacoes"
+    },
+    {
+      "name": "users",
+      "description": "Gestao de usuarios"
+    },
+    {
+      "name": "audit",
+      "description": "Logs de auditoria"
+    }
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Health Check",
+        "description": "Retorna status de saude do sistema",
+        "responses": {
+          "200": {
+            "description": "Sistema operacional",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login",
+        "description": "Autentica usuario e retorna JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "usuario@orgao.gov.br"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "SenhaSegura123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido"
+          },
+          "401": {
+            "description": "Credenciais invalidas"
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Registro",
+        "description": "Registra novo usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario criado com sucesso"
+          },
+          "400": {
+            "description": "Dados invalidos"
+          }
+        }
+      }
+    },
+    "/v1/etps": {
+      "get": {
+        "tags": ["etps"],
+        "summary": "Listar ETPs",
+        "description": "Lista todos os ETPs do usuario",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de ETPs"
+          },
+          "401": {
+            "description": "Nao autenticado"
+          }
+        }
+      },
+      "post": {
+        "tags": ["etps"],
+        "summary": "Criar ETP",
+        "description": "Cria novo Estudo Tecnico Preliminar",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "description"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Aquisicao de Equipamentos de TI"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ETP para contratacao de servidores e switches"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ETP criado com sucesso"
+          }
+        }
+      }
+    },
+    "/v1/etps/{id}": {
+      "get": {
+        "tags": ["etps"],
+        "summary": "Obter ETP",
+        "description": "Retorna detalhes de um ETP especifico",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do ETP"
+          },
+          "404": {
+            "description": "ETP nao encontrado"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["etps"],
+        "summary": "Atualizar ETP",
+        "description": "Atualiza dados de um ETP",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ETP atualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["etps"],
+        "summary": "Excluir ETP",
+        "description": "Remove um ETP",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ETP removido"
+          }
+        }
+      }
+    },
+    "/v1/sections/{etpId}": {
+      "get": {
+        "tags": ["sections"],
+        "summary": "Listar Secoes",
+        "description": "Lista todas as secoes de um ETP",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "etpId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de secoes"
+          }
+        }
+      }
+    },
+    "/v1/sections/{id}/generate": {
+      "post": {
+        "tags": ["sections"],
+        "summary": "Gerar Conteudo IA",
+        "description": "Gera conteudo da secao usando IA",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conteudo gerado"
+          }
+        }
+      }
+    },
+    "/v1/export/etp/{id}/pdf": {
+      "get": {
+        "tags": ["export"],
+        "summary": "Exportar PDF",
+        "description": "Exporta ETP em formato PDF",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arquivo PDF",
+            "content": {
+              "application/pdf": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/export/etp/{id}/docx": {
+      "get": {
+        "tags": ["export"],
+        "summary": "Exportar DOCX",
+        "description": "Exporta ETP em formato Microsoft Word",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arquivo DOCX",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/export/etp/{id}/json": {
+      "get": {
+        "tags": ["export"],
+        "summary": "Exportar JSON",
+        "description": "Exporta ETP em formato JSON estruturado",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arquivo JSON",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/search/similar": {
+      "post": {
+        "tags": ["search"],
+        "summary": "Buscar Similares",
+        "description": "Busca contratacoes similares usando Exa AI",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["query"],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "example": "aquisicao de servidores para datacenter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultados da busca"
+          }
+        }
+      }
+    },
+    "/v1/analysis/upload": {
+      "post": {
+        "tags": ["analysis"],
+        "summary": "Upload Documento",
+        "description": "Upload de documento para analise",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Documento enviado para analise"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtido via /auth/login"
+      }
+    }
+  }
+}
