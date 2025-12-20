@@ -191,7 +191,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 | ~~#737~~ | ~~Smoke test checklist pré-launch~~ | ~~2h~~ | ✅ PR #748 |
 | ~~#675~~ | ~~Manual usuário PDF para órgãos B2G~~ | ~~8h~~ | ✅ CLOSED 2025-12-18 |
 | ~~#677~~ | ~~Canal de suporte email~~ | ~~4h~~ | ✅ CLOSED 2025-12-18 |
-| #741 | Deploy final validado | 2h | OPEN |
+| ~~#741~~ | ~~Deploy final validado~~ | ~~2h~~ | ✅ PR #854 |
 | #742 | Monitoramento 24h pós-deploy | 8h | OPEN |
 
 **P1 - Infrastructure:** ✅ COMPLETE
@@ -217,7 +217,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 |---|-------|------|
 | TBD | Migrar SINAPI/SICRO para PostgreSQL | 8h |
 
-**Total Esforço Restante:** ~12h (3 issues: #741, #742, #744)
+**Total Esforço Restante:** ~10h (2 issues: #742, #744)
 
 **Labels:** `go-live`, `go-to-market`, `priority/P0`, `priority/P1`, `priority/P2`
 
