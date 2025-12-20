@@ -469,7 +469,23 @@ describe('HealthService', () => {
   });
 
   describe('checkReadiness', () => {
-    it('should return ready status when database connected and no pending migrations', async () => {
+    beforeEach(() => {
+      // Default: circuit breakers closed (healthy)
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+    });
+
+    it('should return ready status with all components when fully healthy', async () => {
       // Arrange
       jest
         .spyOn(userRepository, 'query')
@@ -480,13 +496,17 @@ describe('HealthService', () => {
       const result = await service.checkReadiness();
 
       // Assert
-      expect(result).toEqual({
-        status: 'ready',
-        timestamp: expect.any(String),
-        database: 'connected',
-        migrations: 'completed',
-      });
+      expect(result.status).toBe('ready');
       expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(result.components).toEqual({
+        database: { status: 'healthy' },
+        migrations: { status: 'completed' },
+        redis: { status: 'not_configured' },
+        providers: {
+          openai: { status: 'healthy', circuitOpen: false },
+          exa: { status: 'healthy', circuitOpen: false },
+        },
+      });
     });
 
     it('should return starting status when migrations are in progress', async () => {
@@ -500,13 +520,10 @@ describe('HealthService', () => {
       const result = await service.checkReadiness();
 
       // Assert
-      expect(result).toEqual({
-        status: 'starting',
-        reason: 'migrations_in_progress',
-        database: 'connected',
-        timestamp: expect.any(String),
-      });
-      expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(result.status).toBe('starting');
+      expect(result.reason).toBe('migrations_in_progress');
+      expect(result.components.database.status).toBe('healthy');
+      expect(result.components.migrations.status).toBe('pending');
     });
 
     it('should return not_ready status when database is disconnected', async () => {
@@ -519,11 +536,9 @@ describe('HealthService', () => {
       const result = await service.checkReadiness();
 
       // Assert
-      expect(result).toEqual({
-        status: 'not_ready',
-        reason: 'database_disconnected',
-        timestamp: expect.any(String),
-      });
+      expect(result.status).toBe('not_ready');
+      expect(result.reason).toBe('database_disconnected');
+      expect(result.components.database.status).toBe('unhealthy');
       expect(dataSource.showMigrations).not.toHaveBeenCalled();
     });
 
@@ -557,6 +572,84 @@ describe('HealthService', () => {
       // Assert
       const timestamp = new Date(result.timestamp);
       expect(timestamp.toISOString()).toBe(result.timestamp);
+    });
+
+    it('should return degraded status when OpenAI circuit breaker is open', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {},
+      } as any);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result.status).toBe('degraded');
+      const openaiProvider = result.components.providers.openai as { status: string; circuitOpen: boolean };
+      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      expect(openaiProvider.status).toBe('degraded');
+      expect(openaiProvider.circuitOpen).toBe(true);
+      expect(exaProvider.status).toBe('healthy');
+    });
+
+    it('should return degraded status when Exa circuit breaker is open', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {},
+      } as any);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result.status).toBe('degraded');
+      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      expect(exaProvider.status).toBe('degraded');
+      expect(exaProvider.circuitOpen).toBe(true);
+    });
+
+    it('should return degraded status when both circuit breakers are open', async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository, 'query')
+        .mockResolvedValue([{ '?column?': 1 }]);
+      jest.spyOn(dataSource, 'showMigrations').mockResolvedValue(false);
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {},
+      } as any);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
+        opened: true,
+        halfOpen: false,
+        closed: false,
+        stats: {},
+      } as any);
+
+      // Act
+      const result = await service.checkReadiness();
+
+      // Assert
+      expect(result.status).toBe('degraded');
+      const openaiProvider = result.components.providers.openai as { status: string; circuitOpen: boolean };
+      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      expect(openaiProvider.circuitOpen).toBe(true);
+      expect(exaProvider.circuitOpen).toBe(true);
     });
   });
 
@@ -619,6 +712,22 @@ describe('HealthService', () => {
   });
 
   describe('readiness integration scenarios', () => {
+    beforeEach(() => {
+      // Default: circuit breakers closed (healthy)
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+      jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+    });
+
     it('should handle transition from starting to ready', async () => {
       // Arrange - First call: migrations pending
       jest
@@ -636,7 +745,7 @@ describe('HealthService', () => {
       // Act - Second check (ready)
       const result2 = await service.checkReadiness();
       expect(result2.status).toBe('ready');
-      expect(result2.migrations).toBe('completed');
+      expect(result2.components.migrations.status).toBe('completed');
     });
 
     it('should handle rapid consecutive readiness checks', async () => {
@@ -657,8 +766,8 @@ describe('HealthService', () => {
       expect(results).toHaveLength(3);
       results.forEach((result) => {
         expect(result.status).toBe('ready');
-        expect(result.database).toBe('connected');
-        expect(result.migrations).toBe('completed');
+        expect(result.components.database.status).toBe('healthy');
+        expect(result.components.migrations.status).toBe('completed');
       });
       expect(dataSource.showMigrations).toHaveBeenCalledTimes(3);
     });
