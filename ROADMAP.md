@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 362/393 (92.1%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 423/448 (94.4%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -152,18 +152,18 @@ M2: CI/CD Pipeline ████████████████████ 
 M3: Quality & Security ████████████████████ 61/61 100%
 M4: Refactoring & Perf ████████████████████ 45/45 100%
 M5: E2E & Docs █████████████████░░░ 26/30 87%
-M6: Maintenance ██████████████████░░ 77/85 91%
+M6: Maintenance ███████████████████░ 81/85 95%
 M7: Multi-Tenancy B2G ████████████████████ 6/6 100%
 M8: Domínios Instit. ████████████████████ 24/24 100% ✅ COMPLETE
 M9: Export/Import ████████████████████ 16/16 100% ✅ COMPLETE
-Go-Live B2G ██████████████░░░░░░ 10/14 71%
+Go-Live B2G █████████████████░░░ 12/14 86%
 ```
 
 ---
 
 ## Próximas Ações Prioritárias
 
-### ÉPICO - Go-Live B2G (4 issues restantes) - DATA FLEXÍVEL
+### ÉPICO - Go-Live B2G (2 issues restantes) - DATA FLEXÍVEL
 
 **Criado:** 2024-12-16 | **Objetivo:** Lançamento comercial B2G com todas as condições de prontidão atendidas
 
@@ -217,7 +217,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 |---|-------|------|
 | TBD | Migrar SINAPI/SICRO para PostgreSQL | 8h |
 
-**Total Esforço Restante:** ~10h (2 issues: #742, #744)
+**Total Esforço Restante:** ~12h (2 issues: #742 Monitoramento 24h, #744 Pitch deck)
 
 **Labels:** `go-live`, `go-to-market`, `priority/P0`, `priority/P1`, `priority/P2`
 
@@ -320,7 +320,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 86% (25/29, 4 open)
+### M5 - E2E & Docs - 87% (26/30, 4 open)
 
 | #    | Issue                 | Status |
 | ---- | --------------------- | ------ |
@@ -329,7 +329,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 | #456 | Frontend coverage 70% | OPEN   |
 | #458 | WCAG 2.1 gaps         | OPEN   |
 
-### M6 - Maintenance (8 open)
+### M6 - Maintenance (4 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -352,8 +352,8 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 | ---- | ----------------------- | -------- |
 | ~~#379~~ | ~~Migrar LLM obsoletos~~ | ✅ DONE PR #850 |
 | #387 | PostgreSQL pgvector | P0 |
-| #460 | Migration timestamp | P3 |
-| #492 | ESLint 9 flat config | P2 |
+| ~~#460~~ | ~~Migration timestamp~~ | ✅ DONE |
+| ~~#492~~ | ~~ESLint 9 flat config~~ | ✅ DONE |
 | #493 | React Router v7 | P2 |
 | ~~#536~~ | ~~DomainDetail test fix~~ | ✅ DONE |
 
@@ -520,7 +520,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 
 ## Milestones Completos
 
-M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 206 issues**
+M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 206 issues completas**
 
 ---
 
@@ -528,10 +528,10 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 393      |
-| Issues Abertas    | 31       |
-| Issues Fechadas   | 362      |
-| Progresso         | 92.1%    |
+| Issues Totais     | 448      |
+| Issues Abertas    | 25       |
+| Issues Fechadas   | 423      |
+| Progresso         | 94.4%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
