@@ -9,6 +9,17 @@
         "include": "**/*.hbs",
         "watchAssets": true
       }
+    ],
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": true,
+          "introspectComments": true,
+          "controllerKeyOfComment": "description",
+          "controllerFileNameSuffix": [".controller.ts"]
+        }
+      }
     ]
   }
 }
