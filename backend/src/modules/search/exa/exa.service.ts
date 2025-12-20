@@ -106,7 +106,7 @@ export class ExaService {
    * @returns Promise<ExaResponse> - Search results with cache metadata
    */
   async search(query: string): Promise<ExaResponse> {
-    this.logger.warn(
+    this.logger.debug(
       'Using deprecated search() method. Use searchSimple() or searchDeep() instead.',
     );
     return this.searchSimple(query);
