@@ -121,7 +121,7 @@ JWT_EXPIRATION=7d
 
 # OpenAI (Obrigatório)
 OPENAI_API_KEY=sk-proj-xxxxx
-OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_MODEL=gpt-4.1-nano
 
 # Exa (Obrigatório)
 EXA_API_KEY=exa-xxxxx
