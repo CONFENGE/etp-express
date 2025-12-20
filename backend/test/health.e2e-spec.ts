@@ -80,9 +80,21 @@ describe('Health Endpoints (e2e)', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('status');
-      expect(['ready', 'starting', 'not_ready']).toContain(
+      expect(['ready', 'starting', 'not_ready', 'degraded']).toContain(
         response.body.status,
       );
+    });
+
+    it('should return components status in response', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/health/ready')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('components');
+      expect(response.body.components).toHaveProperty('database');
+      expect(response.body.components).toHaveProperty('migrations');
+      expect(response.body.components).toHaveProperty('redis');
+      expect(response.body.components).toHaveProperty('providers');
     });
   });
 

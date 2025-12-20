@@ -107,10 +107,15 @@ export class AuthController {
    * @throws {BadRequestException} 400 - If validation fails
    */
   @Public()
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 attempts per hour (abuse prevention)
   @Post('register')
   @ApiOperation({ summary: 'Registrar novo usuário' })
   @ApiResponse({ status: 201, description: 'Usuário registrado com sucesso' })
   @ApiResponse({ status: 409, description: 'Email já cadastrado' })
+  @ApiResponse({
+    status: 429,
+    description: 'Muitas tentativas de registro. Tente novamente em 1 hora.',
+  })
   async register(
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -313,7 +318,7 @@ export class AuthController {
    * @returns Success message (same whether email exists or not)
    */
   @Public()
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 attempts per 60 seconds
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 attempts per hour (abuse prevention)
   @Post('forgot-password')
   @ApiOperation({
     summary: 'Solicitar redefinição de senha',
@@ -326,7 +331,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 429,
-    description: 'Muitas tentativas. Tente novamente em 1 minuto.',
+    description: 'Muitas tentativas. Tente novamente em 1 hora.',
   })
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
