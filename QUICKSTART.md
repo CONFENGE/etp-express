@@ -72,9 +72,9 @@ DATABASE_URL=postgresql://seu_usuario:sua_senha@localhost:5432/etp_express
 JWT_SECRET=meu-super-secret-jwt-change-this-123
 
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_MODEL=gpt-4.1-nano
 
-PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EXA_API_KEY=exa-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 FRONTEND_URL=http://localhost:5173
 CORS_ORIGINS=http://localhost:5173
