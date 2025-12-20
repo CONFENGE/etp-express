@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-19 | **Progresso:** 402/448 (89.7%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 407/448 (90.8%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -25,7 +25,7 @@
 | ~~#785~~ | ~~Remover emoticons do MANUAL_USUARIO.md~~                         | ✅ DONE |
 | ~~#786~~ | ~~Auditar e remover emoticons decorativos de arquivos do projeto~~ | ✅ DONE |
 
-### P1 - UX CRITICO (4 open / 11 total)
+### P1 - UX CRITICO (0 open / 11 total) ✅ COMPLETO
 
 | #        | Issue                                              | Status  |
 | -------- | -------------------------------------------------- | ------- |
@@ -35,26 +35,26 @@
 | ~~#790~~ | ~~Adicionar welcome modal para primeiro login~~    | ✅ DONE |
 | ~~#791~~ | ~~Melhorar empty state do dashboard~~              | ✅ DONE |
 | ~~#792~~ | ~~Mensagens de erro amigaveis para falhas de API~~ | ✅ DONE |
-| #793     | Ajustar design tokens para melhor legibilidade     | OPEN    |
+| ~~#793~~ | ~~Ajustar design tokens para melhor legibilidade~~ | ✅ DONE |
 | ~~#794~~ | ~~Padronizar micro-interacoes existentes~~         | ✅ DONE |
-| #795     | Criar guia de tom e voz institucional              | OPEN    |
-| #796     | Remover linguagem AI-like das interfaces           | OPEN    |
-| #797     | Revisar empty states com CTAs claros               | OPEN    |
+| ~~#795~~ | ~~Criar guia de tom e voz institucional~~          | ✅ DONE |
+| ~~#796~~ | ~~Remover linguagem AI-like das interfaces~~       | ✅ DONE |
+| ~~#797~~ | ~~Revisar empty states com CTAs claros~~           | ✅ DONE |
 
-### P2 - OPERACIONAL (10 issues)
+### P2 - OPERACIONAL (5 open / 10 total)
 
-| #    | Issue                                               | Status |
-| ---- | --------------------------------------------------- | ------ |
-| #798 | Criar MANUAL_TESTER.md para gestores e testadores   | OPEN   |
-| #799 | Criar TROUBLESHOOTING.md com problemas comuns       | OPEN   |
-| #800 | Exportar documentacao OpenAPI/Swagger               | OPEN   |
-| #801 | Criar OPS_RUNBOOK.md com procedimentos operacionais | OPEN   |
-| #802 | Configurar dashboard de metricas em Railway         | OPEN   |
-| #803 | Adicionar endpoint /api/health/ready                | OPEN   |
-| #804 | Configurar rate limiting agressivo para /auth/\*    | OPEN   |
-| #805 | Criar script de verificacao de security headers     | OPEN   |
-| #806 | Executar re-teste completo pos-correcoes P0         | OPEN   |
-| #807 | Documentar processo de validacao pre-deploy         | OPEN   |
+| #        | Issue                                               | Status      |
+| -------- | --------------------------------------------------- | ----------- |
+| #798     | Criar MANUAL_TESTER.md para gestores e testadores   | OPEN        |
+| #799     | Criar TROUBLESHOOTING.md com problemas comuns       | OPEN        |
+| ~~#800~~ | ~~Exportar documentacao OpenAPI/Swagger~~           | PR #842     |
+| #801     | Criar OPS_RUNBOOK.md com procedimentos operacionais | OPEN        |
+| #802     | Configurar dashboard de metricas em Railway         | OPEN        |
+| ~~#803~~ | ~~Adicionar endpoint /api/health/ready~~            | PR #840     |
+| ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/*~~ | ✅ DONE     |
+| ~~#805~~ | ~~Criar script de verificacao de security headers~~ | PR #841     |
+| #806     | Executar re-teste completo pos-correcoes P0         | OPEN        |
+| ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~     | PR #843     |
 
 ### P3 - FUTURO (10 issues)
 
