@@ -136,7 +136,10 @@ export class HealthService {
           database: { status: 'unhealthy' },
           migrations: { status: 'unknown' },
           redis: { status: 'unknown' },
-          providers: { openai: { status: 'unknown' }, exa: { status: 'unknown' } },
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
         },
       };
     }
@@ -152,7 +155,10 @@ export class HealthService {
           database: { status: 'healthy' },
           migrations: { status: 'pending' },
           redis: { status: 'unknown' },
-          providers: { openai: { status: 'unknown' }, exa: { status: 'unknown' } },
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
         },
       };
     }
@@ -176,7 +182,10 @@ export class HealthService {
           database: { status: 'healthy' },
           migrations: { status: 'completed' },
           redis: redisStatus,
-          providers: { openai: { status: 'unknown' }, exa: { status: 'unknown' } },
+          providers: {
+            openai: { status: 'unknown' },
+            exa: { status: 'unknown' },
+          },
         },
       };
     }
@@ -186,7 +195,9 @@ export class HealthService {
     const exaCircuit = this.exaService.getCircuitState();
 
     const openaiStatus = {
-      status: openaiCircuit.opened ? ('degraded' as const) : ('healthy' as const),
+      status: openaiCircuit.opened
+        ? ('degraded' as const)
+        : ('healthy' as const),
       circuitOpen: openaiCircuit.opened,
     };
 
