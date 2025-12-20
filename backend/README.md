@@ -165,7 +165,7 @@ Para documentação detalhada da estrutura, veja:
 
 ## Swagger API Docs
 
-Após iniciar o servidor, acesse:
+Apos iniciar o servidor, acesse:
 
 ```
 http://localhost:3001/api/docs
@@ -175,8 +175,28 @@ Recursos:
 
 - Interface interativa
 - Teste de endpoints
-- Autenticação JWT integrada
+- Autenticacao JWT integrada
 - Schemas de request/response
+
+### Exportar Documentacao OpenAPI/Swagger
+
+A documentacao OpenAPI esta disponivel em `docs/swagger.json` e deve ser atualizada quando houver mudancas na API.
+
+**Para atualizar o swagger.json:**
+
+```bash
+# 1. Iniciar o servidor de desenvolvimento
+npm run start:dev
+
+# 2. Em outro terminal, exportar a documentacao
+npm run swagger:export
+```
+
+O script ira buscar a documentacao do servidor rodando em `localhost:3001` e salvar em `docs/swagger.json`.
+
+**Configuracao do CLI Plugin:**
+
+O projeto utiliza o plugin `@nestjs/swagger` no CLI para introspeccao automatica de tipos. Veja `nest-cli.json` para detalhes.
 
 ## Fluxo de Geração de Seção
 

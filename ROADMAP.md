@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 408/448 (91.1%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 355/392 (90.6%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -41,20 +41,20 @@
 | ~~#796~~ | ~~Remover linguagem AI-like das interfaces~~       | ✅ DONE |
 | ~~#797~~ | ~~Revisar empty states com CTAs claros~~           | ✅ DONE |
 
-### P2 - OPERACIONAL (7 open / 10 total)
+### P2 - OPERACIONAL (5 open / 10 total)
 
 | #        | Issue                                                | Status  |
 | -------- | ---------------------------------------------------- | ------- |
 | #798     | Criar MANUAL_TESTER.md para gestores e testadores    | OPEN    |
 | #799     | Criar TROUBLESHOOTING.md com problemas comuns        | OPEN    |
-| #800     | Exportar documentacao OpenAPI/Swagger                | OPEN    |
+| ~~#800~~ | ~~Exportar documentacao OpenAPI/Swagger~~            | ✅ DONE |
 | #801     | Criar OPS_RUNBOOK.md com procedimentos operacionais  | OPEN    |
 | #802     | Configurar dashboard de metricas em Railway          | OPEN    |
 | ~~#803~~ | ~~Adicionar endpoint /api/health/ready~~             | ✅ DONE |
 | ~~#804~~ | ~~Configurar rate limiting agressivo para /auth/\*~~ | ✅ DONE |
 | ~~#805~~ | ~~Criar script de verificacao de security headers~~  | ✅ DONE |
 | #806     | Executar re-teste completo pos-correcoes P0          | OPEN    |
-| #807     | Documentar processo de validacao pre-deploy          | OPEN    |
+| ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~      | ✅ DONE |
 
 ### P3 - FUTURO (10 issues)
 
@@ -147,15 +147,16 @@
 ## Milestones
 
 ```
-M1: Foundation ████████████████████ 35/35 100%
+M1: Foundation ████████████████████ 36/36 100%
 M2: CI/CD Pipeline ████████████████████ 18/18 100%
-M3: Quality & Security ████████████████████ 60/60 100%
-M4: Refactoring & Perf ████████████████████ 44/44 100%
-M5: E2E & Docs █████████████████░░░ 25/29 86%
+M3: Quality & Security ████████████████████ 61/61 100%
+M4: Refactoring & Perf ████████████████████ 45/45 100%
+M5: E2E & Docs █████████████████░░░ 26/30 87%
 M6: Maintenance ██████████████████░░ 77/85 91%
 M7: Multi-Tenancy B2G ████████████████████ 6/6 100%
 M8: Domínios Instit. ████████████████████ 24/24 100% ✅ COMPLETE
 M9: Export/Import ████████████████████ 16/16 100% ✅ COMPLETE
+Go-Live B2G ██████████████░░░░░░ 10/14 71%
 ```
 
 ---
@@ -519,7 +520,7 @@ M9: Export/Import ████████████████████ 1
 
 ## Milestones Completos
 
-M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/44), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 203 issues**
+M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/45), M7 Multi-Tenancy (6/6), M8 Domínios (24/24), M9 Export/Import (16/16) - **Total: 206 issues**
 
 ---
 
@@ -527,17 +528,17 @@ M1 Foundation (35/35), M2 CI/CD (18/18), M3 Quality (60/60), M4 Refactoring (44/
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 448      |
-| Issues Abertas    | 40       |
-| Issues Fechadas   | 408      |
-| Progresso         | 91.1%    |
+| Issues Totais     | 392      |
+| Issues Abertas    | 38       |
+| Issues Fechadas   | 355      |
+| Progresso         | 90.3%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1879     |
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
-| P2 Go-Live        | 7        |
+| P2 Go-Live        | 5        |
 | P3 Go-Live        | 10       |
 | P2 Gov-API        | 1        |
 | v1.1 Backlog      | 7        |
