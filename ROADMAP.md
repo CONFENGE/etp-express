@@ -208,16 +208,16 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 | #744 | Pitch deck B2G | 8h | OPEN |
 
 **P3 - Tech Debt:**
-| # | Issue | Est. |
-|---|-------|------|
-| #740 | Refactor deprecated methods | 2h |
+| # | Issue | Est. | Status |
+|---|-------|------|--------|
+| ~~#740~~ | ~~Refactor deprecated methods~~ | ~~2h~~ | ✅ DONE 2025-12-20 |
 
 **v1.1 - Postergar:**
 | # | Issue | Est. |
 |---|-------|------|
 | TBD | Migrar SINAPI/SICRO para PostgreSQL | 8h |
 
-**Total Esforço Restante:** ~14h (4 issues: #741, #742, #744, #740)
+**Total Esforço Restante:** ~12h (3 issues: #741, #742, #744)
 
 **Labels:** `go-live`, `go-to-market`, `priority/P0`, `priority/P1`, `priority/P2`
 
