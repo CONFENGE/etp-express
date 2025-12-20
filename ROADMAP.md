@@ -350,7 +350,7 @@ Go-Live B2G ██████████████░░░░░░ 10/14 7
 **Infrastructure:**
 | # | Issue | Priority |
 | ---- | ----------------------- | -------- |
-| #379 | Migrar LLM obsoletos | P2 |
+| ~~#379~~ | ~~Migrar LLM obsoletos~~ | ✅ DONE PR #850 |
 | #387 | PostgreSQL pgvector | P0 |
 | #460 | Migration timestamp | P3 |
 | #492 | ESLint 9 flat config | P2 |
