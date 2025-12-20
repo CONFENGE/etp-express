@@ -59,11 +59,12 @@ export class User {
 
   /**
    * Organization relation (Multi-Tenancy B2G - MT-02).
-   * Eager loaded for quick access to organization data.
+   * Lazy loaded - use explicit JOINs when organization data is needed.
+   * @see UsersService.findOneWithOrganization() for queries that need organization
    */
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
-  organization: Organization;
+  organization?: Organization;
 
   @Column({ type: 'varchar', nullable: true })
   cargo: string | null;
