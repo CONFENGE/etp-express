@@ -29,6 +29,10 @@ import {
   ValidationSummary,
 } from './interfaces';
 import {
+  OutputValidatorService,
+  LLMOutputValidationError,
+} from './validators/output-validator';
+import {
   sanitizeInput,
   wrapWithXmlDelimiters,
   getXmlDelimiterSystemPrompt,
@@ -164,6 +168,7 @@ export class OrchestratorService {
     private piiRedactionService: PIIRedactionService,
     private govSearchService: GovSearchService,
     private exaService: ExaService,
+    private outputValidator: OutputValidatorService,
   ) {}
 
   /**
@@ -925,12 +930,16 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
    * @remarks
    * Constructs an LLM request with appropriate temperature settings and token limits,
    * logs the generation request, and invokes the OpenAI service to generate content.
+   * Includes output validation with automatic regeneration for invalid responses.
    *
    * @param userPrompt - The enriched user prompt containing context and requirements
    * @param systemPrompt - The system prompt with guidelines and constraints
    * @param sectionType - Type of section being generated (affects temperature)
    * @returns LLM response containing content, tokens, and model information
+   * @throws {LLMOutputValidationError} If output validation fails after max retries
    * @private
+   *
+   * @see Issue #656 - Validação estruturada de saída do LLM
    */
   private async generateWithLLM(
     userPrompt: string,
@@ -938,19 +947,72 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     sectionType: string,
   ): Promise<{ content: string; tokens: number; model: string }> {
     const temperature = this.getSectionTemperature(sectionType);
-    const llmRequest: LLMRequest = {
-      systemPrompt,
-      userPrompt,
-      temperature,
-      maxTokens: 4000,
-    };
+    const maxRetries = this.outputValidator.getMaxRetries(sectionType);
 
     this.logger.log(
       `Generating section with temperature ${temperature} for sectionType: ${sectionType}`,
     );
 
-    const llmResponse = await this.openaiService.generateCompletion(llmRequest);
-    return llmResponse;
+    let lastValidationReason = '';
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const llmRequest: LLMRequest = {
+        systemPrompt,
+        userPrompt,
+        temperature,
+        maxTokens: 4000,
+      };
+
+      const llmResponse =
+        await this.openaiService.generateCompletion(llmRequest);
+
+      // Validate the output
+      const validation = this.outputValidator.validateOutput(
+        llmResponse.content,
+        sectionType,
+      );
+
+      if (validation.valid) {
+        if (attempt > 0) {
+          this.logger.log(
+            `LLM output validated after ${attempt + 1} attempts for ${sectionType}`,
+          );
+        }
+        return llmResponse;
+      }
+
+      // Log validation failure
+      lastValidationReason = validation.reason || 'Unknown validation failure';
+      this.logger.warn('Invalid LLM output, attempting regeneration', {
+        sectionType,
+        attempt: attempt + 1,
+        maxRetries: maxRetries + 1,
+        reason: lastValidationReason,
+        detectedPatterns: validation.detectedPatterns,
+        outputLength: validation.details?.outputLength,
+      });
+
+      // If max retries not reached, continue to next attempt
+      if (attempt < maxRetries) {
+        continue;
+      }
+    }
+
+    // Max retries exceeded
+    this.logger.error(
+      `LLM output validation failed after ${maxRetries + 1} attempts`,
+      {
+        sectionType,
+        lastReason: lastValidationReason,
+      },
+    );
+
+    throw new LLMOutputValidationError(
+      `Failed to generate valid content for ${sectionType} after ${maxRetries + 1} attempts`,
+      sectionType,
+      maxRetries + 1,
+      lastValidationReason,
+    );
   }
 
   /**

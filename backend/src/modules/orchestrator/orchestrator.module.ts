@@ -6,6 +6,7 @@ import { FundamentacaoAgent } from './agents/fundamentacao.agent';
 import { ClarezaAgent } from './agents/clareza.agent';
 import { SimplificacaoAgent } from './agents/simplificacao.agent';
 import { AntiHallucinationAgent } from './agents/anti-hallucination.agent';
+import { OutputValidatorService } from './validators/output-validator';
 import { PrivacyModule } from '../privacy/privacy.module';
 import { RAGModule } from '../rag/rag.module';
 import { SearchModule } from '../search/search.module';
@@ -28,6 +29,7 @@ import { GovSearchModule } from '../gov-api/gov-search/gov-search.module';
     ClarezaAgent,
     SimplificacaoAgent,
     AntiHallucinationAgent,
+    OutputValidatorService,
   ],
   exports: [
     OrchestratorService,
