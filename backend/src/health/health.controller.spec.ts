@@ -133,10 +133,17 @@ describe('HealthController', () => {
     it('should return ready status when application is ready', async () => {
       // Arrange
       const expectedResponse = {
-        status: 'ready',
+        status: 'ready' as const,
         timestamp: '2025-11-29T12:00:00.000Z',
-        database: 'connected',
-        migrations: 'completed',
+        components: {
+          database: { status: 'healthy' as const },
+          migrations: { status: 'completed' as const },
+          redis: { status: 'not_configured' as const },
+          providers: {
+            openai: { status: 'healthy' as const, circuitOpen: false },
+            exa: { status: 'healthy' as const, circuitOpen: false },
+          },
+        },
       };
       jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
 
@@ -151,10 +158,18 @@ describe('HealthController', () => {
     it('should return starting status during migrations', async () => {
       // Arrange
       const expectedResponse = {
-        status: 'starting',
-        reason: 'migrations_in_progress',
-        database: 'connected',
+        status: 'starting' as const,
+        reason: 'migrations_in_progress' as const,
         timestamp: '2025-11-29T12:00:00.000Z',
+        components: {
+          database: { status: 'healthy' as const },
+          migrations: { status: 'pending' as const },
+          redis: { status: 'unknown' as const },
+          providers: {
+            openai: { status: 'unknown' as const },
+            exa: { status: 'unknown' as const },
+          },
+        },
       };
       jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
 
@@ -171,9 +186,18 @@ describe('HealthController', () => {
     it('should return not_ready status when database disconnected', async () => {
       // Arrange
       const expectedResponse = {
-        status: 'not_ready',
-        reason: 'database_disconnected',
+        status: 'not_ready' as const,
+        reason: 'database_disconnected' as const,
         timestamp: '2025-11-29T12:00:00.000Z',
+        components: {
+          database: { status: 'unhealthy' as const },
+          migrations: { status: 'unknown' as const },
+          redis: { status: 'unknown' as const },
+          providers: {
+            openai: { status: 'unknown' as const },
+            exa: { status: 'unknown' as const },
+          },
+        },
       };
       jest.spyOn(service, 'checkReadiness').mockResolvedValue(expectedResponse);
 
