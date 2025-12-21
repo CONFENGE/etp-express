@@ -44,6 +44,9 @@ import { AppService } from './app.service';
 import { TenantGuard } from './common/guards/tenant.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
+// Subscribers (#813)
+import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber';
+
 /**
  * AppModule - Root module of the application
  *
@@ -145,13 +148,16 @@ import { RolesGuard } from './common/guards/roles.guard';
           ),
         },
 
-        // Slow query logging (#343) - Log queries > 3s
-        maxQueryExecutionTime: 3000,
+        // Slow query logging (#343, #813) - Log queries > 1s
+        maxQueryExecutionTime: 1000,
 
         // Retry logic para reconnections
         retryAttempts: parseInt(configService.get('DB_RETRY_ATTEMPTS', '3')),
         retryDelay: parseInt(configService.get('DB_RETRY_DELAY', '1000')), // 1 segundo
         autoLoadEntities: true,
+
+        // Subscribers (#813) - Slow query monitoring
+        subscribers: [SlowQuerySubscriber],
       }),
     }),
 

@@ -64,6 +64,10 @@ export class PrometheusMetricsService implements OnModuleInit {
   private readonly bullmqJobsFailedTotal: client.Counter<string>;
   private readonly bullmqJobDuration: client.Histogram<string>;
 
+  // Slow query metrics (#813)
+  private readonly slowQueriesTotal: client.Counter<string>;
+  private readonly queryDurationSeconds: client.Histogram<string>;
+
   constructor(@InjectDataSource() private dataSource: DataSource) {
     // Create a custom registry
     this.registry = new client.Registry();
@@ -216,6 +220,21 @@ export class PrometheusMetricsService implements OnModuleInit {
       help: 'BullMQ job processing duration in seconds',
       labelNames: ['queue'],
       buckets: [1, 5, 10, 20, 30, 45, 60, 90, 120, 180],
+      registers: [this.registry],
+    });
+
+    // Slow query metrics (#813)
+    this.slowQueriesTotal = new client.Counter({
+      name: 'etp_express_slow_queries_total',
+      help: 'Total number of slow queries (>1s)',
+      labelNames: ['table'],
+      registers: [this.registry],
+    });
+
+    this.queryDurationSeconds = new client.Histogram({
+      name: 'etp_express_query_duration_seconds',
+      help: 'Database query duration in seconds',
+      buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
       registers: [this.registry],
     });
   }
@@ -389,6 +408,17 @@ export class PrometheusMetricsService implements OnModuleInit {
     if (status === 'failed' && errorType) {
       this.bullmqJobsFailedTotal.inc({ queue, error_type: errorType });
     }
+  }
+
+  /**
+   * Record a slow query (#813)
+   *
+   * @param table - Table name involved in the slow query
+   * @param durationSeconds - Query duration in seconds
+   */
+  recordSlowQuery(table: string, durationSeconds: number): void {
+    this.slowQueriesTotal.inc({ table });
+    this.queryDurationSeconds.observe(durationSeconds);
   }
 
   /**
