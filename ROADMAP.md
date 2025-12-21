@@ -521,7 +521,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 **#654 - [EPIC] OpenTelemetry Distributed Tracing**
 | # | Issue | Esforço |
 |---|-------|---------|
-| #857 | SDK setup e auto-instrumentation | 2h |
+| #857 | SDK setup e auto-instrumentation | DONE |
 | #858 | Instrumentação manual serviços LLM | 1.5h |
 | #859 | Dashboard e validação | 0.5h |
 
@@ -569,8 +569,8 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | ----------------- | -------- |
 | Issues Totais     | 463      |
 | Issues Abertas    | 40       |
-| Issues Fechadas   | 423      |
-| Progresso         | 91.4%    |
+| Issues Fechadas   | 424      |
+| Progresso         | 91.6%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
