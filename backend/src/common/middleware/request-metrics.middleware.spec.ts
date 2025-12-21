@@ -125,13 +125,14 @@ describe('RequestMetricsMiddleware', () => {
 
       middleware.use(req as Request, res as unknown as Response, next);
 
-      // Simulate some processing time
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      // Simulate some processing time (50ms for reliable CI timing)
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       res.triggerFinish();
 
       const metrics = collector.getAggregatedMetrics();
-      expect(metrics.responseTimeP50Ms).toBeGreaterThanOrEqual(10);
+      // Use 30ms threshold (60% of delay) to account for timer imprecision on CI runners
+      expect(metrics.responseTimeP50Ms).toBeGreaterThanOrEqual(30);
     });
   });
 });
