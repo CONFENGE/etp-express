@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Tabs } from '@/components/ui/tabs';

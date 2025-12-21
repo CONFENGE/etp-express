@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Shield, FileText, Mail } from 'lucide-react';
 
 export function Footer() {

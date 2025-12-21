@@ -11,7 +11,7 @@
  * @module navigation
  */
 
-import { NavigateFunction } from 'react-router-dom';
+import { NavigateFunction } from 'react-router';
 
 /**
  * Singleton instance of React Router's navigate function.

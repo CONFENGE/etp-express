@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState } from 'react';
-import { useBlocker, type BlockerFunction } from 'react-router-dom';
+import { useBlocker, type BlockerFunction } from 'react-router';
 
 interface UseUnsavedChangesWarningOptions {
   /**

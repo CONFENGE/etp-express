@@ -25,7 +25,7 @@ export default defineConfig({
           // React core - loaded first, cached separately
           'vendor-react': ['react', 'react-dom'],
           // React Router - separate chunk for routing
-          'vendor-router': ['react-router-dom'],
+          'vendor-router': ['react-router'],
           // UI library dependencies
           'vendor-radix': [
             '@radix-ui/react-dialog',

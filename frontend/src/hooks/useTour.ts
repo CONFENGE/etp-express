@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { useTourStore } from '@/store/tourStore';
 import { useAuth } from '@/hooks/useAuth';
 
