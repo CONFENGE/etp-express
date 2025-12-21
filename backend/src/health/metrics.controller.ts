@@ -1,30 +1,41 @@
-import { Controller, Get, Header, VERSION_NEUTRAL } from '@nestjs/common';
+import { Controller, Get, Header, Res, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 import { MetricsService } from './metrics.service';
+import { PrometheusMetricsService } from './prometheus-metrics.service';
 
 /**
  * Controller para expor métricas da aplicação em formato Prometheus
  *
  * Endpoints:
- * - GET /api/metrics - Métricas em formato Prometheus (text/plain)
- * - GET /api/metrics/json - Métricas em formato JSON
+ * - GET /api/metrics - Métricas em formato Prometheus via prom-client (#860)
+ * - GET /api/metrics/json - Métricas em formato JSON (legacy)
+ * - GET /api/metrics/legacy - Métricas em formato Prometheus (legacy)
  *
  * Uso:
  * ```bash
  * curl https://etp-express-backend-production.up.railway.app/api/metrics
  * ```
  *
- * Integração com Railway:
+ * Integração com Railway/Grafana:
  * - Railway pode scrape /api/metrics automaticamente
  * - Custom dashboards podem usar /api/metrics/json
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/860
  */
 @ApiTags('health')
 @Controller({ path: 'metrics', version: VERSION_NEUTRAL })
 export class MetricsController {
-  constructor(private readonly metricsService: MetricsService) {}
+  constructor(
+    private readonly metricsService: MetricsService,
+    private readonly prometheusMetricsService: PrometheusMetricsService,
+  ) {}
 
   /**
-   * Retorna métricas em formato Prometheus (text/plain)
+   * Retorna métricas em formato Prometheus via prom-client (#860)
+   *
+   * Inclui métricas padrão do Node.js (CPU, memory, event loop, GC)
+   * e métricas customizadas da aplicação.
    *
    * Formato compatível com Prometheus scraping:
    * ```
@@ -36,27 +47,49 @@ export class MetricsController {
    * @returns Métricas em formato Prometheus
    */
   @Get()
-  @Header('Content-Type', 'text/plain; version=0.0.4')
   @ApiOperation({
-    summary: 'Get application metrics (Prometheus format)',
+    summary: 'Get application metrics (Prometheus format via prom-client)',
     description:
-      'Retorna métricas customizadas em formato Prometheus para scraping',
+      'Retorna métricas via prom-client incluindo métricas padrão do Node.js',
   })
   @ApiResponse({
     status: 200,
     description: 'Metrics in Prometheus text format',
     schema: {
       type: 'string',
-      example: `# HELP database_connections_active Active database connections
-# TYPE database_connections_active gauge
-database_connections_active 5
+      example: `# HELP etp_express_database_connections_active Number of active database connections
+# TYPE etp_express_database_connections_active gauge
+etp_express_database_connections_active 5
 
-# HELP memory_usage_bytes Memory heap used in bytes
-# TYPE memory_usage_bytes gauge
-memory_usage_bytes 45678901`,
+# HELP etp_express_process_cpu_seconds_total Total user and system CPU time
+# TYPE etp_express_process_cpu_seconds_total counter
+etp_express_process_cpu_seconds_total 123.45`,
     },
   })
-  async getMetrics(): Promise<string> {
+  async getMetrics(@Res() res: Response): Promise<void> {
+    const metrics = await this.prometheusMetricsService.getMetrics();
+    res.set('Content-Type', this.prometheusMetricsService.getContentType());
+    res.end(metrics);
+  }
+
+  /**
+   * Retorna métricas em formato Prometheus legacy (sem prom-client)
+   *
+   * Mantido para compatibilidade. Prefer /api/metrics para scraping.
+   *
+   * @returns Métricas em formato Prometheus (legacy)
+   */
+  @Get('legacy')
+  @Header('Content-Type', 'text/plain; version=0.0.4')
+  @ApiOperation({
+    summary: 'Get application metrics (legacy Prometheus format)',
+    description: 'Retorna métricas customizadas em formato Prometheus legado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Metrics in Prometheus text format (legacy)',
+  })
+  async getMetricsLegacy(): Promise<string> {
     return this.metricsService.getPrometheusMetrics();
   }
 
