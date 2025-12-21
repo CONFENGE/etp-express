@@ -32,6 +32,7 @@ import { DomainManagerModule } from './modules/domain-manager/domain-manager.mod
 import { DemoModule } from './modules/demo/demo.module';
 import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
 import { GovDataSyncModule } from './modules/gov-data-sync/gov-data-sync.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -219,6 +220,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     DemoModule,
     DocumentExtractionModule,
     GovDataSyncModule,
+    FeatureFlagsModule,
     HealthModule,
   ],
   controllers: [AppController],
