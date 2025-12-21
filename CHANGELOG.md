@@ -24,6 +24,15 @@ Trabalho em progresso para alcançar qualidade de produção:
 
 #### Observability (2025-12-21)
 
+- ✅ #861 - Business Metrics for Prometheus (PR #877)
+  - **etp_express_etp_created_total:** Counter para ETPs criados (labels: status, organization_id)
+  - **etp_express_llm_requests_total:** Counter para requests LLM (labels: provider, model, status)
+  - **etp_express_generation_duration_seconds:** Histogram para duração de geração (labels: type, provider)
+  - **etp_express_active_users:** Gauge para usuários ativos (últimos 15min)
+  - Métodos públicos para serviços: `recordEtpCreated()`, `recordLlmRequest()`, `recordGenerationDuration()`, `setActiveUsers()`
+  - 12 novos testes unitários para business metrics
+  - Closes #861
+
 - ✅ #858 - OpenTelemetry: Instrumentação manual de serviços LLM (PR #874)
   - **OpenAIService:** Spans para completion e streaming operations
     - Atributos: `gen_ai.system`, `gen_ai.request.model`, `gen_ai.request.temperature`
