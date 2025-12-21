@@ -5,7 +5,7 @@ import {
   Navigate,
   useNavigate,
 } from 'react-router-dom';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, lazy, Suspense } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
@@ -16,20 +16,78 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { useAuth } from '@/hooks/useAuth';
 import { setNavigate } from '@/lib/navigation';
 
-// Pages
+// Lazy-loaded Pages for code splitting
+// Critical path pages (login/register) loaded eagerly for fast initial render
 import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
-import { Dashboard } from '@/pages/Dashboard';
-import { ETPs } from '@/pages/ETPs';
-import { ETPEditor } from '@/pages/ETPEditor';
 import { NotFound } from '@/pages/NotFound';
-import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
-import { TermsOfService } from '@/pages/TermsOfService';
-import { ForgotPassword } from '@/pages/ForgotPassword';
-import { ResetPassword } from '@/pages/ResetPassword';
-import { AdminDashboard, DomainManagement, DomainDetail } from '@/pages/admin';
-import { ManagerDashboard, UserManagement } from '@/pages/manager';
-import { AnalysisPage } from '@/pages/AnalysisPage';
+
+// Non-critical pages lazy-loaded for reduced initial bundle size
+const Dashboard = lazy(() =>
+  import('@/pages/Dashboard').then((m) => ({ default: m.Dashboard })),
+);
+const ETPs = lazy(() =>
+  import('@/pages/ETPs').then((m) => ({ default: m.ETPs })),
+);
+const ETPEditor = lazy(() =>
+  import('@/pages/ETPEditor').then((m) => ({ default: m.ETPEditor })),
+);
+const PrivacyPolicy = lazy(() =>
+  import('@/pages/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy })),
+);
+const TermsOfService = lazy(() =>
+  import('@/pages/TermsOfService').then((m) => ({ default: m.TermsOfService })),
+);
+const ForgotPassword = lazy(() =>
+  import('@/pages/ForgotPassword').then((m) => ({ default: m.ForgotPassword })),
+);
+const ResetPassword = lazy(() =>
+  import('@/pages/ResetPassword').then((m) => ({ default: m.ResetPassword })),
+);
+const AnalysisPage = lazy(() =>
+  import('@/pages/AnalysisPage').then((m) => ({ default: m.AnalysisPage })),
+);
+
+// Admin pages - lazy-loaded (only accessed by system admins)
+const AdminDashboard = lazy(() =>
+  import('@/pages/admin/AdminDashboard').then((m) => ({
+    default: m.AdminDashboard,
+  })),
+);
+const DomainManagement = lazy(() =>
+  import('@/pages/admin/DomainManagement').then((m) => ({
+    default: m.DomainManagement,
+  })),
+);
+const DomainDetail = lazy(() =>
+  import('@/pages/admin/DomainDetail').then((m) => ({
+    default: m.DomainDetail,
+  })),
+);
+
+// Manager pages - lazy-loaded (only accessed by domain managers)
+const ManagerDashboard = lazy(() =>
+  import('@/pages/manager/ManagerDashboard').then((m) => ({
+    default: m.ManagerDashboard,
+  })),
+);
+const UserManagement = lazy(() =>
+  import('@/pages/manager/UserManagement').then((m) => ({
+    default: m.UserManagement,
+  })),
+);
+
+/**
+ * Route loading fallback component.
+ * Displays centered loading state while lazy-loaded pages are fetched.
+ */
+function RouteLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <LoadingState message="Carregando página..." size="lg" />
+    </div>
+  );
+}
 
 /**
  * Protected Route Component
@@ -108,101 +166,103 @@ function AppRoutes() {
   }, [validateAuth]);
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPassword />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          <PublicRoute>
-            <ResetPassword />
-          </PublicRoute>
-        }
-      />
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/terms" element={<TermsOfService />} />
+    <Suspense fallback={<RouteLoadingFallback />}>
+      <Routes>
+        {/* Public Routes - Login/Register loaded eagerly for fast initial render */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/etps"
-        element={
-          <ProtectedRoute>
-            <ETPs />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/etps/:id"
-        element={
-          <ProtectedRoute>
-            <ETPEditor />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analysis"
-        element={
-          <ProtectedRoute>
-            <AnalysisPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected Routes - Lazy-loaded for reduced initial bundle */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/etps"
+          element={
+            <ProtectedRoute>
+              <ETPs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/etps/:id"
+          element={
+            <ProtectedRoute>
+              <ETPEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analysis"
+          element={
+            <ProtectedRoute>
+              <AnalysisPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Admin Routes (System Admin only) */}
-      <Route path="/admin" element={<AdminProtectedRoute />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="domains" element={<DomainManagement />} />
-        <Route path="domains/:id" element={<DomainDetail />} />
-      </Route>
+        {/* Admin Routes (System Admin only) - Lazy-loaded */}
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="domains" element={<DomainManagement />} />
+          <Route path="domains/:id" element={<DomainDetail />} />
+        </Route>
 
-      {/* Manager Routes (Domain Manager only) */}
-      <Route path="/manager" element={<ManagerProtectedRoute />}>
-        <Route index element={<ManagerDashboard />} />
-        <Route path="users" element={<UserManagement />} />
-      </Route>
+        {/* Manager Routes (Domain Manager only) - Lazy-loaded */}
+        <Route path="/manager" element={<ManagerProtectedRoute />}>
+          <Route index element={<ManagerDashboard />} />
+          <Route path="users" element={<UserManagement />} />
+        </Route>
 
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* 404 - Loaded eagerly for fast error display */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   );
 }
 
