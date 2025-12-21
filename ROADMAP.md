@@ -322,12 +322,12 @@ Go-Live B2G █████████████████░░░ 12/14 8
 
 ### M5 - E2E & Docs - 87% (26/30, 4 open → Movido para Sprint v1.1)
 
-| #    | Issue                         | Status      |
-| ---- | ----------------------------- | ----------- |
-| #110 | [EPIC] Staged rollout (4 sub) | Sprint v1.1 |
-| #111 | [EPIC] Production SLA (3 sub) | Sprint v1.1 |
-| #456 | Frontend coverage 70%         | Sprint v1.1 |
-| #458 | WCAG 2.1 gaps                 | Sprint v1.1 |
+| #        | Issue                         | Status          |
+| -------- | ----------------------------- | --------------- |
+| #110     | [EPIC] Staged rollout (4 sub) | Sprint v1.1     |
+| #111     | [EPIC] Production SLA (3 sub) | Sprint v1.1     |
+| #456     | Frontend coverage 70%         | Sprint v1.1     |
+| ~~#458~~ | ~~WCAG 2.1 gaps~~             | ✅ DONE PR #875 |
 
 ### M6 - Maintenance (4 open)
 
@@ -513,7 +513,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | #    | Issue                      | Esforço | Status |
 | ---- | -------------------------- | ------- | ------ |
 | #456 | Frontend Test Coverage 70% | 8h      | OPEN   |
-| #458 | WCAG 2.1 Accessibility     | 4h      | OPEN   |
+| #458 | WCAG 2.1 Accessibility     | 4h      | DONE   |
 | #759 | Rich Text Editor (WYSIWYG) | 12h     | OPEN   |
 
 ### EPICs com Sub-issues
@@ -522,7 +522,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | # | Issue | Esforço |
 |---|-------|---------|
 | #857 | SDK setup e auto-instrumentation | DONE |
-| #858 | Instrumentação manual serviços LLM | 1.5h |
+| #858 | Instrumentação manual serviços LLM | DONE |
 | #859 | Dashboard e validação | 0.5h |
 
 **#655 - [EPIC] Prometheus Business Metrics**
@@ -549,7 +549,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 **#111 - [EPIC] Production Support SLA**
 | # | Issue | Esforço |
 |---|-------|---------|
-| #869 | SLA: Definição de níveis e métricas | 2h |
+| ~~#869~~ | ~~SLA: Definição de níveis e métricas~~ | ~~2h~~ | ✅ DONE 2025-12-21 |
 | #870 | SLA: Setup de ferramentas | 2-3h |
 | #871 | SLA: Treinamento e documentação | 2-3h |
 

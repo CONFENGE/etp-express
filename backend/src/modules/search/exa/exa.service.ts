@@ -4,6 +4,7 @@ import Exa from 'exa-js';
 import CircuitBreaker from 'opossum';
 import NodeCache from 'node-cache';
 import { createHash } from 'crypto';
+import { trace, SpanStatusCode, Span } from '@opentelemetry/api';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
 import {
   ExaSearchResult,
@@ -12,6 +13,9 @@ import {
   LegalReferenceInput,
   ExaSearchOptions,
 } from './exa.types';
+
+/** OpenTelemetry tracer for Exa AI search operations */
+const tracer = trace.getTracer('llm-exa', '1.0.0');
 
 /** Disclaimer displayed when external search is unavailable */
 const FALLBACK_DISCLAIMER =
@@ -187,39 +191,77 @@ export class ExaService {
     query: string,
     options: ExaSearchOptions,
   ): Promise<ExaResponse> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response: any = await withRetry(async () => {
-      if (options.text) {
-        return this.exa.searchAndContents(query, {
-          type: options.type,
-          numResults: options.numResults,
-          useAutoprompt: options.useAutoprompt ?? false,
-          includeDomains: options.includeDomains,
-          excludeDomains: options.excludeDomains,
-          text: options.text,
+    // Create OpenTelemetry span for Exa search operation
+    return tracer.startActiveSpan('exa.search', async (span: Span) => {
+      try {
+        // Set initial span attributes
+        span.setAttribute('gen_ai.system', 'exa');
+        span.setAttribute('search.query.length', query.length);
+        span.setAttribute('search.type', options.type || 'auto');
+        span.setAttribute('search.num_results', options.numResults || 5);
+        span.setAttribute(
+          'search.use_autoprompt',
+          options.useAutoprompt ?? false,
+        );
+        span.setAttribute('search.include_content', !!options.text);
+
+        const startTime = Date.now();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response: any = await withRetry(async () => {
+          if (options.text) {
+            return this.exa.searchAndContents(query, {
+              type: options.type,
+              numResults: options.numResults,
+              useAutoprompt: options.useAutoprompt ?? false,
+              includeDomains: options.includeDomains,
+              excludeDomains: options.excludeDomains,
+              text: options.text,
+            });
+          }
+          return this.exa.search(query, {
+            type: options.type,
+            numResults: options.numResults,
+            useAutoprompt: options.useAutoprompt ?? false,
+            includeDomains: options.includeDomains,
+            excludeDomains: options.excludeDomains,
+          });
+        }, this.retryOptions);
+
+        const duration = Date.now() - startTime;
+
+        const results = this.parseResults(response.results);
+        const sources = response.results.map(
+          (r: { url: string }) => r.url,
+        ) as string[];
+        const summary = this.generateSummary(response.results);
+
+        // Add response attributes to span
+        span.setAttribute('search.response.result_count', results.length);
+        span.setAttribute('search.response.duration_ms', duration);
+        span.setAttribute('search.response.sources_count', sources.length);
+        span.setAttribute('search.response.summary.length', summary.length);
+
+        span.setStatus({ code: SpanStatusCode.OK });
+
+        return {
+          results,
+          summary,
+          sources,
+          isFallback: false,
+        };
+      } catch (error) {
+        // Record error in span
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
+        span.recordException(error as Error);
+        throw error;
+      } finally {
+        span.end();
       }
-      return this.exa.search(query, {
-        type: options.type,
-        numResults: options.numResults,
-        useAutoprompt: options.useAutoprompt ?? false,
-        includeDomains: options.includeDomains,
-        excludeDomains: options.excludeDomains,
-      });
-    }, this.retryOptions);
-
-    const results = this.parseResults(response.results);
-    const sources = response.results.map(
-      (r: { url: string }) => r.url,
-    ) as string[];
-    const summary = this.generateSummary(response.results);
-
-    return {
-      results,
-      summary,
-      sources,
-      isFallback: false,
-    };
+    });
   }
 
   /**

@@ -440,12 +440,14 @@ railway logs --service=etp-express-backend | grep "health"
 
 ### Escalation Matrix
 
-| Severity | Descricao                          | Tempo Resposta | Responsavel           |
-| -------- | ---------------------------------- | -------------- | --------------------- |
-| **P0**   | Sistema fora do ar                 | 15 minutos     | DevOps + Tech Lead    |
-| **P1**   | Funcionalidade critica quebrada    | 1 hora         | DevOps                |
-| **P2**   | Funcionalidade secundaria afetada  | 4 horas        | Desenvolvedor         |
-| **P3**   | Bug menor                          | 24 horas       | Desenvolvedor         |
+> **Referencia Completa:** Ver `docs/SLA.md` para definicoes detalhadas de severidade, SLOs e processo de escalation.
+
+| Severity | Descricao                          | Tempo Resposta | Resolucao Target | Responsavel           |
+| -------- | ---------------------------------- | -------------- | ---------------- | --------------------- |
+| **P0**   | Sistema fora do ar                 | 15 minutos     | 4 horas          | DevOps + Tech Lead    |
+| **P1**   | Funcionalidade critica quebrada    | 1 hora         | 8 horas          | DevOps                |
+| **P2**   | Funcionalidade secundaria afetada  | 4 horas        | 48 horas         | Desenvolvedor         |
+| **P3**   | Bug menor                          | 24 horas       | 5 dias uteis     | Desenvolvedor         |
 
 ### Contatos
 
@@ -469,12 +471,14 @@ railway logs --service=etp-express-backend | grep "health"
 
 ## Documentacao Relacionada
 
+- **SLA e Niveis de Severidade:** `docs/SLA.md`
 - **Deploy completo:** `DEPLOY_RAILWAY.md`
 - **Rotacao de secrets:** `docs/SECRET_ROTATION_PROCEDURES.md`
 - **Disaster recovery:** `DISASTER_RECOVERY.md`
 - **Infraestrutura:** `docs/INFRASTRUCTURE.md`
 - **Monitoramento:** `docs/MONITORING.md`
-- **Resposta a incidentes:** `docs/INCIDENT_RESPONSE.md`
+- **Registro de Incidentes:** `docs/incidents/README.md`
+- **Templates de Incidentes:** `docs/templates/`
 
 ---
 
