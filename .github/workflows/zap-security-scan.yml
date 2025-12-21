@@ -60,10 +60,12 @@ jobs:
           # Actions: IGNORE, WARN, FAIL
 
           # Informational findings (IGNORE)
+          10015	IGNORE	Re-examine Cache-control Directives (API caching expected)
           10021	IGNORE	X-Content-Type-Options Header Missing (handled by helmet)
           10036	IGNORE	Server Leaks Version Information
           10037	IGNORE	Server Leaks Information via X-Powered-By
           10038	IGNORE	Content Security Policy Header Not Set (SPA handles this)
+          10049	IGNORE	Storable and Cacheable Content (API responses cacheable by design)
           10098	IGNORE	Cross-Domain Misconfiguration (expected for API)
 
           # Low severity (WARN only)
