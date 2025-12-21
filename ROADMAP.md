@@ -522,7 +522,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | # | Issue | Esforço |
 |---|-------|---------|
 | #857 | SDK setup e auto-instrumentation | DONE |
-| #858 | Instrumentação manual serviços LLM | 1.5h |
+| #858 | Instrumentação manual serviços LLM | DONE |
 | #859 | Dashboard e validação | 0.5h |
 
 **#655 - [EPIC] Prometheus Business Metrics**
