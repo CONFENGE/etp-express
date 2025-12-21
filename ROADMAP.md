@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-21 | **Progresso:** 424/463 (91.6%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-21 | **Progresso:** 432/463 (93.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -151,8 +151,8 @@ M1: Foundation ████████████████████ 36/3
 M2: CI/CD Pipeline ████████████████████ 18/18 100%
 M3: Quality & Security ████████████████████ 61/61 100%
 M4: Refactoring & Perf ████████████████████ 45/45 100%
-M5: E2E & Docs █████████████████░░░ 26/30 87%
-M6: Maintenance ███████████████████░ 81/85 95%
+M5: E2E & Docs ██████████████████░░ 27/30 90%
+M6: Maintenance ███████████████████░ 83/85 98%
 M7: Multi-Tenancy B2G ████████████████████ 6/6 100%
 M8: Domínios Instit. ████████████████████ 24/24 100% ✅ COMPLETE
 M9: Export/Import ████████████████████ 16/16 100% ✅ COMPLETE
@@ -320,7 +320,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 87% (26/30, 4 open → Movido para Sprint v1.1)
+### M5 - E2E & Docs - 90% (27/30, 3 open → Movido para Sprint v1.1)
 
 | #        | Issue                         | Status          |
 | -------- | ----------------------------- | --------------- |
@@ -329,7 +329,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | #456     | Frontend coverage 70%         | Sprint v1.1     |
 | ~~#458~~ | ~~WCAG 2.1 gaps~~             | ✅ DONE PR #875 |
 
-### M6 - Maintenance (4 open)
+### M6 - Maintenance (2 open)
 
 **Security:** ✅ ALL COMPLETE
 | # | Issue | Priority |
@@ -568,9 +568,9 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 463      |
-| Issues Abertas    | 40       |
-| Issues Fechadas   | 424      |
-| Progresso         | 91.6%    |
+| Issues Abertas    | 31       |
+| Issues Fechadas   | 432      |
+| Progresso         | 93.3%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
