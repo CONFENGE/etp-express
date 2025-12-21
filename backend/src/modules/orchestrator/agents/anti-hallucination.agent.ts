@@ -57,6 +57,37 @@ export interface HallucinationCheckResult {
   suggestions?: string[]; // Improvement suggestions
 }
 
+/**
+ * Agent responsible for detecting and mitigating potential hallucinations in LLM-generated content.
+ *
+ * @remarks
+ * **DESIGN DECISION: DETERMINISTIC VALIDATION**
+ *
+ * This agent uses **deterministic validation** (Regex patterns + RAG database lookup),
+ * NOT LLM-based analysis. This is intentional for:
+ *
+ * - **Auditability**: Same input always produces same output (critical for public procurement)
+ * - **Performance**: Validation runs in milliseconds, not seconds
+ * - **Cost**: No OpenAI token consumption for validation
+ * - **Testability**: Simple unit tests with predictable outcomes
+ *
+ * **WARNING**: If you replace Regex validation with LLM-based validation in the future,
+ * the system behavior will change from deterministic to probabilistic. This impacts:
+ * - Test reliability (same input may produce different outputs)
+ * - Audit compliance (harder to reproduce results)
+ * - Cost structure (validation will consume tokens)
+ *
+ * **Validation Methods:**
+ * 1. `suspiciousPatterns`: Regex patterns to detect unverified claims (legal refs, monetary values, dates)
+ * 2. `prohibitedClaims`: Static list of absolutist phrases ("melhor do mercado", "único capaz")
+ * 3. `verifyReferences()`: RAG lookup against local legislation database + Exa fallback
+ *
+ * The `getSystemPrompt()` method provides instructions FOR the LLM (used during generation),
+ * but the `check()` method itself does NOT call any LLM.
+ *
+ * @see ARCHITECTURE.md section 3.3 "Arquitetura de Agentes: Determinísticos vs Probabilísticos"
+ * @see OrchestratorService - Uses this agent as final validation step
+ */
 @Injectable()
 export class AntiHallucinationAgent {
   private readonly logger = new Logger(AntiHallucinationAgent.name);
