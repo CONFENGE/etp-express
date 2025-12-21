@@ -3,11 +3,14 @@ import {
   Get,
   Param,
   Query,
+  Res,
   UseGuards,
   ForbiddenException,
   ParseIntPipe,
   DefaultValuePipe,
+  StreamableFile,
 } from '@nestjs/common';
+import { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -22,6 +25,8 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User, UserRole } from '../../entities/user.entity';
 import { SecretAccessStatus } from '../../entities/secret-access-log.entity';
 import { AuditAction } from '../../entities/audit-log.entity';
+import { ExportAuditLogsDto, ExportFormat } from './dto/export-audit-logs.dto';
+import { Parser } from '@json2csv/plainjs';
 
 /**
  * Audit Controller for Secret Access Logs
@@ -252,5 +257,122 @@ export class AuditController {
       action,
       limit,
     });
+  }
+
+  /**
+   * Export audit logs to CSV or JSON file
+   * For LGPD compliance reporting (Art. 37)
+   */
+  @Get('export')
+  @ApiOperation({
+    summary: 'Export audit logs',
+    description:
+      'Export audit logs in CSV or JSON format for LGPD compliance. Supports filtering by date range, user, and action type. Requires admin role.',
+  })
+  @ApiQuery({
+    name: 'format',
+    required: false,
+    enum: ExportFormat,
+    description: 'Export format (csv or json, default: json)',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Start date for filtering (ISO 8601 format)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'End date for filtering (ISO 8601 format)',
+  })
+  @ApiQuery({
+    name: 'userId',
+    required: false,
+    description: 'Filter by user ID (UUID)',
+  })
+  @ApiQuery({
+    name: 'action',
+    required: false,
+    enum: AuditAction,
+    description: 'Filter by action type',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description:
+      'Maximum number of records to export (default: 10000, max: 50000)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Audit logs exported successfully as file download',
+  })
+  @ApiResponse({ status: 403, description: 'Admin role required' })
+  async exportAuditLogs(
+    @CurrentUser() user: User,
+    @Query() query: ExportAuditLogsDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile | { logs: unknown[]; metadata: unknown }> {
+    this.ensureAdmin(user);
+
+    const { format, startDate, endDate, userId, action, limit } = query;
+
+    const result = await this.auditService.exportAuditLogs({
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      userId,
+      action,
+      limit,
+    });
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `audit-logs-${timestamp}`;
+
+    if (format === ExportFormat.CSV) {
+      const csvData = this.auditService.formatLogsForCsv(result.logs);
+
+      const parser = new Parser({
+        fields: [
+          'id',
+          'action',
+          'entityType',
+          'entityId',
+          'userId',
+          'userEmail',
+          'userName',
+          'ipAddress',
+          'userAgent',
+          'description',
+          'createdAt',
+          'etpId',
+          'etpTitle',
+        ],
+      });
+
+      const csv = parser.parse(csvData);
+
+      res.set({
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${filename}.csv"`,
+      });
+
+      return new StreamableFile(Buffer.from(csv, 'utf-8'));
+    }
+
+    // JSON format (default)
+    const jsonContent = JSON.stringify(
+      {
+        logs: this.auditService.formatLogsForCsv(result.logs),
+        metadata: result.metadata,
+      },
+      null,
+      2,
+    );
+
+    res.set({
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${filename}.json"`,
+    });
+
+    return new StreamableFile(Buffer.from(jsonContent, 'utf-8'));
   }
 }
