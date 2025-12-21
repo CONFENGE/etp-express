@@ -153,112 +153,184 @@ export class FeatureFlagsService implements OnModuleInit {
     context?: FeatureFlagContext,
   ): Promise<FeatureFlagEvaluation> {
     const key = String(flag);
-    const config = this.defaults[key];
-    const now = Date.now();
 
     // Check in-memory cache first
+    const cachedResult = this.checkCache(key);
+    if (cachedResult) return cachedResult;
+
+    // Check Redis overrides if available
+    const redisResult = await this.checkRedisOverrides(key, context);
+    if (redisResult) return redisResult;
+
+    // Check environment override
+    const envResult = this.checkEnvironmentOverride(key, context);
+    if (envResult) return envResult;
+
+    // Return default value
+    return this.getDefaultEvaluation(key);
+  }
+
+  /**
+   * Check in-memory cache for flag value
+   */
+  private checkCache(key: string): FeatureFlagEvaluation | null {
     const cached = this.cache.get(key);
-    if (cached && cached.expiresAt > now) {
+    if (cached && cached.expiresAt > Date.now()) {
       return {
         key,
         enabled: cached.value,
-        reason: 'redis',
+        reason: 'cache',
         evaluatedAt: new Date(),
       };
     }
+    return null;
+  }
 
-    // Check Redis if available
-    if (this.redis) {
-      try {
-        // Check user-specific override
-        if (context?.userId) {
-          const userOverride = await this.redis.get(
-            `${this.redisPrefix}${key}:user:${context.userId}`,
-          );
-          if (userOverride !== null) {
-            const enabled = userOverride === 'true';
-            this.updateCache(key, enabled);
-            return {
-              key,
-              enabled,
-              reason: 'user_override',
-              evaluatedAt: new Date(),
-            };
-          }
-        }
+  /**
+   * Check Redis for overrides (user, org, global, percentage)
+   */
+  private async checkRedisOverrides(
+    key: string,
+    context?: FeatureFlagContext,
+  ): Promise<FeatureFlagEvaluation | null> {
+    if (!this.redis) return null;
 
-        // Check organization-specific override
-        if (context?.organizationId) {
-          const orgOverride = await this.redis.get(
-            `${this.redisPrefix}${key}:org:${context.organizationId}`,
-          );
-          if (orgOverride !== null) {
-            const enabled = orgOverride === 'true';
-            this.updateCache(key, enabled);
-            return {
-              key,
-              enabled,
-              reason: 'org_override',
-              evaluatedAt: new Date(),
-            };
-          }
-        }
+    try {
+      // Check user-specific override
+      const userResult = await this.checkUserOverride(key, context?.userId);
+      if (userResult) return userResult;
 
-        // Check global flag value
-        const globalValue = await this.redis.get(`${this.redisPrefix}${key}`);
-        if (globalValue !== null) {
-          const enabled = globalValue === 'true';
-          this.updateCache(key, enabled);
-          return {
-            key,
-            enabled,
-            reason: 'redis',
-            evaluatedAt: new Date(),
-          };
-        }
+      // Check organization-specific override
+      const orgResult = await this.checkOrgOverride(
+        key,
+        context?.organizationId,
+      );
+      if (orgResult) return orgResult;
 
-        // Check percentage rollout
-        const percentage = await this.redis.get(
-          `${this.redisPrefix}${key}:percentage`,
-        );
-        if (percentage !== null) {
-          const pct = parseInt(percentage, 10);
-          const hash = this.hashString(
-            `${key}:${context?.userId || context?.organizationId || 'global'}`,
-          );
-          const enabled = hash % 100 < pct;
-          this.updateCache(key, enabled);
-          return {
-            key,
-            enabled,
-            reason: 'percentage',
-            evaluatedAt: new Date(),
-          };
-        }
-      } catch (error) {
-        this.logger.warn(
-          `Redis error evaluating flag ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-      }
+      // Check global flag value
+      const globalResult = await this.checkGlobalValue(key);
+      if (globalResult) return globalResult;
+
+      // Check percentage rollout
+      return await this.checkPercentageRollout(key, context);
+    } catch (error) {
+      this.logger.warn(
+        `Redis error evaluating flag ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return null;
     }
+  }
 
-    // Check environment override
+  /**
+   * Check user-specific override in Redis
+   */
+  private async checkUserOverride(
+    key: string,
+    userId?: string,
+  ): Promise<FeatureFlagEvaluation | null> {
+    if (!userId || !this.redis) return null;
+
+    const userOverride = await this.redis.get(
+      `${this.redisPrefix}${key}:user:${userId}`,
+    );
+    if (userOverride !== null) {
+      const enabled = userOverride === 'true';
+      this.updateCache(key, enabled);
+      return { key, enabled, reason: 'user_override', evaluatedAt: new Date() };
+    }
+    return null;
+  }
+
+  /**
+   * Check organization-specific override in Redis
+   */
+  private async checkOrgOverride(
+    key: string,
+    organizationId?: string,
+  ): Promise<FeatureFlagEvaluation | null> {
+    if (!organizationId || !this.redis) return null;
+
+    const orgOverride = await this.redis.get(
+      `${this.redisPrefix}${key}:org:${organizationId}`,
+    );
+    if (orgOverride !== null) {
+      const enabled = orgOverride === 'true';
+      this.updateCache(key, enabled);
+      return { key, enabled, reason: 'org_override', evaluatedAt: new Date() };
+    }
+    return null;
+  }
+
+  /**
+   * Check global flag value in Redis
+   */
+  private async checkGlobalValue(
+    key: string,
+  ): Promise<FeatureFlagEvaluation | null> {
+    if (!this.redis) return null;
+
+    const globalValue = await this.redis.get(`${this.redisPrefix}${key}`);
+    if (globalValue !== null) {
+      const enabled = globalValue === 'true';
+      this.updateCache(key, enabled);
+      return { key, enabled, reason: 'redis', evaluatedAt: new Date() };
+    }
+    return null;
+  }
+
+  /**
+   * Check percentage-based rollout in Redis
+   */
+  private async checkPercentageRollout(
+    key: string,
+    context?: FeatureFlagContext,
+  ): Promise<FeatureFlagEvaluation | null> {
+    if (!this.redis) return null;
+
+    const percentage = await this.redis.get(
+      `${this.redisPrefix}${key}:percentage`,
+    );
+    if (percentage !== null) {
+      const pct = parseInt(percentage, 10);
+      const hash = this.hashString(
+        `${key}:${context?.userId || context?.organizationId || 'global'}`,
+      );
+      const enabled = hash % 100 < pct;
+      this.updateCache(key, enabled);
+      return { key, enabled, reason: 'percentage', evaluatedAt: new Date() };
+    }
+    return null;
+  }
+
+  /**
+   * Check environment-specific override
+   */
+  private checkEnvironmentOverride(
+    key: string,
+    context?: FeatureFlagContext,
+  ): FeatureFlagEvaluation | null {
+    const config = this.defaults[key];
     const env = context?.environment || this.getEnvironment();
+
     if (config?.environments?.[env] !== undefined) {
-      const enabled = config.environments[env];
       return {
         key,
-        enabled,
+        enabled: config.environments[env],
         reason: 'environment',
         evaluatedAt: new Date(),
       };
     }
+    return null;
+  }
 
-    // Return default value
-    const enabled = config?.defaultValue ?? false;
+  /**
+   * Get default evaluation for a flag
+   */
+  private getDefaultEvaluation(key: string): FeatureFlagEvaluation {
+    const config = this.defaults[key];
     return {
       key,
-      enabled,
+      enabled: config?.defaultValue ?? false,
       reason: 'default',
       evaluatedAt: new Date(),
     };
