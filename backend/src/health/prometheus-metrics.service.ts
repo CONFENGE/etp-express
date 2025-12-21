@@ -234,14 +234,11 @@ export class PrometheusMetricsService implements OnModuleInit {
    * Start periodic metrics collection (every 15 seconds)
    */
   private startMetricsCollection(): void {
-    setInterval(
-      () => {
-        this.collectDynamicMetrics().catch((err) => {
-          this.logger.error('Error collecting metrics', err);
-        });
-      },
-      15 * 1000,
-    );
+    setInterval(() => {
+      this.collectDynamicMetrics().catch((err) => {
+        this.logger.error('Error collecting metrics', err);
+      });
+    }, 15 * 1000);
   }
 
   /**
@@ -249,7 +246,10 @@ export class PrometheusMetricsService implements OnModuleInit {
    */
   private normalizePath(path: string): string {
     return path
-      .replace(/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '/:id')
+      .replace(
+        /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+        '/:id',
+      )
       .replace(/\/\d+/g, '/:id')
       .replace(/\?.*$/, '');
   }
