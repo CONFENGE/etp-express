@@ -64,6 +64,11 @@ const DomainDetail = lazy(() =>
     default: m.DomainDetail,
   })),
 );
+const AuditLogsExport = lazy(() =>
+  import('@/pages/admin/AuditLogsExport').then((m) => ({
+    default: m.AuditLogsExport,
+  })),
+);
 
 // Manager pages - lazy-loaded (only accessed by domain managers)
 const ManagerDashboard = lazy(() =>
@@ -251,6 +256,7 @@ function AppRoutes() {
           <Route index element={<AdminDashboard />} />
           <Route path="domains" element={<DomainManagement />} />
           <Route path="domains/:id" element={<DomainDetail />} />
+          <Route path="audit-export" element={<AuditLogsExport />} />
         </Route>
 
         {/* Manager Routes (Domain Manager only) - Lazy-loaded */}
