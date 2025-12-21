@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router';
 import { ManagerProtectedRoute } from './ManagerProtectedRoute';
 import { useAuthStore } from '@/store/authStore';
 import type { User } from '@/types/user';

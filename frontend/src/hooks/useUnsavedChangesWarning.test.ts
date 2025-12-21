@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useUnsavedChangesWarning } from './useUnsavedChangesWarning';
 
-// Mock react-router-dom
+// Mock react-router
 const mockBlocker = {
   state: 'unblocked' as 'unblocked' | 'blocked' | 'proceeding',
   proceed: vi.fn(),
@@ -10,7 +10,7 @@ const mockBlocker = {
   location: undefined,
 };
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   useBlocker: vi.fn((callback: unknown) => {
     // Store the callback for testing
     (mockBlocker as unknown as { _callback: unknown })._callback = callback;

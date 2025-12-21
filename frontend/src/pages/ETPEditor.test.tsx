@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { ETPEditor } from './ETPEditor';
 import type { ETP } from '@/types/etp';
 
-// Mock react-router-dom
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+// Mock react-router
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router');
   return {
     ...actual,
     useParams: vi.fn(),
@@ -389,7 +389,7 @@ describe('ETPEditor', () => {
     vi.clearAllMocks();
 
     // Mock useParams
-    const { useParams } = await import('react-router-dom');
+    const { useParams } = await import('react-router');
     vi.mocked(useParams).mockReturnValue({ id: 'etp-123' });
 
     // Mock useETPs

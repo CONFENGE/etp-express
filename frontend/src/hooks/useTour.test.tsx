@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import type { ReactNode } from 'react';
 import { useTour } from './useTour';
 import { useTourStore } from '@/store/tourStore';

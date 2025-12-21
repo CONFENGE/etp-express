@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { MoreVertical, Edit, Trash2, Download } from 'lucide-react';
 import {
   Card,

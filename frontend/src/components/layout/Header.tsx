@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { FileText, HelpCircle, LogOut, Menu, User } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useUIStore } from '@/store/uiStore';
