@@ -8,7 +8,11 @@ import OpenAI from 'openai';
 import CircuitBreaker from 'opossum';
 import NodeCache from 'node-cache';
 import * as crypto from 'crypto';
+import { trace, SpanStatusCode, Span } from '@opentelemetry/api';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
+
+/** OpenTelemetry tracer for LLM operations */
+const tracer = trace.getTracer('llm-openai', '1.0.0');
 
 export interface LLMRequest {
   systemPrompt: string;
@@ -156,51 +160,104 @@ export class OpenAIService {
       temperature,
     );
 
-    // Check cache
-    const cached = this.cache.get<LLMResponse>(cacheKey);
-    if (cached) {
-      this.logger.log(`Cache HIT: ${cacheKey.substring(0, 16)}...`);
-      return cached;
-    }
+    // Create OpenTelemetry span for LLM operation
+    return tracer.startActiveSpan(
+      'openai.chat.completion',
+      async (span: Span) => {
+        try {
+          // Set initial span attributes
+          span.setAttribute('gen_ai.system', 'openai');
+          span.setAttribute('gen_ai.request.model', model);
+          span.setAttribute('gen_ai.request.temperature', temperature);
+          span.setAttribute('gen_ai.request.max_tokens', maxTokens);
+          span.setAttribute('llm.prompt.system.length', systemPrompt.length);
+          span.setAttribute('llm.prompt.user.length', userPrompt.length);
 
-    // Cache MISS - call OpenAI
-    this.logger.log(`Cache MISS: ${cacheKey.substring(0, 16)}...`);
-    this.logger.log(`Generating completion with model: ${model}`);
+          // Check cache
+          const cached = this.cache.get<LLMResponse>(cacheKey);
+          if (cached) {
+            this.logger.log(`Cache HIT: ${cacheKey.substring(0, 16)}...`);
+            span.setAttribute('cache.hit', true);
+            span.setAttribute('gen_ai.response.model', cached.model);
+            span.setAttribute('gen_ai.usage.total_tokens', cached.tokens);
+            span.setStatus({ code: SpanStatusCode.OK });
+            return cached;
+          }
 
-    const startTime = Date.now();
+          // Cache MISS - call OpenAI
+          span.setAttribute('cache.hit', false);
+          this.logger.log(`Cache MISS: ${cacheKey.substring(0, 16)}...`);
+          this.logger.log(`Generating completion with model: ${model}`);
 
-    // Wrap OpenAI API call with retry logic for transient failures
-    const completion = await withRetry(
-      () =>
-        this.openai.chat.completions.create({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
-          ],
-          temperature,
-          max_tokens: maxTokens,
-        }),
-      this.retryOptions,
+          const startTime = Date.now();
+
+          // Wrap OpenAI API call with retry logic for transient failures
+          const completion = await withRetry(
+            () =>
+              this.openai.chat.completions.create({
+                model,
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt },
+                ],
+                temperature,
+                max_tokens: maxTokens,
+              }),
+            this.retryOptions,
+          );
+
+          const duration = Date.now() - startTime;
+
+          const response: LLMResponse = {
+            content: completion.choices[0]?.message?.content || '',
+            tokens: completion.usage?.total_tokens || 0,
+            model: completion.model,
+            finishReason: completion.choices[0]?.finish_reason || 'unknown',
+          };
+
+          // Add response attributes to span
+          span.setAttribute('gen_ai.response.model', response.model);
+          span.setAttribute(
+            'gen_ai.response.finish_reasons',
+            response.finishReason,
+          );
+          span.setAttribute('gen_ai.usage.total_tokens', response.tokens);
+          span.setAttribute(
+            'gen_ai.usage.prompt_tokens',
+            completion.usage?.prompt_tokens || 0,
+          );
+          span.setAttribute(
+            'gen_ai.usage.completion_tokens',
+            completion.usage?.completion_tokens || 0,
+          );
+          span.setAttribute('llm.response.duration_ms', duration);
+          span.setAttribute(
+            'llm.response.content.length',
+            response.content.length,
+          );
+
+          this.logger.log(
+            `Completion generated in ${duration}ms. Tokens: ${response.tokens}`,
+          );
+
+          // Store in cache
+          this.cache.set(cacheKey, response);
+
+          span.setStatus({ code: SpanStatusCode.OK });
+          return response;
+        } catch (error) {
+          // Record error in span
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error instanceof Error ? error.message : 'Unknown error',
+          });
+          span.recordException(error as Error);
+          throw error;
+        } finally {
+          span.end();
+        }
+      },
     );
-
-    const duration = Date.now() - startTime;
-
-    const response: LLMResponse = {
-      content: completion.choices[0]?.message?.content || '',
-      tokens: completion.usage?.total_tokens || 0,
-      model: completion.model,
-      finishReason: completion.choices[0]?.finish_reason || 'unknown',
-    };
-
-    this.logger.log(
-      `Completion generated in ${duration}ms. Tokens: ${response.tokens}`,
-    );
-
-    // Store in cache
-    this.cache.set(cacheKey, response);
-
-    return response;
   }
 
   /**
@@ -277,49 +334,89 @@ export class OpenAIService {
 
     this.logger.log(`Generating streaming completion with model: ${model}`);
 
-    try {
-      // Wrap stream creation with retry logic for connection failures
-      const stream = await withRetry(
-        () =>
-          this.openai.chat.completions.create({
+    // Create OpenTelemetry span for streaming LLM operation
+    return tracer.startActiveSpan(
+      'openai.chat.completion.stream',
+      async (span: Span) => {
+        try {
+          // Set initial span attributes
+          span.setAttribute('gen_ai.system', 'openai');
+          span.setAttribute('gen_ai.request.model', model);
+          span.setAttribute('gen_ai.request.temperature', temperature);
+          span.setAttribute('gen_ai.request.max_tokens', maxTokens);
+          span.setAttribute('gen_ai.request.streaming', true);
+          span.setAttribute('llm.prompt.system.length', systemPrompt.length);
+          span.setAttribute('llm.prompt.user.length', userPrompt.length);
+
+          const startTime = Date.now();
+
+          // Wrap stream creation with retry logic for connection failures
+          const stream = await withRetry(
+            () =>
+              this.openai.chat.completions.create({
+                model,
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt },
+                ],
+                temperature,
+                max_tokens: maxTokens,
+                stream: true,
+              }),
+            {
+              ...this.retryOptions,
+              operationName: 'OpenAI Streaming API',
+            },
+          );
+
+          let fullContent = '';
+          let tokenCount = 0;
+          let chunkCount = 0;
+
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              fullContent += content;
+              chunkCount++;
+              onChunk(content);
+            }
+          }
+
+          const duration = Date.now() - startTime;
+
+          // Estimate tokens (rough approximation)
+          tokenCount = Math.ceil(fullContent.length / 4);
+
+          const response: LLMResponse = {
+            content: fullContent,
+            tokens: tokenCount,
             model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt },
-            ],
-            temperature,
-            max_tokens: maxTokens,
-            stream: true,
-          }),
-        {
-          ...this.retryOptions,
-          operationName: 'OpenAI Streaming API',
-        },
-      );
+            finishReason: 'stop',
+          };
 
-      let fullContent = '';
-      let tokenCount = 0;
+          // Add response attributes to span
+          span.setAttribute('gen_ai.response.model', model);
+          span.setAttribute('gen_ai.response.finish_reasons', 'stop');
+          span.setAttribute('gen_ai.usage.total_tokens', tokenCount);
+          span.setAttribute('llm.response.duration_ms', duration);
+          span.setAttribute('llm.response.content.length', fullContent.length);
+          span.setAttribute('llm.stream.chunk_count', chunkCount);
 
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || '';
-        if (content) {
-          fullContent += content;
-          onChunk(content);
+          span.setStatus({ code: SpanStatusCode.OK });
+          return response;
+        } catch (error) {
+          // Record error in span
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error instanceof Error ? error.message : 'Unknown error',
+          });
+          span.recordException(error as Error);
+          this.logger.error('Error generating streaming completion:', error);
+          throw error;
+        } finally {
+          span.end();
         }
-      }
-
-      // Estimate tokens (rough approximation)
-      tokenCount = Math.ceil(fullContent.length / 4);
-
-      return {
-        content: fullContent,
-        tokens: tokenCount,
-        model,
-        finishReason: 'stop',
-      };
-    } catch (error) {
-      this.logger.error('Error generating streaming completion:', error);
-      throw error;
-    }
+      },
+    );
   }
 }
