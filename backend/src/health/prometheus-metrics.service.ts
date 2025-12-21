@@ -56,6 +56,14 @@ export class PrometheusMetricsService implements OnModuleInit {
   private readonly generationDurationSeconds: client.Histogram<string>;
   private readonly activeUsersGauge: client.Gauge<string>;
 
+  // Business metrics (#862)
+  private readonly sectionsGeneratedTotal: client.Counter<string>;
+  private readonly sectionGenerationDuration: client.Histogram<string>;
+  private readonly sectionEnrichmentSource: client.Counter<string>;
+  private readonly bullmqJobsProcessedTotal: client.Counter<string>;
+  private readonly bullmqJobsFailedTotal: client.Counter<string>;
+  private readonly bullmqJobDuration: client.Histogram<string>;
+
   constructor(@InjectDataSource() private dataSource: DataSource) {
     // Create a custom registry
     this.registry = new client.Registry();
@@ -162,6 +170,52 @@ export class PrometheusMetricsService implements OnModuleInit {
     this.activeUsersGauge = new client.Gauge({
       name: 'etp_express_active_users',
       help: 'Number of active users (logged in within last 15 minutes)',
+      registers: [this.registry],
+    });
+
+    // Business metrics (#862) - Section generation
+    this.sectionsGeneratedTotal = new client.Counter({
+      name: 'etp_express_sections_generated_total',
+      help: 'Total number of ETP sections generated',
+      labelNames: ['section_type', 'status'],
+      registers: [this.registry],
+    });
+
+    this.sectionGenerationDuration = new client.Histogram({
+      name: 'etp_express_section_generation_duration_seconds',
+      help: 'ETP section generation duration in seconds',
+      labelNames: ['section_type'],
+      buckets: [1, 5, 10, 20, 30, 45, 60, 90, 120],
+      registers: [this.registry],
+    });
+
+    this.sectionEnrichmentSource = new client.Counter({
+      name: 'etp_express_section_enrichment_source_total',
+      help: 'Count of enrichment sources used during section generation',
+      labelNames: ['source'],
+      registers: [this.registry],
+    });
+
+    // Business metrics (#862) - BullMQ job processing
+    this.bullmqJobsProcessedTotal = new client.Counter({
+      name: 'etp_express_bullmq_jobs_processed_total',
+      help: 'Total number of BullMQ jobs processed',
+      labelNames: ['queue', 'status'],
+      registers: [this.registry],
+    });
+
+    this.bullmqJobsFailedTotal = new client.Counter({
+      name: 'etp_express_bullmq_jobs_failed_total',
+      help: 'Total number of BullMQ jobs that failed',
+      labelNames: ['queue', 'error_type'],
+      registers: [this.registry],
+    });
+
+    this.bullmqJobDuration = new client.Histogram({
+      name: 'etp_express_bullmq_job_duration_seconds',
+      help: 'BullMQ job processing duration in seconds',
+      labelNames: ['queue'],
+      buckets: [1, 5, 10, 20, 30, 45, 60, 90, 120, 180],
       registers: [this.registry],
     });
   }
@@ -283,6 +337,58 @@ export class PrometheusMetricsService implements OnModuleInit {
    */
   setActiveUsers(count: number): void {
     this.activeUsersGauge.set(count);
+  }
+
+  /**
+   * Record a section generation (#862)
+   *
+   * @param sectionType - Type of section generated (e.g., 'justificativa', 'orcamento')
+   * @param status - Generation status ('success' or 'error')
+   * @param durationSeconds - Time taken to generate the section
+   */
+  recordSectionGeneration(
+    sectionType: string,
+    status: 'success' | 'error',
+    durationSeconds: number,
+  ): void {
+    this.sectionsGeneratedTotal.inc({ section_type: sectionType, status });
+    if (status === 'success') {
+      this.sectionGenerationDuration.observe(
+        { section_type: sectionType },
+        durationSeconds,
+      );
+    }
+  }
+
+  /**
+   * Record the enrichment source used during section generation (#862)
+   *
+   * @param source - Enrichment source ('gov-api', 'exa', 'mixed', or 'none')
+   */
+  recordEnrichmentSource(source: 'gov-api' | 'exa' | 'mixed' | 'none'): void {
+    this.sectionEnrichmentSource.inc({ source });
+  }
+
+  /**
+   * Record a BullMQ job processing result (#862)
+   *
+   * @param queue - Queue name (e.g., 'sections')
+   * @param status - Job status ('completed' or 'failed')
+   * @param durationSeconds - Job processing duration
+   * @param errorType - Optional error type if job failed
+   */
+  recordBullMQJob(
+    queue: string,
+    status: 'completed' | 'failed',
+    durationSeconds: number,
+    errorType?: string,
+  ): void {
+    this.bullmqJobsProcessedTotal.inc({ queue, status });
+    this.bullmqJobDuration.observe({ queue }, durationSeconds);
+
+    if (status === 'failed' && errorType) {
+      this.bullmqJobsFailedTotal.inc({ queue, error_type: errorType });
+    }
   }
 
   /**

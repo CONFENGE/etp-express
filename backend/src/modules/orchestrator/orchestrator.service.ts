@@ -39,6 +39,7 @@ import {
   SanitizationResult,
 } from '../../common/utils/sanitizer';
 import { ProgressCallback } from '../sections/interfaces/progress-event.interface';
+import { PrometheusMetricsService } from '../../health/prometheus-metrics.service';
 
 /**
  * Request structure for ETP section content generation.
@@ -169,6 +170,7 @@ export class OrchestratorService {
     private govSearchService: GovSearchService,
     private exaService: ExaService,
     private outputValidator: OutputValidatorService,
+    private prometheusMetrics: PrometheusMetricsService,
   ) {}
 
   /**
@@ -480,8 +482,16 @@ export class OrchestratorService {
         hasEnrichmentWarning,
         enrichmentSource,
         startTime,
+        undefined,
+        request.sectionType,
       );
     } catch (error) {
+      // Record error metric (#862)
+      this.prometheusMetrics.recordSectionGeneration(
+        request.sectionType,
+        'error',
+        (Date.now() - startTime) / 1000,
+      );
       this.logger.error('Error generating section:', error);
       throw error;
     }
@@ -638,8 +648,15 @@ export class OrchestratorService {
         enrichmentSource,
         startTime,
         dataSourceStatus,
+        request.sectionType,
       );
     } catch (error) {
+      // Record error metric (#862)
+      this.prometheusMetrics.recordSectionGeneration(
+        request.sectionType,
+        'error',
+        (Date.now() - startTime) / 1000,
+      );
       this.logger.error('Error generating section with progress:', error);
       throw error;
     }
@@ -1197,6 +1214,7 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
     enrichmentSource: 'gov-api' | 'exa' | 'mixed' | null,
     startTime: number,
     dataSourceStatus?: GenerationResult['metadata']['dataSourceStatus'],
+    sectionType?: string,
   ): GenerationResult {
     // Add mandatory disclaimer
     const finalContent =
@@ -1204,10 +1222,21 @@ ${sectionSpecificPrompt ? `---\n${sectionSpecificPrompt}` : ''}`;
       '\n\n⚠ Este conteúdo foi gerado por IA e requer validação humana antes do uso oficial.';
 
     const generationTime = Date.now() - startTime;
+    const generationTimeSeconds = generationTime / 1000;
 
     this.logger.log(
       `Section generated successfully in ${generationTime}ms. Agents used: ${agentsUsed.length}`,
     );
+
+    // Record Prometheus metrics (#862)
+    if (sectionType) {
+      this.prometheusMetrics.recordSectionGeneration(
+        sectionType,
+        'success',
+        generationTimeSeconds,
+      );
+    }
+    this.prometheusMetrics.recordEnrichmentSource(enrichmentSource || 'none');
 
     return {
       content: finalContent,
