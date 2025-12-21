@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 423/448 (94.4%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Stabilization Sprint
+**Atualizado:** 2025-12-20 | **Progresso:** 423/463 (91.4%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -126,12 +126,12 @@
 | ~~#652~~ | ~~Logging estruturado em JSON~~ | ✅ PR #680 | 1      |
 | ~~#653~~ | ~~Request ID/Trace ID em logs~~ | ✅ PR #681 | 1      |
 
-### v1.1 - Observabilidade Avançada (2 issues - Postergado)
+### Sprint v1.1 - Observabilidade Avançada (2 EPICs - Ativado)
 
-| #    | Issue                             | Impacto                        |
-| ---- | --------------------------------- | ------------------------------ |
-| #654 | OpenTelemetry distributed tracing | Visibilidade por componente    |
-| #655 | Métricas de negócio Prometheus    | KPIs: tokens, latência, falhas |
+| #    | Issue                                    | Sub-issues |
+| ---- | ---------------------------------------- | ---------- |
+| #654 | [EPIC] OpenTelemetry distributed tracing | #857-#859  |
+| #655 | [EPIC] Métricas de negócio Prometheus    | #860-#862  |
 
 ### P3 - Melhorias (3 issues)
 
@@ -203,7 +203,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | # | Issue | Est. | Status |
 |---|-------|------|--------|
 | ~~#743~~ | ~~Tour guiado in-app~~ | ~~6h~~ | ✅ CLOSED 2025-12-18 |
-| #111 | SLA formal | 4h | OPEN |
+| #111 | [EPIC] SLA formal (#869-#871) | 6-8h | Sprint v1.1 |
 | ~~#739~~ | ~~Atualizar dependências outdated~~ | ~~6h~~ | ✅ CLOSED 2025-12-18 |
 | #744 | Pitch deck B2G | 8h | OPEN |
 
@@ -320,14 +320,14 @@ Go-Live B2G █████████████████░░░ 12/14 8
 - ✅ #526 DomainDetail + AssignManager
 - ✅ #527 Testes e responsividade
 
-### M5 - E2E & Docs - 87% (26/30, 4 open)
+### M5 - E2E & Docs - 87% (26/30, 4 open → Movido para Sprint v1.1)
 
-| #    | Issue                 | Status |
-| ---- | --------------------- | ------ |
-| #110 | Staged rollout        | OPEN   |
-| #111 | Production SLA        | OPEN   |
-| #456 | Frontend coverage 70% | OPEN   |
-| #458 | WCAG 2.1 gaps         | OPEN   |
+| #    | Issue                         | Status      |
+| ---- | ----------------------------- | ----------- |
+| #110 | [EPIC] Staged rollout (4 sub) | Sprint v1.1 |
+| #111 | [EPIC] Production SLA (3 sub) | Sprint v1.1 |
+| #456 | Frontend coverage 70%         | Sprint v1.1 |
+| #458 | WCAG 2.1 gaps                 | Sprint v1.1 |
 
 ### M6 - Maintenance (4 open)
 
@@ -351,7 +351,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | # | Issue | Priority |
 | ---- | ----------------------- | -------- |
 | ~~#379~~ | ~~Migrar LLM obsoletos~~ | ✅ DONE PR #850 |
-| #387 | PostgreSQL pgvector | P0 |
+| #387 | [EPIC] PostgreSQL pgvector (#863-#864) | Sprint v1.1 |
 | ~~#460~~ | ~~Migration timestamp~~ | ✅ DONE |
 | ~~#492~~ | ~~ESLint 9 flat config~~ | ✅ DONE |
 | #493 | React Router v7 | P2 |
@@ -504,17 +504,56 @@ Go-Live B2G █████████████████░░░ 12/14 8
 
 ---
 
-## Backlog v1.1 (Postergado)
+## Sprint v1.1 (Ativado Imediatamente)
 
-| #    | Issue                 | Esforço |
-| ---- | --------------------- | ------- |
-| #654 | OpenTelemetry         | 4h      |
-| #655 | Prometheus metrics    | 4h      |
-| #110 | Staged rollout        | TBD     |
-| #387 | pgvector migration    | TBD     |
-| #111 | SLA definition        | 4h      |
-| #456 | Frontend coverage 70% | 8h      |
-| #458 | WCAG 2.1 gaps         | 4h      |
+**Decisão:** 2025-12-20 - Issues v1.1 ativadas para sprint único. EPICs quebrados em sub-issues atômicas.
+
+### Issues Atômicas (Prontas para Execução)
+
+| #    | Issue                      | Esforço | Status |
+| ---- | -------------------------- | ------- | ------ |
+| #456 | Frontend Test Coverage 70% | 8h      | OPEN   |
+| #458 | WCAG 2.1 Accessibility     | 4h      | OPEN   |
+| #759 | Rich Text Editor (WYSIWYG) | 12h     | OPEN   |
+
+### EPICs com Sub-issues
+
+**#654 - [EPIC] OpenTelemetry Distributed Tracing**
+| # | Issue | Esforço |
+|---|-------|---------|
+| #857 | SDK setup e auto-instrumentation | 2h |
+| #858 | Instrumentação manual serviços LLM | 1.5h |
+| #859 | Dashboard e validação | 0.5h |
+
+**#655 - [EPIC] Prometheus Business Metrics**
+| # | Issue | Esforço |
+|---|-------|---------|
+| #860 | Setup base e endpoint /metrics | 1.5h |
+| #861 | Métricas de negócio | 2h |
+| #862 | Integração nos serviços | 0.5h |
+
+**#387 - [EPIC] PostgreSQL pgvector Migration (P0)**
+| # | Issue | Esforço |
+|---|-------|---------|
+| #863 | Análise e decisão de estratégia | 1h |
+| #864 | Execução da migração | 5-7h |
+
+**#110 - [EPIC] Staged Rollout & Feature Flags**
+| # | Issue | Esforço |
+|---|-------|---------|
+| #865 | Feature Flags: Escolha e setup provider | 2h |
+| #866 | Feature Flags: Integração frontend | 3h |
+| #867 | Estratégia Alpha/Beta/GA | 2h |
+| #868 | Documentação e runbook | 3h |
+
+**#111 - [EPIC] Production Support SLA**
+| # | Issue | Esforço |
+|---|-------|---------|
+| #869 | SLA: Definição de níveis e métricas | 2h |
+| #870 | SLA: Setup de ferramentas | 2-3h |
+| #871 | SLA: Treinamento e documentação | 2-3h |
+
+**Total:** 3 issues atômicas + 5 EPICs (15 sub-issues) = 23 issues | ~56-68h
 
 ---
 
@@ -528,10 +567,10 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 448      |
-| Issues Abertas    | 25       |
+| Issues Totais     | 463      |
+| Issues Abertas    | 40       |
 | Issues Fechadas   | 423      |
-| Progresso         | 94.4%    |
+| Progresso         | 91.4%    |
 | Velocidade        | 10.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
@@ -541,7 +580,7 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | P2 Go-Live        | 0 ✅     |
 | P3 Go-Live        | 10       |
 | P2 Gov-API        | 1        |
-| v1.1 Backlog      | 7        |
+| Sprint v1.1       | 23       |
 
 ---
 
