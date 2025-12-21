@@ -13,6 +13,15 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### Accessibility (2025-12-21)
+
+- ✅ #458 - Add eslint-plugin-jsx-a11y for WCAG 2.1 AA compliance (PR #875)
+  - **eslint-plugin-jsx-a11y** instalado e configurado no ESLint flat config
+  - Corrigido `heading-has-content` em `AlertTitle` e `CardTitle`
+  - Removido `role="button"` redundante em `ETPEditor.test.tsx`
+  - Zero erros de lint após correções
+  - Closes #458
+
 #### Observability (2025-12-21)
 
 - ✅ #858 - OpenTelemetry: Instrumentação manual de serviços LLM (PR #874)
