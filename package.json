@@ -46,6 +46,10 @@
   "overrides": {
     "jws": "^4.0.0"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.0.0",
+    "@rollup/rollup-linux-x64-musl": "^4.0.0"
+  },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
       "prettier --check"

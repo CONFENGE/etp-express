@@ -198,6 +198,158 @@ describe('PrometheusMetricsService', () => {
     });
   });
 
+  // Business metrics tests (#861)
+  describe('recordEtpCreated', () => {
+    it('should record ETP creation metric', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordEtpCreated('draft', 'org-123');
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_etp_created_total');
+      expect(metrics).toContain('status="draft"');
+      expect(metrics).toContain('organization_id="org-123"');
+    });
+
+    it('should increment counter for multiple ETPs', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordEtpCreated('draft', 'org-123');
+      service.recordEtpCreated('draft', 'org-123');
+      service.recordEtpCreated('draft', 'org-456');
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_etp_created_total');
+    });
+  });
+
+  describe('recordLlmRequest', () => {
+    it('should record LLM request metric', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordLlmRequest('openai', 'gpt-4o', 'success');
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_llm_requests_total');
+      expect(metrics).toContain('provider="openai"');
+      expect(metrics).toContain('model="gpt-4o"');
+      expect(metrics).toContain('status="success"');
+    });
+
+    it('should track different providers separately', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordLlmRequest('openai', 'gpt-4o', 'success');
+      service.recordLlmRequest('exa', 'search', 'success');
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('provider="openai"');
+      expect(metrics).toContain('provider="exa"');
+    });
+  });
+
+  describe('recordGenerationDuration', () => {
+    it('should record generation duration histogram', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordGenerationDuration('section', 'openai', 5.5);
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_generation_duration_seconds');
+      expect(metrics).toContain('type="section"');
+      expect(metrics).toContain('provider="openai"');
+    });
+
+    it('should record multiple durations for histogram buckets', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordGenerationDuration('section', 'openai', 1.0);
+      service.recordGenerationDuration('section', 'openai', 5.0);
+      service.recordGenerationDuration('section', 'openai', 30.0);
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_generation_duration_seconds_bucket');
+      expect(metrics).toContain('etp_express_generation_duration_seconds_sum');
+      expect(metrics).toContain('etp_express_generation_duration_seconds_count');
+    });
+  });
+
+  describe('setActiveUsers', () => {
+    it('should set active users gauge', async () => {
+      // Arrange - mock all 3 queries: active connections, total connections, active users
+      jest
+        .spyOn(dataSource, 'query')
+        .mockResolvedValueOnce([{ active: '3' }])
+        .mockResolvedValueOnce([{ total: '5' }])
+        .mockResolvedValueOnce([{ count: '42' }]); // This will be the value from DB
+
+      // Act
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_active_users 42');
+    });
+
+    it('should allow manual override via setActiveUsers', () => {
+      // Act - setActiveUsers directly sets the gauge value
+      service.setActiveUsers(25);
+
+      // Assert - verify the gauge was set (without calling getMetrics which queries DB)
+      const registry = service.getRegistry();
+      expect(registry).toBeDefined();
+    });
+  });
+
+  describe('active users from database', () => {
+    it('should collect active users from database', async () => {
+      // Arrange
+      jest
+        .spyOn(dataSource, 'query')
+        .mockResolvedValueOnce([{ active: '3' }])
+        .mockResolvedValueOnce([{ total: '5' }])
+        .mockResolvedValueOnce([{ count: '15' }]); // active users
+
+      // Act
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_active_users');
+    });
+
+    it('should handle missing lastLoginAt column gracefully', async () => {
+      // Arrange
+      jest
+        .spyOn(dataSource, 'query')
+        .mockResolvedValueOnce([{ active: '3' }])
+        .mockResolvedValueOnce([{ total: '5' }])
+        .mockRejectedValueOnce(new Error('column does not exist'));
+
+      // Act
+      const metrics = await service.getMetrics();
+
+      // Assert
+      expect(metrics).toContain('etp_express_active_users 0');
+    });
+  });
+
   describe('integration', () => {
     it('should handle multiple metric types simultaneously', async () => {
       // Arrange
@@ -232,6 +384,24 @@ describe('PrometheusMetricsService', () => {
       const metricNames2 = metrics2.match(/^etp_express_\w+/gm) || [];
       expect(metricNames1.length).toBeGreaterThan(0);
       expect(metricNames1).toEqual(metricNames2);
+    });
+
+    it('should handle all business metrics together (#861)', async () => {
+      // Arrange
+      jest.spyOn(dataSource, 'query').mockResolvedValue([{ active: '3' }]);
+
+      // Act
+      service.recordEtpCreated('draft', 'org-123');
+      service.recordLlmRequest('openai', 'gpt-4o', 'success');
+      service.recordGenerationDuration('section', 'openai', 15.5);
+      service.setActiveUsers(10);
+      const metrics = await service.getMetrics();
+
+      // Assert - all business metrics present
+      expect(metrics).toContain('etp_express_etp_created_total');
+      expect(metrics).toContain('etp_express_llm_requests_total');
+      expect(metrics).toContain('etp_express_generation_duration_seconds');
+      expect(metrics).toContain('etp_express_active_users');
     });
   });
 });

@@ -4,17 +4,25 @@ import { DataSource } from 'typeorm';
 import * as client from 'prom-client';
 
 /**
- * Prometheus Metrics Service (#860)
+ * Prometheus Metrics Service (#860, #861)
  *
  * Uses prom-client library for standard Prometheus metrics format.
  * Provides:
  * - Default Node.js metrics (CPU, memory, event loop)
- * - Custom application metrics (database, requests, business)
+ * - Custom application metrics (database, requests)
+ * - Business metrics (#861): ETP creation, LLM requests, generation duration, active users
  * - Registry for centralized metric collection
+ *
+ * Business metrics (#861):
+ * - etp_express_etp_created_total: Counter for ETPs created (labels: status, organization_id)
+ * - etp_express_llm_requests_total: Counter for LLM requests (labels: provider, model, status)
+ * - etp_express_generation_duration_seconds: Histogram for generation duration (labels: type, provider)
+ * - etp_express_active_users: Gauge for active users count
  *
  * Metrics exposed at /api/metrics endpoint.
  *
  * @see https://github.com/CONFENGE/etp-express/issues/860
+ * @see https://github.com/CONFENGE/etp-express/issues/861
  * @see https://github.com/siimon/prom-client
  */
 @Injectable()
@@ -41,6 +49,12 @@ export class PrometheusMetricsService implements OnModuleInit {
 
   // Error metrics
   private readonly errorsTotal: client.Counter<string>;
+
+  // Business metrics (#861)
+  private readonly etpCreatedTotal: client.Counter<string>;
+  private readonly llmRequestsTotal: client.Counter<string>;
+  private readonly generationDurationSeconds: client.Histogram<string>;
+  private readonly activeUsersGauge: client.Gauge<string>;
 
   constructor(@InjectDataSource() private dataSource: DataSource) {
     // Create a custom registry
@@ -121,6 +135,35 @@ export class PrometheusMetricsService implements OnModuleInit {
       labelNames: ['type', 'code'],
       registers: [this.registry],
     });
+
+    // Business metrics (#861)
+    this.etpCreatedTotal = new client.Counter({
+      name: 'etp_express_etp_created_total',
+      help: 'Total number of ETPs created',
+      labelNames: ['status', 'organization_id'],
+      registers: [this.registry],
+    });
+
+    this.llmRequestsTotal = new client.Counter({
+      name: 'etp_express_llm_requests_total',
+      help: 'Total number of LLM requests',
+      labelNames: ['provider', 'model', 'status'],
+      registers: [this.registry],
+    });
+
+    this.generationDurationSeconds = new client.Histogram({
+      name: 'etp_express_generation_duration_seconds',
+      help: 'Duration of content generation in seconds',
+      labelNames: ['type', 'provider'],
+      buckets: [0.5, 1, 2.5, 5, 10, 30, 60, 120, 300],
+      registers: [this.registry],
+    });
+
+    this.activeUsersGauge = new client.Gauge({
+      name: 'etp_express_active_users',
+      help: 'Number of active users (logged in within last 15 minutes)',
+      registers: [this.registry],
+    });
   }
 
   /**
@@ -199,6 +242,49 @@ export class PrometheusMetricsService implements OnModuleInit {
     this.errorsTotal.inc({ type, code });
   }
 
+  // ==================== Business Metrics (#861) ====================
+
+  /**
+   * Record ETP creation
+   * @param status - Initial ETP status (usually 'draft')
+   * @param organizationId - Organization ID for multi-tenancy tracking
+   */
+  recordEtpCreated(status: string, organizationId: string): void {
+    this.etpCreatedTotal.inc({ status, organization_id: organizationId });
+  }
+
+  /**
+   * Record LLM request
+   * @param provider - LLM provider (openai, exa, etc.)
+   * @param model - Model used (gpt-4o, gpt-4o-mini, etc.)
+   * @param status - Request status (success, error, timeout)
+   */
+  recordLlmRequest(provider: string, model: string, status: string): void {
+    this.llmRequestsTotal.inc({ provider, model, status });
+  }
+
+  /**
+   * Record content generation duration
+   * @param type - Type of generation (section, summary, research)
+   * @param provider - Provider used (openai, exa)
+   * @param durationSeconds - Duration in seconds
+   */
+  recordGenerationDuration(
+    type: string,
+    provider: string,
+    durationSeconds: number,
+  ): void {
+    this.generationDurationSeconds.observe({ type, provider }, durationSeconds);
+  }
+
+  /**
+   * Set active users count
+   * @param count - Number of active users
+   */
+  setActiveUsers(count: number): void {
+    this.activeUsersGauge.set(count);
+  }
+
   /**
    * Collect dynamic metrics (database, memory)
    */
@@ -228,6 +314,17 @@ export class PrometheusMetricsService implements OnModuleInit {
 
     // Uptime
     this.uptimeSeconds.set(Math.floor(process.uptime()));
+
+    // Active users (#861) - users who logged in within last 15 minutes
+    try {
+      const activeUsersResult = await this.dataSource.query(
+        `SELECT count(*) as count FROM "user" WHERE "lastLoginAt" > NOW() - INTERVAL '15 minutes'`,
+      );
+      this.activeUsersGauge.set(parseInt(activeUsersResult[0]?.count || '0'));
+    } catch {
+      // Table might not have lastLoginAt column, or query fails - set to 0
+      this.activeUsersGauge.set(0);
+    }
   }
 
   /**
