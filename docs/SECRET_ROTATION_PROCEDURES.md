@@ -2,7 +2,49 @@
 
 Runbook completo para rotação de secrets do sistema ETP Express.
 
-**Decisão de Arquitetura:** Railway Secrets + Manual Rotation (conforme `SECRETS_MANAGEMENT_EVALUATION.md`)
+**Decisão de Arquitetura:** Railway Secrets + Automated Rotation via GitHub Actions
+
+---
+
+## Automated Rotation (Recommended)
+
+A rotação de secrets é automatizada via GitHub Actions. O workflow executa mensalmente no primeiro dia de cada mês.
+
+### GitHub Secrets Necessários
+
+Configure os seguintes secrets no repositório GitHub (Settings → Secrets and variables → Actions):
+
+| Secret | Descrição | Como Obter |
+|--------|-----------|------------|
+| `RAILWAY_API_TOKEN` | Token de API Railway | Railway Dashboard → Account Settings → Tokens → Create Token |
+| `RAILWAY_PROJECT_ID` | ID do projeto Railway | Railway Dashboard → Project Settings → General |
+| `RAILWAY_ENVIRONMENT_ID` | ID do environment de produção | Railway GraphQL API ou URL do dashboard |
+| `RAILWAY_SERVICE_ID` | ID do serviço backend | Railway Dashboard → Service Settings |
+| `SLACK_WEBHOOK_URL` | (Opcional) Webhook para notificações | Slack App → Incoming Webhooks |
+
+### Executar Rotação Manual
+
+1. Vá para **Actions** → **Rotate Secrets**
+2. Clique em **Run workflow**
+3. Selecione o secret a rotacionar (ou `all`)
+4. Opcionalmente, marque **Dry run** para testar sem aplicar
+5. Clique em **Run workflow**
+
+### Executar Limpeza de OLD Secrets
+
+Após 48h da rotação (período dual-key):
+
+1. Vá para **Actions** → **Cleanup OLD Secrets**
+2. Clique em **Run workflow**
+3. Digite `CONFIRM` no campo de confirmação
+4. Selecione os secrets a limpar (ou `all`)
+5. Clique em **Run workflow**
+
+### Monitoramento
+
+- Issues de audit são criadas automaticamente após cada rotação
+- Falhas geram issues P0 e notificações Slack (se configurado)
+- Verifique Sentry para erros de autenticação após rotação
 
 ---
 
