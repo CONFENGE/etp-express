@@ -902,5 +902,176 @@ describe('AuditService', () => {
         );
       });
     });
+
+    describe('exportAuditLogs', () => {
+      it('should export audit logs with filters', async () => {
+        const mockLogs = [
+          {
+            id: 'log-1',
+            action: AuditAction.LOGIN,
+            entityType: 'User',
+            entityId: 'user-1',
+            createdAt: new Date(),
+          },
+        ];
+
+        const queryBuilder = {
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(mockLogs),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        const startDate = new Date('2024-01-01');
+        const endDate = new Date('2024-12-31');
+        const userId = 'target-user';
+        const action = AuditAction.LOGIN;
+
+        const result = await service.exportAuditLogs({
+          startDate,
+          endDate,
+          userId,
+          action,
+          limit: 5000,
+        });
+
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.createdAt >= :startDate',
+          { startDate },
+        );
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.createdAt <= :endDate',
+          { endDate },
+        );
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.userId = :userId',
+          { userId },
+        );
+        expect(queryBuilder.andWhere).toHaveBeenCalledWith(
+          'log.action = :action',
+          { action },
+        );
+        expect(queryBuilder.take).toHaveBeenCalledWith(5000);
+        expect(result.logs).toEqual(mockLogs);
+        expect(result.metadata.totalRecords).toBe(1);
+        expect(result.metadata.filters.userId).toBe(userId);
+      });
+
+      it('should export all logs without filters', async () => {
+        const mockLogs = [
+          { id: 'log-1', action: AuditAction.LOGIN, createdAt: new Date() },
+          { id: 'log-2', action: AuditAction.LOGOUT, createdAt: new Date() },
+        ];
+
+        const queryBuilder = {
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(mockLogs),
+        };
+
+        mockAuditLogRepository.createQueryBuilder.mockReturnValue(
+          queryBuilder as any,
+        );
+
+        const result = await service.exportAuditLogs({});
+
+        expect(queryBuilder.take).toHaveBeenCalledWith(10000);
+        expect(result.logs).toEqual(mockLogs);
+        expect(result.metadata.totalRecords).toBe(2);
+      });
+    });
+
+    describe('formatLogsForCsv', () => {
+      it('should format audit logs for CSV export', () => {
+        const mockUser = {
+          id: 'user-1',
+          email: 'test@example.com',
+          name: 'Test User',
+        };
+        const mockEtp = {
+          id: 'etp-1',
+          title: 'Test ETP',
+        };
+        const mockLogs = [
+          {
+            id: 'log-1',
+            action: AuditAction.CREATE,
+            entityType: 'ETP',
+            entityId: 'etp-1',
+            userId: 'user-1',
+            user: mockUser,
+            etp: mockEtp,
+            ipAddress: '192.168.1.1',
+            userAgent: 'Mozilla/5.0',
+            description: 'Created ETP',
+            createdAt: new Date('2024-06-15T10:30:00.000Z'),
+            etpId: 'etp-1',
+          },
+        ] as unknown as AuditLog[];
+
+        const result = service.formatLogsForCsv(mockLogs);
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toEqual({
+          id: 'log-1',
+          action: 'create',
+          entityType: 'ETP',
+          entityId: 'etp-1',
+          userId: 'user-1',
+          userEmail: 'test@example.com',
+          userName: 'Test User',
+          ipAddress: '192.168.1.1',
+          userAgent: 'Mozilla/5.0',
+          description: 'Created ETP',
+          createdAt: '2024-06-15T10:30:00.000Z',
+          etpId: 'etp-1',
+          etpTitle: 'Test ETP',
+        });
+      });
+
+      it('should handle missing optional fields', () => {
+        const mockLogs = [
+          {
+            id: 'log-2',
+            action: AuditAction.LOGIN,
+            entityType: 'User',
+            entityId: null,
+            userId: 'user-2',
+            user: null,
+            etp: null,
+            ipAddress: null,
+            userAgent: null,
+            description: null,
+            createdAt: new Date('2024-06-15T10:30:00.000Z'),
+            etpId: null,
+          },
+        ] as unknown as AuditLog[];
+
+        const result = service.formatLogsForCsv(mockLogs);
+
+        expect(result[0]).toEqual({
+          id: 'log-2',
+          action: 'login',
+          entityType: 'User',
+          entityId: '',
+          userId: 'user-2',
+          userEmail: '',
+          userName: '',
+          ipAddress: '',
+          userAgent: '',
+          description: '',
+          createdAt: '2024-06-15T10:30:00.000Z',
+          etpId: '',
+          etpTitle: '',
+        });
+      });
+    });
   });
 });

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, StreamableFile } from '@nestjs/common';
 import { AuditController } from './audit.controller';
 import { AuditService } from './audit.service';
 import { User, UserRole } from '../../entities/user.entity';
@@ -7,6 +7,8 @@ import {
   SecretAccessLog,
   SecretAccessStatus,
 } from '../../entities/secret-access-log.entity';
+import { AuditLog, AuditAction } from '../../entities/audit-log.entity';
+import { ExportFormat } from './dto/export-audit-logs.dto';
 
 describe('AuditController', () => {
   let controller: AuditController;
@@ -17,6 +19,9 @@ describe('AuditController', () => {
     getAnomalyStatus: jest.fn(),
     getAccessLogs: jest.fn(),
     getAccessStats: jest.fn(),
+    exportAuditLogs: jest.fn(),
+    formatLogsForCsv: jest.fn(),
+    getLGPDOperations: jest.fn(),
   };
 
   const adminUser = {
@@ -201,6 +206,163 @@ describe('AuditController', () => {
       await expect(controller.getAccessStats(regularUser)).rejects.toThrow(
         ForbiddenException,
       );
+    });
+  });
+
+  describe('exportAuditLogs', () => {
+    const mockResponse = {
+      set: jest.fn(),
+    } as unknown as import('express').Response;
+
+    const mockAuditLogs = [
+      {
+        id: 'log-1',
+        action: AuditAction.LOGIN,
+        entityType: 'User',
+        entityId: 'user-1',
+        userId: 'user-1',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent',
+        description: 'User login',
+        createdAt: new Date('2024-01-01'),
+        changes: {},
+        user: adminUser,
+        etp: null,
+        etpId: null,
+      },
+    ] as unknown as AuditLog[];
+
+    const mockExportResult = {
+      logs: mockAuditLogs,
+      metadata: {
+        totalRecords: 1,
+        exportedAt: new Date().toISOString(),
+        filters: {},
+      },
+    };
+
+    const mockCsvData = [
+      {
+        id: 'log-1',
+        action: 'login',
+        entityType: 'User',
+        entityId: 'user-1',
+        userId: 'user-1',
+        userEmail: 'admin@test.com',
+        userName: 'Admin User',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent',
+        description: 'User login',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        etpId: '',
+        etpTitle: '',
+      },
+    ];
+
+    beforeEach(() => {
+      mockAuditService.exportAuditLogs.mockResolvedValue(mockExportResult);
+      mockAuditService.formatLogsForCsv.mockReturnValue(mockCsvData);
+    });
+
+    it('should export logs as JSON for admin user', async () => {
+      const query = {
+        format: ExportFormat.JSON,
+        limit: 10000,
+      };
+
+      const result = await controller.exportAuditLogs(
+        adminUser,
+        query,
+        mockResponse,
+      );
+
+      expect(mockAuditService.exportAuditLogs).toHaveBeenCalledWith({
+        startDate: undefined,
+        endDate: undefined,
+        userId: undefined,
+        action: undefined,
+        limit: 10000,
+      });
+      expect(mockResponse.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Type': 'application/json; charset=utf-8',
+        }),
+      );
+      expect(result).toBeInstanceOf(StreamableFile);
+    });
+
+    it('should export logs as CSV for admin user', async () => {
+      const query = {
+        format: ExportFormat.CSV,
+        limit: 10000,
+      };
+
+      const result = await controller.exportAuditLogs(
+        adminUser,
+        query,
+        mockResponse,
+      );
+
+      expect(mockAuditService.formatLogsForCsv).toHaveBeenCalledWith(
+        mockAuditLogs,
+      );
+      expect(mockResponse.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Type': 'text/csv; charset=utf-8',
+        }),
+      );
+      expect(result).toBeInstanceOf(StreamableFile);
+    });
+
+    it('should apply date filters', async () => {
+      const query = {
+        format: ExportFormat.JSON,
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-12-31T23:59:59.999Z',
+        limit: 10000,
+      };
+
+      await controller.exportAuditLogs(adminUser, query, mockResponse);
+
+      expect(mockAuditService.exportAuditLogs).toHaveBeenCalledWith({
+        startDate: expect.any(Date),
+        endDate: expect.any(Date),
+        userId: undefined,
+        action: undefined,
+        limit: 10000,
+      });
+    });
+
+    it('should apply userId and action filters', async () => {
+      const query = {
+        format: ExportFormat.JSON,
+        userId: 'target-user-id',
+        action: AuditAction.LOGIN,
+        limit: 5000,
+      };
+
+      await controller.exportAuditLogs(adminUser, query, mockResponse);
+
+      expect(mockAuditService.exportAuditLogs).toHaveBeenCalledWith({
+        startDate: undefined,
+        endDate: undefined,
+        userId: 'target-user-id',
+        action: AuditAction.LOGIN,
+        limit: 5000,
+      });
+    });
+
+    it('should throw ForbiddenException for non-admin user', async () => {
+      const query = {
+        format: ExportFormat.JSON,
+        limit: 10000,
+      };
+
+      await expect(
+        controller.exportAuditLogs(regularUser, query, mockResponse),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(mockAuditService.exportAuditLogs).not.toHaveBeenCalled();
     });
   });
 });

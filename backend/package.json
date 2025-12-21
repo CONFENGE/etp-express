@@ -30,6 +30,7 @@
     "swagger:export": "ts-node -r tsconfig-paths/register src/scripts/export-swagger.ts"
   },
   "dependencies": {
+    "@json2csv/plainjs": "^7.0.6",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/cli": "^11.0.10",
     "@nestjs/common": "^11.1.9",

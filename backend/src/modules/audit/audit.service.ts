@@ -828,4 +828,110 @@ export class AuditService {
 
     return savedLog;
   }
+
+  /**
+   * Export audit logs with filtering options
+   * Used for LGPD compliance reporting (Art. 37)
+   * @param options Filter and export options
+   */
+  async exportAuditLogs(options: {
+    startDate?: Date;
+    endDate?: Date;
+    userId?: string;
+    action?: AuditAction;
+    limit?: number;
+  }): Promise<{
+    logs: AuditLog[];
+    metadata: {
+      totalRecords: number;
+      exportedAt: string;
+      filters: {
+        startDate?: string;
+        endDate?: string;
+        userId?: string;
+        action?: string;
+      };
+    };
+  }> {
+    const { startDate, endDate, userId, action, limit = 10000 } = options;
+
+    const queryBuilder = this.auditLogRepository
+      .createQueryBuilder('log')
+      .leftJoinAndSelect('log.user', 'user')
+      .leftJoinAndSelect('log.etp', 'etp');
+
+    if (startDate) {
+      queryBuilder.andWhere('log.createdAt >= :startDate', { startDate });
+    }
+
+    if (endDate) {
+      queryBuilder.andWhere('log.createdAt <= :endDate', { endDate });
+    }
+
+    if (userId) {
+      queryBuilder.andWhere('log.userId = :userId', { userId });
+    }
+
+    if (action) {
+      queryBuilder.andWhere('log.action = :action', { action });
+    }
+
+    queryBuilder.orderBy('log.createdAt', 'DESC').take(limit);
+
+    const logs = await queryBuilder.getMany();
+
+    this.logger.log(
+      `Audit logs export: ${logs.length} records exported with filters: ${JSON.stringify({ startDate, endDate, userId, action })}`,
+    );
+
+    return {
+      logs,
+      metadata: {
+        totalRecords: logs.length,
+        exportedAt: new Date().toISOString(),
+        filters: {
+          startDate: startDate?.toISOString(),
+          endDate: endDate?.toISOString(),
+          userId,
+          action,
+        },
+      },
+    };
+  }
+
+  /**
+   * Convert audit logs to CSV format
+   * @param logs Audit logs to convert
+   */
+  formatLogsForCsv(logs: AuditLog[]): Array<{
+    id: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    userId: string;
+    userEmail: string;
+    userName: string;
+    ipAddress: string;
+    userAgent: string;
+    description: string;
+    createdAt: string;
+    etpId: string;
+    etpTitle: string;
+  }> {
+    return logs.map((log) => ({
+      id: log.id,
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId || '',
+      userId: log.userId,
+      userEmail: log.user?.email || '',
+      userName: log.user?.name || '',
+      ipAddress: log.ipAddress || '',
+      userAgent: log.userAgent || '',
+      description: log.description || '',
+      createdAt: log.createdAt.toISOString(),
+      etpId: log.etpId || '',
+      etpTitle: log.etp?.title || '',
+    }));
+  }
 }
