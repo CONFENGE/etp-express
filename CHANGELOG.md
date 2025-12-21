@@ -13,6 +13,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### Observability (2025-12-21)
+
+- ✅ #858 - OpenTelemetry: Instrumentação manual de serviços LLM (PR #874)
+  - **OpenAIService:** Spans para completion e streaming operations
+    - Atributos: `gen_ai.system`, `gen_ai.request.model`, `gen_ai.request.temperature`
+    - Token usage: `gen_ai.usage.total_tokens`, `prompt_tokens`, `completion_tokens`
+    - Cache tracking: `cache.hit` para monitorar hit/miss
+    - Response metadata: `llm.response.duration_ms`, `llm.stream.chunk_count`
+  - **ExaService:** Spans para search operations
+    - Atributos: `search.type`, `search.num_results`, `search.response.duration_ms`
+  - Spans seguem convencoes semanticas OpenTelemetry (gen_ai.*, llm.*, search.*)
+  - Error handling com `recordException()` para falhas
+  - Closes #858
+
 #### Go-Live B2G (2025-12-20)
 
 - ✅ #741 - Go-Live deploy automation scripts (PR #854)
