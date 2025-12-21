@@ -345,7 +345,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | ~~#455~~ | ~~LLM cache memory leak~~ | ✅ PR #734 |
 | ~~#457~~ | ~~useCallback/useMemo~~ | ✅ CLOSED 2025-12-18 |
 | ~~#459~~ | ~~Eager loading User~~ | ✅ DONE PR #855 |
-| #461 | Bundle lazy loading | P3 |
+| ~~#461~~ | ~~Bundle lazy loading~~ | ✅ DONE PR #856 |
 
 **Infrastructure:**
 | # | Issue | Priority |
