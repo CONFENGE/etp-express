@@ -11,6 +11,7 @@ import { ExaService } from '../search/exa/exa.service';
 import { GovSearchService } from '../gov-api/gov-search/gov-search.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { OutputValidatorService } from './validators/output-validator';
+import { PrometheusMetricsService } from '../../health/prometheus-metrics.service';
 
 /**
  * Integration tests for OrchestratorService
@@ -287,6 +288,14 @@ describe('OrchestratorService', () => {
                 'matricula',
                 'cep',
               ]),
+          },
+        },
+        {
+          provide: PrometheusMetricsService,
+          useValue: {
+            recordSectionGeneration: jest.fn(),
+            recordEnrichmentSource: jest.fn(),
+            recordBullMQJob: jest.fn(),
           },
         },
       ],
@@ -1262,6 +1271,14 @@ describe('OrchestratorService', () => {
               getMaxRetries: jest.fn().mockReturnValue(2),
             },
           },
+          {
+            provide: PrometheusMetricsService,
+            useValue: {
+              recordSectionGeneration: jest.fn(),
+              recordEnrichmentSource: jest.fn(),
+              recordBullMQJob: jest.fn(),
+            },
+          },
         ],
       }).compile();
 
@@ -1367,6 +1384,14 @@ describe('OrchestratorService', () => {
             useValue: {
               validateOutput: jest.fn().mockReturnValue({ valid: true }),
               getMaxRetries: jest.fn().mockReturnValue(2),
+            },
+          },
+          {
+            provide: PrometheusMetricsService,
+            useValue: {
+              recordSectionGeneration: jest.fn(),
+              recordEnrichmentSource: jest.fn(),
+              recordBullMQJob: jest.fn(),
             },
           },
         ],

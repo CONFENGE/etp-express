@@ -1,8 +1,8 @@
 # Production Monitoring & Observability
 
 **Status:** ✅ Implementado
-**Última atualização:** 2025-12-20
-**Versão:** 1.1
+**Última atualização:** 2025-12-21
+**Versão:** 1.2
 
 ## Visão Geral
 
@@ -21,13 +21,13 @@ O ETP Express possui infraestrutura completa de observability em produção para
 
 ### Stack de Monitoring
 
-| Componente | Tecnologia | Função |
+| Componente                 | Tecnologia                       | Função                                |
 | -------------------------- | -------------------------------- | ------------------------------------- |
-| **Error Tracking** | Sentry | Captura exceptions backend + frontend |
-| **Infrastructure Metrics** | Railway Metrics | CPU, Memory, Network (built-in) |
-| **Application Metrics** | Custom `/api/metrics` | DB connections, queries, uptime |
-| **Alerting** | Sentry Alerts + Railway Webhooks | Slack/Email notifications |
-| **Dashboards** | Sentry + Railway UI | Real-time visibility |
+| **Error Tracking**         | Sentry                           | Captura exceptions backend + frontend |
+| **Infrastructure Metrics** | Railway Metrics                  | CPU, Memory, Network (built-in)       |
+| **Application Metrics**    | Custom `/api/metrics`            | DB connections, queries, uptime       |
+| **Alerting**               | Sentry Alerts + Railway Webhooks | Slack/Email notifications             |
+| **Dashboards**             | Sentry + Railway UI              | Real-time visibility                  |
 
 ### Diagrama de Fluxo
 
@@ -121,40 +121,98 @@ VITE_SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 #### Database Metrics
 
-| Métrica | Tipo | Descrição |
-| ----------------------------- | ------- | ------------------------------- |
-| `database_connections_active` | Gauge | Conexões ativas no PostgreSQL |
-| `database_connections_total` | Gauge | Total de conexões abertas |
-| `database_connections_max` | Gauge | Máximo permitido (Railway: 100) |
+| Métrica                       | Tipo  | Descrição                       |
+| ----------------------------- | ----- | ------------------------------- |
+| `database_connections_active` | Gauge | Conexões ativas no PostgreSQL   |
+| `database_connections_total`  | Gauge | Total de conexões abertas       |
+| `database_connections_max`    | Gauge | Máximo permitido (Railway: 100) |
 
 #### Memory Metrics
 
-| Métrica | Tipo | Descrição |
-| ---------------------- | ----- | --------------------- |
-| `memory_usage_bytes` | Gauge | Heap memory usada |
-| `memory_limit_bytes` | Gauge | Heap memory total |
-| `memory_rss_bytes` | Gauge | Resident Set Size |
-| `memory_external_bytes`| Gauge | External memory |
+| Métrica                 | Tipo  | Descrição         |
+| ----------------------- | ----- | ----------------- |
+| `memory_usage_bytes`    | Gauge | Heap memory usada |
+| `memory_limit_bytes`    | Gauge | Heap memory total |
+| `memory_rss_bytes`      | Gauge | Resident Set Size |
+| `memory_external_bytes` | Gauge | External memory   |
 
 #### Process Metrics
 
-| Métrica | Tipo | Descrição |
-| ---------------- | ------- | ----------------------- |
+| Métrica          | Tipo    | Descrição                  |
+| ---------------- | ------- | -------------------------- |
 | `uptime_seconds` | Counter | Uptime do processo Node.js |
-| `process_id` | Gauge | PID do processo |
+| `process_id`     | Gauge   | PID do processo            |
 
 #### Request Metrics (#802)
 
-| Métrica | Tipo | Descrição |
-| ----------------------- | ----- | ---------------------------------- |
-| `request_count_total` | Gauge | Total de requests no sliding window (5 min) |
-| `response_time_p50_ms` | Gauge | 50th percentile response time (ms) |
-| `response_time_p95_ms` | Gauge | 95th percentile response time (ms) |
-| `response_time_p99_ms` | Gauge | 99th percentile response time (ms) |
-| `error_rate_percent` | Gauge | Porcentagem de respostas 5xx |
-| `requests_per_second` | Gauge | Taxa de requests por segundo |
+| Métrica                | Tipo  | Descrição                                   |
+| ---------------------- | ----- | ------------------------------------------- |
+| `request_count_total`  | Gauge | Total de requests no sliding window (5 min) |
+| `response_time_p50_ms` | Gauge | 50th percentile response time (ms)          |
+| `response_time_p95_ms` | Gauge | 95th percentile response time (ms)          |
+| `response_time_p99_ms` | Gauge | 99th percentile response time (ms)          |
+| `error_rate_percent`   | Gauge | Porcentagem de respostas 5xx                |
+| `requests_per_second`  | Gauge | Taxa de requests por segundo                |
 
 **Nota:** Request metrics usam um sliding window de 5 minutos para cálculo de percentis e error rate.
+
+#### Business Metrics (#862)
+
+Métricas de negócio para monitorar a geração de seções ETP e processamento de jobs.
+
+##### Section Generation Metrics
+
+| Métrica                                           | Tipo      | Labels                   | Descrição                               |
+| ------------------------------------------------- | --------- | ------------------------ | --------------------------------------- |
+| `etp_express_sections_generated_total`            | Counter   | `section_type`, `status` | Total de seções geradas (success/error) |
+| `etp_express_section_generation_duration_seconds` | Histogram | `section_type`           | Tempo de geração de seção (segundos)    |
+| `etp_express_section_enrichment_source_total`     | Counter   | `source`                 | Fonte de enriquecimento usada           |
+
+**Labels:**
+
+- `section_type`: Tipo de seção (justificativa, orcamento, contextualizacao, etc.)
+- `status`: success | error
+- `source`: gov-api | exa | mixed | none
+
+**Buckets (duration):** 1s, 5s, 10s, 20s, 30s, 45s, 60s, 90s, 120s
+
+##### BullMQ Job Metrics
+
+| Métrica                                   | Tipo      | Labels                | Descrição                       |
+| ----------------------------------------- | --------- | --------------------- | ------------------------------- |
+| `etp_express_bullmq_jobs_processed_total` | Counter   | `queue`, `status`     | Total de jobs processados       |
+| `etp_express_bullmq_jobs_failed_total`    | Counter   | `queue`, `error_type` | Total de jobs que falharam      |
+| `etp_express_bullmq_job_duration_seconds` | Histogram | `queue`               | Duração de processamento de job |
+
+**Labels:**
+
+- `queue`: Nome da fila (sections)
+- `status`: completed | failed
+- `error_type`: Tipo de erro (UnknownError, TimeoutError, etc.)
+
+**Buckets (duration):** 1s, 5s, 10s, 20s, 30s, 45s, 60s, 90s, 120s, 180s
+
+##### Exemplos de Queries Prometheus
+
+```promql
+# Taxa de sucesso de geração de seções (últimas 5 min)
+sum(rate(etp_express_sections_generated_total{status="success"}[5m])) /
+sum(rate(etp_express_sections_generated_total[5m])) * 100
+
+# P95 de tempo de geração por tipo de seção
+histogram_quantile(0.95, sum(rate(etp_express_section_generation_duration_seconds_bucket[5m])) by (le, section_type))
+
+# Distribuição de fontes de enriquecimento
+sum(etp_express_section_enrichment_source_total) by (source)
+
+# Taxa de falha de jobs BullMQ
+sum(rate(etp_express_bullmq_jobs_failed_total[5m])) /
+sum(rate(etp_express_bullmq_jobs_processed_total[5m])) * 100
+
+# Tempo médio de processamento de job
+sum(rate(etp_express_bullmq_job_duration_seconds_sum[5m])) /
+sum(rate(etp_express_bullmq_job_duration_seconds_count[5m]))
+```
 
 ### Exemplo de Response
 
@@ -335,9 +393,11 @@ curl https://etp-express-backend-production.up.railway.app/api/metrics
 1. Acessar [Sentry Dashboard](https://sentry.io) → ver stack trace completo
 2. Executar `railway logs -f` para logs real-time
 3. Identificar root cause:
- - API externa down? (OpenAI, Exa)
- - Database timeout?
- - Bug de código?
+
+- API externa down? (OpenAI, Exa)
+- Database timeout?
+- Bug de código?
+
 4. Se crítico: Executar rollback (ver `INCIDENT_RESPONSE.md`)
 5. Se não crítico: Criar hotfix PR
 
@@ -362,12 +422,15 @@ curl https://etp-express-backend-production.up.railway.app/api/metrics
 
 1. Verificar logs do Railway: `railway logs -f`
 2. Identificar causa:
- - Build error? → Corrigir código
- - Health check fail? → Ver `/api/health` endpoint
- - Timeout? → Aumentar timeout no `.railway.toml`
+
+- Build error? → Corrigir código
+- Health check fail? → Ver `/api/health` endpoint
+- Timeout? → Aumentar timeout no `.railway.toml`
+
 3. Opções:
- - Corrigir localmente → Push fix
- - Rollback: `./scripts/rollback.sh`
+
+- Corrigir localmente → Push fix
+- Rollback: `./scripts/rollback.sh`
 
 ### Alert: Memory > 85%
 
@@ -378,9 +441,11 @@ curl https://etp-express-backend-production.up.railway.app/api/metrics
 
 1. Executar `curl /api/metrics/json` → ver memory_usage_bytes
 2. Verificar memory leak:
- - Conexões DB não fechadas?
- - Event listeners não removidos?
- - Cache sem TTL?
+
+- Conexões DB não fechadas?
+- Event listeners não removidos?
+- Cache sem TTL?
+
 3. Restart temporário: `railway restart`
 4. Investigar root cause e criar fix permanente
 
@@ -444,10 +509,10 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 **Proximos passos:**
 
 1. Configurar PagerDuty para P0 incidents (on-call rotation)
-2. Adicionar custom business metrics (ETPs criados/dia, tempo medio de geracao)
+2. ~~Adicionar custom business metrics (ETPs criados/dia, tempo medio de geracao)~~ ? Implementado (#862)
 
 **Documentacao relacionada:**
 
 - [OpenTelemetry Distributed Tracing](./OPENTELEMETRY.md) - Tracing distribuido (#857, #858, #859)
 
-**Última revisão:** 2025-12-20
+**Última revisão:** 2025-12-21
