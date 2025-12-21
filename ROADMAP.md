@@ -549,7 +549,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 **#111 - [EPIC] Production Support SLA**
 | # | Issue | Esforço |
 |---|-------|---------|
-| #869 | SLA: Definição de níveis e métricas | 2h |
+| ~~#869~~ | ~~SLA: Definição de níveis e métricas~~ | ~~2h~~ | ✅ DONE 2025-12-21 |
 | #870 | SLA: Setup de ferramentas | 2-3h |
 | #871 | SLA: Treinamento e documentação | 2-3h |
 
