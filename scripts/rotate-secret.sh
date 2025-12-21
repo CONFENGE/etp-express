@@ -9,6 +9,13 @@
 # This script helps generate new secret values and provides step-by-step
 # instructions for completing the rotation via Railway Dashboard.
 #
+# RECOMMENDED: Use GitHub Actions workflow for automated rotation:
+#   1. Go to GitHub Actions → "Rotate Secrets"
+#   2. Click "Run workflow"
+#   3. Select secret to rotate (or "all")
+#
+# This script is for manual/emergency rotation only.
+#
 # =============================================================================
 
 set -e
@@ -36,7 +43,7 @@ if [ -z "$SECRET_NAME" ]; then
     echo "  1) JWT_SECRET         - Authentication tokens (Monthly)"
     echo "  2) SESSION_SECRET     - Session management (Monthly)"
     echo "  3) OPENAI_API_KEY     - GPT-4 API (Quarterly)"
-    echo "  4) PERPLEXITY_API_KEY - Research API (Quarterly)"
+    echo "  4) EXA_API_KEY        - Web Search API (Quarterly)"
     echo "  5) DATABASE_URL       - PostgreSQL (On-demand)"
     echo ""
     read -p "Enter choice (1-5): " choice
@@ -45,7 +52,7 @@ if [ -z "$SECRET_NAME" ]; then
         1) SECRET_NAME="JWT_SECRET" ;;
         2) SECRET_NAME="SESSION_SECRET" ;;
         3) SECRET_NAME="OPENAI_API_KEY" ;;
-        4) SECRET_NAME="PERPLEXITY_API_KEY" ;;
+        4) SECRET_NAME="EXA_API_KEY" ;;
         5) SECRET_NAME="DATABASE_URL" ;;
         *)
             echo -e "${RED}Invalid choice${NC}"
@@ -122,26 +129,26 @@ case $SECRET_NAME in
         echo ""
         ;;
 
-    "PERPLEXITY_API_KEY")
-        echo -e "${GREEN}Steps to rotate Perplexity API Key:${NC}"
+    "EXA_API_KEY")
+        echo -e "${GREEN}Steps to rotate Exa API Key:${NC}"
         echo ""
-        echo "  1. Create new key at Perplexity:"
-        echo "     https://www.perplexity.ai/settings/api"
+        echo "  1. Create new key at Exa Dashboard:"
+        echo "     https://dashboard.exa.ai/api-keys"
         echo ""
         echo "  2. Generate new API key"
         echo ""
-        echo "  3. Copy the key"
+        echo "  3. Copy the key immediately"
         echo ""
         echo "  4. Update in Railway Dashboard:"
         echo "     Project → Backend Service → Variables"
-        echo "     Update PERPLEXITY_API_KEY"
+        echo "     Update EXA_API_KEY"
         echo "     Save Changes"
         echo ""
         echo "  5. Validate:"
-        echo "     - Test context/research queries"
-        echo "     - Check logs for errors"
+        echo "     - Test web search queries"
+        echo "     - Check logs for Exa API errors"
         echo ""
-        echo "  6. Revoke old key in Perplexity dashboard"
+        echo "  6. Revoke old key in Exa dashboard"
         echo ""
         echo "  7. Update docs/SECRET_ROTATION_PROCEDURES.md"
         echo ""
@@ -184,7 +191,7 @@ case $SECRET_NAME in
         echo "  - JWT_SECRET"
         echo "  - SESSION_SECRET"
         echo "  - OPENAI_API_KEY"
-        echo "  - PERPLEXITY_API_KEY"
+        echo "  - EXA_API_KEY"
         echo "  - DATABASE_URL"
         exit 1
         ;;
