@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-21 | **Progresso:** 441/463 (95.2%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-21 | **Progresso:** 446/463 (96.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -56,20 +56,20 @@
 | ~~#806~~ | ~~Executar re-teste completo pos-correcoes P0~~         | ✅ DONE |
 | ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~         | ✅ DONE |
 
-### P3 - FUTURO (10 issues)
+### P3 - FUTURO (8 issues)
 
-| #    | Issue                                          | Status |
-| ---- | ---------------------------------------------- | ------ |
-| #808 | Implementar mutation testing com Stryker       | OPEN   |
-| #809 | Adicionar visual regression testing            | OPEN   |
-| #810 | Integrar OWASP ZAP no CI                       | OPEN   |
-| #811 | Implementar cache Redis para respostas LLM     | OPEN   |
-| #812 | Configurar CDN para assets estaticos           | OPEN   |
-| #813 | Adicionar alertas para slow queries            | OPEN   |
-| #814 | Implementar sistema de feature flags           | OPEN   |
-| #815 | Configurar WAF (Web Application Firewall)      | OPEN   |
-| #816 | Documentar estrategia multi-regiao DR          | OPEN   |
-| #817 | Adicionar export de audit logs para compliance | OPEN   |
+| #        | Issue                                              | Status  |
+| -------- | -------------------------------------------------- | ------- |
+| #808     | Implementar mutation testing com Stryker           | OPEN    |
+| #809     | Adicionar visual regression testing                | OPEN    |
+| #810     | Integrar OWASP ZAP no CI                           | OPEN    |
+| #811     | Implementar cache Redis para respostas LLM         | OPEN    |
+| #812     | Configurar CDN para assets estaticos               | OPEN    |
+| ~~#813~~ | ~~Adicionar alertas para slow queries~~            | ✅ DONE |
+| #814     | Implementar sistema de feature flags               | OPEN    |
+| #815     | Configurar WAF (Web Application Firewall)          | OPEN    |
+| #816     | Documentar estrategia multi-regiao DR              | OPEN    |
+| ~~#817~~ | ~~Adicionar export de audit logs para compliance~~ | ✅ DONE |
 
 **Esforco Estimado:** ~108-152h | **Labels:** `go-live`, `priority/P0-P3`
 
@@ -133,14 +133,14 @@
 | #654 | [EPIC] OpenTelemetry distributed tracing | #857-#859  |
 | #655 | [EPIC] Métricas de negócio Prometheus    | #860-#862  |
 
-### P3 - Melhorias (3 issues)
+### P3 - Melhorias (1 issue open)
 
-| #        | Issue                                | Benefício                            |
-| -------- | ------------------------------------ | ------------------------------------ |
-| ~~#656~~ | ~~Validação estruturada saída LLM~~  | ✅ DONE (2025-12-20)                 |
-| ~~#657~~ | ~~Documentar PgBouncer para escala~~ | ✅ DONE (2025-12-18)                 |
-| #759     | Rich Text (WYSIWYG) formulários      | Tabelas, listas, formatação avançada |
-| #760     | Documentar agentes determinísticos   | Clareza arquitetural (Regex vs LLM)  |
+| #        | Issue                                  | Benefício                            |
+| -------- | -------------------------------------- | ------------------------------------ |
+| ~~#656~~ | ~~Validação estruturada saída LLM~~    | ✅ DONE (2025-12-20)                 |
+| ~~#657~~ | ~~Documentar PgBouncer para escala~~   | ✅ DONE (2025-12-18)                 |
+| #759     | Rich Text (WYSIWYG) formulários        | Tabelas, listas, formatação avançada |
+| ~~#760~~ | ~~Documentar agentes determinísticos~~ | ✅ DONE (2025-12-21)                 |
 
 ---
 
@@ -539,22 +539,22 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#863~~ | ~~Análise e decisão de estratégia~~ | ✅ CLOSED 2025-12-21 |
 | ~~#864~~ | ~~Execução da migração~~ | ✅ CLOSED 2025-12-21 |
 
-**#110 - [EPIC] Staged Rollout & Feature Flags**
+**#110 - [EPIC] Staged Rollout & Feature Flags** (1/4 DONE)
 | # | Issue | Esforço |
 |---|-------|---------|
-| #865 | Feature Flags: Escolha e setup provider | 2h |
+| ~~#865~~ | ~~Feature Flags: Escolha e setup provider~~ | ✅ CLOSED 2025-12-21 |
 | #866 | Feature Flags: Integração frontend | 3h |
 | #867 | Estratégia Alpha/Beta/GA | 2h |
 | #868 | Documentação e runbook | 3h |
 
-**#111 - [EPIC] Production Support SLA** (2/3 DONE)
+**#111 - [EPIC] Production Support SLA** ✅ COMPLETE (3/3)
 | # | Issue | Esforço |
 |---|-------|---------|
 | ~~#869~~ | ~~SLA: Definição de níveis e métricas~~ | ✅ CLOSED 2025-12-21 |
 | ~~#870~~ | ~~SLA: Setup de ferramentas~~ | ✅ CLOSED 2025-12-21 |
-| #871 | SLA: Treinamento e documentação | 2-3h |
+| ~~#871~~ | ~~SLA: Treinamento e documentação~~ | ✅ CLOSED 2025-12-21 |
 
-**Total Atualizado:** 15 issues restantes (3 EPICs completos, 1 issue atômica DONE) | ~20-28h
+**Total Atualizado:** 12 issues restantes (4 EPICs completos) | ~18-24h
 
 ---
 
@@ -569,9 +569,9 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 463      |
-| Issues Abertas    | 22       |
-| Issues Fechadas   | 441      |
-| Progresso         | 95.2%    |
+| Issues Abertas    | 17       |
+| Issues Fechadas   | 446      |
+| Progresso         | 96.3%    |
 | Velocidade        | 16.7/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
@@ -579,9 +579,9 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
 | P2 Go-Live        | 0 ✅     |
-| P3 Go-Live        | 10       |
+| P3 Go-Live        | 8        |
 | P2 Gov-API        | 1        |
-| Sprint v1.1       | 15       |
+| Sprint v1.1       | 12       |
 
 ---
 
