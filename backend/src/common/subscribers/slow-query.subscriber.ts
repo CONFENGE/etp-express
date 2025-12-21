@@ -30,7 +30,7 @@ export class SlowQuerySubscriber implements EntitySubscriberInterface {
   /**
    * Called after entity is loaded from database
    */
-  afterLoad(entity: any, event?: LoadEvent<any>): void {
+  afterLoad(_entity: any, _event?: LoadEvent<any>): void {
     // Load events don't have timing info in TypeORM
     // Query timing is handled by maxQueryExecutionTime config
   }
