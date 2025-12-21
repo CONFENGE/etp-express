@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 import { useEffect, useCallback, lazy, Suspense } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';

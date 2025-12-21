@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
