@@ -1,3 +1,7 @@
+// OpenTelemetry MUST be initialized FIRST, before any other imports (#857)
+// This ensures all HTTP/Express modules are properly instrumented
+import './telemetry';
+
 import { NestFactory } from '@nestjs/core';
 import {
   ValidationPipe,
