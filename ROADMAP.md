@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-21 | **Progresso:** 432/463 (93.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-21 | **Progresso:** 433/463 (93.5%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -529,7 +529,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 | # | Issue | Esforço |
 |---|-------|---------|
 | ~~#860~~ | ~~Setup base e endpoint /metrics~~ | ✅ DONE |
-| #861 | Métricas de negócio | 2h |
+| ~~#861~~ | ~~Métricas de negócio~~ | ✅ DONE |
 | #862 | Integração nos serviços | 0.5h |
 
 **#387 - [EPIC] PostgreSQL pgvector Migration (P0)**
