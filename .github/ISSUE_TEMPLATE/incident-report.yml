@@ -1,0 +1,109 @@
+name: Incident Report
+description: Report a production incident for tracking and response
+title: '[INCIDENT] '
+labels: ['incident']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Production Incident Report
+        Use this template to report production incidents. Please fill in all required fields.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: Select the incident severity based on impact
+      options:
+        - P1 - Critical (Service down, data loss, security breach)
+        - P2 - High (Major feature broken, significant user impact)
+        - P3 - Medium (Feature degraded, workaround available)
+        - P4 - Low (Minor issue, cosmetic, low impact)
+    validations:
+      required: true
+
+  - type: input
+    id: detected-at
+    attributes:
+      label: Detection Time
+      description: When was the incident first detected?
+      placeholder: '2025-01-01 14:30 UTC-3'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component
+      description: Which part of the system is affected?
+      options:
+        - Backend API
+        - Frontend Web App
+        - Database
+        - Authentication
+        - LLM Services (OpenAI/Anthropic)
+        - External APIs (Exa, Gov APIs)
+        - Infrastructure (Railway)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Incident Description
+      description: Describe what is happening and the observed behavior
+      placeholder: 'Users are unable to login. The /auth/login endpoint returns 500 errors.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Business Impact
+      description: How is this affecting users and business operations?
+      placeholder: 'All users cannot access the platform. ETP generation is blocked.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce (if applicable)
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to https://app.confenge.com.br
+        2. Click 'Login'
+        3. Enter valid credentials
+        4. Observe 500 error
+
+  - type: textarea
+    id: investigation
+    attributes:
+      label: Investigation Notes
+      description: Any logs, error messages, or initial findings
+      placeholder: 'Sentry shows NullPointerException in AuthService.validateToken()'
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Mitigation Actions Taken
+      description: What immediate actions have been taken?
+      placeholder: 'Restarted backend service at 14:45 UTC-3'
+
+  - type: checkboxes
+    id: notifications
+    attributes:
+      label: Notifications
+      description: Who has been notified?
+      options:
+        - label: Engineering team notified
+        - label: Product/Business team notified
+        - label: Affected customers notified (if applicable)
+
+  - type: input
+    id: assignee
+    attributes:
+      label: Incident Commander
+      description: Who is leading the incident response?
+      placeholder: '@username'
