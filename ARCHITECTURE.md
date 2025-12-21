@@ -35,35 +35,35 @@ O **ETP Express** é um sistema wrapper de LLM projetado para auxiliar servidore
 
 ### 2.1 Backend
 
-| Componente | Tecnologia | Justificativa |
+| Componente | Tecnologia      | Justificativa                                      |
 | ---------- | --------------- | -------------------------------------------------- |
-| Framework | NestJS | Arquitetura modular, TypeScript nativo, decorators |
-| Runtime | Node.js 20 LTS | Performance, ecossistema maduro |
-| Database | PostgreSQL 15 | ACID, jsonb, versionamento eficiente |
-| ORM | TypeORM | Migrations robustas, relations |
-| Validação | class-validator | Validação declarativa, pipes NestJS |
-| Auth | Passport + JWT | Padrão industry, extensível |
-| Docs API | Swagger/OpenAPI | Auto-documentação, testing |
+| Framework  | NestJS          | Arquitetura modular, TypeScript nativo, decorators |
+| Runtime    | Node.js 20 LTS  | Performance, ecossistema maduro                    |
+| Database   | PostgreSQL 15   | ACID, jsonb, versionamento eficiente               |
+| ORM        | TypeORM         | Migrations robustas, relations                     |
+| Validação  | class-validator | Validação declarativa, pipes NestJS                |
+| Auth       | Passport + JWT  | Padrão industry, extensível                        |
+| Docs API   | Swagger/OpenAPI | Auto-documentação, testing                         |
 
 ### 2.2 Frontend
 
-| Componente | Tecnologia | Justificativa |
+| Componente | Tecnologia               | Justificativa                         |
 | ---------- | ------------------------ | ------------------------------------- |
-| Framework | React 18 | Virtual DOM, hooks, ecossistema |
-| Language | TypeScript 5 | Type safety, refatoração segura |
+| Framework  | React 18                 | Virtual DOM, hooks, ecossistema       |
+| Language   | TypeScript 5             | Type safety, refatoração segura       |
 | UI Library | Tailwind CSS + shadcn/ui | Componentes acessíveis, customizáveis |
-| Forms | React Hook Form + Zod | Performance, validação schema |
-| State | Zustand | Simples, performático, DevTools |
-| HTTP | Axios | Interceptors, cancelation |
-| Build | Vite | Fast HMR, tree-shaking |
+| Forms      | React Hook Form + Zod    | Performance, validação schema         |
+| State      | Zustand                  | Simples, performático, DevTools       |
+| HTTP       | Axios                    | Interceptors, cancelation             |
+| Build      | Vite                     | Fast HMR, tree-shaking                |
 
 ### 2.3 Integrações Externas
 
 - **OpenAI API** (GPT-4-turbo): Geração de conteúdo, refinamento
 - **Exa API**: Busca web + síntese de contratações similares
- - **Error Handling**: Lança `ServiceUnavailableException` quando API falha
- - **Transparência**: Sem fallback silencioso - usuário sempre sabe quando busca falha
- - **Mensagem**: "Busca externa temporariamente indisponível. Tente novamente em alguns minutos."
+- **Error Handling**: Lança `ServiceUnavailableException` quando API falha
+- **Transparência**: Sem fallback silencioso - usuário sempre sabe quando busca falha
+- **Mensagem**: "Busca externa temporariamente indisponível. Tente novamente em alguns minutos."
 - **Government APIs**: Fontes oficiais de licitações e preços (PNCP, Compras.gov.br, SINAPI, SICRO)
 - **PDF Generation**: Puppeteer (headless Chrome)
 - **Analytics**: Mixpanel ou PostHog (self-hosted Railway)
@@ -88,15 +88,15 @@ Configuração otimizada para Railway Postgres Starter (max 20 connections):
 ```typescript
 // backend/src/app.module.ts
 TypeOrmModule.forRootAsync({
- extra: {
- max: 20, // Max connections (Railway limit)
- min: 5, // Min connections (always warm)
- idleTimeoutMillis: 30000, // Close idle connections after 30s
- connectionTimeoutMillis: 5000, // Fail after 5s if pool exhausted
- },
- maxQueryExecutionTime: 3000, // Log slow queries (>3s)
- retryAttempts: 3, // Retry on transient failures
- retryDelay: 1000, // Wait 1s between retries
+  extra: {
+    max: 20, // Max connections (Railway limit)
+    min: 5, // Min connections (always warm)
+    idleTimeoutMillis: 30000, // Close idle connections after 30s
+    connectionTimeoutMillis: 5000, // Fail after 5s if pool exhausted
+  },
+  maxQueryExecutionTime: 3000, // Log slow queries (>3s)
+  retryAttempts: 3, // Retry on transient failures
+  retryDelay: 1000, // Wait 1s between retries
 });
 ```
 
@@ -181,11 +181,13 @@ Response: {
 3. Job enfileirado no BullMQ com jobId retornado
 4. Client faz polling de `GET /sections/jobs/:jobId` a cada 2-3s
 5. Worker processa job em background:
- - 10%: Valida section exists
- - 10-90%: OrchestratorService gera conteúdo via LLM
- - 90%: Salva conteúdo no database
- - 95%: Atualiza ETP completion percentage
- - 100%: Job completo
+
+- 10%: Valida section exists
+- 10-90%: OrchestratorService gera conteúdo via LLM
+- 90%: Salva conteúdo no database
+- 95%: Atualiza ETP completion percentage
+- 100%: Job completo
+
 6. Client detecta `status: 'completed'` e busca section atualizada
 
 **Configuração (backend/src/app.module.ts):**
@@ -235,13 +237,14 @@ O ETP Express implementa dois tipos de health checks para garantir zero-downtime
 - **Comportamento**: Retorna 200 mesmo durante initialization/migrations
 - **Uso**: Railway utiliza para detectar crashes e reiniciar containers
 - **Response**:
- ```json
- {
- "status": "healthy",
- "timestamp": "2025-11-29T12:00:00.000Z",
- "database": "connected"
- }
- ```
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-11-29T12:00:00.000Z",
+  "database": "connected"
+}
+```
 
 **GET /api/health/ready** (Readiness Probe)
 
@@ -249,23 +252,26 @@ O ETP Express implementa dois tipos de health checks para garantir zero-downtime
 - **Comportamento**: Retorna 503 durante migrations/initialization
 - **Uso**: deploy.sh utiliza para decisão de switch de tráfego
 - **Response (ready)**:
- ```json
- {
- "status": "ready",
- "timestamp": "2025-11-29T12:00:00.000Z",
- "database": "connected",
- "migrations": "completed"
- }
- ```
+
+```json
+{
+  "status": "ready",
+  "timestamp": "2025-11-29T12:00:00.000Z",
+  "database": "connected",
+  "migrations": "completed"
+}
+```
+
 - **Response (starting)**:
- ```json
- {
- "status": "starting",
- "reason": "migrations_in_progress",
- "database": "connected",
- "timestamp": "2025-11-29T12:00:00.000Z"
- }
- ```
+
+```json
+{
+  "status": "starting",
+  "reason": "migrations_in_progress",
+  "database": "connected",
+  "timestamp": "2025-11-29T12:00:00.000Z"
+}
+```
 
 **Distinção Liveness vs Readiness:**
 
@@ -287,28 +293,28 @@ O ETP Express implementa dois tipos de health checks para garantir zero-downtime
 
 ```typescript
 class ETOrchestratorService {
- async generateSection(
- sectionId: string,
- userContext: UserInput,
- etpDraft: ETPDraft,
- ): Promise<GeneratedSection> {
- // Chain de subagentes
- const chain = [
- this.legalAgent, // Valida coerência legal superficial
- this.fundamentacaoAgent, // Busca contratações similares
- this.clarezaAgent, // Revisa clareza textual
- this.simplificacaoAgent, // Simplifica linguagem jurídica
- this.antiHallucinationAgent, // Mitiga alucinações
- ];
+  async generateSection(
+    sectionId: string,
+    userContext: UserInput,
+    etpDraft: ETPDraft,
+  ): Promise<GeneratedSection> {
+    // Chain de subagentes
+    const chain = [
+      this.legalAgent, // Valida coerência legal superficial
+      this.fundamentacaoAgent, // Busca contratações similares
+      this.clarezaAgent, // Revisa clareza textual
+      this.simplificacaoAgent, // Simplifica linguagem jurídica
+      this.antiHallucinationAgent, // Mitiga alucinações
+    ];
 
- let result = await this.llmWrapper.generate(userContext);
+    let result = await this.llmWrapper.generate(userContext);
 
- for (const agent of chain) {
- result = await agent.process(result);
- }
+    for (const agent of chain) {
+      result = await agent.process(result);
+    }
 
- return this.normalizer.format(result);
- }
+    return this.normalizer.format(result);
+  }
 }
 ```
 
@@ -319,11 +325,11 @@ class ETOrchestratorService {
 ```typescript
 @Injectable()
 export class LegalAgent {
- async process(draft: string): Promise<ProcessedDraft> {
- // Valida menções à Lei 14.133/2021
- // Verifica consistência de incisos citados
- // Injeta avisos "Confirme se esta interpretação se aplica ao seu órgão"
- }
+  async process(draft: string): Promise<ProcessedDraft> {
+    // Valida menções à Lei 14.133/2021
+    // Verifica consistência de incisos citados
+    // Injeta avisos "Confirme se esta interpretação se aplica ao seu órgão"
+  }
 }
 ```
 
@@ -332,13 +338,13 @@ export class LegalAgent {
 ```typescript
 @Injectable()
 export class FundamentacaoAgent {
- constructor(private exaService: ExaService) {}
+  constructor(private exaService: ExaService) {}
 
- async process(draft: string): Promise<ProcessedDraft> {
- // Extrai objeto da contratação
- // Busca contratações similares via Exa + Government APIs
- // Anexa referências com aviso "verifique a fonte antes de utilizar"
- }
+  async process(draft: string): Promise<ProcessedDraft> {
+    // Extrai objeto da contratação
+    // Busca contratações similares via Exa + Government APIs
+    // Anexa referências com aviso "verifique a fonte antes de utilizar"
+  }
 }
 ```
 
@@ -347,11 +353,11 @@ export class FundamentacaoAgent {
 ```typescript
 @Injectable()
 export class ClarezaAgent {
- async process(draft: string): Promise<ProcessedDraft> {
- // Identifica jargão excessivo
- // Sugere simplificações
- // Valida Flesch Reading Ease > 50
- }
+  async process(draft: string): Promise<ProcessedDraft> {
+    // Identifica jargão excessivo
+    // Sugere simplificações
+    // Valida Flesch Reading Ease > 50
+  }
 }
 ```
 
@@ -360,13 +366,92 @@ export class ClarezaAgent {
 ```typescript
 @Injectable()
 export class AntiHallucinationAgent {
- async process(draft: string): Promise<ProcessedDraft> {
- // Injeta prompts defensivos
- // Valida afirmações factuais contra base de conhecimento
- // Marca trechos de baixa confiança para revisão humana
- }
+  async process(draft: string): Promise<ProcessedDraft> {
+    // Injeta prompts defensivos
+    // Valida afirmações factuais contra base de conhecimento
+    // Marca trechos de baixa confiança para revisão humana
+  }
 }
 ```
+
+### 3.3 Arquitetura de Agentes: Determinísticos vs Probabilísticos
+
+> **AVISO IMPORTANTE**: Esta seção documenta uma decisão arquitetural crítica.
+> Alterações na natureza dos agentes (de determinístico para probabilístico)
+> mudarão drasticamente o comportamento do sistema.
+
+#### Classificação dos Agentes
+
+| Agente                 | Tipo               | Método de Validação                 | Comportamento                                         |
+| ---------------------- | ------------------ | ----------------------------------- | ----------------------------------------------------- |
+| AntiHallucinationAgent | **DETERMINÍSTICO** | Regex + RAG lookup                  | Sempre retorna o mesmo resultado para a mesma entrada |
+| LegalAgent             | **DETERMINÍSTICO** | Keyword matching (`includes`)       | Sempre retorna o mesmo resultado para a mesma entrada |
+| ClarezaAgent           | **DETERMINÍSTICO** | Métricas estatísticas (Flesch-like) | Sempre retorna o mesmo resultado para a mesma entrada |
+| FundamentacaoAgent     | **DETERMINÍSTICO** | Keyword matching (`includes`)       | Sempre retorna o mesmo resultado para a mesma entrada |
+| SimplificacaoAgent     | **DETERMINÍSTICO** | Regex patterns + substituição       | Sempre retorna o mesmo resultado para a mesma entrada |
+
+#### Por que "Agente" se são Determinísticos?
+
+A nomenclatura "Agent" segue o padrão arquitetural de **subagentes especializados** no pipeline de processamento,
+não implica necessariamente comportamento adaptativo ou uso de IA generativa.
+
+**Vantagens da abordagem determinística:**
+
+- **Previsibilidade**: Resultados consistentes e auditáveis
+- **Performance**: Execução em milissegundos (sem chamadas LLM)
+- **Custo**: Sem consumo de tokens OpenAI para validação
+- **Testabilidade**: Testes unitários determinísticos
+- **Compliance**: Facilita auditoria em contexto de licitações públicas
+
+#### Onde está o LLM?
+
+Os agentes **NÃO usam LLM para validação**. O LLM é usado apenas:
+
+1. **Geração de conteúdo**: `OrchestratorService` → OpenAI API
+2. **Prompts de contexto**: Agentes fornecem `getSystemPrompt()` para instruir o LLM
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ FLUXO DE GERAÇÃO + VALIDAÇÃO │
+├─────────────────────────────────────────────────────────────────┤
+│ │
+│ UserInput │
+│ ↓ │
+│ ┌──────────────────────────────────────┐ │
+│ │ OrchestratorService │ │
+│ │ (usa LLM para GERAR conteúdo) │ │
+│ └──────────────────────────────────────┘ │
+│ ↓ │
+│ ┌──────────────────────────────────────┐ │
+│ │ Pipeline de Validação │ │
+│ │ (DETERMINÍSTICO - sem LLM) │ │
+│ │ │ │
+│ │ 1. LegalAgent (keyword matching) │ │
+│ │ 2. FundamentacaoAgent (keyword) │ │
+│ │ 3. ClarezaAgent (métricas) │ │
+│ │ 4. SimplificacaoAgent (regex) │ │
+│ │ 5. AntiHallucinationAgent (regex) │ │
+│ └──────────────────────────────────────┘ │
+│ ↓ │
+│ ValidatedContent + Warnings │
+│ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Impacto de Mudanças Futuras
+
+**CUIDADO**: Se no futuro decidir substituir validações Regex por modelos de IA:
+
+| Aspecto      | Determinístico (atual)                | Probabilístico (futuro)                    |
+| ------------ | ------------------------------------- | ------------------------------------------ |
+| Consistência | 100% reprodutível                     | Variável entre execuções                   |
+| Latência     | ~1-10ms                               | ~500-3000ms                                |
+| Custo        | $0                                    | ~$0.001-0.01 por validação                 |
+| Auditoria    | Trivial (mesma entrada = mesma saída) | Complexa (precisa logar prompts/respostas) |
+| Testes       | Unitários simples                     | Testes probabilísticos ou mocks            |
+
+**Recomendação**: Manter agentes de validação como determinísticos.
+Usar LLM apenas para geração de conteúdo, não para validação.
 
 ---
 
@@ -467,21 +552,21 @@ CREATE INDEX idx_analytics_events_created_at ON analytics_events(created_at);
 
 ### 4.2 Incisos Obrigatórios (Art. 18 §1º)
 
-| Código | Descrição | Obrigatório |
+| Código | Descrição                                           | Obrigatório |
 | ------ | --------------------------------------------------- | ----------- |
-| I | Descrição da necessidade da contratação | ✅ SIM |
-| II | Demonstração da previsão de recursos orçamentários | ❌ Não |
-| III | Estimativa preliminar de despesa | ❌ Não |
-| IV | Justificativa da solução escolhida | ✅ SIM |
-| V | Descrição da solução como um todo | ❌ Não |
-| VI | Requisitos da contratação | ✅ SIM |
-| VII | Estimativas de valor da contratação | ❌ Não |
-| VIII | Justificativa do parcelamento ou não da contratação | ✅ SIM |
-| IX | Contratações correlatas | ❌ Não |
-| X | Demonstração de compatibilidade do orçamento | ❌ Não |
-| XI | Descrição dos riscos | ❌ Não |
-| XII | Providências a serem adotadas | ❌ Não |
-| XIII | Declaração de viabilidade | ✅ SIM |
+| I      | Descrição da necessidade da contratação             | ✅ SIM      |
+| II     | Demonstração da previsão de recursos orçamentários  | ❌ Não      |
+| III    | Estimativa preliminar de despesa                    | ❌ Não      |
+| IV     | Justificativa da solução escolhida                  | ✅ SIM      |
+| V      | Descrição da solução como um todo                   | ❌ Não      |
+| VI     | Requisitos da contratação                           | ✅ SIM      |
+| VII    | Estimativas de valor da contratação                 | ❌ Não      |
+| VIII   | Justificativa do parcelamento ou não da contratação | ✅ SIM      |
+| IX     | Contratações correlatas                             | ❌ Não      |
+| X      | Demonstração de compatibilidade do orçamento        | ❌ Não      |
+| XI     | Descrição dos riscos                                | ❌ Não      |
+| XII    | Providências a serem adotadas                       | ❌ Não      |
+| XIII   | Declaração de viabilidade                           | ✅ SIM      |
 
 ---
 
@@ -616,20 +701,20 @@ Seu objetivo é AUXILIAR, não decidir. Toda afirmação deve ser auditável.
 
 ```typescript
 class AntiHallucinationAgent {
- private readonly FORBIDDEN_PATTERNS = [
- /\bgaranto\b/i,
- /\bcom certeza\b/i,
- /\bsempre\b/i,
- /\bnunca\b/i,
- /\bdefinitivamente\b/i,
- ];
+  private readonly FORBIDDEN_PATTERNS = [
+    /\bgaranto\b/i,
+    /\bcom certeza\b/i,
+    /\bsempre\b/i,
+    /\bnunca\b/i,
+    /\bdefinitivamente\b/i,
+  ];
 
- async process(draft: string): Promise<ProcessedDraft> {
- // Detecta afirmações absolutas
- // Injeta disclaimers em citações legais
- // Marca valores numéricos sem fonte
- // Sugere revisão humana em trechos de baixa confiança
- }
+  async process(draft: string): Promise<ProcessedDraft> {
+    // Detecta afirmações absolutas
+    // Injeta disclaimers em citações legais
+    // Marca valores numéricos sem fonte
+    // Sugere revisão humana em trechos de baixa confiança
+  }
 }
 ```
 
@@ -687,14 +772,14 @@ class AntiHallucinationAgent {
 ```yaml
 # railway.json (monorepo)
 {
- '$schema': 'https://railway.app/railway.schema.json',
- 'build': { 'builder': 'NIXPACKS' },
- 'deploy':
- {
- 'numReplicas': 1,
- 'restartPolicyType': 'ON_FAILURE',
- 'restartPolicyMaxRetries': 10,
- },
+  '$schema': 'https://railway.app/railway.schema.json',
+  'build': { 'builder': 'NIXPACKS' },
+  'deploy':
+    {
+      'numReplicas': 1,
+      'restartPolicyType': 'ON_FAILURE',
+      'restartPolicyMaxRetries': 10,
+    },
 }
 ```
 
@@ -790,14 +875,14 @@ VITE_APP_NAME="ETP Express"
 ### 11.1 Proteções Implementadas
 
 - **OWASP Top 10**:
- - ✅ Sanitização de inputs (class-validator)
- - ✅ Prepared statements (TypeORM protege contra SQL Injection)
- - ✅ CORS configurado
- - ✅ Helmet.js (headers de segurança)
- - ✅ Rate limiting (express-rate-limit)
- - ✅ JWT com expiração
- - ✅ Bcrypt para senhas
- - ✅ HTTPS obrigatório (Railway)
+- ✅ Sanitização de inputs (class-validator)
+- ✅ Prepared statements (TypeORM protege contra SQL Injection)
+- ✅ CORS configurado
+- ✅ Helmet.js (headers de segurança)
+- ✅ Rate limiting (express-rate-limit)
+- ✅ JWT com expiração
+- ✅ Bcrypt para senhas
+- ✅ HTTPS obrigatório (Railway)
 
 ### 11.2 Privacidade
 
@@ -838,13 +923,13 @@ Railway platform provides integrated environment variable management with sealed
 
 #### Managed Secrets
 
-| Secret | Frequency | Method |
+| Secret         | Frequency | Method                          |
 | -------------- | --------- | ------------------------------- |
-| JWT_SECRET | Monthly | Manual rotation + documentation |
-| SESSION_SECRET | Monthly | Manual rotation + documentation |
-| OPENAI_API_KEY | Quarterly | Manual rotation (provider) |
-| EXA_API_KEY | Quarterly | Manual rotation (provider) |
-| DATABASE_URL | On-demand | Manual rotation (DB password) |
+| JWT_SECRET     | Monthly   | Manual rotation + documentation |
+| SESSION_SECRET | Monthly   | Manual rotation + documentation |
+| OPENAI_API_KEY | Quarterly | Manual rotation (provider)      |
+| EXA_API_KEY    | Quarterly | Manual rotation (provider)      |
+| DATABASE_URL   | On-demand | Manual rotation (DB password)   |
 
 #### Rotation Procedure
 
@@ -966,14 +1051,14 @@ ETP Express/
 
 ```javascript
 module.exports = {
- moduleFileExtensions: ['js', 'json', 'ts'],
- rootDir: 'src',
- testRegex: '.*\\.spec\\.ts$',
- transform: { '^.+\\.(t|j)s$': 'ts-jest' },
- collectCoverageFrom: ['**/*.(t|j)s', '!**/*.module.ts', '!main.ts'],
- coverageDirectory: '../coverage',
- testEnvironment: 'node',
- moduleNameMapper: { '^src/(.*)$': '<rootDir>/$1' },
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: 'src',
+  testRegex: '.*\\.spec\\.ts$',
+  transform: { '^.+\\.(t|j)s$': 'ts-jest' },
+  collectCoverageFrom: ['**/*.(t|j)s', '!**/*.module.ts', '!main.ts'],
+  coverageDirectory: '../coverage',
+  testEnvironment: 'node',
+  moduleNameMapper: { '^src/(.*)$': '<rootDir>/$1' },
 };
 ```
 
@@ -986,37 +1071,37 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 
 describe('AuthService', () => {
- let service: AuthService;
- let usersService: UsersService;
+  let service: AuthService;
+  let usersService: UsersService;
 
- const mockUsersService = {
- findByEmail: jest.fn(),
- create: jest.fn(),
- };
+  const mockUsersService = {
+    findByEmail: jest.fn(),
+    create: jest.fn(),
+  };
 
- beforeEach(async () => {
- const module: TestingModule = await Test.createTestingModule({
- providers: [
- AuthService,
- { provide: UsersService, useValue: mockUsersService },
- ],
- }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        { provide: UsersService, useValue: mockUsersService },
+      ],
+    }).compile();
 
- service = module.get<AuthService>(AuthService);
- jest.clearAllMocks();
- });
+    service = module.get<AuthService>(AuthService);
+    jest.clearAllMocks();
+  });
 
- describe('validateUser', () => {
- it('should return user without password when credentials are valid', async () => {
- // Arrange
- mockUsersService.findByEmail.mockResolvedValue(mockUser);
- // Act
- const result = await service.validateUser('test@example.com', 'password');
- // Assert
- expect(result).toBeDefined();
- expect(result?.password).toBeUndefined();
- });
- });
+  describe('validateUser', () => {
+    it('should return user without password when credentials are valid', async () => {
+      // Arrange
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      // Act
+      const result = await service.validateUser('test@example.com', 'password');
+      // Assert
+      expect(result).toBeDefined();
+      expect(result?.password).toBeUndefined();
+    });
+  });
 });
 ```
 
@@ -1031,18 +1116,18 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
- plugins: [react()],
- test: {
- globals: true,
- environment: 'jsdom',
- setupFiles: './src/test/setup.ts',
- css: true,
- coverage: {
- provider: 'v8',
- reporter: ['text', 'json', 'html'],
- exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
- },
- },
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
+    },
+  },
 });
 ```
 
@@ -1081,26 +1166,26 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
 describe('AuthController (e2e)', () => {
- let app: INestApplication;
+  let app: INestApplication;
 
- beforeEach(async () => {
- const module = await Test.createTestingModule({
- imports: [AppModule],
- }).compile();
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
 
- app = module.createNestApplication();
- await app.init();
- });
+    app = module.createNestApplication();
+    await app.init();
+  });
 
- it('/auth/login (POST) should return JWT token', () => {
- return request(app.getHttpServer())
- .post('/auth/login')
- .send({ email: 'test@example.com', password: 'password123' })
- .expect(201)
- .expect((res) => {
- expect(res.body).toHaveProperty('accessToken');
- });
- });
+  it('/auth/login (POST) should return JWT token', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@example.com', password: 'password123' })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('accessToken');
+      });
+  });
 });
 ```
 
@@ -1118,27 +1203,27 @@ O ETP Express utiliza duas ferramentas de E2E complementares:
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
- testDir: './e2e',
- fullyParallel: true,
- forbidOnly: !!process.env.CI,
- retries: process.env.CI ? 2 : 0,
- workers: process.env.CI ? 1 : undefined,
- reporter: 'html',
- use: {
- baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
- trace: 'on-first-retry',
- screenshot: 'only-on-failure',
- },
- projects: [
- { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
- { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
- { name: 'webkit', use: { ...devices['Desktop Safari'] } },
- ],
- webServer: {
- command: 'cd frontend && npm run dev',
- url: 'http://localhost:5173',
- reuseExistingServer: !process.env.CI,
- },
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:5173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+  webServer: {
+    command: 'cd frontend && npm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
 });
 ```
 
@@ -1150,26 +1235,26 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test.describe('WCAG 2.1 AA Compliance', () => {
- const pages = [
- { path: '/login', name: 'Login' },
- { path: '/register', name: 'Register' },
- { path: '/dashboard', name: 'Dashboard' },
- ];
+  const pages = [
+    { path: '/login', name: 'Login' },
+    { path: '/register', name: 'Register' },
+    { path: '/dashboard', name: 'Dashboard' },
+  ];
 
- for (const page of pages) {
- test(`${page.name} should be WCAG 2.1 AA compliant`, async ({
- page: p,
- }) => {
- await p.goto(page.path);
- await p.waitForLoadState('networkidle');
+  for (const page of pages) {
+    test(`${page.name} should be WCAG 2.1 AA compliant`, async ({
+      page: p,
+    }) => {
+      await p.goto(page.path);
+      await p.waitForLoadState('networkidle');
 
- const results = await new AxeBuilder({ page: p })
- .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
- .analyze();
+      const results = await new AxeBuilder({ page: p })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
 
- expect(results.violations).toEqual([]);
- });
- }
+      expect(results.violations).toEqual([]);
+    });
+  }
 });
 ```
 
@@ -1189,37 +1274,37 @@ test.describe('WCAG 2.1 AA Compliance', () => {
 ```typescript
 // puppeteer-tests/critical-flow.spec.ts
 describe('Critical Flow E2E', () => {
- beforeEach(async () => {
- const setup = await setupBrowser();
- browser = setup.browser;
- page = setup.page;
+  beforeEach(async () => {
+    const setup = await setupBrowser();
+    browser = setup.browser;
+    page = setup.page;
 
- // Mock API calls (evita custos OpenAI)
- await page.setRequestInterception(true);
- page.on('request', (request) => {
- if (
- request.url().includes('/api/sections/') &&
- request.url().includes('/generate')
- ) {
- request.respond({
- status: 201,
- contentType: 'application/json',
- body: JSON.stringify({
- content: '# Seção Gerada (Mock)',
- status: 'completed',
- }),
- });
- } else {
- request.continue();
- }
- });
- });
+    // Mock API calls (evita custos OpenAI)
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+      if (
+        request.url().includes('/api/sections/') &&
+        request.url().includes('/generate')
+      ) {
+        request.respond({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            content: '# Seção Gerada (Mock)',
+            status: 'completed',
+          }),
+        });
+      } else {
+        request.continue();
+      }
+    });
+  });
 
- test('deve completar fluxo crítico', async () => {
- await login(page, testUser.email, testUser.password);
- expect(page.url()).toContain('/dashboard');
- // ... resto do fluxo
- }, 90000);
+  test('deve completar fluxo crítico', async () => {
+    await login(page, testUser.email, testUser.password);
+    expect(page.url()).toContain('/dashboard');
+    // ... resto do fluxo
+  }, 90000);
 });
 ```
 
@@ -1337,12 +1422,12 @@ jobs:
 
 #### Otimizações CI/CD
 
-| Otimização | Economia |
+| Otimização          | Economia                         |
 | ------------------- | -------------------------------- |
-| Cache NPM | ~60% tempo de build |
-| Cache Playwright | ~3-4 min por run |
-| Path Filters | Commits docs-only não acionam CI |
-| Codecov Integration | Tracking automático de coverage |
+| Cache NPM           | ~60% tempo de build              |
+| Cache Playwright    | ~3-4 min por run                 |
+| Path Filters        | Commits docs-only não acionam CI |
+| Codecov Integration | Tracking automático de coverage  |
 
 ### 12.7 Rodando Testes Localmente
 
@@ -1422,27 +1507,27 @@ PUPPETEER_HEADLESS=false npm test
 ```json
 // .vscode/launch.json
 {
- "version": "0.2.0",
- "configurations": [
- {
- "type": "node",
- "request": "launch",
- "name": "Debug Jest Backend",
- "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
- "args": ["--runInBand", "--watchAll=false"],
- "cwd": "${workspaceFolder}/backend",
- "console": "integratedTerminal"
- },
- {
- "type": "node",
- "request": "launch",
- "name": "Debug Vitest Frontend",
- "runtimeExecutable": "npx",
- "runtimeArgs": ["vitest", "--no-coverage"],
- "cwd": "${workspaceFolder}/frontend",
- "console": "integratedTerminal"
- }
- ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Jest Backend",
+      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "args": ["--runInBand", "--watchAll=false"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Vitest Frontend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vitest", "--no-coverage"],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal"
+    }
+  ]
 }
 ```
 
@@ -1491,27 +1576,27 @@ npx playwright codegen localhost:5173
 
 #### Nomenclatura
 
-| Tipo | Padrão | Exemplo |
+| Tipo            | Padrão                         | Exemplo                   |
 | --------------- | ------------------------------ | ------------------------- |
-| Unit (Backend) | `*.spec.ts` | `auth.service.spec.ts` |
-| Unit (Frontend) | `*.test.tsx` | `Button.test.tsx` |
-| Integration | `*.spec.ts` | `auth.controller.spec.ts` |
-| E2E | `*.e2e-spec.ts` ou `*.spec.ts` | `critical-flow.spec.ts` |
+| Unit (Backend)  | `*.spec.ts`                    | `auth.service.spec.ts`    |
+| Unit (Frontend) | `*.test.tsx`                   | `Button.test.tsx`         |
+| Integration     | `*.spec.ts`                    | `auth.controller.spec.ts` |
+| E2E             | `*.e2e-spec.ts` ou `*.spec.ts` | `critical-flow.spec.ts`   |
 
 #### Estrutura AAA (Arrange-Act-Assert)
 
 ```typescript
 it('should do something', async () => {
- // Arrange - Setup inicial
- const mockData = { id: 1, name: 'Test' };
- mockService.findOne.mockResolvedValue(mockData);
+  // Arrange - Setup inicial
+  const mockData = { id: 1, name: 'Test' };
+  mockService.findOne.mockResolvedValue(mockData);
 
- // Act - Executar ação
- const result = await service.getById(1);
+  // Act - Executar ação
+  const result = await service.getById(1);
 
- // Assert - Verificar resultado
- expect(result).toEqual(mockData);
- expect(mockService.findOne).toHaveBeenCalledWith(1);
+  // Assert - Verificar resultado
+  expect(result).toEqual(mockData);
+  expect(mockService.findOne).toHaveBeenCalledWith(1);
 });
 ```
 
@@ -1522,16 +1607,16 @@ it('should do something', async () => {
 ```typescript
 // Mock de serviço injetado
 const mockUsersService = {
- findByEmail: jest.fn(),
- create: jest.fn(),
+  findByEmail: jest.fn(),
+  create: jest.fn(),
 };
 
 // Uso no módulo de teste
 const module = await Test.createTestingModule({
- providers: [
- AuthService,
- { provide: UsersService, useValue: mockUsersService },
- ],
+  providers: [
+    AuthService,
+    { provide: UsersService, useValue: mockUsersService },
+  ],
 }).compile();
 ```
 
@@ -1542,14 +1627,14 @@ const module = await Test.createTestingModule({
 import { rest } from 'msw';
 
 export const handlers = [
- rest.post('/api/auth/login', (req, res, ctx) => {
- return res(
- ctx.json({
- accessToken: 'mock-token',
- user: { id: 1, email: 'test@example.com' },
- }),
- );
- }),
+  rest.post('/api/auth/login', (req, res, ctx) => {
+    return res(
+      ctx.json({
+        accessToken: 'mock-token',
+        user: { id: 1, email: 'test@example.com' },
+      }),
+    );
+  }),
 ];
 ```
 
@@ -1563,12 +1648,12 @@ export const handlers = [
 import { Logger } from '@nestjs/common';
 
 this.logger.log({
- event: 'etp_section_generated',
- etpId: etp.id,
- sectionCode: 'IV',
- llmProvider: 'openai',
- tokensUsed: 1250,
- latencyMs: 3400,
+  event: 'etp_section_generated',
+  etpId: etp.id,
+  sectionCode: 'IV',
+  llmProvider: 'openai',
+  tokensUsed: 1250,
+  latencyMs: 3400,
 });
 ```
 
@@ -1583,5 +1668,5 @@ this.logger.log({
 
 **Documento vivo**: Este arquivo será atualizado conforme o desenvolvimento avança.
 
-**Última atualização**: 2025-12-07
-**Versão**: 0.2.0 (Testing Strategy)
+**Última atualização**: 2025-12-21
+**Versão**: 0.3.0 (Agent Architecture Documentation)
