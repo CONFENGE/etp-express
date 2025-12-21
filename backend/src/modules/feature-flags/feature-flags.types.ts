@@ -85,6 +85,7 @@ export interface FeatureFlagEvaluation {
   /** Reason for the evaluation result */
   reason:
     | 'default'
+    | 'cache'
     | 'user_override'
     | 'org_override'
     | 'percentage'
