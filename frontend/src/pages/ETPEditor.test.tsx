@@ -181,7 +181,7 @@ vi.mock('@/components/etp/ETPEditorContent', () => ({
             onChange={(e) => onContentChange(e.target.value)}
             placeholder={`Digite o conteúdo da seção ${sections[0].title}...`}
           />
-          <button role="button">Gerar Sugestao</button>
+          <button>Gerar Sugestao</button>
         </div>
       )}
     </div>
