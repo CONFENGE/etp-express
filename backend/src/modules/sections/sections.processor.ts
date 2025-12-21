@@ -6,6 +6,7 @@ import { EtpsService } from '../etps/etps.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
+import { PrometheusMetricsService } from '../../health/prometheus-metrics.service';
 
 /**
  * Job payload for section generation queue
@@ -68,6 +69,7 @@ export class SectionsProcessor
     private sectionsRepository: Repository<EtpSection>,
     private orchestratorService: OrchestratorService,
     private etpsService: EtpsService,
+    private prometheusMetrics: PrometheusMetricsService,
   ) {
     super();
   }
@@ -145,6 +147,8 @@ export class SectionsProcessor
       `Processing section generation job ${job.id} for ETP ${etpId}, section ${sectionType}`,
     );
 
+    const jobStartTime = Date.now();
+
     try {
       // Step 1: Validate section exists
       await job.updateProgress(10);
@@ -213,6 +217,14 @@ export class SectionsProcessor
         `Section generation job ${job.id} completed successfully`,
       );
 
+      // Record BullMQ job success metric (#862)
+      const jobDurationSeconds = (Date.now() - jobStartTime) / 1000;
+      this.prometheusMetrics.recordBullMQJob(
+        'sections',
+        'completed',
+        jobDurationSeconds,
+      );
+
       return {
         sectionId: section.id,
         status: SectionStatus.GENERATED,
@@ -248,6 +260,15 @@ export class SectionsProcessor
           `Failed to update section with error status: ${saveError.message}`,
         );
       }
+
+      // Record BullMQ job failure metric (#862)
+      const jobDurationSeconds = (Date.now() - jobStartTime) / 1000;
+      this.prometheusMetrics.recordBullMQJob(
+        'sections',
+        'failed',
+        jobDurationSeconds,
+        error.name || 'UnknownError',
+      );
 
       throw error; // Rethrow to trigger BullMQ retry
     }

@@ -13,6 +13,7 @@ import {
   SectionStatus,
   SectionType,
 } from '../../entities/etp-section.entity';
+import { PrometheusMetricsService } from '../../health/prometheus-metrics.service';
 
 describe('SectionsProcessor', () => {
   let processor: SectionsProcessor;
@@ -91,6 +92,14 @@ describe('SectionsProcessor', () => {
           useValue: {
             findOneMinimal: jest.fn(),
             updateCompletionPercentage: jest.fn(),
+          },
+        },
+        {
+          provide: PrometheusMetricsService,
+          useValue: {
+            recordBullMQJob: jest.fn(),
+            recordSectionGeneration: jest.fn(),
+            recordEnrichmentSource: jest.fn(),
           },
         },
       ],
