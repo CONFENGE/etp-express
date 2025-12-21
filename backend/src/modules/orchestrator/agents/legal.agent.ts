@@ -20,6 +20,15 @@ export interface LegalValidationResult {
  * Agent responsible for ensuring legal compliance of ETP content with Brazilian public procurement law.
  *
  * @remarks
+ * **DESIGN DECISION: DETERMINISTIC VALIDATION**
+ *
+ * This agent uses **keyword matching** (`string.includes()`), NOT LLM-based analysis.
+ * This is intentional for auditability, performance, cost, and testability.
+ * See ARCHITECTURE.md section 3.3 for full rationale.
+ *
+ * **WARNING**: Replacing keyword matching with LLM validation will change behavior
+ * from deterministic to probabilistic, impacting audit compliance and test reliability.
+ *
  * This agent validates generated content against:
  * - Lei 14.133/2021 (Nova Lei de Licitações e Contratos)
  * - Lei 8.666/1993 (partially repealed but still referenced)
