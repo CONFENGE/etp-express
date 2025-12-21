@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-20 | **Progresso:** 423/463 (91.4%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-21 | **Progresso:** 424/463 (91.6%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** TBD | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -528,7 +528,7 @@ Go-Live B2G █████████████████░░░ 12/14 8
 **#655 - [EPIC] Prometheus Business Metrics**
 | # | Issue | Esforço |
 |---|-------|---------|
-| #860 | Setup base e endpoint /metrics | 1.5h |
+| ~~#860~~ | ~~Setup base e endpoint /metrics~~ | ✅ DONE |
 | #861 | Métricas de negócio | 2h |
 | #862 | Integração nos serviços | 0.5h |
 
