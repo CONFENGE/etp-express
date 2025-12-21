@@ -441,10 +441,13 @@ console.log(import.meta.env.VITE_SENTRY_DSN) // Deve ter valor
 
 ---
 
-**Próximos passos:**
+**Proximos passos:**
 
 1. Configurar PagerDuty para P0 incidents (on-call rotation)
-2. Adicionar custom business metrics (ETPs criados/dia, tempo médio de geração)
-3. Configurar distributed tracing com OpenTelemetry
+2. Adicionar custom business metrics (ETPs criados/dia, tempo medio de geracao)
+
+**Documentacao relacionada:**
+
+- [OpenTelemetry Distributed Tracing](./OPENTELEMETRY.md) - Tracing distribuido (#857, #858, #859)
 
 **Última revisão:** 2025-12-20
