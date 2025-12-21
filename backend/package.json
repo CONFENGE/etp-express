@@ -25,6 +25,7 @@
     "seed:legislation": "ts-node -r tsconfig-paths/register scripts/seed-legislation.ts",
     "seed:admin": "ts-node -r tsconfig-paths/register scripts/seed-admin.ts",
     "seed:admin:prod": "node dist/scripts/seed-admin.js",
+    "seed:alpha-testers": "ts-node -r tsconfig-paths/register scripts/seed-alpha-testers.ts",
     "reset:demo": "ts-node -r tsconfig-paths/register scripts/reset-demo-data.ts",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "swagger:export": "ts-node -r tsconfig-paths/register src/scripts/export-swagger.ts"
