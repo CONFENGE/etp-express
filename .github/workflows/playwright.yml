@@ -49,7 +49,8 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests
-        run: npx playwright test
+        # Exclude visual project (runs in dedicated visual-regression.yml workflow)
+        run: npx playwright test --project=chromium --project=firefox --project=webkit
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
