@@ -65,7 +65,7 @@
     "docx": "^9.5.1",
     "exa-js": "^2.0.11",
     "exceljs": "^4.4.0",
-    "express-rate-limit": "^7.1.5",
+    "express-rate-limit": "^8.2.1",
     "handlebars": "^4.7.8",
     "helmet": "^8.1.0",
     "ioredis": "^5.8.2",
