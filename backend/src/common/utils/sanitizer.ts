@@ -107,9 +107,13 @@ const MALICIOUS_PATTERNS: RegExp[] = [
 /**
  * Zero-width and invisible Unicode characters to remove.
  * These can be used to obfuscate malicious patterns.
+ * The regex includes bidirectional control characters (U+202A-U+202E, U+2066-U+2069)
+ * which are intentionally matched for security sanitization purposes.
  */
+/* eslint-disable no-misleading-character-class */
 const ZERO_WIDTH_PATTERN =
   /[\u200B-\u200D\u2060\u2061\u2062\u2063\u2064\uFEFF\u00AD\u034F\u061C\u17B4\u17B5\u180E\u2028\u2029\u202A-\u202E\u2066-\u2069]/g;
+/* eslint-enable no-misleading-character-class */
 
 /**
  * Unicode confusables mapping for common bypass attempts.

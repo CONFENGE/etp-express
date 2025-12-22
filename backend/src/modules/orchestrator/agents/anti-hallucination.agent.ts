@@ -120,7 +120,7 @@ export class AntiHallucinationAgent {
       severity: 'medium' as const,
     },
     {
-      pattern: /processo\s+n?[º°]?\s*[\d\/\-\.]+/gi,
+      pattern: /processo\s+n?[º°]?\s*[\d/\-.]+/gi,
       description: 'Número de processo',
       severity: 'high' as const,
     },

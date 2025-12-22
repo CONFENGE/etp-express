@@ -252,7 +252,7 @@ describe('Seed Admin Script', () => {
       expect(password).toMatch(/[0-9]/);
 
       // Contains special character
-      expect(password).toMatch(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/);
+      expect(password).toMatch(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
     });
 
     it('admin should not require password change (master account)', () => {

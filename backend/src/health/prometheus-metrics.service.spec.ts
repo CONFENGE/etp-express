@@ -286,9 +286,13 @@ describe('PrometheusMetricsService', () => {
       const metrics = await service.getMetrics();
 
       // Assert
-      expect(metrics).toContain('etp_express_generation_duration_seconds_bucket');
+      expect(metrics).toContain(
+        'etp_express_generation_duration_seconds_bucket',
+      );
       expect(metrics).toContain('etp_express_generation_duration_seconds_sum');
-      expect(metrics).toContain('etp_express_generation_duration_seconds_count');
+      expect(metrics).toContain(
+        'etp_express_generation_duration_seconds_count',
+      );
     });
   });
 
