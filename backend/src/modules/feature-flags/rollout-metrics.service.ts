@@ -6,7 +6,6 @@ import {
   ROLLOUT_STRATEGY,
   getNextPhase,
   getPreviousPhase,
-  getPhaseConfig,
   canAdvancePhase,
 } from './rollout-strategy.config';
 
@@ -110,7 +109,6 @@ export class RolloutMetricsService {
     const phaseDurationHours = this.calculateDurationHours(phaseStartedAt);
     const metrics = await this.getMetrics(featureKey);
 
-    const phaseConfig = getPhaseConfig(phase);
     const canAdvance = canAdvancePhase(phase, {
       errorRateThreshold: metrics.errorRate,
       minDurationHours: phaseDurationHours,
