@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-22 | **Progresso:** 456/463 (98.5%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-22 | **Progresso:** 453/463 (97.8%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -539,13 +539,13 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#863~~ | ~~Análise e decisão de estratégia~~ | ✅ CLOSED 2025-12-21 |
 | ~~#864~~ | ~~Execução da migração~~ | ✅ CLOSED 2025-12-21 |
 
-**#110 - [EPIC] Staged Rollout & Feature Flags** (3/4 DONE)
+**#110 - [EPIC] Staged Rollout & Feature Flags** ✅ COMPLETE (4/4)
 | # | Issue | Esforço |
 |---|-------|---------|
 | ~~#865~~ | ~~Feature Flags: Escolha e setup provider~~ | ✅ CLOSED 2025-12-21 |
 | ~~#866~~ | ~~Feature Flags: Integração frontend~~ | ✅ CLOSED 2025-12-21 |
 | ~~#867~~ | ~~Estratégia Alpha/Beta/GA~~ | ✅ CLOSED 2025-12-22 |
-| #868 | Documentação e runbook | 3h |
+| ~~#868~~ | ~~Documentação e runbook~~ | ✅ CLOSED 2025-12-22 |
 
 **#111 - [EPIC] Production Support SLA** ✅ COMPLETE (3/3)
 | # | Issue | Esforço |
@@ -554,7 +554,7 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#870~~ | ~~SLA: Setup de ferramentas~~ | ✅ CLOSED 2025-12-21 |
 | ~~#871~~ | ~~SLA: Treinamento e documentação~~ | ✅ CLOSED 2025-12-21 |
 
-**Total Atualizado:** 7 issues restantes (4 EPICs abertos, 3 com sub-issues completas) | ~12-16h
+**Total Atualizado:** 6 issues restantes (4 EPICs abertos - todos com sub-issues completas, 1 P3 feature) | ~12h
 
 ---
 
@@ -569,10 +569,10 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 463      |
-| Issues Abertas    | 11       |
-| Issues Fechadas   | 452      |
-| Progresso         | 97.6%    |
-| Velocidade        | 14.3/dia |
+| Issues Abertas    | 10       |
+| Issues Fechadas   | 453      |
+| Progresso         | 97.8%    |
+| Velocidade        | 16.4/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1879     |
@@ -581,7 +581,7 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | P2 Go-Live        | 0 ✅     |
 | P3 Go-Live        | 5        |
 | P2 Gov-API        | 0 ✅     |
-| Sprint v1.1       | 7        |
+| Sprint v1.1       | 6        |
 
 ---
 
