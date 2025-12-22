@@ -37,7 +37,7 @@ export interface SectionTemplate {
 export interface SectionField {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select';
+  type: 'text' | 'textarea' | 'richtext' | 'number' | 'date' | 'select';
   required: boolean;
   placeholder?: string;
   options?: string[];
