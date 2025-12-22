@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useFeatureFlag } from './useFeatureFlag';
 import { useFeatureFlagsStore } from '@/store/featureFlagsStore';
 import { useAuthStore } from '@/store/authStore';
