@@ -1,0 +1,234 @@
+name: Security - OWASP ZAP Scan
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/**/*.ts'
+      - 'backend/src/**/*'
+      - '.github/workflows/zap-security-scan.yml'
+  schedule:
+    # Run weekly on Sundays at 3 AM UTC
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to run'
+        required: false
+        default: 'baseline'
+        type: choice
+        options:
+          - baseline
+          - api
+          - full
+
+env:
+  TARGET_URL: 'https://etp-express-backend-production.up.railway.app'
+  OPENAPI_URL: 'https://etp-express-backend-production.up.railway.app/api/docs-json'
+
+jobs:
+  zap-baseline-scan:
+    name: ZAP Baseline Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event.inputs.scan_type != 'api' && github.event.inputs.scan_type != 'full'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check target availability
+        id: health-check
+        run: |
+          echo "Checking target availability..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.TARGET_URL }}/api/health" || echo "000")
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "Target is available (HTTP $HTTP_STATUS)"
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "Target is not available (HTTP $HTTP_STATUS)"
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "::warning::Target URL returned HTTP $HTTP_STATUS - scan may fail"
+          fi
+
+      - name: Create ZAP rules file
+        run: |
+          cat > zap-rules.tsv << 'EOF'
+          # ZAP Scan Rules Configuration
+          # Format: rule_id	action	description
+          # Actions: IGNORE, WARN, FAIL
+
+          # Informational findings (IGNORE)
+          10015	IGNORE	Re-examine Cache-control Directives (API caching expected)
+          10021	IGNORE	X-Content-Type-Options Header Missing (handled by helmet)
+          10036	IGNORE	Server Leaks Version Information
+          10037	IGNORE	Server Leaks Information via X-Powered-By
+          10038	IGNORE	Content Security Policy Header Not Set (SPA handles this)
+          10049	IGNORE	Storable and Cacheable Content (API responses cacheable by design)
+          10098	IGNORE	Cross-Domain Misconfiguration (expected for API)
+
+          # Low severity (WARN only)
+          10020	WARN	X-Frame-Options Header Not Set
+          10035	WARN	Strict-Transport-Security Header Not Set
+          10096	WARN	Timestamp Disclosure
+
+          # Medium severity (WARN for now, review periodically)
+          10010	WARN	Cookie No HttpOnly Flag
+          10011	WARN	Cookie Without Secure Flag
+          10054	WARN	Cookie without SameSite Attribute
+
+          # High/Critical severity (FAIL - block merge)
+          40012	FAIL	Cross Site Scripting (Reflected)
+          40014	FAIL	Cross Site Scripting (Persistent)
+          40018	FAIL	SQL Injection
+          90020	FAIL	Remote OS Command Injection
+          90021	FAIL	XPath Injection
+          90023	FAIL	XML External Entity Attack
+          40003	FAIL	CRLF Injection
+          40008	FAIL	Parameter Tampering
+          40009	FAIL	Server Side Include
+          40013	FAIL	Session ID in URL Rewrite
+          10202	FAIL	Absence of Anti-CSRF Tokens
+          EOF
+
+      - name: Run ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: '${{ env.TARGET_URL }}/api'
+          rules_file_name: 'zap-rules.tsv'
+          fail_action: 'true'
+          allow_issue_writing: 'false'
+          artifact_name: 'zap-baseline-report'
+
+      - name: Generate scan summary
+        if: always()
+        run: |
+          echo "## OWASP ZAP Baseline Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${{ env.TARGET_URL }}/api" >> $GITHUB_STEP_SUMMARY
+          echo "**Scan Type:** Baseline (Passive)" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f "report_html.html" ]; then
+            echo "Full report available in workflow artifacts." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  zap-api-scan:
+    name: ZAP API Scan (OpenAPI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event.inputs.scan_type == 'api' || github.event.inputs.scan_type == 'full'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check OpenAPI spec availability
+        id: openapi-check
+        run: |
+          echo "Checking OpenAPI spec availability..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.OPENAPI_URL }}" || echo "000")
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "OpenAPI spec is available (HTTP $HTTP_STATUS)"
+            echo "available=true" >> $GITHUB_OUTPUT
+
+            # Download spec for reference
+            curl -s "${{ env.OPENAPI_URL }}" > openapi-spec.json
+            echo "OpenAPI spec downloaded"
+          else
+            echo "OpenAPI spec is not available (HTTP $HTTP_STATUS)"
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "::error::OpenAPI spec not available - cannot run API scan"
+            exit 1
+          fi
+
+      - name: Create ZAP API scan rules
+        run: |
+          cat > zap-api-rules.tsv << 'EOF'
+          # ZAP API Scan Rules Configuration
+          # Optimized for REST API scanning
+
+          # Informational (IGNORE)
+          10021	IGNORE	X-Content-Type-Options Header Missing
+          10036	IGNORE	Server Leaks Version Information
+          10098	IGNORE	Cross-Domain Misconfiguration
+
+          # Low severity (WARN)
+          10020	WARN	X-Frame-Options Header
+          10035	WARN	Strict-Transport-Security Header
+
+          # Medium severity (WARN)
+          10010	WARN	Cookie No HttpOnly Flag
+          10011	WARN	Cookie Without Secure Flag
+
+          # Critical - Must fail (FAIL)
+          40012	FAIL	Cross Site Scripting (Reflected)
+          40014	FAIL	Cross Site Scripting (Persistent)
+          40018	FAIL	SQL Injection
+          90020	FAIL	Remote OS Command Injection
+          90023	FAIL	XML External Entity Attack
+          EOF
+
+      - name: Run ZAP API Scan
+        uses: zaproxy/action-api-scan@v0.9.0
+        with:
+          target: '${{ env.OPENAPI_URL }}'
+          format: openapi
+          rules_file_name: 'zap-api-rules.tsv'
+          fail_action: 'true'
+          allow_issue_writing: 'false'
+          artifact_name: 'zap-api-report'
+
+      - name: Generate API scan summary
+        if: always()
+        run: |
+          echo "## OWASP ZAP API Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**OpenAPI Spec:** ${{ env.OPENAPI_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Scan Type:** API (Active)" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f "openapi-spec.json" ]; then
+            ENDPOINTS=$(jq '.paths | keys | length' openapi-spec.json 2>/dev/null || echo "N/A")
+            echo "**Endpoints Scanned:** $ENDPOINTS" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  scan-summary:
+    name: Security Scan Summary
+    runs-on: ubuntu-latest
+    needs: [zap-baseline-scan]
+    if: always() && (github.event.inputs.scan_type != 'api' && github.event.inputs.scan_type != 'full')
+
+    steps:
+      - name: Evaluate scan results
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.zap-baseline-scan.result }}" == "success" ]; then
+            echo "| Scan | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| ZAP Baseline | :white_check_mark: Passed |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "No critical or high severity vulnerabilities detected." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Scan | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| ZAP Baseline | :x: Failed |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo ":warning: **Security issues detected.** Review the scan report in artifacts." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Powered by [OWASP ZAP](https://www.zaproxy.org/)*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if scan failed
+        if: needs.zap-baseline-scan.result == 'failure'
+        run: |
+          echo "::error::OWASP ZAP scan detected security issues. Please review the report."
+          exit 1
