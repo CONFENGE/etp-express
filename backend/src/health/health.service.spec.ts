@@ -592,8 +592,14 @@ describe('HealthService', () => {
 
       // Assert
       expect(result.status).toBe('degraded');
-      const openaiProvider = result.components.providers.openai as { status: string; circuitOpen: boolean };
-      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      const openaiProvider = result.components.providers.openai as {
+        status: string;
+        circuitOpen: boolean;
+      };
+      const exaProvider = result.components.providers.exa as {
+        status: string;
+        circuitOpen: boolean;
+      };
       expect(openaiProvider.status).toBe('degraded');
       expect(openaiProvider.circuitOpen).toBe(true);
       expect(exaProvider.status).toBe('healthy');
@@ -617,7 +623,10 @@ describe('HealthService', () => {
 
       // Assert
       expect(result.status).toBe('degraded');
-      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      const exaProvider = result.components.providers.exa as {
+        status: string;
+        circuitOpen: boolean;
+      };
       expect(exaProvider.status).toBe('degraded');
       expect(exaProvider.circuitOpen).toBe(true);
     });
@@ -646,8 +655,14 @@ describe('HealthService', () => {
 
       // Assert
       expect(result.status).toBe('degraded');
-      const openaiProvider = result.components.providers.openai as { status: string; circuitOpen: boolean };
-      const exaProvider = result.components.providers.exa as { status: string; circuitOpen: boolean };
+      const openaiProvider = result.components.providers.openai as {
+        status: string;
+        circuitOpen: boolean;
+      };
+      const exaProvider = result.components.providers.exa as {
+        status: string;
+        circuitOpen: boolean;
+      };
       expect(openaiProvider.circuitOpen).toBe(true);
       expect(exaProvider.circuitOpen).toBe(true);
     });

@@ -62,7 +62,6 @@ try {
     console.log('[OpenTelemetry] SDK initialized successfully');
   }
 } catch (error) {
-  // eslint-disable-next-line no-console
   console.error('[OpenTelemetry] Failed to initialize SDK:', error);
 }
 
@@ -76,7 +75,6 @@ const shutdownOtel = async (): Promise<void> => {
       console.log('[OpenTelemetry] SDK shut down successfully');
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('[OpenTelemetry] Error shutting down SDK:', error);
   }
 };
