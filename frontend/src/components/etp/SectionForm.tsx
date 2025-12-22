@@ -1,10 +1,11 @@
 import { memo, useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { HelpTooltip } from '@/components/common/HelpTooltip';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { SectionTemplate } from '@/types/etp';
 import { Save } from 'lucide-react';
 
@@ -28,7 +29,7 @@ export const SectionForm = memo(function SectionForm({
     [defaultValues],
   );
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, control } = useForm({
     defaultValues: memoizedDefaultValues,
   });
 
@@ -54,7 +55,23 @@ export const SectionForm = memo(function SectionForm({
             {field.helpText && <HelpTooltip content={field.helpText} />}
           </div>
 
-          {field.type === 'textarea' ? (
+          {field.type === 'richtext' ? (
+            <Controller
+              name={field.name}
+              control={control}
+              rules={{ required: field.required }}
+              render={({ field: controllerField }) => (
+                <RichTextEditor
+                  id={field.name}
+                  content={(controllerField.value as string) || ''}
+                  onChange={(html) => controllerField.onChange(html)}
+                  placeholder={field.placeholder}
+                  disabled={isLoading}
+                  minHeight="200px"
+                />
+              )}
+            />
+          ) : field.type === 'textarea' ? (
             <Textarea
               id={field.name}
               placeholder={field.placeholder}
