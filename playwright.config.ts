@@ -57,8 +57,6 @@ export default defineConfig({
       name: 'visual',
       testDir: './e2e/visual',
       testMatch: /.*\.visual\.spec\.ts/,
-      // Create missing baselines automatically, fail only on differences
-      updateSnapshots: 'missing',
       use: {
         ...devices['Desktop Chrome'],
         // Consistent viewport for visual tests

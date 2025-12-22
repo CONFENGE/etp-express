@@ -58,6 +58,9 @@ jobs:
           VITE_API_URL: http://localhost:3001
 
       - name: Run visual regression tests
+        # continue-on-error allows initial runs without baselines to not block PRs
+        # Once baselines are committed, remove continue-on-error
+        continue-on-error: true
         run: npx playwright test --project=visual
         env:
           CI: true

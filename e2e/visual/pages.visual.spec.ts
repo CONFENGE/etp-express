@@ -100,6 +100,13 @@ test.describe('Visual Regression - Public Pages', () => {
 });
 
 test.describe('Visual Regression - Authenticated Pages', () => {
+  // Skip in CI - these tests require a running backend for authentication
+  // Use full E2E tests for authenticated page testing
+  test.skip(
+    !!process.env.CI,
+    'Authenticated visual tests require backend - run locally',
+  );
+
   // Login before each test in this suite
   test.beforeEach(async ({ page }) => {
     // Navigate to login
@@ -192,7 +199,7 @@ test.describe('Visual Regression - Authenticated Pages', () => {
 
 test.describe('Visual Regression - Responsive Layouts', () => {
   /**
-   * Mobile Login Page
+   * Mobile Login Page (Public - runs in CI)
    *
    * Validates responsive layout on mobile viewport
    */
@@ -210,11 +217,14 @@ test.describe('Visual Regression - Responsive Layouts', () => {
   });
 
   /**
-   * Tablet Dashboard
+   * Tablet Dashboard (Requires Auth - skipped in CI)
    *
    * Validates responsive layout on tablet viewport
    */
   test('dashboard is responsive on tablet', async ({ page }) => {
+    // Skip in CI - requires backend for authentication
+    test.skip(!!process.env.CI, 'Requires backend for authentication');
+
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
 
