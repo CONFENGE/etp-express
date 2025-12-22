@@ -3,6 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FeatureFlagsController } from './feature-flags.controller';
 import { FeatureFlagsService } from './feature-flags.service';
+import { RolloutMetricsService } from './rollout-metrics.service';
 import { FeatureFlagGuard } from './guards/feature-flag.guard';
 import { FeatureFlag } from './feature-flags.types';
 
@@ -30,6 +31,15 @@ describe('FeatureFlagsController', () => {
     isRedisAvailable: jest.fn(),
   };
 
+  const mockRolloutMetricsService = {
+    getStatus: jest.fn(),
+    initializeRollout: jest.fn(),
+    advancePhase: jest.fn(),
+    rollbackPhase: jest.fn(),
+    getRolloutConfiguration: jest.fn(),
+    isRedisAvailable: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FeatureFlagsController],
@@ -37,6 +47,10 @@ describe('FeatureFlagsController', () => {
         {
           provide: FeatureFlagsService,
           useValue: mockFeatureFlagsService,
+        },
+        {
+          provide: RolloutMetricsService,
+          useValue: mockRolloutMetricsService,
         },
         {
           provide: Reflector,
