@@ -258,9 +258,8 @@ describe('OutputValidatorService', () => {
       });
 
       it('should reject content with repeated blocks', () => {
-        const block = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '.repeat(
-          3,
-        );
+        const block =
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '.repeat(3);
         const repetitiveContent = block + block + block;
         const result = service.validateOutput(
           repetitiveContent,
@@ -327,7 +326,9 @@ describe('OutputValidatorService', () => {
         // Generate unique numbered paragraphs to avoid repetition detection
         const sentences: string[] = [];
         for (let i = 1; i <= 100; i++) {
-          sentences.push(`Paragrafo numero ${i} trata da necessidade de contratacao de servicos tecnicos especializados para o orgao publico federal que demanda modernizacao de sua infraestrutura de acordo com normas vigentes.`);
+          sentences.push(
+            `Paragrafo numero ${i} trata da necessidade de contratacao de servicos tecnicos especializados para o orgao publico federal que demanda modernizacao de sua infraestrutura de acordo com normas vigentes.`,
+          );
         }
         let nearMaxContent = sentences.join(' ');
         nearMaxContent = nearMaxContent.substring(0, 9990);
