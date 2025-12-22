@@ -107,8 +107,9 @@ test.describe('Visual Regression - Authenticated Pages', () => {
 
     // Fill credentials
     await page.getByLabel(/email/i).fill(VISUAL_CONFIG.testUser.email);
+    // Use specific input selector to avoid matching "Mostrar senha" button
     await page
-      .getByLabel(/senha|password/i)
+      .locator('input[type="password"]')
       .fill(VISUAL_CONFIG.testUser.password);
 
     // Submit and wait for navigation
@@ -220,8 +221,9 @@ test.describe('Visual Regression - Responsive Layouts', () => {
     // Login first
     await page.goto('/login');
     await page.getByLabel(/email/i).fill(VISUAL_CONFIG.testUser.email);
+    // Use specific input selector to avoid matching "Mostrar senha" button
     await page
-      .getByLabel(/senha|password/i)
+      .locator('input[type="password"]')
       .fill(VISUAL_CONFIG.testUser.password);
     await page.getByRole('button', { name: /entrar|login/i }).click();
     await page.waitForURL(/\/(dashboard|etps|home)/i, { timeout: 10000 });

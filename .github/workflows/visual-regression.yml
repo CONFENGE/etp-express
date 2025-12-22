@@ -11,6 +11,10 @@ on:
       - 'playwright.config.ts'
       - '.github/workflows/visual-regression.yml'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   visual-test:
     name: Visual Regression
