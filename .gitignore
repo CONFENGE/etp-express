@@ -50,6 +50,12 @@ coverage/
 test-results/
 playwright-report/
 
+# Mutation Testing (Stryker)
+.stryker-cache/
+.stryker-tmp/
+reports/mutation/
+stryker.log
+
 # IDE
 .vscode/
 .idea/

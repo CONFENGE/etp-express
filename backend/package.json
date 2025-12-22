@@ -28,7 +28,9 @@
     "seed:alpha-testers": "ts-node -r tsconfig-paths/register scripts/seed-alpha-testers.ts",
     "reset:demo": "ts-node -r tsconfig-paths/register scripts/reset-demo-data.ts",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "swagger:export": "ts-node -r tsconfig-paths/register src/scripts/export-swagger.ts"
+    "swagger:export": "ts-node -r tsconfig-paths/register src/scripts/export-swagger.ts",
+    "test:mutation": "stryker run",
+    "test:mutation:dry": "stryker run --dryRunOnly"
   },
   "dependencies": {
     "@json2csv/plainjs": "^7.0.6",
@@ -90,6 +92,9 @@
   "devDependencies": {
     "@nestjs/schematics": "^10.0.3",
     "@nestjs/testing": "^11.1.9",
+    "@stryker-mutator/core": "^9.4.0",
+    "@stryker-mutator/jest-runner": "^9.4.0",
+    "@stryker-mutator/typescript-checker": "^9.4.0",
     "@types/adm-zip": "^0.5.7",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",

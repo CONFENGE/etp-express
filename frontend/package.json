@@ -10,7 +10,9 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "start": "serve -s dist -l 3000"
+    "start": "serve -s dist -l 3000",
+    "test:mutation": "stryker run",
+    "test:mutation:dry": "stryker run --dryRunOnly"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.3",
@@ -55,6 +57,9 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@eslint/js": "^9.39.0",
+    "@stryker-mutator/core": "^9.4.0",
+    "@stryker-mutator/typescript-checker": "^9.4.0",
+    "@stryker-mutator/vitest-runner": "^9.4.0",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
