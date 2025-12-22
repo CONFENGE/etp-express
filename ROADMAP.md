@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-21 | **Progresso:** 446/463 (96.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-21 | **Progresso:** 447/463 (96.5%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -494,12 +494,12 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#697~~ | ~~Migrations entidades gov-data~~ | ✅     | PR #732                          |
 | ~~#698~~ | ~~Jobs sync automático (BullMQ)~~ | ✅     | PR #774                          |
 
-### Sprint 3 - Observabilidade (1 open)
+### Sprint 3 - Observabilidade (0 open) ✅ COMPLETE
 
 | #        | Issue                             | Prior. | Status            |
 | -------- | --------------------------------- | ------ | ----------------- |
 | ~~#699~~ | ~~Métricas gov-api (Prometheus)~~ | ✅     | CLOSED 2025-12-18 |
-| #700     | Documentação integração           | P3     | -                 |
+| ~~#700~~ | ~~Documentação integração~~       | ✅     | DONE (2025-12-21) |
 
 **Labels:** `area/gov-api`, `enhancement`
 
@@ -580,7 +580,7 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | P1 Go-Live        | 0 ✅     |
 | P2 Go-Live        | 0 ✅     |
 | P3 Go-Live        | 8        |
-| P2 Gov-API        | 1        |
+| P2 Gov-API        | 0 ✅     |
 | Sprint v1.1       | 12       |
 
 ---
