@@ -32,7 +32,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --include=optional --force
+        # Use npm install (not ci) to avoid lockfile sync issues with optional deps
+        run: npm install --include=optional --force
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
