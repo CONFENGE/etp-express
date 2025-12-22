@@ -62,7 +62,7 @@ export class SlowQuerySubscriber implements EntitySubscriberInterface {
   private logSlowOperation(
     operation: string,
     tableName: string | undefined,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     _event: any,
   ): void {
     // Note: TypeORM doesn't provide query execution time in entity subscribers

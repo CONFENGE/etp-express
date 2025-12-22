@@ -18,7 +18,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as https from 'https';
 import * as http from 'http';
 
 const DEFAULT_PORT = 3001;
