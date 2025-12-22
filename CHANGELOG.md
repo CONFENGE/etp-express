@@ -13,6 +13,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### Rich Text WYSIWYG (2025-12-22)
+
+- ✅ #905 - Rich Text: Integração no SectionForm (PR #908)
+  - Adicionado tipo `richtext` à interface `SectionField` em `types/etp.ts`
+  - Atualizado `SectionForm.tsx` para renderizar `RichTextEditor` para campos richtext
+  - Usado `Controller` do react-hook-form para integração adequada com formulários
+  - Atualizado `section-templates.json` para usar richtext em todos os campos de texto extenso
+  - 12 novos testes unitários para SectionForm
+  - Parte do EPIC #759 (Rich Text WYSIWYG)
+  - Closes #905
+
 #### Accessibility (2025-12-21)
 
 - ✅ #458 - Add eslint-plugin-jsx-a11y for WCAG 2.1 AA compliance (PR #875)
@@ -41,7 +52,7 @@ Trabalho em progresso para alcançar qualidade de produção:
     - Response metadata: `llm.response.duration_ms`, `llm.stream.chunk_count`
   - **ExaService:** Spans para search operations
     - Atributos: `search.type`, `search.num_results`, `search.response.duration_ms`
-  - Spans seguem convencoes semanticas OpenTelemetry (gen_ai.*, llm.*, search.*)
+  - Spans seguem convencoes semanticas OpenTelemetry (gen*ai.*, llm.\_, search.\*)
   - Error handling com `recordException()` para falhas
   - Closes #858
 
@@ -69,134 +80,134 @@ Trabalho em progresso para alcançar qualidade de produção:
 #### Security & Infrastructure (2025-12-05)
 
 - ✅ #413 - Fix HIGH severity jws vulnerability + Update Railway domain (PR #415)
- - **Security Fix:** Upgraded `jws` from 3.2.2 to 3.2.3 (CVE Score: 7.5 HIGH)
- - Fixed GHSA-869p-cjfg-cm3x: Improper Verification of Cryptographic Signature (CWE-347)
- - Added npm `overrides` for `jws@^4.0.0` to force secure version
- - Upgraded `nodemailer` from 7.0.10 to 7.0.11 (LOW severity fix)
- - **Documentation:** Updated all Railway domain references from `etp-express-backend.up.railway.app` to `etp-express-backend-production.up.railway.app`
- - Zero vulnerabilities after fix (`npm audit --omit=dev`)
- - All 882 tests passing ✅
+- **Security Fix:** Upgraded `jws` from 3.2.2 to 3.2.3 (CVE Score: 7.5 HIGH)
+- Fixed GHSA-869p-cjfg-cm3x: Improper Verification of Cryptographic Signature (CWE-347)
+- Added npm `overrides` for `jws@^4.0.0` to force secure version
+- Upgraded `nodemailer` from 7.0.10 to 7.0.11 (LOW severity fix)
+- **Documentation:** Updated all Railway domain references from `etp-express-backend.up.railway.app` to `etp-express-backend-production.up.railway.app`
+- Zero vulnerabilities after fix (`npm audit --omit=dev`)
+- All 882 tests passing ✅
 
 #### Async Processing & Performance (2025-12-04 to 2025-12-05)
 
 - ✅ #221 - Unit Tests for Job Status Polling API (PR #417)
- - **Test Coverage Completion** para endpoint `GET /sections/jobs/:jobId` implementado em PR #416
- - 6 novos testes unitários cobrindo todos os estados de job:
- - ✅ Job completed com result (200 OK)
- - ✅ Job waiting na fila (200 OK)
- - ✅ Job active com progress (200 OK)
- - ✅ Job failed com error message (200 OK)
- - ✅ Job not found (404 NOT FOUND)
- - ✅ Retry attempts metadata validation
- - TypeScript type safety aprimorado com `as const` para status literals
- - Test coverage: **37/37 tests passing** (+6 tests, +19.4% para sections.controller.spec.ts)
- - Overall coverage mantido: 77.83% statements, 77.88% lines ✅
- - Closes #221
+- **Test Coverage Completion** para endpoint `GET /sections/jobs/:jobId` implementado em PR #416
+- 6 novos testes unitários cobrindo todos os estados de job:
+- ✅ Job completed com result (200 OK)
+- ✅ Job waiting na fila (200 OK)
+- ✅ Job active com progress (200 OK)
+- ✅ Job failed com error message (200 OK)
+- ✅ Job not found (404 NOT FOUND)
+- ✅ Retry attempts metadata validation
+- TypeScript type safety aprimorado com `as const` para status literals
+- Test coverage: **37/37 tests passing** (+6 tests, +19.4% para sections.controller.spec.ts)
+- Overall coverage mantido: 77.83% statements, 77.88% lines ✅
+- Closes #221
 
 - ✅ #186 - Job Status Polling API for Async Section Generation (PR #416)
- - **Endpoint final** para completar funcionalidade async queue processing (#220)
- - Novo endpoint `GET /sections/jobs/:jobId` para polling de status em tempo real
- - Suporte a 6 estados: waiting, active, completed, failed, delayed, unknown
- - Progress tracking 0-100% para feedback visual no frontend
- - Retry attempts tracking (attemptsMade/attemptsMax)
- - Timestamps completos (createdAt, processedOn, completedAt, failedReason)
- - Error messages detalhados quando job falha
- - Novo DTO `JobStatusDto` com documentação OpenAPI completa
- - Documentação técnica completa em ARCHITECTURE.md (nova seção 2.6 - Job Queue & Async Processing)
- - 7 novos testes unitários para `getJobStatus()` (889/889 passing, 100%)
- - Coverage mantido: 77.76% statements, 70.05% branches
- - Ready para frontend polling implementation (Issue #222)
- - Closes #391 (duplicada de #186)
+- **Endpoint final** para completar funcionalidade async queue processing (#220)
+- Novo endpoint `GET /sections/jobs/:jobId` para polling de status em tempo real
+- Suporte a 6 estados: waiting, active, completed, failed, delayed, unknown
+- Progress tracking 0-100% para feedback visual no frontend
+- Retry attempts tracking (attemptsMade/attemptsMax)
+- Timestamps completos (createdAt, processedOn, completedAt, failedReason)
+- Error messages detalhados quando job falha
+- Novo DTO `JobStatusDto` com documentação OpenAPI completa
+- Documentação técnica completa em ARCHITECTURE.md (nova seção 2.6 - Job Queue & Async Processing)
+- 7 novos testes unitários para `getJobStatus()` (889/889 passing, 100%)
+- Coverage mantido: 77.76% statements, 70.05% branches
+- Ready para frontend polling implementation (Issue #222)
+- Closes #391 (duplicada de #186)
 
 - ✅ #220 - Implementar BullMQ para geração assíncrona de seções (PR #386)
- - **Migração de processamento síncrono → assíncrono** eliminando timeouts HTTP (30-60s → <100ms)
- - BullMQ instalado com configuração global de Redis (`@nestjs/bullmq` + `bullmq`)
- - `SectionsProcessor` criado para processamento background de geração AI
- - Progress tracking: 10% → 90% → 95% → 100% (habilita feedback em tempo real)
- - Retry automático: 3 tentativas com backoff exponencial (5s → 10s → 20s)
- - Error handling robusto: atualiza status para PENDING em falhas
- - `SectionsService.generateSection()` retorna `jobId` imediatamente
- - Múltiplos workers podem processar jobs em paralelo (escalabilidade)
- - **Breaking Change:** API agora retorna `jobId` ao invés de conteúdo final
- - **Próximos passos:** Issue #221 (API de status de jobs), #222 (UX assíncrona frontend)
- - 77/77 testes passando no módulo sections (incluindo 9 novos testes do processor)
- - Coverage: 98.81% no módulo sections
+- **Migração de processamento síncrono → assíncrono** eliminando timeouts HTTP (30-60s → <100ms)
+- BullMQ instalado com configuração global de Redis (`@nestjs/bullmq` + `bullmq`)
+- `SectionsProcessor` criado para processamento background de geração AI
+- Progress tracking: 10% → 90% → 95% → 100% (habilita feedback em tempo real)
+- Retry automático: 3 tentativas com backoff exponencial (5s → 10s → 20s)
+- Error handling robusto: atualiza status para PENDING em falhas
+- `SectionsService.generateSection()` retorna `jobId` imediatamente
+- Múltiplos workers podem processar jobs em paralelo (escalabilidade)
+- **Breaking Change:** API agora retorna `jobId` ao invés de conteúdo final
+- **Próximos passos:** Issue #221 (API de status de jobs), #222 (UX assíncrona frontend)
+- 77/77 testes passando no módulo sections (incluindo 9 novos testes do processor)
+- Coverage: 98.81% no módulo sections
 
 #### Multi-Tenancy B2G (2025-12-01)
 
 - ✅ #354 - Infraestrutura de Organizations para Multi-Tenancy B2G (PR #360)
- - **MT-01** - Primeira issue da cadeia de Multi-Tenancy
- - Entidade `Organization` com CNPJ, domainWhitelist, isActive (Kill Switch)
- - Migration com índice GIN em domainWhitelist para lookup eficiente de domínios
- - Módulo `OrganizationsModule` com operações CRUD completas
- - Métodos `suspend()`/`reactivate()` para funcionalidade de Kill Switch
- - Método `findByDomain()` para integração com AuthService.register (MT-03)
- - Suite de testes abrangente: 40 testes, 100% coverage
- - Preparação para próximas issues: MT-02 (relação User-Organization), MT-03 (registro com whitelist), MT-04 (TenantGuard), MT-05 (isolamento de dados ETP), MT-06 (adaptação frontend)
+- **MT-01** - Primeira issue da cadeia de Multi-Tenancy
+- Entidade `Organization` com CNPJ, domainWhitelist, isActive (Kill Switch)
+- Migration com índice GIN em domainWhitelist para lookup eficiente de domínios
+- Módulo `OrganizationsModule` com operações CRUD completas
+- Métodos `suspend()`/`reactivate()` para funcionalidade de Kill Switch
+- Método `findByDomain()` para integração com AuthService.register (MT-03)
+- Suite de testes abrangente: 40 testes, 100% coverage
+- Preparação para próximas issues: MT-02 (relação User-Organization), MT-03 (registro com whitelist), MT-04 (TenantGuard), MT-05 (isolamento de dados ETP), MT-06 (adaptação frontend)
 
 - ✅ #356 - Validação de domínio de email no registro (MT-03) (PR #362)
- - **MT-03** - Auth Guardrails para Multi-Tenancy B2G
- - Validação automática de domínio de email durante registro (`AuthService.register()`)
- - Apenas emails de domínios whitelisted podem criar conta
- - OrganizationId incluído no JWT payload para autorização de tenant
- - Validação de `organization.isActive` antes de permitir registro
- - Remoção do campo legacy `orgao` de CreateUserDto
- - 6 novos testes MT-03 (818 testes passing, 0 regressões)
- - Casos cobertos: domínio válido, inválido, case-insensitive, organização suspensa
+- **MT-03** - Auth Guardrails para Multi-Tenancy B2G
+- Validação automática de domínio de email durante registro (`AuthService.register()`)
+- Apenas emails de domínios whitelisted podem criar conta
+- OrganizationId incluído no JWT payload para autorização de tenant
+- Validação de `organization.isActive` antes de permitir registro
+- Remoção do campo legacy `orgao` de CreateUserDto
+- 6 novos testes MT-03 (818 testes passing, 0 regressões)
+- Casos cobertos: domínio válido, inválido, case-insensitive, organização suspensa
 
 - ✅ #357 - Tenant Kill Switch + RBAC (MT-04) (PR #363)
- - **MT-04** - Kill Switch para suspender organizações + controle de acesso por roles
- - **TenantGuard** bloqueia todos os usuários de organizações suspensas (isActive=false)
- - Retorna 403 Forbidden com mensagem clara ao usuário
- - Respeita rotas @Public() (login, register, health checks)
- - Logs de auditoria para todas as tentativas bloqueadas (compliance LGPD)
- - **RolesGuard** + decorator @Roles() para controle de acesso baseado em roles
- - Endpoints de Organizations restritos a role ADMIN
- - Ordem de execução: JwtAuthGuard → TenantGuard → RolesGuard
- - Endpoints ADMIN: `PATCH /organizations/:id/suspend` e `/reactivate`
- - 7 novos testes TenantGuard (873 testes passing, 43 test suites)
- - AuditAction.TENANT_BLOCKED para trilha de auditoria completa
+- **MT-04** - Kill Switch para suspender organizações + controle de acesso por roles
+- **TenantGuard** bloqueia todos os usuários de organizações suspensas (isActive=false)
+- Retorna 403 Forbidden com mensagem clara ao usuário
+- Respeita rotas @Public() (login, register, health checks)
+- Logs de auditoria para todas as tentativas bloqueadas (compliance LGPD)
+- **RolesGuard** + decorator @Roles() para controle de acesso baseado em roles
+- Endpoints de Organizations restritos a role ADMIN
+- Ordem de execução: JwtAuthGuard → TenantGuard → RolesGuard
+- Endpoints ADMIN: `PATCH /organizations/:id/suspend` e `/reactivate`
+- 7 novos testes TenantGuard (873 testes passing, 43 test suites)
+- AuditAction.TENANT_BLOCKED para trilha de auditoria completa
 
 #### Enriquecimento com IA (2025-11-25)
 
 - ✅ #210 - Enriquecimento automático de ETPs com fundamentação de mercado via Perplexity (PR #296)
- - Integração do PerplexityService no OrchestratorService
- - Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
- - Graceful degradation: geração continua mesmo sem dados externos
- - Indicadores visuais no frontend quando enrichment indisponível
- - Queries customizadas por tipo de seção para busca otimizada
- - 30 novos testes backend (100% passing, 0 regressões)
- - Flag `hasEnrichmentWarning` para transparência ao usuário
+- Integração do PerplexityService no OrchestratorService
+- Enriquecimento de 5 seções críticas: justificativa, contextualização, orçamento, pesquisa_mercado, especificação_técnica
+- Graceful degradation: geração continua mesmo sem dados externos
+- Indicadores visuais no frontend quando enrichment indisponível
+- Queries customizadas por tipo de seção para busca otimizada
+- 30 novos testes backend (100% passing, 0 regressões)
+- Flag `hasEnrichmentWarning` para transparência ao usuário
 
 #### Hotfixes (2025-11-25)
 
 - ✅ #297 - Adicionar componente Alert faltante para SectionCard (PR #297)
- - Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
- - Suporte para variantes: default, destructive, warning
- - Correção de falha de build pós-merge da PR #296
- - JSDoc completo para todos os componentes públicos
- - Re-merge da PR #296 executado com sucesso após correção
+- Componente shadcn/ui Alert com 3 subcomponentes (Alert, AlertTitle, AlertDescription)
+- Suporte para variantes: default, destructive, warning
+- Correção de falha de build pós-merge da PR #296
+- JSDoc completo para todos os componentes públicos
+- Re-merge da PR #296 executado com sucesso após correção
 
 #### Refatoração de Código (2025-11-28)
 
 - ✅ #316 - Extrair método buildEnrichedPrompt() do OrchestratorService (PR #320)
- - **Parte 1 de 4** da refatoração para Clean Code compliance (#28)
- - Novo método privado `buildEnrichedPrompt()` (132 linhas) encapsula lógica de construção de prompts
- - Reduz `generateSection()` de 120 para 86 linhas (próximas PRs: #317, #318, #319)
- - Sanitização de input (prompt injection), enriquecimento legal, fundamentação, PII redaction
- - 7 novos testes unitários (766/766 passing, 96% coverage mantido)
- - Zero mudanças comportamentais - output idêntico à implementação anterior
- - Cleanup: remoção de arquivos temporários `github-issues.json` e `github-milestones.json`
+- **Parte 1 de 4** da refatoração para Clean Code compliance (#28)
+- Novo método privado `buildEnrichedPrompt()` (132 linhas) encapsula lógica de construção de prompts
+- Reduz `generateSection()` de 120 para 86 linhas (próximas PRs: #317, #318, #319)
+- Sanitização de input (prompt injection), enriquecimento legal, fundamentação, PII redaction
+- 7 novos testes unitários (766/766 passing, 96% coverage mantido)
+- Zero mudanças comportamentais - output idêntico à implementação anterior
+- Cleanup: remoção de arquivos temporários `github-issues.json` e `github-milestones.json`
 
 #### Resiliência e Confiabilidade (2025-11-20)
 
 - ✅ #206 - Implementar Circuit Breaker para OpenAI API (PR #230)
- - Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
- - Thresholds: 50% erro rate, 5 requests mínimas, 60s timeout, 30s reset
- - Endpoint de monitoramento: `GET /health/providers/openai`
- - Graceful degradation com mensagem amigável ao usuário
- - 17 testes para OpenAIService + 9 testes para HealthController
- - 590 testes passando (0 regressões)
+- Proteção contra falhas em cascata usando padrão Circuit Breaker (Opossum)
+- Thresholds: 50% erro rate, 5 requests mínimas, 60s timeout, 30s reset
+- Endpoint de monitoramento: `GET /health/providers/openai`
+- Graceful degradation com mensagem amigável ao usuário
+- 17 testes para OpenAIService + 9 testes para HealthController
+- 590 testes passando (0 regressões)
 
 #### Conformidade LGPD (2025-11-19 a 2025-11-20)
 
@@ -205,10 +216,10 @@ Trabalho em progresso para alcançar qualidade de produção:
 - ✅ #204 - Aviso de transferência internacional de dados (PR #221)
 - ✅ #205 - Política de Privacidade completa conforme LGPD (PR #223)
 - ✅ #196 - Termos de Uso completos + integração frontend (PR #229)
- - Criado `docs/TERMS_OF_SERVICE.md` (14 seções, 353 lines)
- - Nova página `/terms` no frontend (TermsOfService.tsx)
- - Links separados no formulário de registro
- - Conformidade com LGPD, Marco Civil, CDC, Lei 14.133
+- Criado `docs/TERMS_OF_SERVICE.md` (14 seções, 353 lines)
+- Nova página `/terms` no frontend (TermsOfService.tsx)
+- Links separados no formulário de registro
+- Conformidade com LGPD, Marco Civil, CDC, Lei 14.133
 
 #### Infraestrutura Técnica (2025-11-06 a 2025-11-12)
 
@@ -217,8 +228,8 @@ Trabalho em progresso para alcançar qualidade de produção:
 - ✅ Testes unitários: auth, sections, ETPs, controllers, services
 - ✅ Documentação JSDoc implementada
 - ✅ Vulnerabilidades de segurança resolvidas:
- - HIGH: jspdf 2.5.1 → 3.0.3 (CVE-2024: ReDoS, DoS)
- - MODERATE: dompurify 2.5.8 → 3.3.0 (XSS bypass)
+- HIGH: jspdf 2.5.1 → 3.0.3 (CVE-2024: ReDoS, DoS)
+- MODERATE: dompurify 2.5.8 → 3.3.0 (XSS bypass)
 - ✅ Correções TypeScript aplicadas
 - Cobertura de testes em aumento (0.46% → ~50%, meta: 70%)
 
@@ -254,22 +265,22 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - CRUD de ETPs (Estudos Técnicos Preliminares)
 - Sistema de seções com 13 incisos da Lei 14.133/2021
 - **Orquestrador de IA** com 5 subagentes especializados:
- - Legal Agent (validação de conformidade legal)
- - Fundamentação Agent (busca de contratações similares)
- - Clareza Agent (análise de legibilidade)
- - Simplificação Agent (remoção de jargão)
- - Anti-Hallucination Agent (mitigação de alucinações)
+- Legal Agent (validação de conformidade legal)
+- Fundamentação Agent (busca de contratações similares)
+- Clareza Agent (análise de legibilidade)
+- Simplificação Agent (remoção de jargão)
+- Anti-Hallucination Agent (mitigação de alucinações)
 - Integração com **OpenAI GPT-4** para geração de conteúdo
 - Integração com **Perplexity API** para busca de contratações similares
 - Sistema completo de **versionamento** com:
- - Snapshots automáticos
- - Histórico de versões
- - Diff textual
- - Restauração de versões
+- Snapshots automáticos
+- Histórico de versões
+- Diff textual
+- Restauração de versões
 - Sistema de **exportação** para:
- - PDF (Puppeteer + Handlebars)
- - JSON estruturado
- - XML padronizado
+- PDF (Puppeteer + Handlebars)
+- JSON estruturado
+- XML padronizado
 - **Auditoria completa** com trilha de logs
 - **Analytics** de UX com telemetria
 - Validação obrigatória de seções mínimas (I, IV, VI, VIII, XIII)
@@ -283,11 +294,11 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - Sistema de autenticação com JWT
 - Dashboard com estatísticas
 - **Editor de ETP** com:
- - 13 seções em tabs navegáveis
- - Formulários guiados por seção
- - Indicadores de seções obrigatórias
- - Barra de progresso de completude
- - Auto-save
+- 13 seções em tabs navegáveis
+- Formulários guiados por seção
+- Indicadores de seções obrigatórias
+- Barra de progresso de completude
+- Auto-save
 - **Painel de IA** para geração de conteúdo
 - **Painel de busca** de contratações similares
 - **WarningBanner persistente** (aviso obrigatório em todas as páginas)
@@ -297,21 +308,21 @@ Primeira versão funcional do **ETP Express** - Sistema assistivo para elaboraç
 - State management com **Zustand**
 - Responsividade mobile-first
 - Acessibilidade **WCAG 2.1 AA**:
- - ARIA labels completos
- - Navegação por teclado
- - Contraste 4.5:1
- - Screen reader friendly
+- ARIA labels completos
+- Navegação por teclado
+- Contraste 4.5:1
+- Screen reader friendly
 - 62 arquivos TypeScript + TSX
 
 #### Infraestrutura
 
 - Configuração completa para **Railway**
 - Schema PostgreSQL completo com:
- - 8 tabelas principais
- - Views materializadas
- - Funções utilitárias
- - Triggers automáticos
- - Índices otimizados
+- 8 tabelas principais
+- Views materializadas
+- Funções utilitárias
+- Triggers automáticos
+- Índices otimizados
 - Migrations TypeORM
 - Deploy automatizado
 - Variáveis de ambiente documentadas
