@@ -53,7 +53,7 @@ export class PIIRedactionService {
     phone: /\(?\d{2}\)?\s?\d{4,5}-?\d{4}/g,
 
     // Número de processo: Processo nº 1234/2024 ou processo 1234.56.2024.1.00.0000
-    processNumber: /processo\s+n?[º°]?\s*[\d\/\-\.]+/gi,
+    processNumber: /processo\s+n?[º°]?\s*[\d/\-.]+/gi,
 
     // RG: 12.345.678-9 ou MG-12.345.678
     rg: /\b[A-Z]{2}-?\d{1,2}\.?\d{3}\.?\d{3}-?\d{1}\b/g,
