@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-22 | **Progresso:** 453/463 (97.8%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-22 | **Progresso:** 458/466 (98.3%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -56,7 +56,7 @@
 | ~~#806~~ | ~~Executar re-teste completo pos-correcoes P0~~         | ✅ DONE |
 | ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~         | ✅ DONE |
 
-### P3 - FUTURO (5 issues open)
+### P3 - FUTURO (4 issues open)
 
 | #        | Issue                                              | Status  |
 | -------- | -------------------------------------------------- | ------- |
@@ -66,7 +66,7 @@
 | #811     | Implementar cache Redis para respostas LLM         | OPEN    |
 | #812     | Configurar CDN para assets estaticos               | OPEN    |
 | ~~#813~~ | ~~Adicionar alertas para slow queries~~            | ✅ DONE |
-| #814     | Implementar sistema de feature flags               | OPEN    |
+| ~~#814~~ | ~~Implementar sistema de feature flags~~           | ✅ DONE |
 | #815     | Configurar WAF (Web Application Firewall)          | OPEN    |
 | #816     | Documentar estrategia multi-regiao DR              | OPEN    |
 | ~~#817~~ | ~~Adicionar export de audit logs para compliance~~ | ✅ DONE |
@@ -133,14 +133,21 @@
 | #654 | [EPIC] OpenTelemetry distributed tracing | #857-#859  |
 | #655 | [EPIC] Métricas de negócio Prometheus    | #860-#862  |
 
-### P3 - Melhorias (1 issue open)
+### P3 - Melhorias (1 EPIC open → 4 sub-issues)
 
 | #        | Issue                                  | Benefício                            |
 | -------- | -------------------------------------- | ------------------------------------ |
 | ~~#656~~ | ~~Validação estruturada saída LLM~~    | ✅ DONE (2025-12-20)                 |
 | ~~#657~~ | ~~Documentar PgBouncer para escala~~   | ✅ DONE (2025-12-18)                 |
-| #759     | Rich Text (WYSIWYG) formulários        | Tabelas, listas, formatação avançada |
+| #759     | [EPIC] Rich Text (WYSIWYG) formulários | Tabelas, listas, formatação avançada |
 | ~~#760~~ | ~~Documentar agentes determinísticos~~ | ✅ DONE (2025-12-21)                 |
+
+**Sub-issues de #759 (Rich Text EPIC):**
+| # | Issue | Status |
+|---|-------|--------|
+| #904 | Rich Text: Setup do Editor TipTap | OPEN |
+| #905 | Rich Text: Integração no SectionForm | OPEN |
+| #906 | Rich Text: Export DOCX/PDF com formatação | OPEN |
 
 ---
 
@@ -554,7 +561,7 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#870~~ | ~~SLA: Setup de ferramentas~~ | ✅ CLOSED 2025-12-21 |
 | ~~#871~~ | ~~SLA: Treinamento e documentação~~ | ✅ CLOSED 2025-12-21 |
 
-**Total Atualizado:** 6 issues restantes (4 EPICs abertos - todos com sub-issues completas, 1 P3 feature) | ~12h
+**Total Atualizado:** 4 issues restantes (1 EPIC Rich Text com 3 sub-issues + 4 issues P3 avulsas) | ~12h
 
 ---
 
@@ -568,10 +575,10 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 | Métrica           | Valor    |
 | ----------------- | -------- |
-| Issues Totais     | 463      |
-| Issues Abertas    | 10       |
-| Issues Fechadas   | 453      |
-| Progresso         | 97.8%    |
+| Issues Totais     | 466      |
+| Issues Abertas    | 8        |
+| Issues Fechadas   | 458      |
+| Progresso         | 98.3%    |
 | Velocidade        | 16.4/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
@@ -579,9 +586,9 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
 | P2 Go-Live        | 0 ✅     |
-| P3 Go-Live        | 5        |
+| P3 Go-Live        | 4        |
 | P2 Gov-API        | 0 ✅     |
-| Sprint v1.1       | 6        |
+| Sprint v1.1       | 4        |
 
 ---
 
