@@ -52,7 +52,7 @@ export class LoggingInterceptor implements NestInterceptor {
     this.logger.setContext('HTTP');
   }
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<AuthenticatedRequest>();
     const response = ctx.getResponse<Response>();
