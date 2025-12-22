@@ -12,7 +12,15 @@ const config = {
   checkers: ['typescript'],
   tsconfigFile: 'tsconfig.json',
   // Ignore patterns for sandbox creation (avoid copying coverage folder)
-  ignorePatterns: ['coverage', 'coverage-demo', 'dist', 'node_modules', '.stryker-tmp', '.stryker-cache', 'reports'],
+  ignorePatterns: [
+    'coverage',
+    'coverage-demo',
+    'dist',
+    'node_modules',
+    '.stryker-tmp',
+    '.stryker-cache',
+    'reports',
+  ],
   mutate: [
     // Critical modules for mutation testing (correct paths under src/modules/)
     'src/modules/auth/**/*.ts',
