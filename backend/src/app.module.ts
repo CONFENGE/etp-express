@@ -10,6 +10,7 @@ import * as Joi from 'joi';
 // Middleware
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { RequestMetricsMiddleware } from './common/middleware/request-metrics.middleware';
+import { SecurityMiddleware } from './common/middleware/security.middleware';
 
 // Configuration
 import redisConfig from './config/redis.config';
@@ -240,15 +241,16 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
 })
 export class AppModule implements NestModule {
   /**
-   * Configure middleware for request processing (#653, #802)
+   * Configure middleware for request processing (#653, #802, #815)
    *
    * Middleware execution order:
-   * 1. RequestIdMiddleware - Establish request context with unique ID
-   * 2. RequestMetricsMiddleware - Collect performance metrics
+   * 1. SecurityMiddleware - WAF-like protection (blocks malicious requests early)
+   * 2. RequestIdMiddleware - Establish request context with unique ID
+   * 3. RequestMetricsMiddleware - Collect performance metrics
    */
   configure(consumer: MiddlewareConsumer): void {
     consumer
-      .apply(RequestIdMiddleware, RequestMetricsMiddleware)
+      .apply(SecurityMiddleware, RequestIdMiddleware, RequestMetricsMiddleware)
       .forRoutes('*'); // Apply to all routes
   }
 }
