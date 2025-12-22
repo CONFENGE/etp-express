@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-21 | **Progresso:** 447/463 (96.5%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
+**Atualizado:** 2025-12-22 | **Progresso:** 456/463 (98.5%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Ativado
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
@@ -56,13 +56,13 @@
 | ~~#806~~ | ~~Executar re-teste completo pos-correcoes P0~~         | ✅ DONE |
 | ~~#807~~ | ~~Documentar processo de validacao pre-deploy~~         | ✅ DONE |
 
-### P3 - FUTURO (8 issues)
+### P3 - FUTURO (5 issues open)
 
 | #        | Issue                                              | Status  |
 | -------- | -------------------------------------------------- | ------- |
-| #808     | Implementar mutation testing com Stryker           | OPEN    |
-| #809     | Adicionar visual regression testing                | OPEN    |
-| #810     | Integrar OWASP ZAP no CI                           | OPEN    |
+| ~~#808~~ | ~~Implementar mutation testing com Stryker~~       | ✅ DONE |
+| ~~#809~~ | ~~Adicionar visual regression testing~~            | ✅ DONE |
+| ~~#810~~ | ~~Integrar OWASP ZAP no CI~~                       | ✅ DONE |
 | #811     | Implementar cache Redis para respostas LLM         | OPEN    |
 | #812     | Configurar CDN para assets estaticos               | OPEN    |
 | ~~#813~~ | ~~Adicionar alertas para slow queries~~            | ✅ DONE |
@@ -539,12 +539,12 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#863~~ | ~~Análise e decisão de estratégia~~ | ✅ CLOSED 2025-12-21 |
 | ~~#864~~ | ~~Execução da migração~~ | ✅ CLOSED 2025-12-21 |
 
-**#110 - [EPIC] Staged Rollout & Feature Flags** (1/4 DONE)
+**#110 - [EPIC] Staged Rollout & Feature Flags** (3/4 DONE)
 | # | Issue | Esforço |
 |---|-------|---------|
 | ~~#865~~ | ~~Feature Flags: Escolha e setup provider~~ | ✅ CLOSED 2025-12-21 |
-| #866 | Feature Flags: Integração frontend | 3h |
-| #867 | Estratégia Alpha/Beta/GA | 2h |
+| ~~#866~~ | ~~Feature Flags: Integração frontend~~ | ✅ CLOSED 2025-12-21 |
+| ~~#867~~ | ~~Estratégia Alpha/Beta/GA~~ | ✅ CLOSED 2025-12-22 |
 | #868 | Documentação e runbook | 3h |
 
 **#111 - [EPIC] Production Support SLA** ✅ COMPLETE (3/3)
@@ -554,7 +554,7 @@ Go-Live B2G ████████████████████ 14/14 1
 | ~~#870~~ | ~~SLA: Setup de ferramentas~~ | ✅ CLOSED 2025-12-21 |
 | ~~#871~~ | ~~SLA: Treinamento e documentação~~ | ✅ CLOSED 2025-12-21 |
 
-**Total Atualizado:** 12 issues restantes (4 EPICs completos) | ~18-24h
+**Total Atualizado:** 7 issues restantes (4 EPICs abertos, 3 com sub-issues completas) | ~12-16h
 
 ---
 
@@ -569,19 +569,19 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 | Métrica           | Valor    |
 | ----------------- | -------- |
 | Issues Totais     | 463      |
-| Issues Abertas    | 17       |
-| Issues Fechadas   | 446      |
-| Progresso         | 96.3%    |
-| Velocidade        | 16.7/dia |
+| Issues Abertas    | 11       |
+| Issues Fechadas   | 452      |
+| Progresso         | 97.6%    |
+| Velocidade        | 14.3/dia |
 | Backend Coverage  | 78%      |
 | Frontend Coverage | 76%      |
 | Testes            | 1879     |
 | P0 Go-Live        | 0 ✅     |
 | P1 Go-Live        | 0 ✅     |
 | P2 Go-Live        | 0 ✅     |
-| P3 Go-Live        | 8        |
+| P3 Go-Live        | 5        |
 | P2 Gov-API        | 0 ✅     |
-| Sprint v1.1       | 12       |
+| Sprint v1.1       | 7        |
 
 ---
 
