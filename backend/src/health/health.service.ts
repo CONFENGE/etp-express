@@ -7,6 +7,7 @@ import Redis from 'ioredis';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { ExaService } from '../modules/search/exa/exa.service';
+import { SemanticCacheService } from '../modules/cache/semantic-cache.service';
 
 /**
  * Health Check Service
@@ -27,6 +28,7 @@ export class HealthService {
     private readonly exaService: ExaService,
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
+    private readonly semanticCache: SemanticCacheService,
   ) {}
 
   /**
@@ -206,6 +208,14 @@ export class HealthService {
       circuitOpen: exaCircuit.opened,
     };
 
+    // Verificar semantic cache (#811)
+    const semanticCacheHealth = await this.semanticCache.healthCheck();
+    const semanticCacheStatus = {
+      status: semanticCacheHealth.status,
+      latencyMs: semanticCacheHealth.latencyMs,
+      connected: semanticCacheHealth.connected,
+    };
+
     // Determinar status geral
     const hasDegradedProvider = openaiCircuit.opened || exaCircuit.opened;
     const overallStatus = hasDegradedProvider ? 'degraded' : 'ready';
@@ -217,6 +227,7 @@ export class HealthService {
         database: { status: 'healthy' },
         migrations: { status: 'completed' },
         redis: redisStatus,
+        semanticCache: semanticCacheStatus,
         providers: {
           openai: openaiStatus,
           exa: exaStatus,

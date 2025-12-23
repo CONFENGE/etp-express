@@ -34,6 +34,7 @@ import { DemoModule } from './modules/demo/demo.module';
 import { DocumentExtractionModule } from './modules/document-extraction/document-extraction.module';
 import { GovDataSyncModule } from './modules/gov-data-sync/gov-data-sync.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
+import { SemanticCacheModule } from './modules/cache/semantic-cache.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -222,6 +223,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     DocumentExtractionModule,
     GovDataSyncModule,
     FeatureFlagsModule,
+    SemanticCacheModule,
     HealthModule,
   ],
   controllers: [AppController],

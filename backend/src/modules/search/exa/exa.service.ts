@@ -2,8 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Exa from 'exa-js';
 import CircuitBreaker from 'opossum';
-import NodeCache from 'node-cache';
-import { createHash } from 'crypto';
 import { trace, SpanStatusCode, Span } from '@opentelemetry/api';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
 import {
@@ -13,6 +11,7 @@ import {
   LegalReferenceInput,
   ExaSearchOptions,
 } from './exa.types';
+import { SemanticCacheService } from '../../cache/semantic-cache.service';
 
 /** OpenTelemetry tracer for Exa AI search operations */
 const tracer = trace.getTracer('llm-exa', '1.0.0');
@@ -27,9 +26,11 @@ export class ExaService {
   private readonly exa: Exa;
   private readonly circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
-  private readonly cache: NodeCache;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private semanticCache: SemanticCacheService,
+  ) {
     // Initialize Exa client
     const apiKey = this.configService.get<string>('EXA_API_KEY') || '';
     this.exa = new Exa(apiKey);
@@ -55,13 +56,6 @@ export class ExaService {
       logger: this.logger,
       operationName: 'Exa API',
     };
-
-    // Initialize cache with 7-day TTL (604800 seconds)
-    this.cache = new NodeCache({
-      stdTTL: 604800, // 7 days
-      checkperiod: 3600, // Check for expired keys every hour
-      useClones: false, // Performance optimization
-    });
 
     // Initialize Circuit Breaker for Exa API
     this.circuitBreaker = new CircuitBreaker(
@@ -146,34 +140,39 @@ export class ExaService {
 
   /**
    * Generic search method (internal use).
+   * Uses Redis cache for persistence across restarts.
    * @private
    */
   private async performSearch(
     query: string,
     options: ExaSearchOptions,
   ): Promise<ExaResponse> {
-    // Include search type in cache key
-    const cacheKey = this.generateCacheKey(
-      `${options.type}:${options.numResults}:${query}`,
+    // Generate cache key using SemanticCacheService
+    const cacheKey = this.semanticCache.generateExaKey(
+      query,
+      options.type || 'auto',
+      options.numResults || 5,
     );
 
-    // Check cache
-    const cached = this.cache.get<ExaResponse>(cacheKey);
+    // Check Redis cache (persistent across restarts)
+    const cached = await this.semanticCache.get<ExaResponse>('exa', cacheKey);
     if (cached) {
       this.logger.log(
-        `Cache HIT: ${query.substring(0, 50)}... (type: ${options.type})`,
+        `Redis Cache HIT: ${query.substring(0, 50)}... (type: ${options.type})`,
       );
       return cached;
     }
 
-    this.logger.log(`Cache MISS - calling Exa API (type: ${options.type})`);
+    this.logger.log(
+      `Redis Cache MISS - calling Exa API (type: ${options.type})`,
+    );
 
     try {
       const response = await this.callExaWithOptions(query, options);
 
-      // Cache only successful responses
+      // Cache only successful responses (persistent across restarts)
       if (!response.isFallback) {
-        this.cache.set(cacheKey, response);
+        await this.semanticCache.set('exa', cacheKey, response);
       }
 
       return response;
@@ -434,28 +433,17 @@ export class ExaService {
   }
 
   /**
-   * Generates a SHA-256 hash cache key from a normalized query string.
-   * Normalization ensures consistent caching for equivalent queries.
-   *
-   * @param query - Raw search query string
-   * @returns string - SHA-256 hash (64 hex characters)
-   */
-  private generateCacheKey(query: string): string {
-    // Normalize query: trim, lowercase, collapse multiple spaces
-    const normalized = query.trim().toLowerCase().replace(/\s+/g, ' ');
-
-    // Generate SHA-256 hash
-    return createHash('sha256').update(normalized).digest('hex');
-  }
-
-  /**
    * Returns cache statistics for monitoring and debugging.
-   * Useful for analyzing cache effectiveness and hit rates.
+   * Uses Redis-based semantic cache for persistence.
    *
-   * @returns Cache statistics object
+   * @returns Cache statistics object with hit rate from Redis
    */
   getCacheStats() {
-    return this.cache.getStats();
+    return {
+      ...this.semanticCache.getStats('exa'),
+      type: 'redis',
+      available: this.semanticCache.isAvailable(),
+    };
   }
 
   /**
