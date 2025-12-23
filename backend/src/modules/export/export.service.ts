@@ -19,6 +19,7 @@ import {
   PageNumber,
   AlignmentType,
   BorderStyle,
+  INumberingOptions,
 } from 'docx';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
@@ -32,6 +33,7 @@ import {
   DEFAULT_DOCUMENT_PROPERTIES,
   ETP_SECTION_LABELS,
 } from './docx.config';
+import { HtmlToDocxParser } from './html-to-docx.parser';
 
 export enum ExportFormat {
   PDF = 'pdf',
@@ -44,6 +46,7 @@ export enum ExportFormat {
 export class ExportService {
   private readonly logger = new Logger(ExportService.name);
   private template: HandlebarsTemplateDelegate;
+  private readonly htmlParser: HtmlToDocxParser;
 
   constructor(
     @InjectRepository(Etp)
@@ -53,6 +56,7 @@ export class ExportService {
   ) {
     this.loadTemplate();
     this.registerHandlebarsHelpers();
+    this.htmlParser = new HtmlToDocxParser();
   }
 
   private loadTemplate() {
@@ -222,8 +226,31 @@ export class ExportService {
 
     const etp = await this.getEtpWithSections(etpId);
 
+    // Numbering config for ordered lists in rich text content
+    const numberingConfig: INumberingOptions = {
+      config: [
+        {
+          reference: 'default-numbering',
+          levels: [
+            {
+              level: 0,
+              format: 'decimal',
+              text: '%1.',
+              alignment: AlignmentType.LEFT,
+              style: {
+                paragraph: {
+                  indent: { left: 720, hanging: 360 },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
     const doc = new Document({
       styles: DOCX_STYLES,
+      numbering: numberingConfig,
       sections: [
         {
           properties: {
@@ -455,8 +482,10 @@ export class ExportService {
     ];
   }
 
-  private createSectionsParagraphs(sections: EtpSection[]): Paragraph[] {
-    const paragraphs: Paragraph[] = [];
+  private createSectionsParagraphs(
+    sections: EtpSection[],
+  ): (Paragraph | Table)[] {
+    const elements: (Paragraph | Table)[] = [];
 
     const sortedSections = [...sections].sort((a, b) => a.order - b.order);
 
@@ -465,7 +494,7 @@ export class ExportService {
       const sectionLabel =
         ETP_SECTION_LABELS[section.type.toUpperCase()] || section.title;
 
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
           children: [
@@ -481,19 +510,19 @@ export class ExportService {
         }),
       );
 
-      // Section content
+      // Section content - use HTML parser for rich text support
       if (section.content) {
-        const contentParagraphs = this.parseContentToParagraphs(
+        const contentElements = this.parseContentToDocxElements(
           section.content,
         );
-        paragraphs.push(...contentParagraphs);
+        elements.push(...contentElements);
       } else {
-        paragraphs.push(
+        elements.push(
           new Paragraph({
             style: 'bodyText',
             children: [
               new TextRun({
-                text: '[Conteúdo não gerado]',
+                text: '[Conteudo nao gerado]',
                 italics: true,
                 font: DOCX_FONTS.PRIMARY,
                 size: DOCX_FONT_SIZES.BODY,
@@ -505,7 +534,29 @@ export class ExportService {
       }
     });
 
-    return paragraphs;
+    return elements;
+  }
+
+  /**
+   * Parse content to DOCX elements with rich text support
+   *
+   * Detects if content is HTML (from RichTextEditor) or plain text/markdown
+   * and uses the appropriate parser.
+   *
+   * @param content - Content string (HTML or plain text)
+   * @returns Array of Paragraph and Table elements
+   */
+  private parseContentToDocxElements(content: string): (Paragraph | Table)[] {
+    // Detect if content is HTML (from RichTextEditor)
+    const isHtml = /<[a-z][\s\S]*>/i.test(content);
+
+    if (isHtml) {
+      // Use HTML parser for rich text content
+      return this.htmlParser.parse(content);
+    }
+
+    // Fallback to legacy markdown parsing for plain text
+    return this.parseContentToParagraphs(content);
   }
 
   private parseContentToParagraphs(content: string): Paragraph[] {
