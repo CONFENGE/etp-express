@@ -1,6 +1,6 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'ETP Express';
 export const API_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 export const ROUTES = {
   HOME: '/',
