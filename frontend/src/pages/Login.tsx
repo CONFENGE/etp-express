@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/card';
 import { APP_NAME, getAuthErrorMessage } from '@/lib/constants';
 import { cn, isValidEmail } from '@/lib/utils';
+import { checkApiHealth, getErrorWithDiagnostic } from '@/lib/api-errors';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -69,7 +70,19 @@ export function Login() {
       success('Login realizado com sucesso!');
       navigate('/dashboard');
     } catch (error) {
-      showError(getAuthErrorMessage(error));
+      // Get base error message
+      const baseMessage = getAuthErrorMessage(error);
+
+      // Perform health check to diagnose connectivity issues
+      const health = await checkApiHealth();
+      const { message, diagnostic } = getErrorWithDiagnostic(error, health);
+
+      // Show error with diagnostic if API is unhealthy
+      if (diagnostic) {
+        showError(`${baseMessage} (Diagnóstico: ${diagnostic})`);
+      } else {
+        showError(message);
+      }
     } finally {
       setIsLoading(false);
     }

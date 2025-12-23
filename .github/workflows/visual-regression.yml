@@ -55,7 +55,7 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
         env:
-          VITE_API_URL: http://localhost:3001
+          VITE_API_URL: http://localhost:3001/api/v1
 
       - name: Run visual regression tests
         # continue-on-error allows initial runs without baselines to not block PRs
