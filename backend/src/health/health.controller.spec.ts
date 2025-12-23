@@ -139,6 +139,11 @@ describe('HealthController', () => {
           database: { status: 'healthy' as const },
           migrations: { status: 'completed' as const },
           redis: { status: 'not_configured' as const },
+          semanticCache: {
+            status: 'healthy' as const,
+            latencyMs: 5,
+            connected: true,
+          },
           providers: {
             openai: { status: 'healthy' as const, circuitOpen: false },
             exa: { status: 'healthy' as const, circuitOpen: false },

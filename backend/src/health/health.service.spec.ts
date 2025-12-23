@@ -7,6 +7,7 @@ import { HealthService } from './health.service';
 import { User } from '../entities/user.entity';
 import { OpenAIService } from '../modules/orchestrator/llm/openai.service';
 import { ExaService } from '../modules/search/exa/exa.service';
+import { SemanticCacheService } from '../modules/cache/semantic-cache.service';
 
 describe('HealthService', () => {
   let service: HealthService;
@@ -52,6 +53,16 @@ describe('HealthService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn().mockReturnValue(undefined), // Redis not configured by default
+          },
+        },
+        {
+          provide: SemanticCacheService,
+          useValue: {
+            healthCheck: jest.fn().mockResolvedValue({
+              status: 'healthy' as const,
+              latencyMs: 5,
+              connected: true,
+            }),
           },
         },
       ],
@@ -502,6 +513,7 @@ describe('HealthService', () => {
         database: { status: 'healthy' },
         migrations: { status: 'completed' },
         redis: { status: 'not_configured' },
+        semanticCache: { status: 'healthy', latencyMs: 5, connected: true },
         providers: {
           openai: { status: 'healthy', circuitOpen: false },
           exa: { status: 'healthy', circuitOpen: false },
