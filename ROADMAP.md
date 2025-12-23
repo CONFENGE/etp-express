@@ -1,8 +1,38 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-22 | **Progresso:** 466/466 (100%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Completo ✅
+**Atualizado:** 2025-12-23 | **Progresso:** 467/471 (99%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Completo ✅
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
+
+---
+
+## HOTFIX: API Versioning (5 issues)
+
+**Criado:** 2025-12-23 | **Objetivo:** Corrigir erro de login (404) e prevenir regressões
+
+### Causa Raiz
+
+Frontend chamava `/api/auth/login` mas backend exige `/api/v1/auth/login` (URI versioning).
+
+### P0 - BLOQUEADOR (1 issue) ✅ COMPLETO
+
+| #        | Issue                                        | Status  |
+| -------- | -------------------------------------------- | ------- |
+| ~~#913~~ | ~~Corrigir API_URL para incluir versão /v1~~ | ✅ DONE |
+
+### P1 - PREVENÇÃO (2 issues open)
+
+| #    | Issue                                     | Status  |
+| ---- | ----------------------------------------- | ------- |
+| #914 | Adicionar teste E2E de conectividade      | 🔄 TODO |
+| #915 | Validar VITE_API_URL no build do frontend | 🔄 TODO |
+
+### P2 - MELHORIAS (2 issues open)
+
+| #    | Issue                                     | Status  |
+| ---- | ----------------------------------------- | ------- |
+| #916 | Documentar padrão de versionamento de API | 🔄 TODO |
+| #917 | Melhorar diagnóstico de erros de conexão  | 🔄 TODO |
 
 ---
 
