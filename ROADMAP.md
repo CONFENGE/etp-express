@@ -1,12 +1,12 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-23 | **Progresso:** 467/471 (99%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Completo ✅
+**Atualizado:** 2025-12-23 | **Progresso:** 469/471 (99%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Completo ✅
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
 
 ---
 
-## HOTFIX: API Versioning (5 issues)
+## HOTFIX: API Versioning (3/5 DONE, 1 PR, 1 TODO)
 
 **Criado:** 2025-12-23 | **Objetivo:** Corrigir erro de login (404) e prevenir regressões
 
@@ -20,19 +20,19 @@ Frontend chamava `/api/auth/login` mas backend exige `/api/v1/auth/login` (URI v
 | -------- | -------------------------------------------- | ------- |
 | ~~#913~~ | ~~Corrigir API_URL para incluir versão /v1~~ | ✅ DONE |
 
-### P1 - PREVENÇÃO (2 issues open)
+### P1 - PREVENÇÃO (0 open / 2 total) ✅ COMPLETO
 
-| #    | Issue                                     | Status  |
-| ---- | ----------------------------------------- | ------- |
-| #914 | Adicionar teste E2E de conectividade      | 🔄 TODO |
-| #915 | Validar VITE_API_URL no build do frontend | 🔄 TODO |
+| #        | Issue                                         | Status            |
+| -------- | --------------------------------------------- | ----------------- |
+| ~~#914~~ | ~~Adicionar teste E2E de conectividade~~      | ✅ DONE (PR #918) |
+| ~~#915~~ | ~~Validar VITE_API_URL no build do frontend~~ | ✅ DONE (PR #919) |
 
-### P2 - MELHORIAS (2 issues open)
+### P2 - MELHORIAS (1 open / 2 total)
 
-| #    | Issue                                     | Status  |
-| ---- | ----------------------------------------- | ------- |
-| #916 | Documentar padrão de versionamento de API | 🔄 TODO |
-| #917 | Melhorar diagnóstico de erros de conexão  | 🔄 TODO |
+| #    | Issue                                     | Status     |
+| ---- | ----------------------------------------- | ---------- |
+| #916 | Documentar padrão de versionamento de API | 🔄 PR #920 |
+| #917 | Melhorar diagnóstico de erros de conexão  | 🔄 TODO    |
 
 ---
 
@@ -603,22 +603,23 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 ## Métricas
 
-| Métrica           | Valor    |
-| ----------------- | -------- |
-| Issues Totais     | 466      |
-| Issues Abertas    | 0        |
-| Issues Fechadas   | 466      |
-| Progresso         | 100%     |
-| Velocidade        | 16.4/dia |
-| Backend Coverage  | 78%      |
-| Frontend Coverage | 76%      |
-| Testes            | 1879     |
-| P0 Go-Live        | 0 ✅     |
-| P1 Go-Live        | 0 ✅     |
-| P2 Go-Live        | 0 ✅     |
-| P3 Go-Live        | 0 ✅     |
-| P2 Gov-API        | 0 ✅     |
-| Sprint v1.1       | 0 ✅     |
+| Métrica             | Valor    |
+| ------------------- | -------- |
+| Issues Totais       | 471      |
+| Issues Abertas      | 2        |
+| Issues Fechadas     | 469      |
+| Progresso           | 99%      |
+| Velocidade          | 16.4/dia |
+| Backend Coverage    | 78%      |
+| Frontend Coverage   | 76%      |
+| Testes              | 1879     |
+| P0 Go-Live          | 0 ✅     |
+| P1 Go-Live          | 0 ✅     |
+| P2 Go-Live          | 0 ✅     |
+| P3 Go-Live          | 0 ✅     |
+| P2 Gov-API          | 0 ✅     |
+| Sprint v1.1         | 0 ✅     |
+| HOTFIX API Version. | 2 🔄     |
 
 ---
 

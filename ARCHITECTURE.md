@@ -79,7 +79,75 @@ Railway Stack:
 └── Env Variables: API_KEYS, JWT_SECRET, DATABASE_URL, REDIS_URL
 ```
 
-### 2.5 Database Configuration & Performance
+### 2.5 API Versioning
+
+O ETP Express utiliza **URI Versioning** para a API RESTful, garantindo compatibilidade futura e clareza nos endpoints.
+
+#### Configuração Backend (`main.ts`)
+
+```typescript
+// backend/src/main.ts (linhas 89-96)
+app.setGlobalPrefix('api');
+app.enableVersioning({
+  type: VersioningType.URI,
+  defaultVersion: '1',
+});
+```
+
+#### Formato de URL
+
+| Componente       | Valor                                                                     |
+| ---------------- | ------------------------------------------------------------------------- |
+| Base URL (prod)  | `https://etp-express-backend-production.up.railway.app`                   |
+| Prefixo          | `/api`                                                                    |
+| Versão           | `/v1`                                                                     |
+| Endpoint exemplo | `/auth/login`                                                             |
+| **URL Completa** | `https://etp-express-backend-production.up.railway.app/api/v1/auth/login` |
+
+#### Configuração do Frontend
+
+A variável `VITE_API_URL` **DEVE** incluir o prefixo de versão:
+
+```bash
+# Correto - inclui /api/v1
+VITE_API_URL=https://etp-express-backend-production.up.railway.app/api/v1
+
+# Incorreto - causará erro 404 em todos os endpoints
+VITE_API_URL=https://etp-express-backend-production.up.railway.app/api
+```
+
+**Validação em build-time (#915)**: O frontend valida a presença de `/v1` no `VITE_API_URL` durante o build, prevenindo deploys com configuração incorreta.
+
+#### Adicionando Novos Endpoints
+
+Todos os controllers devem estar versionados. O decorator `@Controller()` com versão explícita é recomendado:
+
+```typescript
+import { Controller, Get, Version } from '@nestjs/common';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  @Version('1') // Opcional se defaultVersion for '1'
+  findAll() {
+    // GET /api/v1/users
+  }
+
+  @Get()
+  @Version('2') // Para nova versão do endpoint
+  findAllV2() {
+    // GET /api/v2/users
+  }
+}
+```
+
+#### Referências
+
+- **Issue #913**: Hotfix que corrigiu o problema de 404 no login
+- **Issue #914**: Teste E2E de conectividade adicionado
+- **Issue #915**: Validação de VITE_API_URL no build
+
+### 2.6 Database Configuration & Performance
 
 **PostgreSQL Connection Pooling (#108, #343)**
 
@@ -120,7 +188,7 @@ TypeOrmModule.forRootAsync({
 - Connection pool metrics available via health checks
 - Railway database metrics dashboard
 
-### 2.6 Job Queue & Async Processing (#186, #220, #391)
+### 2.7 Job Queue & Async Processing (#186, #220, #391)
 
 O ETP Express implementa processamento assíncrono para operações de longa duração usando **BullMQ** com backend Redis.
 
@@ -227,7 +295,7 @@ BullModule.forRootAsync({
 - ✅ Escalabilidade horizontal (add more workers)
 - ✅ Job monitoring e debugging (retained failed jobs)
 
-### 2.7 Health Checks
+### 2.8 Health Checks
 
 O ETP Express implementa dois tipos de health checks para garantir zero-downtime deployment (#181):
 
@@ -1668,5 +1736,5 @@ this.logger.log({
 
 **Documento vivo**: Este arquivo será atualizado conforme o desenvolvimento avança.
 
-**Última atualização**: 2025-12-21
-**Versão**: 0.3.0 (Agent Architecture Documentation)
+**Última atualização**: 2025-12-23
+**Versão**: 0.3.1 (API Versioning Documentation)
