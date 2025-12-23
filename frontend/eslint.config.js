@@ -9,7 +9,7 @@ import globals from 'globals';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**'],
+    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'scripts/**'],
   },
 
   // Base ESLint recommended rules
@@ -57,5 +57,5 @@ export default tseslint.config(
       // JSX Accessibility rules (WCAG 2.1 AA)
       ...jsxA11y.flatConfigs.recommended.rules,
     },
-  }
+  },
 );
