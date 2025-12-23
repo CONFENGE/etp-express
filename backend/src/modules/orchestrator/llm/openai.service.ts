@@ -6,10 +6,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import CircuitBreaker from 'opossum';
-import NodeCache from 'node-cache';
-import * as crypto from 'crypto';
 import { trace, SpanStatusCode, Span } from '@opentelemetry/api';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
+import { SemanticCacheService } from '../../cache/semantic-cache.service';
 
 /** OpenTelemetry tracer for LLM operations */
 const tracer = trace.getTracer('llm-openai', '1.0.0');
@@ -35,9 +34,11 @@ export class OpenAIService {
   private openai: OpenAI;
   private circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
-  private cache: NodeCache;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private semanticCache: SemanticCacheService,
+  ) {
     // Configure retry options for OpenAI API
     this.retryOptions = {
       maxRetries: 3,
@@ -62,22 +63,14 @@ export class OpenAIService {
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
     });
 
-    // Initialize Cache with size limit to prevent memory leak
-    this.cache = new NodeCache({
-      stdTTL: 86400, // 24h TTL
-      checkperiod: 3600, // Check for expired keys every 1h
-      useClones: false, // Performance optimization - don't clone objects
-      maxKeys: 1000, // Limit cache size to prevent unbounded growth (FIFO eviction)
-    });
-
     // Initialize Circuit Breaker
     this.circuitBreaker = new CircuitBreaker(
       (request: LLMRequest) => this.callOpenAI(request),
       {
         timeout: 60000, // 60s timeout
-        errorThresholdPercentage: 50, // Open após 50% de erros
-        resetTimeout: 30000, // Tentar novamente após 30s
-        volumeThreshold: 5, // Mínimo de requests para avaliar
+        errorThresholdPercentage: 50, // Open after 50% errors
+        resetTimeout: 30000, // Try again after 30s
+        volumeThreshold: 5, // Minimum requests to evaluate
       },
     );
 
@@ -119,11 +112,12 @@ export class OpenAIService {
 
   /**
    * Generate deterministic cache key from request parameters
+   * Uses SemanticCacheService for consistent key generation
    * @param systemPrompt System prompt for the LLM
    * @param userPrompt User prompt for the LLM
    * @param model Model name (e.g., 'gpt-4.1-nano')
    * @param temperature Temperature parameter (0.0-2.0)
-   * @returns SHA-256 hash of concatenated parameters
+   * @returns Normalized key string for caching
    */
   private getCacheKey(
     systemPrompt: string,
@@ -131,8 +125,12 @@ export class OpenAIService {
     model: string,
     temperature: number,
   ): string {
-    const content = `${systemPrompt}|${userPrompt}|${model}|${temperature}`;
-    return crypto.createHash('sha256').update(content).digest('hex');
+    return this.semanticCache.generateOpenAIKey(
+      systemPrompt,
+      userPrompt,
+      model,
+      temperature,
+    );
   }
 
   /**
@@ -173,11 +171,15 @@ export class OpenAIService {
           span.setAttribute('llm.prompt.system.length', systemPrompt.length);
           span.setAttribute('llm.prompt.user.length', userPrompt.length);
 
-          // Check cache
-          const cached = this.cache.get<LLMResponse>(cacheKey);
+          // Check Redis cache (persistent across restarts)
+          const cached = await this.semanticCache.get<LLMResponse>(
+            'openai',
+            cacheKey,
+          );
           if (cached) {
-            this.logger.log(`Cache HIT: ${cacheKey.substring(0, 16)}...`);
+            this.logger.log(`Redis Cache HIT: ${cacheKey.substring(0, 32)}...`);
             span.setAttribute('cache.hit', true);
+            span.setAttribute('cache.type', 'redis');
             span.setAttribute('gen_ai.response.model', cached.model);
             span.setAttribute('gen_ai.usage.total_tokens', cached.tokens);
             span.setStatus({ code: SpanStatusCode.OK });
@@ -186,7 +188,8 @@ export class OpenAIService {
 
           // Cache MISS - call OpenAI
           span.setAttribute('cache.hit', false);
-          this.logger.log(`Cache MISS: ${cacheKey.substring(0, 16)}...`);
+          span.setAttribute('cache.type', 'redis');
+          this.logger.log(`Redis Cache MISS: ${cacheKey.substring(0, 32)}...`);
           this.logger.log(`Generating completion with model: ${model}`);
 
           const startTime = Date.now();
@@ -240,8 +243,8 @@ export class OpenAIService {
             `Completion generated in ${duration}ms. Tokens: ${response.tokens}`,
           );
 
-          // Store in cache
-          this.cache.set(cacheKey, response);
+          // Store in Redis cache (persistent across restarts)
+          await this.semanticCache.set('openai', cacheKey, response);
 
           span.setStatus({ code: SpanStatusCode.OK });
           return response;
@@ -275,19 +278,13 @@ export class OpenAIService {
 
   /**
    * Get cache statistics for monitoring
-   * @returns Cache statistics including keys count, hits, misses, hit rate and max size
+   * @returns Cache statistics including hits, misses, and hit rate from Redis
    */
   getCacheStats() {
-    const stats = this.cache.getStats();
     return {
-      keys: this.cache.keys().length,
-      maxKeys: 1000,
-      hits: stats.hits,
-      misses: stats.misses,
-      hitRate:
-        stats.hits + stats.misses > 0
-          ? stats.hits / (stats.hits + stats.misses)
-          : 0,
+      ...this.semanticCache.getStats('openai'),
+      type: 'redis',
+      available: this.semanticCache.isAvailable(),
     };
   }
 
