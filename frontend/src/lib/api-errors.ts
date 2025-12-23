@@ -28,13 +28,29 @@ export const HTTP_ERROR_MESSAGES: Record<number, string> = {
 /**
  * Patterns for matching technical error messages to friendly messages.
  * Order matters - more specific patterns should come first.
+ *
+ * @see Issue #917 - Melhorar diagnóstico de erros de conexão
  */
 const ERROR_PATTERNS: Array<{ pattern: RegExp; message: string }> = [
-  // Network errors
+  // 404 - Endpoint not found (API misconfiguration)
+  {
+    pattern: /404|not\s*found|cannot\s*(get|post|put|patch|delete)/i,
+    message: 'Endpoint não encontrado. Verifique a configuração da API.',
+  },
+
+  // Network errors (no HTTP response)
   {
     pattern: /network\s*error|ERR_NETWORK|ECONNREFUSED/i,
     message: 'Erro de conexão. Verifique sua internet e tente novamente.',
   },
+
+  // CORS errors
+  {
+    pattern: /cors|cross.*origin|access.*control.*allow/i,
+    message: 'Erro de configuração do servidor. Contate o suporte.',
+  },
+
+  // Timeout errors
   {
     pattern: /timeout|ETIMEDOUT|ECONNRESET/i,
     message: 'A conexão expirou. Tente novamente.',
@@ -297,4 +313,162 @@ export function getContextualErrorMessage(
   }
 
   return `Erro ao ${operation} ${resource}. Tente novamente.`;
+}
+
+/**
+ * Health check result with diagnostic details.
+ *
+ * @see Issue #917 - Melhorar diagnóstico de erros de conexão
+ */
+export interface ApiHealthResult {
+  /** Whether the API is reachable and healthy */
+  isHealthy: boolean;
+  /** Human-readable diagnostic details */
+  details: string;
+  /** Diagnostic code for programmatic use */
+  code:
+    | 'healthy'
+    | 'not_found'
+    | 'server_error'
+    | 'network_error'
+    | 'timeout'
+    | 'unknown';
+}
+
+/**
+ * Checks if the API is reachable and healthy.
+ * Performs a lightweight health check and returns diagnostic information.
+ *
+ * @param apiUrl - Base URL of the API (defaults to VITE_API_URL)
+ * @returns Health check result with diagnostic details
+ *
+ * @example
+ * ```ts
+ * const health = await checkApiHealth();
+ * if (!health.isHealthy) {
+ *   console.log(`API offline: ${health.details}`);
+ * }
+ * ```
+ *
+ * @see Issue #917 - Melhorar diagnóstico de erros de conexão
+ */
+export async function checkApiHealth(
+  apiUrl?: string,
+): Promise<ApiHealthResult> {
+  const baseUrl =
+    apiUrl || import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+
+  // Build health endpoint URL
+  // If API_URL includes /api/v1, health is at /api/health (one level up)
+  const healthUrl = baseUrl.includes('/api/v1')
+    ? baseUrl.replace('/api/v1', '/api/health')
+    : `${baseUrl}/health`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(healthUrl, {
+      method: 'GET',
+      signal: controller.signal,
+      credentials: 'include',
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      return {
+        isHealthy: true,
+        details: 'API disponível',
+        code: 'healthy',
+      };
+    }
+
+    // Handle specific HTTP status codes
+    if (response.status === 404) {
+      return {
+        isHealthy: false,
+        details: `Endpoint não encontrado (404). Verifique a URL da API: ${healthUrl}`,
+        code: 'not_found',
+      };
+    }
+
+    return {
+      isHealthy: false,
+      details: `API retornou status ${response.status}`,
+      code: 'server_error',
+    };
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    // Handle abort (timeout)
+    if (error instanceof Error && error.name === 'AbortError') {
+      return {
+        isHealthy: false,
+        details: 'API não respondeu em 5 segundos',
+        code: 'timeout',
+      };
+    }
+
+    // Handle network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      return {
+        isHealthy: false,
+        details: 'API inacessível. Verifique sua conexão.',
+        code: 'network_error',
+      };
+    }
+
+    return {
+      isHealthy: false,
+      details: 'Erro ao verificar API',
+      code: 'unknown',
+    };
+  }
+}
+
+/**
+ * Diagnostic error message type for enhanced error display.
+ *
+ * @see Issue #917 - Melhorar diagnóstico de erros de conexão
+ */
+export interface DiagnosticErrorMessage {
+  /** Main user-friendly error message */
+  message: string;
+  /** Additional diagnostic details (optional) */
+  diagnostic?: string;
+}
+
+/**
+ * Gets an error message with optional diagnostic details from a health check.
+ *
+ * @param error - The original error
+ * @param healthResult - Optional health check result for diagnostic enhancement
+ * @returns Error message with optional diagnostic
+ *
+ * @example
+ * ```ts
+ * const health = await checkApiHealth();
+ * const { message, diagnostic } = getErrorWithDiagnostic(error, health);
+ * toast.error(diagnostic ? `${message} (${diagnostic})` : message);
+ * ```
+ *
+ * @see Issue #917 - Melhorar diagnóstico de erros de conexão
+ */
+export function getErrorWithDiagnostic(
+  error: unknown,
+  healthResult?: ApiHealthResult,
+): DiagnosticErrorMessage {
+  const message = getApiErrorMessage(error);
+
+  // If no health result or API is healthy, just return the base message
+  if (!healthResult || healthResult.isHealthy) {
+    return { message };
+  }
+
+  // Add diagnostic info for unhealthy API
+  return {
+    message,
+    diagnostic: healthResult.details,
+  };
 }

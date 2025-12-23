@@ -23,6 +23,19 @@ vi.mock('@/hooks/useToast', () => ({
   }),
 }));
 
+// Mock checkApiHealth to return healthy by default (no diagnostic shown)
+vi.mock('@/lib/api-errors', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/lib/api-errors')>();
+  return {
+    ...original,
+    checkApiHealth: vi.fn().mockResolvedValue({
+      isHealthy: true,
+      details: 'API disponível',
+      code: 'healthy',
+    }),
+  };
+});
+
 const renderLogin = () => {
   return render(
     <BrowserRouter>

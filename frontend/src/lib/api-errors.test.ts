@@ -1,8 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   HTTP_ERROR_MESSAGES,
   getApiErrorMessage,
   getContextualErrorMessage,
+  checkApiHealth,
+  getErrorWithDiagnostic,
+  type ApiHealthResult,
 } from './api-errors';
 
 describe('API Error Handling', () => {
@@ -278,6 +281,210 @@ describe('API Error Handling', () => {
         expect(result).toContain(op);
         expect(result).toContain(resource);
       });
+    });
+  });
+
+  describe('ERROR_PATTERNS - 404 and CORS', () => {
+    it('should match 404 errors', () => {
+      const error = { message: 'Request failed with status code 404' };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('Endpoint não encontrado');
+    });
+
+    it('should match "not found" errors', () => {
+      const error = { message: 'Resource not found' };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('Endpoint não encontrado');
+    });
+
+    it('should match "cannot GET" errors', () => {
+      const error = { message: 'Cannot GET /api/auth/login' };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('Endpoint não encontrado');
+    });
+
+    it('should match "cannot POST" errors', () => {
+      const error = { message: 'Cannot POST /api/users' };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('Endpoint não encontrado');
+    });
+
+    it('should match CORS errors', () => {
+      const error = {
+        message: 'CORS policy: No Access-Control-Allow-Origin header',
+      };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('configuração do servidor');
+    });
+
+    it('should match cross-origin errors', () => {
+      const error = { message: 'Cross-Origin Request Blocked' };
+      const result = getApiErrorMessage(error);
+      expect(result).toContain('configuração do servidor');
+    });
+  });
+
+  describe('checkApiHealth', () => {
+    const originalFetch = global.fetch;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      global.fetch = originalFetch;
+      vi.useRealTimers();
+    });
+
+    it('should return healthy when API responds with 200', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      });
+
+      const result = await checkApiHealth('http://localhost:3001/api/v1');
+
+      expect(result.isHealthy).toBe(true);
+      expect(result.code).toBe('healthy');
+      expect(result.details).toBe('API disponível');
+    });
+
+    it('should return not_found when API responds with 404', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      });
+
+      const result = await checkApiHealth('http://localhost:3001/api/v1');
+
+      expect(result.isHealthy).toBe(false);
+      expect(result.code).toBe('not_found');
+      expect(result.details).toContain('404');
+    });
+
+    it('should return server_error for other HTTP errors', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+      });
+
+      const result = await checkApiHealth('http://localhost:3001/api/v1');
+
+      expect(result.isHealthy).toBe(false);
+      expect(result.code).toBe('server_error');
+      expect(result.details).toContain('500');
+    });
+
+    it('should return timeout when request times out', async () => {
+      global.fetch = vi.fn().mockImplementation(() => {
+        return new Promise((_, reject) => {
+          const error = new Error('Aborted');
+          error.name = 'AbortError';
+          setTimeout(() => reject(error), 6000);
+        });
+      });
+
+      const resultPromise = checkApiHealth('http://localhost:3001/api/v1');
+
+      // Advance timers to trigger abort
+      await vi.advanceTimersByTimeAsync(6000);
+
+      const result = await resultPromise;
+
+      expect(result.isHealthy).toBe(false);
+      expect(result.code).toBe('timeout');
+    });
+
+    it('should return network_error when fetch fails with TypeError', async () => {
+      global.fetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError('Failed to fetch'));
+
+      const result = await checkApiHealth('http://localhost:3001/api/v1');
+
+      expect(result.isHealthy).toBe(false);
+      expect(result.code).toBe('network_error');
+      expect(result.details).toContain('inacessível');
+    });
+
+    it('should build correct health URL from API URL with /api/v1', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      });
+
+      await checkApiHealth('http://example.com/api/v1');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://example.com/api/health',
+        expect.any(Object),
+      );
+    });
+
+    it('should build correct health URL from API URL without version', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+      });
+
+      await checkApiHealth('http://example.com/api');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://example.com/api/health',
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('getErrorWithDiagnostic', () => {
+    it('should return only message when no health result', () => {
+      const error = { message: 'Some error' };
+      const result = getErrorWithDiagnostic(error);
+
+      expect(result.message).toBeDefined();
+      expect(result.diagnostic).toBeUndefined();
+    });
+
+    it('should return only message when API is healthy', () => {
+      const error = { message: 'Some error' };
+      const healthResult: ApiHealthResult = {
+        isHealthy: true,
+        details: 'API disponível',
+        code: 'healthy',
+      };
+
+      const result = getErrorWithDiagnostic(error, healthResult);
+
+      expect(result.message).toBeDefined();
+      expect(result.diagnostic).toBeUndefined();
+    });
+
+    it('should include diagnostic when API is unhealthy', () => {
+      const error = { message: 'Network error' };
+      const healthResult: ApiHealthResult = {
+        isHealthy: false,
+        details: 'API inacessível. Verifique sua conexão.',
+        code: 'network_error',
+      };
+
+      const result = getErrorWithDiagnostic(error, healthResult);
+
+      expect(result.message).toBeDefined();
+      expect(result.diagnostic).toBe('API inacessível. Verifique sua conexão.');
+    });
+
+    it('should include 404 diagnostic details', () => {
+      const error = { message: '404 Not Found' };
+      const healthResult: ApiHealthResult = {
+        isHealthy: false,
+        details: 'Endpoint não encontrado (404). Verifique a URL da API.',
+        code: 'not_found',
+      };
+
+      const result = getErrorWithDiagnostic(error, healthResult);
+
+      expect(result.diagnostic).toContain('404');
+      expect(result.diagnostic).toContain('Verifique a URL');
     });
   });
 });
