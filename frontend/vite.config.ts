@@ -19,8 +19,17 @@ export default defineConfig({
     },
   },
   build: {
+    // Generate source maps for debugging (production-ready)
+    sourcemap: false,
+    // Optimize chunk size warnings
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
+        // CDN-optimized file naming with content hashes for aggressive caching
+        // Hash ensures cache busting on content changes while allowing 1-year TTL
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           // React core - loaded first, cached separately
           'vendor-react': ['react', 'react-dom'],
