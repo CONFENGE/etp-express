@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { ExaService } from './exa.service';
+import { SemanticCacheService } from '../../cache/semantic-cache.service';
 
 // Mock exa-js
 jest.mock('exa-js', () => {
@@ -28,8 +29,47 @@ describe('ExaService', () => {
     }),
   };
 
+  // Mock SemanticCacheService with in-memory simulation (#811)
+  const mockCacheStore = new Map<string, unknown>();
+  const mockCacheStats = { hits: 0, misses: 0, sets: 0, errors: 0 };
+
+  const mockSemanticCacheService = {
+    get: jest.fn(async (_type: string, key: string) => {
+      if (mockCacheStore.has(key)) {
+        mockCacheStats.hits++;
+        return mockCacheStore.get(key);
+      }
+      mockCacheStats.misses++;
+      return null;
+    }),
+    set: jest.fn(async (_type: string, key: string, value: unknown) => {
+      mockCacheStore.set(key, value);
+      mockCacheStats.sets++;
+    }),
+    generateExaKey: jest.fn(
+      (query: string, type: string, numResults: number) =>
+        `${type}:${numResults}:${query.trim().toLowerCase().replace(/\s+/g, ' ')}`,
+    ),
+    getStats: jest.fn(() => ({
+      ...mockCacheStats,
+      hitRate:
+        mockCacheStats.hits + mockCacheStats.misses > 0
+          ? mockCacheStats.hits / (mockCacheStats.hits + mockCacheStats.misses)
+          : 0,
+      type: 'redis',
+      available: true,
+    })),
+    isAvailable: jest.fn().mockReturnValue(true),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
+    // Clear the mock cache store between tests
+    mockCacheStore.clear();
+    mockCacheStats.hits = 0;
+    mockCacheStats.misses = 0;
+    mockCacheStats.sets = 0;
+    mockCacheStats.errors = 0;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -37,6 +77,10 @@ describe('ExaService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: SemanticCacheService,
+          useValue: mockSemanticCacheService,
         },
       ],
     }).compile();
@@ -461,11 +505,13 @@ describe('ExaService', () => {
 
       mockExa.search.mockResolvedValue(mockResponse);
 
-      // Initial state
+      // Initial state - Redis-based cache stats (#811)
       const initialStats = service.getCacheStats();
       expect(initialStats).toHaveProperty('hits');
       expect(initialStats).toHaveProperty('misses');
-      expect(initialStats).toHaveProperty('keys');
+      expect(initialStats).toHaveProperty('type');
+      expect(initialStats).toHaveProperty('available');
+      expect(initialStats.type).toBe('redis');
 
       const initialMisses = initialStats.misses;
       const initialHits = initialStats.hits;

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { OpenAIService, LLMRequest } from './openai.service';
+import { SemanticCacheService } from '../../cache/semantic-cache.service';
 import OpenAI from 'openai';
 
 // Mock the OpenAI module
@@ -30,7 +31,51 @@ describe('OpenAIService', () => {
     }),
   };
 
+  // Mock SemanticCacheService with in-memory simulation (#811)
+  const mockCacheStore = new Map<string, unknown>();
+  const mockCacheStats = { hits: 0, misses: 0, sets: 0, errors: 0 };
+
+  const mockSemanticCacheService = {
+    get: jest.fn(async (_type: string, key: string) => {
+      if (mockCacheStore.has(key)) {
+        mockCacheStats.hits++;
+        return mockCacheStore.get(key);
+      }
+      mockCacheStats.misses++;
+      return null;
+    }),
+    set: jest.fn(async (_type: string, key: string, value: unknown) => {
+      mockCacheStore.set(key, value);
+      mockCacheStats.sets++;
+    }),
+    generateOpenAIKey: jest.fn(
+      (
+        systemPrompt: string,
+        userPrompt: string,
+        model: string,
+        temperature: number,
+      ) => `${systemPrompt}|${userPrompt}|${model}|${temperature}`,
+    ),
+    getStats: jest.fn(() => ({
+      ...mockCacheStats,
+      hitRate:
+        mockCacheStats.hits + mockCacheStats.misses > 0
+          ? mockCacheStats.hits / (mockCacheStats.hits + mockCacheStats.misses)
+          : 0,
+      type: 'redis',
+      available: true,
+    })),
+    isAvailable: jest.fn().mockReturnValue(true),
+  };
+
   beforeEach(async () => {
+    // Clear the mock cache store between tests
+    mockCacheStore.clear();
+    mockCacheStats.hits = 0;
+    mockCacheStats.misses = 0;
+    mockCacheStats.sets = 0;
+    mockCacheStats.errors = 0;
+
     // Reset the OpenAI mock
     (OpenAI as jest.MockedClass<typeof OpenAI>).mockClear();
     (OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(
@@ -43,6 +88,10 @@ describe('OpenAIService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: SemanticCacheService,
+          useValue: mockSemanticCacheService,
         },
       ],
     }).compile();
@@ -494,30 +543,30 @@ describe('OpenAIService', () => {
       // Second call - cache HIT
       await service.generateCompletion(mockRequest);
       expect(loggerSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Cache HIT:'),
+        expect.stringContaining('Redis Cache HIT:'),
       );
     });
 
     it('should return cache stats with correct structure', () => {
       const stats = service.getCacheStats();
 
-      expect(stats).toHaveProperty('keys');
-      expect(stats).toHaveProperty('maxKeys');
+      // Redis-based cache stats (#811)
       expect(stats).toHaveProperty('hits');
       expect(stats).toHaveProperty('misses');
       expect(stats).toHaveProperty('hitRate');
-      expect(typeof stats.keys).toBe('number');
-      expect(typeof stats.maxKeys).toBe('number');
+      expect(stats).toHaveProperty('type');
+      expect(stats).toHaveProperty('available');
       expect(typeof stats.hits).toBe('number');
       expect(typeof stats.misses).toBe('number');
       expect(typeof stats.hitRate).toBe('number');
+      expect(stats.type).toBe('redis');
     });
 
-    it('should include maxKeys limit in cache stats to prevent memory leak', () => {
+    it('should indicate cache availability status', () => {
       const stats = service.getCacheStats();
 
-      expect(stats.maxKeys).toBe(1000);
-      expect(stats.keys).toBeLessThanOrEqual(stats.maxKeys);
+      // Redis cache availability check (#811)
+      expect(typeof stats.available).toBe('boolean');
     });
 
     it('should calculate hitRate correctly', async () => {
