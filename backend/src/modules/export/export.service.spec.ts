@@ -548,6 +548,163 @@ describe('ExportService', () => {
       expect(result).toBeInstanceOf(Buffer);
       expect(result.length).toBeGreaterThan(0);
     });
+
+    describe('rich text content (HTML from TipTap)', () => {
+      it('should handle HTML paragraphs with bold and italic', async () => {
+        const sectionWithRichText = {
+          ...mockSection,
+          content:
+            '<p>Este e um texto com <strong>negrito</strong> e <em>italico</em>.</p>',
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithRichText],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+        // DOCX files start with PK (ZIP format)
+        expect(result[0]).toBe(0x50);
+        expect(result[1]).toBe(0x4b);
+      });
+
+      it('should handle HTML unordered lists', async () => {
+        const sectionWithList = {
+          ...mockSection,
+          content: '<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>',
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithList],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      it('should handle HTML ordered lists', async () => {
+        const sectionWithOrderedList = {
+          ...mockSection,
+          content:
+            '<ol><li>Primeiro</li><li>Segundo</li><li>Terceiro</li></ol>',
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithOrderedList],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      it('should handle HTML tables', async () => {
+        const sectionWithTable = {
+          ...mockSection,
+          content: `
+            <table>
+              <thead>
+                <tr><th>Coluna 1</th><th>Coluna 2</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Valor A</td><td>Valor B</td></tr>
+                <tr><td>Valor C</td><td>Valor D</td></tr>
+              </tbody>
+            </table>
+          `,
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithTable],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      it('should handle complex TipTap output with mixed content', async () => {
+        const sectionWithComplexContent = {
+          ...mockSection,
+          content: `
+            <p>Introducao com <strong>negrito</strong> e <em>italico</em>.</p>
+            <p>Requisitos principais:</p>
+            <ul>
+              <li>Requisito <strong>obrigatorio</strong></li>
+              <li>Requisito opcional</li>
+            </ul>
+            <p>Tabela de custos:</p>
+            <table>
+              <tr><th>Item</th><th>Valor</th></tr>
+              <tr><td>Total</td><td>R$ 1.000,00</td></tr>
+            </table>
+            <p>Conclusao final.</p>
+          `,
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithComplexContent],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+      });
+
+      it('should fall back to markdown parser for non-HTML content', async () => {
+        const sectionWithPlainText = {
+          ...mockSection,
+          content:
+            'Este e um texto com **negrito** e *italico* no formato markdown.',
+        } as EtpSection;
+
+        const etpWithSections = {
+          ...mockEtp,
+          sections: [sectionWithPlainText],
+        } as Etp;
+
+        mockEtpsRepository.createQueryBuilder.mockReturnValue(
+          createQueryBuilderMock(etpWithSections),
+        );
+
+        const result = await service.exportToDocx('etp-123');
+
+        expect(result).toBeInstanceOf(Buffer);
+        expect(result.length).toBeGreaterThan(0);
+      });
+    });
   });
 
   describe('getEtpWithSections (private method tested via public methods)', () => {

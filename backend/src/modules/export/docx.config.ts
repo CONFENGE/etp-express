@@ -68,6 +68,8 @@ export const DOCX_COLORS = {
   SUCCESS: '059669', // Green for approved status
   WARNING: 'd97706', // Orange for pending status
   ERROR: 'dc2626', // Red for rejected status
+  BORDER: '999999', // Gray for table borders
+  TABLE_HEADER: 'F3F4F6', // Light gray for table headers
 } as const;
 
 /**
