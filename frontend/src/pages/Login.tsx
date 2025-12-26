@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,10 +32,18 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const { error: showError, success } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+
+  // State-driven navigation: navigate only after React commits isAuthenticated
+  useEffect(() => {
+    if (isAuthenticated && loginSuccess) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, loginSuccess, navigate]);
 
   // Real-time validation hooks
   const emailValidator = useCallback(
@@ -68,7 +76,7 @@ export function Login() {
     try {
       await login(data);
       success('Login realizado com sucesso!');
-      navigate('/dashboard');
+      setLoginSuccess(true); // Trigger state-driven navigation via useEffect
     } catch (error) {
       // Get base error message
       const baseMessage = getAuthErrorMessage(error);
