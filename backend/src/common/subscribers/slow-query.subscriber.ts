@@ -30,7 +30,7 @@ export class SlowQuerySubscriber implements EntitySubscriberInterface {
   /**
    * Called after entity is loaded from database
    */
-  afterLoad(_entity: any, _event?: LoadEvent<any>): void {
+  afterLoad(_entity: unknown, _event?: LoadEvent<unknown>): void {
     // Load events don't have timing info in TypeORM
     // Query timing is handled by maxQueryExecutionTime config
   }
@@ -38,21 +38,21 @@ export class SlowQuerySubscriber implements EntitySubscriberInterface {
   /**
    * Called after entity is inserted
    */
-  afterInsert(event: InsertEvent<any>): void {
+  afterInsert(event: InsertEvent<unknown>): void {
     this.logSlowOperation('INSERT', event.metadata?.tableName, event);
   }
 
   /**
    * Called after entity is updated
    */
-  afterUpdate(event: UpdateEvent<any>): void {
+  afterUpdate(event: UpdateEvent<unknown>): void {
     this.logSlowOperation('UPDATE', event.metadata?.tableName, event);
   }
 
   /**
    * Called after entity is removed
    */
-  afterRemove(event: RemoveEvent<any>): void {
+  afterRemove(event: RemoveEvent<unknown>): void {
     this.logSlowOperation('DELETE', event.metadata?.tableName, event);
   }
 
@@ -62,8 +62,7 @@ export class SlowQuerySubscriber implements EntitySubscriberInterface {
   private logSlowOperation(
     operation: string,
     tableName: string | undefined,
-
-    _event: any,
+    _event: InsertEvent<unknown> | UpdateEvent<unknown> | RemoveEvent<unknown>,
   ): void {
     // Note: TypeORM doesn't provide query execution time in entity subscribers
     // This subscriber is prepared for future enhancement when timing is available
