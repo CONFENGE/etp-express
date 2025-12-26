@@ -94,9 +94,8 @@ async function resetDemoData(): Promise<void> {
     const organizationRepository = dataSource.getRepository(Organization);
     const userRepository = dataSource.getRepository(User);
     const etpRepository = dataSource.getRepository(Etp);
-    const sectionRepository = dataSource.getRepository(EtpSection);
-    const versionRepository = dataSource.getRepository(EtpVersion);
-    const auditLogRepository = dataSource.getRepository(AuditLog);
+    // Note: EtpSection, EtpVersion, and AuditLog repositories are not needed here
+    // as they are deleted via cascade or queryRunner.manager directly
 
     // 1. Find demo organization
     const demoOrg = await organizationRepository.findOne({
