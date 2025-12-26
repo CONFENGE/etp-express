@@ -8,12 +8,25 @@ import { Login } from './Login';
 const mockLogin = vi.fn();
 const mockError = vi.fn();
 const mockSuccess = vi.fn();
+const mockNavigate = vi.fn();
+
+// Mutable state for controlling isAuthenticated in tests
+let mockIsAuthenticated = false;
+
+// Mock react-router's useNavigate
+vi.mock('react-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router')>();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock the hooks
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     login: mockLogin,
-    isAuthenticated: false, // Default to false for most tests
+    isAuthenticated: mockIsAuthenticated,
   }),
 }));
 
@@ -51,6 +64,8 @@ describe('Login', () => {
     mockLogin.mockReset();
     mockError.mockReset();
     mockSuccess.mockReset();
+    mockNavigate.mockReset();
+    mockIsAuthenticated = false; // Reset to default for most tests
   });
 
   describe('Password Visibility Toggle', () => {
@@ -497,6 +512,79 @@ describe('Login', () => {
       expect(delay700).toBeInTheDocument();
       expect(delay800).toBeInTheDocument();
       expect(delay900).toBeInTheDocument();
+    });
+  });
+
+  describe('State-Driven Navigation (#958)', () => {
+    it('should NOT call navigate directly from onSubmit', async () => {
+      const user = userEvent.setup();
+      // Login resolves but isAuthenticated stays false (simulating delayed state update)
+      mockLogin.mockResolvedValueOnce({});
+      mockIsAuthenticated = false;
+      renderLogin();
+
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      await waitFor(() => {
+        expect(mockLogin).toHaveBeenCalledTimes(1);
+      });
+
+      // Navigate should NOT be called directly from onSubmit
+      // because state-driven navigation waits for isAuthenticated AND loginSuccess
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('should call navigate when isAuthenticated=true AND loginSuccess=true', async () => {
+      const user = userEvent.setup();
+      // Simulate successful login that updates isAuthenticated
+      mockLogin.mockImplementation(() => {
+        mockIsAuthenticated = true;
+        return Promise.resolve({});
+      });
+      renderLogin();
+
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'password123');
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      // After successful login with isAuthenticated=true and loginSuccess=true,
+      // the useEffect should trigger navigation
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard', {
+          replace: true,
+        });
+      });
+    });
+
+    it('should NOT call navigate on initial render even if isAuthenticated=true', () => {
+      // User is already authenticated but loginSuccess is false (not from this form)
+      mockIsAuthenticated = true;
+      renderLogin();
+
+      // Navigate should NOT be called because loginSuccess is false
+      // This prevents redirect loops and ensures only successful form submissions trigger navigation
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call navigate when login fails (error state)', async () => {
+      const user = userEvent.setup();
+      // Login rejects with error
+      mockLogin.mockRejectedValueOnce(new Error('Credenciais inválidas'));
+      mockIsAuthenticated = false;
+      renderLogin();
+
+      await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+      await user.type(screen.getByLabelText(/Senha/), 'wrongpassword');
+      await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+      await waitFor(() => {
+        expect(mockError).toHaveBeenCalled();
+      });
+
+      // Navigate should NOT be called on error
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 });
