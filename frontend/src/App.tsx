@@ -5,7 +5,7 @@ import {
   Navigate,
   useNavigate,
 } from 'react-router';
-import { useEffect, useCallback, lazy, Suspense } from 'react';
+import { useEffect, useCallback, useState, lazy, Suspense } from 'react';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { PasswordChangeModal } from '@/components/auth/PasswordChangeModal';
@@ -95,18 +95,114 @@ function RouteLoadingFallback() {
 }
 
 /**
- * Protected Route Component
+ * Recovery timeout thresholds for auth state validation
+ */
+const AUTH_RECOVERY_CONFIG = {
+  /** Initial timeout before showing extended message (3s) */
+  SLOW_THRESHOLD_MS: 3000,
+  /** Timeout before attempting recovery (8s) */
+  RECOVERY_THRESHOLD_MS: 8000,
+  /** Maximum wait before forcing redirect to login (15s) */
+  MAX_WAIT_MS: 15000,
+};
+
+/**
+ * Protected Route Component with Recovery Mechanism
+ *
  * Shows loading spinner while auth state is being validated.
  * Prevents "flash of login" on page refresh for authenticated users.
+ *
+ * Recovery mechanism (issue #931):
+ * - After 3s: Shows "taking longer than expected" message
+ * - After 8s: Attempts to re-check auth state
+ * - After 15s: Redirects to login with error message
+ *
+ * This prevents users from being stuck in infinite loading.
  */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAuthInitialized } = useAuth();
+  const { isAuthenticated, isAuthInitialized, checkAuth } = useAuth();
+  const [loadingPhase, setLoadingPhase] = useState<
+    'initial' | 'slow' | 'recovering' | 'timeout'
+  >('initial');
+  const [recoveryAttempted, setRecoveryAttempted] = useState(false);
+
+  // Recovery mechanism: handle extended loading states
+  useEffect(() => {
+    if (isAuthInitialized) {
+      // Reset state when auth is initialized
+      setLoadingPhase('initial');
+      setRecoveryAttempted(false);
+      return;
+    }
+
+    // Timer for slow loading message (3s)
+    const slowTimer = setTimeout(() => {
+      if (!isAuthInitialized) {
+        setLoadingPhase('slow');
+        if (import.meta.env.DEV) {
+          console.warn(
+            '[ProtectedRoute] Auth check taking longer than expected (3s)',
+          );
+        }
+      }
+    }, AUTH_RECOVERY_CONFIG.SLOW_THRESHOLD_MS);
+
+    // Timer for recovery attempt (8s)
+    const recoveryTimer = setTimeout(() => {
+      if (!isAuthInitialized && !recoveryAttempted) {
+        setLoadingPhase('recovering');
+        setRecoveryAttempted(true);
+        if (import.meta.env.DEV) {
+          console.warn('[ProtectedRoute] Attempting auth recovery (8s)');
+        }
+        // Attempt to re-check auth
+        checkAuth().catch(() => {
+          // If recovery fails, timeout phase will handle it
+        });
+      }
+    }, AUTH_RECOVERY_CONFIG.RECOVERY_THRESHOLD_MS);
+
+    // Timer for max wait (15s) - redirect to login
+    const maxWaitTimer = setTimeout(() => {
+      if (!isAuthInitialized) {
+        setLoadingPhase('timeout');
+        if (import.meta.env.DEV) {
+          console.error(
+            '[ProtectedRoute] Auth check timeout (15s) - redirecting to login',
+          );
+        }
+      }
+    }, AUTH_RECOVERY_CONFIG.MAX_WAIT_MS);
+
+    return () => {
+      clearTimeout(slowTimer);
+      clearTimeout(recoveryTimer);
+      clearTimeout(maxWaitTimer);
+    };
+  }, [isAuthInitialized, recoveryAttempted, checkAuth]);
+
+  // Handle timeout - redirect to login
+  if (loadingPhase === 'timeout') {
+    return <Navigate to="/login" replace />;
+  }
 
   // Show loading while auth check is in progress
   if (!isAuthInitialized) {
+    const message =
+      loadingPhase === 'slow' || loadingPhase === 'recovering'
+        ? 'Isso está demorando mais que o esperado...'
+        : 'Verificando autenticação...';
+
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <LoadingState message="Verificando autenticação..." size="lg" />
+        <div className="flex flex-col items-center gap-4">
+          <LoadingState message={message} size="lg" />
+          {loadingPhase === 'recovering' && (
+            <p className="text-sm text-muted-foreground animate-pulse">
+              Tentando reconectar...
+            </p>
+          )}
+        </div>
       </div>
     );
   }
