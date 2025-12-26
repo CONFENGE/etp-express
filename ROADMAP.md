@@ -1,8 +1,38 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-23 | **Progresso:** 469/471 (99%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 Completo ✅
+**Atualizado:** 2025-12-26 | **Progresso:** 474/481 (98%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 + Happy Paths
 
 > **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
+
+---
+
+## HOTFIX: Login isAuthInitialized Bug (5/10 DONE)
+
+**Criado:** 2025-12-26 | **Objetivo:** Corrigir bug onde login mostrava sucesso mas usuário permanecia na tela de login
+
+### Causa Raiz
+
+`authStore.login()` setava `isAuthenticated=true` mas NÃO setava `isAuthInitialized=true`, fazendo o `ProtectedRoute` mostrar loading infinito.
+
+### P0 - BLOQUEADOR (2/2) ✅ COMPLETO
+
+| #        | Issue                                                      | Status  |
+| -------- | ---------------------------------------------------------- | ------- |
+| ~~#928~~ | ~~fix(frontend): Set isAuthInitialized on login/register~~ | ✅ DONE |
+| ~~#929~~ | ~~test(e2e): Add login-to-dashboard flow test~~            | ✅ DONE |
+
+### P1 - TESTES E PREVENÇÃO (3/8)
+
+| #        | Issue                                                 | Status  |
+| -------- | ----------------------------------------------------- | ------- |
+| ~~#930~~ | ~~test(frontend): Unit tests for isAuthInitialized~~  | ✅ DONE |
+| ~~#931~~ | ~~feat(frontend): Auth recovery mechanism~~           | ✅ DONE |
+| ~~#932~~ | ~~test(e2e): Complete authentication flow E2E tests~~ | ✅ DONE |
+| #933     | test(e2e): ETP CRUD E2E tests (10 happy paths)        | 🔄 TODO |
+| #934     | test(e2e): Section generation E2E tests (13 paths)    | 🔄 TODO |
+| #935     | test(e2e): Export PDF/DOCX E2E tests (6 paths)        | 🔄 TODO |
+| #936     | test(e2e): Admin dashboard E2E tests (8 paths)        | 🔄 TODO |
+| #937     | test(e2e): Manager dashboard E2E tests (5 paths)      | 🔄 TODO |
 
 ---
 
