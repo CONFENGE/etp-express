@@ -1,18 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-26 | **Progresso:** 474/481 (98%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅ | **Strategy:** Sprint v1.1 + Happy Paths
-
-> **DECISÃO CTOs (18/12/2024):** Sprint de estabilizacao antes do go-live. 41 issues criadas para resolver deficiencias criticas.
+**Atualizado:** 2025-12-26 | **Progresso:** 478/481 (99%) | **Deploy:** P0 COMPLETE ✅ | **Go-Live:** 100% COMPLETE ✅
 
 ---
 
-## HOTFIX: Login isAuthInitialized Bug (5/10 DONE)
-
-**Criado:** 2025-12-26 | **Objetivo:** Corrigir bug onde login mostrava sucesso mas usuário permanecia na tela de login
-
-### Causa Raiz
-
-`authStore.login()` setava `isAuthenticated=true` mas NÃO setava `isAuthInitialized=true`, fazendo o `ProtectedRoute` mostrar loading infinito.
+## HOTFIX: Login isAuthInitialized Bug (9/10 DONE)
 
 ### P0 - BLOQUEADOR (2/2) ✅ COMPLETO
 
@@ -21,18 +13,18 @@
 | ~~#928~~ | ~~fix(frontend): Set isAuthInitialized on login/register~~ | ✅ DONE |
 | ~~#929~~ | ~~test(e2e): Add login-to-dashboard flow test~~            | ✅ DONE |
 
-### P1 - TESTES E PREVENÇÃO (3/8)
+### P1 - TESTES E PREVENÇÃO (7/8)
 
 | #        | Issue                                                 | Status  |
 | -------- | ----------------------------------------------------- | ------- |
 | ~~#930~~ | ~~test(frontend): Unit tests for isAuthInitialized~~  | ✅ DONE |
 | ~~#931~~ | ~~feat(frontend): Auth recovery mechanism~~           | ✅ DONE |
 | ~~#932~~ | ~~test(e2e): Complete authentication flow E2E tests~~ | ✅ DONE |
-| #933     | test(e2e): ETP CRUD E2E tests (10 happy paths)        | 🔄 TODO |
+| ~~#933~~ | ~~test(e2e): ETP CRUD E2E tests (10 happy paths)~~    | ✅ DONE |
 | #934     | test(e2e): Section generation E2E tests (13 paths)    | 🔄 TODO |
-| #935     | test(e2e): Export PDF/DOCX E2E tests (6 paths)        | 🔄 TODO |
-| #936     | test(e2e): Admin dashboard E2E tests (8 paths)        | 🔄 TODO |
-| #937     | test(e2e): Manager dashboard E2E tests (5 paths)      | 🔄 TODO |
+| ~~#935~~ | ~~test(e2e): Export PDF/DOCX E2E tests (6 paths)~~    | ✅ DONE |
+| ~~#936~~ | ~~test(e2e): Admin dashboard E2E tests (8 paths)~~    | ✅ DONE |
+| ~~#937~~ | ~~test(e2e): Manager dashboard E2E tests (5 paths)~~  | ✅ DONE |
 
 ---
 
@@ -633,23 +625,19 @@ M1 Foundation (36/36), M2 CI/CD (18/18), M3 Quality (61/61), M4 Refactoring (45/
 
 ## Métricas
 
-| Métrica             | Valor    |
-| ------------------- | -------- |
-| Issues Totais       | 471      |
-| Issues Abertas      | 2        |
-| Issues Fechadas     | 469      |
-| Progresso           | 99%      |
-| Velocidade          | 16.4/dia |
-| Backend Coverage    | 78%      |
-| Frontend Coverage   | 76%      |
-| Testes              | 1879     |
-| P0 Go-Live          | 0 ✅     |
-| P1 Go-Live          | 0 ✅     |
-| P2 Go-Live          | 0 ✅     |
-| P3 Go-Live          | 0 ✅     |
-| P2 Gov-API          | 0 ✅     |
-| Sprint v1.1         | 0 ✅     |
-| HOTFIX API Version. | 2 🔄     |
+| Métrica           | Valor   |
+| ----------------- | ------- |
+| Issues Totais     | 481     |
+| Issues Abertas    | 3       |
+| Issues Fechadas   | 478     |
+| Progresso         | 99%     |
+| Backend Coverage  | 78%     |
+| Frontend Coverage | 76%     |
+| Backend Tests     | 2095    |
+| Frontend Tests    | 1368    |
+| Total Tests       | 3463    |
+| Go-Live           | ✅ 100% |
+| Sprint v1.1       | ✅ 100% |
 
 ---
 
