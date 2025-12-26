@@ -89,6 +89,101 @@ test.describe('Login Flow - Critical Path', () => {
   });
 
   /**
+   * Test: Login redirects to dashboard within 3 seconds (Timing Assertion)
+   *
+   * @description Validates that login-to-dashboard redirect happens quickly,
+   * without visible loading flash. This test measures the actual time from
+   * form submission to dashboard URL change.
+   *
+   * @issue #945
+   * @acceptance-criteria
+   * - Time from submit to dashboard URL must be < 3 seconds
+   * - No "Verificando autenticação" message should appear
+   * - Works for both ADMIN and DEMO users
+   */
+  test('login redirects to dashboard within 3 seconds (ADMIN)', async ({
+    page,
+  }) => {
+    const MAX_REDIRECT_TIME_MS = 3000;
+
+    // Step 1: Fill login form
+    await page.fill(
+      'input[name="email"], input#email',
+      TEST_CONFIG.admin.email,
+    );
+    await page.fill(
+      'input[name="password"], input#password',
+      TEST_CONFIG.admin.password,
+    );
+
+    // Step 2: Start timing and submit
+    const startTime = Date.now();
+    await page.click('button[type="submit"]');
+
+    // Step 3: Wait for navigation to dashboard
+    await expect(page).toHaveURL(/\/dashboard/, {
+      timeout: MAX_REDIRECT_TIME_MS,
+    });
+
+    // Step 4: Measure elapsed time
+    const elapsed = Date.now() - startTime;
+
+    // Step 5: Assert timing requirement
+    expect(elapsed).toBeLessThan(MAX_REDIRECT_TIME_MS);
+
+    // Step 6: Verify no loading flash was visible
+    const loadingMessage = page.locator('text=Verificando autenticação');
+    await expect(loadingMessage).not.toBeVisible();
+
+    console.log(
+      `ADMIN login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - PASSED`,
+    );
+  });
+
+  /**
+   * Test: Login redirects to dashboard within 3 seconds (DEMO user)
+   *
+   * @description Same timing assertion as ADMIN, but for DEMO user type.
+   *
+   * @issue #945
+   */
+  test('login redirects to dashboard within 3 seconds (DEMO)', async ({
+    page,
+  }) => {
+    const MAX_REDIRECT_TIME_MS = 3000;
+
+    // Fill login form with DEMO credentials
+    await page.fill('input[name="email"], input#email', TEST_CONFIG.demo.email);
+    await page.fill(
+      'input[name="password"], input#password',
+      TEST_CONFIG.demo.password,
+    );
+
+    // Start timing and submit
+    const startTime = Date.now();
+    await page.click('button[type="submit"]');
+
+    // Wait for navigation to dashboard
+    await expect(page).toHaveURL(/\/dashboard/, {
+      timeout: MAX_REDIRECT_TIME_MS,
+    });
+
+    // Measure elapsed time
+    const elapsed = Date.now() - startTime;
+
+    // Assert timing requirement
+    expect(elapsed).toBeLessThan(MAX_REDIRECT_TIME_MS);
+
+    // Verify no loading flash was visible
+    const loadingMessage = page.locator('text=Verificando autenticação');
+    await expect(loadingMessage).not.toBeVisible();
+
+    console.log(
+      `DEMO login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - PASSED`,
+    );
+  });
+
+  /**
    * Test: Login with valid credentials redirects to dashboard
    *
    * @description This is the CRITICAL test that validates the bug #928 fix.
