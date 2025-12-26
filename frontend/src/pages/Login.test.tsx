@@ -13,6 +13,7 @@ const mockSuccess = vi.fn();
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
     login: mockLogin,
+    isAuthenticated: false, // Default to false for most tests
   }),
 }));
 
