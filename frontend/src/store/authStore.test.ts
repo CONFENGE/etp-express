@@ -102,6 +102,8 @@ describe('authStore', () => {
       );
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
+      // Critical: isAuthInitialized must be true after login for ProtectedRoute to work
+      expect(result.current.isAuthInitialized).toBe(true);
       expect(result.current.error).toBeNull();
     });
 
@@ -174,6 +176,8 @@ describe('authStore', () => {
       );
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
+      // Critical: isAuthInitialized must be true after register for ProtectedRoute to work
+      expect(result.current.isAuthInitialized).toBe(true);
       expect(result.current.error).toBeNull();
     });
 
@@ -486,6 +490,121 @@ describe('authStore', () => {
       expect(state.isLoading).toBe(false);
       // User should NOT be updated on failure
       expect(state.user?.mustChangePassword).toBe(true);
+    });
+  });
+
+  describe('isAuthInitialized state machine', () => {
+    it('should start with isAuthInitialized as false', () => {
+      const { result } = renderHook(() => useAuthStore());
+      expect(result.current.isAuthInitialized).toBe(false);
+    });
+
+    it('should set isAuthInitialized to true after successful login', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAuthResponse);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      expect(result.current.isAuthInitialized).toBe(false);
+
+      await act(async () => {
+        await result.current.login(mockCredentials);
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+    });
+
+    it('should set isAuthInitialized to true after successful register', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAuthResponse);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      expect(result.current.isAuthInitialized).toBe(false);
+
+      await act(async () => {
+        await result.current.register(mockRegisterData);
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+    });
+
+    it('should set isAuthInitialized to true after checkAuth success', async () => {
+      vi.mocked(apiHelpers.get).mockResolvedValue({ user: mockUser });
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          user: mockUser,
+          isAuthInitialized: false,
+        });
+      });
+
+      await act(async () => {
+        await result.current.checkAuth();
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+    });
+
+    it('should set isAuthInitialized to true after checkAuth failure', async () => {
+      vi.mocked(apiHelpers.get).mockRejectedValue(new Error('Token expired'));
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          user: mockUser,
+          isAuthInitialized: false,
+        });
+      });
+
+      await act(async () => {
+        await result.current.checkAuth();
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+    });
+
+    it('should keep isAuthInitialized true after clearAuth', () => {
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        useAuthStore.setState({
+          user: mockUser,
+          isAuthenticated: true,
+          isAuthInitialized: true,
+        });
+      });
+
+      act(() => {
+        result.current.clearAuth();
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+
+    it('should keep isAuthInitialized true after logout', async () => {
+      vi.mocked(apiHelpers.post).mockResolvedValue({});
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        useAuthStore.setState({
+          user: mockUser,
+          isAuthenticated: true,
+          isAuthInitialized: true,
+        });
+      });
+
+      await act(async () => {
+        await result.current.logout();
+      });
+
+      expect(result.current.isAuthInitialized).toBe(true);
+      expect(result.current.isAuthenticated).toBe(false);
     });
   });
 
