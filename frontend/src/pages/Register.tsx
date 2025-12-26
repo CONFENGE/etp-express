@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,7 +49,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function Register() {
   const navigate = useNavigate();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, isAuthenticated } = useAuth();
   const { error: showError, success } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -57,6 +57,14 @@ export function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [unauthorizedEmail, setUnauthorizedEmail] = useState<string>('');
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+
+  // State-driven navigation: navigate only after React commits isAuthenticated
+  useEffect(() => {
+    if (isAuthenticated && registerSuccess) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, registerSuccess, navigate]);
 
   const {
     register,
@@ -96,7 +104,7 @@ export function Register() {
         internationalTransferConsent: data.internationalTransferConsent,
       });
       success('Cadastro realizado com sucesso!');
-      navigate('/dashboard');
+      setRegisterSuccess(true); // Trigger state-driven navigation via useEffect
     } catch (error: unknown) {
       // Handle unauthorized domain error (400)
       if (
