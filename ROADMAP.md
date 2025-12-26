@@ -1,20 +1,12 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-26 | **Progresso:** 484/505 (96%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-26 | **Progresso:** 488/505 (97%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (21)
+## Issues Abertas (17)
 
-### P0 - Auth Fixes (3 issues)
-
-| #    | Issue                                                  | Priority |
-| ---- | ------------------------------------------------------ | -------- |
-| #943 | fix(auth): Use state-driven navigation in Login        | P0       |
-| #944 | fix(auth): Apply state-driven navigation to Register   | P0       |
-| #948 | fix(auth): Simplify ProtectedRoute - remove workaround | P0       |
-
-### P1 - E2E Tests (14 issues)
+### P1 - E2E & Unit Tests (12 issues)
 
 | #    | Issue                                                   |
 | ---- | ------------------------------------------------------- |
@@ -30,11 +22,15 @@
 | #955 | test(e2e): Export PDF complete flow                     |
 | #956 | test(e2e): Export DOCX complete flow                    |
 | #957 | test(e2e): Admin domain management CRUD                 |
-| #958 | test(unit): Login component state-driven navigation     |
-| #959 | test(unit): ProtectedRoute auth state handling          |
-| #960 | test(unit): authStore state machine transitions         |
 
-### P2 - Melhorias (4 issues)
+### P1 - Unit Tests (2 issues)
+
+| #    | Issue                                           |
+| ---- | ----------------------------------------------- |
+| #959 | test(unit): ProtectedRoute auth state handling  |
+| #960 | test(unit): authStore state machine transitions |
+
+### P2 - Melhorias (3 issues)
 
 | #    | Issue                                         |
 | ---- | --------------------------------------------- |
@@ -48,11 +44,11 @@
 
 | Milestone              | Issues |
 | ---------------------- | ------ |
-| M1: Foundation         | 36/36  |
+| M1: Foundation         | 35/35  |
 | M2: CI/CD Pipeline     | 18/18  |
-| M3: Quality & Security | 61/61  |
-| M4: Refactoring & Perf | 45/45  |
-| M5: E2E & Docs         | 30/30  |
+| M3: Quality & Security | 60/60  |
+| M4: Refactoring & Perf | 44/44  |
+| M5: E2E & Docs         | 29/29  |
 | M6: Maintenance        | 85/85  |
 | M7: Multi-Tenancy B2G  | 6/6    |
 | M8: Dominios Instit.   | 24/24  |
@@ -66,9 +62,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 505   |
-| Issues Abertas    | 21    |
-| Issues Fechadas   | 484   |
-| Progresso         | 96%   |
+| Issues Abertas    | 17    |
+| Issues Fechadas   | 488   |
+| Progresso         | 97%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2095  |
