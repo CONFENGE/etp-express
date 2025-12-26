@@ -71,9 +71,11 @@ export const useAuthStore = create<AuthState>()(
           );
 
           // Token is set in httpOnly cookie by backend - we only store user data
+          // isAuthInitialized must be set to true to allow ProtectedRoute to render
           set({
             user: response.user,
             isAuthenticated: true,
+            isAuthInitialized: true,
             isLoading: false,
             error: null,
           });
@@ -102,9 +104,11 @@ export const useAuthStore = create<AuthState>()(
           );
 
           // Token is set in httpOnly cookie by backend - we only store user data
+          // isAuthInitialized must be set to true to allow ProtectedRoute to render
           set({
             user: response.user,
             isAuthenticated: true,
+            isAuthInitialized: true,
             isLoading: false,
             error: null,
           });
