@@ -3,10 +3,17 @@
  *
  * @description Tests session persistence, expiration, and recovery scenarios.
  *
- * @issue #932
+ * @issue #932, #947
  * @group e2e
  * @group auth
  * @priority P1
+ *
+ * @acceptance-criteria (Issue #947)
+ * - Sessão persiste: Dashboard -> ETPs -> Dashboard
+ * - Sessão persiste: Múltiplas abas do browser compartilham sessão
+ * - Sessão persiste: Page refresh em rota protegida
+ * - Sessão persiste: Browser back/forward navigation
+ * - Sessão limpa: Após logout explícito
  */
 
 import { test, expect } from '@playwright/test';
@@ -117,6 +124,57 @@ test.describe('Session Management', () => {
     }
 
     console.log('Multiple refresh persistence: PASSED');
+  });
+
+  /**
+   * Test: Session persists with browser back/forward navigation
+   * @issue #947 - AC: Browser back/forward navigation
+   */
+  test('session persists with browser back/forward navigation', async ({
+    page,
+  }) => {
+    // Login
+    await page.goto('/login');
+    await page.fill(
+      'input[name="email"], input#email',
+      TEST_CONFIG.admin.email,
+    );
+    await page.fill(
+      'input[name="password"], input#password',
+      TEST_CONFIG.admin.password,
+    );
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/\/dashboard/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
+
+    // Navigate to ETPs
+    await page.goto('/etps');
+    await expect(page).toHaveURL(/\/etps/);
+    await expect(page).not.toHaveURL(/\/login/);
+
+    // Go back to dashboard using browser back
+    await page.goBack();
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page).not.toHaveURL(/\/login/);
+
+    // Go forward to ETPs using browser forward
+    await page.goForward();
+    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL(/\/etps/);
+    await expect(page).not.toHaveURL(/\/login/);
+
+    // Multiple back/forward cycles
+    await page.goBack();
+    await page.waitForLoadState('networkidle');
+    await expect(page).not.toHaveURL(/\/login/);
+
+    await page.goForward();
+    await page.waitForLoadState('networkidle');
+    await expect(page).not.toHaveURL(/\/login/);
+
+    console.log('Browser back/forward navigation persistence: PASSED');
   });
 
   /**
