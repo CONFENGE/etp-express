@@ -169,7 +169,11 @@ describe('etpStore', () => {
   describe('Teste 1: fetchETPs', () => {
     it('should populate ETPs array on successful fetch', async () => {
       const mockETPs = [mockETP, { ...mockETP, id: 'etp-2', title: 'ETP 2' }];
-      vi.mocked(apiHelpers.get).mockResolvedValue(mockETPs);
+      // API returns paginated response (#982)
+      vi.mocked(apiHelpers.get).mockResolvedValue({
+        data: mockETPs,
+        meta: { total: 2, page: 1, perPage: 10, totalPages: 1 },
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -474,9 +478,12 @@ describe('etpStore', () => {
 
       const { result } = renderHook(() => useETPStore());
 
-      // Setup: populate etps array
+      // Setup: populate etps array (API returns paginated response #982)
       await act(async () => {
-        vi.mocked(apiHelpers.get).mockResolvedValue([mockETP]);
+        vi.mocked(apiHelpers.get).mockResolvedValue({
+          data: [mockETP],
+          meta: { total: 1, page: 1, perPage: 10, totalPages: 1 },
+        });
         await result.current.fetchETPs();
       });
 
