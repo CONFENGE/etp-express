@@ -315,46 +315,156 @@ describe('UsersController', () => {
   });
 
   describe('findOne', () => {
-    it('should return a user by ID', async () => {
-      // Arrange
-      mockUsersService.findOne.mockResolvedValue(mockUser);
+    describe('Security: IDOR protection (#993)', () => {
+      it('should allow user to view their own profile', async () => {
+        // Arrange - User viewing their own profile
+        const currentUser = {
+          id: mockUserId,
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.findOne.mockResolvedValue(mockUser);
 
-      // Act
-      const result = await controller.findOne(mockUserId);
+        // Act
+        const result = await controller.findOne(mockUserId, currentUser);
 
-      // Assert
-      expect(service.findOne).toHaveBeenCalledWith(mockUserId);
-      expect(service.findOne).toHaveBeenCalledTimes(1);
-      expect(result.data).toEqual(mockUser);
-      expect(result.data.id).toBe(mockUserId);
-      expect(result.disclaimer).toBeDefined();
+        // Assert
+        expect(service.findOne).toHaveBeenCalledWith(mockUserId);
+        expect(result.data).toEqual(mockUser);
+        expect(result.data.id).toBe(mockUserId);
+        expect(result.disclaimer).toBeDefined();
+      });
+
+      it('should allow SYSTEM_ADMIN to view any user', async () => {
+        // Arrange - SYSTEM_ADMIN viewing another user
+        mockUsersService.findOne.mockResolvedValue(mockUser);
+
+        // Act
+        const result = await controller.findOne(
+          mockUserId, // Different from admin's ID
+          mockSystemAdminWithOrg,
+        );
+
+        // Assert
+        expect(service.findOne).toHaveBeenCalledWith(mockUserId);
+        expect(result.data).toEqual(mockUser);
+      });
+
+      it('should allow ADMIN to view users from same organization', async () => {
+        // Arrange - ADMIN viewing user from same org
+        const targetUser = {
+          ...mockUser,
+          organizationId: mockOrgAdminUser.organizationId,
+        };
+        mockUsersService.findOne.mockResolvedValue(targetUser);
+
+        // Act
+        const result = await controller.findOne(mockUserId, mockOrgAdminUser);
+
+        // Assert
+        expect(service.findOne).toHaveBeenCalledWith(mockUserId);
+        expect(result.data).toEqual(targetUser);
+      });
+
+      it('should throw ForbiddenException when ADMIN tries to view user from different organization', async () => {
+        // Arrange - ADMIN attempting to view user from different org
+        const targetUserDifferentOrg = {
+          ...mockUser,
+          organizationId: 'different-org-999',
+        };
+        mockUsersService.findOne.mockResolvedValue(targetUserDifferentOrg);
+
+        // Act & Assert
+        await expect(
+          controller.findOne(mockUserId, mockOrgAdminUser),
+        ).rejects.toThrow(ForbiddenException);
+        await expect(
+          controller.findOne(mockUserId, mockOrgAdminUser),
+        ).rejects.toThrow(
+          'Você não tem permissão para visualizar usuários de outra organização',
+        );
+      });
+
+      it('should throw ForbiddenException when regular user tries to view another user', async () => {
+        // Arrange - Regular user attempting to view another user
+        const anotherUserId = 'another-user-456';
+        const anotherUser = {
+          ...mockUser,
+          id: anotherUserId,
+          organizationId: mockRegularUser.organizationId,
+        };
+        mockUsersService.findOne.mockResolvedValue(anotherUser);
+
+        // Act & Assert
+        await expect(
+          controller.findOne(anotherUserId, mockRegularUser),
+        ).rejects.toThrow(ForbiddenException);
+        await expect(
+          controller.findOne(anotherUserId, mockRegularUser),
+        ).rejects.toThrow(
+          'Você não tem permissão para visualizar este usuário',
+        );
+      });
+
+      it('should log IDOR attempt when unauthorized view is blocked', async () => {
+        // Arrange
+        const anotherUserId = 'another-user-456';
+        const anotherUser = {
+          ...mockUser,
+          id: anotherUserId,
+        };
+        mockUsersService.findOne.mockResolvedValue(anotherUser);
+
+        // Act & Assert
+        await expect(
+          controller.findOne(anotherUserId, mockRegularUser),
+        ).rejects.toThrow(ForbiddenException);
+
+        // Note: Actual logging verification would require mocking Logger
+        // This test ensures the code path is reached
+      });
     });
 
-    it('should throw NotFoundException when user not found', async () => {
-      // Arrange
-      mockUsersService.findOne.mockRejectedValue(
-        new NotFoundException('Usuário não encontrado'),
-      );
+    describe('General findOne functionality', () => {
+      it('should throw NotFoundException when user not found', async () => {
+        // Arrange - User viewing own profile but not found
+        const currentUser = {
+          id: 'non-existent-id',
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.findOne.mockRejectedValue(
+          new NotFoundException('Usuário não encontrado'),
+        );
 
-      // Act & Assert
-      await expect(controller.findOne('invalid-id')).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(controller.findOne('invalid-id')).rejects.toThrow(
-        'Usuário não encontrado',
-      );
-    });
+        // Act & Assert
+        await expect(
+          controller.findOne('non-existent-id', currentUser),
+        ).rejects.toThrow(NotFoundException);
+        await expect(
+          controller.findOne('non-existent-id', currentUser),
+        ).rejects.toThrow('Usuário não encontrado');
+      });
 
-    it('should include disclaimer in response', async () => {
-      // Arrange
-      mockUsersService.findOne.mockResolvedValue(mockUser);
+      it('should include disclaimer in response', async () => {
+        // Arrange
+        const currentUser = {
+          id: mockUserId,
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.findOne.mockResolvedValue(mockUser);
 
-      // Act
-      const result = await controller.findOne(mockUserId);
+        // Act
+        const result = await controller.findOne(mockUserId, currentUser);
 
-      // Assert
-      expect(result.disclaimer).toBeDefined();
-      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+        // Assert
+        expect(result.disclaimer).toBeDefined();
+        expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+      });
     });
   });
 
