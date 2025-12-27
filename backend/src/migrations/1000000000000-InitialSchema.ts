@@ -10,7 +10,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Timestamp 0000000000000 ensures it executes first.
  *
  * Tables created:
- * - organization
+ * - organizations
  * - users
  * - etps
  * - etp_versions
@@ -26,9 +26,9 @@ export class InitialSchema1000000000000 implements MigrationInterface {
   name = 'InitialSchema1000000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create organization table (Multi-Tenancy)
+    // Create organizations table (Multi-Tenancy)
     await queryRunner.query(`
- CREATE TABLE IF NOT EXISTS "organization" (
+ CREATE TABLE IF NOT EXISTS "organizations" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
  "cnpj" character varying(14) NOT NULL,
@@ -37,8 +37,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  "stripeCustomerId" character varying,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
- CONSTRAINT "UQ_organization_cnpj" UNIQUE ("cnpj"),
- CONSTRAINT "PK_organization_id" PRIMARY KEY ("id")
+ CONSTRAINT "UQ_organizations_cnpj" UNIQUE ("cnpj"),
+ CONSTRAINT "PK_organizations_id" PRIMARY KEY ("id")
  )
  `);
 
@@ -63,7 +63,7 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CONSTRAINT "UQ_users_email" UNIQUE ("email"),
  CONSTRAINT "PK_users_id" PRIMARY KEY ("id"),
  CONSTRAINT "FK_users_organizationId" FOREIGN KEY ("organizationId")
- REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+ REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
  )
  `);
 
@@ -86,7 +86,7 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
  CONSTRAINT "PK_etps_id" PRIMARY KEY ("id"),
  CONSTRAINT "FK_etps_organizationId" FOREIGN KEY ("organizationId")
- REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
+ REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
  CONSTRAINT "FK_etps_created_by" FOREIGN KEY ("created_by")
  REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
  )
@@ -254,6 +254,6 @@ export class InitialSchema1000000000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "etp_versions"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "etps"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "users"`);
-    await queryRunner.query(`DROP TABLE IF EXISTS "organization"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "organizations"`);
   }
 }

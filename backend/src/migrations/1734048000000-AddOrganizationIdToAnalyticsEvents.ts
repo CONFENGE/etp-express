@@ -35,7 +35,7 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
  ALTER TABLE "analytics_events"
  ADD CONSTRAINT "FK_analytics_events_organizationId"
  FOREIGN KEY ("organizationId")
- REFERENCES "organization"("id")
+ REFERENCES "organizations"("id")
  ON DELETE SET NULL
  `);
 
