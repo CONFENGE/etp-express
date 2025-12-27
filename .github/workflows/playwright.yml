@@ -30,7 +30,8 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15-alpine
+        # Use pgvector image for vector extension support (required by migrations)
+        image: pgvector/pgvector:pg15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
