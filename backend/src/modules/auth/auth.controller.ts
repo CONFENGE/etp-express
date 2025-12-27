@@ -68,8 +68,15 @@ export class AuthController {
    * @security
    * - httpOnly: true - prevents JavaScript access (XSS protection)
    * - secure: true in production - HTTPS only
-   * - sameSite: 'lax' - CSRF protection for cross-site requests
+   * - sameSite: 'none' in production - required for cross-origin Railway subdomains
+   * - sameSite: 'lax' in development - CSRF protection for same-origin
    * - maxAge: 24 hours - matches JWT expiration
+   *
+   * @remarks
+   * Production uses SameSite=None because frontend and backend are on different
+   * Railway subdomains (etp-express-frontend-*.railway.app vs etp-express-backend-*.railway.app).
+   * SameSite=Lax blocks cookies in cross-origin AJAX requests, breaking authentication.
+   * See: https://github.com/CONFENGE/etp-express/issues/981
    */
   private setAuthCookie(res: Response, token: string): void {
     const isProduction = this.configService.get('NODE_ENV') === 'production';
@@ -77,7 +84,7 @@ export class AuthController {
     res.cookie(AUTH_COOKIE_NAME, token, {
       httpOnly: true, // Prevents XSS access
       secure: isProduction, // HTTPS only in production
-      sameSite: 'lax', // CSRF protection
+      sameSite: isProduction ? 'none' : 'lax', // none for cross-origin in prod (#981)
       maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
       path: '/', // Available for all routes
     });
@@ -92,7 +99,7 @@ export class AuthController {
     res.clearCookie(AUTH_COOKIE_NAME, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax',
+      sameSite: isProduction ? 'none' : 'lax', // Match setAuthCookie (#981)
       path: '/',
     });
   }
