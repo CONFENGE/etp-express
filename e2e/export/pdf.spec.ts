@@ -1,12 +1,20 @@
 /**
- * E2E Export PDF Tests - Happy Paths
+ * E2E Export PDF Tests - Complete Flow
  *
- * @description Tests the 3 happy paths for PDF export:
- * 1. Export complete ETP to PDF
- * 2. Export partial ETP to PDF
- * 3. Export PDF with rich text formatting
+ * @description Tests the complete PDF export flow per Lei 14.133/2021:
+ * 1. Export complete ETP to PDF - validates download, size, filename
+ * 2. Export partial ETP to PDF - validates partial content export
+ * 3. Export PDF with rich text formatting - validates formatting preservation
  *
- * @issue #935
+ * Acceptance Criteria:
+ * - Button Export PDF initiates download
+ * - PDF file is generated with size >10KB
+ * - PDF contains all filled sections
+ * - Rich text formatting is preserved in PDF
+ * - Filename follows pattern ETP-{id}.pdf
+ *
+ * @issue #955
+ * @see #935 (original implementation)
  * @group e2e
  * @group export
  * @priority P1
@@ -192,10 +200,11 @@ test.describe('Export PDF Happy Paths', () => {
       exportPdfButton.first().click(),
     ]);
 
-    // Validate filename
+    // Validate filename format: ETP-{uuid}.pdf
     const filename = download.suggestedFilename();
     expect(filename).toMatch(/\.pdf$/i);
-    expect(filename).toContain('ETP');
+    expect(filename).toMatch(/^ETP-/); // Filename starts with ETP-
+    expect(filename).toMatch(/^ETP-[a-f0-9-]+\.pdf$/i); // Full pattern: ETP-{uuid}.pdf
     console.log(`Downloaded file: ${filename}`);
 
     // Save and validate file size
@@ -247,9 +256,10 @@ test.describe('Export PDF Happy Paths', () => {
       exportPdfButton.first().click(),
     ]);
 
-    // Validate filename
+    // Validate filename format: ETP-{uuid}.pdf (same pattern for partial ETPs)
     const filename = download.suggestedFilename();
     expect(filename).toMatch(/\.pdf$/i);
+    expect(filename).toMatch(/^ETP-[a-f0-9-]+\.pdf$/i); // Full pattern: ETP-{uuid}.pdf
     console.log(`Downloaded partial ETP file: ${filename}`);
 
     // Save and validate file size (should still be > minimum)
@@ -313,9 +323,10 @@ test.describe('Export PDF Happy Paths', () => {
       exportPdfButton.first().click(),
     ]);
 
-    // Validate filename
+    // Validate filename format: ETP-{uuid}.pdf
     const filename = download.suggestedFilename();
     expect(filename).toMatch(/\.pdf$/i);
+    expect(filename).toMatch(/^ETP-[a-f0-9-]+\.pdf$/i); // Full pattern: ETP-{uuid}.pdf
     console.log(`Downloaded rich text PDF file: ${filename}`);
 
     // Save and validate file size
