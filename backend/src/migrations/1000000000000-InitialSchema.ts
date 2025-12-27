@@ -26,13 +26,24 @@ export class InitialSchema1000000000000 implements MigrationInterface {
   name = 'InitialSchema1000000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create users_role_enum type for role column (matches User entity)
+    await queryRunner.query(`
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'users_role_enum') THEN
+ CREATE TYPE "users_role_enum" AS ENUM ('system_admin', 'domain_manager', 'admin', 'user', 'viewer', 'demo');
+ END IF;
+ END
+ $$;
+ `);
+
     // Create organizations table (Multi-Tenancy)
     await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "organizations" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
  "cnpj" character varying NOT NULL,
- "domainWhitelist" text NOT NULL,
+ "domainWhitelist" text array NOT NULL,
  "isActive" boolean NOT NULL DEFAULT true,
  "stripeCustomerId" character varying,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
@@ -51,13 +62,15 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  "name" character varying NOT NULL,
  "organizationId" uuid NOT NULL,
  "cargo" character varying,
- "role" character varying NOT NULL DEFAULT 'user',
+ "role" "users_role_enum" NOT NULL DEFAULT 'user',
  "isActive" boolean NOT NULL DEFAULT true,
+ "mustChangePassword" boolean NOT NULL DEFAULT false,
  "lastLoginAt" TIMESTAMP,
  "lgpdConsentAt" TIMESTAMP,
  "lgpdConsentVersion" character varying,
  "internationalTransferConsentAt" TIMESTAMP,
  "deletedAt" TIMESTAMP,
+ "authorizedDomainId" uuid,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
  CONSTRAINT "UQ_users_email" UNIQUE ("email"),
