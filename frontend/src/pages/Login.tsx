@@ -22,6 +22,7 @@ import {
 import { APP_NAME, getAuthErrorMessage } from '@/lib/constants';
 import { cn, isValidEmail } from '@/lib/utils';
 import { checkApiHealth, getErrorWithDiagnostic } from '@/lib/api-errors';
+import { logger } from '@/lib/logger';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -41,6 +42,11 @@ export function Login() {
   // State-driven navigation: navigate only after React commits isAuthenticated
   useEffect(() => {
     if (isAuthenticated && loginSuccess) {
+      // Sentry breadcrumb: track navigation from login to dashboard
+      logger.info('Auth: navigating to dashboard', {
+        from: '/login',
+        to: '/dashboard',
+      });
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, loginSuccess, navigate]);
