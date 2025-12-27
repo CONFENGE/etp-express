@@ -27,6 +27,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { EtpsService } from '../etps/etps.service';
 
 /**
  * Controller handling ETP section management HTTP endpoints.
@@ -56,6 +57,7 @@ export class SectionsController {
   constructor(
     private readonly sectionsService: SectionsService,
     private readonly sectionProgressService: SectionProgressService,
+    private readonly etpsService: EtpsService,
   ) {}
 
   /**
@@ -191,18 +193,23 @@ export class SectionsController {
     status: 400,
     description: 'Seção já existe ou dados inválidos',
   })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   @ApiResponse({
     status: 429,
     description: 'Limite de requisições excedido',
   })
-  generateSectionStream(
+  async generateSectionStream(
     @Param('etpId') etpId: string,
     @Query() generateDto: GenerateSectionDto,
     @CurrentUser('id') userId: string,
     @CurrentUser('organizationId') organizationId: string,
-  ): Observable<MessageEvent> {
-    // Start generation with progress tracking
+  ): Promise<Observable<MessageEvent>> {
+    // SECURITY FIX (#992): Validate ETP ownership BEFORE creating SSE stream
+    // This prevents unauthorized users from connecting to streams of ETPs they don't own
+    await this.etpsService.findOneMinimal(etpId, organizationId, userId);
+
+    // Start generation with progress tracking (ownership already validated)
     const progressObservable = this.sectionsService.generateSectionWithProgress(
       etpId,
       generateDto,

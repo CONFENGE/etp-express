@@ -10,6 +10,7 @@ import request from 'supertest';
 import { SectionsController } from './sections.controller';
 import { SectionsService } from './sections.service';
 import { SectionProgressService } from './section-progress.service';
+import { EtpsService } from '../etps/etps.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 import { SectionStatus, SectionType } from '../../entities/etp-section.entity';
@@ -100,6 +101,13 @@ describe('SectionsController (Integration)', () => {
    */
   const createMockSectionsService = () => ({
     generateSection: jest.fn().mockResolvedValue(mockGeneratedSection),
+    generateSectionWithProgress: jest.fn().mockReturnValue({
+      pipe: jest.fn().mockReturnValue({
+        data: { phase: 'complete', percentage: 100 },
+        id: 'sse-123',
+        type: 'progress',
+      }),
+    }),
     getJobStatus: jest.fn().mockResolvedValue({
       jobId: 'job-123',
       status: 'completed',
@@ -156,6 +164,14 @@ describe('SectionsController (Integration)', () => {
     getActiveStreamCount: jest.fn().mockReturnValue(0),
   });
 
+  /**
+   * Creates a mock EtpsService for ownership validation
+   * @see #992 - SSE ownership validation fix
+   */
+  const createMockEtpsService = () => ({
+    findOneMinimal: jest.fn().mockResolvedValue(mockEtp),
+  });
+
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [SectionsController],
@@ -165,6 +181,7 @@ describe('SectionsController (Integration)', () => {
           provide: SectionProgressService,
           useValue: createMockSectionProgressService(),
         },
+        { provide: EtpsService, useValue: createMockEtpsService() },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -835,6 +852,83 @@ describe('SectionsController (Integration)', () => {
       await request(app.getHttpServer())
         .get(`/sections/${invalidId}`)
         .expect(404);
+    });
+  });
+
+  /**
+   * Tests for SSE ownership validation
+   * @see #992 - Fix IDOR vulnerability in SSE streaming endpoint
+   */
+  describe('GET /sections/etp/:etpId/generate/stream (SSE Ownership Validation)', () => {
+    let etpsService: EtpsService;
+
+    beforeEach(() => {
+      etpsService = app.get<EtpsService>(EtpsService);
+    });
+
+    it('deve chamar validação de ownership antes de criar stream SSE', async () => {
+      // Este teste verifica que findOneMinimal é chamado com os parâmetros corretos
+      // A resposta pode ser 500 devido à complexidade do mock SSE, mas o importante
+      // é que a validação de ownership ocorra ANTES de criar o stream
+      await request(app.getHttpServer()).get(
+        `/sections/etp/${mockEtpId}/generate/stream?type=justificativa&title=Test&userInput=Test`,
+      );
+
+      // Verifica que a validação de ownership foi chamada com os parâmetros corretos
+      expect(etpsService.findOneMinimal).toHaveBeenCalledWith(
+        mockEtpId,
+        mockOrganizationId,
+        mockUserId,
+      );
+    });
+
+    it('deve retornar 403 quando usuário não tem acesso ao ETP (#992)', async () => {
+      jest
+        .spyOn(etpsService, 'findOneMinimal')
+        .mockRejectedValue(
+          new ForbiddenException(
+            'Você não tem permissão para acessar este ETP',
+          ),
+        );
+
+      await request(app.getHttpServer())
+        .get(
+          `/sections/etp/${mockEtpId}/generate/stream?type=justificativa&title=Test&userInput=Test`,
+        )
+        .expect(403);
+    });
+
+    it('deve retornar 404 quando ETP não existe', async () => {
+      jest
+        .spyOn(etpsService, 'findOneMinimal')
+        .mockRejectedValue(
+          new NotFoundException('ETP com ID etp-456 não encontrado'),
+        );
+
+      await request(app.getHttpServer())
+        .get(
+          `/sections/etp/invalid-etp/generate/stream?type=justificativa&title=Test&userInput=Test`,
+        )
+        .expect(404);
+    });
+
+    it('deve bloquear acesso de usuário de outra organização via SSE (#992)', async () => {
+      // Simula tentativa de acesso cross-organization
+      jest
+        .spyOn(etpsService, 'findOneMinimal')
+        .mockRejectedValue(
+          new ForbiddenException(
+            'Você não tem permissão para acessar este ETP',
+          ),
+        );
+
+      const response = await request(app.getHttpServer())
+        .get(
+          `/sections/etp/${mockEtpId}/generate/stream?type=justificativa&title=Test&userInput=Test`,
+        )
+        .expect(403);
+
+      expect(response.body.message).toContain('permissão');
     });
   });
 });
