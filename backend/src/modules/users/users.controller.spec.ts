@@ -61,6 +61,15 @@ describe('UsersController', () => {
     id: 'regular-123',
     email: 'regular@example.com',
     role: UserRole.USER,
+    organizationId: '123e4567-e89b-12d3-a456-426614174001',
+  };
+
+  // Mock SYSTEM_ADMIN user with organizationId
+  const mockSystemAdminWithOrg = {
+    id: 'admin-123',
+    email: 'admin@example.com',
+    role: UserRole.SYSTEM_ADMIN,
+    organizationId: '123e4567-e89b-12d3-a456-426614174001',
   };
 
   const mockUsersService = {
@@ -173,19 +182,36 @@ describe('UsersController', () => {
   });
 
   describe('findAll', () => {
-    it('should return all users', async () => {
+    it('should return all users when called by SYSTEM_ADMIN', async () => {
       // Arrange
       const users = [mockUser, { ...mockUser, id: 'user-456' }];
       mockUsersService.findAll.mockResolvedValue(users);
 
       // Act
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockSystemAdminWithOrg);
 
       // Assert
-      expect(service.findAll).toHaveBeenCalled();
+      expect(service.findAll).toHaveBeenCalledWith(undefined); // No org filter for SYSTEM_ADMIN
       expect(service.findAll).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual(users);
       expect(result.data.length).toBe(2);
+      expect(result.disclaimer).toBeDefined();
+    });
+
+    it('should return only organization users when called by regular user', async () => {
+      // Arrange
+      const orgUsers = [mockUser];
+      mockUsersService.findAll.mockResolvedValue(orgUsers);
+
+      // Act
+      const result = await controller.findAll(mockRegularUser);
+
+      // Assert
+      expect(service.findAll).toHaveBeenCalledWith(
+        mockRegularUser.organizationId,
+      );
+      expect(service.findAll).toHaveBeenCalledTimes(1);
+      expect(result.data).toEqual(orgUsers);
       expect(result.disclaimer).toBeDefined();
     });
 
@@ -194,7 +220,7 @@ describe('UsersController', () => {
       mockUsersService.findAll.mockResolvedValue([]);
 
       // Act
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockRegularUser);
 
       // Assert
       expect(result.data).toEqual([]);
@@ -206,11 +232,27 @@ describe('UsersController', () => {
       mockUsersService.findAll.mockResolvedValue([mockUser]);
 
       // Act
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockRegularUser);
 
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    it('should filter by organizationId for non-SYSTEM_ADMIN roles', async () => {
+      // Arrange
+      const orgId = 'org-xyz-789';
+      const userWithDifferentOrg = {
+        ...mockRegularUser,
+        organizationId: orgId,
+      };
+      mockUsersService.findAll.mockResolvedValue([]);
+
+      // Act
+      await controller.findAll(userWithDifferentOrg);
+
+      // Assert
+      expect(service.findAll).toHaveBeenCalledWith(orgId);
     });
   });
 

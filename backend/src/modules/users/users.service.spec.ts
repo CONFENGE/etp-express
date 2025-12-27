@@ -221,17 +221,32 @@ describe('UsersService', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of users ordered by createdAt DESC', async () => {
+    it('should return all users when no organizationId is provided', async () => {
       const users = [mockUser, { ...mockUser, id: '456' }];
       mockRepository.find.mockResolvedValue(users);
 
       const result = await service.findAll();
 
       expect(mockRepository.find).toHaveBeenCalledWith({
+        where: {},
         order: { createdAt: 'DESC' },
       });
       expect(result).toEqual(users);
       expect(result.length).toBe(2);
+    });
+
+    it('should filter by organizationId when provided', async () => {
+      const orgId = 'org-123';
+      const orgUsers = [mockUser];
+      mockRepository.find.mockResolvedValue(orgUsers);
+
+      const result = await service.findAll(orgId);
+
+      expect(mockRepository.find).toHaveBeenCalledWith({
+        where: { organizationId: orgId },
+        order: { createdAt: 'DESC' },
+      });
+      expect(result).toEqual(orgUsers);
     });
 
     it('should return empty array when no users exist', async () => {
