@@ -1,34 +1,25 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-27 | **Progresso:** 509/518 (98%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 513/518 (99%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR   | Commit    | Descricao                                          |
-| ---- | --------- | -------------------------------------------------- |
-| #996 | `2cc3866` | security(users): fix IDOR PATCH /users/:id (#991)  |
-| #995 | `f526754` | security(users): fix IDOR GET /users (Closes #990) |
-| #994 | `77b2e71` | security(export): fix IDOR export endpoints (#988) |
+| PR    | Commit    | Descricao                                             |
+| ----- | --------- | ----------------------------------------------------- |
+| #1000 | `2a8a6c3` | fix(frontend): replace /etps/new with CreateETPDialog |
+| #999  | `2f50675` | security(sections): fix IDOR SSE streaming (#992)     |
+| #998  | `55dce43` | security(users): fix IDOR GET /users/:id (#993)       |
 
 ---
 
-## Issues Abertas (9)
+## Issues Abertas (5)
 
-### P0 - Security/Blockers (3 issues)
-
-| #    | Issue                                                              |
-| ---- | ------------------------------------------------------------------ |
-| #989 | [BLOCKER] Versions: IDOR permite manipular versoes de qualquer ETP |
-| #992 | [HIGH] Sections SSE: Streaming sem validacao de ownership          |
-| #993 | [HIGH] Users: GET /users/:id expoe dados de qualquer usuario       |
-
-### P1 - Bugs/Tests (3 issues)
+### P1 - Bugs/Tests (2 issues)
 
 | #    | Issue                                                                 |
 | ---- | --------------------------------------------------------------------- |
-| #985 | fix(frontend): Loading infinito 'Carregando ETP...' ao criar ETP      |
 | #986 | fix(frontend): Tarja superior sobrepoe primeiro botao do menu lateral |
 | #956 | test(e2e): Export DOCX complete flow                                  |
 
@@ -64,14 +55,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 518   |
-| Issues Abertas    | 9     |
-| Issues Fechadas   | 509   |
-| Progresso         | 98%   |
+| Issues Abertas    | 5     |
+| Issues Fechadas   | 513   |
+| Progresso         | 99%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2109  |
-| Frontend Tests    | 1368  |
-| Total Tests       | 3477  |
+| Backend Tests     | 2124  |
+| Frontend Tests    | 1378  |
+| Total Tests       | 3502  |
 
 ---
 
