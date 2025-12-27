@@ -192,31 +192,8 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
-    // Create audit_logs table (LGPD compliance)
-    await queryRunner.query(`
- CREATE TABLE IF NOT EXISTS "audit_logs" (
- "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
- "userId" uuid,
- "action" character varying NOT NULL,
- "entityType" character varying NOT NULL,
- "entityId" character varying,
- "changes" jsonb,
- "ipAddress" character varying,
- "userAgent" character varying,
- "timestamp" TIMESTAMP NOT NULL DEFAULT now(),
- CONSTRAINT "PK_audit_logs_id" PRIMARY KEY ("id"),
- CONSTRAINT "FK_audit_logs_userId" FOREIGN KEY ("userId")
- REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
- )
- `);
-
-    // Create index on audit_logs for performance
-    await queryRunner.query(`
- CREATE INDEX IF NOT EXISTS "IDX_audit_logs_userId" ON "audit_logs" ("userId")
- `);
-    await queryRunner.query(`
- CREATE INDEX IF NOT EXISTS "IDX_audit_logs_timestamp" ON "audit_logs" ("timestamp")
- `);
+    // NOTE: audit_logs table is created by CreateAuditLogs1763750000000 migration
+    // with proper enum type and column names matching the AuditLog entity
 
     // Create analytics_events table
     await queryRunner.query(`
@@ -273,10 +250,10 @@ export class InitialSchema1000000000000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop tables in reverse order (respecting foreign keys)
+    // NOTE: audit_logs is handled by CreateAuditLogs migration
     await queryRunner.query(`DROP TABLE IF EXISTS "similar_contracts"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "secret_access_logs"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "analytics_events"`);
-    await queryRunner.query(`DROP TABLE IF EXISTS "audit_logs"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "legislation"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "section_templates"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "etp_sections"`);
