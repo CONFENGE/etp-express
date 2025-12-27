@@ -85,15 +85,31 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CREATE INDEX IF NOT EXISTS "IDX_users_organizationId" ON "users" ("organizationId")
  `);
 
-    // Create etps table
+    // Create etps_status_enum type for status column (matches Etp entity)
+    await queryRunner.query(`
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'etps_status_enum') THEN
+ CREATE TYPE "etps_status_enum" AS ENUM ('draft', 'in_progress', 'review', 'completed', 'archived');
+ END IF;
+ END
+ $$;
+ `);
+
+    // Create etps table (matches Etp entity)
     await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "etps" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
- "metadata" jsonb NOT NULL,
- "sections" jsonb NOT NULL DEFAULT '{}',
- "status" character varying NOT NULL DEFAULT 'draft',
- "version" integer NOT NULL DEFAULT 1,
+ "title" character varying NOT NULL,
+ "description" text,
+ "objeto" character varying NOT NULL,
+ "numeroProcesso" character varying,
+ "valorEstimado" decimal(15,2),
+ "status" "etps_status_enum" NOT NULL DEFAULT 'draft',
+ "metadata" jsonb,
  "organizationId" uuid NOT NULL,
+ "currentVersion" integer NOT NULL DEFAULT 1,
+ "completionPercentage" float NOT NULL DEFAULT 0,
  "created_by" uuid,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
@@ -101,7 +117,7 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CONSTRAINT "FK_etps_organizationId" FOREIGN KEY ("organizationId")
  REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
  CONSTRAINT "FK_etps_created_by" FOREIGN KEY ("created_by")
- REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+ REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
  )
  `);
 
