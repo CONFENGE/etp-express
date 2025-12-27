@@ -30,12 +30,12 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
  ADD COLUMN "organizationId" UUID
  `);
 
-      // Step 2: Add foreign key constraint to organizations table
+      // Step 2: Add foreign key constraint to organization table
       await queryRunner.query(`
  ALTER TABLE "analytics_events"
  ADD CONSTRAINT "FK_analytics_events_organizationId"
  FOREIGN KEY ("organizationId")
- REFERENCES "organizations"("id")
+ REFERENCES "organization"("id")
  ON DELETE SET NULL
  `);
 
@@ -48,8 +48,8 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
       // Step 4: Create compound index for common query patterns
       // - Events by organization ordered by date
       await queryRunner.query(`
- CREATE INDEX IF NOT EXISTS "IDX_analytics_events_org_created"
- ON "analytics_events" ("organizationId", "createdAt")
+ CREATE INDEX IF NOT EXISTS "IDX_analytics_events_org_timestamp"
+ ON "analytics_events" ("organizationId", "timestamp")
  `);
     }
   }
@@ -57,7 +57,7 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Rollback: Drop indexes first
     await queryRunner.query(`
- DROP INDEX IF EXISTS "IDX_analytics_events_org_created"
+ DROP INDEX IF EXISTS "IDX_analytics_events_org_timestamp"
  `);
 
     await queryRunner.query(`
