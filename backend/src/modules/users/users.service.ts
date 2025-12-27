@@ -58,8 +58,22 @@ export class UsersService {
     return savedUser;
   }
 
-  async findAll(): Promise<User[]> {
+  /**
+   * Retrieves all users, optionally filtered by organization.
+   *
+   * @remarks
+   * Multi-Tenancy B2G (MT-02): Users are isolated by organizationId.
+   * - SYSTEM_ADMIN can call without organizationId to see all users
+   * - Other roles MUST provide organizationId to see only their org's users
+   *
+   * @param organizationId - Optional organization filter (required for non-SYSTEM_ADMIN)
+   * @returns Array of users (passwords excluded via @Exclude decorator)
+   */
+  async findAll(organizationId?: string): Promise<User[]> {
+    const whereClause = organizationId ? { organizationId } : {};
+
     return this.usersRepository.find({
+      where: whereClause,
       order: { createdAt: 'DESC' },
     });
   }

@@ -103,16 +103,48 @@ export class UsersController {
   }
 
   /**
-   * Retrieves all users.
+   * Retrieves users filtered by organization (Multi-Tenancy B2G - MT-02).
    *
+   * @remarks
+   * Security: Users can only see users from their own organization.
+   * SYSTEM_ADMIN can see all users across all organizations.
+   * Unauthorized cross-organization access attempts are logged.
+   *
+   * @param currentUser - Current authenticated user (from JWT token)
    * @returns Array of user entities (passwords excluded) with disclaimer message
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Get()
-  @ApiOperation({ summary: 'Listar todos os usuários' })
+  @ApiOperation({
+    summary: 'Listar usuários da organização (SYSTEM_ADMIN: todos)',
+  })
   @ApiResponse({ status: 200, description: 'Lista de usuários' })
-  async findAll() {
-    const users = await this.usersService.findAll();
+  async findAll(
+    @CurrentUser()
+    currentUser: {
+      id: string;
+      email: string;
+      role: UserRole;
+      organizationId: string;
+    },
+  ) {
+    // MT-02: SYSTEM_ADMIN can see all users, others see only their organization
+    const isSystemAdmin = currentUser.role === UserRole.SYSTEM_ADMIN;
+    const organizationId = isSystemAdmin
+      ? undefined
+      : currentUser.organizationId;
+
+    if (isSystemAdmin) {
+      this.logger.log(
+        `[ADMIN] User ${currentUser.email} listing all users (SYSTEM_ADMIN)`,
+      );
+    } else {
+      this.logger.log(
+        `User ${currentUser.email} listing users for organization ${currentUser.organizationId}`,
+      );
+    }
+
+    const users = await this.usersService.findAll(organizationId);
     return {
       data: users,
       disclaimer: DISCLAIMER,
