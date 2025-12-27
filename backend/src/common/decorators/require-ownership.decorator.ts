@@ -8,6 +8,7 @@ import { ResourceOwnershipGuard } from '../guards/resource-ownership.guard';
 export enum ResourceType {
   ETP = 'etp',
   SECTION = 'section',
+  VERSION = 'version',
 }
 
 /**

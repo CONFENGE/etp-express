@@ -10,6 +10,7 @@ import { ResourceOwnershipGuard } from './resource-ownership.guard';
 import { ResourceType } from '../decorators/require-ownership.decorator';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { EtpVersion } from '../../entities/etp-version.entity';
 
 describe('ResourceOwnershipGuard', () => {
   let guard: ResourceOwnershipGuard;
@@ -20,6 +21,10 @@ describe('ResourceOwnershipGuard', () => {
   };
 
   const mockSectionRepository = {
+    findOne: jest.fn(),
+  };
+
+  const mockVersionRepository = {
     findOne: jest.fn(),
   };
 
@@ -43,6 +48,10 @@ describe('ResourceOwnershipGuard', () => {
           provide: getRepositoryToken(EtpSection),
           useValue: mockSectionRepository,
         },
+        {
+          provide: getRepositoryToken(EtpVersion),
+          useValue: mockVersionRepository,
+        },
       ],
     }).compile();
 
@@ -59,7 +68,7 @@ describe('ResourceOwnershipGuard', () => {
     const request: {
       params: Record<string, string>;
       user: { id: string; organizationId: string } | null;
-      resource?: Etp | EtpSection;
+      resource?: Etp | EtpSection | EtpVersion;
     } = {
       params,
       user,
@@ -102,6 +111,22 @@ describe('ResourceOwnershipGuard', () => {
         createdBy: { id: etpCreatedById },
       },
     }) as EtpSection;
+
+  const createMockVersion = (
+    id: string,
+    etpOrganizationId: string,
+    etpCreatedById: string,
+  ): EtpVersion =>
+    ({
+      id,
+      versionNumber: 1,
+      etp: {
+        id: 'etp-id',
+        organizationId: etpOrganizationId,
+        createdById: etpCreatedById,
+        createdBy: { id: etpCreatedById },
+      },
+    }) as EtpVersion;
 
   describe('No @RequireOwnership decorator', () => {
     it('should allow access when no decorator is present', async () => {
@@ -306,6 +331,104 @@ describe('ResourceOwnershipGuard', () => {
       await expect(guard.canActivate(context)).rejects.toThrow(
         'Você não tem permissão para acessar esta seção',
       );
+    });
+  });
+
+  describe('Version Resource', () => {
+    beforeEach(() => {
+      mockReflector.getAllAndOverride.mockReturnValue({
+        resourceType: ResourceType.VERSION,
+        idParam: 'id',
+        validateOwnership: true,
+      });
+    });
+
+    it('should allow access when user owns parent ETP', async () => {
+      const version = createMockVersion('version-1', 'org-1', 'user-1');
+      mockVersionRepository.findOne.mockResolvedValue(version);
+
+      const context = createMockExecutionContext(
+        { id: 'version-1' },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      const result = await guard.canActivate(context);
+
+      expect(result).toBe(true);
+      expect(mockVersionRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'version-1' },
+        relations: ['etp', 'etp.createdBy'],
+      });
+    });
+
+    it('should throw NotFoundException when Version does not exist', async () => {
+      mockVersionRepository.findOne.mockResolvedValue(null);
+
+      const context = createMockExecutionContext(
+        { id: 'non-existent' },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Versão com ID non-existent não encontrada',
+      );
+    });
+
+    it('should throw ForbiddenException when Version parent ETP belongs to different organization (IDOR)', async () => {
+      const version = createMockVersion('version-1', 'other-org', 'user-1');
+      mockVersionRepository.findOne.mockResolvedValue(version);
+
+      const context = createMockExecutionContext(
+        { id: 'version-1' },
+        { id: 'user-1', organizationId: 'my-org' },
+      );
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Você não tem permissão para acessar esta versão',
+      );
+    });
+
+    it('should throw ForbiddenException when user does not own parent ETP', async () => {
+      const version = createMockVersion('version-1', 'org-1', 'other-user');
+      mockVersionRepository.findOne.mockResolvedValue(version);
+
+      const context = createMockExecutionContext(
+        { id: 'version-1' },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Você não tem permissão para acessar esta versão',
+      );
+    });
+
+    it('should allow access without ownership check when validateOwnership is false', async () => {
+      mockReflector.getAllAndOverride.mockReturnValue({
+        resourceType: ResourceType.VERSION,
+        idParam: 'id',
+        validateOwnership: false, // Only check organization
+      });
+
+      const version = createMockVersion('version-1', 'org-1', 'other-user');
+      mockVersionRepository.findOne.mockResolvedValue(version);
+
+      const context = createMockExecutionContext(
+        { id: 'version-1' },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      const result = await guard.canActivate(context);
+
+      expect(result).toBe(true);
     });
   });
 
