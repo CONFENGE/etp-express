@@ -85,6 +85,8 @@ jobs:
       # E2E specific - enables auth tests to run
       E2E_API_URL: http://localhost:3001
       E2E_BASE_URL: http://localhost:5173
+      # Enable logging in test environment to see error messages
+      LOG_IN_TESTS: 'true'
 
     steps:
       - uses: actions/checkout@v6
