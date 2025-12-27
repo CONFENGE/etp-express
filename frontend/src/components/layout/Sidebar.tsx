@@ -22,7 +22,7 @@ export function Sidebar() {
       aria-label="Main navigation"
       data-tour="sidebar-nav"
       className={cn(
-        'fixed left-0 top-16 z-30 h-[calc(100vh-4rem)] w-64 border-r bg-background overflow-y-auto',
+        'fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r bg-background overflow-y-auto',
         // Responsive: overlay on mobile
         'lg:translate-x-0',
         'max-lg:shadow-lg',
