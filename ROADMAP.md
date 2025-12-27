@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-27 | **Progresso:** 508/518 (98%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 509/518 (98%) | **Deploy:** LIVE
 
 ---
 
@@ -8,18 +8,18 @@
 
 | PR   | Commit    | Descricao                                          |
 | ---- | --------- | -------------------------------------------------- |
+| #996 | `2cc3866` | security(users): fix IDOR PATCH /users/:id (#991)  |
 | #995 | `f526754` | security(users): fix IDOR GET /users (Closes #990) |
 | #994 | `77b2e71` | security(export): fix IDOR export endpoints (#988) |
 
 ---
 
-## Issues Abertas (10)
+## Issues Abertas (9)
 
-### P0 - Security/Blockers (4 issues)
+### P0 - Security/Blockers (3 issues)
 
 | #    | Issue                                                              |
 | ---- | ------------------------------------------------------------------ |
-| #991 | [BLOCKER] Users: PATCH /users/:id permite editar qualquer usuario  |
 | #989 | [BLOCKER] Versions: IDOR permite manipular versoes de qualquer ETP |
 | #992 | [HIGH] Sections SSE: Streaming sem validacao de ownership          |
 | #993 | [HIGH] Users: GET /users/:id expoe dados de qualquer usuario       |
@@ -64,14 +64,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 518   |
-| Issues Abertas    | 10    |
-| Issues Fechadas   | 508   |
+| Issues Abertas    | 9     |
+| Issues Fechadas   | 509   |
 | Progresso         | 98%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2104  |
+| Backend Tests     | 2109  |
 | Frontend Tests    | 1368  |
-| Total Tests       | 3472  |
+| Total Tests       | 3477  |
 
 ---
 
