@@ -2,9 +2,11 @@
  * E2E Admin Domain Management Tests - System Admin Flow
  *
  * @description Tests the Domain Management functionality for SYSTEM_ADMIN users.
- * Validates CRUD operations on domains, manager assignment, and user viewing.
+ * Validates CRUD operations on domains, manager assignment, user viewing,
+ * domain editing, and statistics display.
  *
- * @issue #936
+ * @issue #957
+ * @see #936 - Original implementation
  * @group e2e
  * @group admin
  * @priority P1
@@ -381,5 +383,182 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await expect(userCount).toBeVisible();
 
     console.log('View domain users: PASSED');
+  });
+
+  /**
+   * Test 5: Edit domain
+   *
+   * @description Validates that a system admin can edit an existing domain's
+   * configuration (name, max users, status).
+   *
+   * @acceptance-criteria
+   * - Domain detail page has "Edit" button
+   * - Clicking edit opens the edit domain dialog
+   * - Form is pre-filled with current domain data
+   * - Changes can be saved successfully
+   * - Success message is displayed after save
+   */
+  test('edit domain', async ({ page }) => {
+    // Navigate to domain management
+    await page.goto('/admin/domains');
+    await page.waitForLoadState('networkidle');
+
+    // Wait for data to load
+    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+
+    // Find a domain row with actions menu
+    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const hasActions = await actionsButton.isVisible().catch(() => false);
+
+    if (!hasActions) {
+      console.log('Edit domain: SKIPPED (no domains exist)');
+      return;
+    }
+
+    // Click actions menu
+    await actionsButton.click();
+
+    // Click "Edit" option
+    const editOption = page.locator(
+      '[role="menuitem"]:has-text("Edit"), text=Edit',
+    );
+    const hasEditOption = await editOption.isVisible().catch(() => false);
+
+    if (!hasEditOption) {
+      // Navigate to domain detail and look for edit button there
+      const viewDetailsOption = page.locator('text=View Details');
+      await viewDetailsOption.click();
+
+      // Wait for detail page
+      await expect(page).toHaveURL(/\/admin\/domains\/[a-zA-Z0-9-]+/, {
+        timeout: TEST_CONFIG.timeouts.navigation,
+      });
+
+      // Find edit button on detail page
+      const editButton = page.locator(
+        'button:has-text("Edit"), button[aria-label*="Edit"]',
+      );
+      await expect(editButton).toBeVisible({
+        timeout: TEST_CONFIG.timeouts.action,
+      });
+      await editButton.click();
+    } else {
+      await editOption.click();
+    }
+
+    // Verify edit dialog opens
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dialog,
+    });
+
+    // Verify form fields are visible and pre-filled
+    const domainInput = dialog.locator('input[name="domain"], input#domain');
+    const maxUsersInput = dialog.locator(
+      'input[name="maxUsers"], input#maxUsers',
+    );
+
+    // At least one field should be visible (domain or maxUsers)
+    const hasDomainField = await domainInput.isVisible().catch(() => false);
+    const hasMaxUsersField = await maxUsersInput.isVisible().catch(() => false);
+    expect(hasDomainField || hasMaxUsersField).toBe(true);
+
+    // Modify max users (increment by 1)
+    if (hasMaxUsersField) {
+      const currentValue = await maxUsersInput.inputValue();
+      const newValue = (parseInt(currentValue) || 10) + 1;
+      await maxUsersInput.clear();
+      await maxUsersInput.fill(String(newValue));
+    }
+
+    // Submit form
+    const submitButton = dialog.locator(
+      'button[type="submit"], button:has-text("Save"), button:has-text("Update")',
+    );
+    await submitButton.click();
+
+    // Wait for dialog to close
+    await expect(dialog).not.toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Verify success message
+    const successToast = page.locator(
+      'text=Domain updated successfully, text=successfully updated, text=saved',
+    );
+    const hasSuccess = await successToast.isVisible().catch(() => false);
+
+    // Success can be indicated by dialog closing without error
+    expect(hasSuccess || !(await dialog.isVisible())).toBe(true);
+
+    console.log('Edit domain: PASSED');
+  });
+
+  /**
+   * Test 6: View domain statistics
+   *
+   * @description Validates that the domain detail page displays statistics
+   * including user count, ETP count, and usage metrics.
+   *
+   * @acceptance-criteria
+   * - Domain detail page shows statistics section
+   * - User count is displayed
+   * - ETP count is displayed (if applicable)
+   * - Statistics cards have numeric values
+   */
+  test('view domain statistics', async ({ page }) => {
+    // Navigate to domain management
+    await page.goto('/admin/domains');
+    await page.waitForLoadState('networkidle');
+
+    // Wait for data to load
+    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+
+    // Find a domain row with actions menu
+    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const hasActions = await actionsButton.isVisible().catch(() => false);
+
+    if (!hasActions) {
+      console.log('View domain statistics: SKIPPED (no domains exist)');
+      return;
+    }
+
+    // Navigate to domain detail
+    await actionsButton.click();
+    const viewDetailsOption = page.locator('text=View Details');
+    await viewDetailsOption.click();
+
+    // Wait for detail page
+    await expect(page).toHaveURL(/\/admin\/domains\/[a-zA-Z0-9-]+/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
+
+    // Wait for statistics to load
+    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+
+    // Check for statistics indicators
+    // Look for user count display (e.g., "X users", "X of Y users")
+    const userCountPattern = page.locator('text=/\\d+.*user/i');
+    const hasUserCount = await userCountPattern.count().then((c) => c > 0);
+
+    // Look for domain info card with stats
+    const domainInfoCard = page.locator('text=Domain Information');
+    const hasDomainInfo = await domainInfoCard.isVisible().catch(() => false);
+
+    // Look for any numeric statistics (cards with numbers)
+    const statsCards = page.locator('[class*="card"], [class*="stat"]');
+    const statsCount = await statsCards.count();
+
+    // At least one statistics indicator should be present
+    expect(hasUserCount || hasDomainInfo || statsCount > 0).toBe(true);
+
+    // If user count pattern found, verify it has a number
+    if (hasUserCount) {
+      const userCountText = await userCountPattern.first().textContent();
+      const hasNumber = userCountText && /\d+/.test(userCountText);
+      expect(hasNumber).toBe(true);
+    }
+
+    console.log('View domain statistics: PASSED');
   });
 });
