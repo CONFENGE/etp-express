@@ -1,8 +1,8 @@
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+  createBrowserRouter,
+  RouterProvider,
   Navigate,
+  Outlet,
   useNavigate,
 } from 'react-router';
 import { useEffect, useCallback, lazy, Suspense } from 'react';
@@ -147,15 +147,15 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * AppRoutes Component
+ * Root Layout Component
  * Initializes global navigation and validates auth on mount.
- * Must be inside BrowserRouter to use useNavigate hook.
+ * Wraps all routes with common providers and UI elements.
  *
  * On app startup, checkAuth() validates the persisted auth state against
  * the backend. This prevents the "flash of login" issue where ProtectedRoute
  * would redirect to login before knowing if the user is actually authenticated.
  */
-function AppRoutes() {
+function RootLayout() {
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
 
@@ -175,116 +175,136 @@ function AppRoutes() {
   }, [validateAuth]);
 
   return (
-    <Suspense fallback={<RouteLoadingFallback />}>
-      <Routes>
-        {/* Public Routes - Login/Register loaded eagerly for fast initial render */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <PublicRoute>
-              <Register />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPassword />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/reset-password"
-          element={
-            <PublicRoute>
-              <ResetPassword />
-            </PublicRoute>
-          }
-        />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
-
-        {/* Protected Routes - Lazy-loaded for reduced initial bundle */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/etps"
-          element={
-            <ProtectedRoute>
-              <ETPs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/etps/:id"
-          element={
-            <ProtectedRoute>
-              <ETPEditor />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/analysis"
-          element={
-            <ProtectedRoute>
-              <AnalysisPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Admin Routes (System Admin only) - Lazy-loaded */}
-        <Route path="/admin" element={<AdminProtectedRoute />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="domains" element={<DomainManagement />} />
-          <Route path="domains/:id" element={<DomainDetail />} />
-          <Route path="audit-export" element={<AuditLogsExport />} />
-        </Route>
-
-        {/* Manager Routes (Domain Manager only) - Lazy-loaded */}
-        <Route path="/manager" element={<ManagerProtectedRoute />}>
-          <Route index element={<ManagerDashboard />} />
-          <Route path="users" element={<UserManagement />} />
-        </Route>
-
-        {/* 404 - Loaded eagerly for fast error display */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+    <>
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Outlet />
+      </Suspense>
+      <PasswordChangeModal />
+      <Toaster />
+      <AppTour />
+    </>
   );
 }
+
+/**
+ * Data Router configuration (#984)
+ * Using createBrowserRouter to support useBlocker hook for unsaved changes warning.
+ * This is required by React Router v6.4+ for data APIs like useBlocker.
+ */
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      // Public Routes - Login/Register loaded eagerly for fast initial render
+      {
+        path: '/login',
+        element: (
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: '/register',
+        element: (
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: '/forgot-password',
+        element: (
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: '/reset-password',
+        element: (
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        ),
+      },
+      { path: '/privacy', element: <PrivacyPolicy /> },
+      { path: '/terms', element: <TermsOfService /> },
+
+      // Protected Routes - Lazy-loaded for reduced initial bundle
+      {
+        path: '/',
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/etps',
+        element: (
+          <ProtectedRoute>
+            <ETPs />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/etps/:id',
+        element: (
+          <ProtectedRoute>
+            <ETPEditor />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/analysis',
+        element: (
+          <ProtectedRoute>
+            <AnalysisPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Admin Routes (System Admin only) - Lazy-loaded
+      {
+        path: '/admin',
+        element: <AdminProtectedRoute />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: 'domains', element: <DomainManagement /> },
+          { path: 'domains/:id', element: <DomainDetail /> },
+          { path: 'audit-export', element: <AuditLogsExport /> },
+        ],
+      },
+
+      // Manager Routes (Domain Manager only) - Lazy-loaded
+      {
+        path: '/manager',
+        element: <ManagerProtectedRoute />,
+        children: [
+          { index: true, element: <ManagerDashboard /> },
+          { path: 'users', element: <UserManagement /> },
+        ],
+      },
+
+      // 404 - Loaded eagerly for fast error display
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+]);
 
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <AppRoutes />
-        <PasswordChangeModal />
-        <Toaster />
-        <AppTour />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ErrorBoundary>
   );
 }
