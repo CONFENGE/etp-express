@@ -424,7 +424,7 @@ describe('AuthController', () => {
         expect.objectContaining({
           httpOnly: true,
           secure: true, // production mode
-          sameSite: 'lax',
+          sameSite: 'none', // SameSite=None for cross-origin Railway subdomains (#981)
         }),
       );
     });
