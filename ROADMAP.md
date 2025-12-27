@@ -1,35 +1,27 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-27 | **Progresso:** 513/518 (99%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 516/518 (99.6%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR    | Commit    | Descricao                                             |
-| ----- | --------- | ----------------------------------------------------- |
-| #1000 | `2a8a6c3` | fix(frontend): replace /etps/new with CreateETPDialog |
-| #999  | `2f50675` | security(sections): fix IDOR SSE streaming (#992)     |
-| #998  | `55dce43` | security(users): fix IDOR GET /users/:id (#993)       |
+| PR    | Commit    | Descricao                                              |
+| ----- | --------- | ------------------------------------------------------ |
+| #1002 | `de5ce76` | feat(frontend): show admin navigation for SYSTEM_ADMIN |
+| #1001 | `7bb31b4` | fix(frontend): fix sidebar z-index overlap with header |
+| #1000 | `2a8a6c3` | fix(frontend): replace /etps/new with CreateETPDialog  |
 
 ---
 
-## Issues Abertas (5)
+## Issues Abertas (2)
 
-### P1 - Bugs/Tests (2 issues)
+### P2 - Melhorias (2 issues)
 
-| #    | Issue                                                                 |
-| ---- | --------------------------------------------------------------------- |
-| #986 | fix(frontend): Tarja superior sobrepoe primeiro botao do menu lateral |
-| #956 | test(e2e): Export DOCX complete flow                                  |
-
-### P2 - Melhorias (3 issues)
-
-| #    | Issue                                                                   |
-| ---- | ----------------------------------------------------------------------- |
-| #962 | docs: Comprehensive authentication flow                                 |
-| #963 | ci: Add auth E2E tests to CI pipeline                                   |
-| #987 | feat(frontend): Exibir menu de administracao para usuarios SYSTEM_ADMIN |
+| #    | Issue                                   |
+| ---- | --------------------------------------- |
+| #962 | docs: Comprehensive authentication flow |
+| #963 | ci: Add auth E2E tests to CI pipeline   |
 
 ---
 
@@ -55,9 +47,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 518   |
-| Issues Abertas    | 5     |
-| Issues Fechadas   | 513   |
-| Progresso         | 99%   |
+| Issues Abertas    | 2     |
+| Issues Fechadas   | 516   |
+| Progresso         | 99.6% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
