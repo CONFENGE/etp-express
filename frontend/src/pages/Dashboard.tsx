@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
+import { useUIStore } from '@/store/uiStore';
+import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -22,7 +24,7 @@ import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
 export function Dashboard() {
-  const navigate = useNavigate();
+  const { openModal } = useUIStore();
   const { user } = useAuth();
   // useETPs hook auto-fetches when etps.length === 0, no manual fetch needed (#983)
   const { etps, isLoading } = useETPs();
@@ -70,7 +72,7 @@ export function Dashboard() {
                   <Button
                     size="lg"
                     className="w-full text-base"
-                    onClick={() => navigate('/etps/new')}
+                    onClick={() => openModal(CREATE_ETP_MODAL_ID)}
                   >
                     <PlusCircle className="mr-2 h-5 w-5" />
                     Criar meu primeiro ETP
@@ -206,11 +208,9 @@ export function Dashboard() {
                 <CardTitle>ETPs Recentes</CardTitle>
                 <CardDescription>Seus estudos mais recentes</CardDescription>
               </div>
-              <Button asChild>
-                <Link to="/etps/new">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Novo ETP
-                </Link>
+              <Button onClick={() => openModal(CREATE_ETP_MODAL_ID)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Novo ETP
               </Button>
             </div>
           </CardHeader>
