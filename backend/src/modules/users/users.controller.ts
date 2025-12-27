@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
   Logger,
 } from '@nestjs/common';
 import {
@@ -374,20 +375,83 @@ export class UsersController {
   }
 
   /**
-   * Updates a user.
+   * Updates a user with ownership validation.
+   *
+   * @remarks
+   * Security: Validates that user can only update:
+   * - Their own profile (id === currentUserId)
+   * - OR any user if SYSTEM_ADMIN
+   * - OR users from same organization if ORG_ADMIN
+   * Unauthorized cross-user/cross-organization update attempts are logged.
    *
    * @param id - User unique identifier (UUID)
    * @param updateUserDto - Partial user update data (name, email, password)
+   * @param currentUser - Current authenticated user (from JWT token)
    * @returns Updated user entity (password excluded) with disclaimer message
    * @throws {NotFoundException} 404 - If user not found
    * @throws {BadRequestException} 400 - If validation fails
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If user lacks permission to update target user
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar usuário' })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @ApiForbiddenResponse({
+    description: 'Acesso negado - sem permissão para editar este usuário',
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser()
+    currentUser: {
+      id: string;
+      email: string;
+      role: UserRole;
+      organizationId: string;
+    },
+  ) {
+    // Security: Validate ownership before update
+    const isOwnProfile = id === currentUser.id;
+    const isSystemAdmin = currentUser.role === UserRole.SYSTEM_ADMIN;
+    const isOrgAdmin = currentUser.role === UserRole.ADMIN;
+
+    // Case 1: User editing their own profile - always allowed
+    if (isOwnProfile) {
+      this.logger.log(`User ${currentUser.email} updating own profile`);
+    }
+    // Case 2: SYSTEM_ADMIN can edit any user
+    else if (isSystemAdmin) {
+      this.logger.log(
+        `[ADMIN] User ${currentUser.email} (SYSTEM_ADMIN) updating user ${id}`,
+      );
+    }
+    // Case 3: ADMIN can edit users from same organization
+    else if (isOrgAdmin) {
+      // Fetch target user to verify organization
+      const targetUser = await this.usersService.findOne(id);
+      if (targetUser.organizationId !== currentUser.organizationId) {
+        this.logger.warn(
+          `[IDOR ATTEMPT] User ${currentUser.email} (ADMIN) attempted to update user ${id} from different organization`,
+        );
+        throw new ForbiddenException(
+          'Você não tem permissão para editar usuários de outra organização',
+        );
+      }
+      this.logger.log(
+        `[ADMIN] User ${currentUser.email} updating user ${id} from same organization`,
+      );
+    }
+    // Case 4: Regular users cannot edit other users
+    else {
+      this.logger.warn(
+        `[IDOR ATTEMPT] User ${currentUser.email} attempted to update user ${id} without permission`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para editar este usuário',
+      );
+    }
+
     const user = await this.usersService.update(id, updateUserDto);
     return {
       data: user,

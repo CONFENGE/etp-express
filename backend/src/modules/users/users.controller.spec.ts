@@ -4,6 +4,7 @@ import {
   ConflictException,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -62,6 +63,22 @@ describe('UsersController', () => {
     email: 'regular@example.com',
     role: UserRole.USER,
     organizationId: '123e4567-e89b-12d3-a456-426614174001',
+  };
+
+  // Mock ADMIN user for testing organization-level admin operations
+  const mockOrgAdminUser = {
+    id: 'org-admin-123',
+    email: 'orgadmin@example.com',
+    role: UserRole.ADMIN,
+    organizationId: '123e4567-e89b-12d3-a456-426614174001',
+  };
+
+  // Mock user from different organization (for IDOR tests)
+  const mockUserDifferentOrg = {
+    id: 'diff-org-user-123',
+    email: 'difforg@example.com',
+    role: UserRole.USER,
+    organizationId: 'different-org-999',
   };
 
   // Mock SYSTEM_ADMIN user with organizationId
@@ -346,58 +363,188 @@ describe('UsersController', () => {
       name: 'Updated User',
     };
 
-    it('should update a user', async () => {
-      // Arrange
-      const updatedUser = { ...mockUser, ...updateUserDto };
-      mockUsersService.update.mockResolvedValue(updatedUser);
+    describe('Security: IDOR protection (#991)', () => {
+      it('should allow user to update their own profile', async () => {
+        // Arrange - User updating their own profile
+        const currentUser = {
+          id: mockUserId,
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        const updatedUser = { ...mockUser, ...updateUserDto };
+        mockUsersService.update.mockResolvedValue(updatedUser);
 
-      // Act
-      const result = await controller.update(mockUserId, updateUserDto);
+        // Act
+        const result = await controller.update(
+          mockUserId,
+          updateUserDto,
+          currentUser,
+        );
 
-      // Assert
-      expect(service.update).toHaveBeenCalledWith(mockUserId, updateUserDto);
-      expect(service.update).toHaveBeenCalledTimes(1);
-      expect(result.data).toEqual(updatedUser);
-      expect(result.data.name).toBe('Updated User');
-      expect(result.disclaimer).toBeDefined();
+        // Assert
+        expect(service.update).toHaveBeenCalledWith(mockUserId, updateUserDto);
+        expect(result.data).toEqual(updatedUser);
+        expect(result.data.name).toBe('Updated User');
+        expect(result.disclaimer).toBeDefined();
+      });
+
+      it('should allow SYSTEM_ADMIN to update any user', async () => {
+        // Arrange - SYSTEM_ADMIN updating another user
+        const updatedUser = { ...mockUser, ...updateUserDto };
+        mockUsersService.update.mockResolvedValue(updatedUser);
+
+        // Act
+        const result = await controller.update(
+          mockUserId, // Different from admin's ID
+          updateUserDto,
+          mockSystemAdminWithOrg,
+        );
+
+        // Assert
+        expect(service.update).toHaveBeenCalledWith(mockUserId, updateUserDto);
+        expect(result.data).toEqual(updatedUser);
+      });
+
+      it('should allow ADMIN to update users from same organization', async () => {
+        // Arrange - ADMIN updating user from same org
+        const targetUser = {
+          ...mockUser,
+          organizationId: mockOrgAdminUser.organizationId,
+        };
+        const updatedUser = { ...targetUser, ...updateUserDto };
+        mockUsersService.findOne.mockResolvedValue(targetUser);
+        mockUsersService.update.mockResolvedValue(updatedUser);
+
+        // Act
+        const result = await controller.update(
+          mockUserId,
+          updateUserDto,
+          mockOrgAdminUser,
+        );
+
+        // Assert
+        expect(service.findOne).toHaveBeenCalledWith(mockUserId);
+        expect(service.update).toHaveBeenCalledWith(mockUserId, updateUserDto);
+        expect(result.data).toEqual(updatedUser);
+      });
+
+      it('should throw ForbiddenException when ADMIN tries to update user from different organization', async () => {
+        // Arrange - ADMIN attempting to update user from different org
+        const targetUserDifferentOrg = {
+          ...mockUser,
+          organizationId: 'different-org-999',
+        };
+        mockUsersService.findOne.mockResolvedValue(targetUserDifferentOrg);
+
+        // Act & Assert
+        await expect(
+          controller.update(mockUserId, updateUserDto, mockOrgAdminUser),
+        ).rejects.toThrow(ForbiddenException);
+        await expect(
+          controller.update(mockUserId, updateUserDto, mockOrgAdminUser),
+        ).rejects.toThrow(
+          'Você não tem permissão para editar usuários de outra organização',
+        );
+
+        // Verify update was NOT called
+        expect(service.update).not.toHaveBeenCalled();
+      });
+
+      it('should throw ForbiddenException when regular user tries to update another user', async () => {
+        // Arrange - Regular user attempting to update another user
+        const anotherUserId = 'another-user-456';
+
+        // Act & Assert
+        await expect(
+          controller.update(anotherUserId, updateUserDto, mockRegularUser),
+        ).rejects.toThrow(ForbiddenException);
+        await expect(
+          controller.update(anotherUserId, updateUserDto, mockRegularUser),
+        ).rejects.toThrow('Você não tem permissão para editar este usuário');
+
+        // Verify update was NOT called (IDOR blocked)
+        expect(service.update).not.toHaveBeenCalled();
+      });
+
+      it('should log IDOR attempt when unauthorized update is blocked', async () => {
+        // Arrange
+        const anotherUserId = 'another-user-456';
+
+        // Act & Assert
+        await expect(
+          controller.update(anotherUserId, updateUserDto, mockRegularUser),
+        ).rejects.toThrow(ForbiddenException);
+
+        // Note: Actual logging verification would require mocking Logger
+        // This test ensures the code path is reached
+      });
     });
 
-    it('should throw NotFoundException when user not found', async () => {
-      // Arrange
-      mockUsersService.update.mockRejectedValue(
-        new NotFoundException('Usuário não encontrado'),
-      );
+    describe('General update functionality', () => {
+      it('should throw NotFoundException when user not found', async () => {
+        // Arrange - User updating own profile but not found
+        const currentUser = {
+          id: 'non-existent-id',
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.update.mockRejectedValue(
+          new NotFoundException('Usuário não encontrado'),
+        );
 
-      // Act & Assert
-      await expect(
-        controller.update('invalid-id', updateUserDto),
-      ).rejects.toThrow(NotFoundException);
-    });
+        // Act & Assert
+        await expect(
+          controller.update('non-existent-id', updateUserDto, currentUser),
+        ).rejects.toThrow(NotFoundException);
+      });
 
-    it('should allow partial updates', async () => {
-      // Arrange
-      const partialDto: UpdateUserDto = { name: 'Only Name Updated' };
-      const updatedUser = { ...mockUser, name: 'Only Name Updated' };
-      mockUsersService.update.mockResolvedValue(updatedUser);
+      it('should allow partial updates', async () => {
+        // Arrange
+        const partialDto: UpdateUserDto = { name: 'Only Name Updated' };
+        const updatedUser = { ...mockUser, name: 'Only Name Updated' };
+        const currentUser = {
+          id: mockUserId,
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.update.mockResolvedValue(updatedUser);
 
-      // Act
-      const result = await controller.update(mockUserId, partialDto);
+        // Act
+        const result = await controller.update(
+          mockUserId,
+          partialDto,
+          currentUser,
+        );
 
-      // Assert
-      expect(result.data.name).toBe('Only Name Updated');
-      expect(result.data.organizationId).toBe(mockUser.organizationId); // Organization should remain unchanged
-    });
+        // Assert
+        expect(result.data.name).toBe('Only Name Updated');
+        expect(result.data.organizationId).toBe(mockUser.organizationId);
+      });
 
-    it('should include disclaimer in response', async () => {
-      // Arrange
-      mockUsersService.update.mockResolvedValue(mockUser);
+      it('should include disclaimer in response', async () => {
+        // Arrange
+        const currentUser = {
+          id: mockUserId,
+          email: 'test@example.com',
+          role: UserRole.USER,
+          organizationId: '123e4567-e89b-12d3-a456-426614174001',
+        };
+        mockUsersService.update.mockResolvedValue(mockUser);
 
-      // Act
-      const result = await controller.update(mockUserId, updateUserDto);
+        // Act
+        const result = await controller.update(
+          mockUserId,
+          updateUserDto,
+          currentUser,
+        );
 
-      // Assert
-      expect(result.disclaimer).toBeDefined();
-      expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+        // Assert
+        expect(result.disclaimer).toBeDefined();
+        expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+      });
     });
   });
 
