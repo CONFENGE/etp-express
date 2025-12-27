@@ -167,17 +167,16 @@ jobs:
         run: |
           npm run preview -- --host &
           echo "Waiting for frontend to be ready..."
-          timeout 30 bash -c 'until curl -sf http://localhost:4173 > /dev/null 2>&1; do sleep 2; done'
+          # Frontend preview is configured to use port 3000 in package.json
+          timeout 30 bash -c 'until curl -sf http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
           echo "Frontend is ready!"
-        env:
-          # Vite preview uses port 4173 by default
-          E2E_BASE_URL: http://localhost:4173
 
       - name: Run Playwright tests (with auth E2E enabled)
         run: npx playwright test --project=chromium --project=firefox --project=webkit
         env:
           E2E_API_URL: http://localhost:3001
-          E2E_BASE_URL: http://localhost:4173
+          # Frontend preview uses port 3000 (configured in frontend/package.json)
+          E2E_BASE_URL: http://localhost:3000
           E2E_ADMIN_EMAIL: admin@confenge.com.br
           E2E_ADMIN_PASSWORD: Admin@123
 
