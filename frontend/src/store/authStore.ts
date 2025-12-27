@@ -8,6 +8,7 @@ import {
 } from '@/types/user';
 import { apiHelpers } from '@/lib/api';
 import { getAuthErrorMessage } from '@/lib/constants';
+import { logger } from '@/lib/logger';
 
 /**
  * DTO for password change request.
@@ -79,6 +80,16 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+
+          // Sentry breadcrumb: track successful login with user role
+          logger.setUser({
+            id: response.user.id,
+            email: response.user.email,
+          });
+          logger.info('Auth: login successful', {
+            role: response.user.role,
+            userId: response.user.id,
+          });
         } catch (error) {
           // Use structured error message extraction
           const errorMessage = getAuthErrorMessage(error);
@@ -129,12 +140,20 @@ export const useAuthStore = create<AuthState>()(
        * Backend clears the httpOnly cookie.
        */
       logout: async () => {
+        // Sentry breadcrumb: track logout event
+        const currentUser = get().user;
+        logger.info('Auth: logout initiated', {
+          userId: currentUser?.id,
+        });
+
         try {
           // Call backend to clear httpOnly cookie
           await apiHelpers.post('/auth/logout');
         } catch {
           // Ignore logout errors - clear state anyway
         } finally {
+          // Clear Sentry user context
+          logger.setUser(null);
           get().clearAuth();
         }
       },
@@ -172,6 +191,7 @@ export const useAuthStore = create<AuthState>()(
         // Skip if no persisted auth state (user never logged in)
         if (!get().isAuthenticated && !get().user) {
           set({ isAuthInitialized: true });
+          logger.info('Auth: check skipped (no session)');
           return false;
         }
 
@@ -182,8 +202,21 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isAuthInitialized: true,
           });
+
+          // Sentry breadcrumb: track successful auth check
+          logger.setUser({
+            id: response.user.id,
+            email: response.user.email,
+          });
+          logger.info('Auth: check successful', {
+            role: response.user.role,
+            userId: response.user.id,
+          });
           return true;
         } catch {
+          // Sentry breadcrumb: track failed auth check
+          logger.info('Auth: check failed (session expired)');
+          logger.setUser(null);
           get().clearAuth();
           set({ isAuthInitialized: true });
           return false;
