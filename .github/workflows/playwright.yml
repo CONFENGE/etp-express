@@ -62,7 +62,8 @@ jobs:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_DATABASE: etp_express_test
-      DB_SYNCHRONIZE: true
+      # DB_SYNCHRONIZE must be false when using migrations to avoid conflicts
+      DB_SYNCHRONIZE: false
       DB_LOGGING: false
       # Application configuration
       NODE_ENV: test
