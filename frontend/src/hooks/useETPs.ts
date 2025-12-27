@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useETPStore } from '@/store/etpStore';
 
 export function useETPs() {
@@ -15,8 +15,13 @@ export function useETPs() {
     setCurrentETP,
   } = useETPStore();
 
+  // Track if initial fetch was already attempted to prevent infinite loops (#983)
+  // When API returns empty array, etps.length stays 0, causing re-fetch without this guard
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
-    if (etps.length === 0 && !isLoading) {
+    if (!hasFetchedRef.current && etps.length === 0 && !isLoading) {
+      hasFetchedRef.current = true;
       fetchETPs();
     }
   }, [etps.length, fetchETPs, isLoading]);
