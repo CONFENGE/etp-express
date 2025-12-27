@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { VersionsController } from './versions.controller';
 import { VersionsService } from './versions.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ResourceOwnershipGuard } from '../../common/guards/resource-ownership.guard';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 describe('VersionsController', () => {
@@ -10,6 +11,7 @@ describe('VersionsController', () => {
   let service: VersionsService;
 
   const mockUserId = 'user-123';
+  const mockOrganizationId = 'org-456';
   const mockEtpId = 'etp-456';
   const mockVersionId = 'version-789';
 
@@ -74,6 +76,8 @@ describe('VersionsController', () => {
       ],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .overrideGuard(ResourceOwnershipGuard)
       .useValue({ canActivate: jest.fn(() => true) })
       .compile();
 
@@ -260,12 +264,17 @@ describe('VersionsController', () => {
       mockVersionsService.compareVersions.mockResolvedValue(mockComparison);
 
       // Act
-      const result = await controller.compareVersions(version1Id, version2Id);
+      const result = await controller.compareVersions(
+        version1Id,
+        version2Id,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(service.compareVersions).toHaveBeenCalledWith(
         version1Id,
         version2Id,
+        mockOrganizationId,
       );
       expect(service.compareVersions).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockComparison);
@@ -280,8 +289,26 @@ describe('VersionsController', () => {
 
       // Act & Assert
       await expect(
-        controller.compareVersions('invalid-1', 'invalid-2'),
+        controller.compareVersions(
+          'invalid-1',
+          'invalid-2',
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when comparing versions from different organizations', async () => {
+      // Arrange
+      mockVersionsService.compareVersions.mockRejectedValue(
+        new ForbiddenException(
+          'Você não tem permissão para acessar esta versão',
+        ),
+      );
+
+      // Act & Assert
+      await expect(
+        controller.compareVersions(version1Id, version2Id, 'different-org'),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should return differences between versions', async () => {
@@ -289,7 +316,11 @@ describe('VersionsController', () => {
       mockVersionsService.compareVersions.mockResolvedValue(mockComparison);
 
       // Act
-      const result = await controller.compareVersions(version1Id, version2Id);
+      const result = await controller.compareVersions(
+        version1Id,
+        version2Id,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result.differences).toBeDefined();
