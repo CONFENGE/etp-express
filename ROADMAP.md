@@ -1,34 +1,20 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-26 | **Progresso:** 488/505 (97%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-26 | **Progresso:** 497/505 (98%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (17)
+## Issues Abertas (8)
 
-### P1 - E2E & Unit Tests (12 issues)
+### P1 - E2E Tests (5 issues)
 
-| #    | Issue                                                   |
-| ---- | ------------------------------------------------------- |
-| #945 | test(e2e): Timing assertion login-to-dashboard redirect |
-| #946 | test(e2e): All user roles login flows                   |
-| #947 | test(e2e): Session persistence across navigation        |
-| #949 | test(e2e): Password change flow (mustChangePassword)    |
-| #950 | test(e2e): Complete logout flow validation              |
-| #951 | test(e2e): Create ETP complete flow                     |
-| #952 | test(e2e): Edit ETP all fields                          |
-| #953 | test(e2e): Delete/Archive/Restore ETP cycle             |
-| #954 | test(e2e): Generate all 13 sections (Lei 14.133/2021)   |
-| #955 | test(e2e): Export PDF complete flow                     |
-| #956 | test(e2e): Export DOCX complete flow                    |
-| #957 | test(e2e): Admin domain management CRUD                 |
-
-### P1 - Unit Tests (2 issues)
-
-| #    | Issue                                           |
-| ---- | ----------------------------------------------- |
-| #959 | test(unit): ProtectedRoute auth state handling  |
-| #960 | test(unit): authStore state machine transitions |
+| #    | Issue                                                 |
+| ---- | ----------------------------------------------------- |
+| #953 | test(e2e): Delete/Archive/Restore ETP cycle           |
+| #954 | test(e2e): Generate all 13 sections (Lei 14.133/2021) |
+| #955 | test(e2e): Export PDF complete flow                   |
+| #956 | test(e2e): Export DOCX complete flow                  |
+| #957 | test(e2e): Admin domain management CRUD               |
 
 ### P2 - Melhorias (3 issues)
 
@@ -62,9 +48,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 505   |
-| Issues Abertas    | 17    |
-| Issues Fechadas   | 488   |
-| Progresso         | 97%   |
+| Issues Abertas    | 8     |
+| Issues Fechadas   | 497   |
+| Progresso         | 98%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2095  |
