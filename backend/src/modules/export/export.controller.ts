@@ -9,6 +9,10 @@ import {
 import { Response } from 'express';
 import { ExportService, ExportFormat } from './export.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import {
+  RequireOwnership,
+  ResourceType,
+} from '../../common/decorators/require-ownership.decorator';
 
 @ApiTags('export')
 @Controller('export')
@@ -18,11 +22,16 @@ export class ExportController {
   constructor(private readonly exportService: ExportService) {}
 
   @Get('etp/:id/pdf')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
   @ApiOperation({
     summary: 'Exportar ETP para PDF',
     description: 'Gera um documento PDF completo do ETP com todas as seções',
   })
   @ApiResponse({ status: 200, description: 'PDF gerado com sucesso' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async exportPDF(@Param('id') id: string, @Res() res: Response) {
     const pdfBuffer = await this.exportService.exportToPDF(id);
@@ -37,11 +46,16 @@ export class ExportController {
   }
 
   @Get('etp/:id/json')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
   @ApiOperation({
     summary: 'Exportar ETP para JSON',
     description: 'Exporta o ETP e todas as seções em formato JSON',
   })
   @ApiResponse({ status: 200, description: 'JSON gerado com sucesso' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async exportJSON(@Param('id') id: string, @Res() res: Response) {
     const jsonData = await this.exportService.exportToJSON(id);
@@ -55,11 +69,16 @@ export class ExportController {
   }
 
   @Get('etp/:id/xml')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
   @ApiOperation({
     summary: 'Exportar ETP para XML',
     description: 'Exporta o ETP e todas as seções em formato XML',
   })
   @ApiResponse({ status: 200, description: 'XML gerado com sucesso' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async exportXML(@Param('id') id: string, @Res() res: Response) {
     const xmlData = await this.exportService.exportToXML(id);
@@ -73,12 +92,17 @@ export class ExportController {
   }
 
   @Get('etp/:id/docx')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
   @ApiOperation({
     summary: 'Exportar ETP para DOCX',
     description:
       'Gera um documento Word (.docx) completo do ETP com todas as seções',
   })
   @ApiResponse({ status: 200, description: 'DOCX gerado com sucesso' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async exportDOCX(@Param('id') id: string, @Res() res: Response) {
     const docxBuffer = await this.exportService.exportToDocx(id);
@@ -94,6 +118,10 @@ export class ExportController {
   }
 
   @Get('etp/:id')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
   @ApiOperation({
     summary: 'Exportar ETP em formato especificado',
     description: 'Exporta o ETP no formato escolhido (pdf, json, xml, docx)',
@@ -105,6 +133,7 @@ export class ExportController {
     description: 'Formato de exportação',
   })
   @ApiResponse({ status: 200, description: 'Exportação concluída' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   async exportETP(
     @Param('id') id: string,

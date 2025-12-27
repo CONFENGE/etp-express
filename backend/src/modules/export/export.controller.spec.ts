@@ -1,8 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
+import { Reflector } from '@nestjs/core';
 import { ExportController } from './export.controller';
 import { ExportService } from './export.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ResourceOwnershipGuard } from '../../common/guards/resource-ownership.guard';
+import {
+  OWNERSHIP_KEY,
+  ResourceType,
+} from '../../common/decorators/require-ownership.decorator';
 
 describe('ExportController', () => {
   let controller: ExportController;
@@ -13,6 +20,15 @@ describe('ExportController', () => {
     exportToJSON: jest.fn(),
     exportToXML: jest.fn(),
     exportToDocx: jest.fn(),
+  };
+
+  const mockJwtAuthGuard = {
+    canActivate: jest.fn(() => true),
+  };
+
+  // Mock ResourceOwnershipGuard - validation is tested in resource-ownership.guard.spec.ts
+  const mockResourceOwnershipGuard = {
+    canActivate: jest.fn(() => true),
   };
 
   const mockResponse = () => {
@@ -33,7 +49,12 @@ describe('ExportController', () => {
           useValue: mockExportService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockJwtAuthGuard)
+      .overrideGuard(ResourceOwnershipGuard)
+      .useValue(mockResourceOwnershipGuard)
+      .compile();
 
     controller = module.get<ExportController>(ExportController);
     exportService = module.get<ExportService>(ExportService);
@@ -45,6 +66,48 @@ describe('ExportController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('Security: @RequireOwnership decorator', () => {
+    const reflector = new Reflector();
+
+    it('should have @RequireOwnership on exportPDF method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportPDF);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+      expect(metadata.idParam).toBe('id');
+    });
+
+    it('should have @RequireOwnership on exportJSON method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportJSON);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+    });
+
+    it('should have @RequireOwnership on exportXML method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportXML);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+    });
+
+    it('should have @RequireOwnership on exportDOCX method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportDOCX);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+    });
+
+    it('should have @RequireOwnership on exportETP method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportETP);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+    });
+
+    it('should validate organization only, not strict ownership (read-only export)', () => {
+      // Export is a read-only operation, so we only validate organization membership,
+      // not that the user created the ETP (validateOwnership: false)
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.exportPDF);
+      expect(metadata.validateOwnership).toBe(false);
+    });
   });
 
   describe('exportPDF', () => {
