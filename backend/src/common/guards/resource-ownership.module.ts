@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResourceOwnershipGuard } from './resource-ownership.guard';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { EtpVersion } from '../../entities/etp-version.entity';
 
 /**
  * Module providing centralized resource ownership validation.
@@ -29,7 +30,7 @@ import { EtpSection } from '../../entities/etp-section.entity';
  * ```
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Etp, EtpSection])],
+  imports: [TypeOrmModule.forFeature([Etp, EtpSection, EtpVersion])],
   providers: [ResourceOwnershipGuard],
   exports: [ResourceOwnershipGuard],
 })

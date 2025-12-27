@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EtpVersion } from '../../entities/etp-version.entity';
@@ -126,11 +131,38 @@ export class VersionsService {
     return version;
   }
 
-  async compareVersions(versionId1: string, versionId2: string) {
+  async compareVersions(
+    versionId1: string,
+    versionId2: string,
+    organizationId?: string,
+  ) {
     const [version1, version2] = await Promise.all([
-      this.getVersion(versionId1),
-      this.getVersion(versionId2),
+      this.versionsRepository.findOne({
+        where: { id: versionId1 },
+        relations: ['etp'],
+      }),
+      this.versionsRepository.findOne({
+        where: { id: versionId2 },
+        relations: ['etp'],
+      }),
     ]);
+
+    if (!version1) {
+      throw new NotFoundException(`Versão ${versionId1} não encontrada`);
+    }
+    if (!version2) {
+      throw new NotFoundException(`Versão ${versionId2} não encontrada`);
+    }
+
+    // Validate organizationId for the second version (first is validated by guard)
+    if (organizationId && version2.etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `IDOR attempt: Organization ${organizationId} attempted to compare Version ${versionId2} from organization ${version2.etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar esta versão',
+      );
+    }
 
     const differences = {
       metadata: this.compareMetadata(

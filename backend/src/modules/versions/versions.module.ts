@@ -5,9 +5,13 @@ import { VersionsController } from './versions.controller';
 import { EtpVersion } from '../../entities/etp-version.entity';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { ResourceOwnershipModule } from '../../common/guards/resource-ownership.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EtpVersion, Etp, EtpSection])],
+  imports: [
+    TypeOrmModule.forFeature([EtpVersion, Etp, EtpSection]),
+    ResourceOwnershipModule,
+  ],
   controllers: [VersionsController],
   providers: [VersionsService],
   exports: [VersionsService],

@@ -16,6 +16,7 @@ import {
 } from '../decorators/require-ownership.decorator';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { EtpVersion } from '../../entities/etp-version.entity';
 
 /**
  * Guard that enforces resource ownership validation for protected endpoints.
@@ -66,6 +67,8 @@ export class ResourceOwnershipGuard implements CanActivate {
     private etpRepository: Repository<Etp>,
     @InjectRepository(EtpSection)
     private sectionRepository: Repository<EtpSection>,
+    @InjectRepository(EtpVersion)
+    private versionRepository: Repository<EtpVersion>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -132,12 +135,14 @@ export class ResourceOwnershipGuard implements CanActivate {
     resourceId: string,
     organizationId: string,
     userId?: string,
-  ): Promise<Etp | EtpSection> {
+  ): Promise<Etp | EtpSection | EtpVersion> {
     switch (resourceType) {
       case ResourceType.ETP:
         return this.validateEtp(resourceId, organizationId, userId);
       case ResourceType.SECTION:
         return this.validateSection(resourceId, organizationId, userId);
+      case ResourceType.VERSION:
+        return this.validateVersion(resourceId, organizationId, userId);
       default:
         throw new Error(`Unsupported resource type: ${resourceType}`);
     }
@@ -221,5 +226,45 @@ export class ResourceOwnershipGuard implements CanActivate {
     }
 
     return section;
+  }
+
+  /**
+   * Validates Version ownership and tenancy via parent ETP.
+   */
+  private async validateVersion(
+    versionId: string,
+    organizationId: string,
+    userId?: string,
+  ): Promise<EtpVersion> {
+    const version = await this.versionRepository.findOne({
+      where: { id: versionId },
+      relations: ['etp', 'etp.createdBy'],
+    });
+
+    if (!version) {
+      throw new NotFoundException(`Versão com ID ${versionId} não encontrada`);
+    }
+
+    // Multi-Tenancy: Validate via parent ETP's organizationId
+    if (version.etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `IDOR attempt: Organization ${organizationId} attempted to access Version ${versionId} from organization ${version.etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar esta versão',
+      );
+    }
+
+    // Ownership validation via parent ETP (if required)
+    if (userId && version.etp.createdById !== userId) {
+      this.logger.warn(
+        `Ownership violation: User ${userId} attempted to access Version ${versionId} owned by ${version.etp.createdById}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar esta versão',
+      );
+    }
+
+    return version;
   }
 }
