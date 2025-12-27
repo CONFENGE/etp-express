@@ -355,19 +355,81 @@ export class UsersController {
   }
 
   /**
-   * Retrieves a user by ID.
+   * Retrieves a user by ID with ownership validation.
+   *
+   * @remarks
+   * Security: Validates that user can only view:
+   * - Their own profile (id === currentUserId)
+   * - OR any user if SYSTEM_ADMIN
+   * - OR users from same organization if ORG_ADMIN
+   * Unauthorized cross-user/cross-organization access attempts are logged.
    *
    * @param id - User unique identifier (UUID)
+   * @param currentUser - Current authenticated user (from JWT token)
    * @returns User entity (password excluded) with disclaimer message
    * @throws {NotFoundException} 404 - If user not found
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If user lacks permission to view target user
    */
   @Get(':id')
   @ApiOperation({ summary: 'Obter usuário por ID' })
   @ApiResponse({ status: 200, description: 'Dados do usuário' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async findOne(@Param('id') id: string) {
+  @ApiForbiddenResponse({
+    description: 'Acesso negado - sem permissão para visualizar este usuário',
+  })
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser()
+    currentUser: {
+      id: string;
+      email: string;
+      role: UserRole;
+      organizationId: string;
+    },
+  ) {
+    // Security: Validate ownership before returning user data
+    const isOwnProfile = id === currentUser.id;
+    const isSystemAdmin = currentUser.role === UserRole.SYSTEM_ADMIN;
+    const isOrgAdmin = currentUser.role === UserRole.ADMIN;
+
+    // Fetch user first (needed for org validation and response)
     const user = await this.usersService.findOne(id);
+
+    // Case 1: User viewing their own profile - always allowed
+    if (isOwnProfile) {
+      this.logger.log(`User ${currentUser.email} viewing own profile`);
+    }
+    // Case 2: SYSTEM_ADMIN can view any user
+    else if (isSystemAdmin) {
+      this.logger.log(
+        `[ADMIN] User ${currentUser.email} (SYSTEM_ADMIN) viewing user ${id}`,
+      );
+    }
+    // Case 3: ADMIN can view users from same organization
+    else if (isOrgAdmin) {
+      if (user.organizationId !== currentUser.organizationId) {
+        this.logger.warn(
+          `[IDOR ATTEMPT] User ${currentUser.email} (ADMIN) attempted to view user ${id} from different organization`,
+        );
+        throw new ForbiddenException(
+          'Você não tem permissão para visualizar usuários de outra organização',
+        );
+      }
+      this.logger.log(
+        `[ADMIN] User ${currentUser.email} viewing user ${id} from same organization`,
+      );
+    }
+    // Case 4: Regular users cannot view other users
+    else {
+      this.logger.warn(
+        `[IDOR ATTEMPT] User ${currentUser.email} attempted to view user ${id} without permission`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para visualizar este usuário',
+      );
+    }
+
     return {
       data: user,
       disclaimer: DISCLAIMER,
