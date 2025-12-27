@@ -1,28 +1,25 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-26 | **Progresso:** 497/505 (98%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 500/505 (99%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (8)
+## Issues Abertas (5)
 
-### P1 - E2E Tests (5 issues)
+### P1 - E2E Tests (3 issues)
 
 | #    | Issue                                                 |
 | ---- | ----------------------------------------------------- |
-| #953 | test(e2e): Delete/Archive/Restore ETP cycle           |
 | #954 | test(e2e): Generate all 13 sections (Lei 14.133/2021) |
 | #955 | test(e2e): Export PDF complete flow                   |
 | #956 | test(e2e): Export DOCX complete flow                  |
-| #957 | test(e2e): Admin domain management CRUD               |
 
-### P2 - Melhorias (3 issues)
+### P2 - Melhorias (2 issues)
 
-| #    | Issue                                         |
-| ---- | --------------------------------------------- |
-| #961 | feat(monitoring): Sentry breadcrumbs for auth |
-| #962 | docs: Comprehensive authentication flow       |
-| #963 | ci: Add auth E2E tests to CI pipeline         |
+| #    | Issue                                   |
+| ---- | --------------------------------------- |
+| #962 | docs: Comprehensive authentication flow |
+| #963 | ci: Add auth E2E tests to CI pipeline   |
 
 ---
 
@@ -48,9 +45,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 505   |
-| Issues Abertas    | 8     |
-| Issues Fechadas   | 497   |
-| Progresso         | 98%   |
+| Issues Abertas    | 5     |
+| Issues Fechadas   | 500   |
+| Progresso         | 99%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2095  |
