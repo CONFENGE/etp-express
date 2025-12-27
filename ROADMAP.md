@@ -1,25 +1,31 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-27 | **Progresso:** 500/505 (99%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 506/512 (99%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (5)
+## Issues Abertas (6)
 
-### P1 - E2E Tests (3 issues)
+### P0 - Bugs Criticos (2 issues)
 
-| #    | Issue                                                 |
-| ---- | ----------------------------------------------------- |
-| #954 | test(e2e): Generate all 13 sections (Lei 14.133/2021) |
-| #955 | test(e2e): Export PDF complete flow                   |
-| #956 | test(e2e): Export DOCX complete flow                  |
+| #    | Issue                                                                 |
+| ---- | --------------------------------------------------------------------- |
+| #985 | fix(frontend): Loading infinito 'Carregando ETP...' ao criar ETP      |
+| #986 | fix(frontend): Tarja superior sobrepoe primeiro botao do menu lateral |
 
-### P2 - Melhorias (2 issues)
+### P1 - E2E Tests (1 issue)
 
-| #    | Issue                                   |
-| ---- | --------------------------------------- |
-| #962 | docs: Comprehensive authentication flow |
-| #963 | ci: Add auth E2E tests to CI pipeline   |
+| #    | Issue                                |
+| ---- | ------------------------------------ |
+| #956 | test(e2e): Export DOCX complete flow |
+
+### P2 - Melhorias (3 issues)
+
+| #    | Issue                                                                   |
+| ---- | ----------------------------------------------------------------------- |
+| #962 | docs: Comprehensive authentication flow                                 |
+| #963 | ci: Add auth E2E tests to CI pipeline                                   |
+| #987 | feat(frontend): Exibir menu de administracao para usuarios SYSTEM_ADMIN |
 
 ---
 
@@ -27,11 +33,11 @@
 
 | Milestone              | Issues |
 | ---------------------- | ------ |
-| M1: Foundation         | 35/35  |
+| M1: Foundation         | 36/36  |
 | M2: CI/CD Pipeline     | 18/18  |
-| M3: Quality & Security | 60/60  |
-| M4: Refactoring & Perf | 44/44  |
-| M5: E2E & Docs         | 29/29  |
+| M3: Quality & Security | 61/61  |
+| M4: Refactoring & Perf | 45/45  |
+| M5: E2E & Docs         | 30/30  |
 | M6: Maintenance        | 85/85  |
 | M7: Multi-Tenancy B2G  | 6/6    |
 | M8: Dominios Instit.   | 24/24  |
@@ -44,9 +50,9 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 505   |
-| Issues Abertas    | 5     |
-| Issues Fechadas   | 500   |
+| Issues Totais     | 512   |
+| Issues Abertas    | 6     |
+| Issues Fechadas   | 506   |
 | Progresso         | 99%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
