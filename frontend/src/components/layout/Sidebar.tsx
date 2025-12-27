@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router';
 import { FileText, Home, PlusCircle, FileSearch } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
+import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -11,7 +12,7 @@ const navigation = [
 ];
 
 export function Sidebar() {
-  const { sidebarOpen } = useUIStore();
+  const { sidebarOpen, openModal } = useUIStore();
 
   if (!sidebarOpen) return null;
 
@@ -30,14 +31,13 @@ export function Sidebar() {
       <div className="flex flex-col gap-4 p-4">
         {/* New ETP button with touch target */}
         <Button
-          asChild
           className="w-full min-h-touch"
           data-tour="new-etp-button"
+          onClick={() => openModal(CREATE_ETP_MODAL_ID)}
+          aria-label="Create new ETP"
         >
-          <NavLink to="/etps/new" aria-label="Create new ETP">
-            <PlusCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-            Novo ETP
-          </NavLink>
+          <PlusCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+          Novo ETP
         </Button>
 
         <nav aria-label="Primary navigation" className="space-y-1">
