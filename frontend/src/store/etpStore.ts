@@ -111,8 +111,11 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   fetchETPs: async () => {
     set({ isLoading: true, error: null });
     try {
-      const etps = await apiHelpers.get<ETP[]>('/etps');
-      set({ etps, isLoading: false });
+      // API returns paginated response: { data: ETP[], meta: {...}, disclaimer: string }
+      const response = await apiHelpers.get<{ data: ETP[]; meta: unknown }>(
+        '/etps',
+      );
+      set({ etps: response.data, isLoading: false });
     } catch (error) {
       set({
         error: getContextualErrorMessage('carregar', 'ETPs', error),
