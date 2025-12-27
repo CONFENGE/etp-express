@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -24,11 +24,8 @@ import { formatDate } from '@/lib/utils';
 export function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { etps, isLoading, fetchETPs } = useETPs();
-
-  useEffect(() => {
-    fetchETPs();
-  }, [fetchETPs]);
+  // useETPs hook auto-fetches when etps.length === 0, no manual fetch needed (#983)
+  const { etps, isLoading } = useETPs();
 
   const stats = useMemo(() => {
     return etps.reduce(
