@@ -133,10 +133,28 @@ jobs:
       - name: Start backend server
         working-directory: backend
         run: |
-          npm run start:prod &
+          # Start backend with output logging for debugging
+          npm run start:prod > /tmp/backend.log 2>&1 &
+          BACKEND_PID=$!
+          echo "Backend PID: $BACKEND_PID"
           echo "Waiting for backend to be ready..."
-          timeout 60 bash -c 'until curl -sf http://localhost:3001/api/health > /dev/null 2>&1; do sleep 2; done'
-          echo "Backend is ready!"
+          # Wait up to 60 seconds for backend to start
+          for i in {1..30}; do
+            if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            # Check if backend process is still running
+            if ! kill -0 $BACKEND_PID 2>/dev/null; then
+              echo "Backend process died. Showing logs:"
+              cat /tmp/backend.log
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "Backend failed to start within 60 seconds. Showing logs:"
+          cat /tmp/backend.log
+          exit 1
 
       - name: Build frontend
         working-directory: frontend
