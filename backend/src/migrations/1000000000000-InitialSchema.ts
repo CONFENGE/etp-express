@@ -31,7 +31,7 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CREATE TABLE IF NOT EXISTS "organizations" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
- "cnpj" character varying(14) NOT NULL,
+ "cnpj" character varying NOT NULL,
  "domainWhitelist" text NOT NULL,
  "isActive" boolean NOT NULL DEFAULT true,
  "stripeCustomerId" character varying,
