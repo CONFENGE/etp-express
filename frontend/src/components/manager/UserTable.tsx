@@ -102,9 +102,11 @@ export function UserTable({
   if (users.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 p-12 text-center">
-        <p className="text-muted-foreground">No users in your domain yet.</p>
+        <p className="text-muted-foreground">
+          Nenhum usuário no seu domínio ainda.
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Add your first user to get started.
+          Adicione seu primeiro usuário para começar.
         </p>
       </div>
     );
@@ -118,22 +120,22 @@ export function UserTable({
             <thead>
               <tr className="border-b bg-muted/50">
                 <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Name
+                  Nome
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                  Email
+                  E-mail
                 </th>
                 <th className="hidden px-6 py-3 text-left text-sm font-medium text-muted-foreground sm:table-cell">
-                  Role
+                  Cargo
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                   Status
                 </th>
                 <th className="hidden px-6 py-3 text-left text-sm font-medium text-muted-foreground lg:table-cell">
-                  Created
+                  Criado em
                 </th>
                 <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
-                  Actions
+                  Ações
                 </th>
               </tr>
             </thead>
@@ -163,18 +165,18 @@ export function UserTable({
                   <td className="hidden px-6 py-4 text-muted-foreground sm:table-cell">
                     {user.cargo || (
                       <span className="italic text-muted-foreground/60">
-                        Not set
+                        Não definido
                       </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1">
                       <Badge variant={user.isActive ? 'success' : 'secondary'}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                        {user.isActive ? 'Ativo' : 'Inativo'}
                       </Badge>
                       {user.mustChangePassword && (
                         <Badge variant="warning" className="text-xs">
-                          Pending setup
+                          Pendente
                         </Badge>
                       )}
                     </div>
@@ -196,7 +198,7 @@ export function UserTable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onEdit(user)}>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit
+                          Editar
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleToggleActive(user)}
@@ -204,12 +206,12 @@ export function UserTable({
                           {user.isActive ? (
                             <>
                               <UserX className="mr-2 h-4 w-4" />
-                              Deactivate
+                              Desativar
                             </>
                           ) : (
                             <>
                               <UserCheck className="mr-2 h-4 w-4" />
-                              Activate
+                              Ativar
                             </>
                           )}
                         </DropdownMenuItem>
@@ -217,7 +219,7 @@ export function UserTable({
                           onClick={() => handleResetPasswordClick(user)}
                         >
                           <KeyRound className="mr-2 h-4 w-4" />
-                          Reset Password
+                          Redefinir Senha
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -225,7 +227,7 @@ export function UserTable({
                           onClick={() => handleDeleteClick(user)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          Excluir
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -265,22 +267,22 @@ function UserTableSkeleton() {
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Name
+                Nome
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Email
+                E-mail
               </th>
               <th className="hidden px-6 py-3 text-left text-sm font-medium text-muted-foreground sm:table-cell">
-                Role
+                Cargo
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                 Status
               </th>
               <th className="hidden px-6 py-3 text-left text-sm font-medium text-muted-foreground lg:table-cell">
-                Created
+                Criado em
               </th>
               <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
-                Actions
+                Ações
               </th>
             </tr>
           </thead>
