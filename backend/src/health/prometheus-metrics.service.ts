@@ -454,7 +454,7 @@ export class PrometheusMetricsService implements OnModuleInit {
     // Active users (#861) - users who logged in within last 15 minutes
     try {
       const activeUsersResult = await this.dataSource.query(
-        `SELECT count(*) as count FROM "user" WHERE "lastLoginAt" > NOW() - INTERVAL '15 minutes'`,
+        `SELECT count(*) as count FROM "users" WHERE "lastLoginAt" > NOW() - INTERVAL '15 minutes'`,
       );
       this.activeUsersGauge.set(parseInt(activeUsersResult[0]?.count || '0'));
     } catch {
