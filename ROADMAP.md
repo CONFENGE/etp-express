@@ -1,28 +1,34 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 524/534 (98.1%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 524/538 (97.4%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR    | Commit    | Descricao                                                |
-| ----- | --------- | -------------------------------------------------------- |
-| #1023 | `aa05763` | fix(frontend): improve error handling in CreateETPDialog |
-| #1022 | `1eaab83` | fix(frontend): add required objeto field to form         |
-| #1006 | `1f9a792` | fix(frontend): use domain.users from existing API        |
+| PR    | Commit    | Descricao                                            |
+| ----- | --------- | ---------------------------------------------------- |
+| #1026 | `39dc16d` | feat(design): add glassmorphism utilities (#1012)    |
+| #1025 | `10e1b39` | feat(design): premium typography with Inter variable |
+| #1024 | `38dcec8` | test(e2e): add E2E tests for ETP creation            |
 
 ---
 
-## Issues Abertas (10)
+## Issues Abertas (14)
 
-### P0 - Critico (0 issues)
+### P0 - Critico (3 issues)
 
-_Nenhuma issue P0 aberta_
+| #     | Issue                                                   |
+| ----- | ------------------------------------------------------- |
+| #1028 | fix(frontend): add null-check for sections in ETPEditor |
+| #1029 | fix(backend): initialize sections array on ETP creation |
+| #1030 | fix(backend): cache Exa ping result in health checks    |
 
-### P1 - Alta Prioridade (0 issues)
+### P1 - Alta Prioridade (1 issue)
 
-_Nenhuma issue P1 aberta_
+| #     | Issue                                                        |
+| ----- | ------------------------------------------------------------ |
+| #1031 | fix(backend): use circuit breaker state for Exa health check |
 
 ### P2 - Melhorias (10 issues)
 
@@ -62,10 +68,10 @@ _Nenhuma issue P1 aberta_
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 534   |
-| Issues Abertas    | 10    |
+| Issues Totais     | 538   |
+| Issues Abertas    | 14    |
 | Issues Fechadas   | 524   |
-| Progresso         | 98.1% |
+| Progresso         | 97.4% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
