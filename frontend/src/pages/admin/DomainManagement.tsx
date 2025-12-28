@@ -48,10 +48,10 @@ export function DomainManagement() {
   }) => {
     try {
       await createDomain(data);
-      success('Domain created successfully');
+      success('Domínio criado com sucesso');
     } catch {
-      showError('Failed to create domain');
-      throw new Error('Failed to create domain');
+      showError('Falha ao criar domínio');
+      throw new Error('Falha ao criar domínio');
     }
   };
 
@@ -91,7 +91,7 @@ export function DomainManagement() {
               next.delete(domain.id);
               return next;
             });
-            showError('Failed to delete domain');
+            showError('Falha ao excluir domínio');
           }
         },
         duration: 5000,
@@ -118,10 +118,10 @@ export function DomainManagement() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Domains
+              Domínios
             </h1>
             <p className="text-sm text-muted-foreground sm:text-base">
-              Manage authorized institutional domains
+              Gerencie os domínios institucionais autorizados
             </p>
           </div>
           <Button
@@ -129,7 +129,7 @@ export function DomainManagement() {
             className="w-full sm:w-auto"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Domain
+            Adicionar Domínio
           </Button>
         </div>
 

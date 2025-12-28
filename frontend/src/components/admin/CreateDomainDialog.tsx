@@ -18,16 +18,16 @@ import { CreateDomainDto } from '@/store/adminStore';
 const createDomainSchema = z.object({
   domain: z
     .string()
-    .min(3, 'Domain must be at least 3 characters')
-    .max(253, 'Domain must be at most 253 characters')
+    .min(3, 'O domínio deve ter pelo menos 3 caracteres')
+    .max(253, 'O domínio deve ter no máximo 253 caracteres')
     .regex(
       /^[a-z0-9]+([-.][a-z0-9]+)*\.[a-z]{2,}$/i,
-      'Please enter a valid domain (e.g., example.com)',
+      'Digite um domínio válido (ex: exemplo.com.br)',
     ),
   maxUsers: z
     .number()
-    .min(1, 'Minimum 1 user required')
-    .max(1000, 'Maximum 1000 users allowed'),
+    .min(1, 'Mínimo de 1 usuário')
+    .max(1000, 'Máximo de 1000 usuários'),
 });
 
 type CreateDomainFormData = z.infer<typeof createDomainSchema>;
@@ -86,18 +86,18 @@ export function CreateDomainDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Domain</DialogTitle>
+          <DialogTitle>Criar Domínio</DialogTitle>
           <DialogDescription>
-            Add a new authorized domain to the platform. Users with email
-            addresses from this domain will be able to register.
+            Adicione um novo domínio autorizado à plataforma. Usuários com
+            endereços de e-mail deste domínio poderão se registrar.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="domain">Domain</Label>
+            <Label htmlFor="domain">Domínio</Label>
             <Input
               id="domain"
-              placeholder="example.com"
+              placeholder="exemplo.com.br"
               {...register('domain')}
               aria-describedby={errors.domain ? 'domain-error' : undefined}
             />
@@ -108,7 +108,7 @@ export function CreateDomainDialog({
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="maxUsers">Max Users</Label>
+            <Label htmlFor="maxUsers">Máximo de Usuários</Label>
             <Input
               id="maxUsers"
               type="number"
@@ -123,7 +123,7 @@ export function CreateDomainDialog({
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Maximum number of users that can register with this domain
+              Número máximo de usuários que podem se registrar com este domínio
             </p>
           </div>
           <DialogFooter>
@@ -133,10 +133,10 @@ export function CreateDomainDialog({
               onClick={() => handleOpenChange(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Domain'}
+              {isSubmitting ? 'Criando...' : 'Criar Domínio'}
             </Button>
           </DialogFooter>
         </form>
