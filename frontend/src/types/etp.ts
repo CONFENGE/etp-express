@@ -1,6 +1,7 @@
 export interface ETP {
   id: string;
   title: string;
+  objeto: string;
   description?: string;
   status: 'draft' | 'in_progress' | 'under_review' | 'completed';
   progress: number;
