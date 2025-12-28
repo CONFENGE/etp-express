@@ -46,11 +46,11 @@ export function ConnectionStatus({
     // Only show toast on actual change
     if (previousOnlineRef.current !== isOnline) {
       if (isOnline && wasOffline) {
-        success('Conexao restaurada', 'Online');
+        success('Conexão restaurada', 'Online');
       } else if (!isOnline) {
         error(
-          'Voce esta offline. Algumas funcionalidades podem nao estar disponiveis.',
-          'Sem conexao',
+          'Você está offline. Algumas funcionalidades podem não estar disponíveis.',
+          'Sem conexão',
         );
       }
       previousOnlineRef.current = isOnline;
@@ -75,7 +75,7 @@ export function ConnectionStatus({
         )}
       >
         <WifiOff className="h-5 w-5" aria-hidden="true" />
-        <span>Sem conexao</span>
+        <span>Sem conexão</span>
       </div>
     );
   }
