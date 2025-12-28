@@ -46,11 +46,11 @@ describe('DomainTable', () => {
         />,
       );
 
-      expect(screen.getByText('Domain')).toBeInTheDocument();
-      expect(screen.getByText('Users')).toBeInTheDocument();
-      expect(screen.getByText('Manager')).toBeInTheDocument();
+      expect(screen.getByText('Domínio')).toBeInTheDocument();
+      expect(screen.getByText('Usuários')).toBeInTheDocument();
+      expect(screen.getByText('Gestor')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
-      expect(screen.getByText('Actions')).toBeInTheDocument();
+      expect(screen.getByText('Ações')).toBeInTheDocument();
     });
 
     it('should render domain data correctly', () => {
@@ -69,7 +69,7 @@ describe('DomainTable', () => {
       expect(screen.getByText('John Doe')).toBeInTheDocument();
     });
 
-    it('should show "Not assigned" for domains without manager', () => {
+    it('should show "Não atribuído" for domains without manager', () => {
       renderWithRouter(
         <DomainTable
           domains={mockDomains}
@@ -78,7 +78,7 @@ describe('DomainTable', () => {
         />,
       );
 
-      expect(screen.getByText('Not assigned')).toBeInTheDocument();
+      expect(screen.getByText('Não atribuído')).toBeInTheDocument();
     });
 
     it('should show correct status badges', () => {
@@ -90,8 +90,8 @@ describe('DomainTable', () => {
         />,
       );
 
-      expect(screen.getByText('Active')).toBeInTheDocument();
-      expect(screen.getByText('Inactive')).toBeInTheDocument();
+      expect(screen.getByText('Ativo')).toBeInTheDocument();
+      expect(screen.getByText('Inativo')).toBeInTheDocument();
     });
   });
 
@@ -114,7 +114,7 @@ describe('DomainTable', () => {
       );
 
       expect(
-        screen.getByText('No domains registered yet.'),
+        screen.getByText('Nenhum domínio cadastrado ainda.'),
       ).toBeInTheDocument();
     });
   });
