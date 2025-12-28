@@ -19,7 +19,8 @@ describe('Card', () => {
 
     it('should use Apple-style border radius', () => {
       render(<Card data-testid="card">Content</Card>);
-      expect(screen.getByTestId('card')).toHaveClass('rounded-apple-lg');
+      // Using rounded-2xl (16px) for borderless Apple-like design (#1013)
+      expect(screen.getByTestId('card')).toHaveClass('rounded-2xl');
     });
 
     it('should use surface-primary background', () => {
@@ -27,9 +28,12 @@ describe('Card', () => {
       expect(screen.getByTestId('card')).toHaveClass('bg-surface-primary');
     });
 
-    it('should use Apple-style shadow', () => {
+    it('should use Apple-style diffuse shadow (borderless design)', () => {
       render(<Card data-testid="card">Content</Card>);
-      expect(screen.getByTestId('card')).toHaveClass('shadow-apple');
+      // Borderless design uses diffuse shadow as visual delimiter (#1013)
+      const card = screen.getByTestId('card');
+      // Check that shadow is applied via inline class
+      expect(card.className).toContain('shadow-');
     });
 
     it('should use text-apple-primary for text color', () => {
@@ -54,9 +58,11 @@ describe('Card', () => {
         </Card>,
       );
       const card = screen.getByTestId('interactive-card');
-      expect(card).toHaveClass('hover:shadow-apple-lg');
-      expect(card).toHaveClass('hover:-translate-y-1');
+      // Hover lift effect with subtle translate (#1013)
+      expect(card).toHaveClass('hover:-translate-y-0.5');
       expect(card).toHaveClass('cursor-pointer');
+      // Shadow enhancement on hover (inline class)
+      expect(card.className).toContain('hover:shadow-');
     });
 
     it('should not apply interactive styles when interactive is false', () => {
@@ -172,7 +178,8 @@ describe('Card', () => {
       );
       const card = screen.getByTestId('card');
       expect(card).toHaveClass('custom-class');
-      expect(card).toHaveClass('rounded-apple-lg');
+      // Base styles preserved with borderless design (#1013)
+      expect(card).toHaveClass('rounded-2xl');
     });
 
     it('should merge custom className on subcomponents', () => {
