@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 521/534 (97.6%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 524/534 (98.1%) | **Deploy:** LIVE
 
 ---
 
@@ -14,7 +14,7 @@
 
 ---
 
-## Issues Abertas (13)
+## Issues Abertas (10)
 
 ### P0 - Critico (0 issues)
 
@@ -24,13 +24,10 @@ _Nenhuma issue P0 aberta_
 
 _Nenhuma issue P1 aberta_
 
-### P2 - Melhorias (13 issues)
+### P2 - Melhorias (10 issues)
 
 | #     | Issue                                                       |
 | ----- | ----------------------------------------------------------- |
-| #1009 | [test] Adicionar testes E2E para criacao de ETP             |
-| #1010 | feat(design): Tipografia Premium com Inter Variable Font    |
-| #1011 | feat(design): Paleta de Cores Warm Gray                     |
 | #1012 | feat(design): Glassmorphism Utilities para Headers e Modais |
 | #1013 | feat(design): Cards Apple-like sem Bordas Duras             |
 | #1014 | feat(design): Botoes com Touch Area 44px e Focus Glow       |
@@ -66,9 +63,9 @@ _Nenhuma issue P1 aberta_
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 534   |
-| Issues Abertas    | 13    |
-| Issues Fechadas   | 521   |
-| Progresso         | 97.6% |
+| Issues Abertas    | 10    |
+| Issues Fechadas   | 524   |
+| Progresso         | 98.1% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
