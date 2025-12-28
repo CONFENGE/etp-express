@@ -7,7 +7,7 @@
     "security:scan": "gitleaks detect --source . --verbose --no-git --config .gitleaks.toml",
     "security:scan:history": "gitleaks detect --source . --verbose --config .gitleaks.toml",
     "security:scan:staged": "gitleaks protect --verbose --staged --config .gitleaks.toml",
-    "test:e2e": "cd e2e && npx tsx run-tests.ts"
+    "test:e2e": "npx playwright test"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
