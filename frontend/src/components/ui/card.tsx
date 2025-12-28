@@ -20,17 +20,19 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      // Base styles with Apple HIG tokens
-      'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
+      // Base styles with Apple HIG tokens - borderless design (#1013)
+      'rounded-2xl bg-surface-primary text-text-apple-primary',
+      // Apple-style diffuse shadow as delimiter (no hard border)
+      'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.04)]',
       // Apple-style transition with GPU acceleration
       'transition-all duration-200 ease-out',
       // Interactive card micro-interactions
       interactive && [
         'cursor-pointer',
         // Hover: lift up with enhanced shadow
-        'hover:shadow-apple-lg hover:-translate-y-1',
+        'hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:-translate-y-0.5',
         // Active: pressed state
-        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.97]',
+        'active:shadow-[0_1px_3px_rgba(0,0,0,0.04)] active:translate-y-0 active:scale-[0.98]',
         // Focus visible for keyboard navigation
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
       ],
