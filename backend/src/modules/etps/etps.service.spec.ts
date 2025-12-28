@@ -117,6 +117,7 @@ describe('EtpsService', () => {
         status: EtpStatus.DRAFT,
         currentVersion: 1,
         completionPercentage: 0,
+        sections: [],
       });
       expect(mockRepository.save).toHaveBeenCalledWith(createdEtp);
       expect(result).toEqual(createdEtp);
