@@ -1,32 +1,28 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 519/534 (97.2%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 521/534 (97.6%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR    | Commit    | Descricao                                              |
-| ----- | --------- | ------------------------------------------------------ |
-| #1006 | `1f9a792` | fix(frontend): use domain.users from existing API      |
-| #1002 | `de5ce76` | feat(frontend): show admin navigation for SYSTEM_ADMIN |
-| #1001 | `7bb31b4` | fix(frontend): fix sidebar z-index overlap with header |
+| PR    | Commit    | Descricao                                                |
+| ----- | --------- | -------------------------------------------------------- |
+| #1023 | `aa05763` | fix(frontend): improve error handling in CreateETPDialog |
+| #1022 | `1eaab83` | fix(frontend): add required objeto field to form         |
+| #1006 | `1f9a792` | fix(frontend): use domain.users from existing API        |
 
 ---
 
-## Issues Abertas (15)
+## Issues Abertas (13)
 
-### P0 - Critico (1 issue)
+### P0 - Critico (0 issues)
 
-| #     | Issue                                                       |
-| ----- | ----------------------------------------------------------- |
-| #1007 | [bug] Campo objeto obrigatorio ausente no formulario de ETP |
+_Nenhuma issue P0 aberta_
 
-### P1 - Alta Prioridade (1 issue)
+### P1 - Alta Prioridade (0 issues)
 
-| #     | Issue                                               |
-| ----- | --------------------------------------------------- |
-| #1008 | [fix] Melhorar tratamento de erro na criacao de ETP |
+_Nenhuma issue P1 aberta_
 
 ### P2 - Melhorias (13 issues)
 
@@ -70,9 +66,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 534   |
-| Issues Abertas    | 15    |
-| Issues Fechadas   | 519   |
-| Progresso         | 97.2% |
+| Issues Abertas    | 13    |
+| Issues Fechadas   | 521   |
+| Progresso         | 97.6% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
