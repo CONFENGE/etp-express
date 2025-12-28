@@ -263,7 +263,7 @@ describe('ThemeToggle', () => {
 
       const button = screen.getByRole('button', { name: /tema atual/i });
       // WCAG 2.5.5: 44x44px minimum touch target
-      expect(button).toHaveClass('min-h-touch', 'min-w-touch');
+      expect(button).toHaveClass('min-h-[44px]', 'min-w-[44px]');
     });
 
     it('should have transition classes for smooth animation', () => {
