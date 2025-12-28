@@ -313,6 +313,68 @@ html.dark {
     border-radius: var(--radius-apple-lg);
   }
 
+  /* ========================================
+   * Glassmorphism Utilities
+   * Apple-style frosted glass effects
+   * ======================================== */
+
+  /* Standard glass effect for headers, cards, overlays */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .dark .glass {
+    background: rgba(28, 28, 30, 0.72);
+  }
+
+  /* Subtle glass effect for less prominent elements */
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dark .glass-subtle {
+    background: rgba(28, 28, 30, 0.5);
+  }
+
+  /* Strong glass effect for modals and dialogs */
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(200%) blur(30px);
+    -webkit-backdrop-filter: saturate(200%) blur(30px);
+  }
+
+  .dark .glass-strong {
+    background: rgba(28, 28, 30, 0.85);
+  }
+
+  /* Glass overlay for modal backdrops */
+  .glass-overlay {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .dark .glass-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Fixed header glass effect (appears on scroll) */
+  .glass-header {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border-secondary);
+  }
+
+  .dark .glass-header {
+    background: rgba(28, 28, 30, 0.72);
+    border-bottom: 1px solid var(--border-secondary);
+  }
+
   /* Typography utilities for improved legibility */
   .leading-tight {
     line-height: var(--line-height-tight);
