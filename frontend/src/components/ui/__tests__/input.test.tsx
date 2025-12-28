@@ -33,16 +33,16 @@ describe('Input', () => {
   });
 
   describe('Apple HIG Design Tokens', () => {
-    it('should use Apple-style border radius', () => {
+    it('should use Apple-style border radius (rounded-xl)', () => {
       render(<Input data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('rounded-apple');
+      expect(input).toHaveClass('rounded-xl');
     });
 
-    it('should use surface-primary background', () => {
+    it('should use surface-secondary background for subtle appearance', () => {
       render(<Input data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('bg-surface-primary');
+      expect(input).toHaveClass('bg-surface-secondary');
     });
 
     it('should use text-apple-primary for text color', () => {
@@ -51,10 +51,10 @@ describe('Input', () => {
       expect(input).toHaveClass('text-text-apple-primary');
     });
 
-    it('should use text-apple-secondary for placeholder', () => {
+    it('should use text-apple-tertiary for placeholder', () => {
       render(<Input placeholder="Test" data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('placeholder:text-text-apple-secondary');
+      expect(input).toHaveClass('placeholder:text-text-apple-tertiary');
     });
 
     it('should use smooth transitions with GPU acceleration', () => {
@@ -65,10 +65,13 @@ describe('Input', () => {
       expect(input).toHaveClass('ease-out');
     });
 
-    it('should have focus ring with Apple accent', () => {
+    it('should have focus glow with Apple accent', () => {
       render(<Input data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('focus-visible:ring-apple-accent');
+      // Focus uses subtle glow (shadow) instead of hard ring
+      expect(input).toHaveClass(
+        'focus-visible:shadow-[0_0_0_4px_rgba(0,102,204,0.12)]',
+      );
       expect(input).toHaveClass('focus-visible:border-apple-accent');
     });
   });
@@ -112,10 +115,11 @@ describe('Input', () => {
   });
 
   describe('Sizing', () => {
-    it('should have correct height', () => {
+    it('should have correct height (h-11 for 44px touch target)', () => {
       render(<Input data-testid="sized-input" />);
       const input = screen.getByTestId('sized-input');
-      expect(input).toHaveClass('h-10');
+      expect(input).toHaveClass('h-11');
+      expect(input).toHaveClass('min-h-[44px]');
     });
 
     it('should be full width', () => {
@@ -130,7 +134,7 @@ describe('Input', () => {
       render(<Input className="custom-class" data-testid="custom-input" />);
       const input = screen.getByTestId('custom-input');
       expect(input).toHaveClass('custom-class');
-      expect(input).toHaveClass('rounded-apple');
+      expect(input).toHaveClass('rounded-xl');
     });
   });
 
