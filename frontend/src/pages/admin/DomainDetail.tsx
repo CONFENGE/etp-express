@@ -156,7 +156,6 @@ export function DomainDetail() {
   const [domain, setDomain] = useState<AuthorizedDomain | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
 
@@ -165,22 +164,18 @@ export function DomainDetail() {
       if (!id) return;
 
       setLoading(true);
-      setLoadingUsers(true);
       setError(null);
 
       try {
-        const [domainResponse, usersResponse] = await Promise.all([
-          apiHelpers.get<AuthorizedDomain>(`/system-admin/domains/${id}`),
-          apiHelpers.get<User[]>(`/system-admin/domains/${id}/users`),
-        ]);
-
+        const domainResponse = await apiHelpers.get<AuthorizedDomain>(
+          `/system-admin/domains/${id}`,
+        );
         setDomain(domainResponse);
-        setUsers(usersResponse);
+        setUsers(domainResponse.users || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch domain');
       } finally {
         setLoading(false);
-        setLoadingUsers(false);
       }
     };
 
@@ -192,11 +187,12 @@ export function DomainDetail() {
 
     try {
       await assignManager(id, userId);
-      // Refresh domain data to get updated manager info
+      // Refresh domain data to get updated manager info and users
       const updatedDomain = await apiHelpers.get<AuthorizedDomain>(
         `/system-admin/domains/${id}`,
       );
       setDomain(updatedDomain);
+      setUsers(updatedDomain.users || []);
       success('Manager assigned successfully');
     } catch {
       showError('Failed to assign manager');
@@ -321,7 +317,7 @@ export function DomainDetail() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UserList users={users} loading={loadingUsers} />
+              <UserList users={users} loading={false} />
             </CardContent>
           </Card>
         </div>
@@ -333,6 +329,7 @@ export function DomainDetail() {
           domainId={id!}
           currentManagerId={domain.managerId}
           onAssign={handleAssignManager}
+          users={users}
         />
       </div>
     </div>
