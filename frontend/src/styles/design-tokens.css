@@ -454,17 +454,33 @@ html.dark {
   }
 
   /* Staggered animation delays (#1019) */
-  .stagger-1 { animation-delay: 0ms; }
-  .stagger-2 { animation-delay: 50ms; }
-  .stagger-3 { animation-delay: 100ms; }
-  .stagger-4 { animation-delay: 150ms; }
-  .stagger-5 { animation-delay: 200ms; }
-  .stagger-6 { animation-delay: 250ms; }
-  .stagger-7 { animation-delay: 300ms; }
-  .stagger-8 { animation-delay: 350ms; }
+  .stagger-1 {
+    animation-delay: 0ms;
+  }
+  .stagger-2 {
+    animation-delay: 50ms;
+  }
+  .stagger-3 {
+    animation-delay: 100ms;
+  }
+  .stagger-4 {
+    animation-delay: 150ms;
+  }
+  .stagger-5 {
+    animation-delay: 200ms;
+  }
+  .stagger-6 {
+    animation-delay: 250ms;
+  }
+  .stagger-7 {
+    animation-delay: 300ms;
+  }
+  .stagger-8 {
+    animation-delay: 350ms;
+  }
 
   /* Initial opacity for staggered elements (before animation) */
-  .animate-enter[class*="stagger-"] {
+  .animate-enter[class*='stagger-'] {
     opacity: 0;
   }
 
