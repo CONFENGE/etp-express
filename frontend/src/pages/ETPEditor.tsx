@@ -28,7 +28,7 @@ import { useConfetti } from '@/hooks/useConfetti';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
-  const { currentETP, fetchETP, updateETP, isLoading } = useETPs();
+  const { currentETP, fetchETP, isLoading } = useETPs();
   const { success, error } = useToast();
   const [activeSection, setActiveSection] = useState(1);
   const [content, setContent] = useState('');
@@ -159,13 +159,22 @@ export function ETPEditor() {
   const handleSave = useCallback(async () => {
     if (!currentETP || !id) return;
 
+    // Find the current section to get its ID (#1046)
+    const section = currentETP.sections?.find(
+      (s) => s.sectionNumber === activeSection,
+    );
+    if (!section?.id) {
+      error('Seção não encontrada');
+      return;
+    }
+
     setIsSaving(true);
     try {
-      await updateETP(id, {
-        sections: (currentETP.sections ?? []).map((s) =>
-          s.sectionNumber === activeSection ? { ...s, content } : s,
-        ),
-      });
+      // Use PATCH /sections/:id endpoint instead of updateETP with sections array
+      // The backend UpdateEtpDto doesn't accept 'sections' field (#1046)
+      const { updateSection } = useETPStore.getState();
+      await updateSection(id, section.id, { content });
+
       // Reset dirty state after successful save (#610)
       setLastSavedContent(content);
       success('Seção salva com sucesso!');
@@ -174,7 +183,7 @@ export function ETPEditor() {
     } finally {
       setIsSaving(false);
     }
-  }, [currentETP, id, updateETP, activeSection, content, success, error]);
+  }, [currentETP, id, activeSection, content, success, error]);
 
   const handleGenerateAll = useCallback(async () => {
     // Generate all sections sequentially
