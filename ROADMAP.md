@@ -1,6 +1,17 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 538/546 (98.5%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 539/546 (98.7%) | **Deploy:** LIVE
+
+---
+
+## PRs Pendentes Review
+
+| PR    | Issue | Descricao                                                         |
+| ----- | ----- | ----------------------------------------------------------------- |
+| #1050 | #1042 | fix(ci): Playwright CI PostgreSQL health check                    |
+| #1051 | #1046 | fix(editor): Use PATCH /sections/:id endpoint for saving sections |
+| #1052 | #1049 | fix(ui): Redesign WarningBanner to follow design system           |
+| #1053 | #1043 | docs(readme): Update E2E section from Puppeteer to Playwright     |
 
 ---
 
@@ -14,35 +25,34 @@
 
 ---
 
-## Issues Abertas (8)
+## Issues Abertas (4)
 
-### P0 - Critico (3 issues)
+### P0 - Critico (1 issue)
 
-| #     | Issue                                                               |
-| ----- | ------------------------------------------------------------------- |
-| #1042 | fix(ci): Playwright CI failing with PostgreSQL health check         |
-| #1046 | fix(editor): Erro ao salvar secao - frontend usa endpoint incorreto |
-| #1047 | fix(ai): Investigar erro ao gerar secao com IA                      |
+| #     | Issue                                          |
+| ----- | ---------------------------------------------- |
+| #1047 | fix(ai): Investigar erro ao gerar secao com IA |
 
-### P1 - Alta (2 issues)
+### P1 - Alta (1 issue)
 
-| #     | Issue                                                         |
-| ----- | ------------------------------------------------------------- |
-| #1043 | docs(readme): Update E2E section from Puppeteer to Playwright |
-| #1048 | feat(editor): Integrar SimilarContractsPanel ao ETPEditor     |
-
-### P2 - Media (2 issues)
-
-| #     | Issue                                                       |
-| ----- | ----------------------------------------------------------- |
-| #1044 | chore(cleanup): Remove legacy Jest/Puppeteer E2E files      |
-| #1049 | fix(ui): Redesenhar WarningBanner para seguir design system |
+| #     | Issue                                                     |
+| ----- | --------------------------------------------------------- |
+| #1048 | feat(editor): Integrar SimilarContractsPanel ao ETPEditor |
 
 ### P3 - Baixa (1 issue)
 
 | #     | Issue                                          |
 | ----- | ---------------------------------------------- |
 | #1045 | docs(readme): Update coverage badges and dates |
+
+### Em PR (Aguardando Review)
+
+| #     | PR    | Issue                                                               |
+| ----- | ----- | ------------------------------------------------------------------- |
+| #1042 | #1050 | fix(ci): Playwright CI failing with PostgreSQL health check         |
+| #1046 | #1051 | fix(editor): Erro ao salvar secao - frontend usa endpoint incorreto |
+| #1049 | #1052 | fix(ui): Redesenhar WarningBanner para seguir design system         |
+| #1043 | #1053 | docs(readme): Update E2E section from Puppeteer to Playwright       |
 
 ---
 
@@ -68,9 +78,10 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 546   |
-| Issues Abertas    | 8     |
-| Issues Fechadas   | 538   |
-| Progresso         | 98.5% |
+| Issues Abertas    | 4     |
+| PRs Pendentes     | 4     |
+| Issues Fechadas   | 539   |
+| Progresso         | 98.7% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
