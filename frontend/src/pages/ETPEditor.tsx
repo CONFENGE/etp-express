@@ -111,7 +111,7 @@ export function ETPEditor() {
 
   useEffect(() => {
     if (currentETP) {
-      const section = currentETP.sections.find(
+      const section = currentETP.sections?.find(
         (s) => s.sectionNumber === activeSection,
       );
       const sectionContent = section?.content || '';
@@ -162,7 +162,7 @@ export function ETPEditor() {
     setIsSaving(true);
     try {
       await updateETP(id, {
-        sections: currentETP.sections.map((s) =>
+        sections: (currentETP.sections ?? []).map((s) =>
           s.sectionNumber === activeSection ? { ...s, content } : s,
         ),
       });
