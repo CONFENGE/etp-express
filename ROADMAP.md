@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 525/538 (97.6%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 535/538 (99.4%) | **Deploy:** LIVE
 
 ---
 
@@ -14,32 +14,12 @@
 
 ---
 
-## Issues Abertas (13)
+## Issues Abertas (3)
 
-### P0 - Critico (3 issues)
-
-| #     | Issue                                                   |
-| ----- | ------------------------------------------------------- |
-| #1028 | fix(frontend): add null-check for sections in ETPEditor |
-| #1029 | fix(backend): initialize sections array on ETP creation |
-| #1030 | fix(backend): cache Exa ping result in health checks    |
-
-### P1 - Alta Prioridade (1 issue)
-
-| #     | Issue                                                        |
-| ----- | ------------------------------------------------------------ |
-| #1031 | fix(backend): use circuit breaker state for Exa health check |
-
-### P2 - Melhorias (9 issues)
+### P2 - Melhorias (3 issues)
 
 | #     | Issue                                               |
 | ----- | --------------------------------------------------- |
-| #1013 | feat(design): Cards Apple-like sem Bordas Duras     |
-| #1014 | feat(design): Botoes com Touch Area 44px            |
-| #1015 | feat(design): Input Fields com Focus Glow Suave     |
-| #1016 | feat(design): Tokens de Border Radius Organicos     |
-| #1017 | feat(design): Stat Cards com Icones Coloridos       |
-| #1018 | feat(design): Lista de ETPs Recentes com Hover Lift |
 | #1019 | feat(design): Empty State com Animacoes Staggered   |
 | #1020 | feat(design): Animacoes de Entrada para Componentes |
 | #1021 | feat(design): Skeleton Loaders com Shimmer Premium  |
@@ -68,9 +48,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 538   |
-| Issues Abertas    | 13    |
-| Issues Fechadas   | 525   |
-| Progresso         | 97.6% |
+| Issues Abertas    | 3     |
+| Issues Fechadas   | 535   |
+| Progresso         | 99.4% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
