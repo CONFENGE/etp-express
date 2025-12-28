@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 524/538 (97.4%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-28 | **Progresso:** 525/538 (97.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,13 +8,13 @@
 
 | PR    | Commit    | Descricao                                            |
 | ----- | --------- | ---------------------------------------------------- |
-| #1026 | `39dc16d` | feat(design): add glassmorphism utilities (#1012)    |
+| #1027 | `1484cf3` | feat(design): glassmorphism utilities (#1012)        |
+| #1026 | `39dc16d` | feat(design): warm gray palette (#1011)              |
 | #1025 | `10e1b39` | feat(design): premium typography with Inter variable |
-| #1024 | `38dcec8` | test(e2e): add E2E tests for ETP creation            |
 
 ---
 
-## Issues Abertas (14)
+## Issues Abertas (13)
 
 ### P0 - Critico (3 issues)
 
@@ -30,20 +30,19 @@
 | ----- | ------------------------------------------------------------ |
 | #1031 | fix(backend): use circuit breaker state for Exa health check |
 
-### P2 - Melhorias (10 issues)
+### P2 - Melhorias (9 issues)
 
-| #     | Issue                                                       |
-| ----- | ----------------------------------------------------------- |
-| #1012 | feat(design): Glassmorphism Utilities para Headers e Modais |
-| #1013 | feat(design): Cards Apple-like sem Bordas Duras             |
-| #1014 | feat(design): Botoes com Touch Area 44px e Focus Glow       |
-| #1015 | feat(design): Input Fields com Focus Glow Suave             |
-| #1016 | feat(design): Tokens de Border Radius Organicos             |
-| #1017 | feat(design): Stat Cards com Icones Coloridos               |
-| #1018 | feat(design): Lista de ETPs Recentes com Hover Lift         |
-| #1019 | feat(design): Empty State com Animacoes Staggered           |
-| #1020 | feat(design): Animacoes de Entrada para Componentes         |
-| #1021 | feat(design): Skeleton Loaders com Shimmer Premium          |
+| #     | Issue                                               |
+| ----- | --------------------------------------------------- |
+| #1013 | feat(design): Cards Apple-like sem Bordas Duras     |
+| #1014 | feat(design): Botoes com Touch Area 44px            |
+| #1015 | feat(design): Input Fields com Focus Glow Suave     |
+| #1016 | feat(design): Tokens de Border Radius Organicos     |
+| #1017 | feat(design): Stat Cards com Icones Coloridos       |
+| #1018 | feat(design): Lista de ETPs Recentes com Hover Lift |
+| #1019 | feat(design): Empty State com Animacoes Staggered   |
+| #1020 | feat(design): Animacoes de Entrada para Componentes |
+| #1021 | feat(design): Skeleton Loaders com Shimmer Premium  |
 
 ---
 
@@ -69,14 +68,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 538   |
-| Issues Abertas    | 14    |
-| Issues Fechadas   | 524   |
-| Progresso         | 97.4% |
+| Issues Abertas    | 13    |
+| Issues Fechadas   | 525   |
+| Progresso         | 97.6% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
-| Frontend Tests    | 1378  |
-| Total Tests       | 3502  |
+| Frontend Tests    | 1409  |
+| Total Tests       | 3533  |
 
 ---
 
