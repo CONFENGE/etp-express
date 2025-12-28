@@ -105,6 +105,7 @@ export class EtpsService {
       status: EtpStatus.DRAFT,
       currentVersion: 1,
       completionPercentage: 0,
+      sections: [],
     });
 
     const savedEtp = await this.etpsRepository.save(etp);
