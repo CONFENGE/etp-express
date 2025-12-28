@@ -74,10 +74,11 @@ describe('WCAG 2.5.5 Touch Target Size', () => {
   });
 
   describe('Input component', () => {
-    it('should have min-h-touch', () => {
+    it('should have min-h-[44px] for WCAG 2.5.5 touch target', () => {
       render(<Input placeholder="Enter text" />);
       const input = screen.getByPlaceholderText('Enter text');
-      expect(input).toHaveClass('min-h-touch');
+      // Input uses min-h-[44px] directly instead of min-h-touch utility
+      expect(input).toHaveClass('min-h-[44px]');
     });
   });
 
