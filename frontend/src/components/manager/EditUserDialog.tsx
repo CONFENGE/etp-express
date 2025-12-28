@@ -18,9 +18,12 @@ import { DomainUser, UpdateDomainUserDto } from '@/store/managerStore';
 const editUserSchema = z.object({
   name: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name must be at most 100 characters'),
-  cargo: z.string().max(100, 'Role must be at most 100 characters').optional(),
+    .min(2, 'O nome deve ter pelo menos 2 caracteres')
+    .max(100, 'O nome deve ter no máximo 100 caracteres'),
+  cargo: z
+    .string()
+    .max(100, 'O cargo deve ter no máximo 100 caracteres')
+    .optional(),
 });
 
 type EditUserFormData = z.infer<typeof editUserSchema>;
@@ -102,9 +105,10 @@ export function EditUserDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit User</DialogTitle>
+          <DialogTitle>Editar Usuário</DialogTitle>
           <DialogDescription>
-            Update user information. Email address cannot be changed.
+            Atualize as informações do usuário. O endereço de e-mail não pode
+            ser alterado.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
@@ -121,14 +125,14 @@ export function EditUserDialog({
               id="email-readonly-hint"
               className="text-xs text-muted-foreground"
             >
-              Email cannot be changed after account creation
+              O e-mail não pode ser alterado após a criação da conta
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-name">Full Name</Label>
+            <Label htmlFor="edit-name">Nome Completo</Label>
             <Input
               id="edit-name"
-              placeholder="John Doe"
+              placeholder="João Silva"
               {...register('name')}
               aria-describedby={errors.name ? 'edit-name-error' : undefined}
             />
@@ -139,10 +143,10 @@ export function EditUserDialog({
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-cargo">Role (optional)</Label>
+            <Label htmlFor="edit-cargo">Cargo (opcional)</Label>
             <Input
               id="edit-cargo"
-              placeholder="Software Engineer"
+              placeholder="Engenheiro de Software"
               {...register('cargo')}
               aria-describedby={errors.cargo ? 'edit-cargo-error' : undefined}
             />
@@ -159,10 +163,10 @@ export function EditUserDialog({
               onClick={() => handleOpenChange(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
             </Button>
           </DialogFooter>
         </form>
