@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
+import { getApiErrorMessage } from '@/lib/api-errors';
 
 const etpSchema = z.object({
   title: z.string().min(5, 'O título deve ter no mínimo 5 caracteres'),
@@ -58,8 +59,9 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
       reset();
       onOpenChange(false);
       navigate(`/etps/${etp.id}`);
-    } catch {
-      error('Erro ao criar ETP. Tente novamente.');
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'criar ETP');
+      error(message);
     } finally {
       setIsLoading(false);
     }
