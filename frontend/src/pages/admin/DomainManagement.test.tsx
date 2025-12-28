@@ -64,9 +64,11 @@ describe('DomainManagement', () => {
     it('should render page header', () => {
       renderWithRouter(<DomainManagement />);
 
-      expect(screen.getByText('Domains')).toBeInTheDocument();
       expect(
-        screen.getByText('Manage authorized institutional domains'),
+        screen.getByRole('heading', { level: 1, name: 'Domínios' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Gerencie os domínios institucionais autorizados'),
       ).toBeInTheDocument();
     });
 
@@ -74,7 +76,7 @@ describe('DomainManagement', () => {
       renderWithRouter(<DomainManagement />);
 
       expect(
-        screen.getByRole('button', { name: /add domain/i }),
+        screen.getByRole('button', { name: /adicionar domínio/i }),
       ).toBeInTheDocument();
     });
 
@@ -118,7 +120,9 @@ describe('DomainManagement', () => {
     it('should open create dialog on Add Domain click', () => {
       renderWithRouter(<DomainManagement />);
 
-      const addButton = screen.getByRole('button', { name: /add domain/i });
+      const addButton = screen.getByRole('button', {
+        name: /adicionar domínio/i,
+      });
       fireEvent.click(addButton);
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -131,16 +135,18 @@ describe('DomainManagement', () => {
       renderWithRouter(<DomainManagement />);
 
       // Open dialog
-      const addButton = screen.getByRole('button', { name: /add domain/i });
+      const addButton = screen.getByRole('button', {
+        name: /adicionar domínio/i,
+      });
       fireEvent.click(addButton);
 
       // Fill form
-      const domainInput = screen.getByLabelText('Domain');
+      const domainInput = screen.getByLabelText('Domínio');
       await user.type(domainInput, 'newdomain.com');
 
       // Submit
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
@@ -174,7 +180,7 @@ describe('DomainManagement', () => {
       renderWithRouter(<DomainManagement />);
 
       expect(
-        screen.getByText('No domains registered yet.'),
+        screen.getByText('Nenhum domínio cadastrado ainda.'),
       ).toBeInTheDocument();
     });
   });
@@ -191,7 +197,9 @@ describe('DomainManagement', () => {
     it('should have responsive Add Domain button', () => {
       renderWithRouter(<DomainManagement />);
 
-      const addButton = screen.getByRole('button', { name: /add domain/i });
+      const addButton = screen.getByRole('button', {
+        name: /adicionar domínio/i,
+      });
       expect(addButton).toHaveClass('w-full', 'sm:w-auto');
     });
 
@@ -209,7 +217,7 @@ describe('DomainManagement', () => {
       renderWithRouter(<DomainManagement />);
 
       const h1 = screen.getByRole('heading', { level: 1 });
-      expect(h1).toHaveTextContent('Domains');
+      expect(h1).toHaveTextContent('Domínios');
     });
 
     it('should have breadcrumb navigation with proper links', () => {
@@ -227,11 +235,11 @@ describe('DomainManagement', () => {
     it('should have descriptive table headers', () => {
       renderWithRouter(<DomainManagement />);
 
-      expect(screen.getByText('Domain')).toBeInTheDocument();
-      expect(screen.getByText('Users')).toBeInTheDocument();
-      expect(screen.getByText('Manager')).toBeInTheDocument();
+      expect(screen.getByText('Domínio')).toBeInTheDocument();
+      expect(screen.getByText('Usuários')).toBeInTheDocument();
+      expect(screen.getByText('Gestor')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
-      expect(screen.getByText('Actions')).toBeInTheDocument();
+      expect(screen.getByText('Ações')).toBeInTheDocument();
     });
   });
 });
