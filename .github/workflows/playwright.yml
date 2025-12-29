@@ -25,7 +25,9 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 60
+    # PRs run chromium only (~20 min), master runs all browsers (~45 min)
+    # Adding buffer for setup, retries, and variance
+    timeout-minutes: 90
     runs-on: ubuntu-latest
 
     services:
@@ -171,8 +173,15 @@ jobs:
           timeout 30 bash -c 'until curl -sf http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
           echo "Frontend is ready!"
 
-      - name: Run Playwright tests (with auth E2E enabled)
-        run: npx playwright test --project=chromium --project=firefox --project=webkit
+      - name: Run Playwright tests (chromium only for PRs, all browsers for master)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running chromium-only tests for PR (fast feedback)"
+            npx playwright test --project=chromium
+          else
+            echo "Running full browser matrix for master merge"
+            npx playwright test --project=chromium --project=firefox --project=webkit
+          fi
         env:
           E2E_API_URL: http://localhost:3001
           # Frontend preview uses port 3000 (configured in frontend/package.json)
