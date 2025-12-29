@@ -11,7 +11,7 @@ import type {
   AIGenerationResponse, // Used in return type assertions
 } from '@/types/etp';
 
-// Mock axios for isCancel check (#603)
+// Mock axios for isCancel and isAxiosError checks (#603, #1059)
 vi.mock('axios', () => ({
   default: {
     isCancel: vi.fn((error: unknown) => {
@@ -20,11 +20,27 @@ vi.mock('axios', () => ({
         (error.name === 'CanceledError' || error.name === 'AbortError')
       );
     }),
+    isAxiosError: vi.fn((error: unknown) => {
+      return (
+        error !== null &&
+        typeof error === 'object' &&
+        'isAxiosError' in error &&
+        (error as { isAxiosError: boolean }).isAxiosError === true
+      );
+    }),
   },
   isCancel: vi.fn((error: unknown) => {
     return (
       error instanceof Error &&
       (error.name === 'CanceledError' || error.name === 'AbortError')
+    );
+  }),
+  isAxiosError: vi.fn((error: unknown) => {
+    return (
+      error !== null &&
+      typeof error === 'object' &&
+      'isAxiosError' in error &&
+      (error as { isAxiosError: boolean }).isAxiosError === true
     );
   }),
 }));
@@ -82,6 +98,7 @@ describe('etpStore', () => {
     userId: 'user-1',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
+    version: 1,
     sections: [
       {
         id: 'section-1',
@@ -451,12 +468,12 @@ describe('etpStore', () => {
 
   describe('Additional coverage tests', () => {
     it('should update ETP in array on updateETP', async () => {
-      const updatedETP = { ...mockETP, title: 'ETP Atualizado' };
-      vi.mocked(apiHelpers.put).mockResolvedValue(updatedETP);
+      const updatedETP = { ...mockETP, title: 'ETP Atualizado', version: 2 };
+      vi.mocked(apiHelpers.patch).mockResolvedValue(updatedETP);
 
       const { result } = renderHook(() => useETPStore());
 
-      // Setup: add ETP to array
+      // Setup: add ETP to array (sets currentETP with version for optimistic locking)
       act(() => {
         result.current.setCurrentETP(mockETP);
       });
@@ -469,8 +486,10 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(apiHelpers.put).toHaveBeenCalledWith('/etps/etp-1', {
+      // Should include version for optimistic locking (#1059)
+      expect(apiHelpers.patch).toHaveBeenCalledWith('/etps/etp-1', {
         title: 'ETP Atualizado',
+        version: 1,
       });
     });
 
