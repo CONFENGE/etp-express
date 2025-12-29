@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Tabs } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -18,6 +19,7 @@ import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
+import { SimilarContractsPanel } from '@/components/search/SimilarContractsPanel';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
@@ -54,6 +56,11 @@ export function ETPEditor() {
     generateSection: storeGenerateSection,
     cancelGeneration,
     dataSourceStatus,
+    // Similar contracts (#1048)
+    similarContracts,
+    similarContractsLoading,
+    fetchSimilarContracts,
+    clearSimilarContracts,
   } = useETPStore();
 
   // Demo user conversion banner (#475)
@@ -106,8 +113,26 @@ export function ETPEditor() {
       fetchETP(id);
       // Reset confetti cooldown when loading new ETP (#597)
       resetCooldown();
+      // Clear similar contracts when loading new ETP (#1048)
+      clearSimilarContracts();
     }
-  }, [id, fetchETP, resetCooldown]);
+  }, [id, fetchETP, resetCooldown, clearSimilarContracts]);
+
+  // Fetch similar contracts when ETP loads (#1048)
+  useEffect(() => {
+    if (currentETP?.description || currentETP?.title) {
+      // Use description or title as search query
+      const searchQuery = currentETP.description || currentETP.title || '';
+      if (searchQuery.length >= 10) {
+        fetchSimilarContracts(searchQuery);
+      }
+    }
+  }, [
+    currentETP?.id,
+    currentETP?.description,
+    currentETP?.title,
+    fetchSimilarContracts,
+  ]);
 
   useEffect(() => {
     if (currentETP) {
@@ -488,18 +513,23 @@ export function ETPEditor() {
               isGenerating={aiGenerating}
             />
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">
-                  Contratações Similares
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  Nenhuma contratação similar encontrada ainda.
-                </p>
-              </CardContent>
-            </Card>
+            {/* Similar contracts panel (#1048) */}
+            {similarContractsLoading ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">
+                    Contratações Similares
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-5/6" />
+                </CardContent>
+              </Card>
+            ) : (
+              <SimilarContractsPanel contracts={similarContracts} />
+            )}
           </div>
         </div>
       </div>
