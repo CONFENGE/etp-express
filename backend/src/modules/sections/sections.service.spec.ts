@@ -452,6 +452,125 @@ describe('SectionsService', () => {
         suggestions: [],
       });
     });
+
+    /**
+     * Test for unique constraint handling (#1058)
+     * Validates race condition prevention via PostgreSQL unique violation
+     */
+    it('should return existing section when PostgreSQL unique violation occurs (race condition)', async () => {
+      // Arrange - Simulate race condition: findOne returns null (no existing section),
+      // but save fails with PostgreSQL unique violation (another request created it first)
+      const existingSection = {
+        ...mockSection,
+        status: SectionStatus.GENERATED,
+        content: 'Already generated content',
+      };
+
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+      // First findOne (before save) returns null - section doesn't exist yet
+      mockSectionsRepository.findOne.mockResolvedValueOnce(null);
+      mockSectionsRepository.create.mockReturnValue({
+        ...mockSection,
+        status: SectionStatus.GENERATING,
+      });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
+
+      // Save throws PostgreSQL unique violation error (code 23505)
+      const uniqueViolationError = new Error(
+        'duplicate key value violates unique constraint "UQ_section_etp_type"',
+      );
+      (uniqueViolationError as any).code = '23505';
+      mockSectionsRepository.save.mockRejectedValueOnce(uniqueViolationError);
+
+      // Second findOne (in catch block) returns the existing section
+      mockSectionsRepository.findOne.mockResolvedValueOnce(existingSection);
+
+      // Suppress logger warning for this test
+      jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+
+      // Act
+      const result = await service.generateSection(
+        mockEtpId,
+        generateDto,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      // Assert - Should return the existing section, not throw error
+      expect(result).toEqual(existingSection);
+      expect(result.status).toBe(SectionStatus.GENERATED);
+      expect(result.content).toBe('Already generated content');
+
+      // Verify the flow: first findOne (null), save (throws), second findOne (existing)
+      expect(mockSectionsRepository.findOne).toHaveBeenCalledTimes(2);
+      expect(mockSectionsRepository.save).toHaveBeenCalledTimes(1);
+
+      // Queue should NOT be called since we returned the existing section
+      expect(mockSectionsQueue.add).not.toHaveBeenCalled();
+    });
+
+    it('should throw error when unique violation occurs but no existing section found', async () => {
+      // Arrange - Edge case: unique violation but section somehow not found
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+      mockSectionsRepository.findOne.mockResolvedValueOnce(null); // Before save
+      mockSectionsRepository.create.mockReturnValue({
+        ...mockSection,
+        status: SectionStatus.GENERATING,
+      });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
+
+      const uniqueViolationError = new Error(
+        'duplicate key value violates unique constraint',
+      );
+      (uniqueViolationError as any).code = '23505';
+      mockSectionsRepository.save.mockRejectedValueOnce(uniqueViolationError);
+      mockSectionsRepository.findOne.mockResolvedValueOnce(null); // In catch block - section not found
+
+      // Suppress logger warning for this test
+      jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+
+      // Act & Assert - Should throw the original error
+      await expect(
+        service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow('duplicate key value violates unique constraint');
+    });
+
+    it('should throw non-unique-violation errors normally', async () => {
+      // Arrange
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+      mockSectionsRepository.findOne.mockResolvedValue(null);
+      mockSectionsRepository.create.mockReturnValue({
+        ...mockSection,
+        status: SectionStatus.GENERATING,
+      });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
+
+      // Different error (not unique violation)
+      const connectionError = new Error('Connection refused');
+      (connectionError as any).code = 'ECONNREFUSED';
+      mockSectionsRepository.save.mockRejectedValueOnce(connectionError);
+
+      // Act & Assert
+      await expect(
+        service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow('Connection refused');
+    });
   });
 
   /**
