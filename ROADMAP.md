@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 550/568 (96.8%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 551/568 (97.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | PR    | Commit    | Descricao                                                                  |
 | ----- | --------- | -------------------------------------------------------------------------- |
+| #1084 | `12bd78f` | feat(editor): integrate SimilarContractsPanel into ETPEditor (#1048)       |
 | #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                       |
 | #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)              |
 | #1080 | `ec7c0ec` | fix(gov-api): implement in-memory cache fallback when Redis fails (#1056)  |
@@ -16,7 +17,7 @@
 
 ---
 
-## Issues Abertas (18)
+## Issues Abertas (17)
 
 ### P0 - Critico (1 issue)
 
@@ -24,11 +25,10 @@
 | ----- | ------------------------------------------------------------------- |
 | #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
 
-### P1 - Alta (12 issues)
+### P1 - Alta (11 issues)
 
 | #     | Issue                                                                 |
 | ----- | --------------------------------------------------------------------- |
-| #1048 | feat(editor): Integrar SimilarContractsPanel ao ETPEditor             |
 | #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled          |
 | #1062 | [Gov-API] Implementar carregamento automatico de dados SINAPI/SICRO   |
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico               |
