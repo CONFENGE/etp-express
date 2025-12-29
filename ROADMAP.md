@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 549/568 (96.7%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 550/568 (96.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,21 +8,20 @@
 
 | PR    | Commit    | Descricao                                                                  |
 | ----- | --------- | -------------------------------------------------------------------------- |
+| #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                       |
 | #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)              |
 | #1080 | `ec7c0ec` | fix(gov-api): implement in-memory cache fallback when Redis fails (#1056)  |
 | #1078 | `a71b9ca` | fix(etps): add ACID transaction to updateCompletionPercentage (#1057)      |
 | #1077 | `fcd7db7` | fix(sections): add unique constraint to prevent duplicate sections (#1058) |
-| #1079 | `c3568ac` | fix(polling): increase timeout and add graceful degradation (#1060)        |
 
 ---
 
-## Issues Abertas (19)
+## Issues Abertas (18)
 
-### P0 - Critico (2 issues)
+### P0 - Critico (1 issue)
 
 | #     | Issue                                                               |
 | ----- | ------------------------------------------------------------------- |
-| #1054 | [Gov-API] Implementar validacao de schema Zod nas respostas         |
 | #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
 
 ### P1 - Alta (12 issues)
