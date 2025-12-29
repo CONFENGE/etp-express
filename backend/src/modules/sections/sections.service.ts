@@ -210,7 +210,24 @@ export class SectionsService {
       isRequired: this.isRequiredSection(generateDto.type),
     });
 
-    const savedSection = await this.sectionsRepository.save(section);
+    let savedSection: EtpSection;
+    try {
+      savedSection = await this.sectionsRepository.save(section);
+    } catch (error) {
+      // Handle PostgreSQL unique violation (race condition)
+      if ((error as { code?: string }).code === '23505') {
+        const existing = await this.sectionsRepository.findOne({
+          where: { etpId, type: generateDto.type },
+        });
+        if (existing) {
+          this.logger.warn(
+            `Section ${generateDto.type} already exists for ETP ${etpId}, returning existing`,
+          );
+          return existing;
+        }
+      }
+      throw error;
+    }
 
     // Queue generation job in BullMQ (async)
     const job = await this.sectionsQueue.add(
@@ -378,7 +395,34 @@ export class SectionsService {
         metadata: { jobId, startedAt: new Date().toISOString() },
       });
 
-      const savedSection = await this.sectionsRepository.save(section);
+      let savedSection: EtpSection;
+      try {
+        savedSection = await this.sectionsRepository.save(section);
+      } catch (error) {
+        // Handle PostgreSQL unique violation (race condition)
+        if ((error as { code?: string }).code === '23505') {
+          const existing = await this.sectionsRepository.findOne({
+            where: { etpId, type: generateDto.type },
+          });
+          if (existing) {
+            this.logger.warn(
+              `Section ${generateDto.type} already exists for ETP ${etpId}, returning existing via SSE`,
+            );
+            // Complete the stream with existing section
+            progressService.emitProgress(jobId, {
+              phase: 'complete',
+              step: 5,
+              totalSteps: 5,
+              message: 'Seção já existe, retornando existente.',
+              percentage: 100,
+              timestamp: Date.now(),
+            });
+            progressService.completeStream(jobId);
+            return;
+          }
+        }
+        throw error;
+      }
 
       // Phase 2: Generate content with progress callbacks
       const generationResult =
