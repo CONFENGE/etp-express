@@ -185,10 +185,13 @@ export class GovApiClient {
     this.source = config.source;
     this.logger = new Logger(`GovApiClient:${config.source.toUpperCase()}`);
 
-    // Initialize Axios instance
+    // Initialize Axios instance with payload size limits to prevent memory exhaustion
     this.axios = axios.create({
       baseURL: config.baseUrl,
       timeout: config.timeout || 30000,
+      maxContentLength: 10 * 1024 * 1024, // 10MB max response size
+      maxBodyLength: 10 * 1024 * 1024, // 10MB max request body size
+      maxRedirects: 5,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
