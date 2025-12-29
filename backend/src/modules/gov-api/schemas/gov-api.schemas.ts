@@ -18,15 +18,22 @@ import { z } from 'zod';
  * Schema for ComprasGov licitacao raw response
  */
 export const ComprasGovLicitacaoRawSchema = z.object({
-  identificador: z.number(),
-  numero_aviso: z.string(),
+  identificador: z.string(),
+  numero_aviso: z.number(),
   modalidade: z.number(),
   uasg: z.number(),
-  objeto: z.string().optional(),
-  situacao: z.string().optional(),
-  data_publicacao: z.string().optional(),
+  objeto: z.string(),
+  situacao_aviso: z.string(),
+  data_publicacao: z.string(),
+  data_abertura_proposta: z.string().optional(),
+  data_entrega_edital: z.string().optional(),
   data_entrega_proposta: z.string().optional(),
+  modalidade_descricao: z.string().optional(),
   valor_estimado: z.number().optional(),
+  valor_estimado_total: z.number().optional(),
+  uasg_nome: z.string().optional(),
+  uf_uasg: z.string().optional(),
+  pregao_eletronico: z.boolean().optional(),
   _links: z.record(z.any()).optional(),
 });
 

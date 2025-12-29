@@ -315,6 +315,7 @@ export class PncpService implements IGovApiService {
         paginasRestantes: 0,
         totalRegistros: 0,
         totalPaginas: 0,
+        empty: true,
       };
     }
 
@@ -326,6 +327,7 @@ export class PncpService implements IGovApiService {
       totalPaginas: validation.data.totalPaginas,
       paginasRestantes:
         validation.data.totalPaginas - validation.data.numeroPagina,
+      empty: validation.data.data.length === 0,
     };
     await this.cache.set(this.source, cacheKey, response);
 
@@ -368,13 +370,23 @@ export class PncpService implements IGovApiService {
       return {
         data: [],
         numeroPagina: 1,
-        quantidadeRegistrosPagina: 0,
+        paginasRestantes: 0,
         totalRegistros: 0,
         totalPaginas: 0,
+        empty: true,
       };
     }
 
-    const response = validation.data as PncpPaginatedResponse<PncpContrato>;
+    // Map Zod schema response to internal type
+    const response: PncpPaginatedResponse<PncpContrato> = {
+      data: validation.data.data as unknown as PncpContrato[],
+      numeroPagina: validation.data.numeroPagina,
+      totalRegistros: validation.data.totalRegistros,
+      totalPaginas: validation.data.totalPaginas,
+      paginasRestantes:
+        validation.data.totalPaginas - validation.data.numeroPagina,
+      empty: validation.data.data.length === 0,
+    };
     await this.cache.set(this.source, cacheKey, response);
 
     return response;
@@ -414,13 +426,23 @@ export class PncpService implements IGovApiService {
       return {
         data: [],
         numeroPagina: 1,
-        quantidadeRegistrosPagina: 0,
+        paginasRestantes: 0,
         totalRegistros: 0,
         totalPaginas: 0,
+        empty: true,
       };
     }
 
-    const response = validation.data as PncpPaginatedResponse<PncpAta>;
+    // Map Zod schema response to internal type
+    const response: PncpPaginatedResponse<PncpAta> = {
+      data: validation.data.data as unknown as PncpAta[],
+      numeroPagina: validation.data.numeroPagina,
+      totalRegistros: validation.data.totalRegistros,
+      totalPaginas: validation.data.totalPaginas,
+      paginasRestantes:
+        validation.data.totalPaginas - validation.data.numeroPagina,
+      empty: validation.data.data.length === 0,
+    };
     await this.cache.set(this.source, cacheKey, response);
 
     return response;
