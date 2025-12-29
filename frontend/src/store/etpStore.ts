@@ -10,6 +10,7 @@ import {
   GenerationStatus,
   AsyncSection,
   DataSourceStatusInfo,
+  SimilarContract,
 } from '@/types/etp';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
@@ -38,6 +39,10 @@ interface ETFState {
 
   // Data source status for government APIs (#756)
   dataSourceStatus: DataSourceStatusInfo | null;
+
+  // Similar contracts state (#1048)
+  similarContracts: SimilarContract[];
+  similarContractsLoading: boolean;
 
   // ETP Operations
   fetchETPs: () => Promise<void>;
@@ -75,6 +80,10 @@ interface ETFState {
   fetchReferences: (etpId: string) => Promise<void>;
   addReference: (reference: Reference) => void;
 
+  // Similar contracts (#1048)
+  fetchSimilarContracts: (query: string) => Promise<void>;
+  clearSimilarContracts: () => void;
+
   // Utility
   clearError: () => void;
   resetStore: () => void;
@@ -97,6 +106,9 @@ const initialState = {
   generationJobId: null as string | null,
   // Data source status for government APIs (#756)
   dataSourceStatus: null as DataSourceStatusInfo | null,
+  // Similar contracts state (#1048)
+  similarContracts: [] as SimilarContract[],
+  similarContractsLoading: false,
 };
 
 /**
@@ -570,6 +582,67 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     set((state) => ({
       references: [...state.references, reference],
     }));
+  },
+
+  /**
+   * Fetch similar contracts based on query text (#1048)
+   * Uses the /search/similar-contracts endpoint with Exa AI
+   */
+  fetchSimilarContracts: async (query: string) => {
+    if (!query || query.trim().length < 10) {
+      // Don't search for very short queries
+      return;
+    }
+
+    set({ similarContractsLoading: true });
+
+    try {
+      const response = await apiHelpers.get<{
+        data: Array<{
+          id: string;
+          title: string;
+          description?: string;
+          similarity?: number;
+          year?: number;
+          value?: number;
+          organ?: string;
+          orgao?: string;
+          objeto?: string;
+          valorTotal?: number;
+          anoContratacao?: number;
+        }>;
+      }>('/search/similar-contracts', {
+        params: { q: query },
+      });
+
+      // Map backend response to SimilarContract type
+      const contracts: SimilarContract[] = (response.data || []).map(
+        (item) => ({
+          id: item.id,
+          title: item.title || item.objeto || 'Contratação sem título',
+          description: item.description || item.objeto || '',
+          similarity: item.similarity || 0.8,
+          year: item.year || item.anoContratacao || new Date().getFullYear(),
+          value: item.value || item.valorTotal,
+          organ: item.organ || item.orgao,
+        }),
+      );
+
+      set({
+        similarContracts: contracts,
+        similarContractsLoading: false,
+      });
+    } catch (error) {
+      logger.error('Error fetching similar contracts', error);
+      set({
+        similarContracts: [],
+        similarContractsLoading: false,
+      });
+    }
+  },
+
+  clearSimilarContracts: () => {
+    set({ similarContracts: [], similarContractsLoading: false });
   },
 
   clearError: () => set({ error: null }),

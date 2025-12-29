@@ -50,6 +50,11 @@ vi.mock('@/store/etpStore', async () => {
         generateSection: vi.fn(),
         cancelGeneration: vi.fn(),
         dataSourceStatus: null,
+        // Similar contracts (#1048)
+        similarContracts: [],
+        similarContractsLoading: false,
+        fetchSimilarContracts: vi.fn(),
+        clearSimilarContracts: vi.fn(),
       })),
       {
         getState: () => ({
@@ -243,6 +248,19 @@ vi.mock('@/components/etp/ETPEditorSidebar', () => ({
       <button onClick={onGenerateAll} disabled={isGenerating}>
         {isGenerating ? 'Gerando...' : 'Gerar Todas Seções'}
       </button>
+    </div>
+  ),
+}));
+
+// Mock SimilarContractsPanel (#1048)
+vi.mock('@/components/search/SimilarContractsPanel', () => ({
+  SimilarContractsPanel: ({
+    contracts,
+  }: {
+    contracts: Array<{ id: string; title: string }>;
+  }) => (
+    <div data-testid="similar-contracts-panel">
+      {contracts.length} contratações similares
     </div>
   ),
 }));
