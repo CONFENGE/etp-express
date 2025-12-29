@@ -172,15 +172,15 @@ async function seedAdmin(): Promise<void> {
     // Create Manager User (same org/domain as admin)
     const managerResult = await createManagerUser(
       userRepository,
-      adminResult.organizationId,
-      adminResult.authorizedDomainId,
+      adminResult.organizationId!,
+      adminResult.authorizedDomainId!,
     );
 
     // Create Regular User (same org/domain as admin)
     const userResult = await createRegularUser(
       userRepository,
-      adminResult.organizationId,
-      adminResult.authorizedDomainId,
+      adminResult.organizationId!,
+      adminResult.authorizedDomainId!,
     );
 
     // Create Demo Organization and User
