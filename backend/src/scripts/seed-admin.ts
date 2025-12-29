@@ -25,23 +25,36 @@ config();
 
 const BCRYPT_ROUNDS = 10;
 
+// Support environment variable override for CI/E2E testing
+// CI provides: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME
+const ciAdminEmail = process.env.ADMIN_EMAIL;
+const ciAdminPassword = process.env.ADMIN_PASSWORD;
+const ciAdminName = process.env.ADMIN_NAME;
+const isCIMode = !!(ciAdminEmail && ciAdminPassword);
+
+if (isCIMode) {
+  console.log('CI Mode detected: Using environment variables for admin user');
+}
+
 const ADMIN_DATA = {
   organization: {
-    name: 'CONFENGE Administracao',
-    cnpj: '00.000.000/0001-00',
-    domainWhitelist: ['confenge.com.br'],
+    name: isCIMode ? 'CI Test Organization' : 'CONFENGE Administracao',
+    cnpj: isCIMode ? '00.000.000/0003-00' : '00.000.000/0001-00',
+    domainWhitelist: isCIMode ? ['confenge.com.br'] : ['confenge.com.br'],
     isActive: true,
   },
   user: {
-    email: 'tiago@confenge.com.br',
-    password: 'Crj70011!',
-    name: 'Tiago Sasaki',
+    email: ciAdminEmail || 'tiago@confenge.com.br',
+    password: ciAdminPassword || 'Crj70011!',
+    name: ciAdminName || 'Tiago Sasaki',
     role: UserRole.SYSTEM_ADMIN,
     mustChangePassword: false,
   },
   authorizedDomain: {
     domain: 'confenge.com.br',
-    institutionName: 'CONFENGE Administracao',
+    institutionName: isCIMode
+      ? 'CI Test Organization'
+      : 'CONFENGE Administracao',
     maxUsers: 100,
     isActive: true,
   },
