@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 551/568 (97.0%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 551/569 (96.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,16 +8,16 @@
 
 | PR    | Commit    | Descricao                                                                  |
 | ----- | --------- | -------------------------------------------------------------------------- |
+| #1086 | `4d59021` | fix(ci): Playwright E2E timeout - chromium-only for PRs, 2 workers (#1085) |
 | #1084 | `12bd78f` | feat(editor): integrate SimilarContractsPanel into ETPEditor (#1048)       |
 | #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                       |
 | #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)              |
 | #1080 | `ec7c0ec` | fix(gov-api): implement in-memory cache fallback when Redis fails (#1056)  |
 | #1078 | `a71b9ca` | fix(etps): add ACID transaction to updateCompletionPercentage (#1057)      |
-| #1077 | `fcd7db7` | fix(sections): add unique constraint to prevent duplicate sections (#1058) |
 
 ---
 
-## Issues Abertas (17)
+## Issues Abertas (18)
 
 ### P0 - Critico (1 issue)
 
@@ -25,10 +25,11 @@
 | ----- | ------------------------------------------------------------------- |
 | #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
 
-### P1 - Alta (11 issues)
+### P1 - Alta (12 issues)
 
 | #     | Issue                                                                 |
 | ----- | --------------------------------------------------------------------- |
+| #1088 | [E2E] Fix 92 Playwright test failures in CI                           |
 | #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled          |
 | #1062 | [Gov-API] Implementar carregamento automatico de dados SINAPI/SICRO   |
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico               |
@@ -79,10 +80,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 568   |
-| Issues Abertas    | 19    |
-| Issues Fechadas   | 549   |
-| Progresso         | 96.7% |
+| Issues Totais     | 569   |
+| Issues Abertas    | 18    |
+| Issues Fechadas   | 551   |
+| Progresso         | 96.8% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2180  |
