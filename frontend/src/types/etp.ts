@@ -8,14 +8,13 @@ export interface ETP {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  /** Optimistic locking version (Issue #1059). Incremented on each update. */
-  version: number;
-  sections: Section[];
   /**
    * Optimistic locking version for concurrent update detection (Issue #1059).
-   * Must be sent in PATCH requests; if mismatch, API returns 409 Conflict.
+   * Incremented on each update. Must be sent in PATCH requests;
+   * if mismatch, API returns 409 Conflict.
    */
   version: number;
+  sections: Section[];
 }
 
 export interface Section {
