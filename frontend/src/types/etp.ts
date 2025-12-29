@@ -8,6 +8,12 @@ export interface ETP {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Optimistic locking version for concurrent update detection (Issue #1059).
+   * Incremented on each update. Must be sent in PATCH requests;
+   * if mismatch, API returns 409 Conflict.
+   */
+  version: number;
   sections: Section[];
 }
 

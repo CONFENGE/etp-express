@@ -58,6 +58,7 @@ describe('SectionsService', () => {
     metadata: {},
     currentVersion: 1,
     completionPercentage: 0,
+    version: 1,
     createdById: mockUserId,
     createdBy: mockUser,
     organizationId: mockOrganizationId,

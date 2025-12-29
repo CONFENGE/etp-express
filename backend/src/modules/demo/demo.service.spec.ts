@@ -66,6 +66,7 @@ describe('DemoService', () => {
     organization: mockDemoOrganization,
     currentVersion: 1,
     completionPercentage: 0,
+    version: 1,
     createdBy: mockDemoUser,
     createdById: 'demo-user-id',
     createdAt: new Date('2024-01-01'),

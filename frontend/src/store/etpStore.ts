@@ -156,16 +156,42 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     }
   },
 
+  /**
+   * Updates an ETP with optimistic locking support (Issue #1059).
+   * Sends the current version to prevent silent data loss from concurrent updates.
+   * If version conflict (409), displays user-friendly error message.
+   */
   updateETP: async (id: string, data: Partial<ETP>) => {
     set({ isLoading: true, error: null });
     try {
-      const updated = await apiHelpers.put<ETP>(`/etps/${id}`, data);
+      // Include version from current ETP state for optimistic locking (#1059)
+      const state = useETPStore.getState();
+      const currentVersion =
+        state.currentETP?.id === id ? state.currentETP.version : undefined;
+      const dataWithVersion =
+        currentVersion !== undefined
+          ? { ...data, version: currentVersion }
+          : data;
+
+      const updated = await apiHelpers.patch<ETP>(
+        `/etps/${id}`,
+        dataWithVersion,
+      );
       set((state) => ({
         etps: state.etps.map((etp) => (etp.id === id ? updated : etp)),
         currentETP: state.currentETP?.id === id ? updated : state.currentETP,
         isLoading: false,
       }));
     } catch (error) {
+      // Handle version conflict specially (Issue #1059)
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        set({
+          error:
+            'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
+          isLoading: false,
+        });
+        throw error;
+      }
       set({
         error: getContextualErrorMessage('atualizar', 'o ETP', error),
         isLoading: false,

@@ -3,6 +3,7 @@ import {
   NotFoundException,
   Logger,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
@@ -463,12 +464,18 @@ export class EtpsService {
    * can modify the document. All fields in updateEtpDto are merged into
    * the existing entity.
    *
+   * Optimistic Locking (Issue #1059):
+   * If version is provided in updateEtpDto, validates that it matches
+   * the current ETP version. If mismatch, throws ConflictException (409).
+   * This prevents silent data loss from concurrent updates.
+   *
    * @param id - ETP unique identifier
-   * @param updateEtpDto - Fields to update (objeto, metadata, status, etc.)
+   * @param updateEtpDto - Fields to update (objeto, metadata, status, version, etc.)
    * @param userId - Current user ID for authorization check
-   * @returns Updated ETP entity
+   * @returns Updated ETP entity with incremented version
    * @throws {NotFoundException} If ETP not found
    * @throws {ForbiddenException} If user doesn't own the ETP
+   * @throws {ConflictException} If version mismatch (concurrent update detected)
    */
   async update(
     id: string,
@@ -478,10 +485,31 @@ export class EtpsService {
   ): Promise<Etp> {
     const etp = await this.findOneMinimal(id, organizationId, userId);
 
-    Object.assign(etp, updateEtpDto);
+    // Optimistic locking: validate version if provided (Issue #1059)
+    if (
+      updateEtpDto.version !== undefined &&
+      updateEtpDto.version !== etp.version
+    ) {
+      this.logger.warn(
+        `Version conflict detected for ETP ${id}: expected ${updateEtpDto.version}, current ${etp.version}`,
+      );
+      throw new ConflictException({
+        message:
+          'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
+        code: 'VERSION_CONFLICT',
+        currentVersion: etp.version,
+        expectedVersion: updateEtpDto.version,
+      });
+    }
+
+    // Remove version from DTO to avoid conflicts with TypeORM auto-increment
+    const { version: _version, ...updateData } = updateEtpDto;
+    Object.assign(etp, updateData);
 
     const updatedEtp = await this.etpsRepository.save(etp);
-    this.logger.log(`ETP updated: ${id} by user ${userId}`);
+    this.logger.log(
+      `ETP updated: ${id} by user ${userId} (version ${updatedEtp.version})`,
+    );
 
     return updatedEtp;
   }
@@ -656,20 +684,46 @@ export class EtpsService {
    * Use ONLY when ETP has been pre-validated by ResourceOwnershipGuard.
    * This method skips tenancy and ownership checks.
    *
+   * Optimistic Locking (Issue #1059):
+   * If version is provided in updateEtpDto, validates that it matches
+   * the current ETP version. If mismatch, throws ConflictException (409).
+   *
    * @param etp - Pre-validated ETP entity
    * @param updateEtpDto - Fields to update
    * @param userId - User ID for audit logging
-   * @returns Updated ETP entity
+   * @returns Updated ETP entity with incremented version
+   * @throws {ConflictException} If version mismatch (concurrent update detected)
    */
   async updateDirect(
     etp: Etp,
     updateEtpDto: UpdateEtpDto,
     userId: string,
   ): Promise<Etp> {
-    Object.assign(etp, updateEtpDto);
+    // Optimistic locking: validate version if provided (Issue #1059)
+    if (
+      updateEtpDto.version !== undefined &&
+      updateEtpDto.version !== etp.version
+    ) {
+      this.logger.warn(
+        `Version conflict detected for ETP ${etp.id}: expected ${updateEtpDto.version}, current ${etp.version}`,
+      );
+      throw new ConflictException({
+        message:
+          'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
+        code: 'VERSION_CONFLICT',
+        currentVersion: etp.version,
+        expectedVersion: updateEtpDto.version,
+      });
+    }
+
+    // Remove version from DTO to avoid conflicts with TypeORM auto-increment
+    const { version: _version, ...updateData } = updateEtpDto;
+    Object.assign(etp, updateData);
 
     const updatedEtp = await this.etpsRepository.save(etp);
-    this.logger.log(`ETP updated: ${etp.id} by user ${userId}`);
+    this.logger.log(
+      `ETP updated: ${etp.id} by user ${userId} (version ${updatedEtp.version})`,
+    );
 
     return updatedEtp;
   }
