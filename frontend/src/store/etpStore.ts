@@ -195,7 +195,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   setCurrentETP: (etp: ETP | null) => set({ currentETP: etp }),
 
   updateSection: async (
-    etpId: string,
+    _etpId: string,
     sectionId: string,
     data: Partial<Section>,
   ) => {
