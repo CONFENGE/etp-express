@@ -364,13 +364,16 @@ describe('ComprasGovService', () => {
       expect(result.total).toBe(0);
     });
 
-    it('should handle API response without _embedded', async () => {
-      // Some endpoints return array directly
+    it('should handle API response without _embedded (validation rejects unexpected format)', async () => {
+      // With Zod validation (#1054), unexpected formats are rejected
+      // This returns empty result because array format doesn't match schema
       mockClient.get.mockResolvedValue([mockLicitacao]);
 
       const result = await service.search('software');
 
-      expect(result.data).toHaveLength(1);
+      // Validation fails for unexpected format, returns empty data
+      expect(result.data).toHaveLength(0);
+      expect(result.status).toBe('SERVICE_UNAVAILABLE');
     });
   });
 
