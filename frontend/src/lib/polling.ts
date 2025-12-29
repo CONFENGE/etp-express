@@ -2,6 +2,7 @@
  * Polling utilities for async job status tracking
  * @see #186 - BullMQ async processing
  * @see #222 - Frontend async UX
+ * @see #1060 - Increase timeout and graceful degradation
  */
 
 import { apiHelpers } from './api';
@@ -18,19 +19,28 @@ export interface PollResult {
 
 /**
  * Polling configuration
+ * @see #1060 - Increased timeout from 3 to 5 minutes
  */
 const POLL_INTERVAL_MS = 2000; // Poll every 2 seconds
-const MAX_POLL_ATTEMPTS = 90; // Max 3 minutes (90 * 2s = 180s)
+const MAX_POLL_ATTEMPTS = 150; // Max 5 minutes (150 * 2s = 300s)
+const MAX_NETWORK_RETRIES = 3; // Max retries for transient network errors
+const INITIAL_BACKOFF_MS = 1000; // Initial backoff for network retries (1s)
 
 /**
  * Error thrown when polling times out
+ * @see #1060 - Graceful degradation with helpful message
  */
 export class PollingTimeoutError extends Error {
+  public readonly jobId: string;
+
   constructor(jobId: string) {
     super(
-      `Tempo limite excedido: a geração do job ${jobId} demorou mais que o esperado`,
+      `Tempo limite de acompanhamento excedido para o job ${jobId}. ` +
+        `O processamento pode ainda estar em andamento. ` +
+        `Aguarde alguns minutos e atualize a página para verificar o resultado.`,
     );
     this.name = 'PollingTimeoutError';
+    this.jobId = jobId;
   }
 }
 
@@ -53,6 +63,34 @@ export class JobFailedError extends Error {
     super(reason || `Job ${jobId} falhou durante processamento`);
     this.name = 'JobFailedError';
   }
+}
+
+/**
+ * Check if error is a transient network error that can be retried
+ * @see #1060 - Retry transient network errors
+ */
+function isTransientNetworkError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  const message = error.message.toLowerCase();
+
+  // Network connectivity issues
+  if (message.includes('network') || message.includes('fetch')) return true;
+
+  // Server overload / temporary errors
+  if (message.includes('503') || message.includes('service unavailable'))
+    return true;
+  if (message.includes('502') || message.includes('bad gateway')) return true;
+  if (message.includes('504') || message.includes('gateway timeout'))
+    return true;
+
+  // Connection issues
+  if (message.includes('timeout') || message.includes('econnreset'))
+    return true;
+  if (message.includes('econnrefused') || message.includes('enotfound'))
+    return true;
+
+  return false;
 }
 
 /**
@@ -94,6 +132,7 @@ export async function pollJobStatus(
   const signal = options?.signal;
 
   let attempts = 0;
+  let consecutiveNetworkErrors = 0;
 
   while (attempts < maxAttempts) {
     // Check if aborted before each poll (#611)
@@ -105,6 +144,9 @@ export async function pollJobStatus(
       const response = await apiHelpers.get<{ data: JobStatusData }>(
         `/sections/jobs/${jobId}`,
       );
+
+      // Reset network error counter on successful request (#1060)
+      consecutiveNetworkErrors = 0;
 
       // Check if aborted after API call (#611)
       if (signal?.aborted) {
@@ -164,7 +206,29 @@ export async function pollJobStatus(
         throw new PollingAbortedError(jobId);
       }
 
-      // Handle API errors (404, 500, etc.)
+      // Handle transient network errors with exponential backoff (#1060)
+      if (isTransientNetworkError(err)) {
+        consecutiveNetworkErrors++;
+
+        if (consecutiveNetworkErrors <= MAX_NETWORK_RETRIES) {
+          // Exponential backoff: 1s, 2s, 4s
+          const backoffMs =
+            INITIAL_BACKOFF_MS * Math.pow(2, consecutiveNetworkErrors - 1);
+          console.warn(
+            `[Polling] Network error (attempt ${consecutiveNetworkErrors}/${MAX_NETWORK_RETRIES}), ` +
+              `retrying in ${backoffMs}ms: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          );
+          await sleepWithAbort(backoffMs, signal);
+          // Don't increment attempts for network retries - they shouldn't count against max
+          continue;
+        }
+        // Max network retries exceeded, fall through to throw
+        console.error(
+          `[Polling] Max network retries (${MAX_NETWORK_RETRIES}) exceeded`,
+        );
+      }
+
+      // Handle non-recoverable API errors (404, 500, etc.)
       const message =
         err instanceof Error ? err.message : 'Erro ao verificar status do job';
       throw new JobFailedError(jobId, message);
