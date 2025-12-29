@@ -195,16 +195,20 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   setCurrentETP: (etp: ETP | null) => set({ currentETP: etp }),
 
   updateSection: async (
-    etpId: string,
+    _etpId: string,
     sectionId: string,
     data: Partial<Section>,
   ) => {
     set({ isLoading: true, error: null });
     try {
-      const updated = await apiHelpers.put<Section>(
-        `/etps/${etpId}/sections/${sectionId}`,
+      // Use PATCH /sections/:id endpoint (not PUT /etps/:id/sections/:id)
+      // Backend sections.controller.ts line 328 - PATCH /sections/:id
+      const response = await apiHelpers.patch<{ data: Section }>(
+        `/sections/${sectionId}`,
         data,
       );
+      // Backend wraps response in { data: section, disclaimer: string }
+      const updated = response.data;
 
       set((state) => {
         if (!state.currentETP) return state;
