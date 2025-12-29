@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 551/569 (96.8%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 553/570 (97.0%) | **Deploy:** LIVE
 
 ---
 
@@ -17,13 +17,7 @@
 
 ---
 
-## Issues Abertas (18)
-
-### P0 - Critico (1 issue)
-
-| #     | Issue                                                               |
-| ----- | ------------------------------------------------------------------- |
-| #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
+## Issues Abertas (17)
 
 ### P1 - Alta (12 issues)
 
@@ -80,10 +74,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 569   |
-| Issues Abertas    | 18    |
-| Issues Fechadas   | 551   |
-| Progresso         | 96.8% |
+| Issues Totais     | 570   |
+| Issues Abertas    | 17    |
+| Issues Fechadas   | 553   |
+| Progresso         | 97.0% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2180  |
