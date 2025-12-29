@@ -126,13 +126,19 @@ jobs:
         working-directory: backend
         run: npm run migration:run
 
-      - name: Seed test admin user
+      - name: Seed test users
         working-directory: backend
         run: npm run seed:admin
         env:
           ADMIN_EMAIL: admin@confenge.com.br
           ADMIN_PASSWORD: Admin@123
           ADMIN_NAME: Admin Test
+          MANAGER_EMAIL: manager@confenge.com.br
+          MANAGER_PASSWORD: Manager@123
+          MANAGER_NAME: Manager Test
+          USER_EMAIL: user@confenge.com.br
+          USER_PASSWORD: User@123
+          USER_NAME: User Test
 
       - name: Start backend server
         working-directory: backend
@@ -188,6 +194,14 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
           E2E_ADMIN_EMAIL: admin@confenge.com.br
           E2E_ADMIN_PASSWORD: Admin@123
+          E2E_SYSTEM_ADMIN_EMAIL: admin@confenge.com.br
+          E2E_SYSTEM_ADMIN_PASSWORD: Admin@123
+          E2E_MANAGER_EMAIL: manager@confenge.com.br
+          E2E_MANAGER_PASSWORD: Manager@123
+          E2E_USER_EMAIL: user@confenge.com.br
+          E2E_USER_PASSWORD: User@123
+          E2E_DEMO_EMAIL: demoetp@confenge.com.br
+          E2E_DEMO_PASSWORD: teste2026
 
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
