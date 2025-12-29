@@ -1,17 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-28 | **Progresso:** 539/568 (94.9%) | **Deploy:** LIVE
-
----
-
-## PRs Pendentes Review
-
-| PR    | Issue | Descricao                                                         |
-| ----- | ----- | ----------------------------------------------------------------- |
-| #1050 | #1042 | fix(ci): Playwright CI PostgreSQL health check                    |
-| #1051 | #1046 | fix(editor): Use PATCH /sections/:id endpoint for saving sections |
-| #1052 | #1049 | fix(ui): Redesign WarningBanner to follow design system           |
-| #1053 | #1043 | docs(readme): Update E2E section from Puppeteer to Playwright     |
+**Atualizado:** 2025-12-28 | **Progresso:** 543/568 (95.6%) | **Deploy:** LIVE
 
 ---
 
@@ -19,13 +8,15 @@
 
 | PR    | Commit    | Descricao                                                                   |
 | ----- | --------- | --------------------------------------------------------------------------- |
+| #1053 | `e937c29` | docs(readme): Update E2E section from Puppeteer to Playwright (#1043)       |
+| #1052 | `84f48ab` | fix(ui): Redesign WarningBanner to follow design system (#1049)             |
+| #1051 | `c8104dc` | fix(editor): Use PATCH /sections/:id endpoint (#1046)                       |
+| #1050 | `cdcc939` | fix(ci): Playwright CI PostgreSQL health check (#1042)                      |
 | #1041 | `909c334` | feat(design): premium animations and skeleton loaders (#1019, #1020, #1021) |
-| #1027 | `1484cf3` | feat(design): glassmorphism utilities (#1012)                               |
-| #1026 | `39dc16d` | feat(design): warm gray palette (#1011)                                     |
 
 ---
 
-## Issues Abertas (29)
+## Issues Abertas (25)
 
 ### P0 - Critico (8 issues)
 
@@ -72,15 +63,6 @@
 | ----- | ---------------------------------------------- |
 | #1045 | docs(readme): Update coverage badges and dates |
 
-### Em PR (Aguardando Review)
-
-| #     | PR    | Issue                                                               |
-| ----- | ----- | ------------------------------------------------------------------- |
-| #1042 | #1050 | fix(ci): Playwright CI failing with PostgreSQL health check         |
-| #1046 | #1051 | fix(editor): Erro ao salvar secao - frontend usa endpoint incorreto |
-| #1049 | #1052 | fix(ui): Redesenhar WarningBanner para seguir design system         |
-| #1043 | #1053 | docs(readme): Update E2E section from Puppeteer to Playwright       |
-
 ---
 
 ## Milestones (100% Complete)
@@ -105,10 +87,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 568   |
-| Issues Abertas    | 29    |
-| PRs Pendentes     | 4     |
-| Issues Fechadas   | 539   |
-| Progresso         | 94.9% |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 543   |
+| Progresso         | 95.6% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
