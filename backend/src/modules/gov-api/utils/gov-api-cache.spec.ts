@@ -15,7 +15,13 @@ jest.mock('ioredis', () => {
   }));
 });
 
+// Mock Sentry
+jest.mock('@sentry/nestjs', () => ({
+  captureMessage: jest.fn(),
+}));
+
 import Redis from 'ioredis';
+import * as Sentry from '@sentry/nestjs';
 const MockedRedis = Redis as jest.MockedClass<typeof Redis>;
 
 describe('GovApiCache', () => {
@@ -309,6 +315,12 @@ describe('GovApiCache', () => {
 
       expect(stats.hitRate).toBe(0);
     });
+
+    it('should include fallbackHits in stats', () => {
+      const stats = cache.getStats('pncp');
+
+      expect(stats.fallbackHits).toBe(0);
+    });
   });
 
   describe('getAllStats()', () => {
@@ -430,6 +442,239 @@ describe('GovApiCache', () => {
       // Case-insensitive keys should be the same
       const calls = mockRedisInstance.get.mock.calls;
       expect(calls[0][0]).toBe(calls[1][0]);
+    });
+  });
+
+  describe('memory fallback', () => {
+    it('should return from memory cache when Redis is down', async () => {
+      const testData = { items: [{ id: '1' }] };
+
+      // First, set some data while Redis is up
+      await cache.set('pncp', 'test-key', testData);
+
+      // Now simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Should get from memory fallback
+      const result = await cache.get<typeof testData>('pncp', 'test-key');
+
+      expect(result).toEqual(testData);
+    });
+
+    it('should track fallback hits in stats', async () => {
+      const testData = { data: 'test' };
+
+      // Set data while Redis is up
+      await cache.set('pncp', 'fallback-test', testData);
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Get from fallback
+      await cache.get('pncp', 'fallback-test');
+
+      const stats = cache.getStats('pncp');
+      expect(stats.fallbackHits).toBe(1);
+    });
+
+    it('should send Sentry alert on first fallback hit', async () => {
+      const testData = { data: 'test' };
+
+      // Set data while Redis is up
+      await cache.set('pncp', 'sentry-test', testData);
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Get from fallback - should trigger Sentry alert
+      await cache.get('pncp', 'sentry-test');
+
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.stringContaining('fallback mode active'),
+        'warning',
+      );
+    });
+
+    it('should only send Sentry alert once per Redis downtime', async () => {
+      const testData = { data: 'test' };
+
+      // Set data while Redis is up
+      await cache.set('pncp', 'test1', testData);
+      await cache.set('pncp', 'test2', testData);
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Multiple fallback hits
+      await cache.get('pncp', 'test1');
+      await cache.get('pncp', 'test2');
+
+      // Sentry should only be called once
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should persist to both Redis and memory cache on set', async () => {
+      const testData = { data: 'dual-cache' };
+
+      await cache.set('pncp', 'dual-key', testData);
+
+      // Verify Redis was called
+      expect(mockRedisInstance.setex).toHaveBeenCalled();
+
+      // Verify memory cache has the data by simulating Redis down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      const result = await cache.get('pncp', 'dual-key');
+      expect(result).toEqual(testData);
+    });
+
+    it('should reset fallback alert flag on reconnection', async () => {
+      const testData = { data: 'reconnect-test' };
+
+      // Set data while Redis is up
+      await cache.set('pncp', 'reconnect-key', testData);
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // First fallback hit - triggers alert
+      await cache.get('pncp', 'reconnect-key');
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+
+      // Simulate Redis reconnecting
+      const connectCallback = (
+        mockRedisInstance.on as jest.Mock
+      ).mock.calls.find(([event]) => event === 'connect')?.[1];
+      if (connectCallback) {
+        connectCallback();
+      }
+
+      // Simulate Redis going down again
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Second fallback hit should trigger another alert
+      await cache.get('pncp', 'reconnect-key');
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(2);
+    });
+
+    it('should delete from both caches on delete', async () => {
+      const testData = { data: 'delete-test' };
+
+      // Set data in both caches
+      await cache.set('pncp', 'to-delete', testData);
+
+      // Delete while Redis is up
+      await cache.delete('pncp', 'to-delete');
+
+      // Verify Redis del was called
+      expect(mockRedisInstance.del).toHaveBeenCalled();
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Memory cache should also not have the data
+      const result = await cache.get('pncp', 'to-delete');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('isInFallbackMode()', () => {
+    it('should return false when Redis is connected', () => {
+      expect(cache.isInFallbackMode()).toBe(false);
+    });
+
+    it('should return true when Redis is disconnected', () => {
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      expect(cache.isInFallbackMode()).toBe(true);
+    });
+
+    it('should return false when Redis was never initialized', () => {
+      const noRedisConfigService = {
+        get: jest.fn().mockReturnValue(undefined),
+      } as unknown as ConfigService;
+
+      const cacheWithoutRedis = new GovApiCache(noRedisConfigService);
+
+      // Not in fallback mode because Redis was never initialized
+      expect(cacheWithoutRedis.isInFallbackMode()).toBe(false);
+    });
+  });
+
+  describe('getMemoryCacheStats()', () => {
+    it('should return memory cache statistics', async () => {
+      // Add some data to memory cache
+      await cache.set('pncp', 'mem-stat-1', { data: 1 });
+      await cache.set('pncp', 'mem-stat-2', { data: 2 });
+
+      const memStats = cache.getMemoryCacheStats();
+
+      expect(memStats.keys).toBeGreaterThanOrEqual(2);
+      expect(memStats).toHaveProperty('hits');
+      expect(memStats).toHaveProperty('misses');
+    });
+
+    it('should track memory cache hits', async () => {
+      const testData = { data: 'memory-hit' };
+
+      // Set data
+      await cache.set('pncp', 'memory-hit-key', testData);
+
+      // Simulate Redis going down
+      const closeCallback = (mockRedisInstance.on as jest.Mock).mock.calls.find(
+        ([event]) => event === 'close',
+      )?.[1];
+      if (closeCallback) {
+        closeCallback();
+      }
+
+      // Get from memory - should increment hits
+      await cache.get('pncp', 'memory-hit-key');
+
+      const memStats = cache.getMemoryCacheStats();
+      expect(memStats.hits).toBeGreaterThan(0);
     });
   });
 });
