@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  VersionColumn,
   ManyToOne,
   OneToMany,
   JoinColumn,
@@ -98,6 +99,16 @@ export class Etp {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  /**
+   * Optimistic locking version for concurrent update detection (Issue #1059).
+   * Automatically incremented by TypeORM on each save operation.
+   * Used to detect conflicts when multiple users edit the same ETP.
+   * Client must send the current version in PUT/PATCH requests.
+   * If version mismatch occurs, returns 409 Conflict.
+   */
+  @VersionColumn()
+  version: number;
 
   @OneToMany(() => EtpSection, (section) => section.etp, { cascade: true })
   sections: EtpSection[];

@@ -4,6 +4,8 @@ import {
   IsNumber,
   IsEnum,
   IsObject,
+  IsInt,
+  Min,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { EtpStatus } from '../../../entities/etp.entity';
@@ -57,4 +59,19 @@ export class UpdateEtpDto {
     tags?: string[];
     [key: string]: unknown;
   };
+
+  /**
+   * Version number for optimistic locking (Issue #1059).
+   * Must match current version in database, otherwise 409 Conflict is returned.
+   * Client should send the version received from last GET request.
+   */
+  @ApiPropertyOptional({
+    example: 1,
+    description:
+      'Version number for optimistic locking. Must match current DB version.',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  version?: number;
 }
