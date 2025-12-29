@@ -8,6 +8,8 @@ export interface ETP {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  /** Optimistic locking version (Issue #1059). Incremented on each update. */
+  version: number;
   sections: Section[];
 }
 

@@ -165,6 +165,7 @@ export class EtpsController {
    * @throws {NotFoundException} 404 - If ETP not found
    * @throws {ForbiddenException} 403 - If user doesn't own this ETP
    * @throws {BadRequestException} 400 - If validation fails
+   * @throws {ConflictException} 409 - If version conflict (concurrent update detected)
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
    */
   @Patch(':id')
@@ -173,6 +174,10 @@ export class EtpsController {
   @ApiResponse({ status: 200, description: 'ETP atualizado com sucesso' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
   @ApiResponse({ status: 403, description: 'Sem permissão' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflito de versão - ETP foi modificado por outro usuário',
+  })
   async update(
     @Body() updateEtpDto: UpdateEtpDto,
     @Resource() etp: Etp,
