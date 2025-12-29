@@ -27,6 +27,12 @@ jest.mock('@sentry/node', () => ({
   captureException: jest.fn(),
 }));
 
+// Mock Sentry/NestJS (used by GovApiCache for fallback alerts)
+jest.mock('@sentry/nestjs', () => ({
+  captureMessage: jest.fn(),
+  captureException: jest.fn(),
+}));
+
 describe('GovDataSyncProcessor', () => {
   let processor: GovDataSyncProcessor;
   let mockSinapiService: Partial<SinapiService>;
