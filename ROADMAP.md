@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 546/568 (96.1%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 547/568 (96.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,25 +8,24 @@
 
 | PR    | Commit    | Descricao                                                                  |
 | ----- | --------- | -------------------------------------------------------------------------- |
+| #1078 | `a71b9ca` | fix(etps): add ACID transaction to updateCompletionPercentage (#1057)      |
 | #1077 | `fcd7db7` | fix(sections): add unique constraint to prevent duplicate sections (#1058) |
 | #1079 | `c3568ac` | fix(polling): increase timeout and add graceful degradation (#1060)        |
 | #1076 | `d536a41` | fix(gov-api): add payload size limits to Axios (#1055)                     |
 | #1053 | `e937c29` | docs(readme): Update E2E section from Puppeteer to Playwright (#1043)      |
-| #1052 | `84f48ab` | fix(ui): Redesign WarningBanner to follow design system (#1049)            |
 
 ---
 
-## Issues Abertas (22)
+## Issues Abertas (21)
 
-### P0 - Critico (5 issues)
+### P0 - Critico (4 issues)
 
-| #     | Issue                                                                 |
-| ----- | --------------------------------------------------------------------- |
-| #1047 | fix(ai): Investigar erro ao gerar secao com IA                        |
-| #1054 | [Gov-API] Implementar validacao de schema Zod nas respostas           |
-| #1056 | [Gov-API] Implementar fallback in-memory quando Redis falha           |
-| #1057 | [Concorrencia] Adicionar transacao ACID em updateCompletionPercentage |
-| #1059 | [Frontend] Implementar conflict detection para updates concorrentes   |
+| #     | Issue                                                               |
+| ----- | ------------------------------------------------------------------- |
+| #1047 | fix(ai): Investigar erro ao gerar secao com IA                      |
+| #1054 | [Gov-API] Implementar validacao de schema Zod nas respostas         |
+| #1056 | [Gov-API] Implementar fallback in-memory quando Redis falha         |
+| #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
 
 ### P1 - Alta (12 issues)
 
@@ -84,14 +83,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 568   |
-| Issues Abertas    | 22    |
-| Issues Fechadas   | 546   |
-| Progresso         | 96.1% |
+| Issues Abertas    | 21    |
+| Issues Fechadas   | 547   |
+| Progresso         | 96.3% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2164  |
-| Frontend Tests    | 1409  |
-| Total Tests       | 3573  |
+| Backend Tests     | 2167  |
+| Frontend Tests    | 1412  |
+| Total Tests       | 3579  |
 
 ---
 
