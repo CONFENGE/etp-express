@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, DataSource } from 'typeorm';
 import { EtpsService } from './etps.service';
@@ -458,6 +462,115 @@ describe('EtpsService', () => {
       await expect(
         service.update('non-existent', {}, mockUser1Id, mockOrganizationId),
       ).rejects.toThrow(NotFoundException);
+    });
+
+    // Optimistic locking tests (Issue #1059)
+    describe('optimistic locking', () => {
+      it('should update ETP when version matches', async () => {
+        const updateDto: UpdateEtpDto = {
+          title: 'ETP Atualizado',
+          version: 1, // Matches mockEtp.version
+        };
+
+        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 1 });
+        mockRepository.save.mockResolvedValue({
+          ...mockEtp,
+          ...updateDto,
+          version: 2,
+        });
+
+        const result = await service.update(
+          'etp-123',
+          updateDto,
+          mockUser1Id,
+          mockOrganizationId,
+        );
+
+        expect(mockRepository.save).toHaveBeenCalled();
+        expect(result.title).toBe('ETP Atualizado');
+        expect(result.version).toBe(2);
+      });
+
+      it('should throw ConflictException when version mismatch occurs', async () => {
+        const updateDto: UpdateEtpDto = {
+          title: 'ETP Atualizado',
+          version: 1, // Client has version 1
+        };
+
+        // DB has version 2 (another user updated it)
+        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 2 });
+
+        await expect(
+          service.update('etp-123', updateDto, mockUser1Id, mockOrganizationId),
+        ).rejects.toThrow(ConflictException);
+      });
+
+      it('should include conflict details in exception', async () => {
+        const updateDto: UpdateEtpDto = {
+          title: 'ETP Atualizado',
+          version: 1,
+        };
+
+        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 3 });
+
+        try {
+          await service.update(
+            'etp-123',
+            updateDto,
+            mockUser1Id,
+            mockOrganizationId,
+          );
+          fail('Should have thrown ConflictException');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ConflictException);
+          const response = (error as ConflictException).getResponse() as any;
+          expect(response.code).toBe('VERSION_CONFLICT');
+          expect(response.currentVersion).toBe(3);
+          expect(response.expectedVersion).toBe(1);
+        }
+      });
+
+      it('should allow update without version (backwards compatibility)', async () => {
+        const updateDto: UpdateEtpDto = {
+          title: 'ETP Atualizado',
+          // No version field - should not trigger conflict check
+        };
+
+        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 5 });
+        mockRepository.save.mockResolvedValue({
+          ...mockEtp,
+          title: 'ETP Atualizado',
+          version: 6,
+        });
+
+        const result = await service.update(
+          'etp-123',
+          updateDto,
+          mockUser1Id,
+          mockOrganizationId,
+        );
+
+        expect(mockRepository.save).toHaveBeenCalled();
+        expect(result.title).toBe('ETP Atualizado');
+      });
+
+      it('should log warning on version conflict', async () => {
+        const loggerSpy = jest.spyOn(service['logger'], 'warn');
+        const updateDto: UpdateEtpDto = {
+          title: 'ETP Atualizado',
+          version: 1,
+        };
+
+        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 2 });
+
+        await expect(
+          service.update('etp-123', updateDto, mockUser1Id, mockOrganizationId),
+        ).rejects.toThrow(ConflictException);
+
+        expect(loggerSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Version conflict detected'),
+        );
+      });
     });
   });
 
