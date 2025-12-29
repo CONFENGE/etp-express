@@ -236,8 +236,9 @@ describe('OpenAIService', () => {
       const apiError = new Error('API rate limit exceeded');
       mockOpenAIInstance.chat.completions.create.mockRejectedValue(apiError);
 
+      // After #1047: Error is wrapped with user-friendly Portuguese message
       await expect(service.generateCompletion(mockRequest)).rejects.toThrow(
-        'API rate limit exceeded',
+        'Limite de requisicoes da IA excedido',
       );
     });
 
@@ -634,8 +635,9 @@ describe('OpenAIService', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Now the circuit should be open, and next call should throw ServiceUnavailableException
+      // After #1047: Using ASCII-safe Portuguese message (no accents)
       await expect(service.generateCompletion(mockRequest)).rejects.toThrow(
-        'Serviço de IA temporariamente indisponível',
+        'Servico de IA temporariamente indisponivel',
       );
     });
 
