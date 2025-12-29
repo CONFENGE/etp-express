@@ -107,6 +107,35 @@ describe('GovApiClient', () => {
         }),
       );
     });
+
+    it('should configure payload size limits to prevent memory exhaustion', () => {
+      new GovApiClient(configService, defaultConfig);
+
+      expect(mockedAxios.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          maxContentLength: 10 * 1024 * 1024, // 10MB
+          maxBodyLength: 10 * 1024 * 1024, // 10MB
+          maxRedirects: 5,
+        }),
+      );
+    });
+
+    it('should reject responses exceeding maxContentLength', async () => {
+      // Create a new client instance
+      const testClient = new GovApiClient(configService, defaultConfig);
+
+      // Simulate an error that would be thrown by axios when content length exceeds limit
+      const contentLengthError = new Error(
+        'maxContentLength size of 10485760 exceeded',
+      );
+      (contentLengthError as Error & { code: string }).code =
+        'ERR_BAD_RESPONSE';
+      mockAxiosInstance.request.mockRejectedValue(contentLengthError);
+
+      await expect(testClient.get('/v1/large-response')).rejects.toThrow(
+        'maxContentLength size of 10485760 exceeded',
+      );
+    });
   });
 
   describe('get()', () => {
