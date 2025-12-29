@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 548/568 (96.5%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-29 | **Progresso:** 549/568 (96.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,21 +8,20 @@
 
 | PR    | Commit    | Descricao                                                                  |
 | ----- | --------- | -------------------------------------------------------------------------- |
+| #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)              |
 | #1080 | `ec7c0ec` | fix(gov-api): implement in-memory cache fallback when Redis fails (#1056)  |
 | #1078 | `a71b9ca` | fix(etps): add ACID transaction to updateCompletionPercentage (#1057)      |
 | #1077 | `fcd7db7` | fix(sections): add unique constraint to prevent duplicate sections (#1058) |
 | #1079 | `c3568ac` | fix(polling): increase timeout and add graceful degradation (#1060)        |
-| #1076 | `d536a41` | fix(gov-api): add payload size limits to Axios (#1055)                     |
 
 ---
 
-## Issues Abertas (20)
+## Issues Abertas (19)
 
-### P0 - Critico (3 issues)
+### P0 - Critico (2 issues)
 
 | #     | Issue                                                               |
 | ----- | ------------------------------------------------------------------- |
-| #1047 | fix(ai): Investigar erro ao gerar secao com IA                      |
 | #1054 | [Gov-API] Implementar validacao de schema Zod nas respostas         |
 | #1059 | [Frontend] Implementar conflict detection para updates concorrentes |
 
@@ -82,9 +81,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 568   |
-| Issues Abertas    | 20    |
-| Issues Fechadas   | 548   |
-| Progresso         | 96.5% |
+| Issues Abertas    | 19    |
+| Issues Fechadas   | 549   |
+| Progresso         | 96.7% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2180  |
