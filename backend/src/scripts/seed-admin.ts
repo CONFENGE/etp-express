@@ -9,10 +9,12 @@ config();
 
 /**
  * Seed script for initial admin users (M8: Gestao de Dominios Institucionais).
- * Creates master admin (System Admin) and demo user with their respective organizations.
+ * Creates master admin (System Admin), manager, user, and demo user with their respective organizations.
  *
  * Users Created:
  * - tiago@confenge.com.br (SYSTEM_ADMIN) - Global master administrator
+ * - manager@confenge.com.br (DOMAIN_MANAGER) - Domain manager for E2E tests
+ * - user@confenge.com.br (USER) - Regular user for E2E tests
  * - demoetp@confenge.com.br (DEMO) - Demo user with isolated data
  *
  * Usage:
@@ -21,19 +23,26 @@ config();
  *
  * @see Issue #469 - Criar seed script para usuarios iniciais
  * @see Issue #578 - Executar seed:admin em producao via Railway
+ * @see Issue #1095 - Seed MANAGER and USER roles for E2E tests
  */
 
 const BCRYPT_ROUNDS = 10;
 
 // Support environment variable override for CI/E2E testing
-// CI provides: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME
+// CI provides: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME, MANAGER_EMAIL, etc.
 const ciAdminEmail = process.env.ADMIN_EMAIL;
 const ciAdminPassword = process.env.ADMIN_PASSWORD;
 const ciAdminName = process.env.ADMIN_NAME;
+const ciManagerEmail = process.env.MANAGER_EMAIL;
+const ciManagerPassword = process.env.MANAGER_PASSWORD;
+const ciManagerName = process.env.MANAGER_NAME;
+const ciUserEmail = process.env.USER_EMAIL;
+const ciUserPassword = process.env.USER_PASSWORD;
+const ciUserName = process.env.USER_NAME;
 const isCIMode = !!(ciAdminEmail && ciAdminPassword);
 
 if (isCIMode) {
-  console.log('CI Mode detected: Using environment variables for admin user');
+  console.log('CI Mode detected: Using environment variables for seed users');
 }
 
 const ADMIN_DATA = {
@@ -82,6 +91,28 @@ const DEMO_DATA = {
   },
 };
 
+// MANAGER user - uses same organization as admin (CI mode) or default
+const MANAGER_DATA = {
+  user: {
+    email: ciManagerEmail || 'manager@confenge.com.br',
+    password: ciManagerPassword || 'Manager@123',
+    name: ciManagerName || 'Manager Test',
+    role: UserRole.DOMAIN_MANAGER,
+    mustChangePassword: false,
+  },
+};
+
+// USER user - uses same organization as admin (CI mode) or default
+const USER_DATA = {
+  user: {
+    email: ciUserEmail || 'user@confenge.com.br',
+    password: ciUserPassword || 'User@123',
+    name: ciUserName || 'User Test',
+    role: UserRole.USER,
+    mustChangePassword: false,
+  },
+};
+
 async function seedAdmin(): Promise<void> {
   console.log('Starting admin seed script...');
 
@@ -115,6 +146,20 @@ async function seedAdmin(): Promise<void> {
       authorizedDomainRepository,
     );
 
+    // Create Manager User (same org/domain as admin)
+    const managerResult = await createManagerUser(
+      userRepository,
+      adminResult.organizationId!,
+      adminResult.authorizedDomainId!,
+    );
+
+    // Create Regular User (same org/domain as admin)
+    const userResult = await createRegularUser(
+      userRepository,
+      adminResult.organizationId!,
+      adminResult.authorizedDomainId!,
+    );
+
     // Create Demo Organization and User
     const demoResult = await createDemoUser(
       organizationRepository,
@@ -126,6 +171,8 @@ async function seedAdmin(): Promise<void> {
     console.log(' Admin Organization:', adminResult.organizationStatus);
     console.log(' Admin User:', adminResult.userStatus);
     console.log(' Admin Domain:', adminResult.domainStatus);
+    console.log(' Manager User:', managerResult);
+    console.log(' Regular User:', userResult);
     console.log(' Demo Organization:', demoResult.organizationStatus);
     console.log(' Demo User:', demoResult.userStatus);
     console.log(' Demo Domain:', demoResult.domainStatus);
@@ -144,6 +191,8 @@ interface SeedResult {
   organizationStatus: string;
   userStatus: string;
   domainStatus: string;
+  organizationId?: string;
+  authorizedDomainId?: string;
 }
 
 async function createAdminUser(
@@ -222,7 +271,13 @@ async function createAdminUser(
     console.log('Admin set as domain manager');
   }
 
-  return { organizationStatus, userStatus, domainStatus };
+  return {
+    organizationStatus,
+    userStatus,
+    domainStatus,
+    organizationId: adminOrg.id,
+    authorizedDomainId: adminDomain.id,
+  };
 }
 
 async function createDemoUser(
@@ -296,6 +351,72 @@ async function createDemoUser(
   }
 
   return { organizationStatus, userStatus, domainStatus };
+}
+
+async function createManagerUser(
+  userRepository: ReturnType<DataSource['getRepository']>,
+  organizationId: string,
+  authorizedDomainId: string,
+): Promise<string> {
+  console.log('\nCreating manager user...');
+
+  // Check if manager user exists
+  const existingManager = await userRepository.findOne({
+    where: { email: MANAGER_DATA.user.email },
+  });
+
+  if (existingManager) {
+    console.log('Manager user already exists. Skipping creation.');
+    return 'Already exists (skipped)';
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    MANAGER_DATA.user.password,
+    BCRYPT_ROUNDS,
+  );
+  const managerUser = await userRepository.save(
+    userRepository.create({
+      ...MANAGER_DATA.user,
+      password: hashedPassword,
+      organizationId,
+      authorizedDomainId,
+    }),
+  );
+  console.log(`Manager user created: ${managerUser.id}`);
+  return `Created (ID: ${managerUser.id})`;
+}
+
+async function createRegularUser(
+  userRepository: ReturnType<DataSource['getRepository']>,
+  organizationId: string,
+  authorizedDomainId: string,
+): Promise<string> {
+  console.log('\nCreating regular user...');
+
+  // Check if user exists
+  const existingUser = await userRepository.findOne({
+    where: { email: USER_DATA.user.email },
+  });
+
+  if (existingUser) {
+    console.log('Regular user already exists. Skipping creation.');
+    return 'Already exists (skipped)';
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    USER_DATA.user.password,
+    BCRYPT_ROUNDS,
+  );
+  const regularUser = await userRepository.save(
+    userRepository.create({
+      ...USER_DATA.user,
+      password: hashedPassword,
+      organizationId,
+      authorizedDomainId,
+    }),
+  );
+  console.log(`Regular user created: ${regularUser.id}`);
+  return `Created (ID: ${regularUser.id})`;
 }
 
 // Run seed
