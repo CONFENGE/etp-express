@@ -25,17 +25,20 @@ describe('Zod Validation Schemas', () => {
   describe('formatZodErrors', () => {
     it('should format errors with path', () => {
       const result = ComprasGovLicitacaoRawSchema.safeParse({
-        identificador: 'not-a-number',
-        numero_aviso: '123',
+        identificador: 'test-id',
+        numero_aviso: 'not-a-number', // should be number
         modalidade: 1,
         uasg: 123,
+        objeto: 'Test object',
+        situacao_aviso: 'Publicado',
+        data_publicacao: '2024-01-15',
       });
 
       expect(result.success).toBe(false);
       if (!result.success) {
         const errors = formatZodErrors(result.error);
         expect(errors.length).toBeGreaterThan(0);
-        expect(errors[0]).toContain('identificador');
+        expect(errors[0]).toContain('numero_aviso');
       }
     });
 
@@ -63,10 +66,13 @@ describe('Zod Validation Schemas', () => {
 
   describe('ComprasGovLicitacaoRawSchema', () => {
     const validLicitacao = {
-      identificador: 12345,
-      numero_aviso: 'PE-2024-001',
+      identificador: 'PE-2024-12345',
+      numero_aviso: 12345,
       modalidade: 5,
       uasg: 110161,
+      objeto: 'Contratacao de servicos de TI',
+      situacao_aviso: 'Publicado',
+      data_publicacao: '2024-01-15',
     };
 
     it('should accept valid licitacao data', () => {
@@ -77,10 +83,10 @@ describe('Zod Validation Schemas', () => {
     it('should accept licitacao with optional fields', () => {
       const fullLicitacao = {
         ...validLicitacao,
-        objeto: 'Contratacao de servicos de TI',
-        situacao: 'ABERTA',
-        data_publicacao: '2024-01-15',
+        data_abertura_proposta: '2024-01-20',
+        data_entrega_edital: '2024-01-18',
         data_entrega_proposta: '2024-02-15',
+        modalidade_descricao: 'Pregao Eletronico',
         valor_estimado: 1500000.0,
       };
       const result = ComprasGovLicitacaoRawSchema.safeParse(fullLicitacao);
@@ -88,7 +94,7 @@ describe('Zod Validation Schemas', () => {
     });
 
     it('should reject licitacao with missing required field', () => {
-      const incomplete = { numero_aviso: 'PE-2024-001' };
+      const incomplete = { numero_aviso: 12345 };
       const result = ComprasGovLicitacaoRawSchema.safeParse(incomplete);
       expect(result.success).toBe(false);
     });
@@ -96,7 +102,7 @@ describe('Zod Validation Schemas', () => {
     it('should reject licitacao with wrong type for identificador', () => {
       const result = ComprasGovLicitacaoRawSchema.safeParse({
         ...validLicitacao,
-        identificador: 'not-a-number',
+        identificador: 12345, // should be string
       });
       expect(result.success).toBe(false);
     });
@@ -104,7 +110,7 @@ describe('Zod Validation Schemas', () => {
     it('should reject licitacao with wrong type for numero_aviso', () => {
       const result = ComprasGovLicitacaoRawSchema.safeParse({
         ...validLicitacao,
-        numero_aviso: 12345,
+        numero_aviso: 'PE-2024-001', // should be number
       });
       expect(result.success).toBe(false);
     });
@@ -137,10 +143,13 @@ describe('Zod Validation Schemas', () => {
         _embedded: {
           licitacoes: [
             {
-              identificador: 12345,
-              numero_aviso: 'PE-2024-001',
+              identificador: 'PE-2024-12345',
+              numero_aviso: 12345,
               modalidade: 5,
               uasg: 110161,
+              objeto: 'Contratacao de servicos',
+              situacao_aviso: 'Publicado',
+              data_publicacao: '2024-01-15',
             },
           ],
         },
