@@ -20,6 +20,7 @@
  */
 
 import { test, expect, Page } from '@playwright/test';
+import { waitForToast, waitForDialog, waitForLoadingComplete } from '../utils';
 
 /**
  * Test configuration
@@ -99,8 +100,14 @@ async function createETP(
   const newEtpButton = page.locator('text=Novo ETP').first();
   await newEtpButton.click();
 
-  // Wait for dialog or new page
-  await page.waitForTimeout(500);
+  // Wait for dialog or navigation
+  await Promise.race([
+    page.waitForSelector('[role="dialog"]', {
+      state: 'visible',
+      timeout: 5000,
+    }),
+    page.waitForURL(/\/etps\/new/, { timeout: 5000 }),
+  ]).catch(() => {});
 
   // Check if dialog is open or we navigated to /etps/new
   const dialog = page.locator('[role="dialog"]');
@@ -176,13 +183,15 @@ async function deleteETP(page: Page, etpTitle: string): Promise<void> {
     .locator('button[aria-label="Opções do ETP"]');
 
   await menuButton.click();
-  await page.waitForTimeout(300);
+  await page.waitForSelector('[role="menu"], [role="menuitem"]', {
+    state: 'visible',
+  });
 
   // Click delete option
   await page.click('text=Excluir');
 
-  // Wait for toast or confirmation
-  await page.waitForTimeout(TEST_CONFIG.timeouts.toast);
+  // Wait for toast confirmation
+  await waitForToast(page);
 }
 
 /**
@@ -280,7 +289,10 @@ test.describe('ETP CRUD Happy Paths', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to appear
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     // Check if dialog is open or we navigated to /etps/new
     const dialog = page.locator('[role="dialog"]');
@@ -294,8 +306,13 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Try to submit with empty title
       await submitButton.click();
 
-      // Wait for validation response
-      await page.waitForTimeout(500);
+      // Wait for validation to appear
+      await page
+        .waitForSelector(
+          '[aria-invalid="true"], .text-destructive, [role="alert"]',
+          { timeout: 2000 },
+        )
+        .catch(() => {});
 
       // Validation should prevent navigation - still on dialog or same page
       // Check for validation error message
@@ -320,8 +337,13 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Try to submit with empty title
       await submitButton.click();
 
-      // Wait for validation response
-      await page.waitForTimeout(500);
+      // Wait for validation to appear
+      await page
+        .waitForSelector(
+          '[aria-invalid="true"], .text-destructive, [role="alert"]',
+          { timeout: 2000 },
+        )
+        .catch(() => {});
 
       // Should still be on /etps/new (form not submitted)
       const currentUrl = page.url();
@@ -362,7 +384,10 @@ test.describe('ETP CRUD Happy Paths', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to appear
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     // Check if dialog is open
     const dialog = page.locator('[role="dialog"]');
@@ -381,8 +406,12 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Try to submit without objeto
       await submitButton.click();
 
-      // Wait for validation response
-      await page.waitForTimeout(500);
+      // Wait for validation to appear
+      await page
+        .waitForSelector('[aria-invalid="true"], .text-destructive', {
+          timeout: 2000,
+        })
+        .catch(() => {});
 
       // Check for validation error message for objeto
       const objetoErrorSelectors = [
@@ -423,7 +452,12 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Try to submit without objeto
       await submitButton.click();
 
-      await page.waitForTimeout(500);
+      // Wait for validation to appear
+      await page
+        .waitForSelector('[aria-invalid="true"], .text-destructive', {
+          timeout: 2000,
+        })
+        .catch(() => {});
 
       // Should still be on /etps/new (form not submitted)
       const currentUrl = page.url();
@@ -455,7 +489,10 @@ test.describe('ETP CRUD Happy Paths', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to appear
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     const dialog = page.locator('[role="dialog"]');
     const isDialog = await dialog.isVisible().catch(() => false);
@@ -474,7 +511,13 @@ test.describe('ETP CRUD Happy Paths', () => {
       const submitButton = page.locator('button:has-text("Criar ETP")').first();
       await submitButton.click();
 
-      await page.waitForTimeout(500);
+      // Wait for validation to appear
+      await page
+        .waitForSelector(
+          '[aria-invalid="true"], .text-destructive, text=10 caracteres',
+          { timeout: 2000 },
+        )
+        .catch(() => {});
 
       // Check for minimum length validation error
       const minLengthError = page.locator('text=10 caracteres');
@@ -541,7 +584,10 @@ test.describe('ETP CRUD Happy Paths', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to appear
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     // Check if dialog is open or we navigated to /etps/new
     const dialog = page.locator('[role="dialog"]');
@@ -633,7 +679,10 @@ test.describe('ETP CRUD Happy Paths', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    await page.waitForTimeout(500);
+    // Wait for dialog to appear
+    await page
+      .waitForSelector('[role="dialog"]', { state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     const dialog = page.locator('[role="dialog"]');
     const isDialog = await dialog.isVisible().catch(() => false);
@@ -673,8 +722,12 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Submit - use .first() to avoid strict mode violation
       await page.locator('button:has-text("Criar ETP")').first().click();
 
-      // Wait for error handling
-      await page.waitForTimeout(1000);
+      // Wait for error toast to appear
+      await page
+        .waitForSelector('[role="status"], [class*="destructive"]', {
+          timeout: 3000,
+        })
+        .catch(() => {});
 
       // Check for error toast/message
       const errorIndicators = [
@@ -786,10 +839,9 @@ test.describe('ETP CRUD Happy Paths', () => {
     );
     if (await saveButton.isVisible()) {
       await saveButton.click();
+      // Wait for save confirmation toast
+      await waitForToast(page);
     }
-
-    // Wait for save confirmation
-    await page.waitForTimeout(TEST_CONFIG.timeouts.toast);
 
     // Note: The actual title editing UX may vary - this test validates the flow
     console.log(`Edited ETP title test completed for: ${etpId}`);
@@ -846,13 +898,16 @@ test.describe('ETP CRUD Happy Paths', () => {
 
     if (await menuButton.isVisible()) {
       await menuButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForSelector('[role="menu"], [role="menuitem"]', {
+        state: 'visible',
+      });
 
       // Click delete
       await page.click('text=Excluir');
 
-      // Wait for undo toast or deletion
-      await page.waitForTimeout(5500); // Undo timeout is 5s
+      // Wait for undo toast and let it expire (undo timeout is 5s)
+      await waitForToast(page);
+      await page.waitForTimeout(5500); // Let undo window expire - this is intentional
 
       // Verify ETP no longer appears in list
       await page.reload();
@@ -892,7 +947,9 @@ test.describe('ETP CRUD Happy Paths', () => {
 
     if (await menuButton.isVisible()) {
       await menuButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForSelector('[role="menu"], [role="menuitem"]', {
+        state: 'visible',
+      });
 
       await page.click('text=Excluir');
 
@@ -901,8 +958,8 @@ test.describe('ETP CRUD Happy Paths', () => {
       if (await undoButton.isVisible({ timeout: 2000 })) {
         await undoButton.click();
 
-        // Verify ETP still exists
-        await page.waitForTimeout(1000);
+        // Wait for undo confirmation and verify ETP still exists
+        await waitForToast(page);
         await expect(page.locator(`text="${title}"`)).toBeVisible();
         console.log(`Undo delete successful for: ${etpId}`);
       } else {
@@ -1013,19 +1070,19 @@ test.describe('ETP CRUD Happy Paths', () => {
     // Type search term
     await searchInput.fill(String(uniqueId));
 
-    // Wait for filtering
-    await page.waitForTimeout(500);
+    // Wait for filtering to complete
+    await page.waitForLoadState('networkidle');
 
     // Verify our ETP is visible and others are filtered
     await expect(page.locator(`text="${title}"`)).toBeVisible();
 
     // Clear search
     await searchInput.fill('');
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle');
 
     // Search with non-existing term
     await searchInput.fill('NonExistentETP12345');
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle');
 
     // Verify empty state or no results message
     const emptyState = page.locator('text=Nenhum');
