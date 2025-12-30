@@ -34,12 +34,22 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
 
-    /* Disable onboarding tour in E2E tests to prevent overlay blocking clicks */
+    /* Disable onboarding tour in E2E tests to prevent overlay blocking clicks
+     * We include both ports: 5173 (local Vite dev) and 3000 (CI build) */
     storageState: {
       cookies: [],
       origins: [
         {
-          origin: process.env.E2E_BASE_URL || 'http://localhost:5173',
+          origin: 'http://localhost:5173',
+          localStorage: [
+            {
+              name: 'etp-express-tour',
+              value: JSON.stringify({ hasCompletedTour: true }),
+            },
+          ],
+        },
+        {
+          origin: 'http://localhost:3000',
           localStorage: [
             {
               name: 'etp-express-tour',

@@ -125,8 +125,10 @@ test.describe('Manager Dashboard - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description text
-    const description = page.locator('text=Manage users within your domain');
+    // Verify description text (PT-BR)
+    const description = page.locator(
+      'text=Gerencie os usuários do seu domínio',
+    );
     await expect(description).toBeVisible();
 
     // Verify no loading state after page loads
@@ -148,10 +150,10 @@ test.describe('Manager Dashboard - Happy Path', () => {
    *
    * @acceptance-criteria
    * - Statistics cards are visible
-   * - "Total Users" card shows a number
-   * - "Active Users" card shows a number
-   * - "Inactive Users" card shows a number
-   * - "Pending Setup" card shows a number
+   * - "Total de Usuários" card shows a number
+   * - "Usuários Ativos" card shows a number
+   * - "Usuários Inativos" card shows a number
+   * - "Pendente Setup" card shows a number
    */
   test('view domain statistics on dashboard', async ({ page }) => {
     await page.goto('/manager');
@@ -160,20 +162,20 @@ test.describe('Manager Dashboard - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Verify Total Users card
-    const totalUsersCard = page.locator('text=Total Users').first();
+    // Verify Total Users card (PT-BR)
+    const totalUsersCard = page.locator('text=Total de Usuários').first();
     await expect(totalUsersCard).toBeVisible();
 
-    // Verify Active Users card
-    const activeUsersCard = page.locator('text=Active Users').first();
+    // Verify Active Users card (PT-BR)
+    const activeUsersCard = page.locator('text=Usuários Ativos').first();
     await expect(activeUsersCard).toBeVisible();
 
-    // Verify Inactive Users card
-    const inactiveUsersCard = page.locator('text=Inactive Users').first();
+    // Verify Inactive Users card (PT-BR)
+    const inactiveUsersCard = page.locator('text=Usuários Inativos').first();
     await expect(inactiveUsersCard).toBeVisible();
 
-    // Verify Pending Setup card
-    const pendingCard = page.locator('text=Pending Setup').first();
+    // Verify Pending Setup card (PT-BR)
+    const pendingCard = page.locator('text=Pendente Setup').first();
     await expect(pendingCard).toBeVisible();
 
     // Verify cards have numeric values (not loading skeletons)
@@ -191,7 +193,7 @@ test.describe('Manager Dashboard - Happy Path', () => {
    * domain capacity information.
    *
    * @acceptance-criteria
-   * - User Quota card is visible
+   * - "Cota de Usuários" card is visible
    * - QuotaIndicator component renders
    * - Capacity information is displayed
    */
@@ -199,14 +201,14 @@ test.describe('Manager Dashboard - Happy Path', () => {
     await page.goto('/manager');
     await page.waitForLoadState('networkidle');
 
-    // Verify User Quota card header
-    const quotaCardTitle = page.locator('text=User Quota');
+    // Verify User Quota card header (PT-BR)
+    const quotaCardTitle = page.locator('text=Cota de Usuários');
     await expect(quotaCardTitle).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify capacity description
-    const capacityText = page.locator('text=Domain capacity');
+    // Verify capacity description (PT-BR)
+    const capacityText = page.locator('text=Uso da capacidade do domínio');
     await expect(capacityText).toBeVisible();
 
     // Verify quota indicator is not in loading state
