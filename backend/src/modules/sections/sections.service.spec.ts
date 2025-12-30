@@ -271,12 +271,7 @@ describe('SectionsService', () => {
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -365,12 +360,7 @@ describe('SectionsService', () => {
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -395,12 +385,7 @@ describe('SectionsService', () => {
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
       // Mock QueryRunner for transaction-based getNextOrder with maxOrder = 2
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 2 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
 
       // Mock create to return section with order 3
       mockSectionsRepository.create.mockImplementation((data) => ({
@@ -444,12 +429,7 @@ describe('SectionsService', () => {
         mockGenerationResult,
       );
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       await service.generateSection(
@@ -479,12 +459,7 @@ describe('SectionsService', () => {
         mockGenerationResult,
       );
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -525,12 +500,7 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
       });
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Save throws PostgreSQL unique violation error (code 23505)
       const uniqueViolationError = new Error(
@@ -575,12 +545,7 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
       });
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       const uniqueViolationError = new Error(
         'duplicate key value violates unique constraint',
@@ -612,12 +577,7 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
       });
       // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      }));
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Different error (not unique violation)
       const connectionError = new Error('Connection refused');
@@ -1337,12 +1297,7 @@ describe('SectionsService', () => {
           mockGenerationResult,
         );
         // Mock QueryRunner for transaction-based getNextOrder
-        mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-          select: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          setLock: jest.fn().mockReturnThis(),
-          getRawOne: jest.fn().mockResolvedValue({ maxOrder: null }),
-        }));
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: null });
 
         // Act
         const generateDto = {
@@ -1384,12 +1339,7 @@ describe('SectionsService', () => {
           mockGenerationResult,
         );
         // Mock existing sections with maxOrder = 5
-        mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-          select: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          setLock: jest.fn().mockReturnThis(),
-          getRawOne: jest.fn().mockResolvedValue({ maxOrder: 5 }),
-        }));
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 5 });
 
         // Act
         const generateDto = {
@@ -1418,12 +1368,7 @@ describe('SectionsService', () => {
         mockSectionsRepository.findOne.mockResolvedValue(null);
         // Mock QueryRunner to throw error
         const dbError = new Error('Database connection lost');
-        mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-          select: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          setLock: jest.fn().mockReturnThis(),
-          getRawOne: jest.fn().mockRejectedValue(dbError),
-        }));
+        mockQueryBuilder.getRawOne.mockRejectedValue(dbError);
 
         // Act & Assert
         const generateDto = {
@@ -1455,13 +1400,7 @@ describe('SectionsService', () => {
           mockGenerationResult,
         );
 
-        const mockSetLock = jest.fn().mockReturnThis();
-        mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-          select: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          setLock: mockSetLock,
-          getRawOne: jest.fn().mockResolvedValue({ maxOrder: 2 }),
-        }));
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
 
         // Act
         const generateDto = {
@@ -1477,7 +1416,9 @@ describe('SectionsService', () => {
         );
 
         // Assert - verify pessimistic_write lock was used
-        expect(mockSetLock).toHaveBeenCalledWith('pessimistic_write');
+        expect(mockQueryBuilder.setLock).toHaveBeenCalledWith(
+          'pessimistic_write',
+        );
       });
     });
 
@@ -1505,12 +1446,7 @@ describe('SectionsService', () => {
             mockGenerationResult,
           );
           // Mock QueryRunner for transaction-based getNextOrder
-          mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-            select: jest.fn().mockReturnThis(),
-            where: jest.fn().mockReturnThis(),
-            setLock: jest.fn().mockReturnThis(),
-            getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-          }));
+          mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
           await service.generateSection(
             mockEtpId,
@@ -1543,12 +1479,7 @@ describe('SectionsService', () => {
           mockGenerationResult,
         );
         // Mock QueryRunner for transaction-based getNextOrder
-        mockQueryRunner.manager.createQueryBuilder = jest.fn(() => ({
-          select: jest.fn().mockReturnThis(),
-          where: jest.fn().mockReturnThis(),
-          setLock: jest.fn().mockReturnThis(),
-          getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-        }));
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
         await service.generateSection(
           mockEtpId,
