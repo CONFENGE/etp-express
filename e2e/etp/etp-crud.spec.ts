@@ -97,7 +97,17 @@ async function createETP(
     objeto || 'Objeto padrao para criacao de ETP via teste E2E automatizado';
 
   // Click "Novo ETP" button to open dialog or navigate to new page
-  const newEtpButton = page.locator('text=Novo ETP').first();
+  const newEtpButton = page
+    .locator(
+      'button:has-text("Novo ETP"), button:has-text("Criar ETP"), text=Novo ETP',
+    )
+    .first();
+
+  const buttonVisible = await newEtpButton.isVisible().catch(() => false);
+  if (!buttonVisible) {
+    throw new Error('Novo ETP button not found on page');
+  }
+
   await newEtpButton.click();
 
   // Wait for dialog or navigation
@@ -128,9 +138,19 @@ async function createETP(
       );
     }
 
-    // Submit dialog
-    // Use .first() to avoid strict mode violation when button appears in multiple places
-    await page.locator('button:has-text("Criar ETP")').first().click();
+    // Submit dialog - try multiple button selectors
+    const submitButton = page
+      .locator(
+        'button:has-text("Criar ETP"), button:has-text("Criar"), button[type="submit"]',
+      )
+      .first();
+
+    const submitVisible = await submitButton.isVisible().catch(() => false);
+    if (!submitVisible) {
+      throw new Error('Submit button not found in create ETP dialog');
+    }
+
+    await submitButton.click();
 
     // Wait for navigation to ETP editor
     await page.waitForURL(/\/etps\/[^/]+$/, {
