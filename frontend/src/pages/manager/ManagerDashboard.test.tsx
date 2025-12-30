@@ -84,9 +84,9 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      expect(screen.getByText('Domain Manager')).toBeInTheDocument();
+      expect(screen.getByText('Gestor de Domínio')).toBeInTheDocument();
       expect(
-        screen.getByText('Manage users within your domain'),
+        screen.getByText('Gerencie os usuários do seu domínio'),
       ).toBeInTheDocument();
     });
 
@@ -108,7 +108,7 @@ describe('ManagerDashboard', () => {
       renderWithRouter(<ManagerDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /manage users/i,
+        name: /gerenciar usuários/i,
       });
       expect(manageButton).toBeInTheDocument();
       expect(manageButton).toHaveAttribute('href', '/manager/users');
@@ -133,8 +133,10 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      expect(screen.getByText('User Quota')).toBeInTheDocument();
-      expect(screen.getByText('Domain capacity usage')).toBeInTheDocument();
+      expect(screen.getByText('Cota de Usuários')).toBeInTheDocument();
+      expect(
+        screen.getByText('Uso da capacidade do domínio'),
+      ).toBeInTheDocument();
     });
 
     it('should display quota values in QuotaIndicator', () => {
@@ -178,10 +180,10 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      expect(screen.getByText('Total Users')).toBeInTheDocument();
-      expect(screen.getByText('Active Users')).toBeInTheDocument();
-      expect(screen.getByText('Inactive Users')).toBeInTheDocument();
-      expect(screen.getByText('Pending Setup')).toBeInTheDocument();
+      expect(screen.getByText('Total de Usuários')).toBeInTheDocument();
+      expect(screen.getByText('Usuários Ativos')).toBeInTheDocument();
+      expect(screen.getByText('Usuários Inativos')).toBeInTheDocument();
+      expect(screen.getByText('Pendente Setup')).toBeInTheDocument();
     });
 
     it('should calculate and display correct statistics', () => {
@@ -227,10 +229,10 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      expect(screen.getByText('Users in domain')).toBeInTheDocument();
-      expect(screen.getByText('Currently active')).toBeInTheDocument();
-      expect(screen.getByText('Deactivated accounts')).toBeInTheDocument();
-      expect(screen.getByText('Need password change')).toBeInTheDocument();
+      expect(screen.getByText('Usuários no domínio')).toBeInTheDocument();
+      expect(screen.getByText('Atualmente ativos')).toBeInTheDocument();
+      expect(screen.getByText('Contas desativadas')).toBeInTheDocument();
+      expect(screen.getByText('Precisam trocar senha')).toBeInTheDocument();
     });
   });
 
@@ -252,8 +254,10 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      expect(screen.getByText('Recent Users')).toBeInTheDocument();
-      expect(screen.getByText('Last 5 registered users')).toBeInTheDocument();
+      expect(screen.getByText('Usuários Recentes')).toBeInTheDocument();
+      expect(
+        screen.getByText('Últimos 5 usuários cadastrados'),
+      ).toBeInTheDocument();
     });
 
     it('should display user list items with names and emails', () => {
@@ -295,8 +299,8 @@ describe('ManagerDashboard', () => {
 
       renderWithRouter(<ManagerDashboard />);
 
-      const activeBadges = screen.getAllByText('Active');
-      const inactiveBadges = screen.getAllByText('Inactive');
+      const activeBadges = screen.getAllByText('Ativo');
+      const inactiveBadges = screen.getAllByText('Inativo');
 
       expect(activeBadges.length).toBe(2);
       expect(inactiveBadges.length).toBe(1);
@@ -341,10 +345,10 @@ describe('ManagerDashboard', () => {
       renderWithRouter(<ManagerDashboard />);
 
       expect(
-        screen.getByText('No users in your domain yet'),
+        screen.getByText('Nenhum usuário no seu domínio ainda'),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: /add your first user/i }),
+        screen.getByRole('link', { name: /adicionar primeiro usuário/i }),
       ).toBeInTheDocument();
     });
 
@@ -504,7 +508,7 @@ describe('ManagerDashboard', () => {
       renderWithRouter(<ManagerDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /manage users/i,
+        name: /gerenciar usuários/i,
       });
       // Button should have responsive width classes
       expect(manageButton).toHaveClass('w-full', 'sm:w-auto');
@@ -552,7 +556,7 @@ describe('ManagerDashboard', () => {
       renderWithRouter(<ManagerDashboard />);
 
       const h1 = screen.getByRole('heading', { level: 1 });
-      expect(h1).toHaveTextContent('Domain Manager');
+      expect(h1).toHaveTextContent('Gestor de Domínio');
     });
 
     it('should have accessible QuotaIndicator with meter role', () => {
