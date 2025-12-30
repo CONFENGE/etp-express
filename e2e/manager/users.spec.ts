@@ -118,7 +118,7 @@ test.describe('Manager User Management - Happy Path', () => {
    *
    * @acceptance-criteria
    * - User Management page loads at /manager/users
-   * - Page header "User Management" is visible
+   * - Page header "Gerenciamento de Usuários" is visible
    * - Users table is displayed
    * - Search functionality is available
    * - Quota indicator is visible
@@ -127,33 +127,35 @@ test.describe('Manager User Management - Happy Path', () => {
     // Verify we're on the user management page
     await expect(page).toHaveURL(/\/manager\/users/);
 
-    // Verify page header
-    const header = page.locator('h1:has-text("User Management")');
+    // Verify page header (Portuguese: "Gerenciamento de Usuários")
+    const header = page.locator('h1:has-text("Gerenciamento de Usuários")');
     await expect(header).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description
-    const description = page.locator('text=Manage users in your domain');
+    // Verify description (Portuguese: "Gerencie os usuários do seu domínio")
+    const description = page.locator(
+      'text=Gerencie os usuários do seu domínio',
+    );
     await expect(description).toBeVisible();
 
-    // Verify search input is available
-    const searchInput = page.locator('input[aria-label="Search users"]');
+    // Verify search input is available (Portuguese placeholder)
+    const searchInput = page.locator('input[placeholder*="Buscar"]');
     await expect(searchInput).toBeVisible();
 
-    // Verify quota card is visible
-    const quotaCard = page.locator('text=User Quota');
+    // Verify quota card is visible (Portuguese: "Cota de Usuários")
+    const quotaCard = page.locator('text=Cota de Usuários');
     await expect(quotaCard).toBeVisible();
 
-    // Verify "New User" button is visible
-    const newUserButton = page.locator('button:has-text("New User")');
+    // Verify "Novo Usuário" button is visible (Portuguese)
+    const newUserButton = page.locator('button:has-text("Novo Usuário")');
     await expect(newUserButton).toBeVisible();
 
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Verify users count text
-    const usersCount = page.locator('text=/\\d+ of \\d+ users/');
+    // Verify users count text (Portuguese: "X de Y usuários")
+    const usersCount = page.locator('text=/\\d+ de \\d+ usuários/');
     await expect(usersCount).toBeVisible();
 
     console.log('View users list: PASSED');
@@ -166,7 +168,7 @@ test.describe('Manager User Management - Happy Path', () => {
    * within their domain through the Create User dialog.
    *
    * @acceptance-criteria
-   * - "New User" button opens create dialog
+   * - "Novo Usuário" button opens create dialog
    * - Dialog has email, name, and cargo fields
    * - Email field shows domain suffix hint
    * - Form submission creates user
@@ -174,8 +176,8 @@ test.describe('Manager User Management - Happy Path', () => {
    * - New user appears in the list
    */
   test('create new user in domain', async ({ page }) => {
-    // Click "New User" button
-    const newUserButton = page.locator('button:has-text("New User")');
+    // Click "Novo Usuário" button (Portuguese)
+    const newUserButton = page.locator('button:has-text("Novo Usuário")');
     await expect(newUserButton).toBeVisible();
     await newUserButton.click();
 
@@ -387,8 +389,8 @@ test.describe('Manager User Management - Happy Path', () => {
     // Wait for users to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find search input
-    const searchInput = page.locator('input[aria-label="Search users"]');
+    // Find search input (Portuguese placeholder)
+    const searchInput = page.locator('input[placeholder*="Buscar"]');
     await expect(searchInput).toBeVisible();
 
     // Type search query

@@ -295,8 +295,10 @@ test.describe('Manager Dashboard - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify User Management page header
-    const userMgmtHeader = page.locator('h1:has-text("User Management")');
+    // Verify User Management page header (Portuguese: "Gerenciamento de Usuários")
+    const userMgmtHeader = page.locator(
+      'h1:has-text("Gerenciamento de Usuários")',
+    );
     await expect(userMgmtHeader).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });

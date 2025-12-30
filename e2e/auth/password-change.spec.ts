@@ -87,8 +87,8 @@ async function createTestUserAsManager(page: Page): Promise<string | null> {
   // Wait for page to load
   await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-  // Click "New User" button
-  const newUserButton = page.locator('button:has-text("New User")');
+  // Click "Novo Usuário" button (Portuguese)
+  const newUserButton = page.locator('button:has-text("Novo Usuário")');
   if (!(await newUserButton.isVisible())) {
     console.log('New User button not found - manager may not have permission');
     return null;

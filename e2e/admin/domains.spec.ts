@@ -149,6 +149,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const domainInput = dialog.locator('input[name="domain"], input#domain');
     await domainInput.fill(TEST_CONFIG.testDomain.name);
 
+    // Fill institution name (required field)
+    const institutionNameInput = dialog.locator(
+      'input[name="institutionName"], input#institutionName',
+    );
+    await institutionNameInput.fill('E2E Test Institution');
+
     const maxUsersInput = dialog.locator(
       'input[name="maxUsers"], input#maxUsers',
     );
