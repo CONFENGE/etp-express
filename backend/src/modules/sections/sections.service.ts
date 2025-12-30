@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Queue } from 'bullmq';
 import { Observable } from 'rxjs';
 import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
@@ -117,6 +117,7 @@ export class SectionsService {
     @InjectQueue('sections') private sectionsQueue: Queue,
     private orchestratorService: OrchestratorService,
     private etpsService: EtpsService,
+    private dataSource: DataSource,
   ) {}
 
   /**
@@ -650,6 +651,11 @@ export class SectionsService {
    * After update, automatically recalculates parent ETP completion percentage
    * to reflect changes in section status.
    *
+   * **ACID Transaction (Issue #1064):**
+   * Uses a single database transaction to ensure atomicity between section update
+   * and ETP completion percentage recalculation. This prevents race conditions
+   * where completion could become desynchronized from actual section status.
+   *
    * **Security (Issue #758):**
    * Validates organizationId when updating ETP completion to prevent cross-tenant
    * data access.
@@ -666,20 +672,51 @@ export class SectionsService {
     organizationId: string,
   ): Promise<EtpSection> {
     const section = await this.findOne(id);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    Object.assign(section, updateDto);
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const updatedSection = await this.sectionsRepository.save(section);
+    try {
+      // Update section within transaction
+      Object.assign(section, updateDto);
+      const updatedSection = await queryRunner.manager.save(section);
 
-    // Update ETP completion percentage with tenancy validation
-    await this.etpsService.updateCompletionPercentage(
-      section.etpId,
-      organizationId,
-    );
+      // Calculate and update ETP completion percentage within same transaction
+      // Uses pessimistic_write lock to prevent race conditions (Issue #1057)
+      const etp = await queryRunner.manager
+        .createQueryBuilder(Etp, 'etp')
+        .leftJoinAndSelect('etp.sections', 'sections')
+        .where('etp.id = :id', { id: section.etpId })
+        .andWhere('etp.organizationId = :organizationId', { organizationId })
+        .setLock('pessimistic_write')
+        .getOne();
 
-    this.logger.log(`Section updated: ${id}`);
+      if (etp) {
+        const completedSections = etp.sections.filter(
+          (s) => s.status === SectionStatus.APPROVED,
+        ).length;
+        const totalSections = etp.sections.length;
+        const percentage =
+          totalSections > 0
+            ? Math.round((completedSections / totalSections) * 100)
+            : 0;
 
-    return updatedSection;
+        await queryRunner.manager.update(Etp, section.etpId, {
+          completionPercentage: percentage,
+        });
+      }
+
+      await queryRunner.commitTransaction();
+      this.logger.log(`Section updated: ${id}`);
+
+      return updatedSection;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
