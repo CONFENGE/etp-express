@@ -44,6 +44,7 @@ export function DomainManagement() {
 
   const handleCreateDomain = async (data: {
     domain: string;
+    institutionName: string;
     maxUsers: number;
   }) => {
     try {

@@ -31,9 +31,11 @@ export interface GlobalStatistics {
 
 /**
  * DTO for creating a new authorized domain.
+ * Must match backend CreateDomainDto validation requirements.
  */
 export interface CreateDomainDto {
   domain: string;
+  institutionName: string;
   maxUsers: number;
 }
 

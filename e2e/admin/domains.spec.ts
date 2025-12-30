@@ -27,6 +27,7 @@ const TEST_CONFIG = {
   // Test domain data
   testDomain: {
     name: `test-e2e-${Date.now()}.example.com`,
+    institutionName: 'E2E Test Institution',
     maxUsers: 10,
   },
 
@@ -146,6 +147,11 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Fill domain form
     const domainInput = dialog.locator('input[name="domain"], input#domain');
     await domainInput.fill(TEST_CONFIG.testDomain.name);
+
+    const institutionNameInput = dialog.locator(
+      'input[name="institutionName"], input#institutionName',
+    );
+    await institutionNameInput.fill(TEST_CONFIG.testDomain.institutionName);
 
     const maxUsersInput = dialog.locator(
       'input[name="maxUsers"], input#maxUsers',
