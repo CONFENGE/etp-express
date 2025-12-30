@@ -1,28 +1,39 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-29 | **Progresso:** 553/570 (97.0%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-30 | **Progresso:** 558/581 (96.0%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR    | Commit    | Descricao                                                                  |
-| ----- | --------- | -------------------------------------------------------------------------- |
-| #1086 | `4d59021` | fix(ci): Playwright E2E timeout - chromium-only for PRs, 2 workers (#1085) |
-| #1084 | `12bd78f` | feat(editor): integrate SimilarContractsPanel into ETPEditor (#1048)       |
-| #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                       |
-| #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)              |
-| #1080 | `ec7c0ec` | fix(gov-api): implement in-memory cache fallback when Redis fails (#1056)  |
-| #1078 | `a71b9ca` | fix(etps): add ACID transaction to updateCompletionPercentage (#1057)      |
+| PR    | Commit    | Descricao                                                               |
+| ----- | --------- | ----------------------------------------------------------------------- |
+| #1097 | `8a7112c` | fix(backend): resolve Playwright test failures (#1097)                  |
+| #1094 | `4020ae2` | fix(e2e): support CI environment variables in seed-admin script (#1090) |
+| #1086 | `4d59021` | fix(ci): Playwright E2E timeout - chromium-only for PRs, 2 workers      |
+| #1084 | `12bd78f` | feat(editor): integrate SimilarContractsPanel into ETPEditor (#1048)    |
+| #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                    |
+| #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)           |
 
 ---
 
-## Issues Abertas (17)
+## Issues Abertas (23)
 
-### P1 - Alta (12 issues)
+### P0 - Critica (1 issue)
+
+| #     | Issue                                             |
+| ----- | ------------------------------------------------- |
+| #1103 | tracking: E2E Playwright test failures (69 tests) |
+
+### P1 - Alta (17 issues)
 
 | #     | Issue                                                                 |
 | ----- | --------------------------------------------------------------------- |
+| #1102 | fix(e2e): Manager module tests failing (dashboard, users)             |
+| #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                     |
+| #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)            |
+| #1099 | fix(e2e): Auth module tests failing (logout, password-reset, role)    |
+| #1098 | fix(e2e): Admin module tests failing (audit, dashboard, domains)      |
 | #1088 | [E2E] Fix 92 Playwright test failures in CI                           |
 | #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled          |
 | #1062 | [Gov-API] Implementar carregamento automatico de dados SINAPI/SICRO   |
@@ -74,10 +85,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 570   |
-| Issues Abertas    | 17    |
-| Issues Fechadas   | 553   |
-| Progresso         | 97.0% |
+| Issues Totais     | 581   |
+| Issues Abertas    | 23    |
+| Issues Fechadas   | 558   |
+| Progresso         | 96.0% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2180  |
