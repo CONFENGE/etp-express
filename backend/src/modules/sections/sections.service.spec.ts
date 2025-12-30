@@ -160,7 +160,8 @@ describe('SectionsService', () => {
   };
 
   /**
-   * Mock queryRunner for transaction testing (Issue #1064)
+   * Mock queryRunner for transaction testing
+   * Supports both update() transactions (Issue #1064) and getNextOrder transactions (Issue #1065)
    * Uses a stable queryBuilder mock that persists across calls
    */
   const mockQueryBuilder = {
@@ -169,6 +170,8 @@ describe('SectionsService', () => {
     andWhere: jest.fn().mockReturnThis(),
     setLock: jest.fn().mockReturnThis(),
     getOne: jest.fn(),
+    select: jest.fn().mockReturnThis(),
+    getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
   };
 
   const mockQueryRunner = {
@@ -267,9 +270,8 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -357,9 +359,8 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -380,18 +381,11 @@ describe('SectionsService', () => {
 
     it('should set correct order for new section', async () => {
       // Arrange
-      mockEtpsService.findOne.mockResolvedValue(mockEtp);
+      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
-      // Mock query builder for getNextOrder to return maxOrder = 2
-      const mockQueryBuilder = {
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 2 }),
-      };
-      mockSectionsRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder,
-      );
+      // Mock QueryRunner for transaction-based getNextOrder with maxOrder = 2
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
 
       // Mock create to return section with order 3
       mockSectionsRepository.create.mockImplementation((data) => ({
@@ -434,9 +428,8 @@ describe('SectionsService', () => {
       mockOrchestratorService.generateSection.mockResolvedValue(
         mockGenerationResult,
       );
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       await service.generateSection(
@@ -465,9 +458,8 @@ describe('SectionsService', () => {
       mockOrchestratorService.generateSection.mockResolvedValue(
         mockGenerationResult,
       );
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Act
       const result = await service.generateSection(
@@ -507,9 +499,8 @@ describe('SectionsService', () => {
         ...mockSection,
         status: SectionStatus.GENERATING,
       });
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Save throws PostgreSQL unique violation error (code 23505)
       const uniqueViolationError = new Error(
@@ -553,9 +544,8 @@ describe('SectionsService', () => {
         ...mockSection,
         status: SectionStatus.GENERATING,
       });
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       const uniqueViolationError = new Error(
         'duplicate key value violates unique constraint',
@@ -586,9 +576,8 @@ describe('SectionsService', () => {
         ...mockSection,
         status: SectionStatus.GENERATING,
       });
-      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
-        maxOrder: 0,
-      });
+      // Mock QueryRunner for transaction-based getNextOrder
+      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
       // Different error (not unique violation)
       const connectionError = new Error('Connection refused');
@@ -1291,8 +1280,12 @@ describe('SectionsService', () => {
    * Validates utility functions
    */
   describe('private helper methods', () => {
+    /**
+     * Tests for getNextOrder with transaction-based locking
+     * @see #1065 - Fix race condition in getNextOrder
+     */
     describe('getNextOrder', () => {
-      it('should return 1 for first section in ETP', async () => {
+      it('should return 1 for first section in ETP using transactional lock', async () => {
         // Arrange
         mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
         mockSectionsRepository.findOne.mockResolvedValue(null);
@@ -1303,9 +1296,8 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        mockSectionsRepository
-          .createQueryBuilder()
-          .getRawOne.mockResolvedValue({ maxOrder: null });
+        // Mock QueryRunner for transaction-based getNextOrder
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: null });
 
         // Act
         const generateDto = {
@@ -1320,11 +1312,112 @@ describe('SectionsService', () => {
           mockOrganizationId,
         );
 
-        // Assert
+        // Assert - verify transaction lifecycle
+        expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
+        expect(mockQueryRunner.connect).toHaveBeenCalled();
+        expect(mockQueryRunner.startTransaction).toHaveBeenCalledWith(
+          'SERIALIZABLE',
+        );
+        expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+        expect(mockQueryRunner.release).toHaveBeenCalled();
+
+        // Assert - verify order is 1
         expect(mockSectionsRepository.create).toHaveBeenCalledWith(
           expect.objectContaining({
             order: 1,
           }),
+        );
+      });
+
+      it('should return maxOrder + 1 for subsequent sections', async () => {
+        // Arrange
+        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+        mockSectionsRepository.findOne.mockResolvedValue(null);
+        mockSectionsRepository.create.mockReturnValue(mockSection);
+        mockSectionsRepository.save.mockResolvedValue(mockSection);
+        mockOrchestratorService.generateSection.mockResolvedValue(
+          mockGenerationResult,
+        );
+        // Mock existing sections with maxOrder = 5
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 5 });
+
+        // Act
+        const generateDto = {
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Test',
+          userInput: 'Test',
+        };
+        await service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        );
+
+        // Assert - verify order is 6
+        expect(mockSectionsRepository.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            order: 6,
+          }),
+        );
+      });
+
+      it('should rollback transaction on error', async () => {
+        // Arrange
+        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+        mockSectionsRepository.findOne.mockResolvedValue(null);
+        // Mock QueryRunner to throw error
+        const dbError = new Error('Database connection lost');
+        mockQueryBuilder.getRawOne.mockRejectedValue(dbError);
+
+        // Act & Assert
+        const generateDto = {
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Test',
+          userInput: 'Test',
+        };
+        await expect(
+          service.generateSection(
+            mockEtpId,
+            generateDto,
+            mockUserId,
+            mockOrganizationId,
+          ),
+        ).rejects.toThrow('Database connection lost');
+
+        // Verify rollback was called
+        expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+        expect(mockQueryRunner.release).toHaveBeenCalled();
+      });
+
+      it('should use pessimistic_write lock to prevent race conditions', async () => {
+        // Arrange
+        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+        mockSectionsRepository.findOne.mockResolvedValue(null);
+        mockSectionsRepository.create.mockReturnValue(mockSection);
+        mockSectionsRepository.save.mockResolvedValue(mockSection);
+        mockOrchestratorService.generateSection.mockResolvedValue(
+          mockGenerationResult,
+        );
+
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
+
+        // Act
+        const generateDto = {
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Test',
+          userInput: 'Test',
+        };
+        await service.generateSection(
+          mockEtpId,
+          generateDto,
+          mockUserId,
+          mockOrganizationId,
+        );
+
+        // Assert - verify pessimistic_write lock was used
+        expect(mockQueryBuilder.setLock).toHaveBeenCalledWith(
+          'pessimistic_write',
         );
       });
     });
@@ -1352,9 +1445,8 @@ describe('SectionsService', () => {
           mockOrchestratorService.generateSection.mockResolvedValue(
             mockGenerationResult,
           );
-          mockSectionsRepository
-            .createQueryBuilder()
-            .getRawOne.mockResolvedValue({ maxOrder: 0 });
+          // Mock QueryRunner for transaction-based getNextOrder
+          mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
           await service.generateSection(
             mockEtpId,
@@ -1386,9 +1478,8 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        mockSectionsRepository
-          .createQueryBuilder()
-          .getRawOne.mockResolvedValue({ maxOrder: 0 });
+        // Mock QueryRunner for transaction-based getNextOrder
+        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
 
         await service.generateSection(
           mockEtpId,
