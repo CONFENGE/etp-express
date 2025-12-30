@@ -67,6 +67,10 @@ async function createETP(
   title: string,
   description?: string,
 ): Promise<string> {
+  // Default objeto text (required field since #1007)
+  const defaultObjeto =
+    'Objeto de teste para validacao E2E do fluxo de edicao de ETP';
+
   const newEtpButton = page.locator('text=Novo ETP').first();
   await newEtpButton.click();
   await page.waitForTimeout(500);
@@ -76,6 +80,7 @@ async function createETP(
 
   if (isDialog) {
     await page.fill('input#title, input[name="title"]', title);
+    await page.fill('textarea#objeto, textarea[name="objeto"]', defaultObjeto);
     if (description) {
       await page.fill(
         'textarea#description, textarea[name="description"]',
@@ -85,6 +90,7 @@ async function createETP(
     await page.click('button:has-text("Criar ETP")');
   } else {
     await page.fill('input[name="title"], input#title', title);
+    await page.fill('textarea[name="objeto"], textarea#objeto', defaultObjeto);
     if (description) {
       await page.fill(
         'textarea[name="description"], textarea#description',

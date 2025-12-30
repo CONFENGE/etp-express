@@ -172,9 +172,7 @@ async function deleteETP(page: Page, etpTitle: string): Promise<void> {
   const menuButton = etpCard
     .locator('..')
     .locator('..')
-    .locator(
-      'button[aria-label="Opcoes do ETP"], button:has([class*="MoreVertical"])',
-    );
+    .locator('button[aria-label="Opções do ETP"]');
 
   await menuButton.click();
   await page.waitForTimeout(300);
