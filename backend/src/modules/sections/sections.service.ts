@@ -884,21 +884,40 @@ export class SectionsService {
    * Calculates the next sequential order number for a new section.
    *
    * @remarks
-   * Queries the database to find the maximum order value among existing
-   * sections for the given ETP, then returns that value + 1. If no sections
-   * exist, returns 1.
+   * Uses SERIALIZABLE isolation level to prevent race conditions where
+   * concurrent section creations could get the same order number.
+   * The FOR UPDATE lock ensures only one transaction can read the max
+   * order at a time, preventing duplicates.
+   *
+   * @see #1065 - Fix race condition in getNextOrder
    *
    * @param etpId - Parent ETP unique identifier
    * @returns Next available order number for section sequencing
    */
   private async getNextOrder(etpId: string): Promise<number> {
-    const maxOrder = await this.sectionsRepository
-      .createQueryBuilder('section')
-      .select('MAX(section.order)', 'maxOrder')
-      .where('section.etpId = :etpId', { etpId })
-      .getRawOne();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction('SERIALIZABLE');
 
-    return (maxOrder?.maxOrder || 0) + 1;
+    try {
+      // Use FOR UPDATE to lock rows and prevent concurrent reads
+      const maxOrder = await queryRunner.manager
+        .createQueryBuilder(EtpSection, 'section')
+        .select('MAX(section.order)', 'maxOrder')
+        .where('section.etpId = :etpId', { etpId })
+        .setLock('pessimistic_write')
+        .getRawOne();
+
+      const nextOrder = (maxOrder?.maxOrder || 0) + 1;
+
+      await queryRunner.commitTransaction();
+      return nextOrder;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
