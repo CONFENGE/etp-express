@@ -221,10 +221,8 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Click actions menu
     await actionsButton.click();
 
-    // Click "Ver Detalhes" or "View Details" (check which text is used)
-    const viewDetailsOption = page
-      .locator('text=Ver Detalhes, text=View Details')
-      .first();
+    // Click "Ver Detalhes" option (Portuguese UI)
+    const viewDetailsOption = page.getByText('Ver Detalhes').first();
     await expect(viewDetailsOption).toBeVisible({
       timeout: TEST_CONFIG.timeouts.dialog,
     });
@@ -246,7 +244,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await expect(domainUsersCard).toBeVisible();
 
     // Verify status badge is visible (English labels: Active/Inactive)
-    const statusBadge = page.locator('text=Active, text=Inactive').first();
+    const statusBadge = page
+      .getByText(/^(Active|Inactive|Ativo|Inativo)$/)
+      .first();
     await expect(statusBadge).toBeVisible();
 
     console.log('View domain details: PASSED');
@@ -284,9 +284,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail via actions menu
     await actionsButton.click();
-    const viewDetailsOption = page
-      .locator('text=Ver Detalhes, text=View Details')
-      .first();
+    const viewDetailsOption = page.getByText('Ver Detalhes').first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -366,9 +364,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail
     await actionsButton.click();
-    const viewDetailsOption = page
-      .locator('text=Ver Detalhes, text=View Details')
-      .first();
+    const viewDetailsOption = page.getByText('Ver Detalhes').first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -442,17 +438,13 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Click "Edit" or "Editar" option
     const editOption = page
-      .locator(
-        '[role="menuitem"]:has-text("Edit"), [role="menuitem"]:has-text("Editar"), text=Edit, text=Editar',
-      )
+      .getByRole('menuitem', { name: /Edit|Editar/i })
       .first();
     const hasEditOption = await editOption.isVisible().catch(() => false);
 
     if (!hasEditOption) {
       // Navigate to domain detail and look for edit button there
-      const viewDetailsOption = page
-        .locator('text=Ver Detalhes, text=View Details')
-        .first();
+      const viewDetailsOption = page.getByText('Ver Detalhes').first();
       await viewDetailsOption.click();
 
       // Wait for detail page
@@ -508,10 +500,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify success message (try both languages)
-    const successToast = page.locator(
-      'text=Domain updated successfully, text=Domínio atualizado com sucesso, text=successfully updated, text=saved',
-    );
+    // Verify success message (try both languages) or dialog closed successfully
+    const successToast = page
+      .getByText(/updated|atualizado|saved|salvo/i)
+      .first();
     const hasSuccess = await successToast.isVisible().catch(() => false);
 
     // Success can be indicated by dialog closing without error
@@ -553,9 +545,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail
     await actionsButton.click();
-    const viewDetailsOption = page
-      .locator('text=Ver Detalhes, text=View Details')
-      .first();
+    const viewDetailsOption = page.getByText('Ver Detalhes').first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -563,8 +553,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Wait for statistics to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for page content to load
+    await page.waitForSelector('text=Domain Information', {
+      timeout: TEST_CONFIG.timeouts.dataLoad,
+    });
 
     // Check for statistics indicators
     // Look for user count display (e.g., "X users", "X of Y users")

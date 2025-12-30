@@ -57,16 +57,16 @@ async function loginUser(
 async function performLogout(page: import('@playwright/test').Page) {
   // Look for user menu (avatar button with dynamic aria-label "User menu for ...")
   // The user menu is a dropdown that contains the logout option
-  const userMenu = page.locator(
-    'button[aria-label^="User menu for"], button[aria-haspopup="menu"]',
-  );
+  const userMenu = page.locator('button[aria-label^="User menu for"]');
 
-  // Click user menu to open dropdown
-  await userMenu.first().click();
-  await page.waitForTimeout(500);
+  // Wait for menu to be visible and click
+  await expect(userMenu).toBeVisible({ timeout: 5000 });
+  await userMenu.click();
 
-  // Click logout option in dropdown
-  await page.click('text=Sair');
+  // Wait for dropdown menu to appear
+  const logoutOption = page.getByRole('menuitem', { name: 'Sair' });
+  await expect(logoutOption).toBeVisible({ timeout: 3000 });
+  await logoutOption.click();
 }
 
 /**
@@ -352,18 +352,19 @@ test.describe('Logout Edge Cases', () => {
     await loginUser(page, TEST_CONFIG.admin);
 
     // Find user menu (avatar button with dynamic aria-label)
-    const userMenu = page.locator(
-      'button[aria-label^="User menu for"], button[aria-haspopup="menu"]',
-    );
+    const userMenu = page.locator('button[aria-label^="User menu for"]');
+    await expect(userMenu).toBeVisible({ timeout: 5000 });
 
     // Click user menu to open dropdown
-    await userMenu.first().click();
-    await page.waitForTimeout(300);
+    await userMenu.click();
 
-    // Click logout - multiple clicks should be handled gracefully
-    await page.click('text=Sair');
+    // Wait for logout option and click
+    const logoutOption = page.getByRole('menuitem', { name: 'Sair' });
+    await expect(logoutOption).toBeVisible({ timeout: 3000 });
+    await logoutOption.click();
+
     // Try clicking again while redirecting (may fail, that's expected)
-    await page.click('text=Sair').catch(() => {
+    await logoutOption.click().catch(() => {
       // Expected to potentially fail during redirect
     });
 

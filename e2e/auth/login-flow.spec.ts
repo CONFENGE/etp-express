@@ -411,8 +411,9 @@ test.describe('Login Flow - Critical Path', () => {
       await logoutButton.click();
     } else if (await userMenu.isVisible()) {
       await userMenu.click();
-      await page.waitForTimeout(500);
-      await page.click('text=Sair, text=Logout');
+      const logoutOption = page.getByRole('menuitem', { name: 'Sair' });
+      await expect(logoutOption).toBeVisible({ timeout: 3000 });
+      await logoutOption.click();
     } else {
       // Skip if logout mechanism not found
       console.log(
