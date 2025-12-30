@@ -114,8 +114,8 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
    * - LGPD compliance info card is visible
    */
   test('export audit logs', async ({ page }) => {
-    // Navigate to audit logs export page
-    await page.goto('/admin/audit');
+    // Navigate to audit logs export page (correct route is /admin/audit-export)
+    await page.goto('/admin/audit-export');
     await page.waitForLoadState('networkidle');
 
     // Verify page header

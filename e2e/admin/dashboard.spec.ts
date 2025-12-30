@@ -123,7 +123,7 @@ test.describe('Admin Dashboard - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description text
+    // Verify description text (UI is in Portuguese)
     const description = page.locator(
       'text=Manage domains and users across the platform',
     );
@@ -134,7 +134,8 @@ test.describe('Admin Dashboard - Happy Path', () => {
     const loadingSkeletons = page.locator('[class*="Skeleton"]');
     const skeletonsVisible = (await loadingSkeletons.count()) > 0;
     // After data loads, skeletons should be replaced with actual content
-    const statsCards = page.locator('text=Total Domains');
+    // UI labels are in Portuguese: "Total de Domínios"
+    const statsCards = page.locator('text=Total de Domínios');
     await expect(statsCards).toBeVisible({
       timeout: TEST_CONFIG.timeouts.dataLoad,
     });
@@ -150,9 +151,9 @@ test.describe('Admin Dashboard - Happy Path', () => {
    *
    * @acceptance-criteria
    * - Statistics cards are visible
-   * - "Total Domains" card shows a number
-   * - "Total Users" card shows a number
-   * - "Active Domains" card shows a number
+   * - "Total de Domínios" card shows a number
+   * - "Total de Usuários" card shows a number
+   * - "Domínios Ativos" card shows a number
    */
   test('view domain statistics on dashboard', async ({ page }) => {
     await page.goto('/admin');
@@ -161,18 +162,18 @@ test.describe('Admin Dashboard - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Verify Total Domains card
-    const totalDomainsCard = page.locator('text=Total Domains').first();
+    // Verify Total Domains card (Portuguese: "Total de Domínios")
+    const totalDomainsCard = page.locator('text=Total de Domínios').first();
     await expect(totalDomainsCard).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify Total Users card
-    const totalUsersCard = page.locator('text=Total Users').first();
+    // Verify Total Users card (Portuguese: "Total de Usuários")
+    const totalUsersCard = page.locator('text=Total de Usuários').first();
     await expect(totalUsersCard).toBeVisible();
 
-    // Verify Active Domains card
-    const activeDomainsCard = page.locator('text=Active Domains').first();
+    // Verify Active Domains card (Portuguese: "Domínios Ativos")
+    const activeDomainsCard = page.locator('text=Domínios Ativos').first();
     await expect(activeDomainsCard).toBeVisible();
 
     // Verify cards have numeric values (not loading skeletons)
@@ -198,7 +199,7 @@ test.describe('Admin Dashboard - Happy Path', () => {
     await page.goto('/admin');
     await page.waitForLoadState('networkidle');
 
-    // Find and click "Manage Domains" button
+    // Find and click "Manage Domains" button (English label in UI)
     const manageDomainsButton = page
       .locator('a:has-text("Manage Domains")')
       .first();
@@ -213,15 +214,15 @@ test.describe('Admin Dashboard - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify Domain Management page header
-    const domainsMgmtHeader = page.locator('h1:has-text("Domains")');
+    // Verify Domain Management page header (Portuguese: "Domínios")
+    const domainsMgmtHeader = page.locator('h1:has-text("Domínios")');
     await expect(domainsMgmtHeader).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description
+    // Verify description (Portuguese)
     const description = page.locator(
-      'text=Manage authorized institutional domains',
+      'text=Gerencie os domínios institucionais autorizados',
     );
     await expect(description).toBeVisible();
 

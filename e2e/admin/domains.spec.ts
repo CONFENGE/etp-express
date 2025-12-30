@@ -115,7 +115,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
    *
    * @acceptance-criteria
    * - Admin can navigate to domain management
-   * - "Add Domain" button is visible and clickable
+   * - "Adicionar Domínio" button is visible and clickable
    * - Create domain dialog opens
    * - Domain can be created with valid data
    * - Success message is displayed
@@ -126,14 +126,16 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Verify page loaded
-    const header = page.locator('h1:has-text("Domains")');
+    // Verify page loaded (Portuguese: "Domínios")
+    const header = page.locator('h1:has-text("Domínios")');
     await expect(header).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Click "Add Domain" button
-    const addDomainButton = page.locator('button:has-text("Add Domain")');
+    // Click "Adicionar Domínio" button (Portuguese)
+    const addDomainButton = page.locator(
+      'button:has-text("Adicionar Domínio")',
+    );
     await expect(addDomainButton).toBeVisible();
     await addDomainButton.click();
 
@@ -162,8 +164,8 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify success toast appears
-    const successToast = page.locator('text=Domain created successfully');
+    // Verify success toast appears (Portuguese: "Domínio criado com sucesso")
+    const successToast = page.locator('text=Domínio criado com sucesso');
     await expect(successToast).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
@@ -185,7 +187,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
    *
    * @acceptance-criteria
    * - Domain list displays domains with action buttons
-   * - Clicking "View Details" opens the domain detail page
+   * - Clicking "Ver Detalhes" opens the domain detail page
    * - Domain detail page shows correct domain information
    * - Domain Information card is visible
    * - Domain Users card is visible
@@ -199,7 +201,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const actionsButton = page
+      .locator('button[aria-label*="Actions"], button[aria-label*="Ações"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -211,8 +215,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Click actions menu
     await actionsButton.click();
 
-    // Click "View Details"
-    const viewDetailsOption = page.locator('text=View Details');
+    // Click "Ver Detalhes" or "View Details" (check which text is used)
+    const viewDetailsOption = page
+      .locator('text=Ver Detalhes, text=View Details')
+      .first();
     await expect(viewDetailsOption).toBeVisible({
       timeout: TEST_CONFIG.timeouts.dialog,
     });
@@ -223,17 +229,17 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify Domain Information card is visible
+    // Verify Domain Information card is visible (English in DomainDetail.tsx)
     const domainInfoCard = page.locator('text=Domain Information');
     await expect(domainInfoCard).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify Domain Users card is visible
+    // Verify Domain Users card is visible (English in DomainDetail.tsx)
     const domainUsersCard = page.locator('text=Domain Users');
     await expect(domainUsersCard).toBeVisible();
 
-    // Verify status badge is visible
+    // Verify status badge is visible (English labels: Active/Inactive)
     const statusBadge = page.locator('text=Active, text=Inactive').first();
     await expect(statusBadge).toBeVisible();
 
@@ -260,7 +266,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const actionsButton = page
+      .locator('button[aria-label*="Actions"], button[aria-label*="Ações"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -270,7 +278,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail via actions menu
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page
+      .locator('text=Ver Detalhes, text=View Details')
+      .first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -278,7 +288,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Find "Assign Manager" or "Change Manager" button
+    // Find "Assign Manager" or "Change Manager" button (English labels in DomainDetail.tsx)
     const assignManagerButton = page.locator(
       'button:has-text("Assign Manager"), button:has-text("Change Manager")',
     );
@@ -299,9 +309,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const dialogContent = dialog.locator('div');
     await expect(dialogContent).toBeVisible();
 
-    // Close dialog (cancel)
+    // Close dialog (cancel) - try both English and Portuguese labels
     const closeButton = dialog.locator(
-      'button:has-text("Cancel"), button[aria-label="Close"]',
+      'button:has-text("Cancel"), button:has-text("Cancelar"), button[aria-label="Close"]',
     );
     if (await closeButton.isVisible()) {
       await closeButton.click();
@@ -338,7 +348,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const actionsButton = page
+      .locator('button[aria-label*="Actions"], button[aria-label*="Ações"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -348,7 +360,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page
+      .locator('text=Ver Detalhes, text=View Details')
+      .first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -356,7 +370,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify Domain Users card is visible
+    // Verify Domain Users card is visible (English in DomainDetail.tsx)
     const domainUsersTitle = page.locator('text=Domain Users');
     await expect(domainUsersTitle).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
@@ -365,7 +379,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for users to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Check for either users list or empty state
+    // Check for either users list or empty state (English message)
     const hasUsers = await page
       .locator('[class*="rounded-full"]')
       .count()
@@ -407,7 +421,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const actionsButton = page
+      .locator('button[aria-label*="Actions"], button[aria-label*="Ações"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -418,15 +434,19 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Click actions menu
     await actionsButton.click();
 
-    // Click "Edit" option
-    const editOption = page.locator(
-      '[role="menuitem"]:has-text("Edit"), text=Edit',
-    );
+    // Click "Edit" or "Editar" option
+    const editOption = page
+      .locator(
+        '[role="menuitem"]:has-text("Edit"), [role="menuitem"]:has-text("Editar"), text=Edit, text=Editar',
+      )
+      .first();
     const hasEditOption = await editOption.isVisible().catch(() => false);
 
     if (!hasEditOption) {
       // Navigate to domain detail and look for edit button there
-      const viewDetailsOption = page.locator('text=View Details');
+      const viewDetailsOption = page
+        .locator('text=Ver Detalhes, text=View Details')
+        .first();
       await viewDetailsOption.click();
 
       // Wait for detail page
@@ -436,7 +456,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
       // Find edit button on detail page
       const editButton = page.locator(
-        'button:has-text("Edit"), button[aria-label*="Edit"]',
+        'button:has-text("Edit"), button:has-text("Editar"), button[aria-label*="Edit"]',
       );
       await expect(editButton).toBeVisible({
         timeout: TEST_CONFIG.timeouts.action,
@@ -471,9 +491,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
       await maxUsersInput.fill(String(newValue));
     }
 
-    // Submit form
+    // Submit form - try both English and Portuguese labels
     const submitButton = dialog.locator(
-      'button[type="submit"], button:has-text("Save"), button:has-text("Update")',
+      'button[type="submit"], button:has-text("Save"), button:has-text("Salvar"), button:has-text("Update"), button:has-text("Atualizar")',
     );
     await submitButton.click();
 
@@ -482,9 +502,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify success message
+    // Verify success message (try both languages)
     const successToast = page.locator(
-      'text=Domain updated successfully, text=successfully updated, text=saved',
+      'text=Domain updated successfully, text=Domínio atualizado com sucesso, text=successfully updated, text=saved',
     );
     const hasSuccess = await successToast.isVisible().catch(() => false);
 
@@ -515,7 +535,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    const actionsButton = page
+      .locator('button[aria-label*="Actions"], button[aria-label*="Ações"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -525,7 +547,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page
+      .locator('text=Ver Detalhes, text=View Details')
+      .first();
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -541,7 +565,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const userCountPattern = page.locator('text=/\\d+.*user/i');
     const hasUserCount = await userCountPattern.count().then((c) => c > 0);
 
-    // Look for domain info card with stats
+    // Look for domain info card with stats (English in DomainDetail.tsx)
     const domainInfoCard = page.locator('text=Domain Information');
     const hasDomainInfo = await domainInfoCard.isVisible().catch(() => false);
 
