@@ -24,7 +24,7 @@ import { API_URL } from '@/lib/constants';
  * Audit action types matching backend enum
  */
 const AUDIT_ACTIONS = [
-  { value: '', label: 'All Actions' },
+  { value: 'all', label: 'All Actions' },
   { value: 'create', label: 'Create' },
   { value: 'update', label: 'Update' },
   { value: 'delete', label: 'Delete' },
@@ -68,7 +68,7 @@ export function AuditLogsExport() {
     startDate: '',
     endDate: '',
     userId: '',
-    action: '',
+    action: 'all',
     limit: 10000,
   });
 
@@ -92,7 +92,7 @@ export function AuditLogsExport() {
     if (filters.userId) {
       params.set('userId', filters.userId);
     }
-    if (filters.action) {
+    if (filters.action && filters.action !== 'all') {
       params.set('action', filters.action);
     }
     if (filters.limit) {
