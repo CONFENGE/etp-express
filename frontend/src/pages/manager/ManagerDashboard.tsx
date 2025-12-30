@@ -58,30 +58,30 @@ export function ManagerDashboard() {
 
   const stats: StatCardData[] = [
     {
-      label: 'Total Users',
+      label: 'Total de Usuários',
       value: users.length,
       icon: Users,
-      description: 'Users in domain',
+      description: 'Usuários no domínio',
     },
     {
-      label: 'Active Users',
+      label: 'Usuários Ativos',
       value: activeUsers,
       icon: UserCheck,
-      description: 'Currently active',
+      description: 'Atualmente ativos',
       color: 'text-green-600',
     },
     {
-      label: 'Inactive Users',
+      label: 'Usuários Inativos',
       value: inactiveUsers,
       icon: UserX,
-      description: 'Deactivated accounts',
+      description: 'Contas desativadas',
       color: 'text-gray-500',
     },
     {
-      label: 'Pending Setup',
+      label: 'Pendente Setup',
       value: pendingPasswordChange,
       icon: Clock,
-      description: 'Need password change',
+      description: 'Precisam trocar senha',
       color: 'text-yellow-600',
     },
   ];
@@ -101,15 +101,15 @@ export function ManagerDashboard() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Domain Manager
+              Gestor de Domínio
             </h1>
             <p className="text-sm text-muted-foreground sm:text-base">
-              Manage users within your domain
+              Gerencie os usuários do seu domínio
             </p>
           </div>
           <Button asChild className="w-full sm:w-auto">
             <Link to="/manager/users">
-              Manage Users
+              Gerenciar Usuários
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -120,8 +120,8 @@ export function ManagerDashboard() {
           {/* Quota Card */}
           <Card className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">User Quota</CardTitle>
-              <CardDescription>Domain capacity usage</CardDescription>
+              <CardTitle className="text-lg">Cota de Usuários</CardTitle>
+              <CardDescription>Uso da capacidade do domínio</CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center py-6">
               <QuotaIndicator quota={quota} loading={loading} size="lg" />
@@ -166,12 +166,12 @@ export function ManagerDashboard() {
         <Card className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Recent Users</CardTitle>
-              <CardDescription>Last 5 registered users</CardDescription>
+              <CardTitle>Usuários Recentes</CardTitle>
+              <CardDescription>Últimos 5 usuários cadastrados</CardDescription>
             </div>
             <Button variant="outline" size="sm" asChild>
               <Link to="/manager/users">
-                View all
+                Ver todos
                 <ArrowRight className="ml-2 h-3 w-3" />
               </Link>
             </Button>
@@ -220,9 +220,11 @@ function EmptyUsersState() {
   return (
     <div className="py-8 text-center">
       <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-      <p className="mt-4 text-muted-foreground">No users in your domain yet</p>
+      <p className="mt-4 text-muted-foreground">
+        Nenhum usuário no seu domínio ainda
+      </p>
       <Button variant="outline" className="mt-4" asChild>
-        <Link to="/manager/users">Add your first user</Link>
+        <Link to="/manager/users">Adicionar primeiro usuário</Link>
       </Button>
     </div>
   );
@@ -289,7 +291,7 @@ function RecentUsersList({ users }: RecentUsersListProps) {
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              {user.isActive ? 'Active' : 'Inactive'}
+              {user.isActive ? 'Ativo' : 'Inativo'}
             </span>
             <span className="text-xs text-muted-foreground">
               {formatDate(user.createdAt)}

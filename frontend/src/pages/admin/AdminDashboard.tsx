@@ -43,15 +43,15 @@ export function AdminDashboard() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              System Admin
+              Administração do Sistema
             </h1>
             <p className="text-sm text-muted-foreground sm:text-base">
-              Manage domains and users across the platform
+              Gerencie domínios e usuários da plataforma
             </p>
           </div>
           <Button asChild className="w-full sm:w-auto">
             <Link to="/admin/domains">
-              Manage Domains
+              Gerenciar Domínios
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -64,12 +64,12 @@ export function AdminDashboard() {
         <Card className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Recent Domains</CardTitle>
-              <CardDescription>Last 5 registered domains</CardDescription>
+              <CardTitle>Domínios Recentes</CardTitle>
+              <CardDescription>Últimos 5 domínios cadastrados</CardDescription>
             </div>
             <Button variant="outline" size="sm" asChild>
               <Link to="/admin/domains">
-                View all
+                Ver todos
                 <ExternalLink className="ml-2 h-3 w-3" />
               </Link>
             </Button>
@@ -93,10 +93,10 @@ export function AdminDashboard() {
             ) : recentDomains.length === 0 ? (
               <div className="py-8 text-center">
                 <p className="text-muted-foreground">
-                  No domains registered yet
+                  Nenhum domínio cadastrado ainda
                 </p>
                 <Button variant="outline" className="mt-4" asChild>
-                  <Link to="/admin/domains">Add your first domain</Link>
+                  <Link to="/admin/domains">Adicionar primeiro domínio</Link>
                 </Button>
               </div>
             ) : (
@@ -110,9 +110,9 @@ export function AdminDashboard() {
                     <div>
                       <p className="font-medium">{domain.domain}</p>
                       <p className="text-sm text-muted-foreground">
-                        {domain.currentUsers ?? 0} / {domain.maxUsers} users
+                        {domain.currentUsers ?? 0} / {domain.maxUsers} usuários
                         {domain.managerName &&
-                          ` \u00B7 Manager: ${domain.managerName}`}
+                          ` \u00B7 Gestor: ${domain.managerName}`}
                       </p>
                     </div>
                     <span
@@ -122,7 +122,7 @@ export function AdminDashboard() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {domain.isActive ? 'Active' : 'Inactive'}
+                      {domain.isActive ? 'Ativo' : 'Inativo'}
                     </span>
                   </Link>
                 ))}

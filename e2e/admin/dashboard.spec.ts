@@ -117,15 +117,15 @@ test.describe('Admin Dashboard - Happy Path', () => {
     // Verify we're on the admin dashboard
     await expect(page).toHaveURL(/\/admin/);
 
-    // Verify page header is visible
-    const header = page.locator('h1:has-text("System Admin")');
+    // Verify page header is visible (Portuguese: "Administração do Sistema")
+    const header = page.locator('h1:has-text("Administração do Sistema")');
     await expect(header).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description text (UI is in Portuguese)
+    // Verify description text (Portuguese)
     const description = page.locator(
-      'text=Manage domains and users across the platform',
+      'text=Gerencie domínios e usuários da plataforma',
     );
     await expect(description).toBeVisible();
 
@@ -199,9 +199,9 @@ test.describe('Admin Dashboard - Happy Path', () => {
     await page.goto('/admin');
     await page.waitForLoadState('networkidle');
 
-    // Find and click "Manage Domains" button (English label in UI)
+    // Find and click "Gerenciar Domínios" button (Portuguese)
     const manageDomainsButton = page
-      .locator('a:has-text("Manage Domains")')
+      .locator('a:has-text("Gerenciar Domínios")')
       .first();
     await expect(manageDomainsButton).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,

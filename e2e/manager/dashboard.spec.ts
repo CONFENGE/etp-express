@@ -120,7 +120,7 @@ test.describe('Manager Dashboard - Happy Path', () => {
     await expect(page).toHaveURL(/\/manager/);
 
     // Verify page header is visible
-    const header = page.locator('h1:has-text("Domain Manager")');
+    const header = page.locator('h1:has-text("Gestor de Domínio")');
     await expect(header).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
@@ -233,7 +233,7 @@ test.describe('Manager Dashboard - Happy Path', () => {
 
     // Verify Recent Users card
     const recentUsersTitle = page.locator(
-      'h3:has-text("Recent Users"), [class*="CardTitle"]:has-text("Recent Users")',
+      'h3:has-text("Usuários Recentes"), [class*="CardTitle"]:has-text("Usuários Recentes")',
     );
     await expect(recentUsersTitle.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
@@ -282,7 +282,7 @@ test.describe('Manager Dashboard - Happy Path', () => {
 
     // Find and click "Manage Users" button
     const manageUsersButton = page
-      .locator('a:has-text("Manage Users")')
+      .locator('a:has-text("Gerenciar Usuários")')
       .first();
     await expect(manageUsersButton).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
