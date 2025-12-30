@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-30 | **Progresso:** 558/581 (96.0%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-30 | **Progresso:** 559/581 (96.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | PR    | Commit    | Descricao                                                               |
 | ----- | --------- | ----------------------------------------------------------------------- |
+| #1089 | `cd0ec27` | fix(sections): race condition in getNextOrder with SERIALIZABLE (#1065) |
 | #1097 | `8a7112c` | fix(backend): resolve Playwright test failures (#1097)                  |
 | #1094 | `4020ae2` | fix(e2e): support CI environment variables in seed-admin script (#1090) |
 | #1086 | `4d59021` | fix(ci): Playwright E2E timeout - chromium-only for PRs, 2 workers      |
@@ -17,7 +18,7 @@
 
 ---
 
-## Issues Abertas (23)
+## Issues Abertas (22)
 
 ### P0 - Critica (1 issue)
 
@@ -25,7 +26,7 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - Alta (17 issues)
+### P1 - Alta (16 issues)
 
 | #     | Issue                                                                 |
 | ----- | --------------------------------------------------------------------- |
@@ -39,7 +40,6 @@
 | #1062 | [Gov-API] Implementar carregamento automatico de dados SINAPI/SICRO   |
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico               |
 | #1064 | [Concorrencia] Usar transacao em update de status de secao            |
-| #1065 | [Concorrencia] Corrigir race condition em getNextOrder                |
 | #1066 | [Frontend] Remover global AbortController para evitar cancelamento    |
 | #1067 | [Gov-API] Implementar alerting automatico para circuit breaker        |
 | #1068 | [Gov-API] Otimizar configuracao de retry para janelas de manutencao   |
@@ -86,14 +86,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 581   |
-| Issues Abertas    | 23    |
-| Issues Fechadas   | 558   |
-| Progresso         | 96.0% |
+| Issues Abertas    | 22    |
+| Issues Fechadas   | 559   |
+| Progresso         | 96.2% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2180  |
+| Backend Tests     | 2192  |
 | Frontend Tests    | 1412  |
-| Total Tests       | 3592  |
+| Total Tests       | 3604  |
 
 ---
 
