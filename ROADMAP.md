@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-30 | **Progresso:** 559/581 (96.2%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-30 | **Progresso:** 559/586 (95.4%) | **Deploy:** LIVE
 
 ---
 
@@ -18,18 +18,23 @@
 
 ---
 
-## Issues Abertas (22)
+## Issues Abertas (27)
 
-### P0 - Critica (1 issue)
+### P0 - Critica (3 issues)
 
-| #     | Issue                                             |
-| ----- | ------------------------------------------------- |
-| #1103 | tracking: E2E Playwright test failures (69 tests) |
+| #     | Issue                                                         |
+| ----- | ------------------------------------------------------------- |
+| #1112 | fix(frontend): useToast hook missing useCallback (ROOT CAUSE) |
+| #1108 | fix(frontend): Maximum update depth exceeded in DomainMgmt    |
+| #1103 | tracking: E2E Playwright test failures (69 tests)             |
 
-### P1 - Alta (16 issues)
+### P1 - Alta (19 issues)
 
 | #     | Issue                                                                 |
 | ----- | --------------------------------------------------------------------- |
+| #1111 | fix(ci): rotate-secrets workflow failing on every run                 |
+| #1110 | fix(e2e): Strict mode violations - selectors matching multiple elems  |
+| #1109 | fix(backend): Domain creation returns 400 Bad Request                 |
 | #1102 | fix(e2e): Manager module tests failing (dashboard, users)             |
 | #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                     |
 | #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)            |
@@ -85,10 +90,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 581   |
-| Issues Abertas    | 22    |
+| Issues Totais     | 586   |
+| Issues Abertas    | 27    |
 | Issues Fechadas   | 559   |
-| Progresso         | 96.2% |
+| Progresso         | 95.4% |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2192  |

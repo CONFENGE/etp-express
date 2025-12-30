@@ -1,24 +1,37 @@
+import { useCallback } from 'react';
 import { useUIStore } from '@/store/uiStore';
 import { TOAST_DURATION } from '@/lib/constants';
 
-export function useToast() {
-  const { showToast } = useUIStore();
+interface ToastOptions {
+  title?: string;
+  description?: string;
+  variant?: 'default' | 'destructive' | 'success';
+  duration?: number;
+}
 
-  return {
-    toast: ({
+/**
+ * Hook for showing toast notifications.
+ * All returned functions are memoized with useCallback to prevent
+ * infinite re-render loops when used in useEffect dependencies.
+ */
+export function useToast() {
+  // Use Zustand selector for stable reference
+  const showToast = useUIStore((state) => state.showToast);
+
+  const toast = useCallback(
+    ({
       title,
       description,
       variant = 'default',
       duration = TOAST_DURATION,
-    }: {
-      title?: string;
-      description?: string;
-      variant?: 'default' | 'destructive' | 'success';
-      duration?: number;
-    }) => {
+    }: ToastOptions) => {
       showToast({ title, description, variant, duration });
     },
-    success: (description: string, title = 'Sucesso') => {
+    [showToast],
+  );
+
+  const success = useCallback(
+    (description: string, title = 'Sucesso') => {
       showToast({
         title,
         description,
@@ -26,7 +39,11 @@ export function useToast() {
         duration: TOAST_DURATION,
       });
     },
-    error: (description: string, title = 'Erro') => {
+    [showToast],
+  );
+
+  const error = useCallback(
+    (description: string, title = 'Erro') => {
       showToast({
         title,
         description,
@@ -34,5 +51,8 @@ export function useToast() {
         duration: TOAST_DURATION,
       });
     },
-  };
+    [showToast],
+  );
+
+  return { toast, success, error };
 }
