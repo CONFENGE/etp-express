@@ -160,9 +160,20 @@ describe('SectionsService', () => {
   };
 
   /**
-   * Mock DataSource for transaction-based getNextOrder
-   * @see #1065 - Fix race condition in getNextOrder
+   * Mock queryRunner for transaction testing
+   * Supports both update() transactions (Issue #1064) and getNextOrder transactions (Issue #1065)
+   * Uses a stable queryBuilder mock that persists across calls
    */
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    setLock: jest.fn().mockReturnThis(),
+    getOne: jest.fn(),
+    select: jest.fn().mockReturnThis(),
+    getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
+  };
+
   const mockQueryRunner = {
     connect: jest.fn(),
     startTransaction: jest.fn(),
@@ -170,17 +181,14 @@ describe('SectionsService', () => {
     rollbackTransaction: jest.fn(),
     release: jest.fn(),
     manager: {
-      createQueryBuilder: jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        setLock: jest.fn().mockReturnThis(),
-        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-      })),
+      save: jest.fn(),
+      update: jest.fn(),
+      createQueryBuilder: jest.fn(() => mockQueryBuilder),
     },
   };
 
   const mockDataSource = {
-    createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
+    createQueryRunner: jest.fn(() => mockQueryRunner),
   };
 
   beforeEach(async () => {
@@ -890,7 +898,7 @@ describe('SectionsService', () => {
 
   /**
    * Tests for update()
-   * Validates manual section updates
+   * Validates manual section updates with ACID transactions (Issue #1064)
    */
   describe('update', () => {
     const updateDto = {
@@ -899,11 +907,30 @@ describe('SectionsService', () => {
       status: SectionStatus.APPROVED,
     };
 
-    it('should update section successfully', async () => {
+    beforeEach(() => {
+      // Reset queryRunner mocks
+      mockQueryRunner.connect.mockResolvedValue(undefined);
+      mockQueryRunner.startTransaction.mockResolvedValue(undefined);
+      mockQueryRunner.commitTransaction.mockResolvedValue(undefined);
+      mockQueryRunner.rollbackTransaction.mockResolvedValue(undefined);
+      mockQueryRunner.release.mockResolvedValue(undefined);
+      mockQueryRunner.manager.save.mockReset();
+      mockQueryRunner.manager.update.mockReset();
+      mockQueryBuilder.getOne.mockReset();
+      mockQueryBuilder.setLock.mockClear();
+    });
+
+    it('should update section successfully within transaction', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
       const updatedSection = { ...mockSection, ...updateDto };
-      mockSectionsRepository.save.mockResolvedValue(updatedSection);
+      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
+
+      const mockEtpWithSections = {
+        ...mockEtp,
+        sections: [{ ...mockSection, status: SectionStatus.APPROVED }],
+      };
+      mockQueryBuilder.getOne.mockResolvedValue(mockEtpWithSections);
 
       // Act
       const result = await service.update(
@@ -912,20 +939,30 @@ describe('SectionsService', () => {
         mockOrganizationId,
       );
 
-      // Assert
-      expect(mockSectionsRepository.findOne).toHaveBeenCalled();
-      expect(mockSectionsRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: updateDto.title,
-          content: updateDto.content,
-          status: updateDto.status,
-        }),
-      );
-      expect(mockEtpsService.updateCompletionPercentage).toHaveBeenCalledWith(
-        mockSection.etpId,
-        mockOrganizationId,
-      );
+      // Assert - Verify transaction lifecycle
+      expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
+      expect(mockQueryRunner.connect).toHaveBeenCalled();
+      expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
+      expect(mockQueryRunner.manager.save).toHaveBeenCalled();
+      expect(mockQueryRunner.manager.update).toHaveBeenCalled();
+      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+      expect(mockQueryRunner.release).toHaveBeenCalled();
       expect(result.title).toBe(updateDto.title);
+    });
+
+    it('should rollback transaction on error', async () => {
+      // Arrange
+      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
+      mockQueryRunner.manager.save.mockRejectedValue(new Error('DB Error'));
+
+      // Act & Assert
+      await expect(
+        service.update(mockSectionId, updateDto, mockOrganizationId),
+      ).rejects.toThrow('DB Error');
+
+      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(mockQueryRunner.release).toHaveBeenCalled();
+      expect(mockQueryRunner.commitTransaction).not.toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when section does not exist', async () => {
@@ -938,12 +975,16 @@ describe('SectionsService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should allow partial updates', async () => {
+    it('should allow partial updates within transaction', async () => {
       // Arrange
       const partialUpdateDto = { title: 'Novo título apenas' };
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
       const updatedSection = { ...mockSection, ...partialUpdateDto };
-      mockSectionsRepository.save.mockResolvedValue(updatedSection);
+      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
+      mockQueryBuilder.getOne.mockResolvedValue({
+        ...mockEtp,
+        sections: [mockSection],
+      });
 
       // Act
       const result = await service.update(
@@ -954,7 +995,81 @@ describe('SectionsService', () => {
 
       // Assert
       expect(result.title).toBe('Novo título apenas');
-      expect(result.content).toBe(mockSection.content); // Content unchanged
+      expect(result.content).toBe(mockSection.content);
+      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+    });
+
+    it('should calculate correct completion percentage for approved sections', async () => {
+      // Arrange
+      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
+      const updatedSection = { ...mockSection, status: SectionStatus.APPROVED };
+      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
+
+      // ETP with 2 sections, 1 approved after update
+      const mockEtpWith2Sections = {
+        ...mockEtp,
+        sections: [
+          { ...mockSection, status: SectionStatus.APPROVED },
+          { ...mockSection, id: 'section-2', status: SectionStatus.GENERATED },
+        ],
+      };
+      mockQueryBuilder.getOne.mockResolvedValue(mockEtpWith2Sections);
+
+      // Act
+      await service.update(
+        mockSectionId,
+        { status: SectionStatus.APPROVED },
+        mockOrganizationId,
+      );
+
+      // Assert - Should calculate 50% (1/2 sections approved)
+      expect(mockQueryRunner.manager.update).toHaveBeenCalledWith(
+        Etp,
+        mockSection.etpId,
+        { completionPercentage: 50 },
+      );
+    });
+
+    it('should handle ETP not found gracefully within transaction', async () => {
+      // Arrange
+      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
+      const updatedSection = { ...mockSection, ...updateDto };
+      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
+      mockQueryBuilder.getOne.mockResolvedValue(null);
+
+      // Act
+      const result = await service.update(
+        mockSectionId,
+        updateDto,
+        mockOrganizationId,
+      );
+
+      // Assert - Should complete without updating ETP
+      expect(mockQueryRunner.manager.update).not.toHaveBeenCalled();
+      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+      expect(result.title).toBe(updateDto.title);
+    });
+
+    it('should use pessimistic write lock for ETP query', async () => {
+      // Arrange
+      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
+      mockQueryRunner.manager.save.mockResolvedValue({
+        ...mockSection,
+        ...updateDto,
+      });
+      mockQueryBuilder.getOne.mockResolvedValue({
+        ...mockEtp,
+        sections: [mockSection],
+      });
+
+      // Act
+      await service.update(mockSectionId, updateDto, mockOrganizationId);
+
+      // Assert - Verify pessimistic lock was requested
+      expect(mockQueryRunner.manager.createQueryBuilder).toHaveBeenCalled();
+      expect(mockQueryBuilder.setLock).toHaveBeenCalledWith(
+        'pessimistic_write',
+      );
     });
   });
 
