@@ -34,6 +34,7 @@ export interface GlobalStatistics {
  */
 export interface CreateDomainDto {
   domain: string;
+  institutionName: string;
   maxUsers: number;
 }
 
