@@ -122,7 +122,8 @@ async function createETP(
     }
 
     // Submit dialog
-    await page.click('button:has-text("Criar ETP")');
+    // Use .first() to avoid strict mode violation when button appears in multiple places
+    await page.locator('button:has-text("Criar ETP")').first().click();
 
     // Wait for navigation to ETP editor
     await page.waitForURL(/\/etps\/[^/]+$/, {
@@ -287,7 +288,8 @@ test.describe('ETP CRUD Happy Paths', () => {
 
     if (isDialog) {
       // Leave title empty and try to submit
-      const submitButton = page.locator('button:has-text("Criar ETP")');
+      // Use .first() to avoid strict mode violation
+      const submitButton = page.locator('button:has-text("Criar ETP")').first();
 
       // Try to submit with empty title
       await submitButton.click();
@@ -373,7 +375,8 @@ test.describe('ETP CRUD Happy Paths', () => {
         'Titulo valido para teste',
       );
 
-      const submitButton = page.locator('button:has-text("Criar ETP")');
+      // Use .first() to avoid strict mode violation
+      const submitButton = page.locator('button:has-text("Criar ETP")').first();
 
       // Try to submit without objeto
       await submitButton.click();
@@ -467,7 +470,8 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Fill objeto with less than 10 characters
       await page.fill('textarea#objeto, textarea[name="objeto"]', 'curto'); // 5 chars, min is 10
 
-      const submitButton = page.locator('button:has-text("Criar ETP")');
+      // Use .first() to avoid strict mode violation
+      const submitButton = page.locator('button:has-text("Criar ETP")').first();
       await submitButton.click();
 
       await page.waitForTimeout(500);
@@ -551,8 +555,8 @@ test.describe('ETP CRUD Happy Paths', () => {
       await page.fill('input#title, input[name="title"]', title);
       await page.fill('textarea#objeto, textarea[name="objeto"]', objeto);
 
-      // Submit dialog
-      await page.click('button:has-text("Criar ETP")');
+      // Submit dialog - use .first() to avoid strict mode violation
+      await page.locator('button:has-text("Criar ETP")').first().click();
     } else {
       // Fill form on page
       await page.fill('input[name="title"], input#title', title);
@@ -666,8 +670,8 @@ test.describe('ETP CRUD Happy Paths', () => {
         'Objeto para teste de erro da API',
       );
 
-      // Submit
-      await page.click('button:has-text("Criar ETP")');
+      // Submit - use .first() to avoid strict mode violation
+      await page.locator('button:has-text("Criar ETP")').first().click();
 
       // Wait for error handling
       await page.waitForTimeout(1000);

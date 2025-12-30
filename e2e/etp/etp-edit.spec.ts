@@ -87,7 +87,8 @@ async function createETP(
         description,
       );
     }
-    await page.click('button:has-text("Criar ETP")');
+    // Use .first() to avoid strict mode violation when button appears in multiple places
+    await page.locator('button:has-text("Criar ETP")').first().click();
   } else {
     await page.fill('input[name="title"], input#title', title);
     await page.fill('textarea[name="objeto"], textarea#objeto', defaultObjeto);

@@ -109,11 +109,12 @@ test.describe('Forgot Password Flow', () => {
     await page.click('button[type="submit"]');
 
     // Should show validation error - Frontend uses "invalido" without accent
+    // Use .first() to avoid strict mode violation when text appears multiple times
     const errorVisible =
-      (await page.locator('text=invalido').isVisible()) ||
-      (await page.locator('text=Email invalido').isVisible()) ||
-      (await page.locator('[class*="error"]').isVisible()) ||
-      (await page.locator('[aria-invalid="true"]').isVisible());
+      (await page.locator('text=invalido').first().isVisible()) ||
+      (await page.locator('text=Email invalido').first().isVisible()) ||
+      (await page.locator('[class*="error"]').first().isVisible()) ||
+      (await page.locator('[aria-invalid="true"]').first().isVisible());
 
     expect(errorVisible).toBe(true);
 
@@ -171,12 +172,13 @@ test.describe('Reset Password Flow', () => {
     if (onResetPage) {
       // Should show error message about invalid/missing token
       // Frontend shows "Link invalido" (without accent) when no token
+      // Use .first() to avoid strict mode violation when text appears multiple times
       const errorVisible =
-        (await page.locator('text=invalido').isVisible()) ||
-        (await page.locator('text=Link invalido').isVisible()) ||
-        (await page.locator('text=expirou').isVisible()) ||
-        (await page.locator('[class*="error"]').isVisible()) ||
-        (await page.locator('[class*="red"]').isVisible());
+        (await page.locator('text=invalido').first().isVisible()) ||
+        (await page.locator('text=Link invalido').first().isVisible()) ||
+        (await page.locator('text=expirou').first().isVisible()) ||
+        (await page.locator('[class*="error"]').first().isVisible()) ||
+        (await page.locator('[class*="red"]').first().isVisible());
 
       expect(errorVisible).toBe(true);
     } else {
@@ -196,9 +198,12 @@ test.describe('Reset Password Flow', () => {
     await page.waitForLoadState('networkidle');
 
     // If form is visible, try to submit
-    const passwordInput = page.locator(
-      'input[name="newPassword"], input#newPassword, input[type="password"]',
-    );
+    // Use .first() to avoid strict mode violation when multiple password inputs exist
+    const passwordInput = page
+      .locator(
+        'input[name="newPassword"], input#newPassword, input[type="password"]',
+      )
+      .first();
 
     if (await passwordInput.isVisible()) {
       await passwordInput.fill('NewPassword123!');
@@ -215,12 +220,13 @@ test.describe('Reset Password Flow', () => {
 
       // Should show error about invalid token
       // Frontend shows toast error or text with "invalido" or "expirou" (without accent)
+      // Use .first() to avoid strict mode violation when text appears multiple times
       const errorVisible =
-        (await page.locator('text=invalido').isVisible()) ||
-        (await page.locator('text=expirou').isVisible()) ||
-        (await page.locator('text=expirado').isVisible()) ||
-        (await page.locator('[class*="error"]').isVisible()) ||
-        (await page.locator('[role="alert"]').isVisible());
+        (await page.locator('text=invalido').first().isVisible()) ||
+        (await page.locator('text=expirou').first().isVisible()) ||
+        (await page.locator('text=expirado').first().isVisible()) ||
+        (await page.locator('[class*="error"]').first().isVisible()) ||
+        (await page.locator('[role="alert"]').first().isVisible());
 
       expect(errorVisible).toBe(true);
     }

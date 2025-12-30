@@ -96,7 +96,8 @@ async function createETP(
         description,
       );
     }
-    await page.click('button:has-text("Criar ETP")');
+    // Use .first() to avoid strict mode violation when button appears in multiple places
+    await page.locator('button:has-text("Criar ETP")').first().click();
     await page.waitForURL(/\/etps\/[^/]+$/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
