@@ -70,6 +70,7 @@ async function verifySessionCookie(page: Page): Promise<boolean> {
   const cookies = await page.context().cookies();
   const sessionCookie = cookies.find(
     (c) =>
+      c.name === 'jwt' ||
       c.name.toLowerCase().includes('session') ||
       c.name.toLowerCase().includes('token') ||
       c.name.toLowerCase().includes('auth'),
