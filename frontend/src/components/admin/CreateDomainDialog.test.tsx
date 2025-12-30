@@ -23,6 +23,7 @@ describe('CreateDomainDialog', () => {
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByLabelText('Domínio')).toBeInTheDocument();
+      expect(screen.getByLabelText('Nome da Instituição')).toBeInTheDocument();
       expect(screen.getByLabelText('Máximo de Usuários')).toBeInTheDocument();
     });
 
@@ -120,9 +121,11 @@ describe('CreateDomainDialog', () => {
       );
 
       const domainInput = screen.getByLabelText('Domínio');
+      const institutionNameInput = screen.getByLabelText('Nome da Instituição');
       const maxUsersInput = screen.getByLabelText('Máximo de Usuários');
 
       await user.type(domainInput, 'example.com');
+      await user.type(institutionNameInput, 'Prefeitura de Exemplo');
       await user.clear(maxUsersInput);
       await user.type(maxUsersInput, '50');
 
@@ -134,6 +137,7 @@ describe('CreateDomainDialog', () => {
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith({
           domain: 'example.com',
+          institutionName: 'Prefeitura de Exemplo',
           maxUsers: 50,
         });
       });
@@ -152,7 +156,9 @@ describe('CreateDomainDialog', () => {
       );
 
       const domainInput = screen.getByLabelText('Domínio');
+      const institutionNameInput = screen.getByLabelText('Nome da Instituição');
       await user.type(domainInput, 'example.com');
+      await user.type(institutionNameInput, 'Prefeitura de Exemplo');
 
       const submitButton = screen.getByRole('button', {
         name: 'Criar Domínio',
@@ -179,7 +185,9 @@ describe('CreateDomainDialog', () => {
       );
 
       const domainInput = screen.getByLabelText('Domínio');
+      const institutionNameInput = screen.getByLabelText('Nome da Instituição');
       await user.type(domainInput, 'example.com');
+      await user.type(institutionNameInput, 'Prefeitura de Exemplo');
 
       const submitButton = screen.getByRole('button', {
         name: 'Criar Domínio',
