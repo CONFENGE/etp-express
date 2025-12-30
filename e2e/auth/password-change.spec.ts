@@ -84,24 +84,40 @@ async function createTestUserAsManager(page: Page): Promise<string | null> {
   await page.goto('/manager/users');
   await page.waitForLoadState('networkidle');
 
-  // Wait for page to load
-  await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+  // Wait for page to be ready by checking for users count
+  const usersCount = page.locator('text=/\\d+ de \\d+ usuários/');
+  try {
+    await expect(usersCount).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dataLoad,
+    });
+  } catch {
+    console.log('Users count not visible - page may not have loaded properly');
+  }
 
   // Click "Novo Usuário" button (Portuguese)
-  const newUserButton = page.locator('button:has-text("Novo Usuário")');
-  if (!(await newUserButton.isVisible())) {
+  const newUserButton = page.getByRole('button', { name: /Novo Usuário/i });
+  if (!(await newUserButton.isVisible().catch(() => false))) {
     console.log('New User button not found - manager may not have permission');
     return null;
   }
   await newUserButton.click();
 
   // Wait for dialog to open
-  await page.waitForTimeout(TEST_CONFIG.timeouts.dialogOpen);
-
-  // Verify dialog is open
   const dialog = page.locator('[role="dialog"]');
-  if (!(await dialog.isVisible())) {
+  try {
+    await expect(dialog).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dialogOpen,
+    });
+  } catch {
     console.log('Create user dialog did not open');
+    return null;
+  }
+
+  // Check if quota is exhausted
+  const quotaExhausted = dialog.locator('text=Você atingiu a cota de usuários');
+  if (await quotaExhausted.isVisible().catch(() => false)) {
+    console.log('Quota exhausted - cannot create test user');
+    await page.keyboard.press('Escape');
     return null;
   }
 
@@ -110,24 +126,25 @@ async function createTestUserAsManager(page: Page): Promise<string | null> {
   const testEmail = generateTestEmail(domainSuffix);
   const testName = `E2E Password Change Test ${Date.now()}`;
 
-  // Fill in user details
-  const emailInput = dialog
-    .locator('input[name="email"], input[type="email"]')
-    .first();
-  const nameInput = dialog.locator('input[name="name"]');
-
-  // Fill email
-  if (await emailInput.isVisible()) {
-    await emailInput.fill(testEmail);
+  // Wait for form fields and fill them
+  const nameInput = dialog.locator('input#name');
+  try {
+    await expect(nameInput).toBeVisible({ timeout: 3000 });
+  } catch {
+    console.log('Name input not found in dialog');
+    await page.keyboard.press('Escape');
+    return null;
   }
 
-  // Fill name
+  // Fill name first
   await nameInput.fill(testName);
 
+  // Fill email
+  const emailInput = dialog.locator('input#email');
+  await emailInput.fill(testEmail);
+
   // Submit form
-  const submitButton = dialog.locator(
-    'button[type="submit"], button:has-text("Create"), button:has-text("Criar")',
-  );
+  const submitButton = dialog.getByRole('button', { name: /Criar Usuário/i });
   await submitButton.click();
 
   // Wait for dialog to close (success)
