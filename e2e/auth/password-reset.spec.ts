@@ -62,11 +62,12 @@ test.describe('Forgot Password Flow', () => {
     // Should show success message (even if email doesn't exist - security)
     await page.waitForTimeout(2000);
 
-    // Check for success indicators
+    // Check for success indicators - Frontend shows "Verifique seu email" on success
     const successVisible =
-      (await page.locator('text=enviado').isVisible()) ||
-      (await page.locator('text=Email').isVisible()) ||
-      (await page.locator('[class*="success"]').isVisible());
+      (await page.locator('text=Verifique seu email').isVisible()) ||
+      (await page.locator('text=recebera instrucoes').isVisible()) ||
+      (await page.locator('[class*="success"]').isVisible()) ||
+      (await page.locator('text=email').isVisible());
 
     expect(successVisible).toBe(true);
 
@@ -107,11 +108,12 @@ test.describe('Forgot Password Flow', () => {
     await page.fill('input[name="email"], input#email', 'invalid-email');
     await page.click('button[type="submit"]');
 
-    // Should show validation error
+    // Should show validation error - Frontend uses "invalido" without accent
     const errorVisible =
-      (await page.locator('text=inválido').isVisible()) ||
-      (await page.locator('text=Email inválido').isVisible()) ||
-      (await page.locator('[class*="error"]').isVisible());
+      (await page.locator('text=invalido').isVisible()) ||
+      (await page.locator('text=Email invalido').isVisible()) ||
+      (await page.locator('[class*="error"]').isVisible()) ||
+      (await page.locator('[aria-invalid="true"]').isVisible());
 
     expect(errorVisible).toBe(true);
 
@@ -168,11 +170,13 @@ test.describe('Reset Password Flow', () => {
     const onResetPage = await page.url().includes('/reset-password');
     if (onResetPage) {
       // Should show error message about invalid/missing token
+      // Frontend shows "Link invalido" (without accent) when no token
       const errorVisible =
-        (await page.locator('text=inválido').isVisible()) ||
-        (await page.locator('text=expirado').isVisible()) ||
-        (await page.locator('text=token').isVisible()) ||
-        (await page.locator('[class*="error"]').isVisible());
+        (await page.locator('text=invalido').isVisible()) ||
+        (await page.locator('text=Link invalido').isVisible()) ||
+        (await page.locator('text=expirou').isVisible()) ||
+        (await page.locator('[class*="error"]').isVisible()) ||
+        (await page.locator('[class*="red"]').isVisible());
 
       expect(errorVisible).toBe(true);
     } else {
@@ -193,7 +197,7 @@ test.describe('Reset Password Flow', () => {
 
     // If form is visible, try to submit
     const passwordInput = page.locator(
-      'input[name="password"], input#password, input[type="password"]',
+      'input[name="newPassword"], input#newPassword, input[type="password"]',
     );
 
     if (await passwordInput.isVisible()) {
@@ -210,10 +214,13 @@ test.describe('Reset Password Flow', () => {
       await page.waitForTimeout(2000);
 
       // Should show error about invalid token
+      // Frontend shows toast error or text with "invalido" or "expirou" (without accent)
       const errorVisible =
-        (await page.locator('text=inválido').isVisible()) ||
+        (await page.locator('text=invalido').isVisible()) ||
+        (await page.locator('text=expirou').isVisible()) ||
         (await page.locator('text=expirado').isVisible()) ||
-        (await page.locator('[class*="error"]').isVisible());
+        (await page.locator('[class*="error"]').isVisible()) ||
+        (await page.locator('[role="alert"]').isVisible());
 
       expect(errorVisible).toBe(true);
     }

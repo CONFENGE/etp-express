@@ -55,23 +55,18 @@ async function loginUser(
  * Helper to find and click logout button
  */
 async function performLogout(page: import('@playwright/test').Page) {
-  // Look for logout button or user menu
-  const logoutButton = page.locator(
-    'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
-  );
+  // Look for user menu (avatar button with dynamic aria-label "User menu for ...")
+  // The user menu is a dropdown that contains the logout option
   const userMenu = page.locator(
-    '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
+    'button[aria-label^="User menu for"], button[aria-haspopup="menu"]',
   );
 
-  if (await logoutButton.isVisible()) {
-    await logoutButton.click();
-  } else if (await userMenu.isVisible()) {
-    await userMenu.click();
-    await page.waitForTimeout(500);
-    await page.click('text=Sair');
-  } else {
-    throw new Error('Logout button not found');
-  }
+  // Click user menu to open dropdown
+  await userMenu.first().click();
+  await page.waitForTimeout(500);
+
+  // Click logout option in dropdown
+  await page.click('text=Sair');
 }
 
 /**
@@ -356,26 +351,21 @@ test.describe('Logout Edge Cases', () => {
   test('multiple logout clicks are handled gracefully', async ({ page }) => {
     await loginUser(page, TEST_CONFIG.admin);
 
-    // Find logout button
-    const logoutButton = page.locator(
-      'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
-    );
+    // Find user menu (avatar button with dynamic aria-label)
     const userMenu = page.locator(
-      '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
+      'button[aria-label^="User menu for"], button[aria-haspopup="menu"]',
     );
 
-    // Click logout multiple times rapidly
-    if (await logoutButton.isVisible()) {
-      await logoutButton.click();
-      // Try clicking again while redirecting
-      await logoutButton.click().catch(() => {
-        // Expected to potentially fail
-      });
-    } else if (await userMenu.isVisible()) {
-      await userMenu.click();
-      await page.waitForTimeout(300);
-      await page.click('text=Sair');
-    }
+    // Click user menu to open dropdown
+    await userMenu.first().click();
+    await page.waitForTimeout(300);
+
+    // Click logout - multiple clicks should be handled gracefully
+    await page.click('text=Sair');
+    // Try clicking again while redirecting (may fail, that's expected)
+    await page.click('text=Sair').catch(() => {
+      // Expected to potentially fail during redirect
+    });
 
     // Should still end up on login page without errors
     await expect(page).toHaveURL(/\/login/, {

@@ -203,35 +203,25 @@ test.describe('Role Login Flows', () => {
     const hasSession = await verifySessionCookie(page);
     expect(hasSession).toBe(true);
 
-    // Step 5: Try to access /admin - should be forbidden or redirected
+    // Step 5: Try to access /admin - should be redirected to home (/)
+    // Frontend's AdminProtectedRoute redirects unauthorized users to "/"
     await page.goto('/admin');
     await page.waitForLoadState('networkidle');
 
-    // Should be redirected away from admin (to dashboard, forbidden, or stay with error)
-    const adminUrl = page.url();
-    const isOnAdmin = adminUrl.includes('/admin');
-    if (isOnAdmin) {
-      // If on admin, verify there's an access denied message
-      const accessDenied = page.locator(
-        'text=Acesso negado, text=Forbidden, text=Sem permissão, text=403',
-      );
-      const hasAccessDenied = await accessDenied.isVisible().catch(() => false);
-      expect(hasAccessDenied).toBe(true);
-    }
+    // Should be redirected away from admin to dashboard or home
+    await expect(page).not.toHaveURL(/\/admin/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
 
-    // Step 6: Try to access /manager - should be forbidden or redirected
+    // Step 6: Try to access /manager - should be redirected to home (/)
+    // Frontend's ManagerProtectedRoute redirects unauthorized users to "/"
     await page.goto('/manager');
     await page.waitForLoadState('networkidle');
 
-    const managerUrl = page.url();
-    const isOnManager = managerUrl.includes('/manager');
-    if (isOnManager) {
-      const accessDenied = page.locator(
-        'text=Acesso negado, text=Forbidden, text=Sem permissão, text=403',
-      );
-      const hasAccessDenied = await accessDenied.isVisible().catch(() => false);
-      expect(hasAccessDenied).toBe(true);
-    }
+    // Should be redirected away from manager to dashboard or home
+    await expect(page).not.toHaveURL(/\/manager/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
 
     console.log('DOMAIN_USER login and restricted access: PASSED');
   });
