@@ -33,6 +33,22 @@ export default defineConfig({
 
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+
+    /* Disable onboarding tour in E2E tests to prevent overlay blocking clicks */
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: process.env.E2E_BASE_URL || 'http://localhost:5173',
+          localStorage: [
+            {
+              name: 'etp-express-tour',
+              value: JSON.stringify({ hasCompletedTour: true }),
+            },
+          ],
+        },
+      ],
+    },
   },
 
   /* Configure projects for major browsers */

@@ -223,9 +223,9 @@ test.describe('Manager Dashboard - Happy Path', () => {
    *
    * @acceptance-criteria
    * - Recent Users card is visible
-   * - Card shows "Last 5 registered users" description
+   * - Card shows "Últimos 5 usuários cadastrados" description
    * - Either user list or empty state is displayed
-   * - "View all" button is visible and links to /manager/users
+   * - "Ver todos" button is visible and links to /manager/users
    */
   test('view recent users list', async ({ page }) => {
     await page.goto('/manager');
@@ -239,12 +239,12 @@ test.describe('Manager Dashboard - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description
-    const description = page.locator('text=Last 5 registered users');
+    // Verify description (PT-BR)
+    const description = page.locator('text=Últimos 5 usuários cadastrados');
     await expect(description).toBeVisible();
 
-    // Verify "View all" button
-    const viewAllButton = page.locator('a:has-text("View all")');
+    // Verify "Ver todos" button (PT-BR)
+    const viewAllButton = page.locator('a:has-text("Ver todos")');
     await expect(viewAllButton).toBeVisible();
     await expect(viewAllButton).toHaveAttribute('href', /\/manager\/users/);
 
@@ -252,7 +252,7 @@ test.describe('Manager Dashboard - Happy Path', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     const hasUsers = (await page.locator('[class*="rounded-lg"]').count()) > 3;
-    const emptyState = page.locator('text=No users in your domain yet');
+    const emptyState = page.locator('text=Nenhum usuário no seu domínio ainda');
 
     if (!hasUsers) {
       // If no users, empty state should be visible
