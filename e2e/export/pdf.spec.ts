@@ -93,6 +93,11 @@ async function createETP(
 
   if (isDialog) {
     await page.fill('input#title, input[name="title"]', title);
+    // Fill required 'objeto' field (mandatory since #1007)
+    await page.fill(
+      'textarea#objeto, textarea[name="objeto"]',
+      'Objeto de teste para exportação PDF',
+    );
     if (description) {
       await page.fill(
         'textarea#description, textarea[name="description"]',
@@ -105,6 +110,11 @@ async function createETP(
     });
   } else {
     await page.fill('input[name="title"], input#title', title);
+    // Fill required 'objeto' field (mandatory since #1007)
+    await page.fill(
+      'textarea[name="objeto"], textarea#objeto',
+      'Objeto de teste para exportação PDF',
+    );
     if (description) {
       await page.fill(
         'textarea[name="description"], textarea#description',
