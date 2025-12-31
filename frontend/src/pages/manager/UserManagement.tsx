@@ -104,11 +104,11 @@ export function UserManagement() {
       (user) =>
         // Filter out hidden users (optimistic delete)
         !hiddenUserIds.has(user.id) &&
-        // Apply search filter if query exists
+        // Apply search filter if query exists (use optional chaining to prevent crash)
         (!query ||
-          user.name.toLowerCase().includes(query) ||
-          user.email.toLowerCase().includes(query) ||
-          (user.cargo && user.cargo.toLowerCase().includes(query))),
+          user.name?.toLowerCase().includes(query) ||
+          user.email?.toLowerCase().includes(query) ||
+          user.cargo?.toLowerCase().includes(query)),
     );
   }, [users, searchQuery, hiddenUserIds]);
 

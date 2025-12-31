@@ -93,7 +93,8 @@ export function ETPs() {
       (etp) =>
         // Filter out hidden ETPs (optimistic delete)
         !hiddenEtpIds.has(etp.id) &&
-        (etp.title.toLowerCase().includes(lowerSearch) ||
+        // Use optional chaining to prevent crash when title/description is undefined
+        (etp.title?.toLowerCase().includes(lowerSearch) ||
           etp.description?.toLowerCase().includes(lowerSearch)),
     );
   }, [etps, search, hiddenEtpIds]);
