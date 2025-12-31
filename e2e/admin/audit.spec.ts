@@ -124,9 +124,11 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description about LGPD
-    const description = page.locator('text=LGPD compliance');
-    await expect(description).toBeVisible();
+    // Verify description about LGPD (use more specific selector to avoid matching multiple elements)
+    const description = page.locator(
+      'p:has-text("LGPD compliance"), div:has-text("LGPD compliance")',
+    );
+    await expect(description.first()).toBeVisible();
 
     // Verify Export Options card is visible
     const exportOptionsCard = page.locator('text=Export Options');

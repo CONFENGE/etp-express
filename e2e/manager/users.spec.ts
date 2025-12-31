@@ -266,7 +266,11 @@ test.describe('Manager User Management - Happy Path', () => {
     } else if (await actionMenu.isVisible()) {
       await actionMenu.click();
       await page.waitForTimeout(500);
-      const editMenuItem = page.locator('text=Edit, text=Editar').first();
+      // Use .or() for bilingual selector
+      const editMenuItem = page
+        .locator('text=Edit')
+        .or(page.locator('text=Editar'))
+        .first();
       await editMenuItem.click();
     } else {
       // Skip if no users to edit

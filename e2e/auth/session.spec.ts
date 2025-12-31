@@ -204,12 +204,16 @@ test.describe('Session Management', () => {
       '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
     );
 
-    if (await logoutButton.isVisible()) {
-      await logoutButton.click();
-    } else if (await userMenu.isVisible()) {
-      await userMenu.click();
+    if (await logoutButton.first().isVisible()) {
+      await logoutButton.first().click();
+    } else if (await userMenu.first().isVisible()) {
+      await userMenu.first().click();
       await page.waitForTimeout(500);
-      await page.click('text=Sair, text=Logout');
+      // Use .or() for bilingual selector
+      const logoutMenuOption = page
+        .locator('text=Sair')
+        .or(page.locator('text=Logout'));
+      await logoutMenuOption.first().click();
     } else {
       console.log('Logout button not found - skipping');
       return;
