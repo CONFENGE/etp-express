@@ -79,6 +79,8 @@ async function createETP(
     'Objeto de teste para validacao E2E do fluxo de lifecycle de ETP';
 
   const newEtpButton = page.locator('text=Novo ETP').first();
+  // Wait for button to be visible (handles race conditions with page load)
+  await newEtpButton.waitFor({ state: 'visible', timeout: 15000 });
   await newEtpButton.click();
   await page.waitForTimeout(500);
 
@@ -210,7 +212,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     });
 
     // Undo toast should appear
-    const undoToast = page.locator('[role="alert"]');
+    const undoToast = page.locator('div[role="alert"]');
     await expect(undoToast).toBeVisible({ timeout: 2000 });
 
     console.log('Optimistic UI: ETP hidden immediately after delete click');
@@ -241,7 +243,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     await clickDeleteForETP(page, title);
 
     // Undo toast should appear
-    const undoToast = page.locator('[role="alert"]');
+    const undoToast = page.locator('div[role="alert"]');
     await expect(undoToast).toBeVisible({ timeout: 2000 });
 
     // Toast should contain the ETP title in message
@@ -290,7 +292,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     });
 
     // Undo toast should appear
-    const undoToast = page.locator('[role="alert"]');
+    const undoToast = page.locator('div[role="alert"]');
     await expect(undoToast).toBeVisible({ timeout: 2000 });
 
     // Click "Desfazer" button
@@ -347,7 +349,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.undoWindow);
 
     // Toast should disappear after timeout
-    const undoToast = page.locator('[role="alert"]');
+    const undoToast = page.locator('div[role="alert"]');
     await expect(undoToast).not.toBeVisible({ timeout: 2000 });
 
     // Refresh page to confirm permanent deletion
@@ -405,7 +407,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
     // Multiple toasts may appear - find the one for title1
     const toast1 = page
-      .locator('[role="alert"]')
+      .locator('div[role="alert"]')
       .filter({ hasText: title1 })
       .first();
     const undoButton1 = toast1.locator('button:has-text("Desfazer")');
@@ -516,7 +518,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     await clickDeleteForETP(page, title);
 
     // Undo toast should appear
-    const undoToast = page.locator('[role="alert"]');
+    const undoToast = page.locator('div[role="alert"]');
     await expect(undoToast).toBeVisible({ timeout: 2000 });
 
     // Click X button to dismiss toast

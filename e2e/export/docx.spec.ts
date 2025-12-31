@@ -119,6 +119,8 @@ async function createETP(
   description?: string,
 ): Promise<string> {
   const newEtpButton = page.locator('text=Novo ETP').first();
+  // Wait for button to be visible (handles race conditions with page load)
+  await newEtpButton.waitFor({ state: 'visible', timeout: 15000 });
   await newEtpButton.click();
 
   await page.waitForTimeout(500);

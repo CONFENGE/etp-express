@@ -78,6 +78,8 @@ async function createETP(
     'Objeto de teste para validacao E2E do fluxo de edicao de ETP';
 
   const newEtpButton = page.locator('text=Novo ETP').first();
+  // Wait for button to be visible (handles race conditions with page load)
+  await newEtpButton.waitFor({ state: 'visible', timeout: 15000 });
   await newEtpButton.click();
   await page.waitForTimeout(500);
 

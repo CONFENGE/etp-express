@@ -110,8 +110,10 @@ async function createETP(
     )
     .first();
 
-  const buttonVisible = await newEtpButton.isVisible().catch(() => false);
-  if (!buttonVisible) {
+  // Wait for button to be visible (handles race conditions with page load)
+  try {
+    await newEtpButton.waitFor({ state: 'visible', timeout: 15000 });
+  } catch {
     throw new Error('Novo ETP button not found on page');
   }
 
