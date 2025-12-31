@@ -138,12 +138,10 @@ async function createETP(
       );
     }
 
-    // Submit dialog - try multiple button selectors
-    const submitButton = page
-      .locator(
-        'button:has-text("Criar ETP"), button:has-text("Criar"), button[type="submit"]',
-      )
-      .first();
+    // Submit dialog - scope to dialog to avoid clicking button behind overlay
+    const submitButton = dialog.locator(
+      'button:has-text("Criar ETP"), button:has-text("Criar"), button[type="submit"]',
+    );
 
     const submitVisible = await submitButton.isVisible().catch(() => false);
     if (!submitVisible) {
@@ -320,8 +318,8 @@ test.describe('ETP CRUD Happy Paths', () => {
 
     if (isDialog) {
       // Leave title empty and try to submit
-      // Use .first() to avoid strict mode violation
-      const submitButton = page.locator('button:has-text("Criar ETP")').first();
+      // Scope to dialog to avoid clicking button behind overlay
+      const submitButton = dialog.locator('button:has-text("Criar ETP")');
 
       // Try to submit with empty title
       await submitButton.click();
@@ -420,8 +418,8 @@ test.describe('ETP CRUD Happy Paths', () => {
         'Titulo valido para teste',
       );
 
-      // Use .first() to avoid strict mode violation
-      const submitButton = page.locator('button:has-text("Criar ETP")').first();
+      // Scope to dialog to avoid clicking button behind overlay
+      const submitButton = dialog.locator('button:has-text("Criar ETP")');
 
       // Try to submit without objeto
       await submitButton.click();
@@ -527,8 +525,8 @@ test.describe('ETP CRUD Happy Paths', () => {
       // Fill objeto with less than 10 characters
       await page.fill('textarea#objeto, textarea[name="objeto"]', 'curto'); // 5 chars, min is 10
 
-      // Use .first() to avoid strict mode violation
-      const submitButton = page.locator('button:has-text("Criar ETP")').first();
+      // Scope to dialog to avoid clicking button behind overlay
+      const submitButton = dialog.locator('button:has-text("Criar ETP")');
       await submitButton.click();
 
       // Wait for validation to appear
@@ -621,8 +619,8 @@ test.describe('ETP CRUD Happy Paths', () => {
       await page.fill('input#title, input[name="title"]', title);
       await page.fill('textarea#objeto, textarea[name="objeto"]', objeto);
 
-      // Submit dialog - use .first() to avoid strict mode violation
-      await page.locator('button:has-text("Criar ETP")').first().click();
+      // Submit dialog - scope to dialog to avoid clicking button behind overlay
+      await dialog.locator('button:has-text("Criar ETP")').click();
     } else {
       // Fill form on page
       await page.fill('input[name="title"], input#title', title);
@@ -739,8 +737,8 @@ test.describe('ETP CRUD Happy Paths', () => {
         'Objeto para teste de erro da API',
       );
 
-      // Submit - use .first() to avoid strict mode violation
-      await page.locator('button:has-text("Criar ETP")').first().click();
+      // Submit - scope to dialog to avoid clicking button behind overlay
+      await dialog.locator('button:has-text("Criar ETP")').click();
 
       // Wait for error toast to appear
       await page

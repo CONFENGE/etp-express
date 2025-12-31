@@ -88,8 +88,8 @@ async function createETP(
         description,
       );
     }
-    // Use .first() to avoid strict mode violation when button appears in multiple places
-    await page.locator('button:has-text("Criar ETP")').first().click();
+    // Scope to dialog to avoid clicking button behind overlay
+    await dialog.locator('button:has-text("Criar ETP")').click();
   } else {
     await page.fill('input[name="title"], input#title', title);
     await page.fill('textarea[name="objeto"], textarea#objeto', defaultObjeto);
