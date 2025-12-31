@@ -109,7 +109,9 @@ export function ETPEditor() {
   }, [error]);
 
   useEffect(() => {
-    if (id) {
+    // Guard against the literal string "undefined" which can occur
+    // when navigation happens before route params are ready (#1103)
+    if (id && id !== 'undefined') {
       fetchETP(id);
       // Reset confetti cooldown when loading new ETP (#597)
       resetCooldown();

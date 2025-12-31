@@ -4,8 +4,10 @@ import {
   ExecutionContext,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
+import { validate as isUUID } from 'uuid';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -101,6 +103,17 @@ export class ResourceOwnershipGuard implements CanActivate {
       );
       throw new NotFoundException(
         `Resource ID not provided in parameter '${idParam}'`,
+      );
+    }
+
+    // Validate UUID format before database query to prevent
+    // "invalid input syntax for type uuid" errors (#1103)
+    if (!isUUID(resourceId)) {
+      this.logger.warn(
+        `Invalid UUID format for ${config.resourceType}: "${resourceId}"`,
+      );
+      throw new BadRequestException(
+        `ID inválido: "${resourceId}" não é um UUID válido`,
       );
     }
 
