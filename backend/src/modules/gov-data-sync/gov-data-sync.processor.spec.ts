@@ -22,9 +22,11 @@ import {
   GovCacheRefreshJobData,
 } from './gov-data-sync.types';
 
-// Mock Sentry
-jest.mock('@sentry/node', () => ({
+// Mock Sentry - must mock @sentry/nestjs as that's what gov-api-cache imports
+jest.mock('@sentry/nestjs', () => ({
   captureException: jest.fn(),
+  startSpan: jest.fn((_, callback) => callback()),
+  generateInstrumentOnce: jest.fn(() => jest.fn()),
 }));
 
 describe('GovDataSyncProcessor', () => {
