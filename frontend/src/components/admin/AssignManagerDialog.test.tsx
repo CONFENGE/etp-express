@@ -2,7 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AssignManagerDialog } from './AssignManagerDialog';
+import { apiHelpers } from '@/lib/api';
 import { createDeferredPromise } from '@/test/setup';
+
+// Mock apiHelpers
+vi.mock('@/lib/api', () => ({
+  apiHelpers: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
 
 const mockUsers = [
   {
@@ -32,6 +41,7 @@ describe('AssignManagerDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(apiHelpers.get).mockResolvedValue(mockUsers);
   });
 
   describe('Rendering', () => {
@@ -42,12 +52,16 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Assign Domain Manager')).toBeInTheDocument();
+
+      // Wait for users to load to avoid act warnings
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
     });
 
     it('should not render dialog when closed', () => {
@@ -57,27 +71,46 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
 
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    it('should show message when no users available', async () => {
+    it('should fetch users when dialog opens', async () => {
       render(
         <AssignManagerDialog
           open={true}
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={[]}
         />,
       );
 
-      expect(
-        screen.getByText('No users available in this domain'),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalledWith(
+          `/system-admin/domains/${mockDomainId}/users`,
+        );
+      });
+    });
+
+    it('should show message when no users available', async () => {
+      vi.mocked(apiHelpers.get).mockResolvedValue([]);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('No users available in this domain'),
+        ).toBeInTheDocument();
+      });
     });
 
     it('should show dialog description', async () => {
@@ -87,13 +120,16 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
 
       expect(
         screen.getByText(/Select a user to manage this domain/),
       ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
     });
   });
 
@@ -105,9 +141,13 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       const assignButton = screen.getByRole('button', {
         name: 'Assign Manager',
@@ -122,12 +162,15 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
 
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       expect(cancelButton).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
     });
   });
 
@@ -141,14 +184,37 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       await user.click(cancelButton);
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should show error message when user fetch fails', async () => {
+      vi.mocked(apiHelpers.get).mockRejectedValue(new Error('Network error'));
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Network error')).toBeInTheDocument();
+      });
     });
   });
 
@@ -160,15 +226,52 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
 
       expect(screen.getByText('Manager')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
     });
   });
 
   describe('Loading States', () => {
+    it('should show loading skeleton while fetching users', async () => {
+      // Use deferred promise to control when the API resolves
+      const { promise, resolve } = createDeferredPromise<typeof mockUsers>();
+      vi.mocked(apiHelpers.get).mockReturnValue(promise);
+
+      render(
+        <AssignManagerDialog
+          open={true}
+          onOpenChange={mockOnOpenChange}
+          domainId={mockDomainId}
+          onAssign={mockOnAssign}
+        />,
+      );
+
+      // Wait for skeleton to appear (Radix renders in portal, use document.body)
+      await waitFor(() => {
+        const skeleton = document.body.querySelector('.animate-pulse');
+        expect(skeleton).toBeInTheDocument();
+      });
+
+      // Resolve to allow cleanup and avoid timeout
+      resolve(mockUsers);
+
+      // After resolution, skeleton should disappear and select should appear
+      await waitFor(() => {
+        expect(
+          document.body.querySelector('.animate-pulse'),
+        ).not.toBeInTheDocument();
+      });
+
+      // Verify select is now visible
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
+    });
+
     it('should show loading state while assigning', async () => {
       const user = userEvent.setup();
       const { promise, resolve } = createDeferredPromise<void>();
@@ -180,9 +283,13 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={slowOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       // Open select and choose a user
       const selectTrigger = screen.getByRole('combobox');
@@ -222,9 +329,13 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       // Open select and choose a user
       const selectTrigger = screen.getByRole('combobox');
@@ -255,9 +366,13 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       // Select a user
       const selectTrigger = screen.getByRole('combobox');
@@ -286,9 +401,13 @@ describe('AssignManagerDialog', () => {
           domainId={mockDomainId}
           currentManagerId="2"
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       // The select should show the current manager's name
       await waitFor(() => {
@@ -305,9 +424,13 @@ describe('AssignManagerDialog', () => {
           onOpenChange={mockOnOpenChange}
           domainId={mockDomainId}
           onAssign={mockOnAssign}
-          users={mockUsers}
         />,
       );
+
+      // Wait for users to load
+      await waitFor(() => {
+        expect(apiHelpers.get).toHaveBeenCalled();
+      });
 
       // Initially disabled
       const assignButton = screen.getByRole('button', {

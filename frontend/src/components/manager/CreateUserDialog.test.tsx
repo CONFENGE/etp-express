@@ -25,9 +25,9 @@ describe('CreateUserDialog', () => {
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByLabelText('Nome Completo')).toBeInTheDocument();
+      expect(screen.getByLabelText('Full Name')).toBeInTheDocument();
       expect(screen.getByLabelText('Email')).toBeInTheDocument();
-      expect(screen.getByLabelText('Cargo (opcional)')).toBeInTheDocument();
+      expect(screen.getByLabelText('Role (optional)')).toBeInTheDocument();
     });
 
     it('should not render dialog when closed', () => {
@@ -56,7 +56,7 @@ describe('CreateUserDialog', () => {
       );
 
       expect(
-        screen.getByText(`Deve ser um e-mail do domínio @${domainSuffix}`),
+        screen.getByText(`Must be an email from @${domainSuffix}`),
       ).toBeInTheDocument();
     });
 
@@ -72,12 +72,10 @@ describe('CreateUserDialog', () => {
       );
 
       expect(
-        screen.getByText('Você atingiu a cota de usuários do seu domínio.'),
+        screen.getByText("You have reached your domain's user quota."),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(
-          'Entre em contato com o administrador para aumentar a cota.',
-        ),
+        screen.getByText('Contact your administrator to increase the quota.'),
       ).toBeInTheDocument();
     });
   });
@@ -96,20 +94,18 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const nameInput = screen.getByLabelText('Nome Completo');
+      const nameInput = screen.getByLabelText('Full Name');
       const emailInput = screen.getByLabelText('Email');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@wrongdomain.com');
 
-      const submitButton = screen.getByRole('button', {
-        name: 'Criar Usuário',
-      });
+      const submitButton = screen.getByRole('button', { name: 'Create User' });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText(`O e-mail deve ser do domínio @${domainSuffix}`),
+          screen.getByText(`Email must be from the domain @${domainSuffix}`),
         ).toBeInTheDocument();
       });
     });
@@ -127,17 +123,15 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const nameInput = screen.getByLabelText('Nome Completo');
+      const nameInput = screen.getByLabelText('Full Name');
       await user.type(nameInput, 'J');
 
-      const submitButton = screen.getByRole('button', {
-        name: 'Criar Usuário',
-      });
+      const submitButton = screen.getByRole('button', { name: 'Create User' });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText('O nome deve ter pelo menos 2 caracteres'),
+          screen.getByText('Name must be at least 2 characters'),
         ).toBeInTheDocument();
       });
     });
@@ -155,15 +149,13 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const nameInput = screen.getByLabelText('Nome Completo');
+      const nameInput = screen.getByLabelText('Full Name');
       const emailInput = screen.getByLabelText('Email');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'invalid-email');
 
-      const submitButton = screen.getByRole('button', {
-        name: 'Criar Usuário',
-      });
+      const submitButton = screen.getByRole('button', { name: 'Create User' });
       fireEvent.click(submitButton);
 
       // Should not call onSubmit with invalid data
@@ -186,15 +178,13 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const nameInput = screen.getByLabelText('Nome Completo');
+      const nameInput = screen.getByLabelText('Full Name');
       const emailInput = screen.getByLabelText('Email');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, `john@${domainSuffix}`);
 
-      const submitButton = screen.getByRole('button', {
-        name: 'Criar Usuário',
-      });
+      const submitButton = screen.getByRole('button', { name: 'Create User' });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -220,15 +210,13 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const nameInput = screen.getByLabelText('Nome Completo');
+      const nameInput = screen.getByLabelText('Full Name');
       const emailInput = screen.getByLabelText('Email');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, `john@${domainSuffix}`);
 
-      const submitButton = screen.getByRole('button', {
-        name: 'Criar Usuário',
-      });
+      const submitButton = screen.getByRole('button', { name: 'Create User' });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -249,7 +237,7 @@ describe('CreateUserDialog', () => {
         />,
       );
 
-      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       fireEvent.click(cancelButton);
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false);

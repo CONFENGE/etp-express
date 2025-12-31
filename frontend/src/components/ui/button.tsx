@@ -16,9 +16,8 @@ import { cn } from '@/lib/utils';
  * - Respects prefers-reduced-motion
  */
 const buttonVariants = cva(
-  // Base styles with Apple HIG tokens and micro-interactions (#1014)
-  // Focus: soft glow instead of hard ring, 44px min touch target
-  'inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_rgba(0,102,204,0.2)] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100',
+  // Base styles with Apple HIG tokens and micro-interactions
+  'inline-flex items-center justify-center whitespace-nowrap rounded-apple text-sm font-medium ring-offset-background transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100',
   {
     variants: {
       variant: {
@@ -42,10 +41,10 @@ const buttonVariants = cva(
       },
       size: {
         // WCAG 2.5.5: All sizes ensure minimum 44px touch target
-        default: 'h-11 min-h-[44px] px-6 py-2',
-        sm: 'h-10 min-h-[44px] rounded-xl px-4 text-sm',
-        lg: 'h-12 min-h-[44px] rounded-xl px-8 text-base',
-        icon: 'h-11 w-11 min-h-[44px] min-w-[44px]',
+        default: 'h-10 min-h-touch px-4 py-2',
+        sm: 'h-9 min-h-touch rounded-apple px-3 text-apple-sm',
+        lg: 'h-11 min-h-touch rounded-apple-lg px-8 text-apple-base',
+        icon: 'h-11 w-11 min-h-touch min-w-touch',
       },
     },
     defaultVariants: {

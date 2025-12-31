@@ -78,7 +78,7 @@ describe('DeleteDomainDialog', () => {
       );
 
       expect(
-        screen.getByText(/Esta ação não pode ser desfeita/i),
+        screen.getByText(/this action cannot be undone/i),
       ).toBeInTheDocument();
     });
   });
@@ -96,7 +96,7 @@ describe('DeleteDomainDialog', () => {
       );
 
       const deleteButton = screen.getByRole('button', {
-        name: 'Excluir Domínio',
+        name: 'Delete Domain',
       });
       fireEvent.click(deleteButton);
 
@@ -114,7 +114,7 @@ describe('DeleteDomainDialog', () => {
         />,
       );
 
-      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       fireEvent.click(cancelButton);
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false);
@@ -133,7 +133,7 @@ describe('DeleteDomainDialog', () => {
         />,
       );
 
-      expect(screen.getByText('Excluindo...')).toBeInTheDocument();
+      expect(screen.getByText('Deleting...')).toBeInTheDocument();
     });
 
     it('should disable buttons when deleting', () => {
@@ -147,8 +147,8 @@ describe('DeleteDomainDialog', () => {
         />,
       );
 
-      const deleteButton = screen.getByRole('button', { name: 'Excluindo...' });
-      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+      const deleteButton = screen.getByRole('button', { name: 'Deleting...' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
 
       expect(deleteButton).toBeDisabled();
       expect(cancelButton).toBeDisabled();

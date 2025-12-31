@@ -13,11 +13,9 @@
  * - Redis cache with 1h TTL (configurable)
  * - Circuit breaker for resilience
  * - Graceful fallback on API unavailability
- * - Zod schema validation for API responses
  *
  * @module modules/gov-api/compras-gov
  * @see https://github.com/CONFENGE/etp-express/issues/691
- * @see https://github.com/CONFENGE/etp-express/issues/1054
  */
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
@@ -35,17 +33,13 @@ import { GovApiCache } from '../utils/gov-api-cache';
 import {
   ComprasGovLicitacaoRaw,
   ComprasGovSearchFilters,
+  ComprasGovListResponse,
   ComprasGovContract,
   transformLicitacaoToContract,
   buildCacheKey,
   ComprasGovModalidade,
 } from './compras-gov.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
-import {
-  ComprasGovListResponseSchema,
-  ComprasGovLicitacaoRawSchema,
-  formatZodErrors,
-} from '../schemas/gov-api.schemas';
 
 /**
  * Compras.gov.br API base URL
@@ -179,23 +173,9 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
     try {
       // Make API request
       const params = this.buildQueryParams(apiFilters);
-      const rawResponse = await this.client.get<unknown>(
-        '/licitacoes/v1/licitacoes.json',
-        { params },
-      );
-
-      // Validate response with Zod schema
-      const listValidation =
-        ComprasGovListResponseSchema.safeParse(rawResponse);
-      if (!listValidation.success) {
-        const errors = formatZodErrors(listValidation.error);
-        this.logger.error(
-          `ComprasGov API returned malformed list response: ${errors.join('; ')}`,
-        );
-        return this.createSchemaValidationErrorResponse(errors);
-      }
-
-      const response = listValidation.data;
+      const response = await this.client.get<
+        ComprasGovListResponse<ComprasGovLicitacaoRaw>
+      >('/licitacoes/v1/licitacoes.json', { params });
 
       // Transform response
       const licitacoes =
@@ -284,25 +264,15 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
     }
 
     try {
-      const rawResponse = await this.client.get<unknown>(
+      const response = await this.client.get<ComprasGovLicitacaoRaw>(
         `/licitacoes/id/${id}.json`,
       );
 
-      if (!rawResponse) {
+      if (!response) {
         return null;
       }
 
-      // Validate response with Zod schema
-      const validation = ComprasGovLicitacaoRawSchema.safeParse(rawResponse);
-      if (!validation.success) {
-        const errors = formatZodErrors(validation.error);
-        this.logger.error(
-          `ComprasGov API returned malformed licitacao for ID "${id}": ${errors.join('; ')}`,
-        );
-        return null;
-      }
-
-      const contract = transformLicitacaoToContract(validation.data);
+      const contract = transformLicitacaoToContract(response);
 
       // Cache the result
       await this.cache.set('comprasgov', cacheKey, contract, CACHE_TTL_SECONDS);
@@ -568,35 +538,6 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
           name: 'comprasgov',
           status: SearchStatus.RATE_LIMITED,
           error,
-        },
-      ],
-    };
-  }
-
-  /**
-   * Create a SCHEMA_VALIDATION_ERROR response when API returns malformed data
-   *
-   * @see https://github.com/CONFENGE/etp-express/issues/1054
-   */
-  private createSchemaValidationErrorResponse(
-    errors: string[],
-  ): GovApiResponse<ComprasGovContract[]> {
-    return {
-      data: [],
-      total: 0,
-      page: 1,
-      perPage: DEFAULT_PAGE_SIZE,
-      source: 'comprasgov',
-      cached: false,
-      isFallback: true,
-      timestamp: new Date(),
-      status: SearchStatus.SERVICE_UNAVAILABLE,
-      statusMessage: `Schema validation failed: ${errors.join('; ')}`,
-      sourceStatuses: [
-        {
-          name: 'comprasgov',
-          status: SearchStatus.SERVICE_UNAVAILABLE,
-          error: `Malformed API response: ${errors.join('; ')}`,
         },
       ],
     };

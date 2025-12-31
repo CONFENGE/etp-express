@@ -42,21 +42,21 @@ export function DeleteUserDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir Usuário</AlertDialogTitle>
+          <AlertDialogTitle>Delete User</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir <strong>{user.name}</strong> (
-            {user.email})? Esta ação não pode ser desfeita e removerá todos os
-            dados dele do sistema.
+            Are you sure you want to delete <strong>{user.name}</strong> (
+            {user.email})? This action cannot be undone and will remove all
+            their data from the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir Usuário'}
+            {isDeleting ? 'Deleting...' : 'Delete User'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

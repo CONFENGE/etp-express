@@ -31,28 +31,28 @@ interface StatisticsCardsProps {
 export function StatisticsCards({ statistics, loading }: StatisticsCardsProps) {
   const cards: StatCardData[] = [
     {
-      label: 'Total de Domínios',
+      label: 'Total Domains',
       value: statistics?.totalDomains ?? 0,
       icon: Building2,
-      description: 'Domínios cadastrados',
+      description: 'Registered domains',
     },
     {
-      label: 'Domínios Ativos',
+      label: 'Active Domains',
       value: statistics?.activeDomains ?? 0,
       icon: CheckCircle,
-      description: 'Atualmente ativos',
+      description: 'Currently active',
     },
     {
-      label: 'Total de Usuários',
+      label: 'Total Users',
       value: statistics?.totalUsers ?? 0,
       icon: Users,
-      description: 'Usuários cadastrados',
+      description: 'Registered users',
     },
     {
-      label: 'Usuários Ativos',
+      label: 'Active Users',
       value: statistics?.activeUsers ?? 0,
       icon: UserCheck,
-      description: 'Ativos este mês',
+      description: 'Active this month',
     },
   ];
 

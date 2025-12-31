@@ -25,48 +25,6 @@ vi.mock('react-router', async () => {
 vi.mock('@/hooks/useETPs');
 vi.mock('@/hooks/useToast');
 
-// Mock function for updateSection that will be set in beforeEach
-let mockUpdateSectionFn: ReturnType<typeof vi.fn>;
-
-// Mock useETPStore for updateSection which is called via getState()
-vi.mock('@/store/etpStore', async () => {
-  const actual =
-    await vi.importActual<typeof import('@/store/etpStore')>(
-      '@/store/etpStore',
-    );
-  return {
-    ...actual,
-    useETPStore: Object.assign(
-      vi.fn(() => ({
-        templates: [],
-        isLoadingTemplates: false,
-        templatesError: null,
-        fetchTemplates: vi.fn(),
-        exportPDF: vi.fn(),
-        exportDocx: vi.fn(),
-        aiGenerating: false,
-        generationProgress: 0,
-        generationStatus: null,
-        generateSection: vi.fn(),
-        cancelGeneration: vi.fn(),
-        dataSourceStatus: null,
-        // Similar contracts (#1048)
-        similarContracts: [],
-        similarContractsLoading: false,
-        fetchSimilarContracts: vi.fn(),
-        clearSimilarContracts: vi.fn(),
-      })),
-      {
-        getState: () => ({
-          updateSection: (...args: unknown[]) => mockUpdateSectionFn?.(...args),
-          exportPDF: vi.fn(),
-          exportDocx: vi.fn(),
-        }),
-      },
-    ),
-  };
-});
-
 // Mock types/etp para REQUIRED_SECTIONS
 vi.mock('@/types/etp', async () => {
   const actual =
@@ -252,19 +210,6 @@ vi.mock('@/components/etp/ETPEditorSidebar', () => ({
   ),
 }));
 
-// Mock SimilarContractsPanel (#1048)
-vi.mock('@/components/search/SimilarContractsPanel', () => ({
-  SimilarContractsPanel: ({
-    contracts,
-  }: {
-    contracts: Array<{ id: string; title: string }>;
-  }) => (
-    <div data-testid="similar-contracts-panel">
-      {contracts.length} contratações similares
-    </div>
-  ),
-}));
-
 describe('ETPEditor', () => {
   const mockETP: ETP = {
     id: 'etp-123',
@@ -437,15 +382,11 @@ describe('ETPEditor', () => {
 
   const mockFetchETP = vi.fn();
   const mockUpdateETP = vi.fn();
-  const mockUpdateSection = vi.fn();
   const mockSuccessToast = vi.fn();
   const mockErrorToast = vi.fn();
 
   beforeEach(async () => {
     vi.clearAllMocks();
-
-    // Connect the mock function to the store mock
-    mockUpdateSectionFn = mockUpdateSection;
 
     // Mock useParams
     const { useParams } = await import('react-router');
@@ -462,7 +403,6 @@ describe('ETPEditor', () => {
       fetchETP: mockFetchETP,
       createETP: vi.fn(),
       updateETP: mockUpdateETP,
-      updateSection: mockUpdateSection,
       deleteETP: vi.fn(),
       setCurrentETP: vi.fn(),
     });
@@ -601,12 +541,12 @@ describe('ETPEditor', () => {
   });
 
   /**
-   * Teste 5: Botão "Salvar" chama updateSection do store
+   * Teste 5: Botão "Salvar" chama updateETP do store
    */
-  it('chama updateSection ao clicar no botão Salvar', async () => {
+  it('chama updateETP ao clicar no botão Salvar', async () => {
     const user = userEvent.setup();
 
-    mockUpdateSection.mockResolvedValueOnce(undefined);
+    mockUpdateETP.mockResolvedValueOnce(undefined);
 
     render(
       <BrowserRouter>
@@ -634,10 +574,15 @@ describe('ETPEditor', () => {
     const saveButton = screen.getByRole('button', { name: /Salvar/i });
     await user.click(saveButton);
 
-    // Verifica que updateSection foi chamado com o endpoint correto
+    // Verifica que updateETP foi chamado
     await waitFor(() => {
-      expect(mockUpdateSection).toHaveBeenCalledWith('etp-123', 'section-1', {
-        content: 'Conteúdo modificado',
+      expect(mockUpdateETP).toHaveBeenCalledWith('etp-123', {
+        sections: expect.arrayContaining([
+          expect.objectContaining({
+            sectionNumber: 1,
+            content: 'Conteúdo modificado',
+          }),
+        ]),
       });
     });
 
@@ -684,7 +629,6 @@ describe('ETPEditor', () => {
       fetchETP: mockFetchETP,
       createETP: vi.fn(),
       updateETP: mockUpdateETP,
-      updateSection: mockUpdateSection,
       deleteETP: vi.fn(),
       setCurrentETP: vi.fn(),
     });
@@ -707,10 +651,10 @@ describe('ETPEditor', () => {
   /**
    * Teste extra: Verifica erro ao salvar
    */
-  it('exibe toast de erro quando updateSection falha', async () => {
+  it('exibe toast de erro quando updateETP falha', async () => {
     const user = userEvent.setup();
 
-    mockUpdateSection.mockRejectedValueOnce(new Error('Erro ao salvar'));
+    mockUpdateETP.mockRejectedValueOnce(new Error('Erro ao salvar'));
 
     render(
       <BrowserRouter>

@@ -34,9 +34,9 @@ describe('DeleteUserDialog', () => {
       );
 
       expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-      // Title and button both say "Excluir Usuário", so check heading specifically
+      // Title and button both say "Delete User", so check heading specifically
       expect(
-        screen.getByRole('heading', { name: 'Excluir Usuário' }),
+        screen.getByRole('heading', { name: 'Delete User' }),
       ).toBeInTheDocument();
       expect(screen.getByText('John Doe')).toBeInTheDocument();
     });
@@ -84,9 +84,7 @@ describe('DeleteUserDialog', () => {
         />,
       );
 
-      const deleteButton = screen.getByRole('button', {
-        name: 'Excluir Usuário',
-      });
+      const deleteButton = screen.getByRole('button', { name: 'Delete User' });
       fireEvent.click(deleteButton);
 
       await waitFor(() => {
@@ -105,7 +103,7 @@ describe('DeleteUserDialog', () => {
         />,
       );
 
-      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
       fireEvent.click(cancelButton);
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false);
@@ -124,7 +122,7 @@ describe('DeleteUserDialog', () => {
         />,
       );
 
-      expect(screen.getByText('Excluindo...')).toBeInTheDocument();
+      expect(screen.getByText('Deleting...')).toBeInTheDocument();
     });
 
     it('should disable buttons when deleting', () => {
@@ -138,8 +136,8 @@ describe('DeleteUserDialog', () => {
         />,
       );
 
-      const deleteButton = screen.getByRole('button', { name: 'Excluindo...' });
-      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
+      const deleteButton = screen.getByRole('button', { name: 'Deleting...' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
 
       expect(deleteButton).toBeDisabled();
       expect(cancelButton).toBeDisabled();
