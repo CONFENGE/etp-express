@@ -1,17 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-31 | **Progresso:** 561/587 (96%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-31 | **Progresso:** 562/588 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (26)
+## Issues Abertas (25)
 
-### P0 - Critical (2 issues)
+### P0 - Critical (1 issue)
 
-| #     | Issue                                                            |
-| ----- | ---------------------------------------------------------------- |
-| #1108 | fix(frontend): Maximum update depth exceeded in DomainManagement |
-| #1103 | tracking: E2E Playwright test failures (69 tests)                |
+| #     | Issue                                             |
+| ----- | ------------------------------------------------- |
+| #1103 | tracking: E2E Playwright test failures (69 tests) |
 
 ### P1 - High Priority (17 issues)
 
@@ -75,15 +74,15 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 587   |
-| Issues Abertas    | 26    |
-| Issues Fechadas   | 561   |
+| Issues Totais     | 588   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 562   |
 | Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2109  |
-| Frontend Tests    | 1368  |
-| Total Tests       | 3477  |
+| Frontend Tests    | 1388  |
+| Total Tests       | 3497  |
 
 ---
 
