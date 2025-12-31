@@ -278,10 +278,13 @@ export async function createETP(
       }
 
       // Submit dialog using data-testid
+      // Use force:true to bypass "element intercepts pointer events" issues
+      // caused by dialog overlay/textarea layout during animations
       const submitButton = page.locator(
         '[data-testid="submit-etp-button"], button:has-text("Criar ETP")',
       );
-      await submitButton.first().click();
+      await submitButton.first().scrollIntoViewIfNeeded();
+      await submitButton.first().click({ force: true });
     } else {
       // Direct form on page (fallback for /etps/new route)
       await page.fill('input[name="title"], input#title', title);
