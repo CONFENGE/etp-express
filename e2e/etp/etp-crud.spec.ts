@@ -278,11 +278,17 @@ test.describe('ETP CRUD Happy Paths', () => {
       await page.waitForTimeout(500);
 
       // Validation should prevent navigation - still on dialog or same page
-      // Check for validation error message
-      const validationError = page.locator(
-        '[role="alert"], .error, [class*="error"], text=obrigatório, text=required',
-      );
-      const hasError = await validationError.isVisible().catch(() => false);
+      // Check for validation error message (using .or() for multiple selectors)
+      const validationError = page
+        .locator('[role="alert"]')
+        .or(page.locator('.error'))
+        .or(page.locator('[class*="error"]'))
+        .or(page.locator('text=obrigatório'))
+        .or(page.locator('text=required'));
+      const hasError = await validationError
+        .first()
+        .isVisible()
+        .catch(() => false);
 
       // Either we see an error, or the button should be disabled, or we stay on dialog
       const stillOnDialog = await dialog.isVisible().catch(() => false);
@@ -307,11 +313,17 @@ test.describe('ETP CRUD Happy Paths', () => {
       const currentUrl = page.url();
       expect(currentUrl).toMatch(/\/etps\/new|\/etps$/);
 
-      // Check for validation error
-      const validationError = page.locator(
-        '[role="alert"], .error, [class*="error"], text=obrigatório, text=required',
-      );
-      const hasError = await validationError.isVisible().catch(() => false);
+      // Check for validation error (using .or() for multiple selectors)
+      const validationError = page
+        .locator('[role="alert"]')
+        .or(page.locator('.error'))
+        .or(page.locator('[class*="error"]'))
+        .or(page.locator('text=obrigatório'))
+        .or(page.locator('text=required'));
+      const hasError = await validationError
+        .first()
+        .isVisible()
+        .catch(() => false);
       const buttonDisabled = await submitButton.isDisabled().catch(() => false);
 
       expect(hasError || buttonDisabled).toBeTruthy();

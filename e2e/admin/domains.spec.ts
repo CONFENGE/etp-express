@@ -239,8 +239,11 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const domainUsersCard = page.locator('text=Domain Users');
     await expect(domainUsersCard).toBeVisible();
 
-    // Verify status badge is visible
-    const statusBadge = page.locator('text=Active, text=Inactive').first();
+    // Verify status badge is visible (Active or Inactive)
+    const statusBadge = page
+      .locator('text=Active')
+      .or(page.locator('text=Inactive'))
+      .first();
     await expect(statusBadge).toBeVisible();
 
     console.log('View domain details: PASSED');
@@ -488,11 +491,15 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify success message
-    const successToast = page.locator(
-      'text=Domain updated successfully, text=successfully updated, text=saved',
-    );
-    const hasSuccess = await successToast.isVisible().catch(() => false);
+    // Verify success message (any of these variations)
+    const successToast = page
+      .locator('text=Domain updated successfully')
+      .or(page.locator('text=successfully updated'))
+      .or(page.locator('text=saved'));
+    const hasSuccess = await successToast
+      .first()
+      .isVisible()
+      .catch(() => false);
 
     // Success can be indicated by dialog closing without error
     expect(hasSuccess || !(await dialog.isVisible())).toBe(true);

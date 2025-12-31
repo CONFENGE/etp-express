@@ -138,7 +138,12 @@ test.describe('Forgot Password Flow', () => {
    * Test: Can navigate back to login
    */
   test('can navigate back to login', async ({ page }) => {
-    await page.click('a[href="/login"], text=Voltar, text=Login');
+    // Use .or() for multiple possible selectors
+    const backToLoginLink = page
+      .locator('a[href="/login"]')
+      .or(page.locator('text=Voltar'))
+      .or(page.locator('text=Login'));
+    await backToLoginLink.first().click();
 
     await expect(page).toHaveURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,

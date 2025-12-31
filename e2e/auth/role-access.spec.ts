@@ -211,11 +211,16 @@ test.describe('Role Login Flows', () => {
     const adminUrl = page.url();
     const isOnAdmin = adminUrl.includes('/admin');
     if (isOnAdmin) {
-      // If on admin, verify there's an access denied message
-      const accessDenied = page.locator(
-        'text=Acesso negado, text=Forbidden, text=Sem permissão, text=403',
-      );
-      const hasAccessDenied = await accessDenied.isVisible().catch(() => false);
+      // If on admin, verify there's an access denied message (any language variant)
+      const accessDenied = page
+        .locator('text=Acesso negado')
+        .or(page.locator('text=Forbidden'))
+        .or(page.locator('text=Sem permissão'))
+        .or(page.locator('text=403'));
+      const hasAccessDenied = await accessDenied
+        .first()
+        .isVisible()
+        .catch(() => false);
       expect(hasAccessDenied).toBe(true);
     }
 
@@ -226,10 +231,15 @@ test.describe('Role Login Flows', () => {
     const managerUrl = page.url();
     const isOnManager = managerUrl.includes('/manager');
     if (isOnManager) {
-      const accessDenied = page.locator(
-        'text=Acesso negado, text=Forbidden, text=Sem permissão, text=403',
-      );
-      const hasAccessDenied = await accessDenied.isVisible().catch(() => false);
+      const accessDenied = page
+        .locator('text=Acesso negado')
+        .or(page.locator('text=Forbidden'))
+        .or(page.locator('text=Sem permissão'))
+        .or(page.locator('text=403'));
+      const hasAccessDenied = await accessDenied
+        .first()
+        .isVisible()
+        .catch(() => false);
       expect(hasAccessDenied).toBe(true);
     }
 

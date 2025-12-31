@@ -407,12 +407,16 @@ test.describe('Login Flow - Critical Path', () => {
     );
 
     // Try clicking user menu first if logout button not directly visible
-    if (await logoutButton.isVisible()) {
-      await logoutButton.click();
-    } else if (await userMenu.isVisible()) {
-      await userMenu.click();
+    if (await logoutButton.first().isVisible()) {
+      await logoutButton.first().click();
+    } else if (await userMenu.first().isVisible()) {
+      await userMenu.first().click();
       await page.waitForTimeout(500);
-      await page.click('text=Sair, text=Logout');
+      // Use .or() for bilingual selector
+      const logoutMenuOption = page
+        .locator('text=Sair')
+        .or(page.locator('text=Logout'));
+      await logoutMenuOption.first().click();
     } else {
       // Skip if logout mechanism not found
       console.log(
