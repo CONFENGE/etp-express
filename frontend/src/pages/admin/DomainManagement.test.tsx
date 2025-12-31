@@ -136,7 +136,9 @@ describe('DomainManagement', () => {
 
       // Fill form
       const domainInput = screen.getByLabelText('Domain');
+      const institutionNameInput = screen.getByLabelText('Institution Name');
       await user.type(domainInput, 'newdomain.com');
+      await user.type(institutionNameInput, 'New Domain Institution');
 
       // Submit
       const submitButton = screen.getByRole('button', {
@@ -147,6 +149,7 @@ describe('DomainManagement', () => {
       await waitFor(() => {
         expect(mockCreateDomain).toHaveBeenCalledWith({
           domain: 'newdomain.com',
+          institutionName: 'New Domain Institution',
           maxUsers: 10,
         });
       });
