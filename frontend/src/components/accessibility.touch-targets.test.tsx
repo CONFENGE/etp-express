@@ -47,37 +47,38 @@ import {
 
 describe('WCAG 2.5.5 Touch Target Size', () => {
   describe('Button component', () => {
-    it('should have min-h-touch for default size', () => {
+    it('should have 44px min height for default size', () => {
       render(<Button>Default Button</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('min-h-touch');
+      expect(button).toHaveClass('min-h-[44px]');
     });
 
-    it('should have min-h-touch for small size', () => {
+    it('should have 44px min height for small size', () => {
       render(<Button size="sm">Small Button</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('min-h-touch');
+      expect(button).toHaveClass('min-h-[44px]');
     });
 
-    it('should have min-h-touch and min-w-touch for icon size', () => {
+    it('should have 44px min height and width for icon size', () => {
       render(<Button size="icon">X</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('min-h-touch');
-      expect(button).toHaveClass('min-w-touch');
+      expect(button).toHaveClass('min-h-[44px]');
+      expect(button).toHaveClass('min-w-[44px]');
     });
 
-    it('should have min-h-touch for large size', () => {
+    it('should have 44px min height for large size', () => {
       render(<Button size="lg">Large Button</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('min-h-touch');
+      expect(button).toHaveClass('min-h-[44px]');
     });
   });
 
   describe('Input component', () => {
-    it('should have min-h-touch', () => {
+    it('should have min-h-[44px] for WCAG 2.5.5 touch target', () => {
       render(<Input placeholder="Enter text" />);
       const input = screen.getByPlaceholderText('Enter text');
-      expect(input).toHaveClass('min-h-touch');
+      // Input uses min-h-[44px] directly instead of min-h-touch utility
+      expect(input).toHaveClass('min-h-[44px]');
     });
   });
 

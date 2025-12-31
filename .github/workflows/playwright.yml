@@ -22,18 +22,85 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/playwright.yml'
+
 jobs:
   test:
-    timeout-minutes: 60
+    # PRs run chromium only (~20 min), master runs all browsers (~45 min)
+    # Adding buffer for setup, retries, and variance
+    timeout-minutes: 90
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # Use pgvector image for vector extension support (required by migrations)
+        image: pgvector/pgvector:pg15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: etp_express_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Database configuration for tests
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/etp_express_test
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: etp_express_test
+      # DB_SYNCHRONIZE must be false when using migrations to avoid conflicts
+      DB_SYNCHRONIZE: false
+      DB_LOGGING: false
+      # Application configuration
+      NODE_ENV: test
+      PORT: 3001
+      JWT_SECRET: e2e-test-secret-key-min-32-chars-required
+      JWT_EXPIRATION: 1d
+      # Frontend/CORS
+      FRONTEND_URL: http://localhost:5173
+      CORS_ORIGINS: http://localhost:5173,http://localhost:3000
+      # Redis
+      REDIS_URL: redis://localhost:6379
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      # Disable external services for E2E tests
+      OPENAI_API_KEY: test-key-disabled
+      EXA_API_KEY: test-key-disabled
+      SENTRY_DSN: ''
+      ANALYTICS_ENABLED: false
+      # E2E specific - enables auth tests to run
+      E2E_API_URL: http://localhost:3001
+      E2E_BASE_URL: http://localhost:5173
+      # Enable logging in test environment to see error messages
+      LOG_IN_TESTS: 'true'
+
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: 'npm'
+
       - name: Install dependencies
         run: npm install --include=optional --force
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -42,18 +109,111 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
+
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
+
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
-      - name: Run Playwright tests
-        # Exclude visual project (runs in dedicated visual-regression.yml workflow)
-        run: npx playwright test --project=chromium --project=firefox --project=webkit
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Run database migrations
+        working-directory: backend
+        run: npm run migration:run
+
+      - name: Seed test users
+        working-directory: backend
+        run: npm run seed:admin
+        env:
+          ADMIN_EMAIL: admin@confenge.com.br
+          ADMIN_PASSWORD: Admin@123
+          ADMIN_NAME: Admin Test
+          MANAGER_EMAIL: manager@confenge.com.br
+          MANAGER_PASSWORD: Manager@123
+          MANAGER_NAME: Manager Test
+          USER_EMAIL: user@confenge.com.br
+          USER_PASSWORD: User@123
+          USER_NAME: User Test
+
+      - name: Start backend server
+        working-directory: backend
+        run: |
+          # Start backend with output logging for debugging
+          npm run start:prod > /tmp/backend.log 2>&1 &
+          BACKEND_PID=$!
+          echo "Backend PID: $BACKEND_PID"
+          echo "Waiting for backend to be ready..."
+          # Wait up to 60 seconds for backend to start
+          for i in {1..30}; do
+            if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            # Check if backend process is still running
+            if ! kill -0 $BACKEND_PID 2>/dev/null; then
+              echo "Backend process died. Showing logs:"
+              cat /tmp/backend.log
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "Backend failed to start within 60 seconds. Showing logs:"
+          cat /tmp/backend.log
+          exit 1
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Start frontend server
+        working-directory: frontend
+        run: |
+          npm run preview -- --host &
+          echo "Waiting for frontend to be ready..."
+          # Frontend preview is configured to use port 3000 in package.json
+          timeout 30 bash -c 'until curl -sf http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
+          echo "Frontend is ready!"
+
+      - name: Run Playwright tests (chromium only for PRs, all browsers for master)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Running chromium-only tests for PR (fast feedback)"
+            npx playwright test --project=chromium
+          else
+            echo "Running full browser matrix for master merge"
+            npx playwright test --project=chromium --project=firefox --project=webkit
+          fi
+        env:
+          E2E_API_URL: http://localhost:3001
+          # Frontend preview uses port 3000 (configured in frontend/package.json)
+          E2E_BASE_URL: http://localhost:3000
+          E2E_ADMIN_EMAIL: admin@confenge.com.br
+          E2E_ADMIN_PASSWORD: Admin@123
+          E2E_SYSTEM_ADMIN_EMAIL: admin@confenge.com.br
+          E2E_SYSTEM_ADMIN_PASSWORD: Admin@123
+          E2E_MANAGER_EMAIL: manager@confenge.com.br
+          E2E_MANAGER_PASSWORD: Manager@123
+          E2E_USER_EMAIL: user@confenge.com.br
+          E2E_USER_PASSWORD: User@123
+          E2E_DEMO_EMAIL: demoetp@confenge.com.br
+          E2E_DEMO_PASSWORD: teste2026
+
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7

@@ -5,15 +5,17 @@ import { Footer } from './Footer';
 import { WarningBanner } from '@/components/common/WarningBanner';
 import { SkipLink } from '@/components/common/SkipLink';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
+import { CreateETPDialog } from '@/components/etp/CreateETPDialog';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
+import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { sidebarOpen } = useUIStore();
+  const { sidebarOpen, activeModal, closeModal } = useUIStore();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -43,6 +45,14 @@ export function MainLayout({ children }: MainLayoutProps) {
           <Footer />
         </main>
       </div>
+
+      {/* Global Create ETP Dialog */}
+      <CreateETPDialog
+        open={activeModal === CREATE_ETP_MODAL_ID}
+        onOpenChange={(open) => {
+          if (!open) closeModal();
+        }}
+      />
     </div>
   );
 }

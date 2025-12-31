@@ -9,12 +9,13 @@
 
 :root {
   /* ========================================
-   * Surface Colors (Backgrounds)
+   * Surface Colors (Warm Gray Palette)
+   * Using blue-tinted grays (hue 220) for a warmer, more inviting feel
    * ======================================== */
-  --surface-primary: #ffffff;
-  --surface-secondary: #f5f5f7;
-  --surface-tertiary: #e8e8ed;
-  --surface-elevated: #ffffff;
+  --surface-primary: hsl(220 20% 99%); /* warm white */
+  --surface-secondary: hsl(220 14% 96%); /* warm gray */
+  --surface-tertiary: hsl(220 13% 91%);
+  --surface-elevated: hsl(220 20% 99%); /* warm white */
 
   /* ========================================
    * Text Colors (WCAG 2.1 AA compliant)
@@ -54,10 +55,11 @@
   --color-info: var(--apple-blue);
 
   /* ========================================
-   * Border Colors
+   * Border Colors (Warm Gray Palette)
    * ======================================== */
   --border-primary: rgba(0, 0, 0, 0.1);
   --border-secondary: rgba(0, 0, 0, 0.06);
+  --border-subtle: hsl(220 13% 88%); /* warm gray border */
   --border-focus: var(--apple-accent);
 
   /* ========================================
@@ -195,11 +197,11 @@ html.dark {
  * Dark Mode Tokens
  * ======================================== */
 .dark {
-  /* Surface Colors */
-  --surface-primary: #1c1c1e;
-  --surface-secondary: #2c2c2e;
-  --surface-tertiary: #3a3a3c;
-  --surface-elevated: #2c2c2e;
+  /* Surface Colors (Warm Gray Palette for Dark Mode) */
+  --surface-primary: hsl(220 15% 10%);
+  --surface-secondary: hsl(220 14% 14%);
+  --surface-tertiary: hsl(220 13% 18%);
+  --surface-elevated: hsl(220 14% 14%);
 
   /* Text Colors */
   --text-primary: #f5f5f7;
@@ -224,9 +226,10 @@ html.dark {
   --apple-purple: #bf5af2;
   --apple-pink: #ff375f;
 
-  /* Border Colors */
+  /* Border Colors (Warm Gray Palette for Dark Mode) */
   --border-primary: rgba(255, 255, 255, 0.15);
   --border-secondary: rgba(255, 255, 255, 0.08);
+  --border-subtle: hsl(220 13% 28%); /* warm gray border for dark mode */
   --border-focus: var(--apple-accent);
 
   /* Shadow Tokens (more subtle in dark mode) */
@@ -310,6 +313,68 @@ html.dark {
     border-radius: var(--radius-apple-lg);
   }
 
+  /* ========================================
+   * Glassmorphism Utilities
+   * Apple-style frosted glass effects
+   * ======================================== */
+
+  /* Standard glass effect for headers, cards, overlays */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .dark .glass {
+    background: rgba(28, 28, 30, 0.72);
+  }
+
+  /* Subtle glass effect for less prominent elements */
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dark .glass-subtle {
+    background: rgba(28, 28, 30, 0.5);
+  }
+
+  /* Strong glass effect for modals and dialogs */
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(200%) blur(30px);
+    -webkit-backdrop-filter: saturate(200%) blur(30px);
+  }
+
+  .dark .glass-strong {
+    background: rgba(28, 28, 30, 0.85);
+  }
+
+  /* Glass overlay for modal backdrops */
+  .glass-overlay {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .dark .glass-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Fixed header glass effect (appears on scroll) */
+  .glass-header {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border-secondary);
+  }
+
+  .dark .glass-header {
+    background: rgba(28, 28, 30, 0.72);
+    border-bottom: 1px solid var(--border-secondary);
+  }
+
   /* Typography utilities for improved legibility */
   .leading-tight {
     line-height: var(--line-height-tight);
@@ -348,5 +413,84 @@ html.dark {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ========================================
+   * Entry Animations (#1020)
+   * Smooth entrance animations for components
+   * ======================================== */
+
+  /* Base enter animation keyframe */
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Scale enter animation for modals/dialogs */
+  @keyframes enter-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Entry animation utility classes */
+  .animate-enter {
+    animation: enter 0.3s var(--ease-apple) forwards;
+  }
+
+  .animate-enter-scale {
+    animation: enter-scale 0.25s var(--ease-apple-spring) forwards;
+  }
+
+  /* Staggered animation delays (#1019) */
+  .stagger-1 {
+    animation-delay: 0ms;
+  }
+  .stagger-2 {
+    animation-delay: 50ms;
+  }
+  .stagger-3 {
+    animation-delay: 100ms;
+  }
+  .stagger-4 {
+    animation-delay: 150ms;
+  }
+  .stagger-5 {
+    animation-delay: 200ms;
+  }
+  .stagger-6 {
+    animation-delay: 250ms;
+  }
+  .stagger-7 {
+    animation-delay: 300ms;
+  }
+  .stagger-8 {
+    animation-delay: 350ms;
+  }
+
+  /* Initial opacity for staggered elements (before animation) */
+  .animate-enter[class*='stagger-'] {
+    opacity: 0;
+  }
+
+  /* Respect prefers-reduced-motion (WCAG 2.1 SC 2.3.3) */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-enter,
+    .animate-enter-scale {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 }

@@ -20,6 +20,7 @@ export default {
     extend: {
       fontFamily: {
         sans: [
+          'Inter var',
           'Inter',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -99,12 +100,24 @@ export default {
         },
       },
       borderRadius: {
+        // Base system
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
         // Apple HIG Border Radius
         apple: 'var(--radius-apple)',
         'apple-lg': 'var(--radius-apple-lg)',
+        // Organic border radius tokens (#1016)
+        none: '0',
+        DEFAULT: '12px',
+        xl: '16px',
+        '2xl': '20px',
+        '3xl': '24px',
+        full: '9999px',
+        // Apple semantic tokens
+        'apple-card': '16px',
+        'apple-modal': '20px',
+        'apple-pill': '9999px',
       },
       boxShadow: {
         // Apple HIG Shadows

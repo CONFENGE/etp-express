@@ -22,8 +22,8 @@ describe('CreateDomainDialog', () => {
       );
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByLabelText('Domain')).toBeInTheDocument();
-      expect(screen.getByLabelText('Max Users')).toBeInTheDocument();
+      expect(screen.getByLabelText('Domínio')).toBeInTheDocument();
+      expect(screen.getByLabelText('Máximo de Usuários')).toBeInTheDocument();
     });
 
     it('should not render dialog when closed', () => {
@@ -47,7 +47,7 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const maxUsersInput = screen.getByLabelText('Max Users');
+      const maxUsersInput = screen.getByLabelText('Máximo de Usuários');
       expect(maxUsersInput).toHaveValue(10);
     });
   });
@@ -64,17 +64,17 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const domainInput = screen.getByLabelText('Domain');
+      const domainInput = screen.getByLabelText('Domínio');
       await user.type(domainInput, 'invalid');
 
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText('Please enter a valid domain (e.g., example.com)'),
+          screen.getByText('Digite um domínio válido (ex: exemplo.com.br)'),
         ).toBeInTheDocument();
       });
     });
@@ -90,17 +90,17 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const domainInput = screen.getByLabelText('Domain');
+      const domainInput = screen.getByLabelText('Domínio');
       await user.type(domainInput, 'ab');
 
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(
-          screen.getByText('Domain must be at least 3 characters'),
+          screen.getByText('O domínio deve ter pelo menos 3 caracteres'),
         ).toBeInTheDocument();
       });
     });
@@ -119,15 +119,15 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const domainInput = screen.getByLabelText('Domain');
-      const maxUsersInput = screen.getByLabelText('Max Users');
+      const domainInput = screen.getByLabelText('Domínio');
+      const maxUsersInput = screen.getByLabelText('Máximo de Usuários');
 
       await user.type(domainInput, 'example.com');
       await user.clear(maxUsersInput);
       await user.type(maxUsersInput, '50');
 
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
@@ -151,11 +151,11 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const domainInput = screen.getByLabelText('Domain');
+      const domainInput = screen.getByLabelText('Domínio');
       await user.type(domainInput, 'example.com');
 
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
@@ -178,16 +178,16 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const domainInput = screen.getByLabelText('Domain');
+      const domainInput = screen.getByLabelText('Domínio');
       await user.type(domainInput, 'example.com');
 
       const submitButton = screen.getByRole('button', {
-        name: 'Create Domain',
+        name: 'Criar Domínio',
       });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Creating...')).toBeInTheDocument();
+        expect(screen.getByText('Criando...')).toBeInTheDocument();
       });
     });
   });
@@ -202,7 +202,7 @@ describe('CreateDomainDialog', () => {
         />,
       );
 
-      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+      const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
       fireEvent.click(cancelButton);
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false);

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Queue } from 'bullmq';
 import { Observable } from 'rxjs';
 import { EtpSection, SectionStatus } from '../../entities/etp-section.entity';
@@ -117,6 +117,7 @@ export class SectionsService {
     @InjectQueue('sections') private sectionsQueue: Queue,
     private orchestratorService: OrchestratorService,
     private etpsService: EtpsService,
+    private dataSource: DataSource,
   ) {}
 
   /**
@@ -210,7 +211,24 @@ export class SectionsService {
       isRequired: this.isRequiredSection(generateDto.type),
     });
 
-    const savedSection = await this.sectionsRepository.save(section);
+    let savedSection: EtpSection;
+    try {
+      savedSection = await this.sectionsRepository.save(section);
+    } catch (error) {
+      // Handle PostgreSQL unique violation (race condition)
+      if ((error as { code?: string }).code === '23505') {
+        const existing = await this.sectionsRepository.findOne({
+          where: { etpId, type: generateDto.type },
+        });
+        if (existing) {
+          this.logger.warn(
+            `Section ${generateDto.type} already exists for ETP ${etpId}, returning existing`,
+          );
+          return existing;
+        }
+      }
+      throw error;
+    }
 
     // Queue generation job in BullMQ (async)
     const job = await this.sectionsQueue.add(
@@ -378,7 +396,34 @@ export class SectionsService {
         metadata: { jobId, startedAt: new Date().toISOString() },
       });
 
-      const savedSection = await this.sectionsRepository.save(section);
+      let savedSection: EtpSection;
+      try {
+        savedSection = await this.sectionsRepository.save(section);
+      } catch (error) {
+        // Handle PostgreSQL unique violation (race condition)
+        if ((error as { code?: string }).code === '23505') {
+          const existing = await this.sectionsRepository.findOne({
+            where: { etpId, type: generateDto.type },
+          });
+          if (existing) {
+            this.logger.warn(
+              `Section ${generateDto.type} already exists for ETP ${etpId}, returning existing via SSE`,
+            );
+            // Complete the stream with existing section
+            progressService.emitProgress(jobId, {
+              phase: 'complete',
+              step: 5,
+              totalSteps: 5,
+              message: 'Seção já existe, retornando existente.',
+              percentage: 100,
+              timestamp: Date.now(),
+            });
+            progressService.completeStream(jobId);
+            return;
+          }
+        }
+        throw error;
+      }
 
       // Phase 2: Generate content with progress callbacks
       const generationResult =
@@ -606,6 +651,11 @@ export class SectionsService {
    * After update, automatically recalculates parent ETP completion percentage
    * to reflect changes in section status.
    *
+   * **ACID Transaction (Issue #1064):**
+   * Uses a single database transaction to ensure atomicity between section update
+   * and ETP completion percentage recalculation. This prevents race conditions
+   * where completion could become desynchronized from actual section status.
+   *
    * **Security (Issue #758):**
    * Validates organizationId when updating ETP completion to prevent cross-tenant
    * data access.
@@ -622,20 +672,51 @@ export class SectionsService {
     organizationId: string,
   ): Promise<EtpSection> {
     const section = await this.findOne(id);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    Object.assign(section, updateDto);
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const updatedSection = await this.sectionsRepository.save(section);
+    try {
+      // Update section within transaction
+      Object.assign(section, updateDto);
+      const updatedSection = await queryRunner.manager.save(section);
 
-    // Update ETP completion percentage with tenancy validation
-    await this.etpsService.updateCompletionPercentage(
-      section.etpId,
-      organizationId,
-    );
+      // Calculate and update ETP completion percentage within same transaction
+      // Uses pessimistic_write lock to prevent race conditions (Issue #1057)
+      const etp = await queryRunner.manager
+        .createQueryBuilder(Etp, 'etp')
+        .leftJoinAndSelect('etp.sections', 'sections')
+        .where('etp.id = :id', { id: section.etpId })
+        .andWhere('etp.organizationId = :organizationId', { organizationId })
+        .setLock('pessimistic_write')
+        .getOne();
 
-    this.logger.log(`Section updated: ${id}`);
+      if (etp) {
+        const completedSections = etp.sections.filter(
+          (s) => s.status === SectionStatus.APPROVED,
+        ).length;
+        const totalSections = etp.sections.length;
+        const percentage =
+          totalSections > 0
+            ? Math.round((completedSections / totalSections) * 100)
+            : 0;
 
-    return updatedSection;
+        await queryRunner.manager.update(Etp, section.etpId, {
+          completionPercentage: percentage,
+        });
+      }
+
+      await queryRunner.commitTransaction();
+      this.logger.log(`Section updated: ${id}`);
+
+      return updatedSection;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
@@ -803,21 +884,40 @@ export class SectionsService {
    * Calculates the next sequential order number for a new section.
    *
    * @remarks
-   * Queries the database to find the maximum order value among existing
-   * sections for the given ETP, then returns that value + 1. If no sections
-   * exist, returns 1.
+   * Uses SERIALIZABLE isolation level to prevent race conditions where
+   * concurrent section creations could get the same order number.
+   * The FOR UPDATE lock ensures only one transaction can read the max
+   * order at a time, preventing duplicates.
+   *
+   * @see #1065 - Fix race condition in getNextOrder
    *
    * @param etpId - Parent ETP unique identifier
    * @returns Next available order number for section sequencing
    */
   private async getNextOrder(etpId: string): Promise<number> {
-    const maxOrder = await this.sectionsRepository
-      .createQueryBuilder('section')
-      .select('MAX(section.order)', 'maxOrder')
-      .where('section.etpId = :etpId', { etpId })
-      .getRawOne();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction('SERIALIZABLE');
 
-    return (maxOrder?.maxOrder || 0) + 1;
+    try {
+      // Use FOR UPDATE to lock rows and prevent concurrent reads
+      const maxOrder = await queryRunner.manager
+        .createQueryBuilder(EtpSection, 'section')
+        .select('MAX(section.order)', 'maxOrder')
+        .where('section.etpId = :etpId', { etpId })
+        .setLock('pessimistic_write')
+        .getRawOne();
+
+      const nextOrder = (maxOrder?.maxOrder || 0) + 1;
+
+      await queryRunner.commitTransaction();
+      return nextOrder;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**

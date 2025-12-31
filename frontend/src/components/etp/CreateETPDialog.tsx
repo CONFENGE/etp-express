@@ -17,9 +17,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
+import { getApiErrorMessage } from '@/lib/api-errors';
 
 const etpSchema = z.object({
   title: z.string().min(5, 'O título deve ter no mínimo 5 caracteres'),
+  objeto: z.string().min(10, 'O objeto deve ter no mínimo 10 caracteres'),
   description: z.string().optional(),
 });
 
@@ -50,16 +52,16 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
     try {
       const etp = await createETP({
         title: data.title,
+        objeto: data.objeto,
         description: data.description,
-        status: 'draft',
-        progress: 0,
       });
       success('ETP criado com sucesso!');
       reset();
       onOpenChange(false);
       navigate(`/etps/${etp.id}`);
-    } catch {
-      error('Erro ao criar ETP. Tente novamente.');
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'criar ETP');
+      error(message);
     } finally {
       setIsLoading(false);
     }
@@ -87,6 +89,22 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
               {errors.title && (
                 <p className="text-sm text-destructive">
                   {errors.title.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="objeto">Objeto *</Label>
+              <Textarea
+                id="objeto"
+                placeholder="Ex: Contratação de empresa especializada em desenvolvimento de sistemas web"
+                rows={3}
+                {...register('objeto')}
+                aria-invalid={errors.objeto ? 'true' : 'false'}
+              />
+              {errors.objeto && (
+                <p className="text-sm text-destructive">
+                  {errors.objeto.message}
                 </p>
               )}
             </div>

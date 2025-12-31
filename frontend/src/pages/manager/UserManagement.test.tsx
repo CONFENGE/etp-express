@@ -104,9 +104,9 @@ describe('UserManagement', () => {
     it('should render page title', () => {
       renderWithRouter(<UserManagement />);
 
-      expect(screen.getByText('User Management')).toBeInTheDocument();
+      expect(screen.getByText('Gerenciamento de Usuários')).toBeInTheDocument();
       expect(
-        screen.getByText('Manage users in your domain'),
+        screen.getByText('Gerencie os usuários do seu domínio'),
       ).toBeInTheDocument();
     });
 
@@ -125,22 +125,22 @@ describe('UserManagement', () => {
       renderWithRouter(<UserManagement />);
 
       expect(
-        screen.getByRole('button', { name: /new user/i }),
+        screen.getByRole('button', { name: /Novo Usuário/i }),
       ).toBeInTheDocument();
     });
 
     it('should render quota indicator', () => {
       renderWithRouter(<UserManagement />);
 
-      expect(screen.getByText('User Quota')).toBeInTheDocument();
-      expect(screen.getByText('Domain capacity')).toBeInTheDocument();
+      expect(screen.getByText('Cota de Usuários')).toBeInTheDocument();
+      expect(screen.getByText('Capacidade do domínio')).toBeInTheDocument();
     });
 
     it('should render search input', () => {
       renderWithRouter(<UserManagement />);
 
       expect(
-        screen.getByPlaceholderText('Search by name, email, or role...'),
+        screen.getByPlaceholderText('Buscar por nome, e-mail ou cargo...'),
       ).toBeInTheDocument();
     });
 
@@ -167,7 +167,7 @@ describe('UserManagement', () => {
       renderWithRouter(<UserManagement />);
 
       const searchInput = screen.getByPlaceholderText(
-        'Search by name, email, or role...',
+        'Buscar por nome, e-mail ou cargo...',
       );
       await user.type(searchInput, 'John');
 
@@ -179,7 +179,7 @@ describe('UserManagement', () => {
       renderWithRouter(<UserManagement />);
 
       const searchInput = screen.getByPlaceholderText(
-        'Search by name, email, or role...',
+        'Buscar por nome, e-mail ou cargo...',
       );
       expect(searchInput).toBeInTheDocument();
     });
@@ -189,11 +189,11 @@ describe('UserManagement', () => {
       renderWithRouter(<UserManagement />);
 
       const searchInput = screen.getByPlaceholderText(
-        'Search by name, email, or role...',
+        'Buscar por nome, e-mail ou cargo...',
       );
       await user.type(searchInput, 'John');
 
-      const clearButton = screen.getByRole('button', { name: 'Clear search' });
+      const clearButton = screen.getByRole('button', { name: 'Limpar busca' });
       await user.click(clearButton);
 
       expect(searchInput).toHaveValue('');
@@ -211,7 +211,9 @@ describe('UserManagement', () => {
 
       renderWithRouter(<UserManagement />);
 
-      const newUserButton = screen.getByRole('button', { name: /new user/i });
+      const newUserButton = screen.getByRole('button', {
+        name: /Novo Usuário/i,
+      });
       expect(newUserButton).toBeDisabled();
     });
   });
@@ -220,7 +222,9 @@ describe('UserManagement', () => {
     it('should have new user button to open dialog', () => {
       renderWithRouter(<UserManagement />);
 
-      const newUserButton = screen.getByRole('button', { name: /new user/i });
+      const newUserButton = screen.getByRole('button', {
+        name: /Novo Usuário/i,
+      });
       expect(newUserButton).toBeInTheDocument();
       expect(newUserButton).not.toBeDisabled();
     });

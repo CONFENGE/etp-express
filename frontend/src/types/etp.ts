@@ -1,12 +1,19 @@
 export interface ETP {
   id: string;
   title: string;
+  objeto: string;
   description?: string;
   status: 'draft' | 'in_progress' | 'under_review' | 'completed';
   progress: number;
   userId: string;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Optimistic locking version for concurrent update detection (Issue #1059).
+   * Incremented on each update. Must be sent in PATCH requests;
+   * if mismatch, API returns 409 Conflict.
+   */
+  version: number;
   sections: Section[];
 }
 

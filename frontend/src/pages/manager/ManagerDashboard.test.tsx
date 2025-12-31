@@ -156,7 +156,7 @@ describe('ManagerDashboard', () => {
 
       expect(screen.getByText('5')).toBeInTheDocument();
       expect(screen.getByText('/ 10')).toBeInTheDocument();
-      expect(screen.getByText('50% used')).toBeInTheDocument();
+      expect(screen.getByText('50% utilizado')).toBeInTheDocument();
     });
   });
 

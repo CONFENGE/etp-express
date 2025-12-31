@@ -74,6 +74,9 @@ export const PAGINATION_DEFAULTS = {
   limit: 10,
 } as const;
 
+// Modal IDs for global modal management
+export const CREATE_ETP_MODAL_ID = 'create-etp';
+
 /**
  * Authentication error codes returned by the backend.
  * These are used to provide contextual error messages to users.

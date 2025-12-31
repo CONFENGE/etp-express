@@ -3,10 +3,12 @@ import {
   NotFoundException,
   Logger,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
+import { SectionStatus } from '../../entities/etp-section.entity';
 import { CreateEtpDto } from './dto/create-etp.dto';
 import { UpdateEtpDto } from './dto/update-etp.dto';
 import {
@@ -49,6 +51,7 @@ export class EtpsService {
   constructor(
     @InjectRepository(Etp)
     private etpsRepository: Repository<Etp>,
+    private dataSource: DataSource,
   ) {}
 
   /**
@@ -105,6 +108,7 @@ export class EtpsService {
       status: EtpStatus.DRAFT,
       currentVersion: 1,
       completionPercentage: 0,
+      sections: [],
     });
 
     const savedEtp = await this.etpsRepository.save(etp);
@@ -460,12 +464,18 @@ export class EtpsService {
    * can modify the document. All fields in updateEtpDto are merged into
    * the existing entity.
    *
+   * Optimistic Locking (Issue #1059):
+   * If version is provided in updateEtpDto, validates that it matches
+   * the current ETP version. If mismatch, throws ConflictException (409).
+   * This prevents silent data loss from concurrent updates.
+   *
    * @param id - ETP unique identifier
-   * @param updateEtpDto - Fields to update (objeto, metadata, status, etc.)
+   * @param updateEtpDto - Fields to update (objeto, metadata, status, version, etc.)
    * @param userId - Current user ID for authorization check
-   * @returns Updated ETP entity
+   * @returns Updated ETP entity with incremented version
    * @throws {NotFoundException} If ETP not found
    * @throws {ForbiddenException} If user doesn't own the ETP
+   * @throws {ConflictException} If version mismatch (concurrent update detected)
    */
   async update(
     id: string,
@@ -475,10 +485,31 @@ export class EtpsService {
   ): Promise<Etp> {
     const etp = await this.findOneMinimal(id, organizationId, userId);
 
-    Object.assign(etp, updateEtpDto);
+    // Optimistic locking: validate version if provided (Issue #1059)
+    if (
+      updateEtpDto.version !== undefined &&
+      updateEtpDto.version !== etp.version
+    ) {
+      this.logger.warn(
+        `Version conflict detected for ETP ${id}: expected ${updateEtpDto.version}, current ${etp.version}`,
+      );
+      throw new ConflictException({
+        message:
+          'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
+        code: 'VERSION_CONFLICT',
+        currentVersion: etp.version,
+        expectedVersion: updateEtpDto.version,
+      });
+    }
+
+    // Remove version from DTO to avoid conflicts with TypeORM auto-increment
+    const { version: _version, ...updateData } = updateEtpDto;
+    Object.assign(etp, updateData);
 
     const updatedEtp = await this.etpsRepository.save(etp);
-    this.logger.log(`ETP updated: ${id} by user ${userId}`);
+    this.logger.log(
+      `ETP updated: ${id} by user ${userId} (version ${updatedEtp.version})`,
+    );
 
     return updatedEtp;
   }
@@ -523,10 +554,15 @@ export class EtpsService {
    * @remarks
    * Called by SectionsService whenever sections are created, updated, or deleted.
    * Completion is calculated as:
-   * (sections with status 'generated', 'reviewed', or 'approved') / (total sections) * 100
+   * (sections with status 'approved') / (total sections) * 100
    *
    * If ETP has no sections, completion is set to 0%. This method is idempotent
    * and safe to call repeatedly.
+   *
+   * **ACID Transaction (Issue #1057):**
+   * Uses pessimistic locking (SELECT FOR UPDATE) to prevent race conditions
+   * when multiple section updates happen concurrently. This ensures that
+   * completion percentage is always calculated correctly even under high concurrency.
    *
    * **Security (Issue #758):**
    * Validates organizationId to prevent cross-tenant data access. Only ETPs
@@ -540,29 +576,46 @@ export class EtpsService {
     id: string,
     organizationId: string,
   ): Promise<void> {
-    const etp = await this.etpsRepository.findOne({
-      where: { id, organizationId },
-      relations: ['sections'],
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (!etp) {
-      return;
-    }
+    try {
+      // SELECT FOR UPDATE para lock pessimista - previne race conditions
+      const etp = await queryRunner.manager
+        .createQueryBuilder(Etp, 'etp')
+        .leftJoinAndSelect('etp.sections', 'sections')
+        .where('etp.id = :id', { id })
+        .andWhere('etp.organizationId = :organizationId', { organizationId })
+        .setLock('pessimistic_write')
+        .getOne();
 
-    const totalSections = etp.sections.length;
-    if (totalSections === 0) {
-      etp.completionPercentage = 0;
-    } else {
+      if (!etp) {
+        await queryRunner.rollbackTransaction();
+        return;
+      }
+
+      // Calcular completion dentro da transacao
       const completedSections = etp.sections.filter(
-        (s) =>
-          s.status === 'generated' ||
-          s.status === 'reviewed' ||
-          s.status === 'approved',
+        (s) => s.status === SectionStatus.APPROVED,
       ).length;
-      etp.completionPercentage = (completedSections / totalSections) * 100;
-    }
+      const totalSections = etp.sections.length;
+      const percentage =
+        totalSections > 0
+          ? Math.round((completedSections / totalSections) * 100)
+          : 0;
 
-    await this.etpsRepository.save(etp);
+      await queryRunner.manager.update(Etp, id, {
+        completionPercentage: percentage,
+      });
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
@@ -631,20 +684,46 @@ export class EtpsService {
    * Use ONLY when ETP has been pre-validated by ResourceOwnershipGuard.
    * This method skips tenancy and ownership checks.
    *
+   * Optimistic Locking (Issue #1059):
+   * If version is provided in updateEtpDto, validates that it matches
+   * the current ETP version. If mismatch, throws ConflictException (409).
+   *
    * @param etp - Pre-validated ETP entity
    * @param updateEtpDto - Fields to update
    * @param userId - User ID for audit logging
-   * @returns Updated ETP entity
+   * @returns Updated ETP entity with incremented version
+   * @throws {ConflictException} If version mismatch (concurrent update detected)
    */
   async updateDirect(
     etp: Etp,
     updateEtpDto: UpdateEtpDto,
     userId: string,
   ): Promise<Etp> {
-    Object.assign(etp, updateEtpDto);
+    // Optimistic locking: validate version if provided (Issue #1059)
+    if (
+      updateEtpDto.version !== undefined &&
+      updateEtpDto.version !== etp.version
+    ) {
+      this.logger.warn(
+        `Version conflict detected for ETP ${etp.id}: expected ${updateEtpDto.version}, current ${etp.version}`,
+      );
+      throw new ConflictException({
+        message:
+          'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
+        code: 'VERSION_CONFLICT',
+        currentVersion: etp.version,
+        expectedVersion: updateEtpDto.version,
+      });
+    }
+
+    // Remove version from DTO to avoid conflicts with TypeORM auto-increment
+    const { version: _version, ...updateData } = updateEtpDto;
+    Object.assign(etp, updateData);
 
     const updatedEtp = await this.etpsRepository.save(etp);
-    this.logger.log(`ETP updated: ${etp.id} by user ${userId}`);
+    this.logger.log(
+      `ETP updated: ${etp.id} by user ${userId} (version ${updatedEtp.version})`,
+    );
 
     return updatedEtp;
   }

@@ -27,6 +27,11 @@ export class ExaService {
   private readonly circuitBreaker: CircuitBreaker;
   private readonly retryOptions: Partial<RetryOptions>;
 
+  /** Cached ping result to avoid excessive API calls from health checks */
+  private lastPingResult: { latency: number; timestamp: number } | null = null;
+  /** TTL for cached ping result (60 seconds) */
+  private readonly PING_CACHE_TTL = 60000;
+
   constructor(
     private configService: ConfigService,
     private semanticCache: SemanticCacheService,
@@ -448,12 +453,28 @@ export class ExaService {
 
   /**
    * Lightweight health check for Exa API availability
-   * Makes a minimal API call to verify connectivity and measure latency
+   * Makes a minimal API call to verify connectivity and measure latency.
+   * Results are cached for 60 seconds to reduce API consumption from
+   * frequent health checks (e.g., Railway polling every 30s).
+   *
    * @returns Promise<{ latency: number }> Latency in milliseconds
    * @throws Error if Exa API is unreachable
    */
   async ping(): Promise<{ latency: number }> {
-    const start = Date.now();
+    const now = Date.now();
+
+    // Return cached result if still valid
+    if (
+      this.lastPingResult &&
+      now - this.lastPingResult.timestamp < this.PING_CACHE_TTL
+    ) {
+      this.logger.debug(
+        `Exa ping cache HIT - latency: ${this.lastPingResult.latency}ms (cached ${Math.round((now - this.lastPingResult.timestamp) / 1000)}s ago)`,
+      );
+      return { latency: this.lastPingResult.latency };
+    }
+
+    const start = now;
 
     try {
       // Make a minimal API call to check connectivity
@@ -465,6 +486,9 @@ export class ExaService {
       const latency = Date.now() - start;
       this.logger.debug(`Exa ping successful - latency: ${latency}ms`);
 
+      // Cache the result
+      this.lastPingResult = { latency, timestamp: Date.now() };
+
       return { latency };
     } catch (error) {
       const latency = Date.now() - start;
@@ -472,6 +496,10 @@ export class ExaService {
       this.logger.error(`Exa ping failed after ${latency}ms`, {
         error: err.message,
       });
+
+      // Clear cache on failure so next check tries fresh
+      this.lastPingResult = null;
+
       throw error;
     }
   }

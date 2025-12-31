@@ -1,6 +1,15 @@
 import { useMemo } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
+import { Link } from 'react-router';
+import {
+  PlusCircle,
+  TrendingUp,
+  FileText,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useUIStore } from '@/store/uiStore';
+import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -22,7 +31,7 @@ import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
 export function Dashboard() {
-  const navigate = useNavigate();
+  const { openModal } = useUIStore();
   const { user } = useAuth();
   // useETPs hook auto-fetches when etps.length === 0, no manual fetch needed (#983)
   const { etps, isLoading } = useETPs();
@@ -70,7 +79,7 @@ export function Dashboard() {
                   <Button
                     size="lg"
                     className="w-full text-base"
-                    onClick={() => navigate('/etps/new')}
+                    onClick={() => openModal(CREATE_ETP_MODAL_ID)}
                   >
                     <PlusCircle className="mr-2 h-5 w-5" />
                     Criar meu primeiro ETP
@@ -152,12 +161,15 @@ export function Dashboard() {
             className="grid gap-4 md:grid-cols-3"
             data-tour="dashboard-stats"
           >
+            {/* Total ETPs - Blue (#1017) */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Total de ETPs
                 </CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.total}</div>
@@ -167,12 +179,15 @@ export function Dashboard() {
               </CardContent>
             </Card>
 
+            {/* In Progress - Orange (#1017) */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Em Progresso
                 </CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
+                  <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.inProgress}</div>
@@ -182,12 +197,15 @@ export function Dashboard() {
               </CardContent>
             </Card>
 
+            {/* Completed - Green (#1017) */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Concluídos
                 </CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.completed}</div>
@@ -206,11 +224,9 @@ export function Dashboard() {
                 <CardTitle>ETPs Recentes</CardTitle>
                 <CardDescription>Seus estudos mais recentes</CardDescription>
               </div>
-              <Button asChild>
-                <Link to="/etps/new">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Novo ETP
-                </Link>
+              <Button onClick={() => openModal(CREATE_ETP_MODAL_ID)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Novo ETP
               </Button>
             </div>
           </CardHeader>
@@ -218,34 +234,50 @@ export function Dashboard() {
             {isLoading ? (
               <SkeletonRecentItems count={5} />
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {recentETPs.map((etp) => (
                   <Link
                     key={etp.id}
                     to={`/etps/${etp.id}`}
-                    className="block p-4 rounded-lg border hover:bg-accent transition-colors"
+                    className={cn(
+                      'group flex items-center justify-between p-4 -mx-2',
+                      'rounded-xl transition-all duration-200',
+                      'hover:bg-surface-secondary hover:shadow-sm',
+                      'hover:-translate-y-0.5',
+                    )}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{etp.title}</h3>
-                        {etp.description && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {etp.description}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs bg-secondary px-2 py-1 rounded">
-                            {ETP_STATUS_LABELS[etp.status]}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(etp.updatedAt)}
-                          </span>
-                        </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold group-hover:text-primary transition-colors">
+                        {etp.title}
+                      </h3>
+                      {etp.description && (
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                          {etp.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        {/* Status badges with semantic colors (#1018) */}
+                        <span
+                          className={cn(
+                            'text-xs px-2 py-1 rounded-full font-medium',
+                            etp.status === 'completed' &&
+                              'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                            etp.status === 'in_progress' &&
+                              'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+                            etp.status === 'draft' &&
+                              'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+                          )}
+                        >
+                          {ETP_STATUS_LABELS[etp.status]}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(etp.updatedAt)}
+                        </span>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-primary">
-                          {etp.progress}%
-                        </div>
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-primary">
+                        {etp.progress}%
                       </div>
                     </div>
                   </Link>

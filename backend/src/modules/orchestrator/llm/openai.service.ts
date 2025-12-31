@@ -100,14 +100,135 @@ export class OpenAIService {
           'OpenAI circuit breaker is open - service temporarily unavailable',
         );
         throw new ServiceUnavailableException(
-          'Serviço de IA temporariamente indisponível. Tente novamente em alguns minutos.',
+          'Servico de IA temporariamente indisponivel. Tente novamente em alguns minutos.',
         );
       }
 
-      // Other errors - propagate
-      this.logger.error('Error generating completion:', error);
-      throw error;
+      // Categorize and wrap OpenAI errors for better user experience (#1047)
+      const wrappedError = this.wrapOpenAIError(error);
+      this.logger.error('Error generating completion:', {
+        originalError: error.message,
+        wrappedError: wrappedError.message,
+        errorType: error.name || error.constructor?.name,
+        code: error.code,
+        status: error.status,
+      });
+
+      throw wrappedError;
     }
+  }
+
+  /**
+   * Wraps OpenAI SDK errors with user-friendly messages.
+   *
+   * @remarks
+   * The OpenAI SDK can throw various error types with technical messages.
+   * This method converts them to ServiceUnavailableException or other
+   * appropriate NestJS exceptions with user-friendly Portuguese messages.
+   *
+   * @param error - Original error from OpenAI SDK or circuit breaker
+   * @returns Wrapped error with user-friendly message
+   * @see #1047 - Improve AI section generation error messages
+   */
+  private wrapOpenAIError(error: unknown): Error {
+    const err = error as {
+      message?: string;
+      status?: number;
+      code?: string;
+      name?: string;
+    };
+    const message = err.message?.toLowerCase() || '';
+    const status = err.status;
+    const code = err.code?.toLowerCase() || '';
+
+    // Rate limit errors (429)
+    if (
+      status === 429 ||
+      message.includes('rate_limit') ||
+      message.includes('rate limit') ||
+      code.includes('rate_limit')
+    ) {
+      return new ServiceUnavailableException(
+        'Limite de requisicoes da IA excedido. Aguarde alguns minutos e tente novamente.',
+      );
+    }
+
+    // Timeout errors
+    if (
+      message.includes('timeout') ||
+      code.includes('timeout') ||
+      code === 'etimedout' ||
+      code === 'econnreset'
+    ) {
+      return new ServiceUnavailableException(
+        'O servico de IA demorou para responder. Tente novamente.',
+      );
+    }
+
+    // Authentication/API key errors (401, 403)
+    if (
+      status === 401 ||
+      status === 403 ||
+      message.includes('api key') ||
+      message.includes('authentication') ||
+      message.includes('invalid_api_key')
+    ) {
+      this.logger.error('OpenAI API key error - check configuration');
+      return new ServiceUnavailableException(
+        'Erro de configuracao do servico de IA. Entre em contato com o suporte.',
+      );
+    }
+
+    // Server errors (500, 502, 503, 504)
+    if (status && status >= 500) {
+      return new ServiceUnavailableException(
+        'O servico de IA esta temporariamente indisponivel. Tente novamente em instantes.',
+      );
+    }
+
+    // Content filter/safety errors
+    if (
+      message.includes('content_filter') ||
+      message.includes('safety') ||
+      message.includes('moderation')
+    ) {
+      return new Error(
+        'O conteudo foi bloqueado pelo filtro de seguranca da IA. Revise o texto de entrada.',
+      );
+    }
+
+    // Context length exceeded
+    if (
+      message.includes('context_length') ||
+      message.includes('maximum context') ||
+      message.includes('token')
+    ) {
+      return new Error(
+        'O texto de entrada e muito longo. Reduza o tamanho e tente novamente.',
+      );
+    }
+
+    // Network errors
+    if (
+      code === 'econnrefused' ||
+      code === 'enotfound' ||
+      message.includes('network') ||
+      message.includes('fetch')
+    ) {
+      return new ServiceUnavailableException(
+        'Erro de conexao com o servico de IA. Verifique a conexao e tente novamente.',
+      );
+    }
+
+    // Return original error if no specific handling applies
+    // but ensure it has a message
+    if (error instanceof Error) {
+      return error;
+    }
+
+    return new Error(
+      err.message || 'Erro desconhecido no servico de IA. Tente novamente.',
+    );
   }
 
   /**
