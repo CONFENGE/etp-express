@@ -73,6 +73,12 @@ async function navigateToETPs(page: Page): Promise<void> {
   await page.goto('/etps');
   await page.waitForLoadState('networkidle');
   await expect(page).toHaveURL(/\/etps/);
+
+  // Wait for the page to fully render by checking for the "Novo ETP" button
+  await page.waitForSelector(
+    'button:has-text("Novo ETP"), button:has-text("Criar ETP")',
+    { state: 'visible', timeout: 10000 },
+  );
 }
 
 /**
