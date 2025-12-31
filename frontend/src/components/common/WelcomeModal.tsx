@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import { BookOpen, PlusCircle, X } from 'lucide-react';
-import { useUIStore } from '@/store/uiStore';
-import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +34,7 @@ interface WelcomeModalProps {
  * - "Don't show again" option (persisted in localStorage)
  */
 export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
-  const { openModal } = useUIStore();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -63,8 +62,8 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
       localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
     }
     setIsOpen(false);
-    openModal(CREATE_ETP_MODAL_ID);
-  }, [dontShowAgain, openModal]);
+    navigate('/etps/new');
+  }, [dontShowAgain, navigate]);
 
   const handleOpenManual = useCallback(() => {
     window.open(MANUAL_URL, '_blank', 'noopener,noreferrer');

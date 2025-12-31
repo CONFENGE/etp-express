@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import {
   PlusCircle,
   Search,
@@ -8,8 +8,6 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { useUIStore } from '@/store/uiStore';
-import { CREATE_ETP_MODAL_ID } from '@/lib/constants';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,7 +37,7 @@ import { UndoToastContainer } from '@/components/ui/undo-toast';
 import { ETP } from '@/types/etp';
 
 export function ETPs() {
-  const { openModal } = useUIStore();
+  const navigate = useNavigate();
   const { etps, isLoading, fetchETPs, deleteETP } = useETPs();
   const [search, setSearch] = useState('');
   // Store hidden ETP IDs for optimistic UI updates
@@ -112,9 +110,11 @@ export function ETPs() {
               Gerencie seus Estudos Técnicos Preliminares
             </p>
           </div>
-          <Button onClick={() => openModal(CREATE_ETP_MODAL_ID)}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Novo ETP
+          <Button asChild>
+            <Link to="/etps/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Novo ETP
+            </Link>
           </Button>
         </div>
 
@@ -151,7 +151,7 @@ export function ETPs() {
                   label: search ? 'Limpar busca' : 'Criar ETP',
                   onClick: search
                     ? handleClearSearch
-                    : () => openModal(CREATE_ETP_MODAL_ID),
+                    : () => navigate('/etps/new'),
                   icon: search ? X : PlusCircle,
                   variant: search ? 'outline' : 'default',
                 }}
@@ -161,7 +161,7 @@ export function ETPs() {
                 <div className="flex justify-center mt-4">
                   <Button
                     variant="default"
-                    onClick={() => openModal(CREATE_ETP_MODAL_ID)}
+                    onClick={() => navigate('/etps/new')}
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Criar novo ETP

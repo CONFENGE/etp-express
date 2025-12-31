@@ -37,21 +37,21 @@ export function DeleteDomainDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir Domínio</AlertDialogTitle>
+          <AlertDialogTitle>Delete Domain</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir <strong>{domain.domain}</strong>?
-            Esta ação não pode ser desfeita e removerá todos os usuários
-            associados a este domínio.
+            Are you sure you want to delete <strong>{domain.domain}</strong>?
+            This action cannot be undone and will remove all users associated
+            with this domain.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir Domínio'}
+            {isDeleting ? 'Deleting...' : 'Delete Domain'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

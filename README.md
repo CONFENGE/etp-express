@@ -458,200 +458,235 @@ docker system df
 
 ---
 
-## E2E TESTS (PLAYWRIGHT)
+## E2E TESTS (PUPPETEER)
 
-Suite completa de testes E2E automatizados com [Playwright](https://playwright.dev/) - framework moderno para testes cross-browser.
+**M5 (Issue #22)** - Infraestrutura completa de testes end-to-end com Puppeteer + Jest.
 
 ### Visão Geral
 
-**24 arquivos de teste** cobrindo fluxos críticos:
+O projeto possui suite de testes E2E automatizados que validam fluxos críticos da aplicação:
 
-| Categoria   | Testes  | Cobertura                                            |
-| ----------- | ------- | ---------------------------------------------------- |
-| **Auth**    | 6 specs | Login, logout, reset/change password, session, roles |
-| **ETP**     | 4 specs | CRUD, edit, lifecycle, sections generation           |
-| **Admin**   | 3 specs | Dashboard, audit, domains                            |
-| **Export**  | 2 specs | PDF, DOCX                                            |
-| **Manager** | 2 specs | Dashboard, users                                     |
-| **Visual**  | 1 spec  | Visual regression testing                            |
-| **Core**    | 6 specs | Happy path, accessibility, connectivity              |
+- ✅ Fluxo de autenticação (login/logout)
+- ✅ Criação de ETPs
+- ✅ Navegação entre páginas
+- ✅ Validação de formulários
+- ✅ Integração frontend-backend
 
-### Executar Testes
+### Pré-requisitos
 
 ```bash
-# Toda a suite (todos os browsers)
-npx playwright test
-
-# Apenas Chromium (mais rápido)
-npx playwright test --project=chromium
-
-# Teste específico
-npx playwright test e2e/auth/login-flow.spec.ts
-
-# Modo headed (browser visível)
-npx playwright test --headed
-
-# Com UI interativa
-npx playwright test --ui
+# Frontend DEVE estar rodando
+cd frontend
+npm run dev
+# Aguardar: http://localhost:5173
 ```
 
-### Projetos Configurados
-
-| Projeto    | Browser         | Uso               |
-| ---------- | --------------- | ----------------- |
-| `chromium` | Chrome          | Testes funcionais |
-| `firefox`  | Firefox         | Cross-browser     |
-| `webkit`   | Safari          | Cross-browser     |
-| `visual`   | Chrome 1280x720 | Visual regression |
+### Executar Testes E2E
 
 ```bash
-# Rodar projeto específico
-npx playwright test --project=chromium
-npx playwright test --project=visual
+# Na raiz do projeto (monorepo)
+npm run test:e2e
+
+# Ou diretamente no diretório e2e/
+cd e2e
+npx tsx run-tests.ts
 ```
 
 ### Estrutura de Arquivos
 
 ```
 e2e/
-├── auth/                    # Testes de autenticação
-│   ├── login-flow.spec.ts
-│   ├── logout.spec.ts
-│   ├── password-change.spec.ts
-│   ├── password-reset.spec.ts
-│   ├── role-access.spec.ts
-│   └── session.spec.ts
-├── admin/                   # Testes admin
-├── etp/                     # Testes de ETP
-├── export/                  # Testes de exportação
-├── manager/                 # Testes manager
-├── visual/                  # Visual regression
-├── fixtures/                # Test fixtures
-└── utils/                   # Helpers compartilhados
-playwright.config.ts         # Configuração principal
+├── puppeteer.config.js # Configuração do Puppeteer (base URL, timeouts, viewport)
+├── jest.config.js # Configuração do Jest (TypeScript, environment node)
+├── utils/
+│ └── setup.ts # Helpers (setupBrowser, login, createETP, screenshots)
+├── login.spec.ts # Suite de testes do fluxo de login (6 casos)
+├── run-tests.ts # Test runner customizado (verifica servidor, executa specs)
+└── .gitignore # Ignora screenshots/, test-results/, temp files
+
+Gerado em runtime:
+├── screenshots/ # Screenshots de falhas (auto-capturados)
+│ └── YYYY-MM-DD_HH-MM-SS_test-name.png
+└── test-results/ # Relatórios XML (Jest JUnit)
+ └── e2e-test-results.xml
 ```
 
-### Configuração (playwright.config.ts)
+### Configuração (puppeteer.config.js)
 
-| Opção        | Dev            | CI              | Descrição           |
-| ------------ | -------------- | --------------- | ------------------- |
-| `workers`    | parallel       | 1               | Paralelismo         |
-| `retries`    | 0              | 2               | Tentativas em falha |
-| `trace`      | -              | on-first-retry  | Coleta de traces    |
-| `screenshot` | -              | only-on-failure | Captura automática  |
-| `baseURL`    | localhost:5173 | localhost:3000  | URL base            |
+| Configuração        | Padrão                  | Variável de Ambiente | Descrição                          |
+| ------------------- | ----------------------- | -------------------- | ---------------------------------- |
+| `baseUrl`           | `http://localhost:5173` | `E2E_BASE_URL`       | URL da aplicação                   |
+| `headless`          | `true`                  | `E2E_HEADLESS=false` | Modo headless (true para CI)       |
+| `devtools`          | `false`                 | `E2E_DEVTOOLS=true`  | Abrir DevTools (debug)             |
+| `slowMo`            | `0`                     | `E2E_SLOW_MO=250`    | Slow motion (ms) para debug visual |
+| `viewport.width`    | `1920`                  | -                    | Largura do browser                 |
+| `viewport.height`   | `1080`                  | -                    | Altura do browser                  |
+| `testTimeout`       | `60000` (60s)           | -                    | Timeout padrão por teste           |
+| `testUser.email`    | `test@confenge.com.br`  | `E2E_TEST_EMAIL`     | Usuário padrão para testes         |
+| `testUser.password` | `Test@123456`           | `E2E_TEST_PASSWORD`  | Senha padrão para testes           |
 
-### Variáveis de Ambiente
-
-```bash
-# Configuração da aplicação
-E2E_BASE_URL=http://localhost:5173
-E2E_API_URL=http://localhost:3001
-
-# Credenciais de teste
-E2E_ADMIN_EMAIL=admin@confenge.com.br
-E2E_ADMIN_PASSWORD=Admin@123
-```
-
-### Exemplo de Teste
+### Helpers Disponíveis (utils/setup.ts)
 
 ```typescript
-import { test, expect } from '@playwright/test';
+// Inicializar browser e page
+const { browser, page } = await setupBrowser();
 
-test.describe('Login Flow', () => {
-  test('deve fazer login com credenciais válidas', async ({ page }) => {
-    await page.goto('/login');
+// Fazer login
+await login(page, 'user@example.com', 'password123');
 
-    await page.fill('[data-testid="email"]', 'admin@confenge.com.br');
-    await page.fill('[data-testid="password"]', 'Admin@123');
-    await page.click('[data-testid="submit"]');
+// Criar ETP
+await createETP(page, { title: 'Projeto Teste', description: 'Descrição' });
 
-    await expect(page).toHaveURL(/dashboard/);
-    await expect(page.getByText('Dashboard')).toBeVisible();
+// Capturar screenshot em falha
+await takeScreenshotOnFailure(page, 'test-name');
+
+// Obter texto de elemento
+const text = await getTextContent(page, '.error-message');
+
+// Aguardar URL conter path
+await waitForUrlContains(page, '/dashboard');
+
+// Teardown
+await teardownBrowser(browser);
+```
+
+### Exemplo de Teste (login.spec.ts)
+
+```typescript
+import { setupBrowser, teardownBrowser, login } from './utils/setup';
+
+describe('Login Flow E2E', () => {
+  let browser, page;
+
+  beforeEach(async () => {
+    ({ browser, page } = await setupBrowser());
   });
+
+  afterEach(async () => {
+    await teardownBrowser(browser);
+  });
+
+  test('deve fazer login com credenciais válidas', async () => {
+    try {
+      await page.goto('http://localhost:5173/login');
+      await page.type('#email', 'test@confenge.com.br');
+      await page.type('#password', 'Test@123456');
+      await page.click('button[type="submit"]');
+      await page.waitForNavigation();
+
+      // Validações
+      expect(page.url()).toContain('/dashboard');
+    } catch (error) {
+      await takeScreenshotOnFailure(page, 'login-valid-credentials');
+      throw error;
+    }
+  }, 60000);
 });
 ```
 
-### Debug
+### Executar com Opções de Debug
 
 ```bash
-# Modo debug com Playwright Inspector
-npx playwright test --debug
+# Modo visual (browser visível)
+E2E_HEADLESS=false npm run test:e2e
 
-# Gerar trace para análise
-npx playwright test --trace on
+# Com DevTools aberto
+E2E_DEVTOOLS=true npm run test:e2e
 
-# Visualizar trace
-npx playwright show-trace trace.zip
+# Slow motion (250ms entre ações)
+E2E_SLOW_MO=250 E2E_HEADLESS=false npm run test:e2e
 
-# Gerar código interativamente
-npx playwright codegen http://localhost:5173
+# Combinar opções
+E2E_HEADLESS=false E2E_SLOW_MO=500 npm run test:e2e
 ```
 
-### Visual Regression
+### Criar Novos Testes
 
-```bash
-# Rodar testes visuais
-npx playwright test --project=visual
+1. Criar arquivo `e2e/<nome>.spec.ts`
+2. Importar helpers de `./utils/setup`
+3. Seguir padrão Jest (describe, test, expect)
+4. Adicionar try-catch com `takeScreenshotOnFailure` em caso de erro
+5. Executar `npm run test:e2e` para validar
 
-# Atualizar snapshots de referência
-npx playwright test --project=visual --update-snapshots
-```
-
-### CI/CD Integration
-
-O workflow `.github/workflows/playwright.yml` executa automaticamente em:
-
-- Push para `main`/`master`
-- Pull requests
+### CI/CD Integration (Futuro)
 
 ```yaml
-# Configuração do CI
-services:
-  postgres: pgvector/pgvector:pg15
-  redis: redis:7-alpine
+# .github/workflows/e2e-tests.yml (exemplo)
+name: E2E Tests
+on: [pull_request]
+jobs:
+ e2e:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v4
+ - uses: actions/setup-node@v4
+ with:
+ node-version: '20'
+ cache: 'npm'
 
-# Browsers testados
-projects: chromium, firefox, webkit
+ # Instalar dependências
+ - run: npm ci
+ - run: cd frontend && npm ci
+ - run: cd backend && npm ci
+
+ # Iniciar aplicação em background
+ - run: cd frontend && npm run dev &
+ - run: cd backend && npm run start:dev &
+
+ # Aguardar servidor (health check)
+ - run: npx wait-on http://localhost:5173 http://localhost:3001/health
+
+ # Executar testes E2E
+ - run: npm run test:e2e
+ env:
+ E2E_HEADLESS: true
+ E2E_BASE_URL: http://localhost:5173
+
+ # Upload screenshots de falhas
+ - uses: actions/upload-artifact@v4
+ if: failure()
+ with:
+ name: e2e-screenshots
+ path: e2e/screenshots/
 ```
-
-Artifacts salvos automaticamente:
-
-- `playwright-report/` - Relatório HTML
-- `test-results/` - Screenshots de falhas
 
 ### Troubleshooting
 
-#### "Timeout waiting for element"
+#### "Servidor não está rodando"
 
 ```bash
-# Aumentar timeout global
-npx playwright test --timeout=60000
+# Certifique-se de que o frontend está rodando
+cd frontend
+npm run dev
 
-# Debug específico
-await page.waitForSelector('[data-testid="element"]', { timeout: 30000 });
+# Verificar porta 5173
+curl http://localhost:5173
 ```
 
-#### "Browser not installed"
+#### "Timeout aguardando navegação"
 
-```bash
-npx playwright install
-npx playwright install-deps  # Linux: instala deps do sistema
-```
+- Aumentar timeout em `puppeteer.config.js` → `timeouts.navigation`
+- Verificar se backend está rodando (frontend pode carregar mas API falhar)
+- Usar `E2E_SLOW_MO=500` para debug visual
 
-#### "Test flaky em CI"
+#### "Element not found"
 
-```typescript
-// Usar retries e waits explícitos
-test.describe.configure({ retries: 2 });
-await expect(locator).toBeVisible({ timeout: 10000 });
-```
+- Capturar screenshot: `await page.screenshot({ path: 'debug.png' })`
+- Verificar seletores no frontend (ID, classes, data-testid)
+- Usar `page.waitForSelector('#elemento', { visible: true })`
+
+#### "Browser não abre (headless=false)"
+
+- Verificar instalação do Chromium: `npx puppeteer browsers install chrome`
+- Linux: Instalar dependências: `sudo apt-get install -y libx11-xcb1 libxcomposite1`
 
 ### Referências
 
-- [Playwright Documentation](https://playwright.dev/)
-- [Best Practices](https://playwright.dev/docs/best-practices)
-- [Workflow: playwright.yml](.github/workflows/playwright.yml)
+- [Documentação Puppeteer](https://pptr.dev/)
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [Issue #22 - Configure Puppeteer E2E](https://github.com/tjsasakifln/etp-express/issues/22)
+- [Issue #23 - E2E Critical Flow Tests](https://github.com/tjsasakifln/etp-express/issues/23)
+- [Issue #24 - Accessibility Tests (Axe-core)](https://github.com/tjsasakifln/etp-express/issues/24)
 
 ---
 
@@ -1184,7 +1219,7 @@ Este software é propriedade exclusiva da CONFENGE. É expressamente proibido co
 
 ## ROADMAP
 
-**Ultima Atualizacao**: 2025-12-28 | [ROADMAP.md completo](./ROADMAP.md)
+**Ultima Atualizacao**: 2025-12-20 | [ROADMAP.md completo](./ROADMAP.md)
 
 ### Progresso Global: 91.1% (408/448 issues)
 
@@ -1294,7 +1329,7 @@ A responsabilidade final é sempre do servidor/agente público responsável.
 
 ---
 
-**Ultima atualizacao**: 2025-12-28
+**Ultima atualizacao**: 2025-12-20
 **Versao**: 1.0.0 (Production Ready)
 **Progresso**: 91.1% (408/448 issues concluidas)
 **Milestones**: M1-M4 ✅ | M5 (86%) | M6 (91%) | M7-M9 ✅

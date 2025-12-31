@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  Unique,
 } from 'typeorm';
 import { Etp } from './etp.entity';
 
@@ -33,7 +32,6 @@ export enum SectionStatus {
 }
 
 @Entity('etp_sections')
-@Unique('UQ_section_etp_type', ['etpId', 'type'])
 export class EtpSection {
   @PrimaryGeneratedColumn('uuid')
   id: string;

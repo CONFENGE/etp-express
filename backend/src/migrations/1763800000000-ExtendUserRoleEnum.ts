@@ -15,46 +15,37 @@ export class ExtendUserRoleEnum1763800000000 implements MigrationInterface {
   name = 'ExtendUserRoleEnum1763800000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Check if the users_role_enum type exists
-    // The initial schema uses character varying, not enum, so we skip enum alterations if not present
-    const enumExists = await queryRunner.query(`
-      SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'users_role_enum') as exists
-    `);
+    // Add new enum values to user_role_enum
+    // PostgreSQL requires ALTER TYPE ... ADD VALUE for each new value
+    await queryRunner.query(`
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'system_admin' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'system_admin';
+ END IF;
+ END
+ $$;
+ `);
 
-    if (enumExists[0]?.exists === true) {
-      // Add new enum values to user_role_enum
-      // PostgreSQL requires ALTER TYPE ... ADD VALUE for each new value
-      await queryRunner.query(`
-   DO $$
-   BEGIN
-   IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'system_admin' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-   ALTER TYPE "users_role_enum" ADD VALUE 'system_admin';
-   END IF;
-   END
-   $$;
-   `);
+    await queryRunner.query(`
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'domain_manager' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'domain_manager';
+ END IF;
+ END
+ $$;
+ `);
 
-      await queryRunner.query(`
-   DO $$
-   BEGIN
-   IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'domain_manager' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-   ALTER TYPE "users_role_enum" ADD VALUE 'domain_manager';
-   END IF;
-   END
-   $$;
-   `);
-
-      await queryRunner.query(`
-   DO $$
-   BEGIN
-   IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'demo' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
-   ALTER TYPE "users_role_enum" ADD VALUE 'demo';
-   END IF;
-   END
-   $$;
-   `);
-    }
-    // If enum doesn't exist, the role column is varchar and can accept any string value
+    await queryRunner.query(`
+ DO $$
+ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'demo' AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'users_role_enum')) THEN
+ ALTER TYPE "users_role_enum" ADD VALUE 'demo';
+ END IF;
+ END
+ $$;
+ `);
 
     // Add mustChangePassword column with default false
     await queryRunner.query(`

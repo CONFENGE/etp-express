@@ -324,18 +324,13 @@ export class HealthService {
    * Loga warnings quando detecta problemas, permitindo ação preventiva antes
    * de afetar os usuários.
    *
-   * NOTE: Uses circuit breaker state instead of API pings to avoid consuming
-   * API credits. Circuit breaker state reflects actual usage patterns and
-   * provides accurate health information without additional API calls.
-   * For Exa specifically, this eliminates ~288 API calls/day from health checks.
-   *
    * @cron Executa a cada 5 minutos (CronExpression.EVERY_5_MINUTES)
    */
   @Cron(CronExpression.EVERY_5_MINUTES)
   async checkProvidersHealth() {
     this.logger.debug('Running scheduled providers health check...');
 
-    // Check OpenAI - still uses ping (covered by internal caching)
+    // Check OpenAI
     try {
       const { latency } = await this.openaiService.ping();
       const circuitState = this.openaiService.getCircuitState();
@@ -354,24 +349,22 @@ export class HealthService {
       });
     }
 
-    // Check Exa - use circuit breaker state only (no API calls)
-    // This avoids consuming Exa API credits for health checks (#1031)
-    const exaCircuitState = this.exaService.getCircuitState();
-    const exaCacheStats = this.exaService.getCacheStats();
+    // Check Exa
+    try {
+      const { latency } = await this.exaService.ping();
+      const circuitState = this.exaService.getCircuitState();
 
-    if (exaCircuitState.opened) {
-      this.logger.warn('Exa circuit breaker is OPEN - service degraded', {
-        stats: exaCircuitState.stats,
-        cacheStats: exaCacheStats,
-      });
-    } else if (exaCircuitState.halfOpen) {
-      this.logger.log('Exa circuit breaker is HALF-OPEN - testing recovery', {
-        stats: exaCircuitState.stats,
-      });
-    } else {
-      this.logger.debug('Exa health check OK (circuit breaker closed)', {
-        circuitClosed: exaCircuitState.closed,
-        cacheHitRate: exaCacheStats.hitRate,
+      if (circuitState.opened) {
+        this.logger.warn('Exa circuit breaker is OPEN - service degraded', {
+          stats: circuitState.stats,
+        });
+      } else {
+        this.logger.debug(`Exa health check OK - latency: ${latency}ms`);
+      }
+    } catch (error) {
+      this.logger.error('Exa health check failed', {
+        error: error.message,
+        stack: error.stack,
       });
     }
 

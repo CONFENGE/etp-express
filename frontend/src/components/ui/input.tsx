@@ -21,25 +21,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          // Base styles with Apple HIG tokens (#1015)
-          // WCAG 2.5.5: min-h-[44px] ensures 44px minimum touch target
-          'flex h-11 min-h-[44px] w-full rounded-xl border border-transparent',
-          'bg-surface-secondary px-4 py-2 text-base text-text-apple-primary',
+          // Base styles with Apple HIG tokens
+          // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
+          'flex h-10 min-h-touch w-full rounded-apple border border-[var(--border-primary)] bg-surface-primary px-3 py-2 text-sm text-text-apple-primary',
           // File input styles
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-          // Placeholder with tertiary text color
-          'placeholder:text-text-apple-tertiary',
+          // Placeholder with secondary text color
+          'placeholder:text-text-apple-secondary',
           // Apple-style transition with GPU acceleration
           'transition-all duration-200 ease-out',
-          // Hover state - subtle background change
-          'hover:bg-surface-tertiary',
-          // Focus state with glow (no hard ring) - border becomes visible
-          'focus-visible:outline-none',
-          'focus-visible:bg-surface-primary',
-          'focus-visible:border-apple-accent',
-          'focus-visible:shadow-[0_0_0_4px_rgba(0,102,204,0.12)]',
+          // Focus state with Apple accent and glow effect
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 focus-visible:border-apple-accent',
+          'focus-visible:shadow-[0_0_0_4px_rgba(0,122,255,0.1)]',
           // Disabled state
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary',
+          // Hover state
+          'hover:border-[var(--border-focus)]',
           // Respect reduced motion preference
           'motion-reduce:transition-none',
           className,

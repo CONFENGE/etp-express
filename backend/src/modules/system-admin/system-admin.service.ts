@@ -311,7 +311,7 @@ export class SystemAdminService {
       .addSelect('COUNT(domain.id)', 'domainCount')
       .where('organization.id IS NOT NULL')
       .groupBy('organization.id')
-      .orderBy('"domainCount"', 'DESC')
+      .orderBy('domainCount', 'DESC')
       .getRawMany();
 
     return {

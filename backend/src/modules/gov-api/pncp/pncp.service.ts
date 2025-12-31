@@ -39,12 +39,6 @@ import {
   PNCP_MODALIDADE_NAMES,
 } from './pncp.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
-import {
-  PncpContratacaoPaginatedSchema,
-  PncpContratoPaginatedSchema,
-  PncpAtaPaginatedSchema,
-  formatZodErrors,
-} from '../schemas/gov-api.schemas';
 
 /**
  * PNCP API Base URL
@@ -298,37 +292,10 @@ export class PncpService implements IGovApiService {
       return cached;
     }
 
-    const rawResponse = await this.client.get<unknown>('/v1/contratacoes', {
-      params,
-    });
+    const response = await this.client.get<
+      PncpPaginatedResponse<PncpContratacao>
+    >('/v1/contratacoes', { params });
 
-    // Validate response with Zod schema (#1054)
-    const validation = PncpContratacaoPaginatedSchema.safeParse(rawResponse);
-    if (!validation.success) {
-      this.logger.warn(
-        `PNCP contratacoes response failed schema validation: ${formatZodErrors(validation.error).join(', ')}`,
-      );
-      // Return empty response instead of invalid data
-      return {
-        data: [],
-        numeroPagina: 1,
-        paginasRestantes: 0,
-        totalRegistros: 0,
-        totalPaginas: 0,
-        empty: true,
-      };
-    }
-
-    // Map Zod schema response to internal type
-    const response: PncpPaginatedResponse<PncpContratacao> = {
-      data: validation.data.data as unknown as PncpContratacao[],
-      numeroPagina: validation.data.numeroPagina,
-      totalRegistros: validation.data.totalRegistros,
-      totalPaginas: validation.data.totalPaginas,
-      paginasRestantes:
-        validation.data.totalPaginas - validation.data.numeroPagina,
-      empty: validation.data.data.length === 0,
-    };
     await this.cache.set(this.source, cacheKey, response);
 
     return response;
@@ -357,36 +324,11 @@ export class PncpService implements IGovApiService {
       return cached;
     }
 
-    const rawResponse = await this.client.get<unknown>('/v1/contratos', {
-      params,
-    });
+    const response = await this.client.get<PncpPaginatedResponse<PncpContrato>>(
+      '/v1/contratos',
+      { params },
+    );
 
-    // Validate response with Zod schema (#1054)
-    const validation = PncpContratoPaginatedSchema.safeParse(rawResponse);
-    if (!validation.success) {
-      this.logger.warn(
-        `PNCP contratos response failed schema validation: ${formatZodErrors(validation.error).join(', ')}`,
-      );
-      return {
-        data: [],
-        numeroPagina: 1,
-        paginasRestantes: 0,
-        totalRegistros: 0,
-        totalPaginas: 0,
-        empty: true,
-      };
-    }
-
-    // Map Zod schema response to internal type
-    const response: PncpPaginatedResponse<PncpContrato> = {
-      data: validation.data.data as unknown as PncpContrato[],
-      numeroPagina: validation.data.numeroPagina,
-      totalRegistros: validation.data.totalRegistros,
-      totalPaginas: validation.data.totalPaginas,
-      paginasRestantes:
-        validation.data.totalPaginas - validation.data.numeroPagina,
-      empty: validation.data.data.length === 0,
-    };
     await this.cache.set(this.source, cacheKey, response);
 
     return response;
@@ -415,34 +357,11 @@ export class PncpService implements IGovApiService {
       return cached;
     }
 
-    const rawResponse = await this.client.get<unknown>('/v1/atas', { params });
+    const response = await this.client.get<PncpPaginatedResponse<PncpAta>>(
+      '/v1/atas',
+      { params },
+    );
 
-    // Validate response with Zod schema (#1054)
-    const validation = PncpAtaPaginatedSchema.safeParse(rawResponse);
-    if (!validation.success) {
-      this.logger.warn(
-        `PNCP atas response failed schema validation: ${formatZodErrors(validation.error).join(', ')}`,
-      );
-      return {
-        data: [],
-        numeroPagina: 1,
-        paginasRestantes: 0,
-        totalRegistros: 0,
-        totalPaginas: 0,
-        empty: true,
-      };
-    }
-
-    // Map Zod schema response to internal type
-    const response: PncpPaginatedResponse<PncpAta> = {
-      data: validation.data.data as unknown as PncpAta[],
-      numeroPagina: validation.data.numeroPagina,
-      totalRegistros: validation.data.totalRegistros,
-      totalPaginas: validation.data.totalPaginas,
-      paginasRestantes:
-        validation.data.totalPaginas - validation.data.numeroPagina,
-      empty: validation.data.data.length === 0,
-    };
     await this.cache.set(this.source, cacheKey, response);
 
     return response;

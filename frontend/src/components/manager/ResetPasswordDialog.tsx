@@ -42,18 +42,18 @@ export function ResetPasswordDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Redefinir Senha</AlertDialogTitle>
+          <AlertDialogTitle>Reset Password</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja redefinir a senha de{' '}
-            <strong>{user.name}</strong> ({user.email})? Ele receberá um e-mail
-            com uma senha temporária e será obrigado a alterá-la no próximo
-            login.
+            Are you sure you want to reset the password for{' '}
+            <strong>{user.name}</strong> ({user.email})? They will receive an
+            email with a temporary password and will be required to change it on
+            their next login.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isResetting}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isResetting}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} disabled={isResetting}>
-            {isResetting ? 'Redefinindo...' : 'Redefinir Senha'}
+            {isResetting ? 'Resetting...' : 'Reset Password'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

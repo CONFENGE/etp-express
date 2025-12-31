@@ -47,15 +47,6 @@ describe('HealthService', () => {
           useValue: {
             ping: jest.fn(),
             getCircuitState: jest.fn(),
-            getCacheStats: jest.fn().mockReturnValue({
-              hits: 0,
-              misses: 0,
-              sets: 0,
-              errors: 0,
-              hitRate: 0,
-              type: 'redis',
-              available: true,
-            }),
           },
         },
         {
@@ -294,6 +285,7 @@ describe('HealthService', () => {
     it('should check both providers successfully', async () => {
       // Arrange
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
@@ -306,22 +298,13 @@ describe('HealthService', () => {
         closed: true,
         stats: {},
       } as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue({
-        hits: 10,
-        misses: 5,
-        sets: 15,
-        errors: 0,
-        hitRate: 0.67,
-        type: 'redis',
-        available: true,
-      });
 
       // Act
       await service.checkProvidersHealth();
 
-      // Assert - OpenAI still uses ping, Exa uses circuit breaker state only (#1031)
+      // Assert
       expect(openaiService.ping).toHaveBeenCalledTimes(1);
-      expect(exaService.ping).not.toHaveBeenCalled(); // Exa no longer pinged (#1031)
+      expect(exaService.ping).toHaveBeenCalledTimes(1);
       expect(loggerDebugSpy).toHaveBeenCalledWith(
         'Running scheduled providers health check...',
       );
@@ -329,11 +312,7 @@ describe('HealthService', () => {
         'OpenAI health check OK - latency: 100ms',
       );
       expect(loggerDebugSpy).toHaveBeenCalledWith(
-        'Exa health check OK (circuit breaker closed)',
-        expect.objectContaining({
-          circuitClosed: true,
-          cacheHitRate: 0.67,
-        }),
+        'Exa health check OK - latency: 200ms',
       );
       expect(loggerDebugSpy).toHaveBeenCalledWith(
         'Scheduled providers health check completed',
@@ -351,6 +330,7 @@ describe('HealthService', () => {
         stats: { fires: 10, successes: 2, failures: 8 },
       };
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 5000 });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 200 });
       jest
         .spyOn(openaiService, 'getCircuitState')
         .mockReturnValue(openaiCircuitState as any);
@@ -360,15 +340,6 @@ describe('HealthService', () => {
         closed: true,
         stats: {},
       } as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue({
-        hits: 0,
-        misses: 0,
-        sets: 0,
-        errors: 0,
-        hitRate: 0,
-        type: 'redis',
-        available: true,
-      });
 
       // Act
       await service.checkProvidersHealth();
@@ -388,16 +359,8 @@ describe('HealthService', () => {
         closed: false,
         stats: { fires: 5, successes: 1, failures: 4 },
       };
-      const exaCacheStats = {
-        hits: 5,
-        misses: 10,
-        sets: 15,
-        errors: 0,
-        hitRate: 0.33,
-        type: 'redis',
-        available: true,
-      };
       jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 8000 });
       jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
@@ -407,16 +370,14 @@ describe('HealthService', () => {
       jest
         .spyOn(exaService, 'getCircuitState')
         .mockReturnValue(exaCircuitState as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue(exaCacheStats);
 
       // Act
       await service.checkProvidersHealth();
 
-      // Assert - Exa no longer pinged (#1031), uses circuit breaker state only
-      expect(exaService.ping).not.toHaveBeenCalled();
+      // Assert
       expect(loggerWarnSpy).toHaveBeenCalledWith(
         'Exa circuit breaker is OPEN - service degraded',
-        { stats: exaCircuitState.stats, cacheStats: exaCacheStats },
+        { stats: exaCircuitState.stats },
       );
     });
 
@@ -424,21 +385,13 @@ describe('HealthService', () => {
       // Arrange
       const error = new Error('OpenAI timeout');
       jest.spyOn(openaiService, 'ping').mockRejectedValue(error);
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
         closed: true,
         stats: {},
       } as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue({
-        hits: 0,
-        misses: 0,
-        sets: 0,
-        errors: 0,
-        hitRate: 0,
-        type: 'redis',
-        available: true,
-      });
 
       // Act
       await service.checkProvidersHealth();
@@ -453,79 +406,75 @@ describe('HealthService', () => {
       );
     });
 
-    it('should continue checking Exa even when OpenAI fails', async () => {
+    it('should log error when Exa ping fails', async () => {
+      // Arrange
+      const error = new Error('Exa API key invalid');
+      jest.spyOn(openaiService, 'ping').mockResolvedValue({ latency: 100 });
+      jest.spyOn(exaService, 'ping').mockRejectedValue(error);
+      jest.spyOn(openaiService, 'getCircuitState').mockReturnValue({
+        opened: false,
+        halfOpen: false,
+        closed: true,
+        stats: {},
+      } as any);
+
+      // Act
+      await service.checkProvidersHealth();
+
+      // Assert
+      expect(loggerErrorSpy).toHaveBeenCalledWith('Exa health check failed', {
+        error: 'Exa API key invalid',
+        stack: error.stack,
+      });
+    });
+
+    it('should continue checking other providers when one fails', async () => {
       // Arrange
       jest
         .spyOn(openaiService, 'ping')
         .mockRejectedValue(new Error('OpenAI down'));
+      jest.spyOn(exaService, 'ping').mockResolvedValue({ latency: 200 });
       jest.spyOn(exaService, 'getCircuitState').mockReturnValue({
         opened: false,
         halfOpen: false,
         closed: true,
         stats: {},
       } as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue({
-        hits: 10,
-        misses: 5,
-        sets: 15,
-        errors: 0,
-        hitRate: 0.67,
-        type: 'redis',
-        available: true,
-      });
 
       // Act
       await service.checkProvidersHealth();
 
-      // Assert - OpenAI failed but Exa circuit breaker check still runs (#1031)
+      // Assert
       expect(openaiService.ping).toHaveBeenCalledTimes(1);
-      expect(exaService.ping).not.toHaveBeenCalled(); // Exa no longer pinged
+      expect(exaService.ping).toHaveBeenCalledTimes(1);
       expect(loggerDebugSpy).toHaveBeenCalledWith(
-        'Exa health check OK (circuit breaker closed)',
-        expect.objectContaining({
-          circuitClosed: true,
-          cacheHitRate: 0.67,
-        }),
+        'Exa health check OK - latency: 200ms',
       );
     });
 
-    it('should handle OpenAI failing while Exa circuit breaker is open', async () => {
+    it('should handle both providers failing', async () => {
       // Arrange
       const openaiError = new Error('OpenAI down');
-      const exaCircuitState = {
-        opened: true,
-        halfOpen: false,
-        closed: false,
-        stats: { fires: 5, successes: 0, failures: 5 },
-      };
-      const exaCacheStats = {
-        hits: 0,
-        misses: 5,
-        sets: 5,
-        errors: 0,
-        hitRate: 0,
-        type: 'redis',
-        available: true,
-      };
+      const exaError = new Error('Exa down');
       jest.spyOn(openaiService, 'ping').mockRejectedValue(openaiError);
-      jest
-        .spyOn(exaService, 'getCircuitState')
-        .mockReturnValue(exaCircuitState as any);
-      jest.spyOn(exaService, 'getCacheStats').mockReturnValue(exaCacheStats);
+      jest.spyOn(exaService, 'ping').mockRejectedValue(exaError);
 
       // Act
       await service.checkProvidersHealth();
 
-      // Assert - Both providers show degraded state
+      // Assert
+      expect(loggerErrorSpy).toHaveBeenCalledTimes(2);
       expect(loggerErrorSpy).toHaveBeenCalledWith(
         'OpenAI health check failed',
         expect.objectContaining({
           error: 'OpenAI down',
         }),
       );
-      expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Exa circuit breaker is OPEN - service degraded',
-        { stats: exaCircuitState.stats, cacheStats: exaCacheStats },
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Exa health check failed',
+        expect.objectContaining({
+          error: 'Exa down',
+        }),
       );
     });
   });

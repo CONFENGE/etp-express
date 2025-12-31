@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { apiHelpers } from '@/lib/api';
 import { getContextualErrorMessage } from '@/lib/api-errors';
-import type { User } from '@/types/user';
 
 /**
  * Authorized domain entity for System Admin management.
@@ -16,7 +15,6 @@ export interface AuthorizedDomain {
   managerId?: string;
   managerName?: string;
   currentUsers?: number;
-  users?: User[];
 }
 
 /**

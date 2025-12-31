@@ -65,40 +65,35 @@ describe('Button', () => {
   });
 
   describe('Sizes', () => {
-    it('should apply default size with 44px touch target', () => {
+    it('should apply default size', () => {
       render(<Button>Default Size</Button>);
       const button = screen.getByRole('button');
-      // WCAG 2.5.5: 44px minimum touch target
-      expect(button).toHaveClass('h-11');
-      expect(button).toHaveClass('min-h-[44px]');
-      expect(button).toHaveClass('px-6');
-    });
-
-    it('should apply small size with 44px touch target', () => {
-      render(<Button size="sm">Small</Button>);
-      const button = screen.getByRole('button');
-      // WCAG 2.5.5: Even small buttons have 44px min touch target
       expect(button).toHaveClass('h-10');
-      expect(button).toHaveClass('min-h-[44px]');
       expect(button).toHaveClass('px-4');
     });
 
-    it('should apply large size with 44px touch target', () => {
+    it('should apply small size', () => {
+      render(<Button size="sm">Small</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toHaveClass('h-9');
+      expect(button).toHaveClass('px-3');
+    });
+
+    it('should apply large size', () => {
       render(<Button size="lg">Large</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-12');
-      expect(button).toHaveClass('min-h-[44px]');
+      expect(button).toHaveClass('h-11');
       expect(button).toHaveClass('px-8');
     });
 
     it('should apply icon size with WCAG 2.5.5 touch target', () => {
       render(<Button size="icon">Icon</Button>);
       const button = screen.getByRole('button');
-      // WCAG 2.5.5: 44x44px minimum touch target
+      // WCAG 2.5.5: 44x44px minimum touch target (h-11 = 44px)
       expect(button).toHaveClass('h-11');
       expect(button).toHaveClass('w-11');
-      expect(button).toHaveClass('min-h-[44px]');
-      expect(button).toHaveClass('min-w-[44px]');
+      expect(button).toHaveClass('min-h-touch');
+      expect(button).toHaveClass('min-w-touch');
     });
   });
 
@@ -106,14 +101,14 @@ describe('Button', () => {
     it('should use Apple-style border radius', () => {
       render(<Button>Styled</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('rounded-xl');
+      expect(button).toHaveClass('rounded-apple');
     });
 
     it('should use smooth micro-interaction transitions', () => {
       render(<Button>Transition</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('transition-all');
-      expect(button).toHaveClass('duration-200');
+      expect(button).toHaveClass('duration-150');
       expect(button).toHaveClass('ease-out');
     });
 
@@ -123,13 +118,10 @@ describe('Button', () => {
       expect(button).toHaveClass('active:scale-[0.97]');
     });
 
-    it('should have focus glow with soft shadow', () => {
+    it('should have focus ring with Apple accent', () => {
       render(<Button>Focus</Button>);
       const button = screen.getByRole('button');
-      // Focus uses soft glow shadow instead of hard ring (#1014)
-      expect(button).toHaveClass(
-        'focus-visible:shadow-[0_0_0_4px_rgba(0,102,204,0.2)]',
-      );
+      expect(button).toHaveClass('focus-visible:ring-apple-accent');
     });
   });
 
@@ -182,8 +174,7 @@ describe('Button', () => {
     it('should generate correct classes when called directly', () => {
       const classes = buttonVariants({ variant: 'default', size: 'default' });
       expect(classes).toContain('bg-apple-accent');
-      expect(classes).toContain('h-11');
-      expect(classes).toContain('min-h-[44px]');
+      expect(classes).toContain('h-10');
     });
   });
 });

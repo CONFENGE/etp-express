@@ -10,7 +10,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Timestamp 0000000000000 ensures it executes first.
  *
  * Tables created:
- * - organizations
+ * - organization
  * - users
  * - etps
  * - etp_versions
@@ -26,30 +26,19 @@ export class InitialSchema1000000000000 implements MigrationInterface {
   name = 'InitialSchema1000000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create users_role_enum type for role column (matches User entity)
+    // Create organization table (Multi-Tenancy)
     await queryRunner.query(`
- DO $$
- BEGIN
- IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'users_role_enum') THEN
- CREATE TYPE "users_role_enum" AS ENUM ('system_admin', 'domain_manager', 'admin', 'user', 'viewer', 'demo');
- END IF;
- END
- $$;
- `);
-
-    // Create organizations table (Multi-Tenancy)
-    await queryRunner.query(`
- CREATE TABLE IF NOT EXISTS "organizations" (
+ CREATE TABLE IF NOT EXISTS "organization" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
  "name" character varying NOT NULL,
- "cnpj" character varying NOT NULL,
- "domainWhitelist" text array NOT NULL,
+ "cnpj" character varying(14) NOT NULL,
+ "domainWhitelist" text NOT NULL,
  "isActive" boolean NOT NULL DEFAULT true,
  "stripeCustomerId" character varying,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
- CONSTRAINT "UQ_organizations_cnpj" UNIQUE ("cnpj"),
- CONSTRAINT "PK_organizations_id" PRIMARY KEY ("id")
+ CONSTRAINT "UQ_organization_cnpj" UNIQUE ("cnpj"),
+ CONSTRAINT "PK_organization_id" PRIMARY KEY ("id")
  )
  `);
 
@@ -62,21 +51,19 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  "name" character varying NOT NULL,
  "organizationId" uuid NOT NULL,
  "cargo" character varying,
- "role" "users_role_enum" NOT NULL DEFAULT 'user',
+ "role" character varying NOT NULL DEFAULT 'user',
  "isActive" boolean NOT NULL DEFAULT true,
- "mustChangePassword" boolean NOT NULL DEFAULT false,
  "lastLoginAt" TIMESTAMP,
  "lgpdConsentAt" TIMESTAMP,
  "lgpdConsentVersion" character varying,
  "internationalTransferConsentAt" TIMESTAMP,
  "deletedAt" TIMESTAMP,
- "authorizedDomainId" uuid,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
  CONSTRAINT "UQ_users_email" UNIQUE ("email"),
  CONSTRAINT "PK_users_id" PRIMARY KEY ("id"),
  CONSTRAINT "FK_users_organizationId" FOREIGN KEY ("organizationId")
- REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+ REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
  )
  `);
 
@@ -85,39 +72,23 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  CREATE INDEX IF NOT EXISTS "IDX_users_organizationId" ON "users" ("organizationId")
  `);
 
-    // Create etps_status_enum type for status column (matches Etp entity)
-    await queryRunner.query(`
- DO $$
- BEGIN
- IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'etps_status_enum') THEN
- CREATE TYPE "etps_status_enum" AS ENUM ('draft', 'in_progress', 'review', 'completed', 'archived');
- END IF;
- END
- $$;
- `);
-
-    // Create etps table (matches Etp entity)
+    // Create etps table
     await queryRunner.query(`
  CREATE TABLE IF NOT EXISTS "etps" (
  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
- "title" character varying NOT NULL,
- "description" text,
- "objeto" character varying NOT NULL,
- "numeroProcesso" character varying,
- "valorEstimado" decimal(15,2),
- "status" "etps_status_enum" NOT NULL DEFAULT 'draft',
- "metadata" jsonb,
+ "metadata" jsonb NOT NULL,
+ "sections" jsonb NOT NULL DEFAULT '{}',
+ "status" character varying NOT NULL DEFAULT 'draft',
+ "version" integer NOT NULL DEFAULT 1,
  "organizationId" uuid NOT NULL,
- "currentVersion" integer NOT NULL DEFAULT 1,
- "completionPercentage" float NOT NULL DEFAULT 0,
  "created_by" uuid,
  "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
  "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
  CONSTRAINT "PK_etps_id" PRIMARY KEY ("id"),
  CONSTRAINT "FK_etps_organizationId" FOREIGN KEY ("organizationId")
- REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
+ REFERENCES "organization"("id") ON DELETE NO ACTION ON UPDATE NO ACTION,
  CONSTRAINT "FK_etps_created_by" FOREIGN KEY ("created_by")
- REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+ REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
  )
  `);
 
@@ -192,8 +163,31 @@ export class InitialSchema1000000000000 implements MigrationInterface {
  )
  `);
 
-    // NOTE: audit_logs table is created by CreateAuditLogs1763750000000 migration
-    // with proper enum type and column names matching the AuditLog entity
+    // Create audit_logs table (LGPD compliance)
+    await queryRunner.query(`
+ CREATE TABLE IF NOT EXISTS "audit_logs" (
+ "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+ "userId" uuid,
+ "action" character varying NOT NULL,
+ "entityType" character varying NOT NULL,
+ "entityId" character varying,
+ "changes" jsonb,
+ "ipAddress" character varying,
+ "userAgent" character varying,
+ "timestamp" TIMESTAMP NOT NULL DEFAULT now(),
+ CONSTRAINT "PK_audit_logs_id" PRIMARY KEY ("id"),
+ CONSTRAINT "FK_audit_logs_userId" FOREIGN KEY ("userId")
+ REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+ )
+ `);
+
+    // Create index on audit_logs for performance
+    await queryRunner.query(`
+ CREATE INDEX IF NOT EXISTS "IDX_audit_logs_userId" ON "audit_logs" ("userId")
+ `);
+    await queryRunner.query(`
+ CREATE INDEX IF NOT EXISTS "IDX_audit_logs_timestamp" ON "audit_logs" ("timestamp")
+ `);
 
     // Create analytics_events table
     await queryRunner.query(`
@@ -250,16 +244,16 @@ export class InitialSchema1000000000000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop tables in reverse order (respecting foreign keys)
-    // NOTE: audit_logs is handled by CreateAuditLogs migration
     await queryRunner.query(`DROP TABLE IF EXISTS "similar_contracts"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "secret_access_logs"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "analytics_events"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "audit_logs"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "legislation"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "section_templates"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "etp_sections"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "etp_versions"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "etps"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "users"`);
-    await queryRunner.query(`DROP TABLE IF EXISTS "organizations"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "organization"`);
   }
 }

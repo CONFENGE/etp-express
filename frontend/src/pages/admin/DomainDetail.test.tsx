@@ -29,6 +29,17 @@ vi.mock('@/store/adminStore', () => ({
   })),
 }));
 
+const mockDomain = {
+  id: 'domain-123',
+  domain: 'example.com',
+  maxUsers: 100,
+  isActive: true,
+  managerId: null,
+  managerName: null,
+  currentUsers: 25,
+  createdAt: '2024-01-01T00:00:00Z',
+};
+
 const mockUsers = [
   {
     id: '1',
@@ -44,18 +55,6 @@ const mockUsers = [
   },
 ];
 
-const mockDomain = {
-  id: 'domain-123',
-  domain: 'example.com',
-  maxUsers: 100,
-  isActive: true,
-  managerId: null,
-  managerName: null,
-  currentUsers: 25,
-  createdAt: '2024-01-01T00:00:00Z',
-  users: mockUsers,
-};
-
 function renderWithRouter(domainId: string = 'domain-123') {
   return render(
     <MemoryRouter initialEntries={[`/admin/domains/${domainId}`]}>
@@ -70,7 +69,12 @@ function renderWithRouter(domainId: string = 'domain-123') {
 describe('DomainDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(apiHelpers.get).mockResolvedValue(mockDomain);
+    vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+      if (url.includes('/users')) {
+        return Promise.resolve(mockUsers);
+      }
+      return Promise.resolve(mockDomain);
+    });
   });
 
   describe('Loading State', () => {
@@ -79,17 +83,24 @@ describe('DomainDetail', () => {
       // This avoids hanging timers from Radix UI components that cause CI timeouts
       // See: createDeferredPromise utility in test/setup.ts
       const domainDeferred = createDeferredPromise<typeof mockDomain>();
+      const usersDeferred = createDeferredPromise<typeof mockUsers>();
 
-      vi.mocked(apiHelpers.get).mockReturnValue(domainDeferred.promise);
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return usersDeferred.promise;
+        }
+        return domainDeferred.promise;
+      });
 
       renderWithRouter();
 
       // Should show skeleton elements
       expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
 
-      // Resolve the promise and wait for state updates to complete
+      // Resolve the promises and wait for state updates to complete
       // This prevents Radix UI timer leaks and act() warnings
       domainDeferred.resolve(mockDomain);
+      usersDeferred.resolve(mockUsers);
       await waitFor(() => {
         expect(
           screen.getByRole('heading', { name: 'example.com' }),
@@ -139,10 +150,15 @@ describe('DomainDetail', () => {
     });
 
     it('should display manager name when assigned', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue({
-        ...mockDomain,
-        managerId: '2',
-        managerName: 'Jane Smith',
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return Promise.resolve(mockUsers);
+        }
+        return Promise.resolve({
+          ...mockDomain,
+          managerId: '2',
+          managerName: 'Jane Smith',
+        });
       });
 
       renderWithRouter();
@@ -207,10 +223,15 @@ describe('DomainDetail', () => {
     });
 
     it('should show "Change Manager" button when manager exists', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue({
-        ...mockDomain,
-        managerId: '2',
-        managerName: 'Jane Smith',
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return Promise.resolve(mockUsers);
+        }
+        return Promise.resolve({
+          ...mockDomain,
+          managerId: '2',
+          managerName: 'Jane Smith',
+        });
       });
 
       renderWithRouter();
@@ -246,9 +267,11 @@ describe('DomainDetail', () => {
 
   describe('Empty Users', () => {
     it('should show empty message when no users', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue({
-        ...mockDomain,
-        users: [],
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return Promise.resolve([]);
+        }
+        return Promise.resolve(mockDomain);
       });
 
       renderWithRouter();
@@ -273,9 +296,11 @@ describe('DomainDetail', () => {
     });
 
     it('should show Inactive badge for inactive domain', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue({
-        ...mockDomain,
-        isActive: false,
+      vi.mocked(apiHelpers.get).mockImplementation((url: string) => {
+        if (url.includes('/users')) {
+          return Promise.resolve(mockUsers);
+        }
+        return Promise.resolve({ ...mockDomain, isActive: false });
       });
 
       renderWithRouter();

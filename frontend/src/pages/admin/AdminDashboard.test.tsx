@@ -110,11 +110,10 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      // PT-BR translations
-      expect(screen.getByText('Total de Domínios')).toBeInTheDocument();
-      expect(screen.getByText('Domínios Ativos')).toBeInTheDocument();
-      expect(screen.getByText('Total de Usuários')).toBeInTheDocument();
-      expect(screen.getByText('Usuários Ativos')).toBeInTheDocument();
+      expect(screen.getByText('Total Domains')).toBeInTheDocument();
+      expect(screen.getByText('Active Domains')).toBeInTheDocument();
+      expect(screen.getByText('Total Users')).toBeInTheDocument();
+      expect(screen.getByText('Active Users')).toBeInTheDocument();
     });
 
     it('should show statistics values', () => {
@@ -358,9 +357,9 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      // Card descriptions should be present (PT-BR)
-      expect(screen.getByText('Domínios cadastrados')).toBeInTheDocument();
-      expect(screen.getByText('Atualmente ativos')).toBeInTheDocument();
+      // Card descriptions should be present
+      expect(screen.getByText('Registered domains')).toBeInTheDocument();
+      expect(screen.getByText('Currently active')).toBeInTheDocument();
     });
   });
 });

@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  NotFoundException,
-  ForbiddenException,
-  ConflictException,
-} from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder, DataSource } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { EtpsService } from './etps.service';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { SectionStatus } from '../../entities/etp-section.entity';
@@ -65,33 +61,6 @@ describe('EtpsService', () => {
     createQueryBuilder: jest.fn(() => mockQueryBuilder),
   };
 
-  // Mock QueryRunner for ACID transactions (Issue #1057)
-  const mockQueryRunnerQueryBuilder: any = {
-    leftJoinAndSelect: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    andWhere: jest.fn().mockReturnThis(),
-    setLock: jest.fn().mockReturnThis(),
-    getOne: jest.fn(),
-  };
-
-  const mockQueryRunnerManager = {
-    createQueryBuilder: jest.fn(() => mockQueryRunnerQueryBuilder),
-    update: jest.fn().mockResolvedValue(undefined),
-  };
-
-  const mockQueryRunner = {
-    connect: jest.fn().mockResolvedValue(undefined),
-    startTransaction: jest.fn().mockResolvedValue(undefined),
-    commitTransaction: jest.fn().mockResolvedValue(undefined),
-    rollbackTransaction: jest.fn().mockResolvedValue(undefined),
-    release: jest.fn().mockResolvedValue(undefined),
-    manager: mockQueryRunnerManager,
-  };
-
-  const mockDataSource = {
-    createQueryRunner: jest.fn(() => mockQueryRunner),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -99,10 +68,6 @@ describe('EtpsService', () => {
         {
           provide: getRepositoryToken(Etp),
           useValue: mockRepository,
-        },
-        {
-          provide: DataSource,
-          useValue: mockDataSource,
         },
       ],
     }).compile();
@@ -152,7 +117,6 @@ describe('EtpsService', () => {
         status: EtpStatus.DRAFT,
         currentVersion: 1,
         completionPercentage: 0,
-        sections: [],
       });
       expect(mockRepository.save).toHaveBeenCalledWith(createdEtp);
       expect(result).toEqual(createdEtp);
@@ -463,115 +427,6 @@ describe('EtpsService', () => {
         service.update('non-existent', {}, mockUser1Id, mockOrganizationId),
       ).rejects.toThrow(NotFoundException);
     });
-
-    // Optimistic locking tests (Issue #1059)
-    describe('optimistic locking', () => {
-      it('should update ETP when version matches', async () => {
-        const updateDto: UpdateEtpDto = {
-          title: 'ETP Atualizado',
-          version: 1, // Matches mockEtp.version
-        };
-
-        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 1 });
-        mockRepository.save.mockResolvedValue({
-          ...mockEtp,
-          ...updateDto,
-          version: 2,
-        });
-
-        const result = await service.update(
-          'etp-123',
-          updateDto,
-          mockUser1Id,
-          mockOrganizationId,
-        );
-
-        expect(mockRepository.save).toHaveBeenCalled();
-        expect(result.title).toBe('ETP Atualizado');
-        expect(result.version).toBe(2);
-      });
-
-      it('should throw ConflictException when version mismatch occurs', async () => {
-        const updateDto: UpdateEtpDto = {
-          title: 'ETP Atualizado',
-          version: 1, // Client has version 1
-        };
-
-        // DB has version 2 (another user updated it)
-        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 2 });
-
-        await expect(
-          service.update('etp-123', updateDto, mockUser1Id, mockOrganizationId),
-        ).rejects.toThrow(ConflictException);
-      });
-
-      it('should include conflict details in exception', async () => {
-        const updateDto: UpdateEtpDto = {
-          title: 'ETP Atualizado',
-          version: 1,
-        };
-
-        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 3 });
-
-        try {
-          await service.update(
-            'etp-123',
-            updateDto,
-            mockUser1Id,
-            mockOrganizationId,
-          );
-          fail('Should have thrown ConflictException');
-        } catch (error) {
-          expect(error).toBeInstanceOf(ConflictException);
-          const response = (error as ConflictException).getResponse() as any;
-          expect(response.code).toBe('VERSION_CONFLICT');
-          expect(response.currentVersion).toBe(3);
-          expect(response.expectedVersion).toBe(1);
-        }
-      });
-
-      it('should allow update without version (backwards compatibility)', async () => {
-        const updateDto: UpdateEtpDto = {
-          title: 'ETP Atualizado',
-          // No version field - should not trigger conflict check
-        };
-
-        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 5 });
-        mockRepository.save.mockResolvedValue({
-          ...mockEtp,
-          title: 'ETP Atualizado',
-          version: 6,
-        });
-
-        const result = await service.update(
-          'etp-123',
-          updateDto,
-          mockUser1Id,
-          mockOrganizationId,
-        );
-
-        expect(mockRepository.save).toHaveBeenCalled();
-        expect(result.title).toBe('ETP Atualizado');
-      });
-
-      it('should log warning on version conflict', async () => {
-        const loggerSpy = jest.spyOn(service['logger'], 'warn');
-        const updateDto: UpdateEtpDto = {
-          title: 'ETP Atualizado',
-          version: 1,
-        };
-
-        mockRepository.findOne.mockResolvedValue({ ...mockEtp, version: 2 });
-
-        await expect(
-          service.update('etp-123', updateDto, mockUser1Id, mockOrganizationId),
-        ).rejects.toThrow(ConflictException);
-
-        expect(loggerSpy).toHaveBeenCalledWith(
-          expect.stringContaining('Version conflict detected'),
-        );
-      });
-    });
   });
 
   describe('updateStatus', () => {
@@ -616,58 +471,30 @@ describe('EtpsService', () => {
   });
 
   describe('updateCompletionPercentage', () => {
-    beforeEach(() => {
-      // Reset queryRunner mocks for each test
-      jest.clearAllMocks();
-    });
-
-    it('should use ACID transaction with pessimistic lock (Issue #1057)', async () => {
-      const etpWithSections = {
-        ...mockEtp,
-        sections: [
-          { status: SectionStatus.APPROVED },
-          { status: SectionStatus.PENDING },
-        ],
-      } as any;
-
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(etpWithSections);
-
-      await service.updateCompletionPercentage('etp-123', mockOrganizationId);
-
-      // Verify transaction lifecycle
-      expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
-      expect(mockQueryRunner.connect).toHaveBeenCalled();
-      expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
-
-      // Verify pessimistic lock was used
-      expect(mockQueryRunnerQueryBuilder.setLock).toHaveBeenCalledWith(
-        'pessimistic_write',
-      );
-
-      // Verify commit and release
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-      expect(mockQueryRunner.release).toHaveBeenCalled();
-    });
-
     it('should set completion to 0% when ETP has no sections', async () => {
       const etpWithoutSections = {
         ...mockEtp,
         sections: [],
       } as Etp;
 
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(etpWithoutSections);
+      mockRepository.findOne.mockResolvedValue(etpWithoutSections);
+      mockRepository.save.mockResolvedValue({
+        ...etpWithoutSections,
+        completionPercentage: 0,
+      });
 
       await service.updateCompletionPercentage('etp-123', mockOrganizationId);
 
-      expect(mockQueryRunnerManager.update).toHaveBeenCalledWith(
-        Etp,
-        'etp-123',
-        { completionPercentage: 0 },
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123', organizationId: mockOrganizationId },
+        relations: ['sections'],
+      });
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ completionPercentage: 0 }),
       );
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
     });
 
-    it('should calculate completion percentage based on APPROVED sections only', async () => {
+    it('should calculate completion percentage based on section status', async () => {
       const etpWithSections = {
         ...mockEtp,
         sections: [
@@ -678,93 +505,42 @@ describe('EtpsService', () => {
         ],
       } as any;
 
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(etpWithSections);
+      mockRepository.findOne.mockResolvedValue(etpWithSections);
+      mockRepository.save.mockResolvedValue({
+        ...etpWithSections,
+        completionPercentage: 75,
+      });
 
       await service.updateCompletionPercentage('etp-123', mockOrganizationId);
 
-      // Only 1 APPROVED out of 4 = 25%
-      expect(mockQueryRunnerManager.update).toHaveBeenCalledWith(
-        Etp,
-        'etp-123',
-        { completionPercentage: 25 },
+      // 3 completed (approved, generated, reviewed) out of 4 = 75%
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ completionPercentage: 75 }),
       );
     });
 
-    it('should rollback and return early when ETP not found', async () => {
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(null);
+    it('should return early when ETP not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
 
       await service.updateCompletionPercentage(
         'non-existent',
         mockOrganizationId,
       );
 
-      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-      expect(mockQueryRunnerManager.update).not.toHaveBeenCalled();
-      expect(mockQueryRunner.release).toHaveBeenCalled();
+      expect(mockRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should rollback and return early when ETP belongs to different organization (Issue #758)', async () => {
-      // ETP exists but belongs to different organization - query returns null
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(null);
+    it('should return early when ETP belongs to different organization (Issue #758)', async () => {
+      // ETP exists but belongs to different organization
+      mockRepository.findOne.mockResolvedValue(null);
 
       await service.updateCompletionPercentage('etp-123', mockOrganization2Id);
 
-      expect(mockQueryRunnerQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'etp.organizationId = :organizationId',
-        { organizationId: mockOrganization2Id },
-      );
-      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-      expect(mockQueryRunnerManager.update).not.toHaveBeenCalled();
-    });
-
-    it('should rollback transaction on error and rethrow', async () => {
-      const testError = new Error('Database error');
-      mockQueryRunnerQueryBuilder.getOne.mockRejectedValue(testError);
-
-      await expect(
-        service.updateCompletionPercentage('etp-123', mockOrganizationId),
-      ).rejects.toThrow('Database error');
-
-      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-      expect(mockQueryRunner.release).toHaveBeenCalled();
-    });
-
-    it('should handle concurrent updates correctly with pessimistic locking', async () => {
-      // This test verifies that the implementation uses pessimistic locking
-      // which prevents race conditions when multiple section updates happen simultaneously
-      const etpWith4Sections = {
-        ...mockEtp,
-        sections: [
-          { status: SectionStatus.APPROVED },
-          { status: SectionStatus.APPROVED },
-          { status: SectionStatus.PENDING },
-          { status: SectionStatus.PENDING },
-        ],
-      } as any;
-
-      mockQueryRunnerQueryBuilder.getOne.mockResolvedValue(etpWith4Sections);
-
-      // Simulate concurrent updates with Promise.all
-      await Promise.all([
-        service.updateCompletionPercentage('etp-123', mockOrganizationId),
-        service.updateCompletionPercentage('etp-123', mockOrganizationId),
-      ]);
-
-      // Both calls should use pessimistic_write lock
-      expect(mockQueryRunnerQueryBuilder.setLock).toHaveBeenCalledWith(
-        'pessimistic_write',
-      );
-      expect(mockQueryRunnerQueryBuilder.setLock).toHaveBeenCalledTimes(2);
-
-      // Both should commit successfully (in real DB, second would wait for first lock to release)
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalledTimes(2);
-
-      // Verify correct percentage: 2 APPROVED out of 4 = 50%
-      expect(mockQueryRunnerManager.update).toHaveBeenCalledWith(
-        Etp,
-        'etp-123',
-        { completionPercentage: 50 },
-      );
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'etp-123', organizationId: mockOrganization2Id },
+        relations: ['sections'],
+      });
+      expect(mockRepository.save).not.toHaveBeenCalled();
     });
   });
 

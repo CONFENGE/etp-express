@@ -11,7 +11,7 @@ import type {
   AIGenerationResponse, // Used in return type assertions
 } from '@/types/etp';
 
-// Mock axios for isCancel and isAxiosError checks (#603, #1059)
+// Mock axios for isCancel check (#603)
 vi.mock('axios', () => ({
   default: {
     isCancel: vi.fn((error: unknown) => {
@@ -20,27 +20,11 @@ vi.mock('axios', () => ({
         (error.name === 'CanceledError' || error.name === 'AbortError')
       );
     }),
-    isAxiosError: vi.fn((error: unknown) => {
-      return (
-        error !== null &&
-        typeof error === 'object' &&
-        'isAxiosError' in error &&
-        (error as { isAxiosError: boolean }).isAxiosError === true
-      );
-    }),
   },
   isCancel: vi.fn((error: unknown) => {
     return (
       error instanceof Error &&
       (error.name === 'CanceledError' || error.name === 'AbortError')
-    );
-  }),
-  isAxiosError: vi.fn((error: unknown) => {
-    return (
-      error !== null &&
-      typeof error === 'object' &&
-      'isAxiosError' in error &&
-      (error as { isAxiosError: boolean }).isAxiosError === true
     );
   }),
 }));
@@ -51,14 +35,12 @@ vi.mock('@/lib/api', () => ({
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
-    patch: vi.fn(),
     delete: vi.fn(),
   },
   apiHelpers: {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
-    patch: vi.fn(),
     delete: vi.fn(),
   },
 }));
@@ -98,7 +80,6 @@ describe('etpStore', () => {
     userId: 'user-1',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
-    version: 1,
     sections: [
       {
         id: 'section-1',
@@ -321,8 +302,7 @@ describe('etpStore', () => {
 
   describe('Teste 4: updateSection', () => {
     it('should update specific section in currentETP', async () => {
-      // Backend returns wrapped response { data: Section, disclaimer: string }
-      vi.mocked(apiHelpers.patch).mockResolvedValue({ data: mockSection });
+      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
 
       const { result } = renderHook(() => useETPStore());
 
@@ -347,11 +327,13 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Now uses PATCH /sections/:id instead of PUT /etps/:etpId/sections/:sectionId (#1046)
-      expect(apiHelpers.patch).toHaveBeenCalledWith('/sections/section-1', {
-        content: 'Conteúdo atualizado',
-        isCompleted: true,
-      });
+      expect(apiHelpers.put).toHaveBeenCalledWith(
+        '/etps/etp-1/sections/section-1',
+        {
+          content: 'Conteúdo atualizado',
+          isCompleted: true,
+        },
+      );
       expect(result.current.currentETP?.sections[0]).toEqual(mockSection);
       expect(result.current.error).toBeNull();
     });
@@ -360,7 +342,7 @@ describe('etpStore', () => {
       // Este teste documenta um bug identificado: updateSection não reseta isLoading
       // quando currentETP é null (linha 156 do etpStore.ts retorna state sem modificar isLoading)
 
-      vi.mocked(apiHelpers.patch).mockResolvedValue({ data: mockSection });
+      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
 
       const { result } = renderHook(() => useETPStore());
 
@@ -374,7 +356,7 @@ describe('etpStore', () => {
       });
 
       // API call is made
-      expect(apiHelpers.patch).toHaveBeenCalled();
+      expect(apiHelpers.put).toHaveBeenCalled();
 
       // BUG: isLoading permanece true quando currentETP é null
       // Deveria ser false após a operação ser concluída
@@ -386,7 +368,7 @@ describe('etpStore', () => {
 
     it('should throw error on update failure', async () => {
       const errorMessage = 'Erro ao atualizar seção';
-      vi.mocked(apiHelpers.patch).mockRejectedValue(new Error(errorMessage));
+      vi.mocked(apiHelpers.put).mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useETPStore());
 
@@ -468,12 +450,12 @@ describe('etpStore', () => {
 
   describe('Additional coverage tests', () => {
     it('should update ETP in array on updateETP', async () => {
-      const updatedETP = { ...mockETP, title: 'ETP Atualizado', version: 2 };
-      vi.mocked(apiHelpers.patch).mockResolvedValue(updatedETP);
+      const updatedETP = { ...mockETP, title: 'ETP Atualizado' };
+      vi.mocked(apiHelpers.put).mockResolvedValue(updatedETP);
 
       const { result } = renderHook(() => useETPStore());
 
-      // Setup: add ETP to array (sets currentETP with version for optimistic locking)
+      // Setup: add ETP to array
       act(() => {
         result.current.setCurrentETP(mockETP);
       });
@@ -486,10 +468,8 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Should include version for optimistic locking (#1059)
-      expect(apiHelpers.patch).toHaveBeenCalledWith('/etps/etp-1', {
+      expect(apiHelpers.put).toHaveBeenCalledWith('/etps/etp-1', {
         title: 'ETP Atualizado',
-        version: 1,
       });
     });
 

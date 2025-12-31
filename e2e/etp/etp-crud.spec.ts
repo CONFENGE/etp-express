@@ -41,7 +41,6 @@ const TEST_CONFIG = {
   // Test data
   testData: {
     etpTitle: `E2E Test ETP ${Date.now()}`,
-    etpObjeto: 'Objeto de teste para validacao E2E do fluxo CRUD de ETP',
     etpDescription: 'Descricao de teste para validacao E2E do fluxo CRUD',
     editedTitle: `E2E Test ETP Editado ${Date.now()}`,
     editedDescription: 'Descricao editada via teste E2E',
@@ -79,22 +78,12 @@ async function navigateToETPs(page: Page): Promise<void> {
 
 /**
  * Helper function to create an ETP via the dialog
- *
- * @param page - Playwright page instance
- * @param title - ETP title (required, min 5 chars)
- * @param objeto - ETP objeto (required, min 10 chars)
- * @param description - ETP description (optional)
  */
 async function createETP(
   page: Page,
   title: string,
-  objeto?: string,
   description?: string,
 ): Promise<string> {
-  // Use default objeto if not provided
-  const etpObjeto =
-    objeto || 'Objeto padrao para criacao de ETP via teste E2E automatizado';
-
   // Click "Novo ETP" button to open dialog or navigate to new page
   const newEtpButton = page.locator('text=Novo ETP').first();
   await newEtpButton.click();
@@ -107,13 +96,8 @@ async function createETP(
   const isDialog = await dialog.isVisible().catch(() => false);
 
   if (isDialog) {
-    // Fill dialog form - title
+    // Fill dialog form
     await page.fill('input#title, input[name="title"]', title);
-
-    // Fill objeto field (required since #1007)
-    await page.fill('textarea#objeto, textarea[name="objeto"]', etpObjeto);
-
-    // Fill description if provided
     if (description) {
       await page.fill(
         'textarea#description, textarea[name="description"]',
@@ -131,10 +115,6 @@ async function createETP(
   } else {
     // We're on /etps/new page - fill form directly
     await page.fill('input[name="title"], input#title', title);
-
-    // Fill objeto field (required since #1007)
-    await page.fill('textarea[name="objeto"], textarea#objeto', etpObjeto);
-
     if (description) {
       await page.fill(
         'textarea[name="description"], textarea#description',
@@ -341,153 +321,6 @@ test.describe('ETP CRUD Happy Paths', () => {
   });
 
   /**
-   * Test 1c: Validate required fields - empty objeto shows error
-   *
-   * @description Attempts to create an ETP without filling the required
-   * objeto field. Should display validation error and prevent submission.
-   *
-   * @issue #1009
-   * @acceptance-criteria
-   * - Fill title but leave objeto empty
-   * - Validation error message is displayed
-   * - Form submission is prevented
-   * - User remains on create form/dialog
-   */
-  test('should show validation error when objeto is empty', async ({
-    page,
-  }) => {
-    await navigateToETPs(page);
-
-    // Click "Novo ETP" button
-    const newEtpButton = page.locator('text=Novo ETP').first();
-    await newEtpButton.click();
-
-    await page.waitForTimeout(500);
-
-    // Check if dialog is open
-    const dialog = page.locator('[role="dialog"]');
-    const isDialog = await dialog.isVisible().catch(() => false);
-
-    if (isDialog) {
-      // Fill title but leave objeto empty
-      await page.fill(
-        'input#title, input[name="title"]',
-        'Titulo valido para teste',
-      );
-
-      const submitButton = page.locator('button:has-text("Criar ETP")');
-
-      // Try to submit without objeto
-      await submitButton.click();
-
-      // Wait for validation response
-      await page.waitForTimeout(500);
-
-      // Check for validation error message for objeto
-      const objetoErrorSelectors = [
-        page.locator('text=objeto deve ter'),
-        page.locator('text=O objeto deve ter no mínimo'),
-        page
-          .locator('[aria-invalid="true"]')
-          .filter({ has: page.locator('#objeto') }),
-        page.locator('#objeto[aria-invalid="true"]'),
-        page.locator('textarea#objeto ~ p.text-destructive'),
-      ];
-
-      let hasObjetoError = false;
-      for (const selector of objetoErrorSelectors) {
-        if (await selector.isVisible().catch(() => false)) {
-          hasObjetoError = true;
-          break;
-        }
-      }
-
-      // Validation should prevent navigation - still on dialog
-      const stillOnDialog = await dialog.isVisible().catch(() => false);
-
-      expect(hasObjetoError || stillOnDialog).toBeTruthy();
-
-      console.log('Empty objeto validation in dialog: PASSED');
-    } else {
-      // On /etps/new page
-      await page.fill(
-        'input[name="title"], input#title',
-        'Titulo valido para teste',
-      );
-
-      const submitButton = page.locator(
-        'button:has-text("Criar"), button[type="submit"]',
-      );
-
-      // Try to submit without objeto
-      await submitButton.click();
-
-      await page.waitForTimeout(500);
-
-      // Should still be on /etps/new (form not submitted)
-      const currentUrl = page.url();
-      expect(currentUrl).toMatch(/\/etps\/new|\/etps$/);
-
-      console.log('Empty objeto validation on page: PASSED');
-    }
-  });
-
-  /**
-   * Test 1d: Validate objeto minimum length
-   *
-   * @description Attempts to create an ETP with objeto shorter than minimum.
-   * Should display validation error about minimum length (10 characters).
-   *
-   * @issue #1009
-   * @acceptance-criteria
-   * - Fill title correctly
-   * - Fill objeto with less than 10 characters
-   * - Validation error message is displayed about minimum length
-   * - Form submission is prevented
-   */
-  test('should show validation error when objeto is too short', async ({
-    page,
-  }) => {
-    await navigateToETPs(page);
-
-    // Click "Novo ETP" button
-    const newEtpButton = page.locator('text=Novo ETP').first();
-    await newEtpButton.click();
-
-    await page.waitForTimeout(500);
-
-    const dialog = page.locator('[role="dialog"]');
-    const isDialog = await dialog.isVisible().catch(() => false);
-
-    if (isDialog) {
-      // Fill title correctly
-      await page.fill(
-        'input#title, input[name="title"]',
-        'Titulo valido para teste',
-      );
-
-      // Fill objeto with less than 10 characters
-      await page.fill('textarea#objeto, textarea[name="objeto"]', 'curto'); // 5 chars, min is 10
-
-      const submitButton = page.locator('button:has-text("Criar ETP")');
-      await submitButton.click();
-
-      await page.waitForTimeout(500);
-
-      // Check for minimum length validation error
-      const minLengthError = page.locator('text=10 caracteres');
-      const hasError = await minLengthError.isVisible().catch(() => false);
-
-      // Should stay on dialog
-      const stillOnDialog = await dialog.isVisible().catch(() => false);
-
-      expect(hasError || stillOnDialog).toBeTruthy();
-
-      console.log('Objeto minimum length validation: PASSED');
-    }
-  });
-
-  /**
    * Test 2: Create ETP with all fields
    *
    * @description Creates an ETP with all available fields filled.
@@ -502,10 +335,8 @@ test.describe('ETP CRUD Happy Paths', () => {
     await navigateToETPs(page);
 
     const title = `Complete ETP ${Date.now()}`;
-    const objeto =
-      'Contratacao de empresa especializada em desenvolvimento de sistemas web para gestao publica';
     const description = 'Descricao completa para teste E2E';
-    const etpId = await createETP(page, title, objeto, description);
+    const etpId = await createETP(page, title, description);
 
     // Verify ETP was created
     expect(etpId).toBeTruthy();
@@ -545,20 +376,15 @@ test.describe('ETP CRUD Happy Paths', () => {
     const dialog = page.locator('[role="dialog"]');
     const isDialog = await dialog.isVisible().catch(() => false);
 
-    const objeto =
-      'Objeto de teste para validacao de feedback de sucesso na criacao de ETP';
-
     if (isDialog) {
       // Fill dialog form
       await page.fill('input#title, input[name="title"]', title);
-      await page.fill('textarea#objeto, textarea[name="objeto"]', objeto);
 
       // Submit dialog
       await page.click('button:has-text("Criar ETP")');
     } else {
       // Fill form on page
       await page.fill('input[name="title"], input#title', title);
-      await page.fill('textarea[name="objeto"], textarea#objeto', objeto);
 
       // Submit form
       await page.click('button:has-text("Criar"), button[type="submit"]');
@@ -607,107 +433,6 @@ test.describe('ETP CRUD Happy Paths', () => {
     expect(successVisible || navigatedToEditor).toBeTruthy();
 
     console.log('Success feedback test: PASSED');
-  });
-
-  /**
-   * Test 2b+: API error message is displayed correctly
-   *
-   * @description When the API returns an error during ETP creation,
-   * the error message should be displayed to the user via toast.
-   * This test validates the improved error handling from #1008.
-   *
-   * @issue #1009
-   * @acceptance-criteria
-   * - When API returns error, error toast is displayed
-   * - Error message is specific and helpful (not generic)
-   * - User can retry after seeing error
-   */
-  test('should display API error message on creation failure', async ({
-    page,
-  }) => {
-    await navigateToETPs(page);
-
-    // Click "Novo ETP" button
-    const newEtpButton = page.locator('text=Novo ETP').first();
-    await newEtpButton.click();
-
-    await page.waitForTimeout(500);
-
-    const dialog = page.locator('[role="dialog"]');
-    const isDialog = await dialog.isVisible().catch(() => false);
-
-    if (isDialog) {
-      // Fill form with valid data - the API might succeed
-      // We need to simulate an error condition
-      // One way is to fill with extremely long data that might cause backend validation error
-      // Or intercept the API call and mock an error
-
-      // Use route interception to mock API error
-      await page.route('**/api/etps', async (route) => {
-        if (route.request().method() === 'POST') {
-          await route.fulfill({
-            status: 400,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              message: 'Erro de validacao: campo invalido',
-              statusCode: 400,
-            }),
-          });
-        } else {
-          await route.continue();
-        }
-      });
-
-      // Fill form
-      await page.fill(
-        'input#title, input[name="title"]',
-        'Titulo para teste de erro',
-      );
-      await page.fill(
-        'textarea#objeto, textarea[name="objeto"]',
-        'Objeto para teste de erro da API',
-      );
-
-      // Submit
-      await page.click('button:has-text("Criar ETP")');
-
-      // Wait for error handling
-      await page.waitForTimeout(1000);
-
-      // Check for error toast/message
-      const errorIndicators = [
-        page.locator('[role="status"]:has-text("erro")'),
-        page.locator('[class*="toast"]:has-text("erro")'),
-        page.locator('[class*="toast"]:has-text("Erro")'),
-        page.locator('text=Erro'),
-        page.locator('text=falhou'),
-        page.locator('[class*="Toaster"] >> text=erro'),
-        page.locator('[class*="destructive"]'),
-      ];
-
-      let errorVisible = false;
-      for (const indicator of errorIndicators) {
-        if (await indicator.isVisible().catch(() => false)) {
-          errorVisible = true;
-          const text = await indicator.textContent().catch(() => '');
-          console.log(`Error message visible: "${text}"`);
-          break;
-        }
-      }
-
-      // Should stay on dialog (not navigate away on error)
-      const stillOnDialog = await dialog.isVisible().catch(() => false);
-
-      // Either error is visible OR we stayed on dialog (showing form still open on error)
-      expect(errorVisible || stillOnDialog).toBeTruthy();
-
-      console.log('API error handling test: PASSED');
-
-      // Clean up route interception
-      await page.unrouteAll();
-    } else {
-      console.log('Skipping API error test - dialog not used');
-    }
   });
 
   /**

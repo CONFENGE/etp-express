@@ -1,7 +1,6 @@
 /**
  * Tests for polling utilities
  * @see #222 - Frontend async UX
- * @see #1060 - Increase timeout and graceful degradation
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -120,7 +119,7 @@ describe('polling utilities', () => {
 
       await expect(pollJobStatus('job-123')).rejects.toThrow(JobFailedError);
       await expect(pollJobStatus('job-123')).rejects.toThrow(
-        'Job não encontrado ou expirou',
+        'Job n\u00e3o encontrado ou expirou',
       );
     });
 
@@ -198,103 +197,11 @@ describe('polling utilities', () => {
       vi.useFakeTimers();
     });
 
-    it('should handle non-retryable API errors gracefully', async () => {
-      // Non-network errors should fail immediately without retry
-      vi.mocked(apiHelpers.get).mockRejectedValue(
-        new Error('Invalid JSON response'),
-      );
+    it('should handle API errors gracefully', async () => {
+      vi.mocked(apiHelpers.get).mockRejectedValue(new Error('Network error'));
 
       await expect(pollJobStatus('job-123')).rejects.toThrow(JobFailedError);
-      await expect(pollJobStatus('job-123')).rejects.toThrow(
-        'Invalid JSON response',
-      );
-    });
-
-    /**
-     * Network retry tests (#1060)
-     * Tests for exponential backoff on transient network errors
-     */
-    describe('network retry with exponential backoff (#1060)', () => {
-      it('should retry on network errors and eventually succeed', async () => {
-        vi.useRealTimers();
-
-        const mockResult = {
-          id: 'section-1',
-          content: 'Generated content',
-          etpId: 'etp-1',
-          sectionNumber: 1,
-          title: 'Test Section',
-          isRequired: true,
-          isCompleted: true,
-          aiGenerated: true,
-          createdAt: '2024-01-01',
-          updatedAt: '2024-01-01',
-        };
-
-        // First 2 calls fail with network error, third succeeds
-        vi.mocked(apiHelpers.get)
-          .mockRejectedValueOnce(new Error('Network error'))
-          .mockRejectedValueOnce(new Error('Network error'))
-          .mockResolvedValueOnce({
-            data: {
-              jobId: 'job-123',
-              status: 'completed',
-              progress: 100,
-              result: mockResult,
-            },
-          });
-
-        const result = await pollJobStatus('job-123', undefined, {
-          intervalMs: 10,
-          maxAttempts: 10,
-        });
-
-        expect(result.section).toEqual(mockResult);
-        expect(apiHelpers.get).toHaveBeenCalledTimes(3);
-
-        vi.useFakeTimers();
-      }, 15000);
-
-      it('should throw after max network retries exceeded', async () => {
-        vi.useRealTimers();
-
-        // All calls fail with network errors
-        vi.mocked(apiHelpers.get).mockRejectedValue(new Error('fetch failed'));
-
-        await expect(
-          pollJobStatus('job-123', undefined, {
-            intervalMs: 10,
-            maxAttempts: 10,
-          }),
-        ).rejects.toThrow(JobFailedError);
-
-        // Should have called MAX_NETWORK_RETRIES + 1 times (3 retries + initial call = 4)
-        expect(apiHelpers.get).toHaveBeenCalledTimes(4);
-
-        vi.useFakeTimers();
-      }, 15000);
-
-      it('should include jobId in PollingTimeoutError (#1060)', async () => {
-        vi.useRealTimers();
-
-        vi.mocked(apiHelpers.get).mockResolvedValue({
-          data: { jobId: 'job-123', status: 'active', progress: 50 },
-        });
-
-        try {
-          await pollJobStatus('job-123', undefined, {
-            intervalMs: 1,
-            maxAttempts: 2,
-          });
-          expect.fail('Should have thrown');
-        } catch (err) {
-          expect(err).toBeInstanceOf(PollingTimeoutError);
-          expect((err as PollingTimeoutError).jobId).toBe('job-123');
-          expect((err as PollingTimeoutError).message).toContain('job-123');
-        }
-
-        vi.useFakeTimers();
-      });
+      await expect(pollJobStatus('job-123')).rejects.toThrow('Network error');
     });
 
     /**

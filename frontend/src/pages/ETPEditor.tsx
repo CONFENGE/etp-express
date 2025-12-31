@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Tabs } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -19,7 +18,6 @@ import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
-import { SimilarContractsPanel } from '@/components/search/SimilarContractsPanel';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
@@ -30,7 +28,7 @@ import { useConfetti } from '@/hooks/useConfetti';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
-  const { currentETP, fetchETP, isLoading } = useETPs();
+  const { currentETP, fetchETP, updateETP, isLoading } = useETPs();
   const { success, error } = useToast();
   const [activeSection, setActiveSection] = useState(1);
   const [content, setContent] = useState('');
@@ -56,11 +54,6 @@ export function ETPEditor() {
     generateSection: storeGenerateSection,
     cancelGeneration,
     dataSourceStatus,
-    // Similar contracts (#1048)
-    similarContracts,
-    similarContractsLoading,
-    fetchSimilarContracts,
-    clearSimilarContracts,
   } = useETPStore();
 
   // Demo user conversion banner (#475)
@@ -113,30 +106,12 @@ export function ETPEditor() {
       fetchETP(id);
       // Reset confetti cooldown when loading new ETP (#597)
       resetCooldown();
-      // Clear similar contracts when loading new ETP (#1048)
-      clearSimilarContracts();
     }
-  }, [id, fetchETP, resetCooldown, clearSimilarContracts]);
-
-  // Fetch similar contracts when ETP loads (#1048)
-  useEffect(() => {
-    if (currentETP?.description || currentETP?.title) {
-      // Use description or title as search query
-      const searchQuery = currentETP.description || currentETP.title || '';
-      if (searchQuery.length >= 10) {
-        fetchSimilarContracts(searchQuery);
-      }
-    }
-  }, [
-    currentETP?.id,
-    currentETP?.description,
-    currentETP?.title,
-    fetchSimilarContracts,
-  ]);
+  }, [id, fetchETP, resetCooldown]);
 
   useEffect(() => {
     if (currentETP) {
-      const section = currentETP.sections?.find(
+      const section = currentETP.sections.find(
         (s) => s.sectionNumber === activeSection,
       );
       const sectionContent = section?.content || '';
@@ -184,22 +159,13 @@ export function ETPEditor() {
   const handleSave = useCallback(async () => {
     if (!currentETP || !id) return;
 
-    // Find the current section to get its ID (#1046)
-    const section = currentETP.sections?.find(
-      (s) => s.sectionNumber === activeSection,
-    );
-    if (!section?.id) {
-      error('Seção não encontrada');
-      return;
-    }
-
     setIsSaving(true);
     try {
-      // Use PATCH /sections/:id endpoint instead of updateETP with sections array
-      // The backend UpdateEtpDto doesn't accept 'sections' field (#1046)
-      const { updateSection } = useETPStore.getState();
-      await updateSection(id, section.id, { content });
-
+      await updateETP(id, {
+        sections: currentETP.sections.map((s) =>
+          s.sectionNumber === activeSection ? { ...s, content } : s,
+        ),
+      });
       // Reset dirty state after successful save (#610)
       setLastSavedContent(content);
       success('Seção salva com sucesso!');
@@ -208,7 +174,7 @@ export function ETPEditor() {
     } finally {
       setIsSaving(false);
     }
-  }, [currentETP, id, activeSection, content, success, error]);
+  }, [currentETP, id, updateETP, activeSection, content, success, error]);
 
   const handleGenerateAll = useCallback(async () => {
     // Generate all sections sequentially
@@ -513,23 +479,18 @@ export function ETPEditor() {
               isGenerating={aiGenerating}
             />
 
-            {/* Similar contracts panel (#1048) */}
-            {similarContractsLoading ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">
-                    Contratações Similares
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-5/6" />
-                </CardContent>
-              </Card>
-            ) : (
-              <SimilarContractsPanel contracts={similarContracts} />
-            )}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Contratações Similares
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Nenhuma contratação similar encontrada ainda.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
