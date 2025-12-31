@@ -193,20 +193,31 @@ test.describe('Export DOCX Happy Paths', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    // Find and click export DOCX button
-    const exportDocxButton = page.locator(
-      'button:has-text("Exportar DOCX"), button:has-text("DOCX"), button:has-text("Word"), [data-testid="export-docx-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "Word (.docx)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    // Wait for export button to be visible
-    await expect(exportDocxButton.first()).toBeVisible({
+    // Wait for export dropdown button to be visible
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click DOCX/Word option
+    const docxMenuItem = page.locator(
+      '[role="menuitem"]:has-text("Word"), [role="menuitem"]:has-text("DOCX"), [role="menuitem"]:has-text(".docx")',
+    );
+    await expect(docxMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click DOCX menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportDocxButton.first().click(),
+      docxMenuItem.first().click(),
     ]);
 
     // Validate filename
@@ -249,19 +260,30 @@ test.describe('Export DOCX Happy Paths', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    // Find and click export DOCX button
-    const exportDocxButton = page.locator(
-      'button:has-text("Exportar DOCX"), button:has-text("DOCX"), button:has-text("Word"), [data-testid="export-docx-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "Word (.docx)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    await expect(exportDocxButton.first()).toBeVisible({
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click DOCX/Word option
+    const docxMenuItem = page.locator(
+      '[role="menuitem"]:has-text("Word"), [role="menuitem"]:has-text("DOCX"), [role="menuitem"]:has-text(".docx")',
+    );
+    await expect(docxMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click DOCX menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportDocxButton.first().click(),
+      docxMenuItem.first().click(),
     ]);
 
     // Validate filename
@@ -315,19 +337,30 @@ test.describe('Export DOCX Happy Paths', () => {
       console.log('Rich text editor found - content can be formatted');
     }
 
-    // Find and click export DOCX button
-    const exportDocxButton = page.locator(
-      'button:has-text("Exportar DOCX"), button:has-text("DOCX"), button:has-text("Word"), [data-testid="export-docx-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "Word (.docx)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    await expect(exportDocxButton.first()).toBeVisible({
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click DOCX/Word option
+    const docxMenuItem = page.locator(
+      '[role="menuitem"]:has-text("Word"), [role="menuitem"]:has-text("DOCX"), [role="menuitem"]:has-text(".docx")',
+    );
+    await expect(docxMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click DOCX menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportDocxButton.first().click(),
+      docxMenuItem.first().click(),
     ]);
 
     // Validate filename

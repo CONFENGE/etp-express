@@ -201,20 +201,31 @@ test.describe('Export PDF Happy Paths', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    // Find and click export PDF button
-    const exportPdfButton = page.locator(
-      'button:has-text("Exportar PDF"), button:has-text("PDF"), [data-testid="export-pdf-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "PDF (.pdf)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    // Wait for export button to be visible
-    await expect(exportPdfButton.first()).toBeVisible({
+    // Wait for export dropdown button to be visible
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click PDF option
+    const pdfMenuItem = page.locator(
+      '[role="menuitem"]:has-text("PDF"), [role="menuitem"]:has-text(".pdf")',
+    );
+    await expect(pdfMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click PDF menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportPdfButton.first().click(),
+      pdfMenuItem.first().click(),
     ]);
 
     // Validate filename format: ETP-{uuid}.pdf
@@ -258,19 +269,30 @@ test.describe('Export PDF Happy Paths', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    // Find and click export PDF button
-    const exportPdfButton = page.locator(
-      'button:has-text("Exportar PDF"), button:has-text("PDF"), [data-testid="export-pdf-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "PDF (.pdf)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    await expect(exportPdfButton.first()).toBeVisible({
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click PDF option
+    const pdfMenuItem = page.locator(
+      '[role="menuitem"]:has-text("PDF"), [role="menuitem"]:has-text(".pdf")',
+    );
+    await expect(pdfMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click PDF menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportPdfButton.first().click(),
+      pdfMenuItem.first().click(),
     ]);
 
     // Validate filename format: ETP-{uuid}.pdf (same pattern for partial ETPs)
@@ -325,19 +347,30 @@ test.describe('Export PDF Happy Paths', () => {
       console.log('Rich text editor found - content can be formatted');
     }
 
-    // Find and click export PDF button
-    const exportPdfButton = page.locator(
-      'button:has-text("Exportar PDF"), button:has-text("PDF"), [data-testid="export-pdf-button"]',
+    // Export is a dropdown menu: click "Exportar" button, then "PDF (.pdf)" menu item
+    const exportDropdownButton = page.locator(
+      'button:has-text("Exportar"), [data-testid="export-dropdown"]',
     );
 
-    await expect(exportPdfButton.first()).toBeVisible({
+    await expect(exportDropdownButton.first()).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Set up download listener
+    // Open the dropdown menu
+    await exportDropdownButton.first().click();
+
+    // Wait for dropdown menu to appear and click PDF option
+    const pdfMenuItem = page.locator(
+      '[role="menuitem"]:has-text("PDF"), [role="menuitem"]:has-text(".pdf")',
+    );
+    await expect(pdfMenuItem.first()).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Set up download listener and click PDF menu item
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: TEST_CONFIG.timeouts.download }),
-      exportPdfButton.first().click(),
+      pdfMenuItem.first().click(),
     ]);
 
     // Validate filename format: ETP-{uuid}.pdf

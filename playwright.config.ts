@@ -34,7 +34,9 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
 
-    /* Disable onboarding tour in E2E tests to prevent overlay blocking clicks
+    /* Disable onboarding tour in E2E tests to prevent overlay blocking clicks.
+     * CRITICAL: The format MUST match Zustand persist middleware format:
+     * {"state":{"hasCompletedTour":true},"version":0}
      * We include both ports: 5173 (local Vite dev) and 3000 (CI build) */
     storageState: {
       cookies: [],
@@ -44,7 +46,10 @@ export default defineConfig({
           localStorage: [
             {
               name: 'etp-express-tour',
-              value: JSON.stringify({ hasCompletedTour: true }),
+              value: JSON.stringify({
+                state: { hasCompletedTour: true },
+                version: 0,
+              }),
             },
           ],
         },
@@ -53,7 +58,10 @@ export default defineConfig({
           localStorage: [
             {
               name: 'etp-express-tour',
-              value: JSON.stringify({ hasCompletedTour: true }),
+              value: JSON.stringify({
+                state: { hasCompletedTour: true },
+                version: 0,
+              }),
             },
           ],
         },
