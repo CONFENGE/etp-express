@@ -24,6 +24,10 @@ const createDomainSchema = z.object({
       /^[a-z0-9]+([-.][a-z0-9]+)*\.[a-z]{2,}$/i,
       'Please enter a valid domain (e.g., example.com)',
     ),
+  institutionName: z
+    .string()
+    .min(3, 'Institution name must be at least 3 characters')
+    .max(200, 'Institution name must be at most 200 characters'),
   maxUsers: z
     .number()
     .min(1, 'Minimum 1 user required')
@@ -60,6 +64,7 @@ export function CreateDomainDialog({
     resolver: zodResolver(createDomainSchema),
     defaultValues: {
       domain: '',
+      institutionName: '',
       maxUsers: 10,
     },
   });
@@ -104,6 +109,25 @@ export function CreateDomainDialog({
             {errors.domain && (
               <p id="domain-error" className="text-sm text-destructive">
                 {errors.domain.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="institutionName">Institution Name</Label>
+            <Input
+              id="institutionName"
+              placeholder="Prefeitura de Lages"
+              {...register('institutionName')}
+              aria-describedby={
+                errors.institutionName ? 'institutionName-error' : undefined
+              }
+            />
+            {errors.institutionName && (
+              <p
+                id="institutionName-error"
+                className="text-sm text-destructive"
+              >
+                {errors.institutionName.message}
               </p>
             )}
           </div>
