@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -32,13 +32,21 @@ export function DomainManagement() {
   const { showUndoToast, handleUndo, dismiss, activeToasts, isProcessing } =
     useUndoToast();
 
+  // Track last shown error to prevent infinite re-render loops
+  const lastShownErrorRef = useRef<string | null>(null);
+
   useEffect(() => {
     fetchDomains();
   }, [fetchDomains]);
 
   useEffect(() => {
-    if (error) {
+    // Only show error if it's a new error (prevents infinite loop)
+    if (error && error !== lastShownErrorRef.current) {
+      lastShownErrorRef.current = error;
       showError(error);
+    } else if (!error) {
+      // Reset ref when error is cleared
+      lastShownErrorRef.current = null;
     }
   }, [error, showError]);
 
