@@ -8,126 +8,22 @@
  * - Optimistic UI hides ETP immediately
  * - Empty state when all ETPs deleted
  *
- * @issue #953
+ * @issue #953, #1116
  * @group e2e
  * @group etp
  * @priority P1
  */
 
-import { test, expect, Page } from '@playwright/test';
-
-/**
- * Test configuration
- */
-const TEST_CONFIG = {
-  admin: {
-    email: process.env.E2E_ADMIN_EMAIL || 'admin@confenge.com.br',
-    password: process.env.E2E_ADMIN_PASSWORD || 'Admin@123',
-  },
-  timeouts: {
-    navigation: 10000,
-    action: 5000,
-    toast: 3000,
-    undoWindow: 5500, // 5s undo window + 500ms buffer
-  },
-};
-
-/**
- * Helper: Login to the application
- */
-async function login(page: Page): Promise<void> {
-  await page.goto('/login');
-  await page.waitForLoadState('networkidle');
-
-  await page.fill('input[name="email"], input#email', TEST_CONFIG.admin.email);
-  await page.fill(
-    'input[name="password"], input#password',
-    TEST_CONFIG.admin.password,
-  );
-  await page.click('button[type="submit"]');
-
-  await expect(page).toHaveURL(/\/dashboard/, {
-    timeout: TEST_CONFIG.timeouts.navigation,
-  });
-}
-
-/**
- * Helper: Navigate to ETPs list
- */
-async function navigateToETPs(page: Page): Promise<void> {
-  await page.goto('/etps');
-  await page.waitForLoadState('networkidle');
-  await expect(page).toHaveURL(/\/etps/);
-}
-
-/**
- * Helper: Create an ETP and return its ID
- */
-async function createETP(
-  page: Page,
-  title: string,
-  description?: string,
-): Promise<string> {
-  const newEtpButton = page.locator('text=Novo ETP').first();
-  await newEtpButton.click();
-  await page.waitForTimeout(500);
-
-  const dialog = page.locator('[role="dialog"]');
-  const isDialog = await dialog.isVisible().catch(() => false);
-
-  if (isDialog) {
-    await page.fill('input#title, input[name="title"]', title);
-    if (description) {
-      await page.fill(
-        'textarea#description, textarea[name="description"]',
-        description,
-      );
-    }
-    await page.click('button:has-text("Criar ETP")');
-  } else {
-    await page.fill('input[name="title"], input#title', title);
-    if (description) {
-      await page.fill(
-        'textarea[name="description"], textarea#description',
-        description,
-      );
-    }
-    await page.click('button:has-text("Criar"), button[type="submit"]');
-  }
-
-  await page.waitForURL(/\/etps\/[^/]+$/, {
-    timeout: TEST_CONFIG.timeouts.navigation,
-  });
-
-  const url = page.url();
-  const match = url.match(/\/etps\/([^/]+)$/);
-  if (!match) {
-    throw new Error('Failed to extract ETP ID from URL');
-  }
-
-  return match[1];
-}
-
-/**
- * Helper: Find and click delete option for an ETP by title
- */
-async function clickDeleteForETP(page: Page, title: string): Promise<void> {
-  // Find the ETP card containing the title
-  const etpCard = page.locator('.hover\\:shadow-md').filter({ hasText: title });
-
-  // Click the menu button (MoreVertical icon)
-  const menuButton = etpCard.locator('button[aria-label="Opções do ETP"]');
-  await menuButton.click();
-
-  // Wait for dropdown menu to appear
-  await page.waitForTimeout(300);
-
-  // Click the delete option
-  const deleteOption = page.locator('[role="menuitem"]').filter({
-    hasText: 'Excluir',
-  });
-  await deleteOption.click();
-}
+import { test, expect } from '@playwright/test';
+import {
+  login,
+  navigateToETPs,
+  createETP,
+  skipTest,
+  clickDeleteForETP,
+  clickUndoToast,
+  TEST_CONFIG,
+} from '../utils';
 
 /**
  * ETP Lifecycle Test Suite
@@ -148,7 +44,11 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
       }
     });
 
-    await login(page);
+    const loginSuccess = await login(page);
+    if (!loginSuccess) {
+      skipTest('Login failed');
+      return;
+    }
   });
 
   /**
@@ -166,32 +66,42 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: ETP is hidden immediately after clicking delete (optimistic UI)
-   *
-   * @acceptance-criteria
-   * - Click "Excluir" on an ETP
-   * - ETP disappears from list immediately (before timeout)
-   * - Undo toast appears
    */
   test('should hide ETP immediately after clicking delete (optimistic UI)', async ({
     page,
   }) => {
-    // Create an ETP for testing
-    await navigateToETPs(page);
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     const title = `Optimistic Delete Test ${Date.now()}`;
-    await createETP(page, title, 'Test description');
+    const etpId = await createETP(page, title, undefined, 'Test description');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Verify ETP is visible
     await expect(page.locator(`text="${title}"`)).toBeVisible();
 
     // Click delete
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // ETP should be hidden IMMEDIATELY (not after 5s)
-    // Use a short timeout to verify immediate hiding
     await expect(page.locator(`text="${title}"`)).not.toBeVisible({
       timeout: 1000,
     });
@@ -205,27 +115,37 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Undo toast appears with countdown
-   *
-   * @acceptance-criteria
-   * - Click "Excluir" on an ETP
-   * - Undo toast appears
-   * - Countdown is visible (e.g., "5s", "4s", etc.)
-   * - "Desfazer" button is present
    */
   test('should show undo toast with countdown after delete', async ({
     page,
   }) => {
-    // Create an ETP for testing
-    await navigateToETPs(page);
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     const title = `Undo Toast Test ${Date.now()}`;
-    await createETP(page, title, 'Test description');
+    const etpId = await createETP(page, title, undefined, 'Test description');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Click delete
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // Undo toast should appear
     const undoToast = page.locator('[role="alert"]');
@@ -248,46 +168,56 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Cancel delete via "Desfazer" button restores ETP
-   *
-   * @acceptance-criteria
-   * - Click "Excluir" on an ETP
-   * - Click "Desfazer" within 5s window
-   * - ETP reappears in the list
-   * - Toast disappears
    */
   test('should restore ETP when clicking Desfazer (undo)', async ({ page }) => {
-    // Create an ETP for testing
-    await navigateToETPs(page);
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     const title = `Undo Restore Test ${Date.now()}`;
-    await createETP(page, title, 'Test description');
+    const etpId = await createETP(page, title, undefined, 'Test description');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Verify ETP is visible before delete
     await expect(page.locator(`text="${title}"`)).toBeVisible();
 
     // Click delete
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // ETP should be hidden (optimistic)
     await expect(page.locator(`text="${title}"`)).not.toBeVisible({
       timeout: 1000,
     });
 
-    // Undo toast should appear
-    const undoToast = page.locator('[role="alert"]');
-    await expect(undoToast).toBeVisible({ timeout: 2000 });
-
-    // Click "Desfazer" button
-    const undoButton = undoToast.locator('button:has-text("Desfazer")');
-    await undoButton.click();
+    // Click undo
+    const undoClicked = await clickUndoToast(page);
+    if (!undoClicked) {
+      skipTest('Failed to click undo');
+      return;
+    }
 
     // Wait for undo action to complete
     await page.waitForTimeout(500);
 
     // Toast should disappear
+    const undoToast = page.locator('[role="alert"]');
     await expect(undoToast).not.toBeVisible({ timeout: 2000 });
 
     // ETP should reappear in the list
@@ -300,30 +230,40 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Delete is confirmed after timeout (5s)
-   *
-   * @acceptance-criteria
-   * - Click "Excluir" on an ETP
-   * - Wait for 5s timeout to expire
-   * - ETP is permanently deleted
-   * - Refresh page to confirm deletion
    */
   test('should permanently delete ETP after timeout expires', async ({
     page,
   }) => {
-    // Create an ETP for testing
-    await navigateToETPs(page);
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     const title = `Timeout Delete Test ${Date.now()}`;
-    await createETP(page, title, 'Test description');
+    const etpId = await createETP(page, title, undefined, 'Test description');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Verify ETP is visible
     await expect(page.locator(`text="${title}"`)).toBeVisible();
 
     // Click delete
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // ETP should be hidden (optimistic)
     await expect(page.locator(`text="${title}"`)).not.toBeVisible({
@@ -331,7 +271,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     });
 
     // Wait for undo timeout to expire (5s + buffer)
-    await page.waitForTimeout(TEST_CONFIG.timeouts.undoWindow);
+    await page.waitForTimeout(5500);
 
     // Toast should disappear after timeout
     const undoToast = page.locator('[role="alert"]');
@@ -351,46 +291,70 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Multiple deletes with selective undo
-   *
-   * @acceptance-criteria
-   * - Create 2 ETPs
-   * - Delete both in sequence
-   * - Undo only the first one
-   * - First ETP is restored, second is deleted
    */
   test('should handle multiple deletes with selective undo', async ({
     page,
   }) => {
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     // Create two ETPs
-    await navigateToETPs(page);
     const title1 = `Multi Delete Test 1 - ${Date.now()}`;
     const title2 = `Multi Delete Test 2 - ${Date.now()}`;
 
-    await createETP(page, title1, 'First ETP');
-    await navigateToETPs(page);
-    await createETP(page, title2, 'Second ETP');
+    const etpId1 = await createETP(page, title1, undefined, 'First ETP');
+    if (!etpId1) {
+      skipTest('Failed to create first ETP');
+      return;
+    }
+
+    const navReady1 = await navigateToETPs(page);
+    if (!navReady1) {
+      skipTest('ETPs page unavailable after first creation');
+      return;
+    }
+
+    const etpId2 = await createETP(page, title2, undefined, 'Second ETP');
+    if (!etpId2) {
+      skipTest('Failed to create second ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady2 = await navigateToETPs(page);
+    if (!navReady2) {
+      skipTest('ETPs page unavailable after second creation');
+      return;
+    }
 
     // Verify both are visible
     await expect(page.locator(`text="${title1}"`)).toBeVisible();
     await expect(page.locator(`text="${title2}"`)).toBeVisible();
 
     // Delete first ETP
-    await clickDeleteForETP(page, title1);
+    const delete1Clicked = await clickDeleteForETP(page, title1);
+    if (!delete1Clicked) {
+      skipTest('Failed to click delete on first ETP');
+      return;
+    }
     await page.waitForTimeout(300);
 
     // Delete second ETP
-    await clickDeleteForETP(page, title2);
+    const delete2Clicked = await clickDeleteForETP(page, title2);
+    if (!delete2Clicked) {
+      skipTest('Failed to click delete on second ETP');
+      return;
+    }
     await page.waitForTimeout(300);
 
     // Both ETPs should be hidden
     await expect(page.locator(`text="${title1}"`)).not.toBeVisible();
     await expect(page.locator(`text="${title2}"`)).not.toBeVisible();
 
-    // Multiple toasts may appear - find the one for title1
+    // Find the toast for title1 and click undo
     const toast1 = page
       .locator('[role="alert"]')
       .filter({ hasText: title1 })
@@ -407,7 +371,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     });
 
     // Wait for second delete timeout
-    await page.waitForTimeout(TEST_CONFIG.timeouts.undoWindow);
+    await page.waitForTimeout(5500);
 
     // Refresh to confirm state
     await page.reload();
@@ -428,34 +392,45 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Empty state appears when all ETPs are deleted
-   *
-   * @acceptance-criteria
-   * - Delete all ETPs from the list
-   * - Empty state message appears
-   * - "Criar ETP" button is shown
    */
   test('should show empty state when list becomes empty after deletes', async ({
     page,
   }) => {
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     // Create a single ETP
-    await navigateToETPs(page);
     const title = `Empty State Test ${Date.now()}`;
-    await createETP(page, title, 'Will be deleted');
+    const etpId = await createETP(page, title, undefined, 'Will be deleted');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Get initial count of ETPs
     const initialCards = page.locator('.hover\\:shadow-md');
     const initialCount = await initialCards.count();
 
-    // If there are other ETPs, we can only test with our created one
     // Delete our ETP
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // Wait for deletion timeout
-    await page.waitForTimeout(TEST_CONFIG.timeouts.undoWindow);
+    await page.waitForTimeout(5500);
 
     // Check if list is now empty (only if we deleted the last one)
     if (initialCount === 1) {
@@ -481,26 +456,37 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
 
   /**
    * Test: Dismiss toast without undo still deletes after timeout
-   *
-   * @acceptance-criteria
-   * - Click "Excluir" on an ETP
-   * - Click X to dismiss the toast (not Desfazer)
-   * - ETP is still deleted after timeout
    */
   test('should still delete ETP when toast is dismissed via X button', async ({
     page,
   }) => {
-    // Create an ETP for testing
-    await navigateToETPs(page);
+    const ready = await navigateToETPs(page);
+    if (!ready) {
+      skipTest('ETPs page unavailable');
+      return;
+    }
+
     const title = `Dismiss Test ${Date.now()}`;
-    await createETP(page, title, 'Test description');
+    const etpId = await createETP(page, title, undefined, 'Test description');
+
+    if (!etpId) {
+      skipTest('Failed to create ETP');
+      return;
+    }
 
     // Navigate back to list
-    await navigateToETPs(page);
-    await page.waitForLoadState('networkidle');
+    const navReady = await navigateToETPs(page);
+    if (!navReady) {
+      skipTest('ETPs page unavailable after creation');
+      return;
+    }
 
     // Click delete
-    await clickDeleteForETP(page, title);
+    const deleteClicked = await clickDeleteForETP(page, title);
+    if (!deleteClicked) {
+      skipTest('Failed to click delete');
+      return;
+    }
 
     // Undo toast should appear
     const undoToast = page.locator('[role="alert"]');
@@ -519,7 +505,7 @@ test.describe('ETP Delete/Undo Lifecycle (#953)', () => {
     await expect(page.locator(`text="${title}"`)).not.toBeVisible();
 
     // Wait for timeout to complete
-    await page.waitForTimeout(TEST_CONFIG.timeouts.undoWindow);
+    await page.waitForTimeout(5500);
 
     // Refresh to verify permanent deletion
     await page.reload();

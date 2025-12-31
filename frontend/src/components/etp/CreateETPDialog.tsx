@@ -82,6 +82,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
               <Label htmlFor="title">Título *</Label>
               <Input
                 id="title"
+                data-testid="etp-title-input"
                 placeholder="Ex: Contratação de Serviços de TI"
                 {...register('title')}
                 aria-invalid={errors.title ? 'true' : 'false'}
@@ -97,6 +98,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
               <Label htmlFor="objeto">Objeto *</Label>
               <Textarea
                 id="objeto"
+                data-testid="etp-objeto-input"
                 placeholder="Ex: Contratação de empresa especializada em desenvolvimento de sistemas web"
                 rows={3}
                 {...register('objeto')}
@@ -113,6 +115,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
               <Label htmlFor="description">Descrição</Label>
               <Textarea
                 id="description"
+                data-testid="etp-description-input"
                 placeholder="Descrição breve do ETP..."
                 rows={3}
                 {...register('description')}
@@ -128,7 +131,11 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              data-testid="submit-etp-button"
+            >
               {isLoading ? 'Criando...' : 'Criar ETP'}
             </Button>
           </DialogFooter>

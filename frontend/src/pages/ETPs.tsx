@@ -112,7 +112,10 @@ export function ETPs() {
               Gerencie seus Estudos Técnicos Preliminares
             </p>
           </div>
-          <Button onClick={() => openModal(CREATE_ETP_MODAL_ID)}>
+          <Button
+            onClick={() => openModal(CREATE_ETP_MODAL_ID)}
+            data-testid="create-etp-button"
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             Novo ETP
           </Button>
