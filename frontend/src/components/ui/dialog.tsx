@@ -44,8 +44,8 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Position and layout
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+        // Position and layout - z-[51] to ensure content is above overlay (z-50)
+        'fixed left-[50%] top-[50%] z-[51] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
         // Apple HIG styles
         'border border-[var(--border-secondary)] bg-surface-primary p-6 shadow-apple-lg rounded-apple-lg',
         // Animation with Apple-style duration and easing
