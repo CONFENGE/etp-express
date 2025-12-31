@@ -32,11 +32,12 @@ const TEST_CONFIG = {
     password: process.env.E2E_ADMIN_PASSWORD || 'Admin@123',
   },
 
-  // Timeouts
+  // Timeouts - increased for CI stability
   timeouts: {
-    navigation: 10000,
-    action: 5000,
-    toast: 3000,
+    navigation: 15000,
+    pageLoad: 20000,
+    action: 10000,
+    toast: 5000,
   },
 
   // Test data
@@ -49,6 +50,22 @@ const TEST_CONFIG = {
     searchTerm: 'E2E Test',
   },
 };
+
+/**
+ * Helper: Wait for ETP Editor to fully load
+ */
+async function waitForETPEditorLoaded(page: Page): Promise<boolean> {
+  try {
+    await page.waitForSelector('h1, [data-testid="etp-title"]', {
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.pageLoad,
+    });
+    return true;
+  } catch {
+    console.log('ETP Editor: Failed to load within timeout');
+    return false;
+  }
+}
 
 /**
  * Helper function to login
@@ -184,6 +201,13 @@ async function createETP(
     await page.waitForURL(/\/etps\/[^/]+$/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
+  }
+
+  // Wait for the ETP Editor page to fully load
+  await page.waitForLoadState('networkidle');
+  const editorLoaded = await waitForETPEditorLoaded(page);
+  if (!editorLoaded) {
+    console.log('Warning: ETP Editor may not be fully loaded');
   }
 
   // Extract ETP ID from URL

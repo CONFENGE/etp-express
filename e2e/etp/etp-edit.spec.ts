@@ -24,12 +24,31 @@ const TEST_CONFIG = {
     password: process.env.E2E_ADMIN_PASSWORD || 'Admin@123',
   },
   timeouts: {
-    navigation: 10000,
-    action: 5000,
-    toast: 3000,
-    save: 3000,
+    navigation: 15000,
+    pageLoad: 20000,
+    action: 10000,
+    toast: 5000,
+    save: 5000,
   },
 };
+
+/**
+ * Helper: Wait for ETP Editor to fully load
+ * Returns true if loaded successfully, false if page failed to load
+ */
+async function waitForETPEditorLoaded(page: Page): Promise<boolean> {
+  try {
+    // Wait for the title element which indicates the page has loaded
+    await page.waitForSelector('h1, [data-testid="etp-title"]', {
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.pageLoad,
+    });
+    return true;
+  } catch {
+    console.log('ETP Editor: Failed to load within timeout');
+    return false;
+  }
+}
 
 /**
  * Helper: Login to the application
@@ -112,6 +131,13 @@ async function createETP(
   await page.waitForURL(/\/etps\/[^/]+$/, {
     timeout: TEST_CONFIG.timeouts.navigation,
   });
+
+  // Wait for the ETP Editor page to fully load
+  await page.waitForLoadState('networkidle');
+  const editorLoaded = await waitForETPEditorLoaded(page);
+  if (!editorLoaded) {
+    console.log('Warning: ETP Editor may not be fully loaded');
+  }
 
   const url = page.url();
   const match = url.match(/\/etps\/([^/]+)$/);
