@@ -1,44 +1,57 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-27 | **Progresso:** 509/518 (98%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-31 | **Progresso:** 560/587 (95%) | **Deploy:** LIVE
 
 ---
 
-## Ultimos Merges
+## Issues Abertas (27)
 
-| PR   | Commit    | Descricao                                          |
-| ---- | --------- | -------------------------------------------------- |
-| #996 | `2cc3866` | security(users): fix IDOR PATCH /users/:id (#991)  |
-| #995 | `f526754` | security(users): fix IDOR GET /users (Closes #990) |
-| #994 | `77b2e71` | security(export): fix IDOR export endpoints (#988) |
+### P0 - Critical (3 issues)
 
----
+| #     | Issue                                                            |
+| ----- | ---------------------------------------------------------------- |
+| #1112 | fix(frontend): useToast hook causes infinite re-renders          |
+| #1108 | fix(frontend): Maximum update depth exceeded in DomainManagement |
+| #1103 | tracking: E2E Playwright test failures (69 tests)                |
 
-## Issues Abertas (9)
+### P1 - High Priority (17 issues)
 
-### P0 - Security/Blockers (3 issues)
+| #     | Issue                                                            |
+| ----- | ---------------------------------------------------------------- |
+| #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
+| #1111 | fix(ci): rotate-secrets workflow failing on every run            |
+| #1110 | fix(e2e): Strict mode violations - selectors matching multiple   |
+| #1109 | fix(backend): Domain creation returns 400 Bad Request            |
+| #1102 | fix(e2e): Manager module tests failing (dashboard, users)        |
+| #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                |
+| #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
+| #1099 | fix(e2e): Auth module tests failing                              |
+| #1098 | fix(e2e): Admin module tests failing                             |
+| #1088 | [E2E] Fix 92 Playwright test failures in CI                      |
+| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
+| #1074 | [QA] Implementar chaos engineering                               |
+| #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
+| #1066 | [Frontend] Remover global AbortController                        |
+| #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
+| #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
+| #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled     |
 
-| #    | Issue                                                              |
-| ---- | ------------------------------------------------------------------ |
-| #989 | [BLOCKER] Versions: IDOR permite manipular versoes de qualquer ETP |
-| #992 | [HIGH] Sections SSE: Streaming sem validacao de ownership          |
-| #993 | [HIGH] Users: GET /users/:id expoe dados de qualquer usuario       |
+### P2 - Medium Priority (6 issues)
 
-### P1 - Bugs/Tests (3 issues)
+| #     | Issue                                                            |
+| ----- | ---------------------------------------------------------------- |
+| #1072 | [Observabilidade] Adicionar retry automatico para emails         |
+| #1071 | [Observabilidade] Garantir requestId em todos os logs            |
+| #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
+| #1069 | [Gov-API] Implementar invalidacao de cache baseada em eventos    |
+| #1068 | [Gov-API] Otimizar configuracao de retry para janelas manutencao |
+| #1067 | [Gov-API] Implementar alerting automatico para circuit breaker   |
 
-| #    | Issue                                                                 |
-| ---- | --------------------------------------------------------------------- |
-| #985 | fix(frontend): Loading infinito 'Carregando ETP...' ao criar ETP      |
-| #986 | fix(frontend): Tarja superior sobrepoe primeiro botao do menu lateral |
-| #956 | test(e2e): Export DOCX complete flow                                  |
+### P3 - Low Priority (1 issue)
 
-### P2 - Melhorias (3 issues)
-
-| #    | Issue                                                                   |
-| ---- | ----------------------------------------------------------------------- |
-| #962 | docs: Comprehensive authentication flow                                 |
-| #963 | ci: Add auth E2E tests to CI pipeline                                   |
-| #987 | feat(frontend): Exibir menu de administracao para usuarios SYSTEM_ADMIN |
+| #     | Issue                                          |
+| ----- | ---------------------------------------------- |
+| #1045 | docs(readme): Update coverage badges and dates |
 
 ---
 
@@ -63,10 +76,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 518   |
-| Issues Abertas    | 9     |
-| Issues Fechadas   | 509   |
-| Progresso         | 98%   |
+| Issues Totais     | 587   |
+| Issues Abertas    | 27    |
+| Issues Fechadas   | 560   |
+| Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2109  |
