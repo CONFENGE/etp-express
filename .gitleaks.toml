@@ -16,6 +16,8 @@ paths = [
   '''backend/\.env\.example$''',
   '''frontend/\.env\.example$''',
   '''\.env\.template$''',
+  # CI/CD workflow files contain test-only secrets (clearly labeled, non-production)
+  '''\.github/workflows/.*\.yml$''',
 ]
 
 # Rule-specific allowlists for false positives
@@ -26,7 +28,7 @@ regex = '''postgres(ql)?://[a-zA-Z0-9_-]+:[^@\s]+@[^\s]+'''
 tags = ["secret", "database"]
 
   [rules.allowlist]
-  description = "Allowlist for documentation placeholders"
+  description = "Allowlist for documentation placeholders and test credentials"
   regexes = [
     '''USER:PASSWORD''',
     '''<USER>:<PASSWORD>''',
@@ -34,9 +36,13 @@ tags = ["secret", "database"]
     '''PLACEHOLDER''',
     '''postgresql://USER:PASSWORD@HOST:PORT/DATABASE''',
     '''postgres(ql)?://USER:PASSWORD@HOST''',
+    # Test database credentials used in CI/CD
+    '''postgres:postgres''',
+    '''postgres:postgres@localhost''',
   ]
   paths = [
     '''scripts/rotate-secret\.sh''',
+    '''\.github/workflows/.*\.yml''',
   ]
 
 # Custom rules for ETP Express specific patterns
