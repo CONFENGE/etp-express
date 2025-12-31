@@ -48,6 +48,7 @@ describe('adminStore', () => {
 
   const mockCreateDomainDto: CreateDomainDto = {
     domain: 'new-domain.com',
+    institutionName: 'New Domain Institution',
     maxUsers: 15,
   };
 
