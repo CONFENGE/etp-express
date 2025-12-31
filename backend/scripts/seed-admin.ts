@@ -79,6 +79,47 @@ const DEMO_DATA = {
   },
 };
 
+/**
+ * E2E test users for Playwright tests.
+ * These users are created in the admin domain (confenge.com.br).
+ *
+ * @see e2e/auth/role-access.spec.ts
+ * @see e2e/manager/dashboard.spec.ts
+ * @see e2e/manager/users.spec.ts
+ */
+const E2E_USERS = {
+  /**
+   * System Admin for E2E tests (alternative to tiago@confenge.com.br)
+   */
+  systemAdmin: {
+    email: 'admin@confenge.com.br',
+    password: 'Admin@123',
+    name: 'System Admin E2E',
+    role: UserRole.SYSTEM_ADMIN,
+    mustChangePassword: false,
+  },
+  /**
+   * Domain Manager for manager module tests
+   */
+  domainManager: {
+    email: 'manager@confenge.com.br',
+    password: 'Manager@123',
+    name: 'Domain Manager E2E',
+    role: UserRole.DOMAIN_MANAGER,
+    mustChangePassword: false,
+  },
+  /**
+   * Regular user for user-level access tests
+   */
+  domainUser: {
+    email: 'user@confenge.com.br',
+    password: 'User@123',
+    name: 'Domain User E2E',
+    role: UserRole.USER,
+    mustChangePassword: false,
+  },
+};
+
 async function seedAdmin(): Promise<void> {
   console.log('Starting admin seed script...');
 
@@ -132,6 +173,12 @@ async function seedAdmin(): Promise<void> {
       authorizedDomainRepository,
     );
 
+    // Create E2E test users (uses admin organization/domain)
+    const e2eResults = await createE2EUsers(
+      userRepository,
+      authorizedDomainRepository,
+    );
+
     console.log('\nSummary:');
     console.log(' Admin Organization:', adminResult.organizationStatus);
     console.log(' Admin User:', adminResult.userStatus);
@@ -139,6 +186,9 @@ async function seedAdmin(): Promise<void> {
     console.log(' Demo Organization:', demoResult.organizationStatus);
     console.log(' Demo User:', demoResult.userStatus);
     console.log(' Demo Domain:', demoResult.domainStatus);
+    console.log(' E2E System Admin:', e2eResults.systemAdmin);
+    console.log(' E2E Domain Manager:', e2eResults.domainManager);
+    console.log(' E2E Domain User:', e2eResults.domainUser);
 
     console.log('\nSeed completed successfully!');
   } catch (error) {
@@ -306,6 +356,76 @@ async function createDemoUser(
   }
 
   return { organizationStatus, userStatus, domainStatus };
+}
+
+interface E2EUsersResult {
+  systemAdmin: string;
+  domainManager: string;
+  domainUser: string;
+}
+
+/**
+ * Create E2E test users for Playwright tests.
+ * Uses the admin organization and domain (confenge.com.br).
+ *
+ * @see e2e/auth/role-access.spec.ts
+ * @see e2e/manager/dashboard.spec.ts
+ * @see e2e/manager/users.spec.ts
+ */
+async function createE2EUsers(
+  userRepository: ReturnType<DataSource['getRepository']>,
+  authorizedDomainRepository: ReturnType<DataSource['getRepository']>,
+): Promise<E2EUsersResult> {
+  console.log('\nCreating E2E test users...');
+
+  // Find the admin domain (confenge.com.br)
+  const adminDomain = await authorizedDomainRepository.findOne({
+    where: { domain: ADMIN_DATA.authorizedDomain.domain },
+  });
+
+  if (!adminDomain) {
+    console.log('⚠ Admin domain not found. E2E users cannot be created.');
+    return {
+      systemAdmin: 'Skipped (admin domain not found)',
+      domainManager: 'Skipped (admin domain not found)',
+      domainUser: 'Skipped (admin domain not found)',
+    };
+  }
+
+  const results: E2EUsersResult = {
+    systemAdmin: '',
+    domainManager: '',
+    domainUser: '',
+  };
+
+  // Create each E2E user
+  for (const [key, userData] of Object.entries(E2E_USERS)) {
+    const existingUser = await userRepository.findOne({
+      where: { email: userData.email },
+    });
+
+    if (existingUser) {
+      console.log(`⚠ E2E ${key} already exists. Skipping creation.`);
+      results[key as keyof E2EUsersResult] = 'Already exists (skipped)';
+    } else {
+      const hashedPassword = await bcrypt.hash(
+        userData.password,
+        BCRYPT_ROUNDS,
+      );
+      const newUser = await userRepository.save(
+        userRepository.create({
+          ...userData,
+          password: hashedPassword,
+          organizationId: adminDomain.organizationId,
+          authorizedDomainId: adminDomain.id,
+        }),
+      );
+      console.log(`✅ E2E ${key} created: ${newUser.id}`);
+      results[key as keyof E2EUsersResult] = `Created (ID: ${newUser.id})`;
+    }
+  }
+
+  return results;
 }
 
 // Run seed
