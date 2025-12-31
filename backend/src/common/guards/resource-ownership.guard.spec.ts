@@ -2,6 +2,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -83,6 +84,16 @@ describe('ResourceOwnershipGuard', () => {
     } as unknown as ExecutionContext;
   };
 
+  // Valid UUID v4 fixtures for tests (#1103)
+  // These are properly formatted UUIDs that pass uuid.validate()
+  const MOCK_ETP_ID = '550e8400-e29b-41d4-a716-446655440001';
+  const MOCK_SECTION_ID = '550e8400-e29b-41d4-a716-446655440002';
+  const MOCK_VERSION_ID = '550e8400-e29b-41d4-a716-446655440003';
+  const MOCK_USER_1 = '550e8400-e29b-41d4-a716-446655440004';
+  const MOCK_USER_2 = '550e8400-e29b-41d4-a716-446655440005';
+  const MOCK_ORG_1 = '550e8400-e29b-41d4-a716-446655440006';
+  const MOCK_ORG_2 = '550e8400-e29b-41d4-a716-446655440007';
+
   const createMockEtp = (
     id: string,
     organizationId: string,
@@ -105,7 +116,7 @@ describe('ResourceOwnershipGuard', () => {
     ({
       id,
       etp: {
-        id: 'etp-id',
+        id: MOCK_ETP_ID,
         organizationId: etpOrganizationId,
         createdById: etpCreatedById,
         createdBy: { id: etpCreatedById },
@@ -121,7 +132,7 @@ describe('ResourceOwnershipGuard', () => {
       id,
       versionNumber: 1,
       etp: {
-        id: 'etp-id',
+        id: MOCK_ETP_ID,
         organizationId: etpOrganizationId,
         createdById: etpCreatedById,
         createdBy: { id: etpCreatedById },
@@ -131,7 +142,7 @@ describe('ResourceOwnershipGuard', () => {
   describe('No @RequireOwnership decorator', () => {
     it('should allow access when no decorator is present', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(null);
-      const context = createMockExecutionContext({ id: 'etp-1' }, null);
+      const context = createMockExecutionContext({ id: MOCK_ETP_ID }, null);
 
       const result = await guard.canActivate(context);
 
@@ -146,7 +157,7 @@ describe('ResourceOwnershipGuard', () => {
         idParam: 'id',
         validateOwnership: true,
       });
-      const context = createMockExecutionContext({ id: 'etp-1' }, null);
+      const context = createMockExecutionContext({ id: MOCK_ETP_ID }, null);
 
       const result = await guard.canActivate(context);
 
@@ -164,19 +175,19 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should allow access when user owns ETP in same organization', async () => {
-      const etp = createMockEtp('etp-1', 'org-1', 'user-1');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_1);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
       expect(mockEtpRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'etp-1' },
+        where: { id: MOCK_ETP_ID },
         relations: ['createdBy'],
       });
 
@@ -186,28 +197,29 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should throw NotFoundException when ETP does not exist', async () => {
+      const nonExistentUUID = '550e8400-e29b-41d4-a716-446655440099';
       mockEtpRepository.findOne.mockResolvedValue(null);
 
       const context = createMockExecutionContext(
-        { id: 'non-existent' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: nonExistentUUID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
         NotFoundException,
       );
       await expect(guard.canActivate(context)).rejects.toThrow(
-        'ETP com ID non-existent não encontrado',
+        `ETP com ID ${nonExistentUUID} não encontrado`,
       );
     });
 
     it('should throw ForbiddenException when ETP belongs to different organization (IDOR)', async () => {
-      const etp = createMockEtp('etp-1', 'other-org', 'user-1');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_2, MOCK_USER_1);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'my-org' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -219,12 +231,12 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should throw ForbiddenException when user does not own ETP', async () => {
-      const etp = createMockEtp('etp-1', 'org-1', 'other-user');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_2);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -242,12 +254,12 @@ describe('ResourceOwnershipGuard', () => {
         validateOwnership: false, // Only check organization
       });
 
-      const etp = createMockEtp('etp-1', 'org-1', 'other-user');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_2);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
@@ -266,46 +278,55 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should allow access when user owns parent ETP', async () => {
-      const section = createMockSection('section-1', 'org-1', 'user-1');
+      const section = createMockSection(
+        MOCK_SECTION_ID,
+        MOCK_ORG_1,
+        MOCK_USER_1,
+      );
       mockSectionRepository.findOne.mockResolvedValue(section);
 
       const context = createMockExecutionContext(
-        { id: 'section-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_SECTION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
       expect(mockSectionRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'section-1' },
+        where: { id: MOCK_SECTION_ID },
         relations: ['etp', 'etp.createdBy'],
       });
     });
 
     it('should throw NotFoundException when Section does not exist', async () => {
+      const nonExistentUUID = '550e8400-e29b-41d4-a716-446655440098';
       mockSectionRepository.findOne.mockResolvedValue(null);
 
       const context = createMockExecutionContext(
-        { id: 'non-existent' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: nonExistentUUID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
         NotFoundException,
       );
       await expect(guard.canActivate(context)).rejects.toThrow(
-        'Seção com ID non-existent não encontrada',
+        `Seção com ID ${nonExistentUUID} não encontrada`,
       );
     });
 
     it('should throw ForbiddenException when Section parent ETP belongs to different organization', async () => {
-      const section = createMockSection('section-1', 'other-org', 'user-1');
+      const section = createMockSection(
+        MOCK_SECTION_ID,
+        MOCK_ORG_2,
+        MOCK_USER_1,
+      );
       mockSectionRepository.findOne.mockResolvedValue(section);
 
       const context = createMockExecutionContext(
-        { id: 'section-1' },
-        { id: 'user-1', organizationId: 'my-org' },
+        { id: MOCK_SECTION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -317,12 +338,16 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should throw ForbiddenException when user does not own parent ETP', async () => {
-      const section = createMockSection('section-1', 'org-1', 'other-user');
+      const section = createMockSection(
+        MOCK_SECTION_ID,
+        MOCK_ORG_1,
+        MOCK_USER_2,
+      );
       mockSectionRepository.findOne.mockResolvedValue(section);
 
       const context = createMockExecutionContext(
-        { id: 'section-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_SECTION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -344,46 +369,55 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should allow access when user owns parent ETP', async () => {
-      const version = createMockVersion('version-1', 'org-1', 'user-1');
+      const version = createMockVersion(
+        MOCK_VERSION_ID,
+        MOCK_ORG_1,
+        MOCK_USER_1,
+      );
       mockVersionRepository.findOne.mockResolvedValue(version);
 
       const context = createMockExecutionContext(
-        { id: 'version-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_VERSION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
       expect(mockVersionRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'version-1' },
+        where: { id: MOCK_VERSION_ID },
         relations: ['etp', 'etp.createdBy'],
       });
     });
 
     it('should throw NotFoundException when Version does not exist', async () => {
+      const nonExistentUUID = '550e8400-e29b-41d4-a716-446655440097';
       mockVersionRepository.findOne.mockResolvedValue(null);
 
       const context = createMockExecutionContext(
-        { id: 'non-existent' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: nonExistentUUID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
         NotFoundException,
       );
       await expect(guard.canActivate(context)).rejects.toThrow(
-        'Versão com ID non-existent não encontrada',
+        `Versão com ID ${nonExistentUUID} não encontrada`,
       );
     });
 
     it('should throw ForbiddenException when Version parent ETP belongs to different organization (IDOR)', async () => {
-      const version = createMockVersion('version-1', 'other-org', 'user-1');
+      const version = createMockVersion(
+        MOCK_VERSION_ID,
+        MOCK_ORG_2,
+        MOCK_USER_1,
+      );
       mockVersionRepository.findOne.mockResolvedValue(version);
 
       const context = createMockExecutionContext(
-        { id: 'version-1' },
-        { id: 'user-1', organizationId: 'my-org' },
+        { id: MOCK_VERSION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -395,12 +429,16 @@ describe('ResourceOwnershipGuard', () => {
     });
 
     it('should throw ForbiddenException when user does not own parent ETP', async () => {
-      const version = createMockVersion('version-1', 'org-1', 'other-user');
+      const version = createMockVersion(
+        MOCK_VERSION_ID,
+        MOCK_ORG_1,
+        MOCK_USER_2,
+      );
       mockVersionRepository.findOne.mockResolvedValue(version);
 
       const context = createMockExecutionContext(
-        { id: 'version-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_VERSION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -418,12 +456,16 @@ describe('ResourceOwnershipGuard', () => {
         validateOwnership: false, // Only check organization
       });
 
-      const version = createMockVersion('version-1', 'org-1', 'other-user');
+      const version = createMockVersion(
+        MOCK_VERSION_ID,
+        MOCK_ORG_1,
+        MOCK_USER_2,
+      );
       mockVersionRepository.findOne.mockResolvedValue(version);
 
       const context = createMockExecutionContext(
-        { id: 'version-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_VERSION_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
@@ -440,19 +482,19 @@ describe('ResourceOwnershipGuard', () => {
         validateOwnership: true,
       });
 
-      const etp = createMockEtp('etp-1', 'org-1', 'user-1');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_1);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { etpId: 'etp-1' }, // Using custom param name
-        { id: 'user-1', organizationId: 'org-1' },
+        { etpId: MOCK_ETP_ID }, // Using custom param name
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
       expect(mockEtpRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'etp-1' },
+        where: { id: MOCK_ETP_ID },
         relations: ['createdBy'],
       });
     });
@@ -465,8 +507,8 @@ describe('ResourceOwnershipGuard', () => {
       });
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' }, // Wrong param name
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID }, // Wrong param name
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       await expect(guard.canActivate(context)).rejects.toThrow(
@@ -486,12 +528,12 @@ describe('ResourceOwnershipGuard', () => {
         validateOwnership: true,
       });
 
-      const etp = createMockEtp('etp-1', 'org-1', 'user-1');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_1);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       const result = await guard.canActivate(context);
@@ -506,18 +548,73 @@ describe('ResourceOwnershipGuard', () => {
         // validateOwnership not specified, should default to true
       });
 
-      const etp = createMockEtp('etp-1', 'org-1', 'other-user');
+      const etp = createMockEtp(MOCK_ETP_ID, MOCK_ORG_1, MOCK_USER_2);
       mockEtpRepository.findOne.mockResolvedValue(etp);
 
       const context = createMockExecutionContext(
-        { id: 'etp-1' },
-        { id: 'user-1', organizationId: 'org-1' },
+        { id: MOCK_ETP_ID },
+        { id: MOCK_USER_1, organizationId: MOCK_ORG_1 },
       );
 
       // Should fail because ownership is validated by default
       await expect(guard.canActivate(context)).rejects.toThrow(
         ForbiddenException,
       );
+    });
+  });
+
+  describe('UUID Validation (#1103)', () => {
+    beforeEach(() => {
+      mockReflector.getAllAndOverride.mockReturnValue({
+        resourceType: ResourceType.ETP,
+        idParam: 'id',
+        validateOwnership: true,
+      });
+    });
+
+    it('should throw BadRequestException for invalid UUID format "undefined"', async () => {
+      const context = createMockExecutionContext(
+        { id: 'undefined' }, // Literal string "undefined"
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'ID inválido: "undefined" não é um UUID válido',
+      );
+
+      // Should NOT call repository (validation happens before DB query)
+      expect(mockEtpRepository.findOne).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException for other invalid UUID formats', async () => {
+      const context = createMockExecutionContext(
+        { id: 'not-a-valid-uuid' },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockEtpRepository.findOne).not.toHaveBeenCalled();
+    });
+
+    it('should accept valid UUID v4 format', async () => {
+      const validUUID = '550e8400-e29b-41d4-a716-446655440000';
+      const etp = createMockEtp(validUUID, 'org-1', 'user-1');
+      mockEtpRepository.findOne.mockResolvedValue(etp);
+
+      const context = createMockExecutionContext(
+        { id: validUUID },
+        { id: 'user-1', organizationId: 'org-1' },
+      );
+
+      const result = await guard.canActivate(context);
+
+      expect(result).toBe(true);
+      expect(mockEtpRepository.findOne).toHaveBeenCalled();
     });
   });
 });

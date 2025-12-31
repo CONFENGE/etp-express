@@ -58,7 +58,12 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
       success('ETP criado com sucesso!');
       reset();
       onOpenChange(false);
-      navigate(`/etps/${etp.id}`);
+      // Guard against undefined etp.id to prevent navigation to /etps/undefined (#1103)
+      if (etp?.id) {
+        navigate(`/etps/${etp.id}`);
+      } else {
+        error('ETP criado mas ID não retornado. Atualize a página.');
+      }
     } catch (err) {
       const message = getApiErrorMessage(err, 'criar ETP');
       error(message);
