@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { getQueueToken } from '@nestjs/bullmq';
-import { Repository, DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SectionsService } from './sections.service';
 import {
   EtpSection,
@@ -58,7 +58,6 @@ describe('SectionsService', () => {
     metadata: {},
     currentVersion: 1,
     completionPercentage: 0,
-    version: 1,
     createdById: mockUserId,
     createdBy: mockUser,
     organizationId: mockOrganizationId,
@@ -159,38 +158,6 @@ describe('SectionsService', () => {
     getJob: jest.fn(),
   };
 
-  /**
-   * Mock queryRunner for transaction testing
-   * Supports both update() transactions (Issue #1064) and getNextOrder transactions (Issue #1065)
-   * Uses a stable queryBuilder mock that persists across calls
-   */
-  const mockQueryBuilder = {
-    leftJoinAndSelect: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    andWhere: jest.fn().mockReturnThis(),
-    setLock: jest.fn().mockReturnThis(),
-    getOne: jest.fn(),
-    select: jest.fn().mockReturnThis(),
-    getRawOne: jest.fn().mockResolvedValue({ maxOrder: 0 }),
-  };
-
-  const mockQueryRunner = {
-    connect: jest.fn(),
-    startTransaction: jest.fn(),
-    commitTransaction: jest.fn(),
-    rollbackTransaction: jest.fn(),
-    release: jest.fn(),
-    manager: {
-      save: jest.fn(),
-      update: jest.fn(),
-      createQueryBuilder: jest.fn(() => mockQueryBuilder),
-    },
-  };
-
-  const mockDataSource = {
-    createQueryRunner: jest.fn(() => mockQueryRunner),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -214,10 +181,6 @@ describe('SectionsService', () => {
         {
           provide: EtpsService,
           useValue: mockEtpsService,
-        },
-        {
-          provide: DataSource,
-          useValue: mockDataSource,
         },
       ],
     }).compile();
@@ -270,8 +233,9 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
 
       // Act
       const result = await service.generateSection(
@@ -359,8 +323,9 @@ describe('SectionsService', () => {
         status: SectionStatus.GENERATING,
         metadata: { jobId: 'job-123', queuedAt: expect.any(String) },
       });
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
 
       // Act
       const result = await service.generateSection(
@@ -381,11 +346,18 @@ describe('SectionsService', () => {
 
     it('should set correct order for new section', async () => {
       // Arrange
-      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
+      mockEtpsService.findOne.mockResolvedValue(mockEtp);
       mockSectionsRepository.findOne.mockResolvedValue(null);
 
-      // Mock QueryRunner for transaction-based getNextOrder with maxOrder = 2
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
+      // Mock query builder for getNextOrder to return maxOrder = 2
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockResolvedValue({ maxOrder: 2 }),
+      };
+      mockSectionsRepository.createQueryBuilder.mockReturnValue(
+        mockQueryBuilder,
+      );
 
       // Mock create to return section with order 3
       mockSectionsRepository.create.mockImplementation((data) => ({
@@ -428,8 +400,9 @@ describe('SectionsService', () => {
       mockOrchestratorService.generateSection.mockResolvedValue(
         mockGenerationResult,
       );
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
 
       // Act
       await service.generateSection(
@@ -458,8 +431,9 @@ describe('SectionsService', () => {
       mockOrchestratorService.generateSection.mockResolvedValue(
         mockGenerationResult,
       );
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+      mockSectionsRepository.createQueryBuilder().getRawOne.mockResolvedValue({
+        maxOrder: 0,
+      });
 
       // Act
       const result = await service.generateSection(
@@ -477,122 +451,6 @@ describe('SectionsService', () => {
         warnings: [],
         suggestions: [],
       });
-    });
-
-    /**
-     * Test for unique constraint handling (#1058)
-     * Validates race condition prevention via PostgreSQL unique violation
-     */
-    it('should return existing section when PostgreSQL unique violation occurs (race condition)', async () => {
-      // Arrange - Simulate race condition: findOne returns null (no existing section),
-      // but save fails with PostgreSQL unique violation (another request created it first)
-      const existingSection = {
-        ...mockSection,
-        status: SectionStatus.GENERATED,
-        content: 'Already generated content',
-      };
-
-      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-      // First findOne (before save) returns null - section doesn't exist yet
-      mockSectionsRepository.findOne.mockResolvedValueOnce(null);
-      mockSectionsRepository.create.mockReturnValue({
-        ...mockSection,
-        status: SectionStatus.GENERATING,
-      });
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
-
-      // Save throws PostgreSQL unique violation error (code 23505)
-      const uniqueViolationError = new Error(
-        'duplicate key value violates unique constraint "UQ_section_etp_type"',
-      );
-      (uniqueViolationError as any).code = '23505';
-      mockSectionsRepository.save.mockRejectedValueOnce(uniqueViolationError);
-
-      // Second findOne (in catch block) returns the existing section
-      mockSectionsRepository.findOne.mockResolvedValueOnce(existingSection);
-
-      // Suppress logger warning for this test
-      jest.spyOn(Logger.prototype, 'warn').mockImplementation();
-
-      // Act
-      const result = await service.generateSection(
-        mockEtpId,
-        generateDto,
-        mockUserId,
-        mockOrganizationId,
-      );
-
-      // Assert - Should return the existing section, not throw error
-      expect(result).toEqual(existingSection);
-      expect(result.status).toBe(SectionStatus.GENERATED);
-      expect(result.content).toBe('Already generated content');
-
-      // Verify the flow: first findOne (null), save (throws), second findOne (existing)
-      expect(mockSectionsRepository.findOne).toHaveBeenCalledTimes(2);
-      expect(mockSectionsRepository.save).toHaveBeenCalledTimes(1);
-
-      // Queue should NOT be called since we returned the existing section
-      expect(mockSectionsQueue.add).not.toHaveBeenCalled();
-    });
-
-    it('should throw error when unique violation occurs but no existing section found', async () => {
-      // Arrange - Edge case: unique violation but section somehow not found
-      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-      mockSectionsRepository.findOne.mockResolvedValueOnce(null); // Before save
-      mockSectionsRepository.create.mockReturnValue({
-        ...mockSection,
-        status: SectionStatus.GENERATING,
-      });
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
-
-      const uniqueViolationError = new Error(
-        'duplicate key value violates unique constraint',
-      );
-      (uniqueViolationError as any).code = '23505';
-      mockSectionsRepository.save.mockRejectedValueOnce(uniqueViolationError);
-      mockSectionsRepository.findOne.mockResolvedValueOnce(null); // In catch block - section not found
-
-      // Suppress logger warning for this test
-      jest.spyOn(Logger.prototype, 'warn').mockImplementation();
-
-      // Act & Assert - Should throw the original error
-      await expect(
-        service.generateSection(
-          mockEtpId,
-          generateDto,
-          mockUserId,
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow('duplicate key value violates unique constraint');
-    });
-
-    it('should throw non-unique-violation errors normally', async () => {
-      // Arrange
-      mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-      mockSectionsRepository.findOne.mockResolvedValue(null);
-      mockSectionsRepository.create.mockReturnValue({
-        ...mockSection,
-        status: SectionStatus.GENERATING,
-      });
-      // Mock QueryRunner for transaction-based getNextOrder
-      mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
-
-      // Different error (not unique violation)
-      const connectionError = new Error('Connection refused');
-      (connectionError as any).code = 'ECONNREFUSED';
-      mockSectionsRepository.save.mockRejectedValueOnce(connectionError);
-
-      // Act & Assert
-      await expect(
-        service.generateSection(
-          mockEtpId,
-          generateDto,
-          mockUserId,
-          mockOrganizationId,
-        ),
-      ).rejects.toThrow('Connection refused');
     });
   });
 
@@ -858,7 +716,7 @@ describe('SectionsService', () => {
 
   /**
    * Tests for update()
-   * Validates manual section updates with ACID transactions (Issue #1064)
+   * Validates manual section updates
    */
   describe('update', () => {
     const updateDto = {
@@ -867,30 +725,11 @@ describe('SectionsService', () => {
       status: SectionStatus.APPROVED,
     };
 
-    beforeEach(() => {
-      // Reset queryRunner mocks
-      mockQueryRunner.connect.mockResolvedValue(undefined);
-      mockQueryRunner.startTransaction.mockResolvedValue(undefined);
-      mockQueryRunner.commitTransaction.mockResolvedValue(undefined);
-      mockQueryRunner.rollbackTransaction.mockResolvedValue(undefined);
-      mockQueryRunner.release.mockResolvedValue(undefined);
-      mockQueryRunner.manager.save.mockReset();
-      mockQueryRunner.manager.update.mockReset();
-      mockQueryBuilder.getOne.mockReset();
-      mockQueryBuilder.setLock.mockClear();
-    });
-
-    it('should update section successfully within transaction', async () => {
+    it('should update section successfully', async () => {
       // Arrange
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
       const updatedSection = { ...mockSection, ...updateDto };
-      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
-
-      const mockEtpWithSections = {
-        ...mockEtp,
-        sections: [{ ...mockSection, status: SectionStatus.APPROVED }],
-      };
-      mockQueryBuilder.getOne.mockResolvedValue(mockEtpWithSections);
+      mockSectionsRepository.save.mockResolvedValue(updatedSection);
 
       // Act
       const result = await service.update(
@@ -899,30 +738,20 @@ describe('SectionsService', () => {
         mockOrganizationId,
       );
 
-      // Assert - Verify transaction lifecycle
-      expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
-      expect(mockQueryRunner.connect).toHaveBeenCalled();
-      expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
-      expect(mockQueryRunner.manager.save).toHaveBeenCalled();
-      expect(mockQueryRunner.manager.update).toHaveBeenCalled();
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-      expect(mockQueryRunner.release).toHaveBeenCalled();
+      // Assert
+      expect(mockSectionsRepository.findOne).toHaveBeenCalled();
+      expect(mockSectionsRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: updateDto.title,
+          content: updateDto.content,
+          status: updateDto.status,
+        }),
+      );
+      expect(mockEtpsService.updateCompletionPercentage).toHaveBeenCalledWith(
+        mockSection.etpId,
+        mockOrganizationId,
+      );
       expect(result.title).toBe(updateDto.title);
-    });
-
-    it('should rollback transaction on error', async () => {
-      // Arrange
-      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockQueryRunner.manager.save.mockRejectedValue(new Error('DB Error'));
-
-      // Act & Assert
-      await expect(
-        service.update(mockSectionId, updateDto, mockOrganizationId),
-      ).rejects.toThrow('DB Error');
-
-      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-      expect(mockQueryRunner.release).toHaveBeenCalled();
-      expect(mockQueryRunner.commitTransaction).not.toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when section does not exist', async () => {
@@ -935,16 +764,12 @@ describe('SectionsService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should allow partial updates within transaction', async () => {
+    it('should allow partial updates', async () => {
       // Arrange
       const partialUpdateDto = { title: 'Novo título apenas' };
       mockSectionsRepository.findOne.mockResolvedValue(mockSection);
       const updatedSection = { ...mockSection, ...partialUpdateDto };
-      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
-      mockQueryBuilder.getOne.mockResolvedValue({
-        ...mockEtp,
-        sections: [mockSection],
-      });
+      mockSectionsRepository.save.mockResolvedValue(updatedSection);
 
       // Act
       const result = await service.update(
@@ -955,81 +780,7 @@ describe('SectionsService', () => {
 
       // Assert
       expect(result.title).toBe('Novo título apenas');
-      expect(result.content).toBe(mockSection.content);
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-    });
-
-    it('should calculate correct completion percentage for approved sections', async () => {
-      // Arrange
-      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      const updatedSection = { ...mockSection, status: SectionStatus.APPROVED };
-      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
-
-      // ETP with 2 sections, 1 approved after update
-      const mockEtpWith2Sections = {
-        ...mockEtp,
-        sections: [
-          { ...mockSection, status: SectionStatus.APPROVED },
-          { ...mockSection, id: 'section-2', status: SectionStatus.GENERATED },
-        ],
-      };
-      mockQueryBuilder.getOne.mockResolvedValue(mockEtpWith2Sections);
-
-      // Act
-      await service.update(
-        mockSectionId,
-        { status: SectionStatus.APPROVED },
-        mockOrganizationId,
-      );
-
-      // Assert - Should calculate 50% (1/2 sections approved)
-      expect(mockQueryRunner.manager.update).toHaveBeenCalledWith(
-        Etp,
-        mockSection.etpId,
-        { completionPercentage: 50 },
-      );
-    });
-
-    it('should handle ETP not found gracefully within transaction', async () => {
-      // Arrange
-      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      const updatedSection = { ...mockSection, ...updateDto };
-      mockQueryRunner.manager.save.mockResolvedValue(updatedSection);
-      mockQueryBuilder.getOne.mockResolvedValue(null);
-
-      // Act
-      const result = await service.update(
-        mockSectionId,
-        updateDto,
-        mockOrganizationId,
-      );
-
-      // Assert - Should complete without updating ETP
-      expect(mockQueryRunner.manager.update).not.toHaveBeenCalled();
-      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-      expect(result.title).toBe(updateDto.title);
-    });
-
-    it('should use pessimistic write lock for ETP query', async () => {
-      // Arrange
-      mockSectionsRepository.findOne.mockResolvedValue(mockSection);
-      mockQueryRunner.manager.save.mockResolvedValue({
-        ...mockSection,
-        ...updateDto,
-      });
-      mockQueryBuilder.getOne.mockResolvedValue({
-        ...mockEtp,
-        sections: [mockSection],
-      });
-
-      // Act
-      await service.update(mockSectionId, updateDto, mockOrganizationId);
-
-      // Assert - Verify pessimistic lock was requested
-      expect(mockQueryRunner.manager.createQueryBuilder).toHaveBeenCalled();
-      expect(mockQueryBuilder.setLock).toHaveBeenCalledWith(
-        'pessimistic_write',
-      );
+      expect(result.content).toBe(mockSection.content); // Content unchanged
     });
   });
 
@@ -1280,12 +1031,8 @@ describe('SectionsService', () => {
    * Validates utility functions
    */
   describe('private helper methods', () => {
-    /**
-     * Tests for getNextOrder with transaction-based locking
-     * @see #1065 - Fix race condition in getNextOrder
-     */
     describe('getNextOrder', () => {
-      it('should return 1 for first section in ETP using transactional lock', async () => {
+      it('should return 1 for first section in ETP', async () => {
         // Arrange
         mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
         mockSectionsRepository.findOne.mockResolvedValue(null);
@@ -1296,8 +1043,9 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        // Mock QueryRunner for transaction-based getNextOrder
-        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: null });
+        mockSectionsRepository
+          .createQueryBuilder()
+          .getRawOne.mockResolvedValue({ maxOrder: null });
 
         // Act
         const generateDto = {
@@ -1312,112 +1060,11 @@ describe('SectionsService', () => {
           mockOrganizationId,
         );
 
-        // Assert - verify transaction lifecycle
-        expect(mockDataSource.createQueryRunner).toHaveBeenCalled();
-        expect(mockQueryRunner.connect).toHaveBeenCalled();
-        expect(mockQueryRunner.startTransaction).toHaveBeenCalledWith(
-          'SERIALIZABLE',
-        );
-        expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-        expect(mockQueryRunner.release).toHaveBeenCalled();
-
-        // Assert - verify order is 1
+        // Assert
         expect(mockSectionsRepository.create).toHaveBeenCalledWith(
           expect.objectContaining({
             order: 1,
           }),
-        );
-      });
-
-      it('should return maxOrder + 1 for subsequent sections', async () => {
-        // Arrange
-        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-        mockSectionsRepository.findOne.mockResolvedValue(null);
-        mockSectionsRepository.create.mockReturnValue(mockSection);
-        mockSectionsRepository.save.mockResolvedValue(mockSection);
-        mockOrchestratorService.generateSection.mockResolvedValue(
-          mockGenerationResult,
-        );
-        // Mock existing sections with maxOrder = 5
-        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 5 });
-
-        // Act
-        const generateDto = {
-          type: SectionType.JUSTIFICATIVA,
-          title: 'Test',
-          userInput: 'Test',
-        };
-        await service.generateSection(
-          mockEtpId,
-          generateDto,
-          mockUserId,
-          mockOrganizationId,
-        );
-
-        // Assert - verify order is 6
-        expect(mockSectionsRepository.create).toHaveBeenCalledWith(
-          expect.objectContaining({
-            order: 6,
-          }),
-        );
-      });
-
-      it('should rollback transaction on error', async () => {
-        // Arrange
-        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-        mockSectionsRepository.findOne.mockResolvedValue(null);
-        // Mock QueryRunner to throw error
-        const dbError = new Error('Database connection lost');
-        mockQueryBuilder.getRawOne.mockRejectedValue(dbError);
-
-        // Act & Assert
-        const generateDto = {
-          type: SectionType.JUSTIFICATIVA,
-          title: 'Test',
-          userInput: 'Test',
-        };
-        await expect(
-          service.generateSection(
-            mockEtpId,
-            generateDto,
-            mockUserId,
-            mockOrganizationId,
-          ),
-        ).rejects.toThrow('Database connection lost');
-
-        // Verify rollback was called
-        expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-        expect(mockQueryRunner.release).toHaveBeenCalled();
-      });
-
-      it('should use pessimistic_write lock to prevent race conditions', async () => {
-        // Arrange
-        mockEtpsService.findOneMinimal.mockResolvedValue(mockEtp);
-        mockSectionsRepository.findOne.mockResolvedValue(null);
-        mockSectionsRepository.create.mockReturnValue(mockSection);
-        mockSectionsRepository.save.mockResolvedValue(mockSection);
-        mockOrchestratorService.generateSection.mockResolvedValue(
-          mockGenerationResult,
-        );
-
-        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 2 });
-
-        // Act
-        const generateDto = {
-          type: SectionType.JUSTIFICATIVA,
-          title: 'Test',
-          userInput: 'Test',
-        };
-        await service.generateSection(
-          mockEtpId,
-          generateDto,
-          mockUserId,
-          mockOrganizationId,
-        );
-
-        // Assert - verify pessimistic_write lock was used
-        expect(mockQueryBuilder.setLock).toHaveBeenCalledWith(
-          'pessimistic_write',
         );
       });
     });
@@ -1445,8 +1092,9 @@ describe('SectionsService', () => {
           mockOrchestratorService.generateSection.mockResolvedValue(
             mockGenerationResult,
           );
-          // Mock QueryRunner for transaction-based getNextOrder
-          mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+          mockSectionsRepository
+            .createQueryBuilder()
+            .getRawOne.mockResolvedValue({ maxOrder: 0 });
 
           await service.generateSection(
             mockEtpId,
@@ -1478,8 +1126,9 @@ describe('SectionsService', () => {
         mockOrchestratorService.generateSection.mockResolvedValue(
           mockGenerationResult,
         );
-        // Mock QueryRunner for transaction-based getNextOrder
-        mockQueryBuilder.getRawOne.mockResolvedValue({ maxOrder: 0 });
+        mockSectionsRepository
+          .createQueryBuilder()
+          .getRawOne.mockResolvedValue({ maxOrder: 0 });
 
         await service.generateSection(
           mockEtpId,

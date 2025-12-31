@@ -16,8 +16,6 @@ paths = [
   '''backend/\.env\.example$''',
   '''frontend/\.env\.example$''',
   '''\.env\.template$''',
-  # CI/CD workflow files contain test-only secrets (clearly labeled, non-production)
-  '''\.github/workflows/.*\.yml$''',
 ]
 
 # Rule-specific allowlists for false positives

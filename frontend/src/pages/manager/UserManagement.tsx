@@ -89,7 +89,7 @@ export function UserManagement() {
   useEffect(() => {
     if (error) {
       toast({
-        title: 'Erro',
+        title: 'Error',
         description: error,
         variant: 'destructive',
       });
@@ -116,9 +116,9 @@ export function UserManagement() {
     try {
       await createUser(data);
       toast({
-        title: 'Sucesso',
+        title: 'Success',
         description:
-          'Usuário criado com sucesso. Ele receberá um e-mail com instruções de login.',
+          'User created successfully. They will receive an email with login instructions.',
       });
     } catch {
       // Error already handled by store
@@ -134,8 +134,8 @@ export function UserManagement() {
     try {
       await updateUser(id, data);
       toast({
-        title: 'Sucesso',
-        description: 'Usuário atualizado com sucesso.',
+        title: 'Success',
+        description: 'User updated successfully.',
       });
     } catch {
       // Error already handled by store
@@ -191,8 +191,8 @@ export function UserManagement() {
     try {
       await updateUser(id, { isActive });
       toast({
-        title: 'Sucesso',
-        description: `Usuário ${isActive ? 'ativado' : 'desativado'} com sucesso.`,
+        title: 'Success',
+        description: `User ${isActive ? 'activated' : 'deactivated'} successfully.`,
       });
     } catch {
       // Error already handled by store
@@ -203,9 +203,9 @@ export function UserManagement() {
     try {
       await resetUserPassword(id);
       toast({
-        title: 'Sucesso',
+        title: 'Success',
         description:
-          'Senha redefinida com sucesso. O usuário receberá um e-mail com instruções.',
+          'Password reset successfully. The user will receive an email with instructions.',
       });
     } catch {
       // Error already handled by store
@@ -229,10 +229,10 @@ export function UserManagement() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Gerenciamento de Usuários
+              User Management
             </h1>
             <p className="text-sm text-muted-foreground sm:text-base">
-              Gerencie os usuários do seu domínio
+              Manage users in your domain
             </p>
           </div>
           <Button
@@ -241,7 +241,7 @@ export function UserManagement() {
             className="w-full sm:w-auto"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Novo Usuário
+            New User
           </Button>
         </div>
 
@@ -250,9 +250,9 @@ export function UserManagement() {
           {/* Quota Card */}
           <Card className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Cota de Usuários</CardTitle>
+              <CardTitle className="text-base">User Quota</CardTitle>
               <CardDescription className="text-xs">
-                Capacidade do domínio
+                Domain capacity
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center py-4">
@@ -265,20 +265,20 @@ export function UserManagement() {
             <CardHeader className="pb-2">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <CardTitle className="text-base">Usuários</CardTitle>
+                  <CardTitle className="text-base">Users</CardTitle>
                   <CardDescription className="text-xs">
-                    {filteredUsers.length} de {users.length} usuários
-                    {searchQuery && ' (filtrado)'}
+                    {filteredUsers.length} of {users.length} users
+                    {searchQuery && ' (filtered)'}
                   </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar por nome, e-mail ou cargo..."
+                    placeholder="Search by name, email, or role..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9 pr-9"
-                    aria-label="Buscar usuários"
+                    aria-label="Search users"
                   />
                   {searchQuery && (
                     <Button
@@ -286,7 +286,7 @@ export function UserManagement() {
                       size="icon"
                       className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
                       onClick={() => setSearchQuery('')}
-                      aria-label="Limpar busca"
+                      aria-label="Clear search"
                     >
                       <X className="h-3 w-3" />
                     </Button>

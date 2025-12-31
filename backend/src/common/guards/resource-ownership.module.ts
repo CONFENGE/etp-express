@@ -32,10 +32,6 @@ import { EtpVersion } from '../../entities/etp-version.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Etp, EtpSection, EtpVersion])],
   providers: [ResourceOwnershipGuard],
-  exports: [
-    ResourceOwnershipGuard,
-    // Export TypeOrmModule to make repositories available to importing modules
-    TypeOrmModule,
-  ],
+  exports: [ResourceOwnershipGuard],
 })
 export class ResourceOwnershipModule {}

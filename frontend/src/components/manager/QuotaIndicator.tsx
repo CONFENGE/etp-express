@@ -88,7 +88,7 @@ export function QuotaIndicator({
         >
           <span className="text-muted-foreground">--</span>
         </div>
-        {showText && <p className="text-sm text-muted-foreground">Sem dados</p>}
+        {showText && <p className="text-sm text-muted-foreground">No data</p>}
       </div>
     );
   }
@@ -153,11 +153,11 @@ export function QuotaIndicator({
       {showText && (
         <div className="text-center">
           <p className={cn('font-medium', getColor(percentUsed))}>
-            {percentUsed.toFixed(0)}% utilizado
+            {percentUsed.toFixed(0)}% used
           </p>
           <p className="text-sm text-muted-foreground">
-            {quota.available} {quota.available === 1 ? 'vaga' : 'vagas'}{' '}
-            {quota.available === 1 ? 'disponível' : 'disponíveis'}
+            {quota.available} {quota.available === 1 ? 'slot' : 'slots'}{' '}
+            available
           </p>
         </div>
       )}

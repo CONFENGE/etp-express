@@ -1,66 +1,44 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-30 | **Progresso:** 559/581 (96.2%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-27 | **Progresso:** 509/518 (98%) | **Deploy:** LIVE
 
 ---
 
 ## Ultimos Merges
 
-| PR    | Commit    | Descricao                                                               |
-| ----- | --------- | ----------------------------------------------------------------------- |
-| #1089 | `cd0ec27` | fix(sections): race condition in getNextOrder with SERIALIZABLE (#1065) |
-| #1097 | `8a7112c` | fix(backend): resolve Playwright test failures (#1097)                  |
-| #1094 | `4020ae2` | fix(e2e): support CI environment variables in seed-admin script (#1090) |
-| #1086 | `4d59021` | fix(ci): Playwright E2E timeout - chromium-only for PRs, 2 workers      |
-| #1084 | `12bd78f` | feat(editor): integrate SimilarContractsPanel into ETPEditor (#1048)    |
-| #1082 | `c26fe11` | fix(gov-api): complete Zod schema validation (#1054)                    |
-| #1081 | `ce6d910` | fix(ai): improve AI section generation error handling (#1047)           |
+| PR   | Commit    | Descricao                                          |
+| ---- | --------- | -------------------------------------------------- |
+| #996 | `2cc3866` | security(users): fix IDOR PATCH /users/:id (#991)  |
+| #995 | `f526754` | security(users): fix IDOR GET /users (Closes #990) |
+| #994 | `77b2e71` | security(export): fix IDOR export endpoints (#988) |
 
 ---
 
-## Issues Abertas (22)
+## Issues Abertas (9)
 
-### P0 - Critica (1 issue)
+### P0 - Security/Blockers (3 issues)
 
-| #     | Issue                                             |
-| ----- | ------------------------------------------------- |
-| #1103 | tracking: E2E Playwright test failures (69 tests) |
+| #    | Issue                                                              |
+| ---- | ------------------------------------------------------------------ |
+| #989 | [BLOCKER] Versions: IDOR permite manipular versoes de qualquer ETP |
+| #992 | [HIGH] Sections SSE: Streaming sem validacao de ownership          |
+| #993 | [HIGH] Users: GET /users/:id expoe dados de qualquer usuario       |
 
-### P1 - Alta (16 issues)
+### P1 - Bugs/Tests (3 issues)
 
-| #     | Issue                                                                 |
-| ----- | --------------------------------------------------------------------- |
-| #1102 | fix(e2e): Manager module tests failing (dashboard, users)             |
-| #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                     |
-| #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)            |
-| #1099 | fix(e2e): Auth module tests failing (logout, password-reset, role)    |
-| #1098 | fix(e2e): Admin module tests failing (audit, dashboard, domains)      |
-| #1088 | [E2E] Fix 92 Playwright test failures in CI                           |
-| #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled          |
-| #1062 | [Gov-API] Implementar carregamento automatico de dados SINAPI/SICRO   |
-| #1063 | [Gov-API] Diferenciar sem resultados de erro de servico               |
-| #1064 | [Concorrencia] Usar transacao em update de status de secao            |
-| #1066 | [Frontend] Remover global AbortController para evitar cancelamento    |
-| #1067 | [Gov-API] Implementar alerting automatico para circuit breaker        |
-| #1068 | [Gov-API] Otimizar configuracao de retry para janelas de manutencao   |
-| #1073 | [QA] Criar testes de integracao com APIs governamentais reais         |
-| #1074 | [QA] Implementar chaos engineering (Redis down, API timeout, payload) |
-| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas         |
+| #    | Issue                                                                 |
+| ---- | --------------------------------------------------------------------- |
+| #985 | fix(frontend): Loading infinito 'Carregando ETP...' ao criar ETP      |
+| #986 | fix(frontend): Tarja superior sobrepoe primeiro botao do menu lateral |
+| #956 | test(e2e): Export DOCX complete flow                                  |
 
-### P2 - Media (4 issues)
+### P2 - Melhorias (3 issues)
 
-| #     | Issue                                                                 |
-| ----- | --------------------------------------------------------------------- |
-| #1069 | [Gov-API] Implementar invalidacao de cache baseada em eventos         |
-| #1070 | [Observabilidade] Enriquecer contexto em erros de document extraction |
-| #1071 | [Observabilidade] Garantir requestId em todos os logs de gov-api      |
-| #1072 | [Observabilidade] Adicionar retry automatico para emails com backoff  |
-
-### P3 - Baixa (1 issue)
-
-| #     | Issue                                          |
-| ----- | ---------------------------------------------- |
-| #1045 | docs(readme): Update coverage badges and dates |
+| #    | Issue                                                                   |
+| ---- | ----------------------------------------------------------------------- |
+| #962 | docs: Comprehensive authentication flow                                 |
+| #963 | ci: Add auth E2E tests to CI pipeline                                   |
+| #987 | feat(frontend): Exibir menu de administracao para usuarios SYSTEM_ADMIN |
 
 ---
 
@@ -85,15 +63,15 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 581   |
-| Issues Abertas    | 22    |
-| Issues Fechadas   | 559   |
-| Progresso         | 96.2% |
+| Issues Totais     | 518   |
+| Issues Abertas    | 9     |
+| Issues Fechadas   | 509   |
+| Progresso         | 98%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2192  |
-| Frontend Tests    | 1412  |
-| Total Tests       | 3604  |
+| Backend Tests     | 2109  |
+| Frontend Tests    | 1368  |
+| Total Tests       | 3477  |
 
 ---
 

@@ -10,7 +10,6 @@ import {
   GenerationStatus,
   AsyncSection,
   DataSourceStatusInfo,
-  SimilarContract,
 } from '@/types/etp';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
@@ -39,10 +38,6 @@ interface ETFState {
 
   // Data source status for government APIs (#756)
   dataSourceStatus: DataSourceStatusInfo | null;
-
-  // Similar contracts state (#1048)
-  similarContracts: SimilarContract[];
-  similarContractsLoading: boolean;
 
   // ETP Operations
   fetchETPs: () => Promise<void>;
@@ -80,10 +75,6 @@ interface ETFState {
   fetchReferences: (etpId: string) => Promise<void>;
   addReference: (reference: Reference) => void;
 
-  // Similar contracts (#1048)
-  fetchSimilarContracts: (query: string) => Promise<void>;
-  clearSimilarContracts: () => void;
-
   // Utility
   clearError: () => void;
   resetStore: () => void;
@@ -106,9 +97,6 @@ const initialState = {
   generationJobId: null as string | null,
   // Data source status for government APIs (#756)
   dataSourceStatus: null as DataSourceStatusInfo | null,
-  // Similar contracts state (#1048)
-  similarContracts: [] as SimilarContract[],
-  similarContractsLoading: false,
 };
 
 /**
@@ -168,42 +156,16 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     }
   },
 
-  /**
-   * Updates an ETP with optimistic locking support (Issue #1059).
-   * Sends the current version to prevent silent data loss from concurrent updates.
-   * If version conflict (409), displays user-friendly error message.
-   */
   updateETP: async (id: string, data: Partial<ETP>) => {
     set({ isLoading: true, error: null });
     try {
-      // Include version from current ETP state for optimistic locking (#1059)
-      const state = useETPStore.getState();
-      const currentVersion =
-        state.currentETP?.id === id ? state.currentETP.version : undefined;
-      const dataWithVersion =
-        currentVersion !== undefined
-          ? { ...data, version: currentVersion }
-          : data;
-
-      const updated = await apiHelpers.patch<ETP>(
-        `/etps/${id}`,
-        dataWithVersion,
-      );
+      const updated = await apiHelpers.put<ETP>(`/etps/${id}`, data);
       set((state) => ({
         etps: state.etps.map((etp) => (etp.id === id ? updated : etp)),
         currentETP: state.currentETP?.id === id ? updated : state.currentETP,
         isLoading: false,
       }));
     } catch (error) {
-      // Handle version conflict specially (Issue #1059)
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
-        set({
-          error:
-            'Este ETP foi modificado por outro usuário. Recarregue a página para ver as alterações mais recentes.',
-          isLoading: false,
-        });
-        throw error;
-      }
       set({
         error: getContextualErrorMessage('atualizar', 'o ETP', error),
         isLoading: false,
@@ -233,20 +195,16 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   setCurrentETP: (etp: ETP | null) => set({ currentETP: etp }),
 
   updateSection: async (
-    _etpId: string,
+    etpId: string,
     sectionId: string,
     data: Partial<Section>,
   ) => {
     set({ isLoading: true, error: null });
     try {
-      // Use PATCH /sections/:id endpoint (not PUT /etps/:id/sections/:id)
-      // Backend sections.controller.ts line 328 - PATCH /sections/:id
-      const response = await apiHelpers.patch<{ data: Section }>(
-        `/sections/${sectionId}`,
+      const updated = await apiHelpers.put<Section>(
+        `/etps/${etpId}/sections/${sectionId}`,
         data,
       );
-      // Backend wraps response in { data: section, disclaimer: string }
-      const updated = response.data;
 
       set((state) => {
         if (!state.currentETP) return state;
@@ -608,67 +566,6 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     set((state) => ({
       references: [...state.references, reference],
     }));
-  },
-
-  /**
-   * Fetch similar contracts based on query text (#1048)
-   * Uses the /search/similar-contracts endpoint with Exa AI
-   */
-  fetchSimilarContracts: async (query: string) => {
-    if (!query || query.trim().length < 10) {
-      // Don't search for very short queries
-      return;
-    }
-
-    set({ similarContractsLoading: true });
-
-    try {
-      const response = await apiHelpers.get<{
-        data: Array<{
-          id: string;
-          title: string;
-          description?: string;
-          similarity?: number;
-          year?: number;
-          value?: number;
-          organ?: string;
-          orgao?: string;
-          objeto?: string;
-          valorTotal?: number;
-          anoContratacao?: number;
-        }>;
-      }>('/search/similar-contracts', {
-        params: { q: query },
-      });
-
-      // Map backend response to SimilarContract type
-      const contracts: SimilarContract[] = (response.data || []).map(
-        (item) => ({
-          id: item.id,
-          title: item.title || item.objeto || 'Contratação sem título',
-          description: item.description || item.objeto || '',
-          similarity: item.similarity || 0.8,
-          year: item.year || item.anoContratacao || new Date().getFullYear(),
-          value: item.value || item.valorTotal,
-          organ: item.organ || item.orgao,
-        }),
-      );
-
-      set({
-        similarContracts: contracts,
-        similarContractsLoading: false,
-      });
-    } catch (error) {
-      logger.error('Error fetching similar contracts', error);
-      set({
-        similarContracts: [],
-        similarContractsLoading: false,
-      });
-    }
-  },
-
-  clearSimilarContracts: () => {
-    set({ similarContracts: [], similarContractsLoading: false });
   },
 
   clearError: () => set({ error: null }),

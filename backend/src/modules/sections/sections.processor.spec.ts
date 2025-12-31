@@ -142,9 +142,8 @@ describe('SectionsProcessor', () => {
       sectionsRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      // After #1047: User-friendly Portuguese error message
       await expect(processor.process(mockJob)).rejects.toThrow(
-        'O ETP ou secao nao foi encontrado',
+        'Section section-abc not found',
       );
     });
 
@@ -154,9 +153,8 @@ describe('SectionsProcessor', () => {
       etpsService.findOneMinimal.mockResolvedValue(undefined as any);
 
       // Act & Assert
-      // After #1047: User-friendly Portuguese error message
       await expect(processor.process(mockJob)).rejects.toThrow(
-        'O ETP ou secao nao foi encontrado',
+        'ETP etp-123 not found',
       );
     });
 
@@ -240,16 +238,15 @@ describe('SectionsProcessor', () => {
       sectionsRepository.save.mockResolvedValue(mockSection as EtpSection);
 
       // Act & Assert
-      // After #1047: User-friendly Portuguese error message (OpenAI errors mapped to config message)
       await expect(processor.process(mockJob)).rejects.toThrow(
-        'Erro de configuracao do servico de IA',
+        'OpenAI API failure',
       );
 
-      // Verify section was updated with user-friendly error status (#1047)
+      // Verify section was updated with error status
       expect(sectionsRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
           status: SectionStatus.PENDING,
-          content: expect.stringContaining('Erro'),
+          content: 'Erro ao gerar conteúdo: OpenAI API failure',
         }),
       );
     });

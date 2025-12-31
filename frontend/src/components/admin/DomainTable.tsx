@@ -43,11 +43,9 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
   if (domains.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 p-12 text-center">
-        <p className="text-muted-foreground">
-          Nenhum domínio cadastrado ainda.
-        </p>
+        <p className="text-muted-foreground">No domains registered yet.</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Adicione seu primeiro domínio para começar.
+          Add your first domain to get started.
         </p>
       </div>
     );
@@ -60,19 +58,19 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Domínio
+                Domain
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Usuários
+                Users
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Gestor
+                Manager
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                 Status
               </th>
               <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
-                Ações
+                Actions
               </th>
             </tr>
           </thead>
@@ -91,13 +89,13 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
                 <td className="px-6 py-4 text-muted-foreground">
                   {domain.managerName || (
                     <span className="italic text-muted-foreground/60">
-                      Não atribuído
+                      Not assigned
                     </span>
                   )}
                 </td>
                 <td className="px-6 py-4">
                   <Badge variant={domain.isActive ? 'success' : 'secondary'}>
-                    {domain.isActive ? 'Ativo' : 'Inativo'}
+                    {domain.isActive ? 'Active' : 'Inactive'}
                   </Badge>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -118,7 +116,7 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
                           className="flex items-center"
                         >
                           <Eye className="mr-2 h-4 w-4" />
-                          Ver Detalhes
+                          View Details
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -126,7 +124,7 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
                         onClick={() => handleDeleteClick(domain)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Excluir
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -148,19 +146,19 @@ function DomainTableSkeleton() {
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Domínio
+                Domain
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Usuários
+                Users
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
-                Gestor
+                Manager
               </th>
               <th className="px-6 py-3 text-left text-sm font-medium text-muted-foreground">
                 Status
               </th>
               <th className="px-6 py-3 text-right text-sm font-medium text-muted-foreground">
-                Ações
+                Actions
               </th>
             </tr>
           </thead>

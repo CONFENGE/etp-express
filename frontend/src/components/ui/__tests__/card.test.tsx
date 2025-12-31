@@ -19,8 +19,7 @@ describe('Card', () => {
 
     it('should use Apple-style border radius', () => {
       render(<Card data-testid="card">Content</Card>);
-      // Using rounded-2xl (16px) for borderless Apple-like design (#1013)
-      expect(screen.getByTestId('card')).toHaveClass('rounded-2xl');
+      expect(screen.getByTestId('card')).toHaveClass('rounded-apple-lg');
     });
 
     it('should use surface-primary background', () => {
@@ -28,12 +27,9 @@ describe('Card', () => {
       expect(screen.getByTestId('card')).toHaveClass('bg-surface-primary');
     });
 
-    it('should use Apple-style diffuse shadow (borderless design)', () => {
+    it('should use Apple-style shadow', () => {
       render(<Card data-testid="card">Content</Card>);
-      // Borderless design uses diffuse shadow as visual delimiter (#1013)
-      const card = screen.getByTestId('card');
-      // Check that shadow is applied via inline class
-      expect(card.className).toContain('shadow-');
+      expect(screen.getByTestId('card')).toHaveClass('shadow-apple');
     });
 
     it('should use text-apple-primary for text color', () => {
@@ -58,11 +54,9 @@ describe('Card', () => {
         </Card>,
       );
       const card = screen.getByTestId('interactive-card');
-      // Hover lift effect with subtle translate (#1013)
-      expect(card).toHaveClass('hover:-translate-y-0.5');
+      expect(card).toHaveClass('hover:shadow-apple-lg');
+      expect(card).toHaveClass('hover:-translate-y-1');
       expect(card).toHaveClass('cursor-pointer');
-      // Shadow enhancement on hover (inline class)
-      expect(card.className).toContain('hover:shadow-');
     });
 
     it('should not apply interactive styles when interactive is false', () => {
@@ -178,8 +172,7 @@ describe('Card', () => {
       );
       const card = screen.getByTestId('card');
       expect(card).toHaveClass('custom-class');
-      // Base styles preserved with borderless design (#1013)
-      expect(card).toHaveClass('rounded-2xl');
+      expect(card).toHaveClass('rounded-apple-lg');
     });
 
     it('should merge custom className on subcomponents', () => {

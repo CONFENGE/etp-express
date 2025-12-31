@@ -15,10 +15,10 @@ describe('StatisticsCards', () => {
     it('should render 4 statistics cards', () => {
       render(<StatisticsCards statistics={mockStatistics} loading={false} />);
 
-      expect(screen.getByText('Total de Domínios')).toBeInTheDocument();
-      expect(screen.getByText('Domínios Ativos')).toBeInTheDocument();
-      expect(screen.getByText('Total de Usuários')).toBeInTheDocument();
-      expect(screen.getByText('Usuários Ativos')).toBeInTheDocument();
+      expect(screen.getByText('Total Domains')).toBeInTheDocument();
+      expect(screen.getByText('Active Domains')).toBeInTheDocument();
+      expect(screen.getByText('Total Users')).toBeInTheDocument();
+      expect(screen.getByText('Active Users')).toBeInTheDocument();
     });
 
     it('should display correct statistics values', () => {
@@ -33,10 +33,10 @@ describe('StatisticsCards', () => {
     it('should display card descriptions', () => {
       render(<StatisticsCards statistics={mockStatistics} loading={false} />);
 
-      expect(screen.getByText('Domínios cadastrados')).toBeInTheDocument();
-      expect(screen.getByText('Atualmente ativos')).toBeInTheDocument();
-      expect(screen.getByText('Usuários cadastrados')).toBeInTheDocument();
-      expect(screen.getByText('Ativos este mês')).toBeInTheDocument();
+      expect(screen.getByText('Registered domains')).toBeInTheDocument();
+      expect(screen.getByText('Currently active')).toBeInTheDocument();
+      expect(screen.getByText('Registered users')).toBeInTheDocument();
+      expect(screen.getByText('Active this month')).toBeInTheDocument();
     });
   });
 

@@ -61,10 +61,10 @@ describe('UserTable', () => {
         />,
       );
 
-      expect(screen.getByText('Nome')).toBeInTheDocument();
-      expect(screen.getByText('E-mail')).toBeInTheDocument();
+      expect(screen.getByText('Name')).toBeInTheDocument();
+      expect(screen.getByText('Email')).toBeInTheDocument();
       expect(screen.getByText('Status')).toBeInTheDocument();
-      expect(screen.getByText('Ações')).toBeInTheDocument();
+      expect(screen.getByText('Actions')).toBeInTheDocument();
     });
 
     it('should render user data correctly', () => {
@@ -87,7 +87,7 @@ describe('UserTable', () => {
       expect(screen.getByText('bob@example.com')).toBeInTheDocument();
     });
 
-    it('should show "Não definido" for users without cargo', () => {
+    it('should show "Not set" for users without cargo', () => {
       renderWithRouter(
         <UserTable
           users={mockUsers}
@@ -99,7 +99,7 @@ describe('UserTable', () => {
         />,
       );
 
-      expect(screen.getByText('Não definido')).toBeInTheDocument();
+      expect(screen.getByText('Not set')).toBeInTheDocument();
     });
 
     it('should show correct status badges', () => {
@@ -115,11 +115,11 @@ describe('UserTable', () => {
       );
 
       // Two active users
-      const activeBadges = screen.getAllByText('Ativo');
+      const activeBadges = screen.getAllByText('Active');
       expect(activeBadges.length).toBe(2);
 
       // One inactive user
-      expect(screen.getByText('Inativo')).toBeInTheDocument();
+      expect(screen.getByText('Inactive')).toBeInTheDocument();
     });
 
     it('should show pending setup badge for users who must change password', () => {
@@ -134,7 +134,7 @@ describe('UserTable', () => {
         />,
       );
 
-      expect(screen.getByText('Pendente')).toBeInTheDocument();
+      expect(screen.getByText('Pending setup')).toBeInTheDocument();
     });
 
     it('should display user initials as avatar', () => {
@@ -187,10 +187,10 @@ describe('UserTable', () => {
       );
 
       expect(
-        screen.getByText('Nenhum usuário no seu domínio ainda.'),
+        screen.getByText('No users in your domain yet.'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Adicione seu primeiro usuário para começar.'),
+        screen.getByText('Add your first user to get started.'),
       ).toBeInTheDocument();
     });
   });
