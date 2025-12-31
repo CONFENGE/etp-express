@@ -233,7 +233,11 @@ describe('etpStore', () => {
 
   describe('Teste 2: fetchETP', () => {
     it('should set currentETP on successful fetch', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue(mockETP);
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      vi.mocked(apiHelpers.get).mockResolvedValue({
+        data: mockETP,
+        disclaimer: '',
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -273,7 +277,11 @@ describe('etpStore', () => {
 
   describe('Teste 3: createETP', () => {
     it('should add ETP to array and return ID on successful creation', async () => {
-      vi.mocked(apiHelpers.post).mockResolvedValue(mockETP);
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      vi.mocked(apiHelpers.post).mockResolvedValue({
+        data: mockETP,
+        disclaimer: '',
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -469,7 +477,11 @@ describe('etpStore', () => {
   describe('Additional coverage tests', () => {
     it('should update ETP in array on updateETP', async () => {
       const updatedETP = { ...mockETP, title: 'ETP Atualizado', version: 2 };
-      vi.mocked(apiHelpers.patch).mockResolvedValue(updatedETP);
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      vi.mocked(apiHelpers.patch).mockResolvedValue({
+        data: updatedETP,
+        disclaimer: '',
+      });
 
       const { result } = renderHook(() => useETPStore());
 
