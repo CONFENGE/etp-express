@@ -139,7 +139,11 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   fetchETP: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const etp = await apiHelpers.get<ETP>(`/etps/${id}`);
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      const response = await apiHelpers.get<{ data: ETP; disclaimer: string }>(
+        `/etps/${id}`,
+      );
+      const etp = response.data;
       set({ currentETP: etp, isLoading: false });
     } catch (error) {
       set({
@@ -152,7 +156,12 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   createETP: async (data: Partial<ETP>) => {
     set({ isLoading: true, error: null });
     try {
-      const etp = await apiHelpers.post<ETP>('/etps', data);
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      const response = await apiHelpers.post<{ data: ETP; disclaimer: string }>(
+        '/etps',
+        data,
+      );
+      const etp = response.data;
       set((state) => ({
         etps: [etp, ...state.etps],
         currentETP: etp,
@@ -185,10 +194,12 @@ export const useETPStore = create<ETFState>((set, _get) => ({
           ? { ...data, version: currentVersion }
           : data;
 
-      const updated = await apiHelpers.patch<ETP>(
-        `/etps/${id}`,
-        dataWithVersion,
-      );
+      // Backend wraps response in { data: ETP, disclaimer: string }
+      const response = await apiHelpers.patch<{
+        data: ETP;
+        disclaimer: string;
+      }>(`/etps/${id}`, dataWithVersion);
+      const updated = response.data;
       set((state) => ({
         etps: state.etps.map((etp) => (etp.id === id ? updated : etp)),
         currentETP: state.currentETP?.id === id ? updated : state.currentETP,
