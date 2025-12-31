@@ -1,16 +1,15 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-31 | **Progresso:** 560/587 (95%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-31 | **Progresso:** 561/587 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (27)
+## Issues Abertas (26)
 
-### P0 - Critical (3 issues)
+### P0 - Critical (2 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1112 | fix(frontend): useToast hook causes infinite re-renders          |
 | #1108 | fix(frontend): Maximum update depth exceeded in DomainManagement |
 | #1103 | tracking: E2E Playwright test failures (69 tests)                |
 
@@ -77,9 +76,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 587   |
-| Issues Abertas    | 27    |
-| Issues Fechadas   | 560   |
-| Progresso         | 95%   |
+| Issues Abertas    | 26    |
+| Issues Fechadas   | 561   |
+| Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2109  |
