@@ -11,6 +11,7 @@ import {
   GovApiContract,
   GovApiPriceReference,
 } from '../interfaces/gov-api.interface';
+import { SearchStatus } from '../types/search-result';
 
 describe('GovSearchService', () => {
   let service: GovSearchService;
@@ -682,6 +683,143 @@ describe('GovSearchService', () => {
       expect(result.pncp).toEqual(mockStats);
       expect(result.sinapi).toEqual(mockStats);
       expect(result.sicro).toEqual(mockStats);
+    });
+  });
+
+  describe('individual source timeout (issue #1061)', () => {
+    it('should return partial results when one source throws timeout error', async () => {
+      // Arrange
+      // PNCP responds successfully
+      pncpService.search.mockResolvedValue({
+        data: [mockPncpContract],
+        total: 1,
+        page: 1,
+        perPage: 10,
+        source: 'pncp',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      });
+
+      // Compras.gov.br throws a timeout error (simulating what withTimeout does)
+      comprasGovService.search.mockRejectedValue(
+        new Error('Timeout: Compras.gov.br did not respond within 5000ms'),
+      );
+
+      // Act
+      const result = await service.search('test query', {
+        enableExaFallback: false,
+      });
+
+      // Assert
+      // Should have PNCP results (successful source)
+      expect(result.contracts).toHaveLength(1);
+      expect(result.contracts[0].source).toBe('pncp');
+      // Both sources should still be listed
+      expect(result.sources).toContain('pncp');
+      expect(result.sources).toContain('compras.gov.br');
+      // Should have source status indicating Compras.gov.br failure
+      const comprasGovStatus = result.sourceStatuses.find(
+        (s) => s.name === 'comprasgov',
+      );
+      expect(comprasGovStatus?.status).not.toBe(SearchStatus.SUCCESS);
+      expect(comprasGovStatus?.error).toContain('Timeout');
+    });
+
+    it('should return results from all sources when all respond successfully', async () => {
+      // Arrange
+      comprasGovService.search.mockResolvedValue({
+        data: [mockComprasGovContract],
+        total: 1,
+        page: 1,
+        perPage: 10,
+        source: 'comprasgov',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      });
+
+      pncpService.search.mockResolvedValue({
+        data: [mockPncpContract],
+        total: 1,
+        page: 1,
+        perPage: 10,
+        source: 'pncp',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      });
+
+      // Act
+      const result = await service.search('test query', {
+        enableExaFallback: false,
+      });
+
+      // Assert
+      expect(result.contracts).toHaveLength(2);
+      expect(result.contracts.map((c) => c.source)).toContain('comprasgov');
+      expect(result.contracts.map((c) => c.source)).toContain('pncp');
+      // All sources should show success status
+      result.sourceStatuses.forEach((status) => {
+        expect(status.status).toBe(SearchStatus.SUCCESS);
+      });
+    });
+
+    it('should handle both sources timing out gracefully', async () => {
+      // Arrange
+      comprasGovService.search.mockRejectedValue(
+        new Error('Timeout: Compras.gov.br did not respond within 5000ms'),
+      );
+      pncpService.search.mockRejectedValue(
+        new Error('Timeout: PNCP did not respond within 5000ms'),
+      );
+
+      // Act
+      const result = await service.search('test query', {
+        enableExaFallback: false,
+      });
+
+      // Assert
+      // No contracts since both failed
+      expect(result.contracts).toHaveLength(0);
+      // Both sources should be in the list
+      expect(result.sources).toContain('compras.gov.br');
+      expect(result.sources).toContain('pncp');
+      // Both should have error status
+      result.sourceStatuses.forEach((status) => {
+        expect(status.status).not.toBe(SearchStatus.SUCCESS);
+        expect(status.error).toContain('Timeout');
+      });
+    });
+
+    it('should include timeout info in source status error message', async () => {
+      // Arrange
+      pncpService.search.mockResolvedValue({
+        data: [mockPncpContract],
+        total: 1,
+        page: 1,
+        perPage: 10,
+        source: 'pncp',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      });
+
+      // Simulate the exact error message format from withTimeout
+      comprasGovService.search.mockRejectedValue(
+        new Error('Timeout: Compras.gov.br did not respond within 5000ms'),
+      );
+
+      // Act
+      const result = await service.search('test query', {
+        enableExaFallback: false,
+      });
+
+      // Assert
+      const comprasGovStatus = result.sourceStatuses.find(
+        (s) => s.name === 'comprasgov',
+      );
+      expect(comprasGovStatus?.error).toMatch(/Timeout.*5000ms/);
     });
   });
 });
