@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-31 | **Progresso:** 565/587 (96%) | **Deploy:** LIVE
+**Atualizado:** 2025-12-31 | **Progresso:** 566/587 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (22)
+## Issues Abertas (21)
 
 ### P0 - Critical (1 issue)
 
@@ -12,12 +12,11 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (14 issues)
+### P1 - High Priority (13 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
 | #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
-| #1110 | fix(e2e): Strict mode violations - selectors matching multiple   |
 | #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                |
 | #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
 | #1099 | fix(e2e): Auth module tests failing                              |
@@ -72,8 +71,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 587   |
-| Issues Abertas    | 22    |
-| Issues Fechadas   | 565   |
+| Issues Abertas    | 21    |
+| Issues Fechadas   | 566   |
 | Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
