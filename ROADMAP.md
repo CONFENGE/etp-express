@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2025-12-31 | **Progresso:** 566/587 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-01 | **Progresso:** 568/587 (97%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (21)
+## Issues Abertas (19)
 
 ### P0 - Critical (1 issue)
 
@@ -12,7 +12,7 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (13 issues)
+### P1 - High Priority (12 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -25,7 +25,6 @@
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
 | #1074 | [QA] Implementar chaos engineering                               |
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
-| #1066 | [Frontend] Remover global AbortController                        |
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 | #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled     |
@@ -71,9 +70,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 587   |
-| Issues Abertas    | 21    |
-| Issues Fechadas   | 566   |
-| Progresso         | 96%   |
+| Issues Abertas    | 19    |
+| Issues Fechadas   | 568   |
+| Progresso         | 97%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
