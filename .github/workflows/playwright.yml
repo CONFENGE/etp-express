@@ -26,6 +26,10 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      # Test against Railway production environment
+      E2E_API_URL: https://etp-express-backend-production.up.railway.app/api
+      E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
