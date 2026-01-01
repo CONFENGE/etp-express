@@ -1086,12 +1086,9 @@ describe('etpStore', () => {
         },
       };
 
-      let capturedSignal: AbortSignal | undefined;
-
       vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
       vi.mocked(pollJobStatus).mockImplementation(
-        async (_jobId, _onProgress, options) => {
-          capturedSignal = options?.signal;
+        async (_jobId, _onProgress, _options) => {
           return {
             section: { id: 'section-1', content: 'Generated' },
             dataSourceStatus: undefined,
