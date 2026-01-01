@@ -24,26 +24,8 @@ on:
       - '.github/workflows/playwright.yml'
 jobs:
   test:
-    timeout-minutes: 90
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      # Railway production environment URLs
-      # Note: E2E_API_URL should NOT include /api/v1 - tests add this prefix automatically
-      # The /api/v1 versioning is handled by individual test files (e.g., auth-connectivity.spec.ts)
-      E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
-      E2E_API_URL: https://etp-express-backend-production.up.railway.app
-      # E2E test credentials from GitHub Secrets
-      # IMPORTANT: These users must exist in Railway database. Run seed:admin if missing:
-      #   railway run npm run seed:admin
-      # Expected users: admin@confenge.com.br, manager@confenge.com.br, demoetp@confenge.com.br
-      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
-      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
-      E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL }}
-      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
-      E2E_DEMO_EMAIL: ${{ secrets.E2E_DEMO_EMAIL }}
-      E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD }}
-      # Parallel workers for remote testing (Railway can handle 4 concurrent requests)
-      PLAYWRIGHT_WORKERS: 4
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -67,9 +49,8 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests
-        # Run only chromium in CI to reduce execution time (from ~1600 to ~531 tests)
         # Exclude visual project (runs in dedicated visual-regression.yml workflow)
-        run: npx playwright test --project=chromium
+        run: npx playwright test --project=chromium --project=firefox --project=webkit
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
