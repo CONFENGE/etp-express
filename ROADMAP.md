@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-01 | **Progresso:** 568/587 (97%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-01 | **Progresso:** 568/588 (97%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (19)
+## Issues Abertas (20)
 
 ### P0 - Critical (1 issue)
 
@@ -12,10 +12,11 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (12 issues)
+### P1 - High Priority (13 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1128 | [E2E] Configurar workflow Playwright para testar contra Railway  |
 | #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
 | #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                |
 | #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
@@ -69,8 +70,8 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 587   |
-| Issues Abertas    | 19    |
+| Issues Totais     | 588   |
+| Issues Abertas    | 20    |
 | Issues Fechadas   | 568   |
 | Progresso         | 97%   |
 | Backend Coverage  | 78%   |
