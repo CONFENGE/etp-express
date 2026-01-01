@@ -100,8 +100,21 @@ const initialState = {
 };
 
 /**
- * AbortController for current polling operation (#611)
+ * Map of AbortControllers for parallel polling operations (#1066)
+ * Key: sectionNumber (unique per generation)
  * Stored outside the store to avoid triggering re-renders
+ *
+ * Changed from single global AbortController to Map to support
+ * multiple simultaneous section generations without cross-cancellation.
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/1066
+ */
+const pollingControllers = new Map<number, AbortController>();
+
+/**
+ * @deprecated Use pollingControllers Map instead (#1066)
+ * Kept for backward compatibility with cancelGeneration() which
+ * cancels ALL ongoing generations (e.g., on component unmount)
  */
 let currentPollingController: AbortController | null = null;
 
@@ -231,12 +244,23 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   },
 
   generateSection: async (request: AIGenerationRequest) => {
-    // Cancel any existing polling before starting new one (#611)
-    if (currentPollingController) {
-      currentPollingController.abort();
+    const { sectionNumber } = request;
+
+    // Cancel only the existing polling for THIS section, not others (#1066)
+    // This allows multiple sections to be generated simultaneously
+    const existingController = pollingControllers.get(sectionNumber);
+    if (existingController) {
+      existingController.abort();
+      pollingControllers.delete(sectionNumber);
     }
-    currentPollingController = new AbortController();
-    const { signal } = currentPollingController;
+
+    // Create new controller for this section
+    const controller = new AbortController();
+    pollingControllers.set(sectionNumber, controller);
+    const { signal } = controller;
+
+    // Keep backward compatibility with cancelGeneration() (#611)
+    currentPollingController = controller;
 
     set({
       aiGenerating: true,
@@ -251,8 +275,8 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       const response = await apiHelpers.post<{ data: AsyncSection }>(
         `/sections/etp/${request.etpId}/generate`,
         {
-          type: `section_${request.sectionNumber}`,
-          title: `Seção ${request.sectionNumber}`,
+          type: `section_${sectionNumber}`,
+          title: `Seção ${sectionNumber}`,
           userInput: request.prompt || '',
           context: request.context,
         },
@@ -344,7 +368,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       });
       throw error;
     } finally {
-      // Clean up controller reference (#611)
+      // Clean up controller reference for this section (#1066)
+      pollingControllers.delete(sectionNumber);
+      // Clean up backward-compat reference if it matches (#611)
       if (currentPollingController?.signal === signal) {
         currentPollingController = null;
       }
@@ -352,12 +378,23 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   },
 
   regenerateSection: async (request: AIGenerationRequest) => {
-    // Cancel any existing polling before starting new one (#611)
-    if (currentPollingController) {
-      currentPollingController.abort();
+    const { sectionNumber } = request;
+
+    // Cancel only the existing polling for THIS section, not others (#1066)
+    // This allows multiple sections to be regenerated simultaneously
+    const existingController = pollingControllers.get(sectionNumber);
+    if (existingController) {
+      existingController.abort();
+      pollingControllers.delete(sectionNumber);
     }
-    currentPollingController = new AbortController();
-    const { signal } = currentPollingController;
+
+    // Create new controller for this section
+    const controller = new AbortController();
+    pollingControllers.set(sectionNumber, controller);
+    const { signal } = controller;
+
+    // Keep backward compatibility with cancelGeneration() (#611)
+    currentPollingController = controller;
 
     set({
       aiGenerating: true,
@@ -373,8 +410,8 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       const response = await apiHelpers.post<{ data: AsyncSection }>(
         `/sections/etp/${request.etpId}/generate`,
         {
-          type: `section_${request.sectionNumber}`,
-          title: `Seção ${request.sectionNumber}`,
+          type: `section_${sectionNumber}`,
+          title: `Seção ${sectionNumber}`,
           userInput: request.prompt || '',
           context: { ...request.context, regenerate: true },
         },
@@ -462,7 +499,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       });
       throw error;
     } finally {
-      // Clean up controller reference (#611)
+      // Clean up controller reference for this section (#1066)
+      pollingControllers.delete(sectionNumber);
+      // Clean up backward-compat reference if it matches (#611)
       if (currentPollingController?.signal === signal) {
         currentPollingController = null;
       }
@@ -573,20 +612,31 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   resetStore: () => set(initialState),
 
   /**
-   * Cancel any ongoing AI generation polling (#611)
+   * Cancel ALL ongoing AI generation polling (#611, #1066)
    * Call this from component cleanup (useEffect return)
    * to prevent state updates on unmounted components
+   *
+   * Updated in #1066 to cancel all parallel generations,
+   * not just the last one started.
    */
   cancelGeneration: () => {
+    // Cancel all ongoing generations (#1066)
+    for (const controller of pollingControllers.values()) {
+      controller.abort();
+    }
+    pollingControllers.clear();
+
+    // Also clean up backward-compat reference (#611)
     if (currentPollingController) {
       currentPollingController.abort();
       currentPollingController = null;
-      set({
-        aiGenerating: false,
-        generationProgress: 0,
-        generationStatus: 'idle',
-        generationJobId: null,
-      });
     }
+
+    set({
+      aiGenerating: false,
+      generationProgress: 0,
+      generationStatus: 'idle',
+      generationJobId: null,
+    });
   },
 }));

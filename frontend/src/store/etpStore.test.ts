@@ -787,7 +787,7 @@ describe('etpStore', () => {
   });
 
   describe('cancelGeneration (#611)', () => {
-    it('should do nothing when no polling controller is active', () => {
+    it('should reset state even when no polling controller is active', () => {
       const { result } = renderHook(() => useETPStore());
 
       // Set up generation in progress state (but no real controller)
@@ -803,18 +803,17 @@ describe('etpStore', () => {
       expect(result.current.aiGenerating).toBe(true);
       expect(result.current.generationProgress).toBe(50);
 
-      // Call cancelGeneration - should not change state because
-      // there's no actual polling controller to abort
+      // Call cancelGeneration - should always reset state for consistent UX
+      // Even if no polling controller is active, user expects state to reset
       act(() => {
         result.current.cancelGeneration();
       });
 
-      // State should remain unchanged since cancelGeneration
-      // only acts when there's an active controller
-      expect(result.current.aiGenerating).toBe(true);
-      expect(result.current.generationProgress).toBe(50);
-      expect(result.current.generationStatus).toBe('generating');
-      expect(result.current.generationJobId).toBe('job-123');
+      // State should be reset to idle (#1066 behavior change)
+      expect(result.current.aiGenerating).toBe(false);
+      expect(result.current.generationProgress).toBe(0);
+      expect(result.current.generationStatus).toBe('idle');
+      expect(result.current.generationJobId).toBeNull();
     });
 
     it('should do nothing when no generation is in progress', () => {
@@ -949,6 +948,173 @@ describe('etpStore', () => {
 
       // Error state should NOT be set for aborted requests
       expect(result.current.error).toBeNull();
+    });
+  });
+
+  describe('Parallel generation support (#1066)', () => {
+    it('should use separate AbortControllers for different sections', async () => {
+      const { pollJobStatus } = await import('@/lib/polling');
+
+      // Mock async responses for two sections
+      const mockAsyncResponse1 = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-section-1' },
+        },
+      };
+
+      const mockAsyncResponse2 = {
+        data: {
+          id: 'section-2',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-section-2' },
+        },
+      };
+
+      // Capture signals to verify different controllers
+      const capturedSignals: AbortSignal[] = [];
+
+      vi.mocked(pollJobStatus).mockImplementation(
+        async (_jobId, _onProgress, options) => {
+          if (options?.signal) {
+            capturedSignals.push(options.signal);
+          }
+          return {
+            section: { id: 'section-1', content: 'Generated' },
+            dataSourceStatus: undefined,
+          };
+        },
+      );
+
+      vi.mocked(apiHelpers.post)
+        .mockResolvedValueOnce(mockAsyncResponse1)
+        .mockResolvedValueOnce(mockAsyncResponse2);
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Generate section 1
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Generate section 2
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 2,
+        });
+      });
+
+      // Two different signals should have been used
+      expect(capturedSignals).toHaveLength(2);
+      // Neither should be aborted (different sections don't cancel each other)
+      expect(capturedSignals[0].aborted).toBe(false);
+      expect(capturedSignals[1].aborted).toBe(false);
+    });
+
+    it('should not cross-cancel when generating different sections sequentially', async () => {
+      const { pollJobStatus } = await import('@/lib/polling');
+
+      // Mock async responses
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-123' },
+        },
+      };
+
+      // Capture all signals to verify they're different
+      const signals: AbortSignal[] = [];
+
+      vi.mocked(pollJobStatus).mockImplementation(
+        async (_jobId, _onProgress, options) => {
+          if (options?.signal) {
+            signals.push(options.signal);
+          }
+          return {
+            section: { id: 'section-1', content: 'Generated' },
+            dataSourceStatus: undefined,
+          };
+        },
+      );
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Generate section 1
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Generate section 2 (different section - should NOT abort section 1)
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 2,
+        });
+      });
+
+      // Both signals should exist and neither should be aborted
+      // (since they're different sections with different controllers)
+      expect(signals).toHaveLength(2);
+      expect(signals[0].aborted).toBe(false);
+      expect(signals[1].aborted).toBe(false);
+    });
+
+    it('should cancel all generations when cancelGeneration is called', async () => {
+      const { pollJobStatus } = await import('@/lib/polling');
+
+      // Mock response
+      const mockAsyncResponse = {
+        data: {
+          id: 'section-1',
+          etpId: 'etp-1',
+          content: '',
+          metadata: { jobId: 'job-1' },
+        },
+      };
+
+      vi.mocked(apiHelpers.post).mockResolvedValue(mockAsyncResponse);
+      vi.mocked(pollJobStatus).mockImplementation(
+        async (_jobId, _onProgress, _options) => {
+          return {
+            section: { id: 'section-1', content: 'Generated' },
+            dataSourceStatus: undefined,
+          };
+        },
+      );
+
+      const { result } = renderHook(() => useETPStore());
+
+      // Generate a section
+      await act(async () => {
+        await result.current.generateSection({
+          etpId: 'etp-1',
+          sectionNumber: 1,
+        });
+      });
+
+      // Cancel all generations
+      act(() => {
+        result.current.cancelGeneration();
+      });
+
+      // State should be reset
+      expect(result.current.aiGenerating).toBe(false);
+      expect(result.current.generationProgress).toBe(0);
+      expect(result.current.generationStatus).toBe('idle');
     });
   });
 });
