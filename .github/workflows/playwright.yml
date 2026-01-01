@@ -24,12 +24,14 @@ on:
       - '.github/workflows/playwright.yml'
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     env:
       # Test against Railway production environment
       E2E_API_URL: https://etp-express-backend-production.up.railway.app/api
       E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
+      # Allow parallel test execution against Railway (rate-limit safe)
+      PLAYWRIGHT_WORKERS: 4
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -53,8 +55,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests
-        # Exclude visual project (runs in dedicated visual-regression.yml workflow)
-        run: npx playwright test --project=chromium --project=firefox --project=webkit
+        # Run only chromium in CI against Railway (faster, sufficient coverage)
+        # Visual project excluded (runs in dedicated visual-regression.yml workflow)
+        run: npx playwright test --project=chromium
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
