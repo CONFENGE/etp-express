@@ -26,6 +26,17 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      # Railway production URLs for E2E testing
+      E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
+      E2E_API_URL: https://etp-express-backend-production.up.railway.app
+      # Test credentials from GitHub Secrets
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      E2E_DEMO_EMAIL: ${{ secrets.E2E_DEMO_EMAIL }}
+      E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD }}
+      E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL }}
+      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
