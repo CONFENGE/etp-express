@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-02 | **Progresso:** 575/597 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-02 | **Progresso:** 575/609 (94%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (22)
+## Issues Abertas (34)
 
 ### P0 - Critical (1 issue)
 
@@ -12,10 +12,15 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (10 issues)
+### P1 - High Priority (15 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1162 | [UX] Implementar UI de historico de versoes                      |
+| #1161 | [Templates] Criar modelos pre-configurados por tipo              |
+| #1160 | [Riscos] Implementar analise de riscos parametrizada             |
+| #1159 | [Precos] Implementar calculo de media entre fontes               |
+| #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
 | #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
 | #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
@@ -28,10 +33,14 @@
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (10 issues)
+### P2 - Medium Priority (14 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1166 | [Precos] Ajustar schedule para atualizacao semanal               |
+| #1165 | [Precos] Persistir historico SINAPI/SICRO em banco de dados      |
+| #1164 | [Dashboard] Adicionar metricas avancadas                         |
+| #1163 | [Conformidade] Adicionar templates baseados em modelos TCU/TCES  |
 | #1136 | [E2E] Fix API connectivity tests for Railway environment         |
 | #1135 | [E2E] Fix Auth/Role access tests for Railway environment         |
 | #1134 | [E2E] Fix Export (PDF/DOCX) tests for Railway environment        |
@@ -44,18 +53,22 @@
 | #1068 | [Gov-API] Otimizar configuracao de retry para janelas manutencao |
 | #1067 | [Gov-API] Implementar alerting automatico para circuit breaker   |
 
-### P3 - Low Priority (1 issue)
+### P3 - Low Priority (4 issues)
 
 | #     | Issue                                          |
 | ----- | ---------------------------------------------- |
+| #1169 | [UX] Implementar auto-save durante edicao      |
+| #1168 | [Export] Integrar armazenamento em nuvem (S3)  |
+| #1167 | [Assistente] Implementar chatbot para duvidas  |
 | #1045 | docs(readme): Update coverage badges and dates |
 
 ---
 
-## Milestones (100% Complete)
+## Milestones
 
 | Milestone              | Issues |
 | ---------------------- | ------ |
+| MVP Comercial          | 0/12   |
 | M1: Foundation         | 36/36  |
 | M2: CI/CD Pipeline     | 18/18  |
 | M3: Quality & Security | 61/61  |
@@ -73,10 +86,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 597   |
-| Issues Abertas    | 22    |
+| Issues Totais     | 609   |
+| Issues Abertas    | 34    |
 | Issues Fechadas   | 575   |
-| Progresso         | 96%   |
+| Progresso         | 94%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2128  |
