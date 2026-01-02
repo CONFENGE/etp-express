@@ -174,8 +174,11 @@ export function AuditLogsExport() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 space-y-8">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <div data-testid="audit-export-header">
+          <h1
+            className="text-2xl font-bold tracking-tight sm:text-3xl"
+            data-testid="audit-export-title"
+          >
             Export Audit Logs
           </h1>
           <p className="text-sm text-muted-foreground sm:text-base">
@@ -184,9 +187,14 @@ export function AuditLogsExport() {
         </div>
 
         {/* Export Card */}
-        <Card className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+        <Card
+          className="shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+          data-testid="export-options-card"
+        >
           <CardHeader>
-            <CardTitle>Export Options</CardTitle>
+            <CardTitle data-testid="export-options-title">
+              Export Options
+            </CardTitle>
             <CardDescription>
               Configure filters and format for your export
             </CardDescription>
@@ -303,6 +311,7 @@ export function AuditLogsExport() {
                 onClick={handleExport}
                 disabled={loading}
                 className="min-w-[160px]"
+                data-testid="export-button"
               >
                 {loading ? (
                   <>
@@ -321,9 +330,15 @@ export function AuditLogsExport() {
         </Card>
 
         {/* Info Card */}
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card
+          className="border-blue-200 bg-blue-50/50"
+          data-testid="lgpd-info-card"
+        >
           <CardContent className="pt-6">
-            <h3 className="font-medium text-blue-900">
+            <h3
+              className="font-medium text-blue-900"
+              data-testid="lgpd-info-title"
+            >
               About LGPD Compliance Exports
             </h3>
             <p className="mt-2 text-sm text-blue-800">

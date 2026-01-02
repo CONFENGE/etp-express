@@ -105,12 +105,16 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
                         variant="ghost"
                         size="icon"
                         aria-label={`Actions for ${domain.domain}`}
+                        data-testid={`domain-actions-${domain.id}`}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
+                      <DropdownMenuItem
+                        asChild
+                        data-testid="view-details-option"
+                      >
                         <Link
                           to={`/admin/domains/${domain.id}`}
                           className="flex items-center"
@@ -122,6 +126,7 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onClick={() => handleDeleteClick(domain)}
+                        data-testid="delete-domain-option"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
