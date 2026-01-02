@@ -256,9 +256,12 @@ export function DomainDetail() {
         {/* Content Cards */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Domain Information */}
-          <Card>
+          <Card data-testid="domain-info-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle
+                className="flex items-center gap-2"
+                data-testid="domain-info-title"
+              >
                 <Settings className="h-5 w-5" />
                 Domain Information
               </CardTitle>
@@ -302,6 +305,7 @@ export function DomainDetail() {
                   onClick={() => setAssignDialogOpen(true)}
                   variant="outline"
                   className="w-full"
+                  data-testid="assign-manager-button"
                 >
                   {domain.managerId ? 'Change Manager' : 'Assign Manager'}
                 </Button>
@@ -310,13 +314,16 @@ export function DomainDetail() {
           </Card>
 
           {/* Users List */}
-          <Card>
+          <Card data-testid="domain-users-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle
+                className="flex items-center gap-2"
+                data-testid="domain-users-title"
+              >
                 <Users className="h-5 w-5" />
                 Domain Users
               </CardTitle>
-              <CardDescription>
+              <CardDescription data-testid="domain-users-count">
                 {users.length} of {domain.maxUsers} users
               </CardDescription>
             </CardHeader>
