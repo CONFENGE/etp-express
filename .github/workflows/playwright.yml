@@ -24,7 +24,7 @@ on:
       - '.github/workflows/playwright.yml'
 jobs:
   test:
-    timeout-minutes: 45
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       # Railway production URLs for E2E testing
@@ -37,8 +37,8 @@ jobs:
       E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD }}
       E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL }}
       E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
-      # Reduce test scope for faster CI - full suite runs in dedicated workflow
-      PLAYWRIGHT_WORKERS: 1
+      # Parallel execution for faster CI - 4 workers balance speed vs resource usage
+      PLAYWRIGHT_WORKERS: 4
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -63,9 +63,6 @@ jobs:
         run: npx playwright install-deps
       - name: Run Playwright tests
         # Run only chromium for faster CI feedback (cross-browser in separate workflow)
-        # continue-on-error: E2E tests are being fixed in issues #1132-#1136
-        # Once all E2E issues are closed, remove continue-on-error
-        continue-on-error: true
         run: npx playwright test --project=chromium
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
