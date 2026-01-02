@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-02 | **Progresso:** 574/597 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-02 | **Progresso:** 575/597 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (23)
+## Issues Abertas (22)
 
 ### P0 - Critical (1 issue)
 
@@ -12,13 +12,12 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (11 issues)
+### P1 - High Priority (10 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
 | #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
-| #1101 | fix(e2e): Export module tests failing (PDF, DOCX)                |
 | #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
 | #1099 | fix(e2e): Auth module tests failing                              |
 | #1098 | fix(e2e): Admin module tests failing                             |
@@ -75,8 +74,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 597   |
-| Issues Abertas    | 23    |
-| Issues Fechadas   | 574   |
+| Issues Abertas    | 22    |
+| Issues Fechadas   | 575   |
 | Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
