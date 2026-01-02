@@ -118,8 +118,8 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
     await page.goto('/admin/audit');
     await page.waitForLoadState('networkidle');
 
-    // Verify page header
-    const header = page.locator('h1:has-text("Export Audit Logs")');
+    // Verify page header (use data-testid for resilience)
+    const header = page.locator('[data-testid="audit-export-title"]');
     await expect(header).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
@@ -130,8 +130,10 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
     );
     await expect(description.first()).toBeVisible();
 
-    // Verify Export Options card is visible
-    const exportOptionsCard = page.locator('text=Export Options');
+    // Verify Export Options card is visible (use data-testid for resilience)
+    const exportOptionsCard = page.locator(
+      '[data-testid="export-options-card"]',
+    );
     await expect(exportOptionsCard).toBeVisible();
 
     // Verify format selector is visible
@@ -153,13 +155,13 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
     const endDateLabel = page.locator('label:has-text("End Date")');
     await expect(endDateLabel).toBeVisible();
 
-    // Verify export button is visible
-    const exportButton = page.locator('button:has-text("Export")');
+    // Verify export button is visible (use data-testid for resilience)
+    const exportButton = page.locator('[data-testid="export-button"]');
     await expect(exportButton).toBeVisible();
     await expect(exportButton).toBeEnabled();
 
-    // Verify LGPD info card is visible
-    const lgpdInfoCard = page.locator('text=About LGPD Compliance Exports');
+    // Verify LGPD info card is visible (use data-testid for resilience)
+    const lgpdInfoCard = page.locator('[data-testid="lgpd-info-card"]');
     await expect(lgpdInfoCard).toBeVisible();
 
     // Test changing format to CSV

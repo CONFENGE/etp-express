@@ -204,8 +204,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    // Find a domain row with actions menu (use data-testid pattern for resilience)
+    const actionsButton = page
+      .locator('button[data-testid^="domain-actions-"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -217,8 +219,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Click actions menu
     await actionsButton.click();
 
-    // Click "View Details"
-    const viewDetailsOption = page.locator('text=View Details');
+    // Click "View Details" (use data-testid for resilience)
+    const viewDetailsOption = page.locator(
+      '[data-testid="view-details-option"]',
+    );
     await expect(viewDetailsOption).toBeVisible({
       timeout: TEST_CONFIG.timeouts.dialog,
     });
@@ -229,14 +233,14 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify Domain Information card is visible
-    const domainInfoCard = page.locator('text=Domain Information');
+    // Verify Domain Information card is visible (use data-testid for resilience)
+    const domainInfoCard = page.locator('[data-testid="domain-info-card"]');
     await expect(domainInfoCard).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify Domain Users card is visible
-    const domainUsersCard = page.locator('text=Domain Users');
+    // Verify Domain Users card is visible (use data-testid for resilience)
+    const domainUsersCard = page.locator('[data-testid="domain-users-card"]');
     await expect(domainUsersCard).toBeVisible();
 
     // Verify status badge is visible (Active or Inactive)
@@ -268,8 +272,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    // Find a domain row with actions menu (use data-testid pattern for resilience)
+    const actionsButton = page
+      .locator('button[data-testid^="domain-actions-"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -279,7 +285,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Navigate to domain detail via actions menu
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page.locator(
+      '[data-testid="view-details-option"]',
+    );
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -287,9 +295,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Find "Assign Manager" or "Change Manager" button
+    // Find "Assign Manager" or "Change Manager" button (use data-testid for resilience)
     const assignManagerButton = page.locator(
-      'button:has-text("Assign Manager"), button:has-text("Change Manager")',
+      '[data-testid="assign-manager-button"]',
     );
     await expect(assignManagerButton).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
@@ -346,8 +354,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    // Find a domain row with actions menu (use data-testid pattern for resilience)
+    const actionsButton = page
+      .locator('button[data-testid^="domain-actions-"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -355,9 +365,11 @@ test.describe('Admin Domain Management - Happy Path', () => {
       return;
     }
 
-    // Navigate to domain detail
+    // Navigate to domain detail (use data-testid for resilience)
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page.locator(
+      '[data-testid="view-details-option"]',
+    );
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -365,8 +377,8 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Verify Domain Users card is visible
-    const domainUsersTitle = page.locator('text=Domain Users');
+    // Verify Domain Users card is visible (use data-testid for resilience)
+    const domainUsersTitle = page.locator('[data-testid="domain-users-title"]');
     await expect(domainUsersTitle).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
@@ -387,8 +399,8 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Either users or empty state should be visible
     expect(hasUsers || hasEmptyState).toBe(true);
 
-    // Verify user count is displayed (e.g., "3 of 10 users")
-    const userCount = page.locator('text=/\\d+ of \\d+ users/');
+    // Verify user count is displayed (use data-testid for resilience)
+    const userCount = page.locator('[data-testid="domain-users-count"]');
     await expect(userCount).toBeVisible();
 
     console.log('View domain users: PASSED');
@@ -415,8 +427,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    // Find a domain row with actions menu (use data-testid pattern for resilience)
+    const actionsButton = page
+      .locator('button[data-testid^="domain-actions-"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -434,8 +448,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const hasEditOption = await editOption.isVisible().catch(() => false);
 
     if (!hasEditOption) {
-      // Navigate to domain detail and look for edit button there
-      const viewDetailsOption = page.locator('text=View Details');
+      // Navigate to domain detail and look for edit button there (use data-testid)
+      const viewDetailsOption = page.locator(
+        '[data-testid="view-details-option"]',
+      );
       await viewDetailsOption.click();
 
       // Wait for detail page
@@ -527,8 +543,10 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for data to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Find a domain row with actions menu
-    const actionsButton = page.locator('button[aria-label*="Actions"]').first();
+    // Find a domain row with actions menu (use data-testid pattern for resilience)
+    const actionsButton = page
+      .locator('button[data-testid^="domain-actions-"]')
+      .first();
     const hasActions = await actionsButton.isVisible().catch(() => false);
 
     if (!hasActions) {
@@ -536,9 +554,11 @@ test.describe('Admin Domain Management - Happy Path', () => {
       return;
     }
 
-    // Navigate to domain detail
+    // Navigate to domain detail (use data-testid for resilience)
     await actionsButton.click();
-    const viewDetailsOption = page.locator('text=View Details');
+    const viewDetailsOption = page.locator(
+      '[data-testid="view-details-option"]',
+    );
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -549,13 +569,13 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // Wait for statistics to load
     await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
-    // Check for statistics indicators
-    // Look for user count display (e.g., "X users", "X of Y users")
-    const userCountPattern = page.locator('text=/\\d+.*user/i');
-    const hasUserCount = await userCountPattern.count().then((c) => c > 0);
+    // Check for statistics indicators (use data-testid for resilience)
+    // Look for user count display
+    const userCountElement = page.locator('[data-testid="domain-users-count"]');
+    const hasUserCount = await userCountElement.isVisible().catch(() => false);
 
-    // Look for domain info card with stats
-    const domainInfoCard = page.locator('text=Domain Information');
+    // Look for domain info card with stats (use data-testid for resilience)
+    const domainInfoCard = page.locator('[data-testid="domain-info-card"]');
     const hasDomainInfo = await domainInfoCard.isVisible().catch(() => false);
 
     // Look for any numeric statistics (cards with numbers)
@@ -565,9 +585,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     // At least one statistics indicator should be present
     expect(hasUserCount || hasDomainInfo || statsCount > 0).toBe(true);
 
-    // If user count pattern found, verify it has a number
+    // If user count element found, verify it has content
     if (hasUserCount) {
-      const userCountText = await userCountPattern.first().textContent();
+      const userCountText = await userCountElement.textContent();
       const hasNumber = userCountText && /\d+/.test(userCountText);
       expect(hasNumber).toBe(true);
     }
