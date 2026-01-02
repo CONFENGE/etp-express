@@ -69,6 +69,7 @@ export function Header() {
                   className="relative min-w-touch min-h-touch rounded-full p-0"
                   aria-label={`User menu for ${user.name}`}
                   aria-haspopup="menu"
+                  data-testid="user-menu-trigger"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     {getInitials(user.name)}
@@ -113,6 +114,7 @@ export function Header() {
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="min-h-touch cursor-pointer"
+                  data-testid="logout-button"
                 >
                   <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Sair</span>
