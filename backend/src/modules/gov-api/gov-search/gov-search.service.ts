@@ -49,6 +49,50 @@ import { createHash } from 'crypto';
  */
 const SIMILARITY_THRESHOLD = 0.85;
 
+/**
+ * Individual timeout for each API source (in milliseconds)
+ * Each source gets 5s to respond before timing out
+ * This prevents slow sources from blocking the entire search
+ * @see https://github.com/CONFENGE/etp-express/issues/1061
+ */
+const INDIVIDUAL_SOURCE_TIMEOUT_MS = 5000;
+
+/**
+ * Wraps a promise with a timeout
+ * If the promise doesn't resolve within the timeout, it rejects with a timeout error
+ *
+ * @param promise - The promise to wrap
+ * @param timeoutMs - Timeout in milliseconds
+ * @param sourceName - Name of the source for error messages
+ * @returns Promise that resolves with the result or rejects with timeout error
+ */
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  sourceName: string,
+): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout>;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      reject(
+        new Error(
+          `Timeout: ${sourceName} did not respond within ${timeoutMs}ms`,
+        ),
+      );
+    }, timeoutMs);
+  });
+
+  try {
+    const result = await Promise.race([promise, timeoutPromise]);
+    clearTimeout(timeoutHandle!);
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutHandle!);
+    throw error;
+  }
+}
+
 @Injectable()
 export class GovSearchService {
   private readonly logger = new Logger(GovSearchService.name);
@@ -105,22 +149,32 @@ export class GovSearchService {
 
     // 1. Search contracts in parallel (PNCP + Compras.gov.br)
     // Now returns full response with status info
+    // Each source has individual timeout to prevent slow sources from blocking
     const contractPromises = [
-      this.searchComprasGovWithStatus(query, {
-        startDate,
-        endDate,
-        uf,
-        maxPerSource,
-      }),
-      this.searchPncpWithStatus(query, {
-        startDate,
-        endDate,
-        uf,
-        maxPerSource,
-      }),
+      withTimeout(
+        this.searchComprasGovWithStatus(query, {
+          startDate,
+          endDate,
+          uf,
+          maxPerSource,
+        }),
+        INDIVIDUAL_SOURCE_TIMEOUT_MS,
+        'Compras.gov.br',
+      ),
+      withTimeout(
+        this.searchPncpWithStatus(query, {
+          startDate,
+          endDate,
+          uf,
+          maxPerSource,
+        }),
+        INDIVIDUAL_SOURCE_TIMEOUT_MS,
+        'PNCP',
+      ),
     ];
 
     // 2. Search prices if requested
+    // Each source has individual timeout to prevent slow sources from blocking
     const pricePromises: Promise<{
       data: GovApiPriceReference[];
       status: SourceStatus;
@@ -128,20 +182,28 @@ export class GovSearchService {
     if (includePrecos) {
       if (isConstrucaoCivil) {
         pricePromises.push(
-          this.searchSinapiWithStatus(query, {
-            uf,
-            mesReferencia,
-            maxPerSource,
-          }),
+          withTimeout(
+            this.searchSinapiWithStatus(query, {
+              uf,
+              mesReferencia,
+              maxPerSource,
+            }),
+            INDIVIDUAL_SOURCE_TIMEOUT_MS,
+            'SINAPI',
+          ),
         );
       }
       if (isInfrastructure) {
         pricePromises.push(
-          this.searchSicroWithStatus(query, {
-            uf,
-            mesReferencia,
-            maxPerSource,
-          }),
+          withTimeout(
+            this.searchSicroWithStatus(query, {
+              uf,
+              mesReferencia,
+              maxPerSource,
+            }),
+            INDIVIDUAL_SOURCE_TIMEOUT_MS,
+            'SICRO',
+          ),
         );
       }
     }
