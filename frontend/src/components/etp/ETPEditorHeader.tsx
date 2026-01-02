@@ -128,7 +128,12 @@ export function ETPEditorHeader({
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" disabled={effectiveExporting}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={effectiveExporting}
+                data-testid="export-menu-trigger"
+              >
                 <Download className="mr-2 h-4 w-4" />
                 {effectiveExporting ? 'Exportando...' : 'Exportar'}
               </Button>
@@ -137,6 +142,7 @@ export function ETPEditorHeader({
               <DropdownMenuItem
                 onClick={onExportPDF}
                 disabled={effectiveExporting}
+                data-testid="export-pdf-button"
               >
                 <FileText className="mr-2 h-4 w-4" />
                 PDF (.pdf)
@@ -144,6 +150,7 @@ export function ETPEditorHeader({
               <DropdownMenuItem
                 onClick={onExportDocx}
                 disabled={effectiveExporting}
+                data-testid="export-docx-button"
               >
                 <FileIcon className="mr-2 h-4 w-4" />
                 Word (.docx)
