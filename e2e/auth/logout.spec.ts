@@ -53,24 +53,42 @@ async function loginUser(
 
 /**
  * Helper to find and click logout button
+ *
+ * Uses stable data-testid selectors for reliability across environments.
+ * @see https://github.com/CONFENGE/etp-express/issues/1130
  */
 async function performLogout(page: import('@playwright/test').Page) {
-  // Look for logout button or user menu
-  const logoutButton = page.locator(
+  // Primary selector: Use stable data-testid attributes
+  const userMenuTrigger = page.locator('[data-testid="user-menu-trigger"]');
+  const logoutButton = page.locator('[data-testid="logout-button"]');
+
+  // Fallback selectors for backwards compatibility
+  const legacyLogoutButton = page.locator(
     'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
   );
-  const userMenu = page.locator(
-    '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
+  const legacyUserMenu = page.locator(
+    'button:has-text("Perfil"), [aria-label="Menu do usuário"]',
   );
 
-  if (await logoutButton.isVisible()) {
+  // Try primary selector first (data-testid)
+  if (await userMenuTrigger.isVisible()) {
+    await userMenuTrigger.click();
+    await page.waitForTimeout(300);
     await logoutButton.click();
-  } else if (await userMenu.isVisible()) {
-    await userMenu.click();
+  }
+  // Fallback: Direct logout button (if visible without menu)
+  else if (await legacyLogoutButton.isVisible()) {
+    await legacyLogoutButton.click();
+  }
+  // Fallback: Legacy user menu
+  else if (await legacyUserMenu.isVisible()) {
+    await legacyUserMenu.click();
     await page.waitForTimeout(500);
     await page.click('text=Sair');
   } else {
-    throw new Error('Logout button not found');
+    throw new Error(
+      'Logout button not found. Ensure data-testid="user-menu-trigger" and data-testid="logout-button" are present.',
+    );
   }
 }
 
@@ -356,23 +374,34 @@ test.describe('Logout Edge Cases', () => {
   test('multiple logout clicks are handled gracefully', async ({ page }) => {
     await loginUser(page, TEST_CONFIG.admin);
 
-    // Find logout button
-    const logoutButton = page.locator(
+    // Primary selector: Use stable data-testid attributes
+    const userMenuTrigger = page.locator('[data-testid="user-menu-trigger"]');
+    const logoutButton = page.locator('[data-testid="logout-button"]');
+
+    // Fallback selectors for backwards compatibility
+    const legacyLogoutButton = page.locator(
       'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
     );
-    const userMenu = page.locator(
-      '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
+    const legacyUserMenu = page.locator(
+      'button:has-text("Perfil"), [aria-label="Menu do usuário"]',
     );
 
     // Click logout multiple times rapidly
-    if (await logoutButton.isVisible()) {
+    if (await userMenuTrigger.isVisible()) {
+      await userMenuTrigger.click();
+      await page.waitForTimeout(300);
       await logoutButton.click();
       // Try clicking again while redirecting
       await logoutButton.click().catch(() => {
         // Expected to potentially fail
       });
-    } else if (await userMenu.isVisible()) {
-      await userMenu.click();
+    } else if (await legacyLogoutButton.isVisible()) {
+      await legacyLogoutButton.click();
+      await legacyLogoutButton.click().catch(() => {
+        // Expected to potentially fail
+      });
+    } else if (await legacyUserMenu.isVisible()) {
+      await legacyUserMenu.click();
       await page.waitForTimeout(300);
       await page.click('text=Sair');
     }
