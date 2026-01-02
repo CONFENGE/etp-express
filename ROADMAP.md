@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-02 | **Progresso:** 573/597 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-02 | **Progresso:** 574/597 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (24)
+## Issues Abertas (23)
 
 ### P0 - Critical (1 issue)
 
@@ -29,7 +29,7 @@
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (11 issues)
+### P2 - Medium Priority (10 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -38,7 +38,6 @@
 | #1134 | [E2E] Fix Export (PDF/DOCX) tests for Railway environment        |
 | #1133 | [E2E] Fix ETP CRUD tests for Railway environment                 |
 | #1132 | [E2E] Fix Manager panel selectors for Railway environment        |
-| #1131 | [E2E] Fix Admin panel selectors for Railway environment          |
 | #1072 | [Observabilidade] Adicionar retry automatico para emails         |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs            |
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
@@ -76,14 +75,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 597   |
-| Issues Abertas    | 24    |
-| Issues Fechadas   | 573   |
+| Issues Abertas    | 23    |
+| Issues Fechadas   | 574   |
 | Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
-| Backend Tests     | 2124  |
-| Frontend Tests    | 1388  |
-| Total Tests       | 3512  |
+| Backend Tests     | 2128  |
+| Frontend Tests    | 1391  |
+| Total Tests       | 3519  |
 
 ---
 
