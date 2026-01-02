@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-01 | **Progresso:** 540/568 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-02 | **Progresso:** 572/597 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (28)
+## Issues Abertas (25)
 
 ### P0 - Critical (1 issue)
 
@@ -12,7 +12,7 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (13 issues)
+### P1 - High Priority (11 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -28,13 +28,11 @@
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
 | #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
-| #1061 | [Gov-API] Adicionar timeout individual em Promise.allSettled     |
 
-### P2 - Medium Priority (13 issues)
+### P2 - Medium Priority (12 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1138 | fix(e2e): Playwright Railway config needs valid credentials      |
 | #1136 | [E2E] Fix API connectivity tests for Railway environment         |
 | #1135 | [E2E] Fix Auth/Role access tests for Railway environment         |
 | #1134 | [E2E] Fix Export (PDF/DOCX) tests for Railway environment        |
@@ -78,10 +76,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 568   |
-| Issues Abertas    | 28    |
-| Issues Fechadas   | 540   |
-| Progresso         | 95%   |
+| Issues Totais     | 597   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 572   |
+| Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2124  |
