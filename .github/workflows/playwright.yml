@@ -22,9 +22,19 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/playwright.yml'
+
+# Railway E2E Testing Configuration (#1170)
+# Tests run against Railway production environment
+# See playwright.config.ts for how these env vars are used
+env:
+  E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
+  E2E_API_URL: https://etp-express-backend-production.up.railway.app
+  # Optimal workers for Railway latency (avoid overwhelming the server)
+  PLAYWRIGHT_WORKERS: 2
+
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
