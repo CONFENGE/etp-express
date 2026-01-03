@@ -115,6 +115,7 @@ test.describe('Admin Audit Logs Export - Happy Path', () => {
    */
   test('export audit logs', async ({ page }) => {
     // Navigate to audit logs export page
+    // Route is /admin/audit-export as defined in frontend/src/App.tsx
     await page.goto('/admin/audit-export');
     await page.waitForLoadState('networkidle');
 
