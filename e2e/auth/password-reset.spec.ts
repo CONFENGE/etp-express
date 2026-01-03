@@ -37,14 +37,24 @@ test.describe('Forgot Password Flow', () => {
    * Test: Forgot password page loads correctly
    */
   test('forgot password page loads correctly', async ({ page }) => {
-    // Verify page elements
+    // Verify page elements using data-testid with fallbacks
     await expect(
-      page.locator('input[name="email"], input#email'),
+      page
+        .locator('[data-testid="email-input"]')
+        .or(page.locator('input[name="email"], input#email')),
     ).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
+    await expect(
+      page
+        .locator('[data-testid="submit-button"]')
+        .or(page.locator('button[type="submit"]')),
+    ).toBeVisible();
 
     // Verify link back to login
-    await expect(page.locator('a[href="/login"]')).toBeVisible();
+    await expect(
+      page
+        .locator('[data-testid="back-to-login"]')
+        .or(page.locator('a[href="/login"]')),
+    ).toBeVisible();
 
     console.log('Forgot password page load: PASSED');
   });
@@ -53,19 +63,25 @@ test.describe('Forgot Password Flow', () => {
    * Test: Submit forgot password with valid email shows success message
    */
   test('submit with valid email shows success message', async ({ page }) => {
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.existingUser.email,
-    );
-    await page.click('button[type="submit"]');
+    const emailInput = page
+      .locator('[data-testid="email-input"]')
+      .or(page.locator('input[name="email"], input#email'));
+    const submitButton = page
+      .locator('[data-testid="submit-button"]')
+      .or(page.locator('button[type="submit"]'));
+
+    await emailInput.fill(TEST_CONFIG.existingUser.email);
+    await submitButton.click();
 
     // Should show success message (even if email doesn't exist - security)
     await page.waitForTimeout(2000);
 
-    // Check for success indicators
+    // Check for success indicators using data-testid first, then fallback to text
+    const successMessage = page.locator('[data-testid="success-message"]');
     const successVisible =
+      (await successMessage.isVisible()) ||
+      (await page.locator('text=Verifique seu email').isVisible()) ||
       (await page.locator('text=enviado').isVisible()) ||
-      (await page.locator('text=Email').isVisible()) ||
       (await page.locator('[class*="success"]').isVisible());
 
     expect(successVisible).toBe(true);
@@ -82,11 +98,15 @@ test.describe('Forgot Password Flow', () => {
   test('submit with non-existent email shows same message (security)', async ({
     page,
   }) => {
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.nonExistentEmail,
-    );
-    await page.click('button[type="submit"]');
+    const emailInput = page
+      .locator('[data-testid="email-input"]')
+      .or(page.locator('input[name="email"], input#email'));
+    const submitButton = page
+      .locator('[data-testid="submit-button"]')
+      .or(page.locator('button[type="submit"]'));
+
+    await emailInput.fill(TEST_CONFIG.nonExistentEmail);
+    await submitButton.click();
 
     await page.waitForTimeout(2000);
 
@@ -104,16 +124,30 @@ test.describe('Forgot Password Flow', () => {
    * Test: Invalid email format shows validation error
    */
   test('invalid email format shows validation error', async ({ page }) => {
-    await page.fill('input[name="email"], input#email', 'invalid-email');
-    await page.click('button[type="submit"]');
+    const emailInput = page
+      .locator('[data-testid="email-input"]')
+      .or(page.locator('input[name="email"], input#email'));
+    const submitButton = page
+      .locator('[data-testid="submit-button"]')
+      .or(page.locator('button[type="submit"]'));
 
-    // Should show validation error
-    const errorVisible =
+    await emailInput.fill('invalid-email');
+    await submitButton.click();
+
+    // Wait for validation error to appear
+    await page.waitForTimeout(500);
+
+    // Should show validation error - check aria-invalid or error text
+    const inputInvalid =
+      (await emailInput.getAttribute('aria-invalid')) === 'true';
+    const errorTextVisible =
+      (await page.locator('text=invalido').isVisible()) ||
       (await page.locator('text=inválido').isVisible()) ||
-      (await page.locator('text=Email inválido').isVisible()) ||
-      (await page.locator('[class*="error"]').isVisible());
+      (await page.locator('text=Email invalido').isVisible()) ||
+      (await page.locator('[class*="error"]').isVisible()) ||
+      (await page.locator('[id*="error"]').isVisible());
 
-    expect(errorVisible).toBe(true);
+    expect(inputInvalid || errorTextVisible).toBe(true);
 
     console.log('Email validation: PASSED');
   });
@@ -122,8 +156,12 @@ test.describe('Forgot Password Flow', () => {
    * Test: Empty email shows validation error
    */
   test('empty email shows validation error', async ({ page }) => {
+    const submitButton = page
+      .locator('[data-testid="submit-button"]')
+      .or(page.locator('button[type="submit"]'));
+
     // Click submit without filling email
-    await page.click('button[type="submit"]');
+    await submitButton.click();
 
     // Should show validation error
     await page.waitForTimeout(500);
@@ -138,9 +176,10 @@ test.describe('Forgot Password Flow', () => {
    * Test: Can navigate back to login
    */
   test('can navigate back to login', async ({ page }) => {
-    // Use .or() for multiple possible selectors
+    // Use data-testid first, then fallback to other selectors
     const backToLoginLink = page
-      .locator('a[href="/login"]')
+      .locator('[data-testid="back-to-login"]')
+      .or(page.locator('a[href="/login"]'))
       .or(page.locator('text=Voltar'))
       .or(page.locator('text=Login'));
     await backToLoginLink.first().click();
@@ -172,8 +211,12 @@ test.describe('Reset Password Flow', () => {
 
     const onResetPage = await page.url().includes('/reset-password');
     if (onResetPage) {
-      // Should show error message about invalid/missing token
+      // Should show error message about invalid/missing token using data-testid first
+      const errorMessage = page.locator('[data-testid="error-message"]');
       const errorVisible =
+        (await errorMessage.isVisible()) ||
+        (await page.locator('text=Link invalido').isVisible()) ||
+        (await page.locator('text=invalido').isVisible()) ||
         (await page.locator('text=inválido').isVisible()) ||
         (await page.locator('text=expirado').isVisible()) ||
         (await page.locator('text=token').isVisible()) ||
@@ -196,29 +239,42 @@ test.describe('Reset Password Flow', () => {
 
     await page.waitForLoadState('networkidle');
 
-    // If form is visible, try to submit
-    const passwordInput = page.locator(
-      'input[name="password"], input#password, input[type="password"]',
-    );
+    // If form is visible, try to submit using data-testid selectors
+    const passwordInput = page
+      .locator('[data-testid="password-input"]')
+      .or(
+        page.locator(
+          'input[name="newPassword"], input#newPassword, input[type="password"]',
+        ),
+      );
 
     if (await passwordInput.isVisible()) {
       await passwordInput.fill('NewPassword123!');
 
-      const confirmInput = page.locator(
-        'input[name="confirmPassword"], input#confirmPassword',
-      );
+      const confirmInput = page
+        .locator('[data-testid="confirm-password-input"]')
+        .or(
+          page.locator('input[name="confirmPassword"], input#confirmPassword'),
+        );
       if (await confirmInput.isVisible()) {
         await confirmInput.fill('NewPassword123!');
       }
 
-      await page.click('button[type="submit"]');
+      const submitButton = page
+        .locator('[data-testid="submit-button"]')
+        .or(page.locator('button[type="submit"]'));
+      await submitButton.click();
       await page.waitForTimeout(2000);
 
-      // Should show error about invalid token
+      // Should show error about invalid token - check toast or inline error
       const errorVisible =
+        (await page.locator('text=invalido').isVisible()) ||
         (await page.locator('text=inválido').isVisible()) ||
         (await page.locator('text=expirado').isVisible()) ||
-        (await page.locator('[class*="error"]').isVisible());
+        (await page.locator('text=Erro').isVisible()) ||
+        (await page.locator('[class*="error"]').isVisible()) ||
+        (await page.locator('[role="alert"]').isVisible()) ||
+        (await page.locator('[data-testid="toast"]').isVisible());
 
       expect(errorVisible).toBe(true);
     }
