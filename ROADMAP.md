@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 578/625 (93%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 579/625 (93%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (47)
+## Issues Abertas (46)
 
 ### P0 - Critical (1 issue)
 
@@ -12,11 +12,10 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (27 issues)
+### P1 - High Priority (26 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1176 | [A11Y] Fix WCAG 2.1 AA color contrast violations in auth forms   |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment             |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment          |
 | #1170 | [E2E/CI] Configure Railway environment variables in Playwright   |
@@ -98,11 +97,11 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 625   |
-| Issues Abertas    | 47    |
-| Issues Fechadas   | 578   |
+| Issues Abertas    | 46    |
+| Issues Fechadas   | 579   |
 | Progresso         | 93%   |
 | Backend Coverage  | 78%   |
-| Frontend Coverage | 76%   |
+| Frontend Coverage | 81%   |
 | Backend Tests     | 2128  |
 | Frontend Tests    | 1391  |
 | Total Tests       | 3519  |
