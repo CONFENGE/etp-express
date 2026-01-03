@@ -402,39 +402,36 @@ test.describe('Login Flow - Critical Path', () => {
     const userMenuTrigger = page.locator('[data-testid="user-menu-trigger"]');
     const logoutButton = page.locator('[data-testid="logout-button"]');
 
-    // Fallback selectors for backwards compatibility
-    const legacyLogoutButton = page.locator(
-      'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
-    );
-    const legacyUserMenu = page.locator(
-      'button:has-text("Perfil"), [aria-label="Menu do usuário"]',
-    );
-
-    // Try primary selector first (data-testid)
-    if (await userMenuTrigger.isVisible()) {
+    // Wait for user menu to be available (indicates user is fully logged in)
+    try {
+      await userMenuTrigger.waitFor({ state: 'visible', timeout: 5000 });
       await userMenuTrigger.click();
-      await page.waitForTimeout(500);
-      await expect(logoutButton).toBeVisible({ timeout: 2000 });
+      await logoutButton.waitFor({ state: 'visible', timeout: 3000 });
       await logoutButton.click();
-    }
-    // Fallback: Direct logout button (if visible without menu)
-    else if (await legacyLogoutButton.first().isVisible()) {
-      await legacyLogoutButton.first().click();
-    }
-    // Fallback: Legacy user menu
-    else if (await legacyUserMenu.first().isVisible()) {
-      await legacyUserMenu.first().click();
-      await page.waitForTimeout(500);
-      const logoutMenuOption = page
-        .locator('text=Sair')
-        .or(page.locator('text=Logout'));
-      await logoutMenuOption.first().click();
-    } else {
-      // Skip if logout mechanism not found
-      console.log(
-        'Logout button not found - skipping (UI may have different logout mechanism)',
+    } catch {
+      // Fallback: Legacy user menu selectors
+      const legacyUserMenu = page.locator(
+        'button:has-text("Perfil"), [aria-label="Menu do usuário"]',
       );
-      return;
+      const legacyLogoutButton = page.locator(
+        'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
+      );
+
+      if (await legacyLogoutButton.first().isVisible()) {
+        await legacyLogoutButton.first().click();
+      } else if (await legacyUserMenu.first().isVisible()) {
+        await legacyUserMenu.first().click();
+        await page.waitForTimeout(500);
+        const logoutMenuOption = page
+          .locator('text=Sair')
+          .or(page.locator('text=Logout'));
+        await logoutMenuOption.first().click();
+      } else {
+        console.log(
+          'Logout button not found - skipping (UI may have different logout mechanism)',
+        );
+        return;
+      }
     }
 
     // Wait for redirect to login
