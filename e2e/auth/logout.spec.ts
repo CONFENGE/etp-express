@@ -73,7 +73,8 @@ async function performLogout(page: import('@playwright/test').Page) {
   // Try primary selector first (data-testid)
   if (await userMenuTrigger.isVisible()) {
     await userMenuTrigger.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
+    await expect(logoutButton).toBeVisible({ timeout: 2000 });
     await logoutButton.click();
   }
   // Fallback: Direct logout button (if visible without menu)
@@ -389,7 +390,8 @@ test.describe('Logout Edge Cases', () => {
     // Click logout multiple times rapidly
     if (await userMenuTrigger.isVisible()) {
       await userMenuTrigger.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
+      await expect(logoutButton).toBeVisible({ timeout: 2000 });
       await logoutButton.click();
       // Try clicking again while redirecting
       await logoutButton.click().catch(() => {

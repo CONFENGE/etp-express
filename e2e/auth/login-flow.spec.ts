@@ -398,21 +398,33 @@ test.describe('Login Flow - Critical Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Find and click logout button (may be in a menu)
-    const logoutButton = page.locator(
+    // Find and click logout button using data-testid selectors
+    const userMenuTrigger = page.locator('[data-testid="user-menu-trigger"]');
+    const logoutButton = page.locator('[data-testid="logout-button"]');
+
+    // Fallback selectors for backwards compatibility
+    const legacyLogoutButton = page.locator(
       'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
     );
-    const userMenu = page.locator(
-      '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
+    const legacyUserMenu = page.locator(
+      'button:has-text("Perfil"), [aria-label="Menu do usuário"]',
     );
 
-    // Try clicking user menu first if logout button not directly visible
-    if (await logoutButton.first().isVisible()) {
-      await logoutButton.first().click();
-    } else if (await userMenu.first().isVisible()) {
-      await userMenu.first().click();
+    // Try primary selector first (data-testid)
+    if (await userMenuTrigger.isVisible()) {
+      await userMenuTrigger.click();
       await page.waitForTimeout(500);
-      // Use .or() for bilingual selector
+      await expect(logoutButton).toBeVisible({ timeout: 2000 });
+      await logoutButton.click();
+    }
+    // Fallback: Direct logout button (if visible without menu)
+    else if (await legacyLogoutButton.first().isVisible()) {
+      await legacyLogoutButton.first().click();
+    }
+    // Fallback: Legacy user menu
+    else if (await legacyUserMenu.first().isVisible()) {
+      await legacyUserMenu.first().click();
+      await page.waitForTimeout(500);
       const logoutMenuOption = page
         .locator('text=Sair')
         .or(page.locator('text=Logout'));
