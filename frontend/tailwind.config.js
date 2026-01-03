@@ -88,6 +88,7 @@ export default {
             hover: 'var(--apple-accent-hover)',
             active: 'var(--apple-accent-active)',
             light: 'var(--apple-accent-light)',
+            disabled: 'var(--apple-accent-disabled)',
           },
         },
         // Apple HIG Text Colors
@@ -96,6 +97,7 @@ export default {
           secondary: 'var(--text-secondary)',
           tertiary: 'var(--text-tertiary)',
           quaternary: 'var(--text-quaternary)',
+          placeholder: 'var(--text-placeholder)',
         },
       },
       borderRadius: {

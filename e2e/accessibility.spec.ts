@@ -18,6 +18,8 @@ import AxeBuilder from '@axe-core/playwright';
 const pages = [
   { path: '/login', name: 'Login' },
   { path: '/register', name: 'Register' },
+  { path: '/forgot-password', name: 'Forgot Password' },
+  { path: '/reset-password?token=test', name: 'Reset Password' },
   { path: '/dashboard', name: 'Dashboard' },
   { path: '/etps', name: 'ETPs List' },
   { path: '/etps/new', name: 'New ETP' },
