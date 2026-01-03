@@ -121,7 +121,9 @@ export function ResetPassword() {
                   />
                 </div>
               </div>
-              <CardTitle className="text-2xl">Link invalido</CardTitle>
+              <CardTitle className="text-2xl" data-testid="error-message">
+                Link invalido
+              </CardTitle>
               <CardDescription className="text-base">
                 O link de redefinicao de senha e invalido ou expirou. Por favor,
                 solicite um novo link.
@@ -159,7 +161,9 @@ export function ResetPassword() {
                   />
                 </div>
               </div>
-              <CardTitle className="text-2xl">Senha redefinida!</CardTitle>
+              <CardTitle className="text-2xl" data-testid="success-message">
+                Senha redefinida!
+              </CardTitle>
               <CardDescription className="text-base">
                 Sua senha foi alterada com sucesso. Voce ja pode fazer login com
                 sua nova senha.
@@ -226,6 +230,7 @@ export function ResetPassword() {
                     id="newPassword"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Nova senha"
+                    data-testid="password-input"
                     {...register('newPassword', {
                       onChange: (e) =>
                         passwordValidation.validate(e.target.value),
@@ -274,6 +279,7 @@ export function ResetPassword() {
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirme a senha"
+                    data-testid="confirm-password-input"
                     {...register('confirmPassword')}
                     aria-invalid={errors.confirmPassword ? 'true' : 'false'}
                     className={cn(
@@ -310,7 +316,12 @@ export function ResetPassword() {
               </FormField>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+                data-testid="submit-button"
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
