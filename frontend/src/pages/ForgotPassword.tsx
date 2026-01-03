@@ -64,7 +64,9 @@ export function ForgotPassword() {
                   />
                 </div>
               </div>
-              <CardTitle className="text-2xl">Verifique seu email</CardTitle>
+              <CardTitle className="text-2xl" data-testid="success-message">
+                Verifique seu email
+              </CardTitle>
               <CardDescription className="text-base">
                 Se o email{' '}
                 <span className="font-medium text-foreground">
@@ -152,6 +154,7 @@ export function ForgotPassword() {
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
+                  data-testid="email-input"
                   {...register('email')}
                   aria-invalid={errors.email ? 'true' : 'false'}
                   aria-describedby={errors.email ? 'email-error' : 'email-hint'}
@@ -159,7 +162,12 @@ export function ForgotPassword() {
               </FormField>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+                data-testid="submit-button"
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -172,7 +180,7 @@ export function ForgotPassword() {
                   </>
                 )}
               </Button>
-              <Link to="/login" className="w-full">
+              <Link to="/login" className="w-full" data-testid="back-to-login">
                 <Button variant="ghost" className="w-full">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar para login
