@@ -16,6 +16,9 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Test configuration for domain management tests
+ *
+ * @note Timeouts are increased for Railway environment which has higher latency
+ * @see #1151 - E2E test fixes for Railway CI
  */
 const TEST_CONFIG = {
   // System Admin credentials - use environment variables in production
@@ -31,12 +34,13 @@ const TEST_CONFIG = {
     maxUsers: 10,
   },
 
-  // Timeouts
+  // Timeouts - increased for Railway environment
   timeouts: {
-    navigation: 10000,
-    action: 5000,
-    dataLoad: 8000,
-    dialog: 3000,
+    navigation: 15000,
+    action: 10000,
+    dataLoad: 15000,
+    dialog: 5000,
+    pageLoad: 20000,
   },
 };
 
@@ -201,8 +205,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Wait for data to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the domain table to be visible (indicates data loaded)
+    const domainTable = page.locator('table, [data-testid="domain-table"]');
+    await domainTable
+      .or(page.locator('text=No domains registered yet'))
+      .first()
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.dataLoad });
 
     // Find a domain row with actions menu (use data-testid pattern for resilience)
     const actionsButton = page
@@ -233,22 +241,29 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
+    // Wait for the page to fully load before checking elements
+    await page.waitForLoadState('networkidle');
+
     // Verify Domain Information card is visible (use data-testid for resilience)
     const domainInfoCard = page.locator('[data-testid="domain-info-card"]');
     await expect(domainInfoCard).toBeVisible({
-      timeout: TEST_CONFIG.timeouts.action,
+      timeout: TEST_CONFIG.timeouts.pageLoad,
     });
 
     // Verify Domain Users card is visible (use data-testid for resilience)
     const domainUsersCard = page.locator('[data-testid="domain-users-card"]');
-    await expect(domainUsersCard).toBeVisible();
+    await expect(domainUsersCard).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
 
     // Verify status badge is visible (Active or Inactive)
     const statusBadge = page
       .locator('text=Active')
       .or(page.locator('text=Inactive'))
       .first();
-    await expect(statusBadge).toBeVisible();
+    await expect(statusBadge).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
 
     console.log('View domain details: PASSED');
   });
@@ -269,8 +284,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Wait for data to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the domain table to be visible (indicates data loaded)
+    const domainTable = page.locator('table, [data-testid="domain-table"]');
+    await domainTable
+      .or(page.locator('text=No domains registered yet'))
+      .first()
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.dataLoad });
 
     // Find a domain row with actions menu (use data-testid pattern for resilience)
     const actionsButton = page
@@ -288,6 +307,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const viewDetailsOption = page.locator(
       '[data-testid="view-details-option"]',
     );
+    await expect(viewDetailsOption).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dialog,
+    });
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -295,12 +317,15 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
+    // Wait for the page to fully load
+    await page.waitForLoadState('networkidle');
+
     // Find "Assign Manager" or "Change Manager" button (use data-testid for resilience)
     const assignManagerButton = page.locator(
       '[data-testid="assign-manager-button"]',
     );
     await expect(assignManagerButton).toBeVisible({
-      timeout: TEST_CONFIG.timeouts.action,
+      timeout: TEST_CONFIG.timeouts.pageLoad,
     });
 
     // Click the button
@@ -351,8 +376,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Wait for data to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the domain table to be visible (indicates data loaded)
+    const domainTable = page.locator('table, [data-testid="domain-table"]');
+    await domainTable
+      .or(page.locator('text=No domains registered yet'))
+      .first()
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.dataLoad });
 
     // Find a domain row with actions menu (use data-testid pattern for resilience)
     const actionsButton = page
@@ -370,6 +399,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const viewDetailsOption = page.locator(
       '[data-testid="view-details-option"]',
     );
+    await expect(viewDetailsOption).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dialog,
+    });
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -377,14 +409,14 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
+    // Wait for the page to fully load
+    await page.waitForLoadState('networkidle');
+
     // Verify Domain Users card is visible (use data-testid for resilience)
     const domainUsersTitle = page.locator('[data-testid="domain-users-title"]');
     await expect(domainUsersTitle).toBeVisible({
-      timeout: TEST_CONFIG.timeouts.action,
+      timeout: TEST_CONFIG.timeouts.pageLoad,
     });
-
-    // Wait for users to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
 
     // Check for either users list or empty state
     const hasUsers = await page
@@ -401,7 +433,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
 
     // Verify user count is displayed (use data-testid for resilience)
     const userCount = page.locator('[data-testid="domain-users-count"]');
-    await expect(userCount).toBeVisible();
+    await expect(userCount).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.action,
+    });
 
     console.log('View domain users: PASSED');
   });
@@ -424,8 +458,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Wait for data to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the domain table to be visible (indicates data loaded)
+    const domainTable = page.locator('table, [data-testid="domain-table"]');
+    await domainTable
+      .or(page.locator('text=No domains registered yet'))
+      .first()
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.dataLoad });
 
     // Find a domain row with actions menu (use data-testid pattern for resilience)
     const actionsButton = page
@@ -452,6 +490,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
       const viewDetailsOption = page.locator(
         '[data-testid="view-details-option"]',
       );
+      await expect(viewDetailsOption).toBeVisible({
+        timeout: TEST_CONFIG.timeouts.dialog,
+      });
       await viewDetailsOption.click();
 
       // Wait for detail page
@@ -459,12 +500,15 @@ test.describe('Admin Domain Management - Happy Path', () => {
         timeout: TEST_CONFIG.timeouts.navigation,
       });
 
+      // Wait for the page to fully load
+      await page.waitForLoadState('networkidle');
+
       // Find edit button on detail page
       const editButton = page.locator(
         'button:has-text("Edit"), button[aria-label*="Edit"]',
       );
       await expect(editButton).toBeVisible({
-        timeout: TEST_CONFIG.timeouts.action,
+        timeout: TEST_CONFIG.timeouts.pageLoad,
       });
       await editButton.click();
     } else {
@@ -540,8 +584,12 @@ test.describe('Admin Domain Management - Happy Path', () => {
     await page.goto('/admin/domains');
     await page.waitForLoadState('networkidle');
 
-    // Wait for data to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the domain table to be visible (indicates data loaded)
+    const domainTable = page.locator('table, [data-testid="domain-table"]');
+    await domainTable
+      .or(page.locator('text=No domains registered yet'))
+      .first()
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.dataLoad });
 
     // Find a domain row with actions menu (use data-testid pattern for resilience)
     const actionsButton = page
@@ -559,6 +607,9 @@ test.describe('Admin Domain Management - Happy Path', () => {
     const viewDetailsOption = page.locator(
       '[data-testid="view-details-option"]',
     );
+    await expect(viewDetailsOption).toBeVisible({
+      timeout: TEST_CONFIG.timeouts.dialog,
+    });
     await viewDetailsOption.click();
 
     // Wait for detail page
@@ -566,13 +617,16 @@ test.describe('Admin Domain Management - Happy Path', () => {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Wait for statistics to load
-    await page.waitForTimeout(TEST_CONFIG.timeouts.dataLoad);
+    // Wait for the page to fully load
+    await page.waitForLoadState('networkidle');
 
     // Check for statistics indicators (use data-testid for resilience)
     // Look for user count display
     const userCountElement = page.locator('[data-testid="domain-users-count"]');
-    const hasUserCount = await userCountElement.isVisible().catch(() => false);
+    const hasUserCount = await userCountElement
+      .waitFor({ state: 'visible', timeout: TEST_CONFIG.timeouts.pageLoad })
+      .then(() => true)
+      .catch(() => false);
 
     // Look for domain info card with stats (use data-testid for resilience)
     const domainInfoCard = page.locator('[data-testid="domain-info-card"]');
