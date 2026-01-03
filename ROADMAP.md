@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 591/625 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 592/626 (95%) | **Deploy:** LIVE
 
 ---
 
@@ -83,9 +83,9 @@ _Nenhuma issue crítica aberta._
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 625   |
+| Issues Totais     | 626   |
 | Issues Abertas    | 34    |
-| Issues Fechadas   | 591   |
+| Issues Fechadas   | 592   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 81%   |
