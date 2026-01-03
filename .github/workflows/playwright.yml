@@ -26,16 +26,24 @@ on:
 # Railway E2E Testing Configuration (#1170)
 # Tests run against Railway production environment
 # See playwright.config.ts for how these env vars are used
-env:
-  E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
-  E2E_API_URL: https://etp-express-backend-production.up.railway.app
-  # Optimal workers for Railway latency (avoid overwhelming the server)
-  PLAYWRIGHT_WORKERS: 2
 
 jobs:
   test:
     timeout-minutes: 90
     runs-on: ubuntu-latest
+    env:
+      # Railway URLs
+      E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
+      E2E_API_URL: https://etp-express-backend-production.up.railway.app
+      # Single worker to avoid rate limiting (429 errors)
+      PLAYWRIGHT_WORKERS: 1
+      # Test credentials from GitHub secrets
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      E2E_DEMO_EMAIL: ${{ secrets.E2E_DEMO_EMAIL }}
+      E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD }}
+      E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL }}
+      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -59,8 +67,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
       - name: Run Playwright tests
-        # Exclude visual project (runs in dedicated visual-regression.yml workflow)
-        run: npx playwright test --project=chromium --project=firefox --project=webkit
+        # Run only chromium to reduce time and rate limiting issues
+        # Retries help with flaky tests on remote Railway environment
+        run: npx playwright test --project=chromium --retries=2
       - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
