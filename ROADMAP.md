@@ -1,16 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 593/626 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 594/626 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (33)
+## Issues Abertas (32)
 
 ### P0 - Critical (0 issues)
 
 _Nenhuma issue crítica aberta._
 
-### P1 - High Priority (19 issues)
+### P1 - High Priority (18 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -23,7 +23,6 @@ _Nenhuma issue crítica aberta._
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
 | #1154 | [E2E] Fix Export tests (PDF/DOCX) - 6 failing tests              |
 | #1152 | [E2E] Fix Manager Dashboard tests - 5 failing tests              |
-| #1151 | [E2E] Fix Admin Domains tests - 5 failing tests                  |
 | #1150 | [E2E] Fix ETP Lifecycle tests - 7 failing tests                  |
 | #1149 | [E2E] Fix ETP Edit tests - 7 failing tests                       |
 | #1148 | [E2E] Fix Auth Logout tests - 7 failing tests                    |
@@ -83,8 +82,8 @@ _Nenhuma issue crítica aberta._
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 626   |
-| Issues Abertas    | 33    |
-| Issues Fechadas   | 593   |
+| Issues Abertas    | 32    |
+| Issues Fechadas   | 594   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 81%   |
