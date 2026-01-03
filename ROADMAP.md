@@ -1,18 +1,19 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 573/623 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 577/625 (92%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (50)
+## Issues Abertas (48)
 
-### P0 - Critical (1 issue)
+### P0 - Critical (2 issues)
 
-| #     | Issue                                             |
-| ----- | ------------------------------------------------- |
-| #1103 | tracking: E2E Playwright test failures (69 tests) |
+| #     | Issue                                                           |
+| ----- | --------------------------------------------------------------- |
+| #1177 | [Security][P0] Fix HIGH severity vulnerability in qs dependency |
+| #1103 | tracking: E2E Playwright test failures (69 tests)               |
 
-### P1 - High Priority (30 issues)
+### P1 - High Priority (27 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -25,9 +26,7 @@
 | #1160 | [Riscos] Implementar analise de riscos parametrizada             |
 | #1159 | [Precos] Implementar calculo de media entre fontes               |
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
-| #1155 | [E2E] Fix Manager Users tests - 3 failing tests                  |
 | #1154 | [E2E] Fix Export tests (PDF/DOCX) - 6 failing tests              |
-| #1153 | [E2E] Fix Auth Password-Reset tests - 4 failing tests            |
 | #1152 | [E2E] Fix Manager Dashboard tests - 5 failing tests              |
 | #1151 | [E2E] Fix Admin Domains tests - 5 failing tests                  |
 | #1150 | [E2E] Fix ETP Lifecycle tests - 7 failing tests                  |
@@ -44,7 +43,6 @@
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
 | #1074 | [QA] Implementar chaos engineering                               |
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
-| #1063 | [Gov-API] Diferenciar sem resultados de erro de servico          |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
 ### P2 - Medium Priority (15 issues)
@@ -100,9 +98,9 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 623   |
-| Issues Abertas    | 50    |
-| Issues Fechadas   | 573   |
+| Issues Totais     | 625   |
+| Issues Abertas    | 48    |
+| Issues Fechadas   | 577   |
 | Progresso         | 92%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
