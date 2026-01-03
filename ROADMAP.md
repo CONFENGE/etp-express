@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-02 | **Progresso:** 573/619 (93%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 573/622 (92%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (46)
+## Issues Abertas (49)
 
 ### P0 - Critical (1 issue)
 
@@ -12,10 +12,13 @@
 | ----- | ------------------------------------------------- |
 | #1103 | tracking: E2E Playwright test failures (69 tests) |
 
-### P1 - High Priority (26 issues)
+### P1 - High Priority (29 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1172 | [E2E] Fix Auth Session tests for Railway environment             |
+| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment          |
+| #1170 | [E2E/CI] Configure Railway environment variables in Playwright   |
 | #1162 | [UX] Implementar UI de historico de versoes                      |
 | #1161 | [Templates] Criar modelos pre-configurados por tipo              |
 | #1160 | [Riscos] Implementar analise de riscos parametrizada             |
@@ -96,10 +99,10 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 619   |
-| Issues Abertas    | 46    |
+| Issues Totais     | 622   |
+| Issues Abertas    | 49    |
 | Issues Fechadas   | 573   |
-| Progresso         | 93%   |
+| Progresso         | 92%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2128  |
