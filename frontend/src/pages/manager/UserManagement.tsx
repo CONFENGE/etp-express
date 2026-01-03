@@ -239,6 +239,7 @@ export function UserManagement() {
             onClick={() => setCreateDialogOpen(true)}
             disabled={isQuotaExhausted}
             className="w-full sm:w-auto"
+            data-testid="new-user-button"
           >
             <Plus className="mr-2 h-4 w-4" />
             New User
@@ -279,6 +280,7 @@ export function UserManagement() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9 pr-9"
                     aria-label="Search users"
+                    data-testid="search-users-input"
                   />
                   {searchQuery && (
                     <Button
@@ -287,6 +289,7 @@ export function UserManagement() {
                       className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
                       onClick={() => setSearchQuery('')}
                       aria-label="Clear search"
+                      data-testid="clear-search-button"
                     >
                       <X className="h-3 w-3" />
                     </Button>
