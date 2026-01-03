@@ -1,16 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 592/626 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 593/626 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (34)
+## Issues Abertas (33)
 
 ### P0 - Critical (0 issues)
 
 _Nenhuma issue crítica aberta._
 
-### P1 - High Priority (20 issues)
+### P1 - High Priority (19 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -28,7 +28,6 @@ _Nenhuma issue crítica aberta._
 | #1149 | [E2E] Fix ETP Edit tests - 7 failing tests                       |
 | #1148 | [E2E] Fix Auth Logout tests - 7 failing tests                    |
 | #1147 | [E2E] Fix Auth Role-Access tests - 9 failing tests               |
-| #1146 | [E2E] Fix ETP CRUD tests - 13 failing tests                      |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
 | #1074 | [QA] Implementar chaos engineering                               |
@@ -84,8 +83,8 @@ _Nenhuma issue crítica aberta._
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 626   |
-| Issues Abertas    | 34    |
-| Issues Fechadas   | 592   |
+| Issues Abertas    | 33    |
+| Issues Fechadas   | 593   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 81%   |
