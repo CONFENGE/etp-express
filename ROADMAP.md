@@ -1,24 +1,21 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 579/625 (93%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 591/625 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (46)
+## Issues Abertas (34)
 
-### P0 - Critical (1 issue)
+### P0 - Critical (0 issues)
 
-| #     | Issue                                             |
-| ----- | ------------------------------------------------- |
-| #1103 | tracking: E2E Playwright test failures (69 tests) |
+_Nenhuma issue crítica aberta._
 
-### P1 - High Priority (26 issues)
+### P1 - High Priority (20 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment             |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment          |
-| #1170 | [E2E/CI] Configure Railway environment variables in Playwright   |
 | #1162 | [UX] Implementar UI de historico de versoes                      |
 | #1161 | [Templates] Criar modelos pre-configurados por tipo              |
 | #1160 | [Riscos] Implementar analise de riscos parametrizada             |
@@ -33,17 +30,12 @@
 | #1147 | [E2E] Fix Auth Role-Access tests - 9 failing tests               |
 | #1146 | [E2E] Fix ETP CRUD tests - 13 failing tests                      |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
-| #1115 | fix(e2e): Address remaining 32 E2E test failures                 |
-| #1100 | fix(e2e): ETP module tests failing (crud, edit, lifecycle)       |
-| #1099 | fix(e2e): Auth module tests failing                              |
-| #1098 | fix(e2e): Admin module tests failing                             |
-| #1088 | [E2E] Fix 92 Playwright test failures in CI                      |
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
 | #1074 | [QA] Implementar chaos engineering                               |
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (15 issues)
+### P2 - Medium Priority (10 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -51,11 +43,6 @@
 | #1165 | [Precos] Persistir historico SINAPI/SICRO em banco de dados      |
 | #1164 | [Dashboard] Adicionar metricas avancadas                         |
 | #1163 | [Conformidade] Adicionar templates baseados em modelos TCU/TCES  |
-| #1136 | [E2E] Fix API connectivity tests for Railway environment         |
-| #1135 | [E2E] Fix Auth/Role access tests for Railway environment         |
-| #1134 | [E2E] Fix Export (PDF/DOCX) tests for Railway environment        |
-| #1133 | [E2E] Fix ETP CRUD tests for Railway environment                 |
-| #1132 | [E2E] Fix Manager panel selectors for Railway environment        |
 | #1072 | [Observabilidade] Adicionar retry automatico para emails         |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs            |
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
@@ -97,9 +84,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 625   |
-| Issues Abertas    | 46    |
-| Issues Fechadas   | 579   |
-| Progresso         | 93%   |
+| Issues Abertas    | 34    |
+| Issues Fechadas   | 591   |
+| Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 81%   |
 | Backend Tests     | 2128  |
