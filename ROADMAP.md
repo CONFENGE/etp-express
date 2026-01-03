@@ -1,17 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 577/625 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-03 | **Progresso:** 578/625 (93%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (48)
+## Issues Abertas (47)
 
-### P0 - Critical (2 issues)
+### P0 - Critical (1 issue)
 
-| #     | Issue                                                           |
-| ----- | --------------------------------------------------------------- |
-| #1177 | [Security][P0] Fix HIGH severity vulnerability in qs dependency |
-| #1103 | tracking: E2E Playwright test failures (69 tests)               |
+| #     | Issue                                             |
+| ----- | ------------------------------------------------- |
+| #1103 | tracking: E2E Playwright test failures (69 tests) |
 
 ### P1 - High Priority (27 issues)
 
@@ -99,9 +98,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 625   |
-| Issues Abertas    | 48    |
-| Issues Fechadas   | 577   |
-| Progresso         | 92%   |
+| Issues Abertas    | 47    |
+| Issues Fechadas   | 578   |
+| Progresso         | 93%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 76%   |
 | Backend Tests     | 2128  |
