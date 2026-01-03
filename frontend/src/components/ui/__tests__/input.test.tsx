@@ -51,10 +51,10 @@ describe('Input', () => {
       expect(input).toHaveClass('text-text-apple-primary');
     });
 
-    it('should use text-apple-secondary for placeholder', () => {
+    it('should use WCAG AA compliant color for placeholder', () => {
       render(<Input placeholder="Test" data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('placeholder:text-text-apple-secondary');
+      expect(input).toHaveClass('placeholder:text-text-apple-placeholder');
     });
 
     it('should use smooth transitions with GPU acceleration', () => {
@@ -78,8 +78,9 @@ describe('Input', () => {
       render(<Input disabled />);
       const input = screen.getByRole('textbox');
       expect(input).toBeDisabled();
-      expect(input).toHaveClass('disabled:opacity-50');
+      expect(input).toHaveClass('disabled:cursor-not-allowed');
       expect(input).toHaveClass('disabled:bg-surface-secondary');
+      expect(input).toHaveClass('disabled:text-text-apple-tertiary');
     });
 
     it('should accept value changes', async () => {

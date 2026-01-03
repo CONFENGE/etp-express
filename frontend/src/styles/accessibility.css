@@ -326,11 +326,29 @@ a:focus-visible {
  * Clear visual feedback for all states
  * ======================================== */
 
-/* Disabled state with sufficient contrast */
+/* Disabled state with sufficient contrast - WCAG 2.1 AA compliant */
 [disabled],
 .disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  /* Note: opacity is intentionally NOT set here to maintain contrast ratios.
+     Each component should define its own disabled colors that meet WCAG 2.1 AA (4.5:1). */
+}
+
+/* ========================================
+ * Placeholder Colors - WCAG 2.1 AA Compliant
+ * Minimum 4.5:1 contrast ratio for normal text
+ * ======================================== */
+::placeholder {
+  color: var(--text-placeholder, #767676);
+  opacity: 1; /* Override browser defaults */
+}
+
+:-ms-input-placeholder {
+  color: var(--text-placeholder, #767676);
+}
+
+::-ms-input-placeholder {
+  color: var(--text-placeholder, #767676);
 }
 
 /* Hover state enhancement */
