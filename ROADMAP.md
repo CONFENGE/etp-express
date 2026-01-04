@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 598/633 (94%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 599/633 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (35)
+## Issues Abertas (34)
 
 ### P1 - High Priority (17 issues)
 
@@ -28,11 +28,10 @@
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (14 issues)
+### P2 - Medium Priority (13 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1195 | fix(frontend): WarningBanner usa cores hardcoded                 |
 | #1193 | fix(frontend): header com z-index incorreto sobrepoe sidebar     |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
@@ -81,9 +80,9 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 35    |
-| Issues Fechadas   | 598   |
-| Progresso         | 94%   |
+| Issues Abertas    | 34    |
+| Issues Fechadas   | 599   |
+| Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2128  |
