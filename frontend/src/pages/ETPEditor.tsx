@@ -286,7 +286,7 @@ export function ETPEditor() {
         });
       }, 500);
 
-      const blob = await exportPDF(id, { signal });
+      const result = await exportPDF(id, { signal });
 
       clearInterval(progressInterval);
 
@@ -296,11 +296,11 @@ export function ETPEditor() {
       // Update progress: downloading (80-100%)
       setExportState((s) => ({ ...s, progress: 90, stage: 'downloading' }));
 
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
+      // Create download link using filename from backend (#1154)
+      const url = window.URL.createObjectURL(result.blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${currentETP.title || 'ETP'}.pdf`;
+      link.download = result.filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -365,7 +365,7 @@ export function ETPEditor() {
         });
       }, 500);
 
-      const blob = await exportDocx(id, { signal });
+      const result = await exportDocx(id, { signal });
 
       clearInterval(progressInterval);
 
@@ -375,11 +375,11 @@ export function ETPEditor() {
       // Update progress: downloading (80-100%)
       setExportState((s) => ({ ...s, progress: 90, stage: 'downloading' }));
 
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
+      // Create download link using filename from backend (#1154)
+      const url = window.URL.createObjectURL(result.blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${currentETP.title || 'ETP'}.docx`;
+      link.download = result.filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

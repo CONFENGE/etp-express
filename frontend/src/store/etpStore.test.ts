@@ -610,13 +610,18 @@ describe('etpStore', () => {
       const mockBlob = new Blob(['mock docx content'], {
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       });
-      vi.mocked(api.get).mockResolvedValue({ data: mockBlob });
+      vi.mocked(api.get).mockResolvedValue({
+        data: mockBlob,
+        headers: {
+          'content-disposition': 'attachment; filename="ETP-etp-1.docx"',
+        },
+      });
 
       const { result } = renderHook(() => useETPStore());
 
-      let blob: Blob | undefined;
+      let exportResult: { blob: Blob; filename: string } | undefined;
       await act(async () => {
-        blob = await result.current.exportDocx('etp-1');
+        exportResult = await result.current.exportDocx('etp-1');
       });
 
       await waitFor(() => {
@@ -626,7 +631,8 @@ describe('etpStore', () => {
       expect(api.get).toHaveBeenCalledWith('/export/etp/etp-1/docx', {
         responseType: 'blob',
       });
-      expect(blob).toEqual(mockBlob);
+      expect(exportResult?.blob).toEqual(mockBlob);
+      expect(exportResult?.filename).toBe('ETP-etp-1.docx');
       expect(result.current.error).toBeNull();
     });
 
@@ -658,7 +664,12 @@ describe('etpStore', () => {
       const mockBlob = new Blob(['mock pdf content'], {
         type: 'application/pdf',
       });
-      vi.mocked(api.post).mockResolvedValue({ data: mockBlob });
+      vi.mocked(api.post).mockResolvedValue({
+        data: mockBlob,
+        headers: {
+          'content-disposition': 'attachment; filename="ETP-etp-1.pdf"',
+        },
+      });
 
       const { result } = renderHook(() => useETPStore());
       const abortController = new AbortController();
@@ -687,7 +698,12 @@ describe('etpStore', () => {
       const mockBlob = new Blob(['mock docx content'], {
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       });
-      vi.mocked(api.get).mockResolvedValue({ data: mockBlob });
+      vi.mocked(api.get).mockResolvedValue({
+        data: mockBlob,
+        headers: {
+          'content-disposition': 'attachment; filename="ETP-etp-1.docx"',
+        },
+      });
 
       const { result } = renderHook(() => useETPStore());
       const abortController = new AbortController();
