@@ -11,6 +11,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bullmq';
 import { GovDataSyncService } from './gov-data-sync.service';
 import {
+  SinapiService,
+  SinapiDataStatus,
+} from '../gov-api/sinapi/sinapi.service';
+import { SicroService, SicroDataStatus } from '../gov-api/sicro/sicro.service';
+import {
   GOV_DATA_SYNC_QUEUE,
   SINAPI_SYNC_JOB,
   SICRO_SYNC_JOB,
@@ -28,6 +33,26 @@ describe('GovDataSyncService', () => {
     getDelayedCount: jest.Mock;
     getJobs: jest.Mock;
   };
+  let mockSinapiService: jest.Mocked<Partial<SinapiService>>;
+  let mockSicroService: jest.Mocked<Partial<SicroService>>;
+
+  const mockSinapiStatus: SinapiDataStatus = {
+    source: 'sinapi',
+    dataLoaded: true,
+    itemCount: 100,
+    loadedMonths: ['DF:2024-01:INSUMO'],
+    lastUpdate: new Date(),
+    message: 'SINAPI data loaded: 100 items from 1 month(s)',
+  };
+
+  const mockSicroStatus: SicroDataStatus = {
+    source: 'sicro',
+    dataLoaded: true,
+    itemCount: 50,
+    loadedMonths: ['DF:2024-01:COMPOSICAO:RODOVIARIO'],
+    lastUpdate: new Date(),
+    message: 'SICRO data loaded: 50 items from 1 month(s)',
+  };
 
   beforeEach(async () => {
     mockQueue = {
@@ -40,12 +65,30 @@ describe('GovDataSyncService', () => {
       getJobs: jest.fn().mockResolvedValue([]),
     };
 
+    mockSinapiService = {
+      getDataStatus: jest.fn().mockReturnValue(mockSinapiStatus),
+      hasData: jest.fn().mockReturnValue(true),
+    };
+
+    mockSicroService = {
+      getDataStatus: jest.fn().mockReturnValue(mockSicroStatus),
+      hasData: jest.fn().mockReturnValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GovDataSyncService,
         {
           provide: getQueueToken(GOV_DATA_SYNC_QUEUE),
           useValue: mockQueue,
+        },
+        {
+          provide: SinapiService,
+          useValue: mockSinapiService,
+        },
+        {
+          provide: SicroService,
+          useValue: mockSicroService,
         },
       ],
     }).compile();
@@ -342,6 +385,77 @@ describe('GovDataSyncService', () => {
 
     it('should have scheduleCacheRefresh method', () => {
       expect(service.scheduleCacheRefresh).toBeDefined();
+    });
+  });
+
+  describe('getDataStatus (#1062)', () => {
+    it('should return combined status when all data loaded', () => {
+      const status = service.getDataStatus();
+
+      expect(status.sinapi).toEqual(mockSinapiStatus);
+      expect(status.sicro).toEqual(mockSicroStatus);
+      expect(status.allDataLoaded).toBe(true);
+      expect(status.summary).toContain('All data loaded');
+    });
+
+    it('should return not loaded status when no data', () => {
+      (mockSinapiService.getDataStatus as jest.Mock).mockReturnValue({
+        source: 'sinapi',
+        dataLoaded: false,
+        itemCount: 0,
+        loadedMonths: [],
+        lastUpdate: null,
+        message: 'SINAPI data not loaded.',
+      });
+      (mockSicroService.getDataStatus as jest.Mock).mockReturnValue({
+        source: 'sicro',
+        dataLoaded: false,
+        itemCount: 0,
+        loadedMonths: [],
+        lastUpdate: null,
+        message: 'SICRO data not loaded.',
+      });
+
+      const status = service.getDataStatus();
+
+      expect(status.allDataLoaded).toBe(false);
+      expect(status.summary).toContain('No data loaded');
+    });
+
+    it('should return partial status when only SINAPI loaded', () => {
+      (mockSicroService.getDataStatus as jest.Mock).mockReturnValue({
+        source: 'sicro',
+        dataLoaded: false,
+        itemCount: 0,
+        loadedMonths: [],
+        lastUpdate: null,
+        message: 'SICRO data not loaded.',
+      });
+
+      const status = service.getDataStatus();
+
+      expect(status.allDataLoaded).toBe(false);
+      expect(status.summary).toContain('Partial data');
+      expect(status.summary).toContain('SINAPI');
+      expect(status.summary).toContain('Missing: SICRO');
+    });
+  });
+
+  describe('getSinapiStatus (#1062)', () => {
+    it('should return SINAPI status', () => {
+      const status = service.getSinapiStatus();
+
+      expect(status).toEqual(mockSinapiStatus);
+      expect(mockSinapiService.getDataStatus).toHaveBeenCalled();
+    });
+  });
+
+  describe('getSicroStatus (#1062)', () => {
+    it('should return SICRO status', () => {
+      const status = service.getSicroStatus();
+
+      expect(status).toEqual(mockSicroStatus);
+      expect(mockSicroService.getDataStatus).toHaveBeenCalled();
     });
   });
 });

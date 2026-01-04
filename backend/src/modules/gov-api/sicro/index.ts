@@ -8,7 +8,7 @@
 export { SicroModule } from './sicro.module';
 
 // Service
-export { SicroService } from './sicro.service';
+export { SicroService, SicroDataStatus } from './sicro.service';
 
 // Parser
 export { SicroParser, createSicroParser } from './sicro-parser';

@@ -23,6 +23,21 @@ import {
   getCurrentReferenceMonth,
   getCurrentQuarterReferenceMonth,
 } from './gov-data-sync.types';
+import {
+  SinapiService,
+  SinapiDataStatus,
+} from '../gov-api/sinapi/sinapi.service';
+import { SicroService, SicroDataStatus } from '../gov-api/sicro/sicro.service';
+
+/**
+ * Combined data status for all gov data sources
+ */
+export interface GovDataStatus {
+  sinapi: SinapiDataStatus;
+  sicro: SicroDataStatus;
+  allDataLoaded: boolean;
+  summary: string;
+}
 
 /**
  * Service for managing government data sync jobs
@@ -39,12 +54,19 @@ export class GovDataSyncService implements OnModuleInit {
   constructor(
     @InjectQueue(GOV_DATA_SYNC_QUEUE)
     private readonly syncQueue: Queue,
+    private readonly sinapiService: SinapiService,
+    private readonly sicroService: SicroService,
   ) {}
 
   /**
-   * Log service initialization
+   * Initialize service and trigger startup sync (#1062)
+   *
+   * Automatically triggers SINAPI/SICRO sync on startup to ensure
+   * data is available when users make searches. This prevents the
+   * scenario where searches return empty arrays because no one
+   * manually loaded the data.
    */
-  onModuleInit(): void {
+  async onModuleInit(): Promise<void> {
     this.logger.log('GovDataSyncService initialized');
     this.logger.log('Scheduled jobs:');
     this.logger.log(' - SINAPI: Monthly on day 5 at 03:00');
@@ -52,6 +74,49 @@ export class GovDataSyncService implements OnModuleInit {
       ' - SICRO: Quarterly on day 1 at 03:00 (Jan, Apr, Jul, Oct)',
     );
     this.logger.log(' - Cache refresh: Weekly on Sunday at 02:00');
+
+    // Trigger startup sync (#1062)
+    // This ensures data is loaded when the application starts
+    await this.triggerStartupSync();
+  }
+
+  /**
+   * Trigger startup sync for SINAPI and SICRO (#1062)
+   *
+   * Adds sync jobs to the queue on application startup.
+   * Jobs are queued with a small delay to avoid overloading the system
+   * during startup.
+   */
+  private async triggerStartupSync(): Promise<void> {
+    this.logger.log('Triggering startup sync for SINAPI and SICRO...');
+
+    try {
+      // Queue SINAPI sync with a small delay
+      const sinapiJobId = await this.addSinapiSyncJob({
+        mesReferencia: getCurrentReferenceMonth(),
+        tipo: 'ALL',
+        force: false, // Don't re-sync if already loaded
+      });
+      this.logger.log(`Startup SINAPI sync job queued: ${sinapiJobId}`);
+
+      // Queue SICRO sync
+      const sicroJobId = await this.addSicroSyncJob({
+        mesReferencia: getCurrentQuarterReferenceMonth(),
+        tipo: 'ALL',
+        force: false,
+      });
+      this.logger.log(`Startup SICRO sync job queued: ${sicroJobId}`);
+
+      this.logger.log('Startup sync jobs queued successfully');
+    } catch (error) {
+      // Don't fail startup if sync queueing fails
+      // The scheduled cron jobs will eventually sync the data
+      this.logger.warn(
+        `Startup sync queueing failed (will retry on scheduled cron): ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    }
   }
 
   /**
@@ -313,5 +378,70 @@ export class GovDataSyncService implements OnModuleInit {
     return this.addCacheRefreshJob({
       cacheType: cacheType || 'all',
     });
+  }
+
+  /**
+   * Get combined data status for SINAPI and SICRO (#1062)
+   *
+   * Returns comprehensive status of all gov data sources,
+   * useful for monitoring and debugging.
+   *
+   * @returns Combined data status
+   */
+  getDataStatus(): GovDataStatus {
+    const sinapiStatus = this.sinapiService.getDataStatus();
+    const sicroStatus = this.sicroService.getDataStatus();
+
+    const allDataLoaded = sinapiStatus.dataLoaded && sicroStatus.dataLoaded;
+
+    let summary: string;
+    if (allDataLoaded) {
+      summary = `All data loaded: SINAPI (${sinapiStatus.itemCount} items), SICRO (${sicroStatus.itemCount} items)`;
+    } else if (!sinapiStatus.dataLoaded && !sicroStatus.dataLoaded) {
+      summary =
+        'No data loaded. Sync jobs may be pending or failed. Check queue status.';
+    } else {
+      const loaded: string[] = [];
+      const notLoaded: string[] = [];
+
+      if (sinapiStatus.dataLoaded) {
+        loaded.push(`SINAPI (${sinapiStatus.itemCount} items)`);
+      } else {
+        notLoaded.push('SINAPI');
+      }
+
+      if (sicroStatus.dataLoaded) {
+        loaded.push(`SICRO (${sicroStatus.itemCount} items)`);
+      } else {
+        notLoaded.push('SICRO');
+      }
+
+      summary = `Partial data: ${loaded.join(', ')} loaded. Missing: ${notLoaded.join(', ')}`;
+    }
+
+    return {
+      sinapi: sinapiStatus,
+      sicro: sicroStatus,
+      allDataLoaded,
+      summary,
+    };
+  }
+
+  /**
+   * Get SINAPI data status (#1062)
+   *
+   * @returns SINAPI data status
+   */
+  getSinapiStatus(): SinapiDataStatus {
+    return this.sinapiService.getDataStatus();
+  }
+
+  /**
+   * Get SICRO data status (#1062)
+   *
+   * @returns SICRO data status
+   */
+  getSicroStatus(): SicroDataStatus {
+    return this.sicroService.getDataStatus();
   }
 }
