@@ -1,16 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 597/633 (94%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 598/633 (94%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (36)
-
-### P0 - Critical (1 issue)
-
-| #     | Issue                                                     |
-| ----- | --------------------------------------------------------- |
-| #1194 | fix(frontend): erro 'Cannot read properties of undefined' |
+## Issues Abertas (35)
 
 ### P1 - High Priority (17 issues)
 
@@ -87,8 +81,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 36    |
-| Issues Fechadas   | 597   |
+| Issues Abertas    | 35    |
+| Issues Fechadas   | 598   |
 | Progresso         | 94%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
