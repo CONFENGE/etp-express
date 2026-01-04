@@ -15,12 +15,13 @@ describe('ETPEditorProgress', () => {
     expect(screen.getByText('75%')).toBeInTheDocument();
   });
 
-  it('should render Progress component with correct value', () => {
-    const { container } = render(<ETPEditorProgress progress={60} />);
+  it('should render Progress component with correct value and data-testid', () => {
+    render(<ETPEditorProgress progress={60} />);
 
-    // Progress component from shadcn/ui uses [data-state] attribute
-    const progressBar = container.querySelector('[role="progressbar"]');
+    // Verify data-testid is present for E2E testing
+    const progressBar = screen.getByTestId('etp-progress');
     expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute('role', 'progressbar');
   });
 
   it('should handle 0% progress', () => {
