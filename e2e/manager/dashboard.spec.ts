@@ -4,7 +4,11 @@
  * @description Tests the Manager Dashboard functionality for DOMAIN_MANAGER users.
  * Validates access to dashboard, statistics display, and navigation to user management.
  *
- * @issue #937
+ * @requires The manager@confenge.com.br user must exist in the database.
+ * Run `railway run npm run seed:e2e:prod` in backend/ to create E2E test users.
+ * @see backend/scripts/seed-e2e-users.ts for user creation script
+ *
+ * @issue #937, #1152
  * @group e2e
  * @group manager
  * @priority P1
@@ -40,8 +44,13 @@ const TEST_CONFIG = {
  * 4. View recent users list
  * 5. Navigate to user management
  *
+ * Prerequisites:
+ * - Backend running on Railway production
+ * - E2E test users seeded via: railway run npm run seed:e2e:prod
+ * - GitHub secrets configured for E2E_MANAGER_EMAIL/PASSWORD
+ *
  * @requires-backend Requires backend running with domain manager user seeded
- * @skip-ci These tests are skipped in CI unless E2E infrastructure is configured
+ * @skip-ci These tests are skipped in CI unless E2E_API_URL is set
  */
 test.describe('Manager Dashboard - Happy Path', () => {
   // Skip in CI if no explicit configuration
