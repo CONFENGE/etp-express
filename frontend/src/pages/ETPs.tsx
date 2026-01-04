@@ -110,7 +110,7 @@ export function ETPs() {
               Gerencie seus Estudos Técnicos Preliminares
             </p>
           </div>
-          <Button asChild>
+          <Button asChild data-testid="new-etp-button">
             <Link to="/etps/new">
               <PlusCircle className="mr-2 h-4 w-4" />
               Novo ETP
@@ -173,7 +173,11 @@ export function ETPs() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredETPs.map((etp) => (
-              <Card key={etp.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={etp.id}
+                className="hover:shadow-md transition-shadow"
+                data-testid={`etp-card-${etp.id}`}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg flex-1 pr-2">
@@ -190,6 +194,7 @@ export function ETPs() {
                             size="icon"
                             className="h-8 w-8"
                             aria-label="Opções do ETP"
+                            data-testid={`etp-menu-${etp.id}`}
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
@@ -205,6 +210,7 @@ export function ETPs() {
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
                             onClick={() => handleDelete(etp)}
+                            data-testid={`etp-delete-${etp.id}`}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Excluir
