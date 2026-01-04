@@ -1,16 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 596/630 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 597/630 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (34)
+## Issues Abertas (33)
 
 ### P0 - Critical (0 issues)
 
 _Nenhuma issue crítica aberta._
 
-### P1 - High Priority (18 issues)
+### P1 - High Priority (17 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
@@ -24,7 +24,6 @@ _Nenhuma issue crítica aberta._
 | #1160 | [Riscos] Implementar analise de riscos parametrizada             |
 | #1159 | [Precos] Implementar calculo de media entre fontes               |
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
-| #1154 | [E2E] Fix Export tests (PDF/DOCX) - 6 failing tests              |
 | #1150 | [E2E] Fix ETP Lifecycle tests - 7 failing tests                  |
 | #1149 | [E2E] Fix ETP Edit tests - 7 failing tests                       |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
@@ -84,11 +83,11 @@ _Nenhuma issue crítica aberta._
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 630   |
-| Issues Abertas    | 34    |
-| Issues Fechadas   | 596   |
+| Issues Abertas    | 33    |
+| Issues Fechadas   | 597   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
-| Frontend Coverage | 81%   |
+| Frontend Coverage | 82%   |
 | Backend Tests     | 2128  |
 | Frontend Tests    | 1391  |
 | Total Tests       | 3519  |
