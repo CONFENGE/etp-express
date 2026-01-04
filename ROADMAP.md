@@ -1,14 +1,16 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 597/630 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 597/633 (94%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (33)
+## Issues Abertas (36)
 
-### P0 - Critical (0 issues)
+### P0 - Critical (1 issue)
 
-_Nenhuma issue crítica aberta._
+| #     | Issue                                                     |
+| ----- | --------------------------------------------------------- |
+| #1194 | fix(frontend): erro 'Cannot read properties of undefined' |
 
 ### P1 - High Priority (17 issues)
 
@@ -32,10 +34,12 @@ _Nenhuma issue crítica aberta._
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (12 issues)
+### P2 - Medium Priority (14 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1195 | fix(frontend): WarningBanner usa cores hardcoded                 |
+| #1193 | fix(frontend): header com z-index incorreto sobrepoe sidebar     |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1166 | [Precos] Ajustar schedule para atualizacao semanal               |
@@ -82,10 +86,10 @@ _Nenhuma issue crítica aberta._
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 630   |
-| Issues Abertas    | 33    |
+| Issues Totais     | 633   |
+| Issues Abertas    | 36    |
 | Issues Fechadas   | 597   |
-| Progresso         | 95%   |
+| Progresso         | 94%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2128  |
