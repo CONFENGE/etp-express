@@ -111,7 +111,8 @@ export function ETPEditor() {
 
   useEffect(() => {
     if (currentETP) {
-      const section = currentETP.sections.find(
+      // Defensive coding: handle undefined sections array (#1194)
+      const section = currentETP.sections?.find(
         (s) => s.sectionNumber === activeSection,
       );
       const sectionContent = section?.content || '';
@@ -161,8 +162,9 @@ export function ETPEditor() {
 
     setIsSaving(true);
     try {
+      // Defensive coding: handle undefined sections array (#1194)
       await updateETP(id, {
-        sections: currentETP.sections.map((s) =>
+        sections: (currentETP.sections ?? []).map((s) =>
           s.sectionNumber === activeSection ? { ...s, content } : s,
         ),
       });
