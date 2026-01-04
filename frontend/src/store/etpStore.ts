@@ -22,6 +22,33 @@ import {
 import { logger } from '@/lib/logger';
 import { getContextualErrorMessage } from '@/lib/api-errors';
 
+/**
+ * Result of export operations containing blob and filename from backend
+ */
+interface ExportResult {
+  blob: Blob;
+  filename: string;
+}
+
+/**
+ * Helper to extract filename from Content-Disposition header
+ */
+function extractFilenameFromHeader(
+  contentDisposition: string | null,
+  fallback: string,
+): string {
+  if (!contentDisposition) return fallback;
+
+  // Try to extract filename from Content-Disposition header
+  // Format: attachment; filename="ETP-uuid.pdf"
+  const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/i);
+  if (filenameMatch && filenameMatch[1]) {
+    return filenameMatch[1];
+  }
+
+  return fallback;
+}
+
 interface ETFState {
   etps: ETP[];
   currentETP: ETP | null;
@@ -67,8 +94,11 @@ interface ETFState {
   exportPDF: (
     id: string,
     options?: Partial<ExportOptions> & { signal?: AbortSignal },
-  ) => Promise<Blob>;
-  exportDocx: (id: string, options?: { signal?: AbortSignal }) => Promise<Blob>;
+  ) => Promise<ExportResult>;
+  exportDocx: (
+    id: string,
+    options?: { signal?: AbortSignal },
+  ) => Promise<ExportResult>;
   exportJSON: (id: string) => Promise<string>;
 
   // References
@@ -537,7 +567,18 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         signal,
       });
       set({ isLoading: false });
-      return response.data as Blob;
+
+      // Extract filename from Content-Disposition header (#1154)
+      const contentDisposition = response.headers['content-disposition'];
+      const filename = extractFilenameFromHeader(
+        contentDisposition,
+        `ETP-${id}.pdf`,
+      );
+
+      return {
+        blob: response.data as Blob,
+        filename,
+      };
     } catch (error) {
       // Don't set error state for aborted requests
       if (axios.isCancel(error) || (error as Error).name === 'CanceledError') {
@@ -560,7 +601,18 @@ export const useETPStore = create<ETFState>((set, _get) => ({
         signal: options?.signal,
       });
       set({ isLoading: false });
-      return response.data as Blob;
+
+      // Extract filename from Content-Disposition header (#1154)
+      const contentDisposition = response.headers['content-disposition'];
+      const filename = extractFilenameFromHeader(
+        contentDisposition,
+        `ETP-${id}.docx`,
+      );
+
+      return {
+        blob: response.data as Blob,
+        filename,
+      };
     } catch (error) {
       // Don't set error state for aborted requests
       if (axios.isCancel(error) || (error as Error).name === 'CanceledError') {
