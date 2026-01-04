@@ -1,19 +1,21 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-03 | **Progresso:** 595/626 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 595/627 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (31)
+## Issues Abertas (32)
 
 ### P0 - Critical (0 issues)
 
 _Nenhuma issue crítica aberta._
 
-### P1 - High Priority (17 issues)
+### P1 - High Priority (18 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution   |
+| #1186 | [E2E] 429 Rate Limiting causing test timeouts in CI              |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment             |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment          |
 | #1162 | [UX] Implementar UI de historico de versoes                      |
@@ -25,7 +27,6 @@ _Nenhuma issue crítica aberta._
 | #1152 | [E2E] Fix Manager Dashboard tests - 5 failing tests              |
 | #1150 | [E2E] Fix ETP Lifecycle tests - 7 failing tests                  |
 | #1149 | [E2E] Fix ETP Edit tests - 7 failing tests                       |
-| #1148 | [E2E] Fix Auth Logout tests - 7 failing tests                    |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
 | #1074 | [QA] Implementar chaos engineering                               |
@@ -80,8 +81,8 @@ _Nenhuma issue crítica aberta._
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 626   |
-| Issues Abertas    | 31    |
+| Issues Totais     | 627   |
+| Issues Abertas    | 32    |
 | Issues Fechadas   | 595   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
