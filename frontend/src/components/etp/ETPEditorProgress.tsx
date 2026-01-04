@@ -12,7 +12,7 @@ export function ETPEditorProgress({ progress }: ETPEditorProgressProps) {
           <span className="text-sm font-medium">Progresso Geral</span>
           <span className="text-sm text-muted-foreground">{progress}%</span>
         </div>
-        <Progress value={progress} />
+        <Progress value={progress} data-testid="etp-progress" />
       </div>
     </div>
   );

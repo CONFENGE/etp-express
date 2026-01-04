@@ -165,6 +165,7 @@ export const ETPEditorContent = memo(function ETPEditorContent({
                   placeholder={`Digite o conteúdo da seção ${section.title}...`}
                   className="min-h-[300px] mt-2"
                   disabled={isGenerating}
+                  data-testid="etp-content-textarea"
                 />
               </div>
             </div>
