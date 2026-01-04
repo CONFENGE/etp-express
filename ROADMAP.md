@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 595/627 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 596/630 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (32)
+## Issues Abertas (34)
 
 ### P0 - Critical (0 issues)
 
@@ -14,6 +14,7 @@ _Nenhuma issue crítica aberta._
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1191 | [E2E] Create dedicated staging environment for E2E tests         |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution   |
 | #1186 | [E2E] 429 Rate Limiting causing test timeouts in CI              |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment             |
@@ -24,7 +25,6 @@ _Nenhuma issue crítica aberta._
 | #1159 | [Precos] Implementar calculo de media entre fontes               |
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
 | #1154 | [E2E] Fix Export tests (PDF/DOCX) - 6 failing tests              |
-| #1152 | [E2E] Fix Manager Dashboard tests - 5 failing tests              |
 | #1150 | [E2E] Fix ETP Lifecycle tests - 7 failing tests                  |
 | #1149 | [E2E] Fix ETP Edit tests - 7 failing tests                       |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
@@ -33,10 +33,12 @@ _Nenhuma issue crítica aberta._
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
 | #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
 
-### P2 - Medium Priority (10 issues)
+### P2 - Medium Priority (12 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
+| #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1166 | [Precos] Ajustar schedule para atualizacao semanal               |
 | #1165 | [Precos] Persistir historico SINAPI/SICRO em banco de dados      |
 | #1164 | [Dashboard] Adicionar metricas avancadas                         |
@@ -81,9 +83,9 @@ _Nenhuma issue crítica aberta._
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 627   |
-| Issues Abertas    | 32    |
-| Issues Fechadas   | 595   |
+| Issues Totais     | 630   |
+| Issues Abertas    | 34    |
+| Issues Fechadas   | 596   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 81%   |
