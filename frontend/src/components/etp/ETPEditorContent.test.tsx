@@ -94,7 +94,7 @@ describe('ETPEditorContent', () => {
     expect(onContentChange).toHaveBeenCalled();
   });
 
-  it('should render textarea with current content', () => {
+  it('should render textarea with current content and data-testid', () => {
     const currentContent = 'Conteúdo atual da seção';
 
     render(
@@ -109,6 +109,8 @@ describe('ETPEditorContent', () => {
 
     const textarea = screen.getByDisplayValue(currentContent);
     expect(textarea).toBeInTheDocument();
+    // Verify data-testid is present for E2E testing
+    expect(screen.getByTestId('etp-content-textarea')).toBeInTheDocument();
   });
 
   it('should render "Gerar Sugestao" button when onGenerateSection is provided', () => {
