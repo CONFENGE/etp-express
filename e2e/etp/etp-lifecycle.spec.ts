@@ -65,17 +65,20 @@ async function navigateToETPs(page: Page): Promise<void> {
  *
  * Uses the API directly instead of UI interactions to avoid header overlay issues
  * and ensure reliable ETP creation across all test environments.
+ *
+ * @note E2E_API_URL should be base URL without /api prefix (e.g., https://backend.up.railway.app)
  */
 async function createETP(
   page: Page,
   title: string,
   description?: string,
 ): Promise<string> {
-  // Get the base URL and auth token from the current page context
-  const baseUrl = process.env.E2E_API_URL || 'http://localhost:3001/api';
+  // Get the base URL - E2E_API_URL is the base without /api (see playwright.config.ts)
+  const baseUrl = process.env.E2E_API_URL || 'http://localhost:3001';
+  const apiPrefix = '/api';
 
   // Create ETP via API - more reliable than UI in CI environments
-  const response = await page.request.post(`${baseUrl}/etps`, {
+  const response = await page.request.post(`${baseUrl}${apiPrefix}/etps`, {
     data: {
       title,
       description: description || '',
