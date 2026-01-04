@@ -77,20 +77,23 @@ export function ETPEditorHeader({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold" data-testid="etp-title">
           {etpTitle}
           {isDirty && (
             <span
               className="ml-2 text-amber-500"
               title="Alterações não salvas"
               aria-label="Alterações não salvas"
+              data-testid="unsaved-indicator"
             >
               *
             </span>
           )}
         </h1>
         {etpDescription && (
-          <p className="text-muted-foreground">{etpDescription}</p>
+          <p className="text-muted-foreground" data-testid="etp-description">
+            {etpDescription}
+          </p>
         )}
       </div>
       <div className="flex gap-2">
@@ -159,7 +162,12 @@ export function ETPEditorHeader({
           </DropdownMenu>
         )}
 
-        <Button size="sm" onClick={onSave} disabled={isSaving}>
+        <Button
+          size="sm"
+          onClick={onSave}
+          disabled={isSaving}
+          data-testid="save-button"
+        >
           <Save className="mr-2 h-4 w-4" />
           {isSaving ? 'Salvando...' : 'Salvar'}
         </Button>

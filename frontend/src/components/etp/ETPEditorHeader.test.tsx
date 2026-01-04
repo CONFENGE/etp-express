@@ -4,13 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { ETPEditorHeader, type ExportState } from './ETPEditorHeader';
 
 describe('ETPEditorHeader', () => {
-  it('should render ETP title', () => {
+  it('should render ETP title with data-testid', () => {
     render(<ETPEditorHeader etpTitle="Test ETP Title" onSave={() => {}} />);
 
     expect(screen.getByText('Test ETP Title')).toBeInTheDocument();
+    expect(screen.getByTestId('etp-title')).toBeInTheDocument();
   });
 
-  it('should render ETP description when provided', () => {
+  it('should render ETP description when provided with data-testid', () => {
     render(
       <ETPEditorHeader
         etpTitle="Test Title"
@@ -20,6 +21,7 @@ describe('ETPEditorHeader', () => {
     );
 
     expect(screen.getByText('Test Description')).toBeInTheDocument();
+    expect(screen.getByTestId('etp-description')).toBeInTheDocument();
   });
 
   it('should not render description when not provided', () => {
@@ -31,13 +33,14 @@ describe('ETPEditorHeader', () => {
     expect(description).not.toBeInTheDocument();
   });
 
-  it('should call onSave when Save button is clicked', async () => {
+  it('should call onSave when Save button is clicked and have data-testid', async () => {
     const user = userEvent.setup();
     const onSave = vi.fn();
 
     render(<ETPEditorHeader etpTitle="Test Title" onSave={onSave} />);
 
-    const saveButton = screen.getByRole('button', { name: /salvar/i });
+    const saveButton = screen.getByTestId('save-button');
+    expect(saveButton).toBeInTheDocument();
     await user.click(saveButton);
 
     expect(onSave).toHaveBeenCalledTimes(1);
@@ -156,6 +159,35 @@ describe('ETPEditorHeader', () => {
 
     const exportButton = screen.getByRole('button', { name: /exportando/i });
     expect(exportButton).toBeDisabled();
+  });
+
+  // Unsaved changes indicator tests (#610)
+  describe('Unsaved Changes Indicator (#610)', () => {
+    it('should show unsaved indicator with data-testid when isDirty is true', () => {
+      render(
+        <ETPEditorHeader
+          etpTitle="Test Title"
+          onSave={() => {}}
+          isDirty={true}
+        />,
+      );
+
+      const indicator = screen.getByTestId('unsaved-indicator');
+      expect(indicator).toBeInTheDocument();
+      expect(indicator).toHaveTextContent('*');
+    });
+
+    it('should not show unsaved indicator when isDirty is false', () => {
+      render(
+        <ETPEditorHeader
+          etpTitle="Test Title"
+          onSave={() => {}}
+          isDirty={false}
+        />,
+      );
+
+      expect(screen.queryByTestId('unsaved-indicator')).not.toBeInTheDocument();
+    });
   });
 
   // Export progress tests (#612)

@@ -164,18 +164,16 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for editor to load
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    // Find the content textarea/editor
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
+    // Find the content textarea/editor using data-testid
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
 
     // Wait for content editor to be visible
-    await expect(contentEditor.first()).toBeVisible({
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
@@ -183,11 +181,11 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     const newContent = `Edited content for section test - ${Date.now()}`;
 
     // Clear and fill the content
-    await contentEditor.first().click();
-    await contentEditor.first().fill(newContent);
+    await contentEditor.click();
+    await contentEditor.fill(newContent);
 
     // Click save button
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await expect(saveButton).toBeVisible();
     await saveButton.click();
 
@@ -195,7 +193,7 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
     // Verify content is still there
-    await expect(contentEditor.first()).toHaveValue(newContent);
+    await expect(contentEditor).toHaveValue(newContent);
 
     console.log(`Section content edited and saved for ETP: ${etpId}`);
   });
@@ -220,16 +218,14 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for editor to load
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    // Find the content editor
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
-    await expect(contentEditor.first()).toBeVisible({
+    // Find the content editor using data-testid
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
@@ -237,11 +233,11 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     const uniqueContent = `Persistent content - ${Date.now()} - unique marker`;
 
     // Edit content
-    await contentEditor.first().click();
-    await contentEditor.first().fill(uniqueContent);
+    await contentEditor.click();
+    await contentEditor.fill(uniqueContent);
 
     // Save changes
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await saveButton.click();
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
@@ -250,20 +246,18 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for editor to reload
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    // Verify content persisted
-    const reloadedEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
-    await expect(reloadedEditor.first()).toBeVisible({
+    // Verify content persisted using data-testid
+    const reloadedEditor = page.locator('[data-testid="etp-content-textarea"]');
+    await expect(reloadedEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    const currentContent = await reloadedEditor.first().inputValue();
+    const currentContent = await reloadedEditor.inputValue();
     expect(currentContent).toContain(uniqueContent);
 
     console.log(`Content persisted after refresh for ETP: ${etpId}`);
@@ -291,25 +285,23 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for editor to load
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
 
     // Edit section 1 (default)
     const section1Content = `Section 1 content - ${Date.now()}`;
-    await expect(contentEditor.first()).toBeVisible({
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
-    await contentEditor.first().click();
-    await contentEditor.first().fill(section1Content);
+    await contentEditor.click();
+    await contentEditor.fill(section1Content);
 
     // Save section 1
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await saveButton.click();
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
@@ -323,9 +315,9 @@ test.describe('ETP Edit - All Fields (#952)', () => {
 
       // Edit section 2
       const section2Content = `Section 2 content - ${Date.now()}`;
-      await expect(contentEditor.first()).toBeVisible();
-      await contentEditor.first().click();
-      await contentEditor.first().fill(section2Content);
+      await expect(contentEditor).toBeVisible();
+      await contentEditor.click();
+      await contentEditor.fill(section2Content);
 
       // Save section 2
       await saveButton.click();
@@ -338,7 +330,7 @@ test.describe('ETP Edit - All Fields (#952)', () => {
       await section1Tab.click();
       await page.waitForTimeout(500);
 
-      const section1Value = await contentEditor.first().inputValue();
+      const section1Value = await contentEditor.inputValue();
       expect(section1Value).toContain(section1Content);
 
       console.log(`Multiple sections edited and verified for ETP: ${etpId}`);
@@ -367,26 +359,22 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for editor to load
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
-    await expect(contentEditor.first()).toBeVisible({
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
     // Make a change without saving
-    await contentEditor.first().click();
-    await contentEditor.first().fill('Unsaved changes test content');
+    await contentEditor.click();
+    await contentEditor.fill('Unsaved changes test content');
 
-    // Check for dirty indicator (asterisk in title)
-    const dirtyIndicator = page.locator(
-      'span:has-text("*"), [aria-label="Alterações não salvas"]',
-    );
+    // Check for dirty indicator using data-testid
+    const dirtyIndicator = page.locator('[data-testid="unsaved-indicator"]');
     const hasDirtyIndicator = await dirtyIndicator
       .isVisible()
       .catch(() => false);
@@ -400,7 +388,7 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     }
 
     // Save changes to cleanup
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await saveButton.click();
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
@@ -426,16 +414,14 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    // Verify title is displayed correctly
-    const titleElement = page.locator('h1, [data-testid="etp-title"]');
+    // Verify title is displayed correctly using data-testid
+    const titleElement = page.locator('[data-testid="etp-title"]');
     await expect(titleElement).toContainText(originalTitle, {
       timeout: TEST_CONFIG.timeouts.action,
     });
 
-    // Verify description is displayed (if visible)
-    const descriptionElement = page.locator(
-      'p.text-muted-foreground, [data-testid="etp-description"]',
-    );
+    // Verify description is displayed using data-testid
+    const descriptionElement = page.locator('[data-testid="etp-description"]');
     const hasDescription = await descriptionElement
       .isVisible()
       .catch(() => false);
@@ -464,15 +450,13 @@ test.describe('ETP Edit - All Fields (#952)', () => {
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
-    await expect(contentEditor.first()).toBeVisible({
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
@@ -487,16 +471,16 @@ Data: 26/12/2025
     `.trim();
 
     // Edit content
-    await contentEditor.first().click();
-    await contentEditor.first().fill(specialContent);
+    await contentEditor.click();
+    await contentEditor.fill(specialContent);
 
     // Save changes
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await saveButton.click();
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
     // Verify content was saved correctly
-    const savedContent = await contentEditor.first().inputValue();
+    const savedContent = await contentEditor.inputValue();
     expect(savedContent).toContain('Contratação');
     expect(savedContent).toContain('14.133/2021');
     expect(savedContent).toContain('R$ 1.500.000,00');
@@ -523,25 +507,21 @@ Data: 26/12/2025
     await page.goto(`/etps/${etpId}`);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('h1, [data-testid="etp-title"]')).toContainText(
+    await expect(page.locator('[data-testid="etp-title"]')).toContainText(
       title,
       { timeout: TEST_CONFIG.timeouts.action },
     );
 
-    // Get initial progress (if visible)
-    const progressElement = page.locator(
-      '[role="progressbar"], .progress, [data-testid="etp-progress"]',
-    );
+    // Get initial progress using data-testid
+    const progressElement = page.locator('[data-testid="etp-progress"]');
     let initialProgress = 0;
     if (await progressElement.isVisible().catch(() => false)) {
       const progressValue = await progressElement.getAttribute('aria-valuenow');
       initialProgress = progressValue ? parseInt(progressValue) : 0;
     }
 
-    const contentEditor = page.locator(
-      'textarea, [contenteditable="true"], [role="textbox"]',
-    );
-    await expect(contentEditor.first()).toBeVisible({
+    const contentEditor = page.locator('[data-testid="etp-content-textarea"]');
+    await expect(contentEditor).toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
     });
 
@@ -553,11 +533,11 @@ especificações, justificativas e demais elementos necessários
 para a elaboração completa do Estudo Técnico Preliminar.
     `.trim();
 
-    await contentEditor.first().click();
-    await contentEditor.first().fill(substantialContent);
+    await contentEditor.click();
+    await contentEditor.fill(substantialContent);
 
     // Save changes
-    const saveButton = page.locator('button:has-text("Salvar")');
+    const saveButton = page.locator('[data-testid="save-button"]');
     await saveButton.click();
     await page.waitForTimeout(TEST_CONFIG.timeouts.save);
 
