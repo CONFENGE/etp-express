@@ -6,8 +6,9 @@
  */
 
 export { GovDataSyncModule } from './gov-data-sync.module';
-export { GovDataSyncService } from './gov-data-sync.service';
+export { GovDataSyncService, GovDataStatus } from './gov-data-sync.service';
 export { GovDataSyncProcessor } from './gov-data-sync.processor';
+export { GovDataSyncController } from './gov-data-sync.controller';
 export {
   SinapiSyncJobData,
   SicroSyncJobData,

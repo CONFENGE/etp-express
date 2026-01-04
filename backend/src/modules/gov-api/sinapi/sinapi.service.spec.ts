@@ -385,6 +385,68 @@ describe('SinapiService', () => {
       expect(result.data.length).toBeGreaterThan(0);
     });
   });
+
+  describe('getDataStatus() (#1062)', () => {
+    it('should return not loaded status when no data', () => {
+      const status = service.getDataStatus();
+
+      expect(status.source).toBe('sinapi');
+      expect(status.dataLoaded).toBe(false);
+      expect(status.itemCount).toBe(0);
+      expect(status.loadedMonths).toEqual([]);
+      expect(status.lastUpdate).toBeNull();
+      expect(status.message).toContain('not loaded');
+    });
+
+    it('should return loaded status when data exists', async () => {
+      // Load some data
+      const buffer = await createExcelBuffer(
+        ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
+        [
+          ['00001', 'Cimento', 'KG', '0,75'],
+          ['00002', 'Areia', 'M3', '120,00'],
+        ],
+      );
+
+      await service.loadFromBuffer(
+        buffer,
+        'DF',
+        '2024-01',
+        SinapiItemType.INSUMO,
+      );
+
+      const status = service.getDataStatus();
+
+      expect(status.source).toBe('sinapi');
+      expect(status.dataLoaded).toBe(true);
+      expect(status.itemCount).toBeGreaterThan(0);
+      expect(status.loadedMonths).toContain('DF:2024-01:INSUMO');
+      expect(status.lastUpdate).toBeInstanceOf(Date);
+      expect(status.message).toContain('loaded');
+    });
+  });
+
+  describe('hasData() (#1062)', () => {
+    it('should return false when no data', () => {
+      expect(service.hasData()).toBe(false);
+    });
+
+    it('should return true when data exists', async () => {
+      const buffer = await createExcelBuffer(
+        ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
+        [['00001', 'Test', 'UN', '10,00']],
+      );
+
+      await service.loadFromBuffer(
+        buffer,
+        'DF',
+        '2024-01',
+        SinapiItemType.INSUMO,
+      );
+
+      expect(service.hasData()).toBe(true);
+    });
+  });
 });
 
 /**
