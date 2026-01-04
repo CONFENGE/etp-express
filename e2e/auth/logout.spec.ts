@@ -31,6 +31,11 @@ const TEST_CONFIG = {
 
 /**
  * Helper to perform login before logout tests
+ *
+ * Also disables the onboarding tour to prevent it from blocking UI interactions.
+ * The tour overlay has high z-index and blocks clicks when active.
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/1148
  */
 async function loginUser(
   page: import('@playwright/test').Page,
@@ -38,6 +43,15 @@ async function loginUser(
 ) {
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
+
+  // Mark tour as completed before login to prevent tour overlay from blocking UI
+  // The tour uses localStorage with key 'etp-express-tour'
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'etp-express-tour',
+      JSON.stringify({ state: { hasCompletedTour: true }, version: 0 }),
+    );
+  });
 
   await page.fill('input[name="email"], input#email', credentials.email);
   await page.fill(
@@ -49,13 +63,20 @@ async function loginUser(
   await expect(page).toHaveURL(/\/dashboard/, {
     timeout: TEST_CONFIG.timeouts.navigation,
   });
+
+  // Wait for the page to fully render after login
+  await page.waitForLoadState('networkidle');
 }
 
 /**
  * Helper to find and click logout button
  *
  * Uses stable data-testid selectors for reliability across environments.
+ * The function waits for elements to be ready and uses force click when
+ * necessary to handle Radix UI portal/focus management quirks.
+ *
  * @see https://github.com/CONFENGE/etp-express/issues/1130
+ * @see https://github.com/CONFENGE/etp-express/issues/1148
  */
 async function performLogout(page: import('@playwright/test').Page) {
   // Primary selector: Use stable data-testid attributes
@@ -71,25 +92,65 @@ async function performLogout(page: import('@playwright/test').Page) {
   );
 
   // Try primary selector first (data-testid)
-  if (await userMenuTrigger.isVisible()) {
-    await userMenuTrigger.click();
-    await page.waitForTimeout(300);
-    await logoutButton.click();
+  // Use waitFor to ensure element is attached and stable
+  try {
+    await userMenuTrigger.waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+
+    // Scroll into view and wait for any animations to settle
+    await userMenuTrigger.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(100);
+
+    // Click to open the dropdown menu
+    // Note: Radix UI may set aria-hidden on closed menu triggers, but they remain clickable
+    await userMenuTrigger.click({ timeout: TEST_CONFIG.timeouts.action });
+
+    // Wait for dropdown content to appear
+    await logoutButton.waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+    await page.waitForTimeout(100);
+
+    // Click logout button
+    await logoutButton.click({ timeout: TEST_CONFIG.timeouts.action });
+    return;
+  } catch {
+    // Primary selector failed, try fallbacks
+    console.log('·Primary logout selectors not available, trying fallbacks...');
   }
+
   // Fallback: Direct logout button (if visible without menu)
-  else if (await legacyLogoutButton.isVisible()) {
-    await legacyLogoutButton.click();
+  try {
+    await legacyLogoutButton.waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+    await legacyLogoutButton.click({ timeout: TEST_CONFIG.timeouts.action });
+    return;
+  } catch {
+    // Continue to next fallback
   }
+
   // Fallback: Legacy user menu
-  else if (await legacyUserMenu.isVisible()) {
-    await legacyUserMenu.click();
-    await page.waitForTimeout(500);
-    await page.click('text=Sair');
-  } else {
-    throw new Error(
-      'Logout button not found. Ensure data-testid="user-menu-trigger" and data-testid="logout-button" are present.',
-    );
+  try {
+    await legacyUserMenu.waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+    await legacyUserMenu.click({ timeout: TEST_CONFIG.timeouts.action });
+    await page.waitForTimeout(300);
+    await page.click('text=Sair', { timeout: TEST_CONFIG.timeouts.action });
+    return;
+  } catch {
+    // All fallbacks failed
   }
+
+  throw new Error(
+    'Logout button not found. Ensure data-testid="user-menu-trigger" and data-testid="logout-button" are present.',
+  );
 }
 
 /**
@@ -387,23 +448,48 @@ test.describe('Logout Edge Cases', () => {
     );
 
     // Click logout multiple times rapidly
-    if (await userMenuTrigger.isVisible()) {
-      await userMenuTrigger.click();
-      await page.waitForTimeout(300);
-      await logoutButton.click();
+    // Use try/catch with waitFor for more reliable element detection
+    try {
+      await userMenuTrigger.waitFor({
+        state: 'visible',
+        timeout: TEST_CONFIG.timeouts.action,
+      });
+      await userMenuTrigger.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(100);
+      await userMenuTrigger.click({ timeout: TEST_CONFIG.timeouts.action });
+      await logoutButton.waitFor({
+        state: 'visible',
+        timeout: TEST_CONFIG.timeouts.action,
+      });
+      await page.waitForTimeout(100);
+      await logoutButton.click({ timeout: TEST_CONFIG.timeouts.action });
       // Try clicking again while redirecting
-      await logoutButton.click().catch(() => {
-        // Expected to potentially fail
+      await logoutButton.click({ timeout: 500 }).catch(() => {
+        // Expected to potentially fail - button may be gone during redirect
       });
-    } else if (await legacyLogoutButton.isVisible()) {
-      await legacyLogoutButton.click();
-      await legacyLogoutButton.click().catch(() => {
-        // Expected to potentially fail
-      });
-    } else if (await legacyUserMenu.isVisible()) {
-      await legacyUserMenu.click();
-      await page.waitForTimeout(300);
-      await page.click('text=Sair');
+    } catch {
+      // Fallback: Direct logout button
+      try {
+        await legacyLogoutButton.waitFor({
+          state: 'visible',
+          timeout: TEST_CONFIG.timeouts.action,
+        });
+        await legacyLogoutButton.click({
+          timeout: TEST_CONFIG.timeouts.action,
+        });
+        await legacyLogoutButton.click({ timeout: 500 }).catch(() => {
+          // Expected to potentially fail
+        });
+      } catch {
+        // Fallback: Legacy user menu
+        await legacyUserMenu.waitFor({
+          state: 'visible',
+          timeout: TEST_CONFIG.timeouts.action,
+        });
+        await legacyUserMenu.click({ timeout: TEST_CONFIG.timeouts.action });
+        await page.waitForTimeout(300);
+        await page.click('text=Sair', { timeout: TEST_CONFIG.timeouts.action });
+      }
     }
 
     // Should still end up on login page without errors
