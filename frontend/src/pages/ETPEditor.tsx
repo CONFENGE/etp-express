@@ -18,6 +18,7 @@ import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
+import { VersionHistory } from '@/components/etp/VersionHistory';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
@@ -480,6 +481,15 @@ export function ETPEditor() {
               onGenerateAll={handleGenerateAll}
               isGenerating={aiGenerating}
             />
+
+            {/* Version History (#1162) */}
+            {id && (
+              <VersionHistory
+                etpId={id}
+                currentVersion={currentETP.currentVersion}
+                onVersionRestored={() => id && fetchETP(id)}
+              />
+            )}
 
             <Card>
               <CardHeader>
