@@ -46,6 +46,18 @@ interface SicroDataStore {
 }
 
 /**
+ * Data status response for status endpoint
+ */
+export interface SicroDataStatus {
+  source: 'sicro';
+  dataLoaded: boolean;
+  itemCount: number;
+  loadedMonths: string[];
+  lastUpdate: Date | null;
+  message: string;
+}
+
+/**
  * Cache TTL in seconds (24 hours for SICRO since data is monthly)
  */
 const CACHE_TTL_SECONDS = 86400;
@@ -457,6 +469,45 @@ export class SicroService implements IGovApiService, OnModuleInit {
     this.dataStore.loadedMonths.clear();
     this.dataStore.lastUpdate = null;
     this.logger.log('SICRO data store cleared');
+  }
+
+  /**
+   * Get comprehensive data status for monitoring (#1062)
+   *
+   * Returns detailed information about the data store state,
+   * useful for status endpoints and debugging.
+   *
+   * @returns Data status with load information
+   */
+  getDataStatus(): SicroDataStatus {
+    const dataLoaded = this.dataStore.items.size > 0;
+    const itemCount = this.dataStore.items.size;
+    const loadedMonths = Array.from(this.dataStore.loadedMonths);
+    const lastUpdate = this.dataStore.lastUpdate;
+
+    let message: string;
+    if (!dataLoaded) {
+      message =
+        'SICRO data not loaded. Use scheduled sync or manual trigger to load data.';
+    } else {
+      message = `SICRO data loaded: ${itemCount} items from ${loadedMonths.length} month(s)`;
+    }
+
+    return {
+      source: 'sicro',
+      dataLoaded,
+      itemCount,
+      loadedMonths,
+      lastUpdate,
+      message,
+    };
+  }
+
+  /**
+   * Check if any data is loaded
+   */
+  hasData(): boolean {
+    return this.dataStore.items.size > 0;
   }
 
   /**
