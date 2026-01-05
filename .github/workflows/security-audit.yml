@@ -96,7 +96,7 @@ jobs:
         with:
           name: backend-audit-report
           path: backend/audit-report.json
-          retention-days: 30
+          retention-days: 7
 
   audit-frontend:
     name: Audit Frontend Dependencies
@@ -153,7 +153,7 @@ jobs:
         with:
           name: frontend-audit-report
           path: frontend/audit-report.json
-          retention-days: 30
+          retention-days: 7
 
   audit-summary:
     name: Security Audit Summary

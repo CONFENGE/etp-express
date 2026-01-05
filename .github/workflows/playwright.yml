@@ -29,7 +29,7 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 90
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       # Railway URLs
@@ -53,8 +53,19 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: 'npm'
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            backend/node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install --include=optional --force
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -83,4 +94,4 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 7

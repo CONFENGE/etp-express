@@ -36,9 +36,21 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '20'
-          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            backend/node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
 
       - name: Install dependencies (workspace root)
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install --include=optional --force
 
       - name: Run tests with coverage
@@ -71,7 +83,7 @@ jobs:
         with:
           name: backend-coverage-report
           path: backend/coverage/
-          retention-days: 30
+          retention-days: 7
 
   test-frontend:
     name: Test Frontend (React)
@@ -86,9 +98,21 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '20'
-          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            backend/node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
 
       - name: Install dependencies (workspace root)
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install --include=optional --force
 
       - name: Run tests with coverage
@@ -120,4 +144,4 @@ jobs:
         with:
           name: frontend-coverage-report
           path: frontend/coverage/
-          retention-days: 30
+          retention-days: 7
