@@ -13,9 +13,11 @@
  * - Unified relevance scoring
  * - Fallback to Exa when results are insufficient
  * - Comprehensive logging of source attribution
+ * - Price aggregation across PNCP/SINAPI/SICRO (Lei 14.133/2021)
  *
  * @module modules/gov-api/gov-search
  * @see https://github.com/CONFENGE/etp-express/issues/695
+ * @see https://github.com/CONFENGE/etp-express/issues/1159
  */
 
 import { Injectable, Logger } from '@nestjs/common';
@@ -25,6 +27,7 @@ import { PncpService } from '../pncp/pncp.service';
 import { SinapiService } from '../sinapi/sinapi.service';
 import { SicroService } from '../sicro/sicro.service';
 import { ExaService } from '../../search/exa/exa.service';
+import { PriceAggregationService } from '../price-aggregation/price-aggregation.service';
 import {
   GovApiContract,
   GovApiPriceReference,
@@ -41,6 +44,10 @@ import {
   calculateOverallStatus,
   getStatusMessage,
 } from '../types/search-result';
+import {
+  PriceAggregationOptions,
+  PriceAggregationResult,
+} from '../price-aggregation/price-aggregation.types';
 import { createHash } from 'crypto';
 
 /**
@@ -105,6 +112,7 @@ export class GovSearchService {
     private readonly sicroService: SicroService,
     private readonly exaService: ExaService,
     private readonly configService: ConfigService,
+    private readonly priceAggregationService: PriceAggregationService,
   ) {
     this.exaFallbackThreshold = this.configService.get<number>(
       'EXA_FALLBACK_THRESHOLD',
@@ -904,5 +912,167 @@ export class GovSearchService {
       sinapi: this.sinapiService.getCacheStats(),
       sicro: this.sicroService.getCacheStats(),
     };
+  }
+
+  /**
+   * Search with price aggregation across multiple sources
+   *
+   * This method extends the standard search by calculating aggregated
+   * price averages from PNCP, SINAPI, and SICRO sources following
+   * Lei 14.133/2021 requirements (Art. 23).
+   *
+   * @param query - Search query string
+   * @param searchOptions - Standard search options
+   * @param aggregationOptions - Price aggregation options
+   * @returns Search results with aggregated prices
+   *
+   * @example
+   * ```typescript
+   * const result = await govSearchService.searchWithPriceAggregation(
+   *   'cimento portland',
+   *   { includePrecos: true, isConstrucaoCivil: true },
+   *   { excludeOutliers: true }
+   * );
+   *
+   * // Access aggregated prices
+   * console.log(result.priceAggregation.averagePrice);
+   * console.log(result.priceAggregation.confidence);
+   * ```
+   *
+   * @see https://github.com/CONFENGE/etp-express/issues/1159
+   */
+  async searchWithPriceAggregation(
+    query: string,
+    searchOptions: GovSearchOptions = {},
+    aggregationOptions: PriceAggregationOptions = {},
+  ): Promise<GovSearchResult & { priceAggregation: PriceAggregationResult }> {
+    const startTime = Date.now();
+    this.logger.log(
+      `Starting search with price aggregation for query: "${query}"`,
+    );
+
+    // 1. Perform standard search with prices enabled
+    const searchResult = await this.search(query, {
+      ...searchOptions,
+      includePrecos: true,
+    });
+
+    // 2. Aggregate prices from all sources
+    const priceAggregation = this.priceAggregationService.aggregatePrices(
+      query,
+      searchResult.prices.sinapi,
+      searchResult.prices.sicro,
+      searchResult.contracts,
+      aggregationOptions,
+    );
+
+    const duration = Date.now() - startTime;
+    this.logger.log(
+      `Search with price aggregation completed in ${duration}ms: ` +
+        `${priceAggregation.aggregations.length} aggregations, ` +
+        `confidence: ${priceAggregation.overallConfidence}`,
+    );
+
+    return {
+      ...searchResult,
+      priceAggregation,
+    };
+  }
+
+  /**
+   * Get aggregated prices for a specific item
+   *
+   * Searches across PNCP, SINAPI, and SICRO to find price references
+   * for a specific item and calculates the average following
+   * Lei 14.133/2021 methodology.
+   *
+   * @param itemDescription - Item description to search for
+   * @param options - Aggregation options
+   * @returns Price aggregation result
+   *
+   * @see https://github.com/CONFENGE/etp-express/issues/1159
+   */
+  async getAggregatedPrice(
+    itemDescription: string,
+    options: PriceAggregationOptions & {
+      uf?: string;
+      mesReferencia?: string;
+      isConstrucaoCivil?: boolean;
+      isInfrastructure?: boolean;
+    } = {},
+  ): Promise<PriceAggregationResult> {
+    const startTime = Date.now();
+    this.logger.log(`Getting aggregated price for item: "${itemDescription}"`);
+
+    const {
+      uf,
+      mesReferencia,
+      isConstrucaoCivil = true,
+      isInfrastructure = true,
+      ...aggregationOptions
+    } = options;
+
+    // 1. Search SINAPI if construcao civil
+    let sinapiPrices: GovApiPriceReference[] = [];
+    if (isConstrucaoCivil) {
+      try {
+        const sinapiResponse = await this.sinapiService.search(
+          itemDescription,
+          {
+            uf,
+            mesReferencia,
+            perPage: 10,
+          },
+        );
+        sinapiPrices = sinapiResponse.data as GovApiPriceReference[];
+      } catch (error) {
+        this.logger.warn(`SINAPI search failed: ${error.message}`);
+      }
+    }
+
+    // 2. Search SICRO if infrastructure
+    let sicroPrices: GovApiPriceReference[] = [];
+    if (isInfrastructure) {
+      try {
+        const sicroResponse = await this.sicroService.search(itemDescription, {
+          uf,
+          mesReferencia,
+          perPage: 10,
+        });
+        sicroPrices = sicroResponse.data as GovApiPriceReference[];
+      } catch (error) {
+        this.logger.warn(`SICRO search failed: ${error.message}`);
+      }
+    }
+
+    // 3. Search PNCP contracts
+    let contractPrices: GovApiContract[] = [];
+    try {
+      const pncpResponse = await this.pncpService.search(itemDescription, {
+        uf,
+        perPage: 10,
+      });
+      contractPrices = pncpResponse.data as GovApiContract[];
+    } catch (error) {
+      this.logger.warn(`PNCP search failed: ${error.message}`);
+    }
+
+    // 4. Aggregate prices
+    const result = this.priceAggregationService.aggregatePrices(
+      itemDescription,
+      sinapiPrices,
+      sicroPrices,
+      contractPrices,
+      aggregationOptions,
+    );
+
+    const duration = Date.now() - startTime;
+    this.logger.log(
+      `Aggregated price calculation completed in ${duration}ms: ` +
+        `${result.aggregations.length} aggregations, ` +
+        `confidence: ${result.overallConfidence}`,
+    );
+
+    return result;
   }
 }
