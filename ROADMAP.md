@@ -79,9 +79,9 @@
 | Progresso         | 96%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2151  |
-| Frontend Tests    | 1393  |
-| Total Tests       | 3544  |
+| Backend Tests     | 2191  |
+| Frontend Tests    | 1440  |
+| Total Tests       | 3631  |
 
 ---
 
