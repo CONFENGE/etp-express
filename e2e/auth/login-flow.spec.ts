@@ -11,6 +11,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import {
+  delay,
+  setupRateLimitMonitoring,
+  rateLimitConfig,
+} from '../utils/rate-limit-helper';
 
 /**
  * Test configuration for login flow tests
@@ -56,8 +61,16 @@ test.describe('Login Flow - Critical Path', () => {
 
   /**
    * Setup before each test
+   * Includes rate limit delay to prevent 429 errors in CI
+   * @issue #1186
    */
   test.beforeEach(async ({ page }) => {
+    // Add delay between tests to respect rate limits (5 req/min on /auth/login)
+    await delay(rateLimitConfig.AUTH_TEST_DELAY);
+
+    // Setup rate limit monitoring for debugging
+    setupRateLimitMonitoring(page);
+
     // Capture console errors
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
