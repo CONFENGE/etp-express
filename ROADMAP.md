@@ -18,7 +18,7 @@
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI        |
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas  |
-| #1074 | [QA] Implementar chaos engineering                             |
+| #1074 | [QA] Implementar chaos engineering (Redis: ✅)                 |
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais  |
 
 ### P2 - Medium Priority (12 issues)
@@ -77,9 +77,9 @@
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2209  |
+| Backend Tests     | 2232  |
 | Frontend Tests    | 1440  |
-| Total Tests       | 3649  |
+| Total Tests       | 3672  |
 
 ---
 
