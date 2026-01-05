@@ -29,13 +29,15 @@ on:
 #
 # Rate Limiting Strategy (#1186):
 # - Single worker (PLAYWRIGHT_WORKERS=1) to serialize test execution
-# - Inter-test delays in Auth tests (2s) via rate-limit-helper.ts
-# - Post-login delays (1.5s) to respect 5 req/min limit on /auth/login
+# - Inter-test delays in Auth tests (1s) via rate-limit-helper.ts
+# - Post-login delays (500ms) to respect 5 req/min limit on /auth/login
 # - Rate limit monitoring logs 429 responses for debugging
+# - Timeout increased to 45min to accommodate delays + retries
 
 jobs:
   test:
-    timeout-minutes: 30
+    # Increased from 30 to 45 min to accommodate rate limit delays (#1186)
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     env:
       # Railway URLs
