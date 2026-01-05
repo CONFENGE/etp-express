@@ -1,12 +1,12 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-05 | **Progresso:** 606/633 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-05 | **Progresso:** 607/633 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (27)
+## Issues Abertas (26)
 
-### P1 - High Priority (11 issues)
+### P1 - High Priority (10 issues)
 
 | #     | Issue                                                          |
 | ----- | -------------------------------------------------------------- |
@@ -15,7 +15,6 @@
 | #1172 | [E2E] Fix Auth Session tests for Railway environment           |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment        |
 | #1161 | [Templates] Criar modelos pre-configurados por tipo            |
-| #1160 | [Riscos] Implementar analise de riscos parametrizada           |
 | #1158 | [ETP] Expandir formulario de criacao para 20-30 campos         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI        |
 | #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas  |
@@ -54,7 +53,7 @@
 
 | Milestone              | Issues |
 | ---------------------- | ------ |
-| MVP Comercial          | 1/12   |
+| MVP Comercial          | 2/12   |
 | M1: Foundation         | 36/36  |
 | M2: CI/CD Pipeline     | 18/18  |
 | M3: Quality & Security | 61/61  |
@@ -73,14 +72,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 27    |
-| Issues Fechadas   | 606   |
+| Issues Abertas    | 26    |
+| Issues Fechadas   | 607   |
 | Progresso         | 96%   |
-| Backend Coverage  | 70%   |
-| Frontend Coverage | 81%   |
-| Backend Tests     | 2169  |
-| Frontend Tests    | 1423  |
-| Total Tests       | 3592  |
+| Backend Coverage  | 71%   |
+| Frontend Coverage | 79%   |
+| Backend Tests     | 2209  |
+| Frontend Tests    | 1440  |
+| Total Tests       | 3649  |
 
 ---
 
