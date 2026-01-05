@@ -219,10 +219,7 @@ describe('RiskMatrix', () => {
 
       fireEvent.click(screen.getByText('Adicionar Risco'));
 
-      const addButton = screen.getByRole('button', {
-        name: /Adicionar Risco/i,
-      });
-      // The button in the dialog, not the trigger
+      // Find the button inside the dialog, not the trigger button
       const dialogAddButton = screen
         .getAllByRole('button')
         .find(
