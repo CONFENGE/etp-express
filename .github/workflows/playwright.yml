@@ -26,16 +26,24 @@ on:
 # Railway E2E Testing Configuration (#1170)
 # Tests run against Railway production environment
 # See playwright.config.ts for how these env vars are used
+#
+# Rate Limiting Strategy (#1186):
+# - Single worker (PLAYWRIGHT_WORKERS=1) to serialize test execution
+# - Inter-test delays in Auth tests (1s) via rate-limit-helper.ts
+# - Post-login delays (500ms) to respect 5 req/min limit on /auth/login
+# - Rate limit monitoring logs 429 responses for debugging
+# - Timeout increased to 45min to accommodate delays + retries
 
 jobs:
   test:
-    timeout-minutes: 30
+    # Increased from 30 to 45 min to accommodate rate limit delays (#1186)
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     env:
       # Railway URLs
       E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
       E2E_API_URL: https://etp-express-backend-production.up.railway.app
-      # Single worker to avoid rate limiting (429 errors)
+      # Single worker to avoid rate limiting (429 errors) - see #1186
       PLAYWRIGHT_WORKERS: 1
       # Test credentials from GitHub secrets
       E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}

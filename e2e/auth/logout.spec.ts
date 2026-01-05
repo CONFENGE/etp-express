@@ -11,6 +11,11 @@
  */
 
 import { test, expect } from '@playwright/test';
+import {
+  delay,
+  setupRateLimitMonitoring,
+  rateLimitConfig,
+} from '../utils/rate-limit-helper';
 
 /**
  * Test configuration for logout flow tests
@@ -34,8 +39,10 @@ const TEST_CONFIG = {
  *
  * Also disables the onboarding tour to prevent it from blocking UI interactions.
  * The tour overlay has high z-index and blocks clicks when active.
+ * Includes post-login delay for rate limit awareness.
  *
  * @see https://github.com/CONFENGE/etp-express/issues/1148
+ * @see https://github.com/CONFENGE/etp-express/issues/1186
  */
 async function loginUser(
   page: import('@playwright/test').Page,
@@ -66,6 +73,9 @@ async function loginUser(
 
   // Wait for the page to fully render after login
   await page.waitForLoadState('networkidle');
+
+  // Post-login delay to allow rate limit window to progress (#1186)
+  await delay(rateLimitConfig.POST_LOGIN_DELAY);
 }
 
 /**
@@ -167,8 +177,16 @@ test.describe('Logout Flow - Complete Validation', () => {
 
   /**
    * Capture errors for debugging
+   * Includes rate limit delay to prevent 429 errors in CI
+   * @issue #1186
    */
   test.beforeEach(async ({ page }) => {
+    // Add delay between tests to respect rate limits (5 req/min on /auth/login)
+    await delay(rateLimitConfig.AUTH_TEST_DELAY);
+
+    // Setup rate limit monitoring for debugging
+    setupRateLimitMonitoring(page);
+
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.error(`[Browser Console Error]: ${msg.text()}`);
@@ -428,6 +446,15 @@ test.describe('Logout Edge Cases', () => {
     !!process.env.CI && !process.env.E2E_API_URL,
     'Edge case tests require full backend infrastructure.',
   );
+
+  /**
+   * Setup before each test - rate limit awareness
+   * @issue #1186
+   */
+  test.beforeEach(async ({ page }) => {
+    await delay(rateLimitConfig.AUTH_TEST_DELAY);
+    setupRateLimitMonitoring(page);
+  });
 
   /**
    * Test: Multiple logout clicks are handled gracefully
