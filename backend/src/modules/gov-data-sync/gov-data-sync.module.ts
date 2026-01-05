@@ -14,6 +14,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule } from '@nestjs/config';
 import { GovDataSyncService } from './gov-data-sync.service';
 import { GovDataSyncProcessor } from './gov-data-sync.processor';
+import { GovDataSyncController } from './gov-data-sync.controller';
 import { SinapiModule } from '../gov-api/sinapi/sinapi.module';
 import { SicroModule } from '../gov-api/sicro/sicro.module';
 import { GovApiModule } from '../gov-api/gov-api.module';
@@ -74,6 +75,7 @@ import { GOV_DATA_SYNC_QUEUE } from './gov-data-sync.types';
     SinapiModule,
     SicroModule,
   ],
+  controllers: [GovDataSyncController],
   providers: [GovDataSyncService, GovDataSyncProcessor],
   exports: [GovDataSyncService],
 })

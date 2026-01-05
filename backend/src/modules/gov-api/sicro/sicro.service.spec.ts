@@ -496,6 +496,48 @@ describe('SicroService', () => {
     });
   });
 
+  describe('getDataStatus() (#1062)', () => {
+    it('should return not loaded status when no data', () => {
+      const status = service.getDataStatus();
+
+      expect(status.source).toBe('sicro');
+      expect(status.dataLoaded).toBe(false);
+      expect(status.itemCount).toBe(0);
+      expect(status.loadedMonths).toEqual([]);
+      expect(status.lastUpdate).toBeNull();
+      expect(status.message).toContain('not loaded');
+    });
+
+    it('should return loaded status when data exists', () => {
+      // Add some data
+      (service as any).dataStore.items.set(mockSicroItem.id, mockSicroItem);
+      (service as any).dataStore.loadedMonths.add(
+        'DF:2024-01:COMPOSICAO:RODOVIARIO',
+      );
+      (service as any).dataStore.lastUpdate = new Date();
+
+      const status = service.getDataStatus();
+
+      expect(status.source).toBe('sicro');
+      expect(status.dataLoaded).toBe(true);
+      expect(status.itemCount).toBe(1);
+      expect(status.loadedMonths).toContain('DF:2024-01:COMPOSICAO:RODOVIARIO');
+      expect(status.lastUpdate).toBeInstanceOf(Date);
+      expect(status.message).toContain('loaded');
+    });
+  });
+
+  describe('hasData() (#1062)', () => {
+    it('should return false when no data', () => {
+      expect(service.hasData()).toBe(false);
+    });
+
+    it('should return true when data exists', () => {
+      (service as any).dataStore.items.set(mockSicroItem.id, mockSicroItem);
+      expect(service.hasData()).toBe(true);
+    });
+  });
+
   describe('search result sorting', () => {
     beforeEach(() => {
       const items: SicroPriceReference[] = [

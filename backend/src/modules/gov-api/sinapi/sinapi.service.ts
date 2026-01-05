@@ -46,6 +46,18 @@ interface SinapiDataStore {
 }
 
 /**
+ * Data status response for status endpoint
+ */
+export interface SinapiDataStatus {
+  source: 'sinapi';
+  dataLoaded: boolean;
+  itemCount: number;
+  loadedMonths: string[];
+  lastUpdate: Date | null;
+  message: string;
+}
+
+/**
  * Cache TTL in seconds (24 hours for SINAPI since data is monthly)
  */
 const CACHE_TTL_SECONDS = 86400;
@@ -338,6 +350,45 @@ export class SinapiService implements IGovApiService, OnModuleInit {
     this.dataStore.loadedMonths.clear();
     this.dataStore.lastUpdate = null;
     this.logger.log('SINAPI data store cleared');
+  }
+
+  /**
+   * Get comprehensive data status for monitoring (#1062)
+   *
+   * Returns detailed information about the data store state,
+   * useful for status endpoints and debugging.
+   *
+   * @returns Data status with load information
+   */
+  getDataStatus(): SinapiDataStatus {
+    const dataLoaded = this.dataStore.items.size > 0;
+    const itemCount = this.dataStore.items.size;
+    const loadedMonths = Array.from(this.dataStore.loadedMonths);
+    const lastUpdate = this.dataStore.lastUpdate;
+
+    let message: string;
+    if (!dataLoaded) {
+      message =
+        'SINAPI data not loaded. Use scheduled sync or manual trigger to load data.';
+    } else {
+      message = `SINAPI data loaded: ${itemCount} items from ${loadedMonths.length} month(s)`;
+    }
+
+    return {
+      source: 'sinapi',
+      dataLoaded,
+      itemCount,
+      loadedMonths,
+      lastUpdate,
+      message,
+    };
+  }
+
+  /**
+   * Check if any data is loaded
+   */
+  hasData(): boolean {
+    return this.dataStore.items.size > 0;
   }
 
   /**
