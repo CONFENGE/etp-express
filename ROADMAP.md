@@ -1,30 +1,29 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 601/633 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-04 | **Progresso:** 602/633 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (32)
+## Issues Abertas (31)
 
-### P1 - High Priority (15 issues)
+### P1 - High Priority (14 issues)
 
-| #     | Issue                                                            |
-| ----- | ---------------------------------------------------------------- |
-| #1191 | [E2E] Create dedicated staging environment for E2E tests         |
-| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution   |
-| #1186 | [E2E] 429 Rate Limiting causing test timeouts in CI              |
-| #1172 | [E2E] Fix Auth Session tests for Railway environment             |
-| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment          |
-| #1162 | [UX] Implementar UI de historico de versoes                      |
-| #1161 | [Templates] Criar modelos pre-configurados por tipo              |
-| #1160 | [Riscos] Implementar analise de riscos parametrizada             |
-| #1159 | [Precos] Implementar calculo de media entre fontes               |
-| #1158 | [ETP] Expandir formulario de criacao para 20-30 campos           |
-| #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI          |
-| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas    |
-| #1074 | [QA] Implementar chaos engineering                               |
-| #1073 | [QA] Criar testes de integracao com APIs governamentais reais    |
-| #1062 | [Gov-API] Implementar carregamento automatico dados SINAPI/SICRO |
+| #     | Issue                                                          |
+| ----- | -------------------------------------------------------------- |
+| #1191 | [E2E] Create dedicated staging environment for E2E tests       |
+| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution |
+| #1186 | [E2E] 429 Rate Limiting causing test timeouts in CI            |
+| #1172 | [E2E] Fix Auth Session tests for Railway environment           |
+| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment        |
+| #1162 | [UX] Implementar UI de historico de versoes                    |
+| #1161 | [Templates] Criar modelos pre-configurados por tipo            |
+| #1160 | [Riscos] Implementar analise de riscos parametrizada           |
+| #1159 | [Precos] Implementar calculo de media entre fontes             |
+| #1158 | [ETP] Expandir formulario de criacao para 20-30 campos         |
+| #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI        |
+| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas  |
+| #1074 | [QA] Implementar chaos engineering                             |
+| #1073 | [QA] Criar testes de integracao com APIs governamentais reais  |
 
 ### P2 - Medium Priority (13 issues)
 
@@ -78,8 +77,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 32    |
-| Issues Fechadas   | 601   |
+| Issues Abertas    | 31    |
+| Issues Fechadas   | 602   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
