@@ -1,18 +1,17 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-04 | **Progresso:** 602/633 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-05 | **Progresso:** 603/633 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (31)
+## Issues Abertas (30)
 
-### P1 - High Priority (14 issues)
+### P1 - High Priority (13 issues)
 
 | #     | Issue                                                          |
 | ----- | -------------------------------------------------------------- |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests       |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution |
-| #1186 | [E2E] 429 Rate Limiting causing test timeouts in CI            |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment           |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment        |
 | #1162 | [UX] Implementar UI de historico de versoes                    |
@@ -77,8 +76,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 31    |
-| Issues Fechadas   | 602   |
+| Issues Abertas    | 30    |
+| Issues Fechadas   | 603   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
