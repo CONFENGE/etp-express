@@ -8,6 +8,7 @@ export interface ETP {
   createdAt: string;
   updatedAt: string;
   sections: Section[];
+  currentVersion?: number;
 }
 
 export interface Section {
