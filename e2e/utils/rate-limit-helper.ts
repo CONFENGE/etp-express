@@ -13,6 +13,8 @@ import { Page, Response } from '@playwright/test';
 
 /**
  * Default configuration for rate limit handling
+ * Optimized for Railway production rate limits while minimizing CI time
+ * @issue #1186
  */
 export const RATE_LIMIT_CONFIG = {
   /** Maximum number of retries on 429 errors */
@@ -21,10 +23,10 @@ export const RATE_LIMIT_CONFIG = {
   baseDelayMs: 5000,
   /** Maximum delay between retries */
   maxDelayMs: 30000,
-  /** Delay between tests that make auth API calls */
-  interTestDelayMs: 2000,
-  /** Delay after login attempt to respect rate limits */
-  postLoginDelayMs: 1500,
+  /** Delay between tests that make auth API calls (reduced from 2000ms) */
+  interTestDelayMs: 1000,
+  /** Delay after login attempt to respect rate limits (reduced from 1500ms) */
+  postLoginDelayMs: 500,
 };
 
 /**
@@ -290,19 +292,25 @@ export function withRateLimitDelay(
  * Configuration object for rate-limit aware test setup
  *
  * Provides consistent delays and retry logic across test suites.
+ * Optimized for Railway production rate limits (5 req/min on /auth/login)
+ * while minimizing CI execution time.
+ *
+ * @issue #1186
  */
 export const rateLimitConfig = {
   /**
    * Standard delay between auth tests (in ms)
    * Prevents exceeding 5 req/min limit on /auth/login
+   * Reduced from 2000ms to 1000ms to balance rate limit protection with CI speed
    */
-  AUTH_TEST_DELAY: 2000,
+  AUTH_TEST_DELAY: 1000,
 
   /**
    * Delay after each login attempt (in ms)
    * Allows rate limit window to progress
+   * Reduced from 1500ms to 500ms for faster execution
    */
-  POST_LOGIN_DELAY: 1500,
+  POST_LOGIN_DELAY: 500,
 
   /**
    * Maximum retries for rate-limited operations
