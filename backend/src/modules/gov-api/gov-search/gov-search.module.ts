@@ -18,6 +18,7 @@ import { PncpModule } from '../pncp/pncp.module';
 import { SinapiModule } from '../sinapi/sinapi.module';
 import { SicroModule } from '../sicro/sicro.module';
 import { SearchModule } from '../../search/search.module';
+import { PriceAggregationModule } from '../price-aggregation/price-aggregation.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SearchModule } from '../../search/search.module';
     SinapiModule,
     SicroModule,
     SearchModule, // Import SearchModule for ExaService
+    PriceAggregationModule,
   ],
   providers: [GovSearchService],
   exports: [GovSearchService],

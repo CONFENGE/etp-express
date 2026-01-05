@@ -6,6 +6,7 @@ import { PncpService } from '../pncp/pncp.service';
 import { SinapiService } from '../sinapi/sinapi.service';
 import { SicroService } from '../sicro/sicro.service';
 import { ExaService } from '../../search/exa/exa.service';
+import { PriceAggregationService } from '../price-aggregation/price-aggregation.service';
 import {
   GovApiResponse,
   GovApiContract,
@@ -133,6 +134,21 @@ describe('GovSearchService', () => {
             get: jest.fn((key: string, defaultValue?: any) => {
               if (key === 'EXA_FALLBACK_THRESHOLD') return 3;
               return defaultValue;
+            }),
+          },
+        },
+        {
+          provide: PriceAggregationService,
+          useValue: {
+            aggregatePrices: jest.fn().mockReturnValue({
+              query: '',
+              aggregations: [],
+              unmatchedPrices: [],
+              totalPricesAnalyzed: 0,
+              sourcesConsulted: [],
+              overallConfidence: 'LOW',
+              timestamp: new Date(),
+              methodologySummary: '',
             }),
           },
         },
