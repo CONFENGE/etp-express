@@ -1,10 +1,10 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-05 | **Progresso:** 603/633 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-05 | **Progresso:** 604/633 (95%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (30)
+## Issues Abertas (29)
 
 ### P1 - High Priority (13 issues)
 
@@ -24,11 +24,10 @@
 | #1074 | [QA] Implementar chaos engineering                             |
 | #1073 | [QA] Criar testes de integracao com APIs governamentais reais  |
 
-### P2 - Medium Priority (13 issues)
+### P2 - Medium Priority (12 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1193 | fix(frontend): header com z-index incorreto sobrepoe sidebar     |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1166 | [Precos] Ajustar schedule para atualizacao semanal               |
@@ -76,14 +75,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 30    |
-| Issues Fechadas   | 603   |
+| Issues Abertas    | 29    |
+| Issues Fechadas   | 604   |
 | Progresso         | 95%   |
 | Backend Coverage  | 78%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2128  |
+| Backend Tests     | 2151  |
 | Frontend Tests    | 1393  |
-| Total Tests       | 3521  |
+| Total Tests       | 3544  |
 
 ---
 
