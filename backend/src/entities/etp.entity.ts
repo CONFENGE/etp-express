@@ -216,6 +216,40 @@ export class Etp {
   // Fim dos Campos de Requisitos e Riscos
   // ============================================
 
+  // ============================================
+  // Campos de Estimativa de Custos (Issue #1226)
+  // ============================================
+
+  /**
+   * Valor unitário do item/serviço.
+   * Usado para cálculo do valor estimado total.
+   * Precision: 15 dígitos, 2 casas decimais.
+   */
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  valorUnitario: number;
+
+  /**
+   * Fonte de pesquisa de preços utilizada.
+   * Ex: "SINAPI", "SICRO", "Painel de Preços", "Cotações de mercado".
+   * Descrição detalhada das fontes consultadas.
+   * Max: 2000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  fontePesquisaPrecos: string;
+
+  /**
+   * Dotação orçamentária para a contratação.
+   * Código da dotação no orçamento público.
+   * Ex: "02.031.0001.2001.339039"
+   * Max: 100 caracteres.
+   */
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  dotacaoOrcamentaria: string;
+
+  // ============================================
+  // Fim dos Campos de Estimativa de Custos
+  // ============================================
+
   @Column({
     type: 'enum',
     enum: EtpStatus,

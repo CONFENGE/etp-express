@@ -81,6 +81,10 @@ describe('DemoService', () => {
     prazoExecucao: null as unknown as number,
     nivelRisco: null as unknown as any,
     descricaoRiscos: null as unknown as string,
+    // Estimativa de Custos fields (Issue #1226 - nullable in DB)
+    valorUnitario: null as unknown as number,
+    fontePesquisaPrecos: null as unknown as string,
+    dotacaoOrcamentaria: null as unknown as string,
     status: EtpStatus.DRAFT,
     metadata: {},
     organizationId: 'demo-org-id',
