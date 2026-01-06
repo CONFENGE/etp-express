@@ -276,6 +276,228 @@ describe('CreateEtpDto', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  // ============================================
+  // Campos de Objeto e Justificativa (Issue #1224)
+  // ============================================
+
+  describe('descricaoDetalhada field validation', () => {
+    it('should accept valid descricaoDetalhada', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        descricaoDetalhada:
+          'Contratação de empresa especializada para desenvolvimento e manutenção de sistemas web utilizando tecnologias modernas.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject descricaoDetalhada longer than 5000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        descricaoDetalhada: 'A'.repeat(5001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'descricaoDetalhada');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('5000 caracteres');
+    });
+
+    it('should allow omitting descricaoDetalhada (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('quantidadeEstimada field validation', () => {
+    it('should accept valid quantidadeEstimada', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        quantidadeEstimada: 12,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should accept quantidadeEstimada equal to 1 (minimum)', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        quantidadeEstimada: 1,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject quantidadeEstimada less than 1', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        quantidadeEstimada: 0,
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'quantidadeEstimada');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.min).toContain('1');
+    });
+
+    it('should allow omitting quantidadeEstimada (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('unidadeMedida field validation', () => {
+    it('should accept valid unidadeMedida', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        unidadeMedida: 'mês',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject unidadeMedida longer than 50 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        unidadeMedida: 'A'.repeat(51),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'unidadeMedida');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('50 caracteres');
+    });
+
+    it('should allow omitting unidadeMedida (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('justificativaContratacao field validation', () => {
+    const validJustificativa =
+      'A contratação se justifica pela necessidade de modernização dos sistemas legados da instituição, atualmente operando com tecnologias defasadas.';
+
+    it('should accept valid justificativaContratacao (>= 50 chars)', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        justificativaContratacao: validJustificativa,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject justificativaContratacao shorter than 50 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        justificativaContratacao: 'Justificativa curta demais',
+      });
+      const errors = await validate(dto);
+      const error = errors.find(
+        (e) => e.property === 'justificativaContratacao',
+      );
+      expect(error).toBeDefined();
+      expect(error?.constraints?.minLength).toContain('50 caracteres');
+    });
+
+    it('should reject justificativaContratacao longer than 5000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        justificativaContratacao: 'A'.repeat(5001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find(
+        (e) => e.property === 'justificativaContratacao',
+      );
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('5000 caracteres');
+    });
+
+    it('should allow omitting justificativaContratacao (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('necessidadeAtendida field validation', () => {
+    it('should accept valid necessidadeAtendida', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        necessidadeAtendida:
+          'Atender à demanda de 10.000 usuários internos com sistema de gestão integrado.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject necessidadeAtendida longer than 3000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        necessidadeAtendida: 'A'.repeat(3001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'necessidadeAtendida');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('3000 caracteres');
+    });
+
+    it('should allow omitting necessidadeAtendida (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('beneficiosEsperados field validation', () => {
+    it('should accept valid beneficiosEsperados', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        beneficiosEsperados:
+          'Redução de 30% no tempo de processamento; Aumento de 50% na satisfação dos usuários.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject beneficiosEsperados longer than 3000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        beneficiosEsperados: 'A'.repeat(3001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'beneficiosEsperados');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('3000 caracteres');
+    });
+
+    it('should allow omitting beneficiosEsperados (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('full ETP creation with all objeto/justificativa fields', () => {
+    it('should accept ETP with all objeto/justificativa fields populated', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        descricaoDetalhada:
+          'Contratação de empresa especializada para desenvolvimento e manutenção de sistemas web.',
+        quantidadeEstimada: 12,
+        unidadeMedida: 'mês',
+        justificativaContratacao:
+          'A contratação se justifica pela necessidade de modernização dos sistemas legados da instituição, atualmente operando com tecnologias defasadas.',
+        necessidadeAtendida:
+          'Atender à demanda de 10.000 usuários internos com sistema de gestão integrado.',
+        beneficiosEsperados:
+          'Redução de 30% no tempo de processamento; Aumento de 50% na satisfação dos usuários.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 describe('ResponsavelTecnicoDto', () => {
