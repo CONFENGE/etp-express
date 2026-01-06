@@ -4,10 +4,13 @@
  * Unit tests for SicroService
  *
  * @module modules/gov-api/sicro
+ * @see https://github.com/CONFENGE/etp-express/issues/694
+ * @see https://github.com/CONFENGE/etp-express/issues/1165 - Persistence tests
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import * as ExcelJS from 'exceljs';
 import { SicroService } from './sicro.service';
 import { GovApiCache } from '../utils/gov-api-cache';
@@ -17,6 +20,7 @@ import {
   SicroCategoria,
   SicroModoTransporte,
 } from './sicro.types';
+import { SicroItem } from '../../../entities/sicro-item.entity';
 
 /**
  * Helper function to create an Excel buffer from array data using ExcelJS
@@ -45,6 +49,31 @@ describe('SicroService', () => {
   let service: SicroService;
   let cache: jest.Mocked<GovApiCache>;
   let configService: jest.Mocked<ConfigService>;
+  let mockRepository: jest.Mocked<Record<string, jest.Mock>>;
+
+  // Mock repository for TypeORM (#1165)
+  const createMockRepository = () => ({
+    count: jest.fn().mockResolvedValue(0),
+    find: jest.fn().mockResolvedValue([]),
+    findOne: jest.fn().mockResolvedValue(null),
+    save: jest.fn().mockImplementation((entity) => Promise.resolve(entity)),
+    createQueryBuilder: jest.fn().mockReturnValue({
+      insert: jest.fn().mockReturnThis(),
+      into: jest.fn().mockReturnThis(),
+      values: jest.fn().mockReturnThis(),
+      orIgnore: jest.fn().mockReturnThis(),
+      execute: jest
+        .fn()
+        .mockResolvedValue({ identifiers: [], generatedMaps: [], raw: [] }),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([]),
+      getCount: jest.fn().mockResolvedValue(0),
+    }),
+  });
 
   const mockSicroItem: SicroPriceReference = {
     id: 'sicro:TER001:DF:2024-01:O',
@@ -129,6 +158,8 @@ describe('SicroService', () => {
       }),
     } as unknown as jest.Mocked<ConfigService>;
 
+    mockRepository = createMockRepository();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SicroService,
@@ -139,6 +170,10 @@ describe('SicroService', () => {
         {
           provide: ConfigService,
           useValue: configService,
+        },
+        {
+          provide: getRepositoryToken(SicroItem),
+          useValue: mockRepository,
         },
       ],
     }).compile();
@@ -578,6 +613,274 @@ describe('SicroService', () => {
       const result = await service.search('terra');
 
       expect((result.data[0] as SicroPriceReference).codigo).toBe('TER001');
+    });
+  });
+
+  describe('Database Persistence (#1165)', () => {
+    let persistenceService: SicroService;
+    let persistenceMockRepository: jest.Mocked<Record<string, jest.Mock>>;
+
+    beforeEach(async () => {
+      persistenceMockRepository = {
+        count: jest.fn().mockResolvedValue(0),
+        find: jest.fn().mockResolvedValue([]),
+        findOne: jest.fn().mockResolvedValue(null),
+        save: jest.fn().mockImplementation((entity) => Promise.resolve(entity)),
+        createQueryBuilder: jest.fn().mockReturnValue({
+          insert: jest.fn().mockReturnThis(),
+          into: jest.fn().mockReturnThis(),
+          values: jest.fn().mockReturnThis(),
+          orIgnore: jest.fn().mockReturnThis(),
+          execute: jest
+            .fn()
+            .mockResolvedValue({ identifiers: [], generatedMaps: [], raw: [] }),
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+          getCount: jest.fn().mockResolvedValue(0),
+        }),
+      };
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          SicroService,
+          {
+            provide: GovApiCache,
+            useValue: cache,
+          },
+          {
+            provide: ConfigService,
+            useValue: configService,
+          },
+          {
+            provide: getRepositoryToken(SicroItem),
+            useValue: persistenceMockRepository,
+          },
+        ],
+      }).compile();
+
+      persistenceService = module.get<SicroService>(SicroService);
+      persistenceService.onModuleInit();
+    });
+
+    afterEach(() => {
+      persistenceService.clearData();
+    });
+
+    describe('hasPersistedData()', () => {
+      it('should return false when no data in database', async () => {
+        persistenceMockRepository.count.mockResolvedValue(0);
+        const result = await persistenceService.hasPersistedData();
+        expect(result).toBe(false);
+        expect(persistenceMockRepository.count).toHaveBeenCalled();
+      });
+
+      it('should return true when data exists in database', async () => {
+        persistenceMockRepository.count.mockResolvedValue(150);
+        const result = await persistenceService.hasPersistedData();
+        expect(result).toBe(true);
+      });
+    });
+
+    describe('getPersistedCount()', () => {
+      it('should return count from database', async () => {
+        persistenceMockRepository.count.mockResolvedValue(500);
+        const result = await persistenceService.getPersistedCount();
+        expect(result).toBe(500);
+      });
+
+      it('should return 0 when database is empty', async () => {
+        persistenceMockRepository.count.mockResolvedValue(0);
+        const result = await persistenceService.getPersistedCount();
+        expect(result).toBe(0);
+      });
+    });
+
+    describe('loadFromBuffer() with persistence', () => {
+      it('should persist items to database after loading', async () => {
+        const headers = [
+          'CODIGO',
+          'DESCRICAO',
+          'UNIDADE',
+          'PRECO ONERADO',
+          'PRECO DESONERADO',
+        ];
+        const data = [
+          ['TER001', 'Escavacao mecanica', 'm3', '12.50', '10.20'],
+          ['TER002', 'Aterro compactado', 'm3', '8.75', '7.30'],
+        ];
+        const buffer = await createExcelBuffer(headers, data);
+
+        const result = await persistenceService.loadFromBuffer(
+          buffer,
+          'DF',
+          '2024-01',
+          SicroItemType.COMPOSICAO,
+          SicroModoTransporte.RODOVIARIO,
+          'org-123',
+        );
+
+        expect(result.loaded).toBeGreaterThan(0);
+        expect(result.persisted).toBeGreaterThanOrEqual(0);
+        expect(persistenceMockRepository.createQueryBuilder).toHaveBeenCalled();
+      });
+
+      it('should use batch inserts for large datasets', async () => {
+        const headers = ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'];
+        const data: (string | number)[][] = [];
+        for (let i = 0; i < 10; i++) {
+          data.push([
+            `CODE${i.toString().padStart(4, '0')}`,
+            `Item ${i}`,
+            'un',
+            (i * 1.5).toString(),
+          ]);
+        }
+        const buffer = await createExcelBuffer(headers, data);
+
+        await persistenceService.loadFromBuffer(
+          buffer,
+          'DF',
+          '2024-01',
+          SicroItemType.INSUMO,
+          undefined,
+          'org-456',
+        );
+
+        expect(persistenceMockRepository.createQueryBuilder).toHaveBeenCalled();
+      });
+    });
+
+    describe('searchFromDatabase()', () => {
+      it('should search database with text query', async () => {
+        const mockDbResults = [
+          {
+            id: 'uuid-1',
+            codigo: 'TER001',
+            descricao: 'Escavacao mecanica',
+            unidade: 'm3',
+            precoOnerado: 12.5,
+            precoDesonerado: 10.2,
+            mesReferencia: 1,
+            anoReferencia: 2024,
+            uf: 'DF',
+            categoriaDescricao: SicroCategoria.TERRAPLANAGEM,
+            tipo: SicroItemType.COMPOSICAO,
+            modoTransporte: SicroModoTransporte.RODOVIARIO,
+            organizationId: 'org-123',
+            createdAt: new Date(),
+          },
+        ];
+
+        const qbMock = {
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(mockDbResults),
+          getCount: jest.fn().mockResolvedValue(1),
+        };
+        persistenceMockRepository.createQueryBuilder.mockReturnValue(
+          qbMock as any,
+        );
+
+        const result = await persistenceService.searchFromDatabase({
+          descricao: 'escavacao',
+          uf: 'DF',
+        });
+
+        expect(result.data).toHaveLength(1);
+        expect(result.total).toBe(1);
+        expect(result.source).toBe('sicro');
+        expect(qbMock.where).toHaveBeenCalled();
+      });
+
+      it('should apply pagination to database queries', async () => {
+        const qbMock = {
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+          getCount: jest.fn().mockResolvedValue(100),
+        };
+        persistenceMockRepository.createQueryBuilder.mockReturnValue(
+          qbMock as any,
+        );
+
+        await persistenceService.searchFromDatabase({ page: 3, perPage: 20 });
+
+        expect(qbMock.skip).toHaveBeenCalledWith(40);
+        expect(qbMock.take).toHaveBeenCalledWith(20);
+      });
+
+      it('should filter by UF in database', async () => {
+        const qbMock = {
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue([]),
+          getCount: jest.fn().mockResolvedValue(0),
+        };
+        persistenceMockRepository.createQueryBuilder.mockReturnValue(
+          qbMock as any,
+        );
+
+        await persistenceService.searchFromDatabase({ uf: 'SP' });
+
+        // The UF filter is applied via the where clause object, not andWhere
+        expect(qbMock.where).toHaveBeenCalledWith(
+          expect.objectContaining({ uf: 'SP' }),
+        );
+      });
+    });
+
+    describe('getDataStatusWithDatabase()', () => {
+      it('should include database count in status', async () => {
+        persistenceMockRepository.count.mockResolvedValue(250);
+        (persistenceService as any).dataStore.items.set(
+          mockSicroItem.id,
+          mockSicroItem,
+        );
+
+        const status = await persistenceService.getDataStatusWithDatabase();
+
+        expect(status.source).toBe('sicro');
+        expect(status.itemCount).toBe(1); // in-memory count
+        expect(status.dbItemCount).toBe(250); // database count
+        expect(status.message).toContain('250');
+      });
+
+      it('should show correct status when only memory has data', async () => {
+        persistenceMockRepository.count.mockResolvedValue(0);
+        (persistenceService as any).dataStore.items.set(
+          mockSicroItem.id,
+          mockSicroItem,
+        );
+
+        const status = await persistenceService.getDataStatusWithDatabase();
+
+        expect(status.itemCount).toBe(1);
+        expect(status.dbItemCount).toBe(0);
+        expect(status.dataLoaded).toBe(true);
+      });
+
+      it('should show correct status when only database has data', async () => {
+        persistenceMockRepository.count.mockResolvedValue(100);
+
+        const status = await persistenceService.getDataStatusWithDatabase();
+
+        expect(status.itemCount).toBe(0);
+        expect(status.dbItemCount).toBe(100);
+        expect(status.message).toContain('100');
+      });
     });
   });
 });
