@@ -307,7 +307,8 @@ export class SicroService implements IGovApiService, OnModuleInit {
               .createQueryBuilder()
               .insert()
               .into(SicroItem)
-              .values(batch as any) // Type assertion for JSONB metadata field
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeORM InsertQueryBuilder requires any for JSONB metadata
+              .values(batch as any)
               .orIgnore() // Skip duplicates
               .execute();
             persistedCount += batch.length;
