@@ -6,14 +6,19 @@
  * Provides SicroService for data ingestion and search of DNIT's transportation
  * infrastructure cost reference system.
  *
+ * Now with database persistence via TypeORM (#1165).
+ *
  * @module modules/gov-api/sicro
  * @see https://github.com/CONFENGE/etp-express/issues/694
+ * @see https://github.com/CONFENGE/etp-express/issues/1165
  */
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { GovApiModule } from '../gov-api.module';
 import { SicroService } from './sicro.service';
+import { SicroItem } from '../../../entities/sicro-item.entity';
 
 /**
  * SicroModule - SICRO integration module
@@ -40,7 +45,7 @@ import { SicroService } from './sicro.service';
  * ```
  */
 @Module({
-  imports: [ConfigModule, GovApiModule],
+  imports: [ConfigModule, GovApiModule, TypeOrmModule.forFeature([SicroItem])],
   providers: [SicroService],
   exports: [SicroService],
 })

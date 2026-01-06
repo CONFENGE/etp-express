@@ -11,12 +11,20 @@
  * Unlike other gov APIs, SINAPI data is provided via Excel spreadsheets
  * that need to be downloaded and parsed.
  *
+ * Data persistence (#1165):
+ * - Data is now persisted to PostgreSQL via TypeORM
+ * - In-memory Map serves as fallback/cache
+ * - Redis cache for fast searches
+ *
  * @module modules/gov-api/sinapi
  * @see https://github.com/CONFENGE/etp-express/issues/693
+ * @see https://github.com/CONFENGE/etp-express/issues/1165
  */
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, ILike } from 'typeorm';
 import {
   IGovApiService,
   GovApiResponse,
@@ -34,10 +42,11 @@ import {
   buildSinapiCacheKey,
 } from './sinapi.types';
 import { SinapiParser, createSinapiParser } from './sinapi-parser';
+import { SinapiItem } from '../../../entities/sinapi-item.entity';
 
 /**
  * In-memory storage for parsed SINAPI data
- * In production, this should be replaced with database storage
+ * Serves as fallback/cache in addition to database persistence (#1165)
  */
 interface SinapiDataStore {
   items: Map<string, SinapiPriceReference>;
@@ -103,6 +112,8 @@ export class SinapiService implements IGovApiService, OnModuleInit {
   constructor(
     private readonly configService: ConfigService,
     private readonly cache: GovApiCache,
+    @InjectRepository(SinapiItem)
+    private readonly sinapiRepository: Repository<SinapiItem>,
   ) {}
 
   /**
@@ -226,17 +237,23 @@ export class SinapiService implements IGovApiService, OnModuleInit {
   /**
    * Load SINAPI data from Excel buffer
    *
+   * Parses the Excel file and persists data to both:
+   * 1. Database (TypeORM) for persistence (#1165)
+   * 2. In-memory Map for fast fallback access
+   *
    * @param buffer Excel file buffer
    * @param uf State (UF)
    * @param mesReferencia Reference month (YYYY-MM)
    * @param tipo Item type (insumo or composicao)
+   * @param organizationId Optional organization ID for multi-tenancy
    */
   async loadFromBuffer(
     buffer: Buffer,
     uf: SinapiUF,
     mesReferencia: string,
     tipo: SinapiItemType,
-  ): Promise<{ loaded: number; errors: number }> {
+    organizationId?: string,
+  ): Promise<{ loaded: number; errors: number; persisted: number }> {
     const startTime = Date.now();
 
     try {
@@ -246,9 +263,52 @@ export class SinapiService implements IGovApiService, OnModuleInit {
         tipo,
       });
 
-      // Store items in data store
+      // Store items in memory (fallback/cache)
       for (const item of result.items) {
         this.dataStore.items.set(item.id, item);
+      }
+
+      // Persist to database (#1165)
+      const [anoRef, mesRef] = mesReferencia.split('-').map(Number);
+      let persistedCount = 0;
+
+      const entitiesToSave = result.items.map((item) => ({
+        organizationId: organizationId || null,
+        codigo: item.codigo,
+        descricao: item.descricao,
+        unidade: item.unidade,
+        precoOnerado: item.precoOnerado,
+        precoDesonerado: item.precoDesonerado,
+        tipo: item.tipo as 'INSUMO' | 'COMPOSICAO',
+        uf: item.uf,
+        mesReferencia: mesRef,
+        anoReferencia: anoRef,
+        classeId: item.classeId || null,
+        classeDescricao: item.classeDescricao || null,
+        metadata: null as Record<string, unknown> | null,
+      }));
+
+      // Use upsert to avoid duplicates (based on codigo + uf + mes/ano)
+      if (entitiesToSave.length > 0) {
+        // Batch insert in chunks to avoid memory issues
+        const BATCH_SIZE = 500;
+        for (let i = 0; i < entitiesToSave.length; i += BATCH_SIZE) {
+          const batch = entitiesToSave.slice(i, i + BATCH_SIZE);
+          try {
+            await this.sinapiRepository
+              .createQueryBuilder()
+              .insert()
+              .into(SinapiItem)
+              .values(batch as any) // Type assertion for JSONB metadata field
+              .orIgnore() // Skip duplicates
+              .execute();
+            persistedCount += batch.length;
+          } catch (dbError) {
+            this.logger.warn(
+              `Batch ${i / BATCH_SIZE + 1} partial save: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`,
+            );
+          }
+        }
       }
 
       // Track loaded month
@@ -258,12 +318,14 @@ export class SinapiService implements IGovApiService, OnModuleInit {
 
       const duration = Date.now() - startTime;
       this.logger.log(
-        `Loaded ${result.count} SINAPI items for ${uf}/${mesReferencia}/${tipo} in ${duration}ms (${result.errors.length} errors)`,
+        `Loaded ${result.count} SINAPI items for ${uf}/${mesReferencia}/${tipo} in ${duration}ms ` +
+          `(${persistedCount} persisted to DB, ${result.errors.length} errors)`,
       );
 
       return {
         loaded: result.count,
         errors: result.errors.length,
+        persisted: persistedCount,
       };
     } catch (error) {
       this.logger.error(
@@ -389,6 +451,194 @@ export class SinapiService implements IGovApiService, OnModuleInit {
    */
   hasData(): boolean {
     return this.dataStore.items.size > 0;
+  }
+
+  /**
+   * Check if data exists in database (#1165)
+   *
+   * @returns True if database has SINAPI items
+   */
+  async hasPersistedData(): Promise<boolean> {
+    try {
+      const count = await this.sinapiRepository.count();
+      return count > 0;
+    } catch (error) {
+      this.logger.warn(
+        `Failed to check persisted data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Get count of items in database (#1165)
+   *
+   * @returns Number of persisted items
+   */
+  async getPersistedCount(): Promise<number> {
+    try {
+      return await this.sinapiRepository.count();
+    } catch (error) {
+      this.logger.warn(
+        `Failed to get persisted count: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return 0;
+    }
+  }
+
+  /**
+   * Search items in database (#1165)
+   *
+   * Queries PostgreSQL directly for persistence-aware searches.
+   *
+   * @param filters Search filters
+   * @returns Paginated results from database
+   */
+  async searchFromDatabase(
+    filters: SinapiSearchFilters,
+  ): Promise<GovApiResponse<SinapiPriceReference[]>> {
+    const startTime = Date.now();
+    const page = filters.page || 1;
+    const perPage = filters.perPage || DEFAULT_PAGE_SIZE;
+
+    try {
+      // Build where clause
+      const whereClause: Record<string, unknown> = {};
+
+      if (filters.uf) {
+        whereClause.uf = filters.uf;
+      }
+
+      if (filters.mesReferencia) {
+        const [ano, mes] = filters.mesReferencia.split('-').map(Number);
+        whereClause.anoReferencia = ano;
+        whereClause.mesReferencia = mes;
+      }
+
+      if (filters.tipo) {
+        whereClause.tipo = filters.tipo;
+      }
+
+      if (filters.codigo) {
+        whereClause.codigo = ILike(`%${filters.codigo}%`);
+      }
+
+      // Use query builder for more complex searches
+      const queryBuilder = this.sinapiRepository
+        .createQueryBuilder('sinapi')
+        .where(whereClause);
+
+      // Text search on description
+      if (filters.descricao) {
+        queryBuilder.andWhere(
+          `to_tsvector('portuguese', sinapi.descricao) @@ plainto_tsquery('portuguese', :query)`,
+          { query: filters.descricao },
+        );
+      }
+
+      // Price filters
+      if (filters.precoMinimo !== undefined) {
+        queryBuilder.andWhere(
+          '(sinapi.precoOnerado >= :minPrice OR sinapi.precoDesonerado >= :minPrice)',
+          { minPrice: filters.precoMinimo },
+        );
+      }
+
+      if (filters.precoMaximo !== undefined) {
+        queryBuilder.andWhere(
+          '(sinapi.precoOnerado <= :maxPrice OR sinapi.precoDesonerado <= :maxPrice)',
+          { maxPrice: filters.precoMaximo },
+        );
+      }
+
+      // Get total count
+      const total = await queryBuilder.getCount();
+
+      // Apply pagination and get results
+      const items = await queryBuilder
+        .orderBy('sinapi.codigo', 'ASC')
+        .skip((page - 1) * perPage)
+        .take(perPage)
+        .getMany();
+
+      // Transform to SinapiPriceReference
+      const results: SinapiPriceReference[] = items.map((item) =>
+        this.entityToReference(item, filters.desonerado ?? false),
+      );
+
+      const duration = Date.now() - startTime;
+      this.logger.log(
+        `Database search returned ${results.length}/${total} results in ${duration}ms`,
+      );
+
+      return {
+        data: results,
+        total,
+        page,
+        perPage,
+        source: 'sinapi',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return this.createFallbackResponse();
+    }
+  }
+
+  /**
+   * Convert database entity to SinapiPriceReference (#1165)
+   */
+  private entityToReference(
+    entity: SinapiItem,
+    desonerado: boolean,
+  ): SinapiPriceReference {
+    const preco = desonerado
+      ? Number(entity.precoDesonerado)
+      : Number(entity.precoOnerado);
+    const mesRef = `${entity.anoReferencia}-${String(entity.mesReferencia).padStart(2, '0')}`;
+
+    return {
+      id: `sinapi:${entity.codigo}:${entity.uf}:${mesRef}:${desonerado ? 'D' : 'O'}`,
+      title: entity.descricao,
+      description: entity.descricao,
+      source: 'sinapi',
+      url: undefined,
+      relevance: 1.0,
+      fetchedAt: entity.createdAt,
+      codigo: entity.codigo,
+      descricao: entity.descricao,
+      unidade: entity.unidade,
+      precoUnitario: preco,
+      mesReferencia: mesRef,
+      uf: entity.uf,
+      desonerado,
+      categoria: entity.classeDescricao || 'SINAPI',
+      tipo: entity.tipo as SinapiItemType,
+      classeId: entity.classeId || undefined,
+      classeDescricao: entity.classeDescricao || undefined,
+      precoOnerado: Number(entity.precoOnerado),
+      precoDesonerado: Number(entity.precoDesonerado),
+    };
+  }
+
+  /**
+   * Get data status including database (#1165)
+   */
+  async getDataStatusWithDatabase(): Promise<
+    SinapiDataStatus & { dbItemCount: number }
+  > {
+    const baseStatus = this.getDataStatus();
+    const dbItemCount = await this.getPersistedCount();
+
+    return {
+      ...baseStatus,
+      dbItemCount,
+      message: `${baseStatus.message}. Database: ${dbItemCount} items persisted.`,
+    };
   }
 
   /**
