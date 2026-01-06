@@ -1,6 +1,15 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 610/637 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 611/638 (96%) | **Deploy:** LIVE
+
+---
+
+## Atualizações Recentes
+
+| Data       | PR    | Tipo     | Descrição                                                   |
+| ---------- | ----- | -------- | ----------------------------------------------------------- |
+| 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2) |
+| 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                |
 
 ---
 
@@ -111,9 +120,9 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 637   |
+| Issues Totais     | 638   |
 | Issues Abertas    | 27    |
-| Issues Fechadas   | 610   |
+| Issues Fechadas   | 611   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
