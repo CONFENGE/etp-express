@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 611/638 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 612/638 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                   |
 | ---------- | ----- | -------- | ----------------------------------------------------------- |
+| 2026-01-06 | #1220 | Feature  | Implementar preview de PDF antes do export (#1214)          |
 | 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2) |
 | 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                |
 
@@ -31,7 +32,7 @@
 | #     | Issue                                         | Status |
 | ----- | --------------------------------------------- | ------ |
 | #1213 | [UX] Wizard de onboarding para primeiro uso   | 🔴 NEW |
-| #1214 | [Export] Preview de documento antes do export | 🔴 NEW |
+| #1214 | [Export] Preview de documento antes do export | ✅     |
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
 
@@ -49,17 +50,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 5/15 (33%)
+**Progresso MVP Comercial:** 6/15 (40%)
 
 ---
 
-## Issues Abertas (27)
+## Issues Abertas (26)
 
-### P1 - High Priority (16 issues)
+### P1 - High Priority (15 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1214 | [Export] Preview de documento antes do export (MVP Comercial)   |
 | #1213 | [UX] Wizard de onboarding para primeiro uso (MVP Comercial)     |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
@@ -102,7 +102,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 5/15   | 🔥 MÁXIMA      |
+| MVP Comercial          | 6/15   | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -121,14 +121,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 638   |
-| Issues Abertas    | 27    |
-| Issues Fechadas   | 611   |
+| Issues Abertas    | 26    |
+| Issues Fechadas   | 612   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2262  |
-| Frontend Tests    | 1541  |
-| Total Tests       | 3803  |
+| Backend Tests     | 2265  |
+| Frontend Tests    | 1574  |
+| Total Tests       | 3839  |
 
 ---
 
