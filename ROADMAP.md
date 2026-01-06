@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 618/644 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 619/644 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                    |
 | ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227  |
 | 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226 |
 | 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225  |
 | 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224 |
@@ -33,7 +34,7 @@
 |       | ↳ #1224 Campos de Objeto e Justificativa               | ✅     |
 |       | ↳ #1225 Campos de Requisitos e Riscos                  | ✅     |
 |       | ↳ #1226 Campos de Estimativa de Custos                 | ✅     |
-|       | ↳ #1227 Frontend CreateETPWizard                       | 🔴     |
+|       | ↳ #1227 Frontend CreateETPWizard                       | ✅     |
 |       | ↳ #1228 Testes E2E                                     | 🔴     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo    | 🔴     |
 | #1215 | [UX] Validação em tempo real dos campos ETP            | ✅     |
@@ -62,18 +63,17 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 12/20 (60%) - Epic #1158 expandido com 6 sub-issues
+**Progresso MVP Comercial:** 13/20 (65%) - Epic #1158 expandido com 6 sub-issues
 
 ---
 
-## Issues Abertas (26)
+## Issues Abertas (25)
 
-### P1 - High Priority (15 issues)
+### P1 - High Priority (14 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
 | #1228 | [ETP-1158f] Testes E2E para wizard de criação expandido         |
-| #1227 | [ETP-1158e] Criar componente CreateETPWizard multi-step         |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -115,7 +115,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 12/20  | 🔥 MÁXIMA      |
+| MVP Comercial          | 13/20  | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -134,14 +134,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 644   |
-| Issues Abertas    | 26    |
-| Issues Fechadas   | 618   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 619   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
 | Backend Tests     | 2379  |
-| Frontend Tests    | 1605  |
-| Total Tests       | 3984  |
+| Frontend Tests    | 1647  |
+| Total Tests       | 4026  |
 
 ---
 
