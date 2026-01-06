@@ -9,9 +9,12 @@ import {
   ValidateNested,
   IsDateString,
   Min,
+  IsEnum,
+  IsInt,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { NivelRisco } from '../../../entities/etp.entity';
 
 /**
  * DTO para responsável técnico do ETP.
@@ -196,6 +199,95 @@ export class CreateEtpDto {
 
   // ============================================
   // Fim dos Campos de Objeto e Justificativa
+  // ============================================
+
+  // ============================================
+  // Campos de Requisitos e Riscos (Issue #1225)
+  // ============================================
+
+  @ApiPropertyOptional({
+    example:
+      'Sistema deve suportar 10.000 usuários simultâneos; Tempo de resposta máximo de 2 segundos; Disponibilidade de 99,9%; Compatibilidade com navegadores Chrome, Firefox e Edge.',
+    description: 'Requisitos técnicos da contratação (max: 5000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000, {
+    message: 'Requisitos técnicos deve ter no máximo 5000 caracteres',
+  })
+  requisitosTecnicos?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Empresa deve possuir certificação ISO 9001; Equipe mínima de 5 desenvolvedores seniores; Experiência comprovada em projetos similares nos últimos 3 anos.',
+    description: 'Requisitos de qualificação técnica do fornecedor (max: 3000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000, {
+    message: 'Requisitos de qualificação deve ter no máximo 3000 caracteres',
+  })
+  requisitosQualificacao?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Utilização de materiais recicláveis; Equipamentos com certificação Energy Star; Descarte adequado de resíduos eletrônicos conforme PNRS.',
+    description:
+      'Critérios de sustentabilidade ambiental conforme IN SLTI/MP nº 01/2010 (max: 2000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000, {
+    message: 'Critérios de sustentabilidade deve ter no máximo 2000 caracteres',
+  })
+  criteriosSustentabilidade?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Garantia de 12 meses contra defeitos de fabricação e vícios ocultos',
+    description: 'Garantia exigida na contratação (max: 500)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500, {
+    message: 'Garantia exigida deve ter no máximo 500 caracteres',
+  })
+  garantiaExigida?: string;
+
+  @ApiPropertyOptional({
+    example: 180,
+    description: 'Prazo de execução em dias (min: 1)',
+  })
+  @IsOptional()
+  @IsInt({ message: 'Prazo de execução deve ser um número inteiro' })
+  @Min(1, { message: 'Prazo de execução deve ser no mínimo 1 dia' })
+  prazoExecucao?: number;
+
+  @ApiPropertyOptional({
+    example: 'MEDIO',
+    description: 'Nível de risco da contratação',
+    enum: NivelRisco,
+  })
+  @IsOptional()
+  @IsEnum(NivelRisco, {
+    message: 'Nível de risco deve ser BAIXO, MEDIO ou ALTO',
+  })
+  nivelRisco?: NivelRisco;
+
+  @ApiPropertyOptional({
+    example:
+      'Risco de atraso na entrega devido à complexidade técnica; Risco de dependência de fornecedor único; Risco de obsolescência tecnológica.',
+    description: 'Descrição detalhada dos riscos identificados (max: 3000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000, {
+    message: 'Descrição de riscos deve ter no máximo 3000 caracteres',
+  })
+  descricaoRiscos?: string;
+
+  // ============================================
+  // Fim dos Campos de Requisitos e Riscos
   // ============================================
 
   @ApiPropertyOptional({
