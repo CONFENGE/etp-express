@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 609/636 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 610/637 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -15,7 +15,7 @@
 | #1158 | [ETP] Expandir formulário de criação para 20-30 campos | 🔴     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo    | 🔴     |
 | #1215 | [UX] Validação em tempo real dos campos ETP            | ✅     |
-| #1169 | [UX] Implementar auto-save durante edição              | 🔴     |
+| #1169 | [UX] Implementar auto-save durante edição              | ✅     |
 
 ### Fase 2 - Experiência Guiada (P1)
 
@@ -40,13 +40,13 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 4/15 (27%)
+**Progresso MVP Comercial:** 5/15 (33%)
 
 ---
 
 ## Issues Abertas (27)
 
-### P1 - High Priority (17 issues)
+### P1 - High Priority (16 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -56,7 +56,6 @@
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
-| #1169 | [UX] Implementar auto-save durante edição (MVP Comercial)       |
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
 | #1165 | [Preços] Persistir histórico SINAPI/SICRO (MVP Comercial)       |
 | #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
@@ -94,7 +93,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 4/15   | 🔥 MÁXIMA      |
+| MVP Comercial          | 5/15   | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -112,15 +111,15 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 636   |
+| Issues Totais     | 637   |
 | Issues Abertas    | 27    |
-| Issues Fechadas   | 609   |
+| Issues Fechadas   | 610   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
 | Backend Tests     | 2262  |
-| Frontend Tests    | 1510  |
-| Total Tests       | 3772  |
+| Frontend Tests    | 1541  |
+| Total Tests       | 3803  |
 
 ---
 
