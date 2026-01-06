@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 608/636 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 609/636 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -14,7 +14,7 @@
 | ----- | ------------------------------------------------------ | ------ |
 | #1158 | [ETP] Expandir formulário de criação para 20-30 campos | 🔴     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo    | 🔴     |
-| #1215 | [UX] Validação em tempo real dos campos ETP            | 🔴 NEW |
+| #1215 | [UX] Validação em tempo real dos campos ETP            | ✅     |
 | #1169 | [UX] Implementar auto-save durante edição              | 🔴     |
 
 ### Fase 2 - Experiência Guiada (P1)
@@ -40,17 +40,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 3/15 (20%)
+**Progresso MVP Comercial:** 4/15 (27%)
 
 ---
 
-## Issues Abertas (28)
+## Issues Abertas (27)
 
-### P1 - High Priority (18 issues)
+### P1 - High Priority (17 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1215 | [UX] Validação em tempo real dos campos ETP (MVP Comercial)     |
 | #1214 | [Export] Preview de documento antes do export (MVP Comercial)   |
 | #1213 | [UX] Wizard de onboarding para primeiro uso (MVP Comercial)     |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
@@ -95,7 +94,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 3/15   | 🔥 MÁXIMA      |
+| MVP Comercial          | 4/15   | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -114,14 +113,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 636   |
-| Issues Abertas    | 28    |
-| Issues Fechadas   | 608   |
+| Issues Abertas    | 27    |
+| Issues Fechadas   | 609   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2245  |
-| Frontend Tests    | 1440  |
-| Total Tests       | 3685  |
+| Backend Tests     | 2262  |
+| Frontend Tests    | 1510  |
+| Total Tests       | 3772  |
 
 ---
 
