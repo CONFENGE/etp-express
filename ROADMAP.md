@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 612/638 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 613/638 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                   |
 | ---------- | ----- | -------- | ----------------------------------------------------------- |
+| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)           |
 | 2026-01-06 | #1220 | Feature  | Implementar preview de PDF antes do export (#1214)          |
 | 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2) |
 | 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                |
@@ -31,7 +32,7 @@
 
 | #     | Issue                                         | Status |
 | ----- | --------------------------------------------- | ------ |
-| #1213 | [UX] Wizard de onboarding para primeiro uso   | 🔴 NEW |
+| #1213 | [UX] Wizard de onboarding para primeiro uso   | ✅     |
 | #1214 | [Export] Preview de documento antes do export | ✅     |
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
@@ -50,17 +51,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 6/15 (40%)
+**Progresso MVP Comercial:** 7/15 (47%)
 
 ---
 
-## Issues Abertas (26)
+## Issues Abertas (25)
 
-### P1 - High Priority (15 issues)
+### P1 - High Priority (14 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1213 | [UX] Wizard de onboarding para primeiro uso (MVP Comercial)     |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -121,8 +121,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 638   |
-| Issues Abertas    | 26    |
-| Issues Fechadas   | 612   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 613   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
