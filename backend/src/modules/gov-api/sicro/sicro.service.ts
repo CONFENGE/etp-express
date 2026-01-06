@@ -9,12 +9,20 @@
  * Unlike other gov APIs, SICRO data is provided via Excel spreadsheets
  * that need to be downloaded and parsed.
  *
+ * Data persistence (#1165):
+ * - Data is now persisted to PostgreSQL via TypeORM
+ * - In-memory Map serves as fallback/cache
+ * - Redis cache for fast searches
+ *
  * @module modules/gov-api/sicro
  * @see https://github.com/CONFENGE/etp-express/issues/694
+ * @see https://github.com/CONFENGE/etp-express/issues/1165
  */
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, ILike } from 'typeorm';
 import {
   IGovApiService,
   GovApiResponse,
@@ -34,10 +42,11 @@ import {
   formatMesReferencia,
 } from './sicro.types';
 import { SicroParser, createSicroParser } from './sicro-parser';
+import { SicroItem } from '../../../entities/sicro-item.entity';
 
 /**
  * In-memory storage for parsed SICRO data
- * In production, this should be replaced with database storage
+ * Serves as fallback/cache in addition to database persistence (#1165)
  */
 interface SicroDataStore {
   items: Map<string, SicroPriceReference>;
@@ -103,6 +112,8 @@ export class SicroService implements IGovApiService, OnModuleInit {
   constructor(
     private readonly configService: ConfigService,
     private readonly cache: GovApiCache,
+    @InjectRepository(SicroItem)
+    private readonly sicroRepository: Repository<SicroItem>,
   ) {}
 
   /**
@@ -223,11 +234,16 @@ export class SicroService implements IGovApiService, OnModuleInit {
   /**
    * Load SICRO data from Excel buffer
    *
+   * Parses the Excel file and persists data to both:
+   * 1. Database (TypeORM) for persistence (#1165)
+   * 2. In-memory Map for fast fallback access
+   *
    * @param buffer Excel file buffer
    * @param uf State (UF)
    * @param mesReferencia Reference month (YYYY-MM)
    * @param tipo Item type (insumo or composicao)
    * @param modoTransporte Transport mode (optional)
+   * @param organizationId Optional organization ID for multi-tenancy
    */
   async loadFromBuffer(
     buffer: Buffer,
@@ -235,7 +251,8 @@ export class SicroService implements IGovApiService, OnModuleInit {
     mesReferencia: string,
     tipo: SicroItemType,
     modoTransporte?: SicroModoTransporte,
-  ): Promise<{ loaded: number; errors: number }> {
+    organizationId?: string,
+  ): Promise<{ loaded: number; errors: number; persisted: number }> {
     const startTime = Date.now();
 
     try {
@@ -246,9 +263,61 @@ export class SicroService implements IGovApiService, OnModuleInit {
         modoTransporte,
       });
 
-      // Store items in data store
+      // Store items in memory (fallback/cache)
       for (const item of result.items) {
         this.dataStore.items.set(item.id, item);
+      }
+
+      // Persist to database (#1165)
+      const [anoRef, mesRef] = mesReferencia.split('-').map(Number);
+      let persistedCount = 0;
+
+      const entitiesToSave = result.items.map((item) => ({
+        organizationId: organizationId || null,
+        codigo: item.codigo,
+        descricao: item.descricao,
+        unidade: item.unidade,
+        precoOnerado: item.precoOnerado,
+        precoDesonerado: item.precoDesonerado,
+        tipo: item.tipo as 'INSUMO' | 'COMPOSICAO',
+        uf: item.uf,
+        mesReferencia: mesRef,
+        anoReferencia: anoRef,
+        categoriaId: item.categoriaId || null,
+        categoriaDescricao: item.categoriaDescricao || null,
+        modoTransporte: item.modoTransporte || null,
+        metadata: (item.custoMaoDeObra || item.custoMaterial
+          ? {
+              custoMaoDeObra: item.custoMaoDeObra,
+              custoMaterial: item.custoMaterial,
+              custoEquipamento: item.custoEquipamento,
+              custoTransporte: item.custoTransporte,
+            }
+          : null) as Record<string, unknown> | null,
+      }));
+
+      // Use upsert to avoid duplicates (based on codigo + uf + mes/ano)
+      if (entitiesToSave.length > 0) {
+        // Batch insert in chunks to avoid memory issues
+        const BATCH_SIZE = 500;
+        for (let i = 0; i < entitiesToSave.length; i += BATCH_SIZE) {
+          const batch = entitiesToSave.slice(i, i + BATCH_SIZE);
+          try {
+            await this.sicroRepository
+              .createQueryBuilder()
+              .insert()
+              .into(SicroItem)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeORM InsertQueryBuilder requires any for JSONB metadata
+              .values(batch as any)
+              .orIgnore() // Skip duplicates
+              .execute();
+            persistedCount += batch.length;
+          } catch (dbError) {
+            this.logger.warn(
+              `Batch ${i / BATCH_SIZE + 1} partial save: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`,
+            );
+          }
+        }
       }
 
       // Track loaded month
@@ -258,12 +327,14 @@ export class SicroService implements IGovApiService, OnModuleInit {
 
       const duration = Date.now() - startTime;
       this.logger.log(
-        `Loaded ${result.count} SICRO items for ${uf} ${mesReferencia} ${tipo} in ${duration}ms (${result.errors.length} errors)`,
+        `Loaded ${result.count} SICRO items for ${uf} ${mesReferencia} ${tipo} in ${duration}ms ` +
+          `(${persistedCount} persisted to DB, ${result.errors.length} errors)`,
       );
 
       return {
         loaded: result.count,
         errors: result.errors.length,
+        persisted: persistedCount,
       };
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -273,7 +344,7 @@ export class SicroService implements IGovApiService, OnModuleInit {
         }`,
       );
 
-      return { loaded: 0, errors: 1 };
+      return { loaded: 0, errors: 1, persisted: 0 };
     }
   }
 
@@ -508,6 +579,204 @@ export class SicroService implements IGovApiService, OnModuleInit {
    */
   hasData(): boolean {
     return this.dataStore.items.size > 0;
+  }
+
+  /**
+   * Check if data exists in database (#1165)
+   *
+   * @returns True if database has SICRO items
+   */
+  async hasPersistedData(): Promise<boolean> {
+    try {
+      const count = await this.sicroRepository.count();
+      return count > 0;
+    } catch (error) {
+      this.logger.warn(
+        `Failed to check persisted data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Get count of items in database (#1165)
+   *
+   * @returns Number of persisted items
+   */
+  async getPersistedCount(): Promise<number> {
+    try {
+      return await this.sicroRepository.count();
+    } catch (error) {
+      this.logger.warn(
+        `Failed to get persisted count: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return 0;
+    }
+  }
+
+  /**
+   * Search items in database (#1165)
+   *
+   * Queries PostgreSQL directly for persistence-aware searches.
+   *
+   * @param filters Search filters
+   * @returns Paginated results from database
+   */
+  async searchFromDatabase(
+    filters: SicroSearchFilters,
+  ): Promise<GovApiResponse<SicroPriceReference[]>> {
+    const startTime = Date.now();
+    const page = filters.page || 1;
+    const perPage = filters.perPage || DEFAULT_PAGE_SIZE;
+
+    try {
+      // Build where clause
+      const whereClause: Record<string, unknown> = {};
+
+      if (filters.uf) {
+        whereClause.uf = filters.uf;
+      }
+
+      if (filters.mesReferencia) {
+        const [ano, mes] = filters.mesReferencia.split('-').map(Number);
+        whereClause.anoReferencia = ano;
+        whereClause.mesReferencia = mes;
+      }
+
+      if (filters.tipo) {
+        whereClause.tipo = filters.tipo;
+      }
+
+      if (filters.modoTransporte) {
+        whereClause.modoTransporte = filters.modoTransporte;
+      }
+
+      if (filters.codigo) {
+        whereClause.codigo = ILike(`%${filters.codigo}%`);
+      }
+
+      // Use query builder for more complex searches
+      const queryBuilder = this.sicroRepository
+        .createQueryBuilder('sicro')
+        .where(whereClause);
+
+      // Text search on description
+      if (filters.descricao) {
+        queryBuilder.andWhere(
+          `to_tsvector('portuguese', sicro.descricao) @@ plainto_tsquery('portuguese', :query)`,
+          { query: filters.descricao },
+        );
+      }
+
+      // Price filters
+      if (filters.precoMinimo !== undefined) {
+        queryBuilder.andWhere(
+          '(sicro.precoOnerado >= :minPrice OR sicro.precoDesonerado >= :minPrice)',
+          { minPrice: filters.precoMinimo },
+        );
+      }
+
+      if (filters.precoMaximo !== undefined) {
+        queryBuilder.andWhere(
+          '(sicro.precoOnerado <= :maxPrice OR sicro.precoDesonerado <= :maxPrice)',
+          { maxPrice: filters.precoMaximo },
+        );
+      }
+
+      // Get total count
+      const total = await queryBuilder.getCount();
+
+      // Apply pagination and get results
+      const items = await queryBuilder
+        .orderBy('sicro.codigo', 'ASC')
+        .skip((page - 1) * perPage)
+        .take(perPage)
+        .getMany();
+
+      // Transform to SicroPriceReference
+      const results: SicroPriceReference[] = items.map((item) =>
+        this.entityToReference(item, filters.desonerado ?? false),
+      );
+
+      const duration = Date.now() - startTime;
+      this.logger.log(
+        `Database search returned ${results.length}/${total} results in ${duration}ms`,
+      );
+
+      return {
+        data: results,
+        total,
+        page,
+        perPage,
+        source: 'sicro',
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return this.createFallbackResponse();
+    }
+  }
+
+  /**
+   * Convert database entity to SicroPriceReference (#1165)
+   */
+  private entityToReference(
+    entity: SicroItem,
+    desonerado: boolean,
+  ): SicroPriceReference {
+    const preco = desonerado
+      ? Number(entity.precoDesonerado)
+      : Number(entity.precoOnerado);
+    const mesRef = `${entity.anoReferencia}-${String(entity.mesReferencia).padStart(2, '0')}`;
+
+    return {
+      id: `sicro:${entity.codigo}:${entity.uf}:${mesRef}:${desonerado ? 'D' : 'O'}`,
+      title: entity.descricao,
+      description: entity.descricao,
+      source: 'sicro',
+      url: `https://www.gov.br/dnit/pt-br/assuntos/planejamento-e-pesquisa/custos-e-pagamentos/sicro/${entity.uf.toLowerCase()}`,
+      relevance: 1.0,
+      fetchedAt: entity.createdAt,
+      codigo: entity.codigo,
+      descricao: entity.descricao,
+      unidade: entity.unidade,
+      precoUnitario: preco,
+      mesReferencia: mesRef,
+      uf: entity.uf,
+      desonerado,
+      categoria: entity.categoriaDescricao || 'SICRO',
+      tipo: entity.tipo as SicroItemType,
+      categoriaId: entity.categoriaId || undefined,
+      categoriaDescricao: entity.categoriaDescricao || undefined,
+      precoOnerado: Number(entity.precoOnerado),
+      precoDesonerado: Number(entity.precoDesonerado),
+      modoTransporte:
+        (entity.modoTransporte as SicroModoTransporte) || undefined,
+      custoMaoDeObra: entity.metadata?.custoMaoDeObra,
+      custoMaterial: entity.metadata?.custoMaterial,
+      custoEquipamento: entity.metadata?.custoEquipamento,
+      custoTransporte: entity.metadata?.custoTransporte,
+    };
+  }
+
+  /**
+   * Get data status including database (#1165)
+   */
+  async getDataStatusWithDatabase(): Promise<
+    SicroDataStatus & { dbItemCount: number }
+  > {
+    const baseStatus = this.getDataStatus();
+    const dbItemCount = await this.getPersistedCount();
+
+    return {
+      ...baseStatus,
+      dbItemCount,
+      message: `${baseStatus.message}. Database: ${dbItemCount} items persisted.`,
+    };
   }
 
   /**

@@ -1,9 +1,13 @@
 /**
  * SINAPI Service Tests
+ *
+ * @see https://github.com/CONFENGE/etp-express/issues/693
+ * @see https://github.com/CONFENGE/etp-express/issues/1165 - Persistence tests
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import * as ExcelJS from 'exceljs';
 import { SinapiService } from './sinapi.service';
 import { GovApiCache } from '../utils/gov-api-cache';
@@ -12,6 +16,7 @@ import {
   SinapiPriceReference,
   SinapiCategoria,
 } from './sinapi.types';
+import { SinapiItem } from '../../../entities/sinapi-item.entity';
 
 /**
  * Helper function to create an Excel buffer from array data using ExcelJS
@@ -39,6 +44,7 @@ async function createExcelBuffer(
 describe('SinapiService', () => {
   let service: SinapiService;
   let cache: jest.Mocked<GovApiCache>;
+  let mockRepository: jest.Mocked<Record<string, jest.Mock>>;
 
   const mockConfigService = {
     get: jest.fn().mockReturnValue(undefined),
@@ -50,14 +56,40 @@ describe('SinapiService', () => {
     delete: jest.fn(),
   };
 
+  // Mock repository for TypeORM (#1165)
+  const createMockRepository = () => ({
+    count: jest.fn().mockResolvedValue(0),
+    find: jest.fn().mockResolvedValue([]),
+    findOne: jest.fn().mockResolvedValue(null),
+    save: jest.fn().mockImplementation((entity) => Promise.resolve(entity)),
+    createQueryBuilder: jest.fn().mockReturnValue({
+      insert: jest.fn().mockReturnThis(),
+      into: jest.fn().mockReturnThis(),
+      values: jest.fn().mockReturnThis(),
+      orIgnore: jest.fn().mockReturnThis(),
+      execute: jest
+        .fn()
+        .mockResolvedValue({ identifiers: [], generatedMaps: [], raw: [] }),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([]),
+      getCount: jest.fn().mockResolvedValue(0),
+    }),
+  });
+
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockRepository = createMockRepository();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SinapiService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: GovApiCache, useValue: mockCache },
+        { provide: getRepositoryToken(SinapiItem), useValue: mockRepository },
       ],
     }).compile();
 
@@ -445,6 +477,193 @@ describe('SinapiService', () => {
       );
 
       expect(service.hasData()).toBe(true);
+    });
+  });
+
+  describe('Database Persistence (#1165)', () => {
+    describe('hasPersistedData()', () => {
+      it('should return false when database is empty', async () => {
+        mockRepository.count.mockResolvedValue(0);
+
+        const result = await service.hasPersistedData();
+
+        expect(result).toBe(false);
+        expect(mockRepository.count).toHaveBeenCalled();
+      });
+
+      it('should return true when database has items', async () => {
+        mockRepository.count.mockResolvedValue(1000);
+
+        const result = await service.hasPersistedData();
+
+        expect(result).toBe(true);
+      });
+
+      it('should handle database errors gracefully', async () => {
+        mockRepository.count.mockRejectedValue(
+          new Error('DB connection failed'),
+        );
+
+        const result = await service.hasPersistedData();
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('getPersistedCount()', () => {
+      it('should return count from database', async () => {
+        mockRepository.count.mockResolvedValue(5000);
+
+        const result = await service.getPersistedCount();
+
+        expect(result).toBe(5000);
+      });
+
+      it('should return 0 on database error', async () => {
+        mockRepository.count.mockRejectedValue(new Error('DB error'));
+
+        const result = await service.getPersistedCount();
+
+        expect(result).toBe(0);
+      });
+    });
+
+    describe('loadFromBuffer() with persistence', () => {
+      it('should persist items to database after loading', async () => {
+        const buffer = await createExcelBuffer(
+          [
+            'CODIGO',
+            'DESCRICAO',
+            'UNIDADE',
+            'PRECO ONERADO',
+            'PRECO DESONERADO',
+          ],
+          [
+            ['00001', 'Cimento Portland', 'KG', '0,75', '0,70'],
+            ['00002', 'Areia lavada', 'M3', '120,00', '115,00'],
+          ],
+        );
+
+        const result = await service.loadFromBuffer(
+          buffer,
+          'DF',
+          '2024-01',
+          SinapiItemType.INSUMO,
+        );
+
+        // Check that createQueryBuilder was called for insert
+        expect(mockRepository.createQueryBuilder).toHaveBeenCalled();
+        expect(result.loaded).toBeGreaterThan(0);
+        expect(result.persisted).toBeGreaterThanOrEqual(0);
+      });
+
+      it('should include persisted count in result', async () => {
+        const buffer = await createExcelBuffer(
+          ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
+          [['00001', 'Test', 'UN', '10,00']],
+        );
+
+        const result = await service.loadFromBuffer(
+          buffer,
+          'DF',
+          '2024-01',
+          SinapiItemType.INSUMO,
+        );
+
+        expect(result).toHaveProperty('persisted');
+        expect(typeof result.persisted).toBe('number');
+      });
+
+      it('should accept optional organizationId for multi-tenancy', async () => {
+        const buffer = await createExcelBuffer(
+          ['CODIGO', 'DESCRICAO', 'UNIDADE', 'PRECO ONERADO'],
+          [['00001', 'Test', 'UN', '10,00']],
+        );
+
+        const orgId = 'test-org-uuid';
+        const result = await service.loadFromBuffer(
+          buffer,
+          'DF',
+          '2024-01',
+          SinapiItemType.INSUMO,
+          orgId,
+        );
+
+        expect(result.loaded).toBeGreaterThan(0);
+      });
+    });
+
+    describe('searchFromDatabase()', () => {
+      it('should query database for items', async () => {
+        const mockItems: Partial<SinapiItem>[] = [
+          {
+            id: 'uuid-1',
+            codigo: '00001',
+            descricao: 'Cimento Portland',
+            unidade: 'KG',
+            precoOnerado: 0.75,
+            precoDesonerado: 0.7,
+            tipo: 'INSUMO',
+            uf: 'DF',
+            mesReferencia: 1,
+            anoReferencia: 2024,
+            createdAt: new Date(),
+          },
+        ];
+
+        const queryBuilder = mockRepository.createQueryBuilder();
+        queryBuilder.getMany.mockResolvedValue(mockItems as SinapiItem[]);
+        queryBuilder.getCount.mockResolvedValue(1);
+
+        const result = await service.searchFromDatabase({
+          descricao: 'cimento',
+          uf: 'DF',
+        });
+
+        expect(result.source).toBe('sinapi');
+        expect(result.cached).toBe(false);
+        expect(result.total).toBe(1);
+      });
+
+      it('should return empty result on database error', async () => {
+        const queryBuilder = mockRepository.createQueryBuilder();
+        queryBuilder.getCount.mockRejectedValue(new Error('DB error'));
+
+        const result = await service.searchFromDatabase({
+          descricao: 'cimento',
+        });
+
+        expect(result.data).toEqual([]);
+        expect(result.isFallback).toBe(true);
+      });
+
+      it('should support pagination', async () => {
+        const queryBuilder = mockRepository.createQueryBuilder();
+        queryBuilder.getMany.mockResolvedValue([]);
+        queryBuilder.getCount.mockResolvedValue(100);
+
+        const result = await service.searchFromDatabase({
+          page: 2,
+          perPage: 20,
+        });
+
+        expect(result.page).toBe(2);
+        expect(result.perPage).toBe(20);
+        expect(queryBuilder.skip).toHaveBeenCalledWith(20);
+        expect(queryBuilder.take).toHaveBeenCalledWith(20);
+      });
+    });
+
+    describe('getDataStatusWithDatabase()', () => {
+      it('should include database count in status', async () => {
+        mockRepository.count.mockResolvedValue(5000);
+
+        const status = await service.getDataStatusWithDatabase();
+
+        expect(status.dbItemCount).toBe(5000);
+        expect(status.message).toContain('5000');
+        expect(status.message).toContain('Database');
+      });
     });
   });
 });
