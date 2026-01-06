@@ -1,0 +1,180 @@
+import { UseFormReturn } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { FormField } from '@/components/form/FormField';
+import {
+  ETPWizardFormData,
+  TITLE_MIN_LENGTH,
+  TITLE_MAX_LENGTH,
+  ORGAO_MAX_LENGTH,
+  UNIDADE_DEMANDANTE_MAX_LENGTH,
+  RESPONSAVEL_NOME_MAX_LENGTH,
+  RESPONSAVEL_MATRICULA_MAX_LENGTH,
+} from '@/schemas/etpWizardSchema';
+
+interface Step1IdentificationProps {
+  form: UseFormReturn<ETPWizardFormData>;
+}
+
+export function Step1Identification({ form }: Step1IdentificationProps) {
+  const {
+    register,
+    formState: { errors, touchedFields },
+    watch,
+  } = form;
+
+  const titleValue = watch('title') || '';
+  const orgaoValue = watch('orgaoEntidade') || '';
+  const unidadeValue = watch('unidadeDemandante') || '';
+  const nomeValue = watch('responsavelTecnicoNome') || '';
+  const matriculaValue = watch('responsavelTecnicoMatricula') || '';
+
+  return (
+    <div className="space-y-4">
+      <FormField
+        label="Titulo do ETP"
+        name="title"
+        required
+        error={errors.title?.message}
+        isValid={
+          !errors.title &&
+          touchedFields.title &&
+          titleValue.length >= TITLE_MIN_LENGTH
+        }
+        charCount={{ current: titleValue.length, max: TITLE_MAX_LENGTH }}
+        helpText="Titulo descritivo do Estudo Tecnico Preliminar"
+      >
+        <Input
+          id="title"
+          placeholder="Ex: Contratacao de Servicos de TI"
+          {...register('title')}
+        />
+      </FormField>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField
+          label="Orgao/Entidade"
+          name="orgaoEntidade"
+          error={errors.orgaoEntidade?.message}
+          isValid={
+            !errors.orgaoEntidade &&
+            touchedFields.orgaoEntidade &&
+            orgaoValue.length > 0
+          }
+          charCount={{ current: orgaoValue.length, max: ORGAO_MAX_LENGTH }}
+          helpText="Orgao ou entidade requisitante"
+        >
+          <Input
+            id="orgaoEntidade"
+            placeholder="Ex: Secretaria Municipal de Tecnologia"
+            {...register('orgaoEntidade')}
+          />
+        </FormField>
+
+        <FormField
+          label="Codigo UASG"
+          name="uasg"
+          error={errors.uasg?.message}
+          isValid={
+            !errors.uasg &&
+            touchedFields.uasg &&
+            (watch('uasg') || '').length === 6
+          }
+          helpText="6 digitos numericos"
+        >
+          <Input
+            id="uasg"
+            placeholder="Ex: 123456"
+            maxLength={6}
+            {...register('uasg')}
+          />
+        </FormField>
+      </div>
+
+      <FormField
+        label="Unidade Demandante"
+        name="unidadeDemandante"
+        error={errors.unidadeDemandante?.message}
+        isValid={
+          !errors.unidadeDemandante &&
+          touchedFields.unidadeDemandante &&
+          unidadeValue.length > 0
+        }
+        charCount={{
+          current: unidadeValue.length,
+          max: UNIDADE_DEMANDANTE_MAX_LENGTH,
+        }}
+        helpText="Unidade demandante dentro do orgao"
+      >
+        <Input
+          id="unidadeDemandante"
+          placeholder="Ex: Departamento de Infraestrutura de TI"
+          {...register('unidadeDemandante')}
+        />
+      </FormField>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField
+          label="Nome do Responsavel Tecnico"
+          name="responsavelTecnicoNome"
+          error={errors.responsavelTecnicoNome?.message}
+          isValid={
+            !errors.responsavelTecnicoNome &&
+            touchedFields.responsavelTecnicoNome &&
+            nomeValue.length > 0
+          }
+          charCount={{
+            current: nomeValue.length,
+            max: RESPONSAVEL_NOME_MAX_LENGTH,
+          }}
+          helpText="Nome completo do responsavel"
+        >
+          <Input
+            id="responsavelTecnicoNome"
+            placeholder="Ex: Joao Silva"
+            {...register('responsavelTecnicoNome')}
+          />
+        </FormField>
+
+        <FormField
+          label="Matricula"
+          name="responsavelTecnicoMatricula"
+          error={errors.responsavelTecnicoMatricula?.message}
+          isValid={
+            !errors.responsavelTecnicoMatricula &&
+            touchedFields.responsavelTecnicoMatricula &&
+            matriculaValue.length > 0
+          }
+          charCount={{
+            current: matriculaValue.length,
+            max: RESPONSAVEL_MATRICULA_MAX_LENGTH,
+          }}
+          helpText="Matricula funcional (opcional)"
+        >
+          <Input
+            id="responsavelTecnicoMatricula"
+            placeholder="Ex: 12345"
+            {...register('responsavelTecnicoMatricula')}
+          />
+        </FormField>
+      </div>
+
+      <FormField
+        label="Data de Elaboracao"
+        name="dataElaboracao"
+        error={errors.dataElaboracao?.message}
+        isValid={
+          !errors.dataElaboracao &&
+          touchedFields.dataElaboracao &&
+          (watch('dataElaboracao') || '').length > 0
+        }
+        helpText="Data de elaboracao do ETP"
+      >
+        <Input
+          id="dataElaboracao"
+          type="date"
+          {...register('dataElaboracao')}
+        />
+      </FormField>
+    </div>
+  );
+}
