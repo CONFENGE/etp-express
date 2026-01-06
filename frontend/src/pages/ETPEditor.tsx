@@ -29,6 +29,7 @@ import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
 import { useConfetti } from '@/hooks/useConfetti';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { useETPPreview } from '@/hooks/useETPPreview';
+import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -95,6 +96,9 @@ export function ETPEditor() {
 
   // Export preview modal (#1214)
   const preview = useETPPreview({ etpId: id || '' });
+
+  // Onboarding task tracking (#1213)
+  const { markSuggestionGenerated, markETPExported } = useOnboardingTasks();
 
   // Track previous progress to detect ETP completion
   const previousProgressRef = useRef<number | null>(null);
@@ -231,6 +235,9 @@ export function ETPEditor() {
           setContent(result.content);
           success('Seção gerada com sucesso!');
 
+          // Mark onboarding task as completed (#1213)
+          markSuggestionGenerated();
+
           // Trigger demo conversion banner after successful AI generation (#475)
           triggerBanner('ai_generation');
         }
@@ -240,7 +247,14 @@ export function ETPEditor() {
         error(message);
       }
     },
-    [id, storeGenerateSection, success, triggerBanner, error],
+    [
+      id,
+      storeGenerateSection,
+      success,
+      markSuggestionGenerated,
+      triggerBanner,
+      error,
+    ],
   );
 
   // Handle cancel export (#612) - must be before early return
@@ -345,6 +359,9 @@ export function ETPEditor() {
 
       success('PDF exportado com sucesso!');
 
+      // Mark onboarding task as completed (#1213)
+      markETPExported();
+
       // Trigger demo conversion banner after PDF export (#475)
       triggerBanner('pdf_export');
     } catch (err) {
@@ -362,7 +379,7 @@ export function ETPEditor() {
       setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
-  }, [id, currentETP, success, triggerBanner, error]);
+  }, [id, currentETP, success, markETPExported, triggerBanner, error]);
 
   // Handle DOCX export (#551) with AbortController (#603) and progress (#612)
   const handleExportDocx = useCallback(async () => {
@@ -424,6 +441,9 @@ export function ETPEditor() {
 
       success('DOCX exportado com sucesso!');
 
+      // Mark onboarding task as completed (#1213)
+      markETPExported();
+
       // Trigger demo conversion banner after export
       triggerBanner('pdf_export');
     } catch (err) {
@@ -441,7 +461,7 @@ export function ETPEditor() {
       setExportState(initialExportState);
       exportAbortControllerRef.current = null;
     }
-  }, [id, currentETP, success, triggerBanner, error]);
+  }, [id, currentETP, success, markETPExported, triggerBanner, error]);
 
   // Early return for loading state - all hooks must be called before this
   if (isLoading || !currentETP || templatesLoading) {
