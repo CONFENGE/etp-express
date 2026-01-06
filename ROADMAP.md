@@ -1,25 +1,25 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-05 | **Progresso:** 607/633 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 608/633 (96%) | **Deploy:** LIVE
 
 ---
 
-## Issues Abertas (26)
+## Issues Abertas (25)
 
 ### P1 - High Priority (10 issues)
 
-| #     | Issue                                                          |
-| ----- | -------------------------------------------------------------- |
-| #1191 | [E2E] Create dedicated staging environment for E2E tests       |
-| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution |
-| #1172 | [E2E] Fix Auth Session tests for Railway environment           |
-| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment        |
-| #1161 | [Templates] Criar modelos pre-configurados por tipo            |
-| #1158 | [ETP] Expandir formulario de criacao para 20-30 campos         |
-| #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI        |
-| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas  |
-| #1074 | [QA] Implementar chaos engineering (Redis: ✅)                 |
-| #1073 | [QA] Criar testes de integracao com APIs governamentais reais  |
+| #     | Issue                                                           |
+| ----- | --------------------------------------------------------------- |
+| #1191 | [E2E] Create dedicated staging environment for E2E tests        |
+| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
+| #1172 | [E2E] Fix Auth Session tests for Railway environment            |
+| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
+| #1161 | [Templates] Criar modelos pre-configurados por tipo             |
+| #1158 | [ETP] Expandir formulario de criacao para 20-30 campos          |
+| #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
+| #1075 | [QA] Configurar load testing com 100+ requisicoes simultaneas   |
+| #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
+| #1073 | [QA] Criar testes de integracao com APIs governamentais reais   |
 
 ### P2 - Medium Priority (12 issues)
 
@@ -72,14 +72,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 633   |
-| Issues Abertas    | 26    |
-| Issues Fechadas   | 607   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 608   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2232  |
+| Backend Tests     | 2245  |
 | Frontend Tests    | 1440  |
-| Total Tests       | 3672  |
+| Total Tests       | 3685  |
 
 ---
 
