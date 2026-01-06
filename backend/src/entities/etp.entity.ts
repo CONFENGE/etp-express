@@ -22,6 +22,16 @@ export enum EtpStatus {
   ARCHIVED = 'archived',
 }
 
+/**
+ * Nível de risco da contratação.
+ * Issue #1225 - Campos de Requisitos e Riscos
+ */
+export enum NivelRisco {
+  BAIXO = 'BAIXO',
+  MEDIO = 'MEDIO',
+  ALTO = 'ALTO',
+}
+
 @Entity('etps')
 export class Etp {
   @PrimaryGeneratedColumn('uuid')
@@ -137,6 +147,73 @@ export class Etp {
 
   // ============================================
   // Fim dos Campos de Objeto e Justificativa
+  // ============================================
+
+  // ============================================
+  // Campos de Requisitos e Riscos (Issue #1225)
+  // ============================================
+
+  /**
+   * Requisitos técnicos da contratação.
+   * Especificações técnicas mínimas do objeto.
+   * Max: 5000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  requisitosTecnicos: string;
+
+  /**
+   * Requisitos de qualificação técnica do fornecedor.
+   * Ex: Certificações, experiência comprovada, equipe mínima.
+   * Max: 3000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  requisitosQualificacao: string;
+
+  /**
+   * Critérios de sustentabilidade ambiental.
+   * Conforme IN SLTI/MP nº 01/2010 e legislação ambiental.
+   * Max: 2000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  criteriosSustentabilidade: string;
+
+  /**
+   * Garantia exigida na contratação.
+   * Ex: "Garantia de 12 meses contra defeitos de fabricação"
+   * Max: 500 caracteres.
+   */
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  garantiaExigida: string;
+
+  /**
+   * Prazo de execução em dias.
+   * Tempo estimado para conclusão do objeto.
+   * Min: 1 dia.
+   */
+  @Column({ type: 'int', nullable: true })
+  prazoExecucao: number;
+
+  /**
+   * Nível de risco da contratação.
+   * BAIXO, MEDIO ou ALTO.
+   */
+  @Column({
+    type: 'enum',
+    enum: NivelRisco,
+    nullable: true,
+  })
+  nivelRisco: NivelRisco;
+
+  /**
+   * Descrição detalhada dos riscos identificados.
+   * Inclui riscos técnicos, operacionais e de mercado.
+   * Max: 3000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  descricaoRiscos: string;
+
+  // ============================================
+  // Fim dos Campos de Requisitos e Riscos
   // ============================================
 
   @Column({
