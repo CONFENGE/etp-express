@@ -8,6 +8,7 @@ import {
   Matches,
   ValidateNested,
   IsDateString,
+  Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -115,6 +116,86 @@ export class CreateEtpDto {
 
   // ============================================
   // Fim dos Campos de Identificação
+  // ============================================
+
+  // ============================================
+  // Campos de Objeto e Justificativa (Issue #1224)
+  // ============================================
+
+  @ApiPropertyOptional({
+    example:
+      'Contratação de empresa especializada para desenvolvimento e manutenção de sistemas web utilizando tecnologias modernas como React, Node.js e PostgreSQL, incluindo suporte técnico e treinamento.',
+    description: 'Descrição detalhada do objeto da contratação (max: 5000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000, {
+    message: 'Descrição detalhada deve ter no máximo 5000 caracteres',
+  })
+  descricaoDetalhada?: string;
+
+  @ApiPropertyOptional({
+    example: 12,
+    description: 'Quantidade estimada a ser contratada',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1, { message: 'Quantidade estimada deve ser no mínimo 1' })
+  quantidadeEstimada?: number;
+
+  @ApiPropertyOptional({
+    example: 'mês',
+    description: 'Unidade de medida (ex: unidade, mês, hora, m²)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50, {
+    message: 'Unidade de medida deve ter no máximo 50 caracteres',
+  })
+  unidadeMedida?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'A contratação se justifica pela necessidade de modernização dos sistemas legados da instituição, atualmente operando com tecnologias defasadas que comprometem a eficiência operacional e a segurança da informação.',
+    description:
+      'Justificativa técnica e legal para a contratação (min: 50, max: 5000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(50, {
+    message: 'Justificativa da contratação deve ter no mínimo 50 caracteres',
+  })
+  @MaxLength(5000, {
+    message: 'Justificativa da contratação deve ter no máximo 5000 caracteres',
+  })
+  justificativaContratacao?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Atender à demanda de 10.000 usuários internos com sistema de gestão integrado, reduzindo o tempo de processamento de solicitações.',
+    description: 'Descrição da necessidade que será atendida (max: 3000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000, {
+    message: 'Necessidade atendida deve ter no máximo 3000 caracteres',
+  })
+  necessidadeAtendida?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Redução de 30% no tempo de processamento de solicitações; Aumento de 50% na satisfação dos usuários; Economia de R$ 200.000/ano em manutenção.',
+    description: 'Benefícios esperados com a contratação (max: 3000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000, {
+    message: 'Benefícios esperados deve ter no máximo 3000 caracteres',
+  })
+  beneficiosEsperados?: string;
+
+  // ============================================
+  // Fim dos Campos de Objeto e Justificativa
   // ============================================
 
   @ApiPropertyOptional({

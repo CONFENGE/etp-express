@@ -87,6 +87,58 @@ export class Etp {
   // Fim dos Campos de Identificação
   // ============================================
 
+  // ============================================
+  // Campos de Objeto e Justificativa (Issue #1224)
+  // ============================================
+
+  /**
+   * Descrição detalhada do objeto da contratação.
+   * Complementa o campo 'objeto' com informações técnicas específicas.
+   * Max: 5000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  descricaoDetalhada: string;
+
+  /**
+   * Quantidade estimada a ser contratada.
+   * Ex: 100 (unidades), 12 (meses), etc.
+   */
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  quantidadeEstimada: number;
+
+  /**
+   * Unidade de medida para a quantidade.
+   * Ex: "unidade", "mês", "hora", "m²", etc.
+   */
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  unidadeMedida: string;
+
+  /**
+   * Justificativa técnica e legal para a contratação.
+   * Campo obrigatório para ETPs completos.
+   * Min: 50, Max: 5000 caracteres.
+   */
+  @Column({ type: 'text', nullable: true })
+  justificativaContratacao: string;
+
+  /**
+   * Descrição da necessidade que será atendida pela contratação.
+   * Ex: "Modernização dos sistemas legados para suporte a 10.000 usuários"
+   */
+  @Column({ type: 'text', nullable: true })
+  necessidadeAtendida: string;
+
+  /**
+   * Benefícios esperados com a contratação.
+   * Ex: "Redução de 30% no tempo de processamento de solicitações"
+   */
+  @Column({ type: 'text', nullable: true })
+  beneficiosEsperados: string;
+
+  // ============================================
+  // Fim dos Campos de Objeto e Justificativa
+  // ============================================
+
   @Column({
     type: 'enum',
     enum: EtpStatus,
