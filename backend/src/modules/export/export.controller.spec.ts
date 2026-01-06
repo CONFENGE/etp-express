@@ -102,6 +102,12 @@ describe('ExportController', () => {
       expect(metadata.resourceType).toBe(ResourceType.ETP);
     });
 
+    it('should have @RequireOwnership on previewPDF method (IDOR protection)', () => {
+      const metadata = reflector.get(OWNERSHIP_KEY, controller.previewPDF);
+      expect(metadata).toBeDefined();
+      expect(metadata.resourceType).toBe(ResourceType.ETP);
+    });
+
     it('should validate organization only, not strict ownership (read-only export)', () => {
       // Export is a read-only operation, so we only validate organization membership,
       // not that the user created the ETP (validateOwnership: false)
@@ -250,6 +256,41 @@ describe('ExportController', () => {
         NotFoundException,
       );
       expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+    });
+  });
+
+  describe('previewPDF', () => {
+    it('should return PDF for inline preview with cache headers', async () => {
+      const etpId = 'test-etp-id';
+      const mockPDFBuffer = Buffer.from('mock-pdf-data');
+      const res = mockResponse();
+
+      mockExportService.exportToPDF.mockResolvedValue(mockPDFBuffer);
+
+      await controller.previewPDF(etpId, res);
+
+      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId);
+      expect(res.set).toHaveBeenCalledWith({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="ETP-${etpId}-preview.pdf"`,
+        'Content-Length': mockPDFBuffer.length,
+        'Cache-Control': 'private, max-age=300',
+      });
+      expect(res.send).toHaveBeenCalledWith(mockPDFBuffer);
+    });
+
+    it('should throw NotFoundException when ETP not found', async () => {
+      const etpId = 'non-existent-id';
+      const res = mockResponse();
+
+      mockExportService.exportToPDF.mockRejectedValue(
+        new NotFoundException(`ETP ${etpId} não encontrado`),
+      );
+
+      await expect(controller.previewPDF(etpId, res)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId);
     });
   });
 

@@ -19,6 +19,7 @@ import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
 import { VersionHistory } from '@/components/etp/VersionHistory';
+import { ExportPreviewModal } from '@/components/etp/ExportPreviewModal';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
@@ -27,6 +28,7 @@ import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
 import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
 import { useConfetti } from '@/hooks/useConfetti';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { useETPPreview } from '@/hooks/useETPPreview';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -90,6 +92,9 @@ export function ETPEditor() {
 
   // Confetti celebration for ETP completion (#597)
   const { celebrate, resetCooldown } = useConfetti();
+
+  // Export preview modal (#1214)
+  const preview = useETPPreview({ etpId: id || '' });
 
   // Track previous progress to detect ETP completion
   const previousProgressRef = useRef<number | null>(null);
@@ -469,6 +474,7 @@ export function ETPEditor() {
           onExportPDF={handleExportPDF}
           onExportDocx={handleExportDocx}
           onCancelExport={handleCancelExport}
+          onPreview={preview.openPreview}
           isSaving={isSaving}
           exportState={exportState}
           isDirty={isDirty}
@@ -548,6 +554,17 @@ export function ETPEditor() {
         open={isBlocking}
         onConfirm={proceed}
         onCancel={reset}
+      />
+
+      {/* Export preview modal (#1214) */}
+      <ExportPreviewModal
+        open={preview.isOpen}
+        onOpenChange={(open) => !open && preview.closePreview()}
+        pdfBlob={preview.pdfBlob}
+        isLoading={preview.isLoading}
+        error={preview.error}
+        onRetry={preview.retry}
+        onDownload={handleExportPDF}
       />
     </MainLayout>
   );

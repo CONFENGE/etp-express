@@ -101,6 +101,12 @@ interface ETFState {
   ) => Promise<ExportResult>;
   exportJSON: (id: string) => Promise<string>;
 
+  // Preview (#1214)
+  fetchPreview: (
+    id: string,
+    options?: { signal?: AbortSignal },
+  ) => Promise<Blob>;
+
   // References
   fetchReferences: (etpId: string) => Promise<void>;
   addReference: (reference: Reference) => void;
@@ -621,6 +627,30 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       }
       set({
         error: getContextualErrorMessage('exportar', 'o DOCX', error),
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  // Preview PDF for modal (#1214)
+  fetchPreview: async (id: string, options?: { signal?: AbortSignal }) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api.get(`/export/etp/${id}/preview`, {
+        responseType: 'blob',
+        signal: options?.signal,
+      });
+      set({ isLoading: false });
+      return response.data as Blob;
+    } catch (error) {
+      // Don't set error state for aborted requests
+      if (axios.isCancel(error) || (error as Error).name === 'CanceledError') {
+        set({ isLoading: false });
+        throw error;
+      }
+      set({
+        error: getContextualErrorMessage('carregar', 'o preview', error),
         isLoading: false,
       });
       throw error;
