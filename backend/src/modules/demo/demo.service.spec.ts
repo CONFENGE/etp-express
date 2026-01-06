@@ -66,6 +66,13 @@ describe('DemoService', () => {
     unidadeDemandante: null as unknown as string,
     responsavelTecnico: null as unknown as { nome: string; matricula?: string },
     dataElaboracao: null as unknown as Date,
+    // Objeto/Justificativa fields (Issue #1224 - nullable in DB)
+    descricaoDetalhada: null as unknown as string,
+    quantidadeEstimada: null as unknown as number,
+    unidadeMedida: null as unknown as string,
+    justificativaContratacao: null as unknown as string,
+    necessidadeAtendida: null as unknown as string,
+    beneficiosEsperados: null as unknown as string,
     status: EtpStatus.DRAFT,
     metadata: {},
     organizationId: 'demo-org-id',
