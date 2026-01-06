@@ -1,19 +1,20 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 615/644 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 616/644 (96%) | **Deploy:** LIVE
 
 ---
 
 ## Atualizações Recentes
 
-| Data       | PR    | Tipo     | Descrição                                                   |
-| ---------- | ----- | -------- | ----------------------------------------------------------- |
-| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223  |
-| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)       |
-| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)           |
-| 2026-01-06 | #1220 | Feature  | Implementar preview de PDF antes do export (#1214)          |
-| 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2) |
-| 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                |
+| Data       | PR    | Tipo     | Descrição                                                    |
+| ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224 |
+| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223   |
+| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)        |
+| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)            |
+| 2026-01-06 | #1220 | Feature  | Implementar preview de PDF antes do export (#1214)           |
+| 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2)  |
+| 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                 |
 
 ---
 
@@ -27,7 +28,7 @@
 | ----- | ------------------------------------------------------ | ------ |
 | #1158 | [ETP] Expandir formulário de criação para 20-30 campos | 🟡     |
 |       | ↳ #1223 Campos de Identificação                        | ✅     |
-|       | ↳ #1224 Campos de Objeto e Justificativa               | 🔴     |
+|       | ↳ #1224 Campos de Objeto e Justificativa               | ✅     |
 |       | ↳ #1225 Campos de Requisitos e Riscos                  | 🔴     |
 |       | ↳ #1226 Campos de Estimativa de Custos                 | 🔴     |
 |       | ↳ #1227 Frontend CreateETPWizard                       | 🔴     |
@@ -59,13 +60,13 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 9/20 (45%) - Epic #1158 expandido com 6 sub-issues
+**Progresso MVP Comercial:** 10/20 (50%) - Epic #1158 expandido com 6 sub-issues
 
 ---
 
-## Issues Abertas (29)
+## Issues Abertas (28)
 
-### P1 - High Priority (18 issues)
+### P1 - High Priority (17 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -73,7 +74,6 @@
 | #1227 | [ETP-1158e] Criar componente CreateETPWizard multi-step         |
 | #1226 | [ETP-1158d] Campos de Estimativa de Custos                      |
 | #1225 | [ETP-1158c] Campos de Requisitos e Riscos                       |
-| #1224 | [ETP-1158b] Campos de Objeto e Justificativa                    |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
