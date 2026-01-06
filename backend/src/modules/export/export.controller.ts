@@ -117,6 +117,34 @@ export class ExportController {
     res.send(docxBuffer);
   }
 
+  @Get('etp/:id/preview')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
+  @ApiOperation({
+    summary: 'Preview do ETP em PDF',
+    description:
+      'Gera um PDF para visualização prévia no browser (Content-Disposition: inline)',
+  })
+  @ApiResponse({ status: 200, description: 'PDF gerado para preview' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
+  @ApiResponse({ status: 404, description: 'ETP não encontrado' })
+  async previewPDF(@Param('id') id: string, @Res() res: Response) {
+    const pdfBuffer = await this.exportService.exportToPDF(id);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      // inline instead of attachment for browser preview
+      'Content-Disposition': `inline; filename="ETP-${id}-preview.pdf"`,
+      'Content-Length': pdfBuffer.length,
+      // Cache for 5 minutes to improve UX on repeated previews
+      'Cache-Control': 'private, max-age=300',
+    });
+
+    res.send(pdfBuffer);
+  }
+
   @Get('etp/:id')
   @RequireOwnership({
     resourceType: ResourceType.ETP,

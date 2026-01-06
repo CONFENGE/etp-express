@@ -3,6 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
@@ -31,6 +32,10 @@ interface ETPEditorHeaderProps {
   onExportPDF?: () => void;
   onExportDocx?: () => void;
   onCancelExport?: () => void;
+  /**
+   * Preview PDF before export (#1214)
+   */
+  onPreview?: () => void;
   isSaving?: boolean;
   /**
    * @deprecated Use exportState instead
@@ -57,6 +62,7 @@ export function ETPEditorHeader({
   onExportPDF,
   onExportDocx,
   onCancelExport,
+  onPreview,
   isSaving = false,
   isExporting = false,
   exportState,
@@ -106,11 +112,6 @@ export function ETPEditorHeader({
         )}
       </div>
       <div className="flex gap-2">
-        <Button variant="outline" size="sm">
-          <Eye className="mr-2 h-4 w-4" />
-          Visualizar
-        </Button>
-
         {/* Export Progress UI (#612) */}
         {exportState?.isExporting ? (
           <div className="flex items-center gap-3 min-w-[200px]">
@@ -151,6 +152,16 @@ export function ETPEditorHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {/* Preview option (#1214) */}
+              <DropdownMenuItem
+                onClick={onPreview}
+                disabled={effectiveExporting}
+                data-testid="preview-button"
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                Preview
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={onExportPDF}
                 disabled={effectiveExporting}
