@@ -55,6 +55,8 @@ export default defineConfig({
           'vendor-utils': ['date-fns', 'clsx', 'class-variance-authority'],
           // State management
           'vendor-state': ['zustand'],
+          // PDF rendering (#1214)
+          'vendor-pdf': ['react-pdf', 'pdfjs-dist'],
         },
       },
     },
