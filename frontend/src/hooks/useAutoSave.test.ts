@@ -93,7 +93,7 @@ describe('useAutoSave', () => {
 
     it('should reset debounce timer on subsequent changes', async () => {
       const onSave = vi.fn().mockResolvedValue(undefined);
-      const { result, rerender } = renderHook(
+      const { rerender } = renderHook(
         ({ content }) => useAutoSave(content, { onSave, delay: 1000 }),
         { initialProps: { content: 'initial' } },
       );
