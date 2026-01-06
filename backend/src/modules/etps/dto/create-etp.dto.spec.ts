@@ -1,6 +1,7 @@
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { CreateEtpDto, ResponsavelTecnicoDto } from './create-etp.dto';
+import { NivelRisco } from '../../../entities/etp.entity';
 
 describe('CreateEtpDto', () => {
   const validData = {
@@ -493,6 +494,271 @@ describe('CreateEtpDto', () => {
           'Atender à demanda de 10.000 usuários internos com sistema de gestão integrado.',
         beneficiosEsperados:
           'Redução de 30% no tempo de processamento; Aumento de 50% na satisfação dos usuários.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  // ============================================
+  // Campos de Requisitos e Riscos (Issue #1225)
+  // ============================================
+
+  describe('requisitosTecnicos field validation', () => {
+    it('should accept valid requisitosTecnicos', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        requisitosTecnicos:
+          'Sistema deve suportar 10.000 usuários simultâneos; Tempo de resposta máximo de 2 segundos.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject requisitosTecnicos longer than 5000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        requisitosTecnicos: 'A'.repeat(5001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'requisitosTecnicos');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('5000 caracteres');
+    });
+
+    it('should allow omitting requisitosTecnicos (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('requisitosQualificacao field validation', () => {
+    it('should accept valid requisitosQualificacao', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        requisitosQualificacao:
+          'Empresa deve possuir certificação ISO 9001; Equipe mínima de 5 desenvolvedores seniores.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject requisitosQualificacao longer than 3000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        requisitosQualificacao: 'A'.repeat(3001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'requisitosQualificacao');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('3000 caracteres');
+    });
+
+    it('should allow omitting requisitosQualificacao (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('criteriosSustentabilidade field validation', () => {
+    it('should accept valid criteriosSustentabilidade', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        criteriosSustentabilidade:
+          'Utilização de materiais recicláveis; Equipamentos com certificação Energy Star.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject criteriosSustentabilidade longer than 2000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        criteriosSustentabilidade: 'A'.repeat(2001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find(
+        (e) => e.property === 'criteriosSustentabilidade',
+      );
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('2000 caracteres');
+    });
+
+    it('should allow omitting criteriosSustentabilidade (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('garantiaExigida field validation', () => {
+    it('should accept valid garantiaExigida', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        garantiaExigida:
+          'Garantia de 12 meses contra defeitos de fabricação e vícios ocultos',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject garantiaExigida longer than 500 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        garantiaExigida: 'A'.repeat(501),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'garantiaExigida');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('500 caracteres');
+    });
+
+    it('should allow omitting garantiaExigida (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('prazoExecucao field validation', () => {
+    it('should accept valid prazoExecucao', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        prazoExecucao: 180,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should accept prazoExecucao equal to 1 (minimum)', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        prazoExecucao: 1,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject prazoExecucao less than 1', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        prazoExecucao: 0,
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'prazoExecucao');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.min).toContain('1');
+    });
+
+    it('should reject non-integer prazoExecucao', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        prazoExecucao: 30.5,
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'prazoExecucao');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.isInt).toContain('inteiro');
+    });
+
+    it('should allow omitting prazoExecucao (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('nivelRisco field validation', () => {
+    it('should accept valid nivelRisco BAIXO', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        nivelRisco: NivelRisco.BAIXO,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should accept valid nivelRisco MEDIO', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        nivelRisco: NivelRisco.MEDIO,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should accept valid nivelRisco ALTO', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        nivelRisco: NivelRisco.ALTO,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject invalid nivelRisco value', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        nivelRisco: 'INVALIDO',
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'nivelRisco');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.isEnum).toContain('BAIXO, MEDIO ou ALTO');
+    });
+
+    it('should allow omitting nivelRisco (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('descricaoRiscos field validation', () => {
+    it('should accept valid descricaoRiscos', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        descricaoRiscos:
+          'Risco de atraso na entrega devido à complexidade técnica; Risco de dependência de fornecedor único.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject descricaoRiscos longer than 3000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        descricaoRiscos: 'A'.repeat(3001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'descricaoRiscos');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('3000 caracteres');
+    });
+
+    it('should allow omitting descricaoRiscos (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('full ETP creation with all requisitos/riscos fields', () => {
+    it('should accept ETP with all requisitos/riscos fields populated', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        requisitosTecnicos:
+          'Sistema deve suportar 10.000 usuários simultâneos.',
+        requisitosQualificacao: 'Empresa deve possuir certificação ISO 9001.',
+        criteriosSustentabilidade:
+          'Utilização de materiais recicláveis conforme PNRS.',
+        garantiaExigida: 'Garantia de 12 meses.',
+        prazoExecucao: 180,
+        nivelRisco: NivelRisco.MEDIO,
+        descricaoRiscos:
+          'Risco de atraso na entrega devido à complexidade técnica.',
       });
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
