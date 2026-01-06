@@ -18,6 +18,7 @@ import {
 } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { WelcomeModal } from '@/components/common/WelcomeModal';
+import { OnboardingChecklist } from '@/components/common/OnboardingChecklist';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -144,6 +145,9 @@ export function Dashboard() {
             Gerencie seus Estudos Técnicos Preliminares
           </p>
         </div>
+
+        {/* Onboarding Checklist for new users */}
+        <OnboardingChecklist data-tour="onboarding-checklist" />
 
         {isLoading ? (
           <SkeletonStats />
