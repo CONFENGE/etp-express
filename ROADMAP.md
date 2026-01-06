@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 616/644 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 617/644 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                    |
 | ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225  |
 | 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224 |
 | 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223   |
 | 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)        |
@@ -29,7 +30,7 @@
 | #1158 | [ETP] Expandir formulário de criação para 20-30 campos | 🟡     |
 |       | ↳ #1223 Campos de Identificação                        | ✅     |
 |       | ↳ #1224 Campos de Objeto e Justificativa               | ✅     |
-|       | ↳ #1225 Campos de Requisitos e Riscos                  | 🔴     |
+|       | ↳ #1225 Campos de Requisitos e Riscos                  | ✅     |
 |       | ↳ #1226 Campos de Estimativa de Custos                 | 🔴     |
 |       | ↳ #1227 Frontend CreateETPWizard                       | 🔴     |
 |       | ↳ #1228 Testes E2E                                     | 🔴     |
@@ -60,20 +61,19 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 10/20 (50%) - Epic #1158 expandido com 6 sub-issues
+**Progresso MVP Comercial:** 11/20 (55%) - Epic #1158 expandido com 6 sub-issues
 
 ---
 
-## Issues Abertas (28)
+## Issues Abertas (27)
 
-### P1 - High Priority (17 issues)
+### P1 - High Priority (16 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
 | #1228 | [ETP-1158f] Testes E2E para wizard de criação expandido         |
 | #1227 | [ETP-1158e] Criar componente CreateETPWizard multi-step         |
 | #1226 | [ETP-1158d] Campos de Estimativa de Custos                      |
-| #1225 | [ETP-1158c] Campos de Requisitos e Riscos                       |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -115,7 +115,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 9/20   | 🔥 MÁXIMA      |
+| MVP Comercial          | 11/20  | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -134,8 +134,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 644   |
-| Issues Abertas    | 29    |
-| Issues Fechadas   | 615   |
+| Issues Abertas    | 27    |
+| Issues Fechadas   | 617   |
 | Progresso         | 95%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
