@@ -42,6 +42,51 @@ export class Etp {
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
   valorEstimado: number;
 
+  // ============================================
+  // Campos de Identificação (Issue #1223)
+  // ============================================
+
+  /**
+   * Órgão/Entidade requisitante.
+   * Ex: "Secretaria Municipal de Tecnologia"
+   */
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  orgaoEntidade: string;
+
+  /**
+   * Código UASG (Unidade Administrativa de Serviços Gerais).
+   * Formato: 6 dígitos numéricos. Ex: "123456"
+   */
+  @Column({ type: 'varchar', length: 6, nullable: true })
+  uasg: string;
+
+  /**
+   * Unidade demandante dentro do órgão.
+   * Ex: "Departamento de Infraestrutura de TI"
+   */
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  unidadeDemandante: string;
+
+  /**
+   * Responsável técnico pela elaboração do ETP.
+   * Armazena nome e matrícula (opcional).
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  responsavelTecnico: {
+    nome: string;
+    matricula?: string;
+  };
+
+  /**
+   * Data de elaboração do ETP.
+   */
+  @Column({ type: 'date', nullable: true })
+  dataElaboracao: Date;
+
+  // ============================================
+  // Fim dos Campos de Identificação
+  // ============================================
+
   @Column({
     type: 'enum',
     enum: EtpStatus,

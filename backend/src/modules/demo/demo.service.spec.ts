@@ -60,6 +60,12 @@ describe('DemoService', () => {
     description: 'Test description',
     numeroProcesso: 'TEST-001',
     valorEstimado: 10000,
+    // Identification fields (Issue #1223 - nullable in DB)
+    orgaoEntidade: null as unknown as string,
+    uasg: null as unknown as string,
+    unidadeDemandante: null as unknown as string,
+    responsavelTecnico: null as unknown as { nome: string; matricula?: string },
+    dataElaboracao: null as unknown as Date,
     status: EtpStatus.DRAFT,
     metadata: {},
     organizationId: 'demo-org-id',
