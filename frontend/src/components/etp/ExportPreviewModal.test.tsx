@@ -4,7 +4,7 @@ import { ExportPreviewModal } from './ExportPreviewModal';
 
 // Mock react-pdf
 vi.mock('react-pdf', () => ({
-  Document: vi.fn(({ children, onLoadSuccess, loading, error }) => {
+  Document: vi.fn(({ children, onLoadSuccess }) => {
     // Simulate successful load
     if (onLoadSuccess) {
       setTimeout(() => onLoadSuccess({ numPages: 5 }), 0);

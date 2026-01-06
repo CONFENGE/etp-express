@@ -24,7 +24,7 @@ describe('useETPPreview', () => {
     vi.clearAllMocks();
     vi.mocked(useETPStore).mockReturnValue({
       fetchPreview: mockFetchPreview,
-    } as any);
+    } as ReturnType<typeof useETPStore>);
   });
 
   afterEach(() => {
@@ -154,11 +154,7 @@ describe('useETPPreview', () => {
   });
 
   it('aborts previous request when opening again', async () => {
-    const abortController = new AbortController();
-    let capturedSignal: AbortSignal | undefined;
-
-    mockFetchPreview.mockImplementation(async (_id, options) => {
-      capturedSignal = options?.signal;
+    mockFetchPreview.mockImplementation(async () => {
       return new Promise((resolve) => setTimeout(() => resolve(mockBlob), 100));
     });
 
