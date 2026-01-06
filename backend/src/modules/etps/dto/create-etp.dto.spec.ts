@@ -764,6 +764,119 @@ describe('CreateEtpDto', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  // ============================================
+  // Campos de Estimativa de Custos (Issue #1226)
+  // ============================================
+
+  describe('valorUnitario field validation', () => {
+    it('should accept valid valorUnitario', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        valorUnitario: 5000.0,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should accept valorUnitario equal to 0', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        valorUnitario: 0,
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject negative valorUnitario', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        valorUnitario: -100,
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'valorUnitario');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.min).toContain('0');
+    });
+
+    it('should allow omitting valorUnitario (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('fontePesquisaPrecos field validation', () => {
+    it('should accept valid fontePesquisaPrecos', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        fontePesquisaPrecos:
+          'Painel de Preços do Governo Federal; SINAPI referência 03/2024; 3 cotações de mercado.',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject fontePesquisaPrecos longer than 2000 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        fontePesquisaPrecos: 'A'.repeat(2001),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'fontePesquisaPrecos');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('2000 caracteres');
+    });
+
+    it('should allow omitting fontePesquisaPrecos (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('dotacaoOrcamentaria field validation', () => {
+    it('should accept valid dotacaoOrcamentaria', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        dotacaoOrcamentaria: '02.031.0001.2001.339039',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+
+    it('should reject dotacaoOrcamentaria longer than 100 characters', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        dotacaoOrcamentaria: 'A'.repeat(101),
+      });
+      const errors = await validate(dto);
+      const error = errors.find((e) => e.property === 'dotacaoOrcamentaria');
+      expect(error).toBeDefined();
+      expect(error?.constraints?.maxLength).toContain('100 caracteres');
+    });
+
+    it('should allow omitting dotacaoOrcamentaria (optional)', async () => {
+      const dto = plainToInstance(CreateEtpDto, validData);
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('full ETP creation with all estimativa de custos fields', () => {
+    it('should accept ETP with all cost estimation fields populated', async () => {
+      const dto = plainToInstance(CreateEtpDto, {
+        ...validData,
+        valorEstimado: 500000.0,
+        valorUnitario: 5000.0,
+        fontePesquisaPrecos:
+          'Painel de Preços do Governo Federal; SINAPI referência 03/2024.',
+        dotacaoOrcamentaria: '02.031.0001.2001.339039',
+      });
+      const errors = await validate(dto);
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 describe('ResponsavelTecnicoDto', () => {

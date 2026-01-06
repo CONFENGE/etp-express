@@ -290,6 +290,46 @@ export class CreateEtpDto {
   // Fim dos Campos de Requisitos e Riscos
   // ============================================
 
+  // ============================================
+  // Campos de Estimativa de Custos (Issue #1226)
+  // ============================================
+
+  @ApiPropertyOptional({
+    example: 5000.0,
+    description: 'Valor unitário do item/serviço (min: 0)',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0, { message: 'Valor unitário deve ser maior ou igual a 0' })
+  valorUnitario?: number;
+
+  @ApiPropertyOptional({
+    example:
+      'Painel de Preços do Governo Federal (https://paineldeprecos.planejamento.gov.br); SINAPI referência 03/2024; 3 cotações de mercado anexas ao processo.',
+    description: 'Fonte de pesquisa de preços utilizada (max: 2000)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000, {
+    message: 'Fonte de pesquisa de preços deve ter no máximo 2000 caracteres',
+  })
+  fontePesquisaPrecos?: string;
+
+  @ApiPropertyOptional({
+    example: '02.031.0001.2001.339039',
+    description: 'Dotação orçamentária para a contratação (max: 100)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100, {
+    message: 'Dotação orçamentária deve ter no máximo 100 caracteres',
+  })
+  dotacaoOrcamentaria?: string;
+
+  // ============================================
+  // Fim dos Campos de Estimativa de Custos
+  // ============================================
+
   @ApiPropertyOptional({
     example: {
       unidadeRequisitante: 'Secretaria de Tecnologia',
