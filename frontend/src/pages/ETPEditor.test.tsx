@@ -5,6 +5,18 @@ import { BrowserRouter } from 'react-router';
 import { ETPEditor } from './ETPEditor';
 import type { ETP } from '@/types/etp';
 
+// Mock react-pdf to avoid DOMMatrix error in Node.js environment
+vi.mock('react-pdf', () => ({
+  Document: vi.fn(({ children }) => (
+    <div data-testid="pdf-document">{children}</div>
+  )),
+  Page: vi.fn(() => <div data-testid="pdf-page">Page</div>),
+  pdfjs: {
+    GlobalWorkerOptions: { workerSrc: '' },
+    version: '3.11.174',
+  },
+}));
+
 // Mock react-router
 vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router');

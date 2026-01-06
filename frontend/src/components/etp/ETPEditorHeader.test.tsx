@@ -71,27 +71,46 @@ describe('ETPEditorHeader', () => {
     expect(saveButton).toBeDisabled();
   });
 
-  it('should render all action buttons', () => {
+  it('should render main action buttons', () => {
     render(<ETPEditorHeader etpTitle="Test Title" onSave={() => {}} />);
 
-    expect(
-      screen.getByRole('button', { name: /visualizar/i }),
-    ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /exportar/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /salvar/i })).toBeInTheDocument();
   });
 
-  it('should show export dropdown with PDF and DOCX options when clicked', async () => {
+  it('should show export dropdown with Preview, PDF and DOCX options when clicked', async () => {
     const user = userEvent.setup();
     render(<ETPEditorHeader etpTitle="Test Title" onSave={() => {}} />);
 
     const exportButton = screen.getByRole('button', { name: /exportar/i });
     await user.click(exportButton);
 
+    expect(screen.getByText('Preview')).toBeInTheDocument();
     expect(screen.getByText('PDF (.pdf)')).toBeInTheDocument();
     expect(screen.getByText('Word (.docx)')).toBeInTheDocument();
+  });
+
+  it('should call onPreview when Preview option is clicked (#1214)', async () => {
+    const user = userEvent.setup();
+    const onPreview = vi.fn();
+
+    render(
+      <ETPEditorHeader
+        etpTitle="Test Title"
+        onSave={() => {}}
+        onPreview={onPreview}
+      />,
+    );
+
+    const exportButton = screen.getByRole('button', { name: /exportar/i });
+    await user.click(exportButton);
+
+    const previewOption = screen.getByText('Preview');
+    await user.click(previewOption);
+
+    expect(onPreview).toHaveBeenCalledTimes(1);
   });
 
   it('should call onExportPDF when PDF option is clicked', async () => {
