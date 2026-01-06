@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
 import { useFormProgress } from '@/hooks/useFormProgress';
+import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
 import { FormField } from '@/components/form/FormField';
 import { FormProgressBar } from '@/components/form/FormProgressBar';
 
@@ -56,6 +57,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
   const navigate = useNavigate();
   const { createETP } = useETPs();
   const { success, error } = useToast();
+  const { markETPCreated } = useOnboardingTasks();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -95,6 +97,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
         status: 'draft',
         progress: 0,
       });
+      markETPCreated();
       success('ETP criado com sucesso!');
       reset();
       onOpenChange(false);
