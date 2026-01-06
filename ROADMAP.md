@@ -42,7 +42,7 @@
 | #     | Issue                                                 | Status |
 | ----- | ----------------------------------------------------- | ------ |
 | #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🔴     |
-| #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | 🔴     |
+| #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | ✅     |
 
 ### Fase 4 - Operacional (P2)
 
@@ -51,13 +51,13 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 7/15 (47%)
+**Progresso MVP Comercial:** 8/15 (53%)
 
 ---
 
-## Issues Abertas (25)
+## Issues Abertas (24)
 
-### P1 - High Priority (14 issues)
+### P1 - High Priority (13 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -66,7 +66,6 @@
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
-| #1165 | [Preços] Persistir histórico SINAPI/SICRO (MVP Comercial)       |
 | #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
 | #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo             |
