@@ -16,6 +16,10 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { ExportState } from './export-types';
+import {
+  AutoSaveIndicator,
+  type AutoSaveIndicatorProps,
+} from './AutoSaveIndicator';
 
 // Re-export type for backwards compatibility (type-only exports are allowed)
 export type { ExportState } from './export-types';
@@ -40,6 +44,10 @@ interface ETPEditorHeaderProps {
    * Whether there are unsaved changes (#610)
    */
   isDirty?: boolean;
+  /**
+   * Auto-save state for visual indicator (#1169)
+   */
+  autoSave?: Omit<AutoSaveIndicatorProps, 'className'>;
 }
 
 export function ETPEditorHeader({
@@ -53,6 +61,7 @@ export function ETPEditorHeader({
   isExporting = false,
   exportState,
   isDirty = false,
+  autoSave,
 }: ETPEditorHeaderProps) {
   // Use exportState if provided, otherwise fall back to legacy isExporting
   const effectiveExporting = exportState?.isExporting ?? isExporting;
@@ -171,6 +180,16 @@ export function ETPEditorHeader({
           <Save className="mr-2 h-4 w-4" />
           {isSaving ? 'Salvando...' : 'Salvar'}
         </Button>
+
+        {/* Auto-save indicator (#1169) */}
+        {autoSave && (
+          <AutoSaveIndicator
+            status={autoSave.status}
+            lastSavedAt={autoSave.lastSavedAt}
+            isOnline={autoSave.isOnline}
+            onRetry={autoSave.onRetry}
+          />
+        )}
       </div>
     </div>
   );

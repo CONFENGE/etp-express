@@ -26,6 +26,7 @@ import { useDemoConversion } from '@/hooks/useDemoConversion';
 import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
 import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
 import { useConfetti } from '@/hooks/useConfetti';
+import { useAutoSave } from '@/hooks/useAutoSave';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -46,6 +47,32 @@ export function ETPEditor() {
   const [lastSavedContent, setLastSavedContent] = useState<string>('');
   const isDirty = content !== lastSavedContent;
   const { isBlocking, proceed, reset } = useUnsavedChangesWarning({ isDirty });
+
+  // Auto-save functionality (#1169)
+  const performAutoSave = useCallback(async () => {
+    if (!currentETP || !id) return;
+
+    await updateETP(id, {
+      sections: (currentETP.sections ?? []).map((s) =>
+        s.sectionNumber === activeSection ? { ...s, content } : s,
+      ),
+    });
+    setLastSavedContent(content);
+  }, [currentETP, id, updateETP, activeSection, content]);
+
+  const autoSave = useAutoSave(content, {
+    delay: 30000, // 30 seconds as specified in issue
+    enabled: Boolean(currentETP && id && isDirty),
+    onSave: performAutoSave,
+    onSuccess: () => {
+      // Subtle notification for auto-save (not using toast to avoid interruption)
+      logger.info('Auto-save completed', { etpId: id, section: activeSection });
+    },
+    onError: (err) => {
+      error('Erro no salvamento automático');
+      logger.error('Auto-save failed', { error: err, etpId: id });
+    },
+  });
 
   // Async generation state from store (#222)
   const {
@@ -445,6 +472,12 @@ export function ETPEditor() {
           isSaving={isSaving}
           exportState={exportState}
           isDirty={isDirty}
+          autoSave={{
+            status: autoSave.status,
+            lastSavedAt: autoSave.lastSavedAt,
+            isOnline: autoSave.isOnline,
+            onRetry: autoSave.retry,
+          }}
         />
 
         <ETPEditorProgress progress={currentETP.progress} />
