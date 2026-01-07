@@ -248,10 +248,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     sectionId: string,
     data: Partial<Section>,
   ) => {
+    // Note: etpId is kept for API consistency but not used in the route
+    // The backend endpoint is PATCH /sections/:id
+    void etpId; // Explicitly mark as unused to avoid lint warnings
     set({ isLoading: true, error: null });
     try {
-      const updated = await apiHelpers.put<Section>(
-        `/etps/${etpId}/sections/${sectionId}`,
+      const updated = await apiHelpers.patch<Section>(
+        `/sections/${sectionId}`,
         data,
       );
 
