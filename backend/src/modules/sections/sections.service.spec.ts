@@ -79,6 +79,11 @@ describe('SectionsService', () => {
     valorUnitario: null as unknown as number,
     fontePesquisaPrecos: null as unknown as string,
     dotacaoOrcamentaria: null as unknown as string,
+    // Template fields (Issue #1240 - nullable in DB)
+    templateId: null as unknown as string,
+    template: null as unknown as any,
+    templateType: null as unknown as any,
+    dynamicFields: null as unknown as any,
     status: 'draft' as any,
     metadata: {},
     currentVersion: 1,

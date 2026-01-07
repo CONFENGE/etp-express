@@ -16,11 +16,13 @@ import {
   step3Schema,
   step4Schema,
   step5Schema,
+  step6Schema,
 } from '@/schemas/etpWizardSchema';
 import { Step0TemplateSelection } from './Step0TemplateSelection';
 import { Step1Identification } from './Step1Identification';
 import { Step2ObjectJustification } from './Step2ObjectJustification';
 import { Step3Requirements } from './Step3Requirements';
+import { Step4DynamicFields } from './Step4DynamicFields';
 import { Step4Costs } from './Step4Costs';
 import { Step5Risks } from './Step5Risks';
 
@@ -35,8 +37,9 @@ const stepSchemas = [
   step1Schema,
   step2Schema,
   step3Schema,
-  step4Schema,
-  step5Schema,
+  step6Schema, // Dynamic fields (step 4 in UI)
+  step4Schema, // Costs (step 5 in UI)
+  step5Schema, // Risks (step 6 in UI)
 ];
 
 export function CreateETPWizard({
@@ -113,8 +116,10 @@ export function CreateETPWizard({
       case 3:
         return <Step3Requirements form={form} />;
       case 4:
-        return <Step4Costs form={form} />;
+        return <Step4DynamicFields form={form} />;
       case 5:
+        return <Step4Costs form={form} />;
+      case 6:
         return <Step5Risks form={form} />;
       default:
         return null;
