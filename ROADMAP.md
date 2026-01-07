@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 619/644 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 620/644 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                    |
 | ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158     |
 | 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227  |
 | 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226 |
 | 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225  |
@@ -29,13 +30,13 @@
 
 | #     | Issue                                                  | Status |
 | ----- | ------------------------------------------------------ | ------ |
-| #1158 | [ETP] Expandir formulário de criação para 20-30 campos | 🟡     |
+| #1158 | [ETP] Expandir formulário de criação para 20-30 campos | ✅     |
 |       | ↳ #1223 Campos de Identificação                        | ✅     |
 |       | ↳ #1224 Campos de Objeto e Justificativa               | ✅     |
 |       | ↳ #1225 Campos de Requisitos e Riscos                  | ✅     |
 |       | ↳ #1226 Campos de Estimativa de Custos                 | ✅     |
 |       | ↳ #1227 Frontend CreateETPWizard                       | ✅     |
-|       | ↳ #1228 Testes E2E                                     | 🔴     |
+|       | ↳ #1228 Testes E2E                                     | ✅     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo    | 🔴     |
 | #1215 | [UX] Validação em tempo real dos campos ETP            | ✅     |
 | #1169 | [UX] Implementar auto-save durante edição              | ✅     |
@@ -63,17 +64,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 13/20 (65%) - Epic #1158 expandido com 6 sub-issues
+**Progresso MVP Comercial:** 14/20 (70%) - Epic #1158 ✅ COMPLETO (6/6 sub-issues)
 
 ---
 
-## Issues Abertas (25)
+## Issues Abertas (24)
 
-### P1 - High Priority (14 issues)
+### P1 - High Priority (13 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1228 | [ETP-1158f] Testes E2E para wizard de criação expandido         |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -82,7 +82,6 @@
 | #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
 | #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo             |
-| #1158 | [ETP] Expandir formulário de criação para 20-30 campos (Epic)   |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
@@ -134,8 +133,8 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 644   |
-| Issues Abertas    | 25    |
-| Issues Fechadas   | 619   |
+| Issues Abertas    | 24    |
+| Issues Fechadas   | 620   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
