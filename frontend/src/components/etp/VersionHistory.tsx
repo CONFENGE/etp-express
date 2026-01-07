@@ -111,7 +111,7 @@ export function VersionHistory({
       const result = await compareVersions(selectedVersion.id, compareVersion);
       setComparison(result);
     } catch {
-      showError('Erro ao comparar versoes');
+      showError('Erro ao comparar versões');
     } finally {
       setIsComparing(false);
     }
@@ -129,13 +129,13 @@ export function VersionHistory({
     try {
       await restoreVersion(versionToRestore.id);
       success(
-        `Versao ${versionToRestore.versionNumber} restaurada com sucesso!`,
+        `Versão ${versionToRestore.versionNumber} restaurada com sucesso!`,
       );
       setRestoreDialogOpen(false);
       setIsOpen(false);
       onVersionRestored?.();
     } catch {
-      showError('Erro ao restaurar versao');
+      showError('Erro ao restaurar versão');
     } finally {
       setIsRestoring(false);
     }
@@ -188,7 +188,7 @@ export function VersionHistory({
                 Voltar
               </Button>
               <span className="text-muted-foreground">
-                Versao {selectedVersion.versionNumber}
+                Versão {selectedVersion.versionNumber}
               </span>
             </div>
 
@@ -216,7 +216,7 @@ export function VersionHistory({
                 {selectedVersion.snapshot.description && (
                   <div>
                     <span className="text-sm text-muted-foreground">
-                      Descricao:
+                      Descrição:
                     </span>
                     <p className="mt-1">
                       {selectedVersion.snapshot.description}
@@ -225,7 +225,7 @@ export function VersionHistory({
                 )}
                 <div>
                   <span className="text-sm text-muted-foreground">
-                    Secoes: {selectedVersion.snapshot.sections.length}
+                    Seções: {selectedVersion.snapshot.sections.length}
                   </span>
                 </div>
               </CardContent>
@@ -255,7 +255,7 @@ export function VersionHistory({
                   onValueChange={setCompareVersion}
                 >
                   <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Selecione uma versao" />
+                    <SelectValue placeholder="Selecione uma versão" />
                   </SelectTrigger>
                   <SelectContent>
                     {versions
@@ -305,18 +305,18 @@ export function VersionHistory({
           <CardTitle className="text-sm flex items-center justify-between">
             <div className="flex items-center gap-2">
               <History className="h-4 w-4" />
-              Historico de Versoes
+              Histórico de Versões
             </div>
             <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
-              Ver historico
+              Ver histórico
             </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <p className="text-xs text-muted-foreground">
             {versions.length > 0
-              ? `${versions.length} versoes salvas`
-              : 'Carregue para ver versoes'}
+              ? `${versions.length} versões salvas`
+              : 'Carregue para ver versões'}
           </p>
         </CardContent>
       </Card>
@@ -326,10 +326,10 @@ export function VersionHistory({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
-              Historico de Versoes
+              Histórico de Versões
             </DialogTitle>
             <DialogDescription>
-              Visualize, compare e restaure versoes anteriores do ETP
+              Visualize, compare e restaure versões anteriores do ETP
             </DialogDescription>
           </DialogHeader>
 
@@ -347,11 +347,11 @@ export function VersionHistory({
       <AlertDialog open={restoreDialogOpen} onOpenChange={setRestoreDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Restaurar versao?</AlertDialogTitle>
+            <AlertDialogTitle>Restaurar versão?</AlertDialogTitle>
             <AlertDialogDescription>
-              Voce esta prestes a restaurar a versao{' '}
+              Você está prestes a restaurar a versão{' '}
               <strong>v{versionToRestore?.versionNumber}</strong>. Um backup da
-              versao atual sera criado automaticamente antes da restauracao.
+              versão atual será criado automaticamente antes da restauração.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

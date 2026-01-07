@@ -249,14 +249,14 @@ export function Login() {
                 </Link>
               </p>
               <p className="text-sm text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1000ms]">
-                Nao tem uma conta?{' '}
+                Não tem uma conta?{' '}
                 <Link to="/register" className="text-primary underline">
                   Cadastre-se
                 </Link>
               </p>
               <p className="text-xs text-center text-muted-foreground opacity-0 animate-fade-in [animation-delay:1100ms]">
                 <Link to="/privacy" className="underline">
-                  Politica de Privacidade
+                  Política de Privacidade
                 </Link>
               </p>
             </CardFooter>

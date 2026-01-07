@@ -152,9 +152,9 @@ describe('OnboardingChecklist', () => {
       });
 
       renderChecklist();
-      expect(screen.getByText('Parabens!')).toBeInTheDocument();
+      expect(screen.getByText('Parabéns!')).toBeInTheDocument();
       expect(
-        screen.getByText('Voce completou todos os passos iniciais!'),
+        screen.getByText('Você completou todos os passos iniciais!'),
       ).toBeInTheDocument();
     });
   });

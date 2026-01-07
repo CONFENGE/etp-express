@@ -26,7 +26,7 @@ describe('VersionDiff', () => {
     render(<VersionDiff comparison={baseComparison} />);
 
     expect(
-      screen.getByText(/nenhuma diferenca encontrada/i),
+      screen.getByText(/nenhuma diferença encontrada/i),
     ).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe('VersionDiff', () => {
 
     render(<VersionDiff comparison={comparison} />);
 
-    expect(screen.getByText('Titulo')).toBeInTheDocument();
+    expect(screen.getByText('Título')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Old Title')).toBeInTheDocument();
     expect(screen.getByText('New Title')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('VersionDiff', () => {
             {
               id: 'section-1',
               type: 'ANALISE_RISCOS',
-              title: 'Analise de Riscos',
+              title: 'Análise de Riscos',
             },
           ],
           modified: [],
@@ -111,7 +111,7 @@ describe('VersionDiff', () => {
 
     render(<VersionDiff comparison={comparison} />);
 
-    expect(screen.getByText('Analise de Riscos')).toBeInTheDocument();
+    expect(screen.getByText('Análise de Riscos')).toBeInTheDocument();
     expect(screen.getByText('Removido')).toBeInTheDocument();
   });
 

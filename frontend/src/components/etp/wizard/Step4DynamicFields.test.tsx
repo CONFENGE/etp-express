@@ -36,7 +36,7 @@ describe('Step4DynamicFields', () => {
 
       expect(
         screen.getByText(
-          /selecione um template no passo anterior para ver campos especificos/i,
+          /selecione um template no passo anterior para ver campos específicos/i,
         ),
       ).toBeInTheDocument();
     });
@@ -45,7 +45,7 @@ describe('Step4DynamicFields', () => {
       render(<TestWrapper templateType={EtpTemplateType.OBRAS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Obras e Engenharia'),
+        screen.getByText('Campos Específicos - Obras e Engenharia'),
       ).toBeInTheDocument();
     });
 
@@ -53,7 +53,7 @@ describe('Step4DynamicFields', () => {
       render(<TestWrapper templateType={EtpTemplateType.TI} />);
 
       expect(
-        screen.getByText('Campos Especificos - Tecnologia da Informacao'),
+        screen.getByText('Campos Específicos - Tecnologia da Informação'),
       ).toBeInTheDocument();
     });
 
@@ -61,7 +61,7 @@ describe('Step4DynamicFields', () => {
       render(<TestWrapper templateType={EtpTemplateType.SERVICOS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Servicos Continuos'),
+        screen.getByText('Campos Específicos - Serviços Contínuos'),
       ).toBeInTheDocument();
     });
 
@@ -69,7 +69,7 @@ describe('Step4DynamicFields', () => {
       render(<TestWrapper templateType={EtpTemplateType.MATERIAIS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Materiais e Bens'),
+        screen.getByText('Campos Específicos - Materiais e Bens'),
       ).toBeInTheDocument();
     });
   });
@@ -86,9 +86,9 @@ describe('Step4DynamicFields', () => {
       render(<TestWrapper templateType={EtpTemplateType.TI} />);
 
       // Should show the required badge explanation
-      expect(screen.getByText('Obrigatorio')).toBeInTheDocument();
+      expect(screen.getByText('Obrigatório')).toBeInTheDocument();
       expect(
-        screen.getByText(/campos marcados sao obrigatorios/i),
+        screen.getByText(/campos marcados são obrigatórios/i),
       ).toBeInTheDocument();
     });
   });

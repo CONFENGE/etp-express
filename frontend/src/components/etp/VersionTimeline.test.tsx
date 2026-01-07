@@ -127,7 +127,7 @@ describe('VersionTimeline', () => {
   it('should show empty state when no versions', () => {
     render(<VersionTimeline {...defaultProps} versions={[]} />);
 
-    expect(screen.getByText(/nenhuma versao encontrada/i)).toBeInTheDocument();
+    expect(screen.getByText(/nenhuma versão encontrada/i)).toBeInTheDocument();
   });
 
   it('should highlight selected version', () => {

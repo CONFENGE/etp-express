@@ -238,7 +238,7 @@ export const step3Schema = z.object({
     .string()
     .max(
       REQUISITOS_TECNICOS_MAX_LENGTH,
-      `Requisitos tecnicos deve ter no maximo ${REQUISITOS_TECNICOS_MAX_LENGTH} caracteres`,
+      `Requisitos técnicos deve ter no máximo ${REQUISITOS_TECNICOS_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -405,8 +405,8 @@ export const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 1,
-    title: 'Identificacao',
-    description: 'Dados basicos do ETP',
+    title: 'Identificação',
+    description: 'Dados básicos do ETP',
     schema: step1Schema,
     fields: [
       'title',
@@ -421,7 +421,7 @@ export const WIZARD_STEPS: WizardStep[] = [
   {
     id: 2,
     title: 'Objeto e Justificativa',
-    description: 'Descricao e motivacao',
+    description: 'Descrição e motivação',
     schema: step2Schema,
     fields: [
       'objeto',
@@ -435,8 +435,8 @@ export const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 3,
-    title: 'Requisitos Tecnicos',
-    description: 'Especificacoes e qualificacoes',
+    title: 'Requisitos Técnicos',
+    description: 'Especificações e qualificações',
     schema: step3Schema,
     fields: [
       'requisitosTecnicos',
@@ -448,8 +448,8 @@ export const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 4,
-    title: 'Campos Especificos',
-    description: 'Campos do tipo de contratacao',
+    title: 'Campos Específicos',
+    description: 'Campos do tipo de contratação',
     schema: step6Schema,
     fields: ['dynamicFields'],
   },
@@ -467,8 +467,8 @@ export const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 6,
-    title: 'Analise de Riscos',
-    description: 'Riscos e observacoes',
+    title: 'Análise de Riscos',
+    description: 'Riscos e observações',
     schema: step5Schema,
     fields: ['nivelRisco', 'descricaoRiscos', 'description'],
   },

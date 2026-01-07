@@ -30,7 +30,7 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
   return (
     <div className="space-y-4">
       <FormField
-        label="Requisitos Tecnicos"
+        label="Requisitos Técnicos"
         name="requisitosTecnicos"
         error={errors.requisitosTecnicos?.message}
         isValid={
@@ -42,18 +42,18 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
           current: requisitosTecnicosValue.length,
           max: REQUISITOS_TECNICOS_MAX_LENGTH,
         }}
-        helpText="Especificacoes tecnicas minimas do objeto"
+        helpText="Especificações técnicas mínimas do objeto"
       >
         <Textarea
           id="requisitosTecnicos"
-          placeholder="Ex: Sistema deve suportar 10.000 usuarios simultaneos; Tempo de resposta maximo de 2 segundos..."
+          placeholder="Ex: Sistema deve suportar 10.000 usuários simultâneos; Tempo de resposta máximo de 2 segundos..."
           rows={4}
           {...register('requisitosTecnicos')}
         />
       </FormField>
 
       <FormField
-        label="Requisitos de Qualificacao"
+        label="Requisitos de Qualificação"
         name="requisitosQualificacao"
         error={errors.requisitosQualificacao?.message}
         isValid={
@@ -65,11 +65,11 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
           current: requisitosQualificacaoValue.length,
           max: REQUISITOS_QUALIFICACAO_MAX_LENGTH,
         }}
-        helpText="Qualificacao tecnica exigida do fornecedor"
+        helpText="Qualificação técnica exigida do fornecedor"
       >
         <Textarea
           id="requisitosQualificacao"
-          placeholder="Ex: Empresa deve possuir certificacao ISO 9001; Equipe minima de 5 desenvolvedores seniores..."
+          placeholder="Ex: Empresa deve possuir certificação ISO 9001; Equipe mínima de 5 desenvolvedores seniores..."
           rows={4}
           {...register('requisitosQualificacao')}
         />
@@ -88,11 +88,11 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
           current: criteriosSustentabilidadeValue.length,
           max: SUSTENTABILIDADE_MAX_LENGTH,
         }}
-        helpText="Criterios de sustentabilidade ambiental (IN SLTI/MP n. 01/2010)"
+        helpText="Critérios de sustentabilidade ambiental (IN SLTI/MP n. 01/2010)"
       >
         <Textarea
           id="criteriosSustentabilidade"
-          placeholder="Ex: Utilizacao de materiais reciclaveis; Equipamentos com certificacao Energy Star..."
+          placeholder="Ex: Utilização de materiais recicláveis; Equipamentos com certificação Energy Star..."
           rows={3}
           {...register('criteriosSustentabilidade')}
         />
@@ -112,7 +112,7 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
             current: garantiaExigidaValue.length,
             max: GARANTIA_MAX_LENGTH,
           }}
-          helpText="Garantia exigida na contratacao"
+          helpText="Garantia exigida na contratação"
         >
           <Input
             id="garantiaExigida"
@@ -122,11 +122,11 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
         </FormField>
 
         <FormField
-          label="Prazo de Execucao (dias)"
+          label="Prazo de Execução (dias)"
           name="prazoExecucao"
           error={errors.prazoExecucao?.message}
           isValid={!errors.prazoExecucao && touchedFields.prazoExecucao}
-          helpText="Prazo em dias para execucao"
+          helpText="Prazo em dias para execução"
         >
           <Input
             id="prazoExecucao"

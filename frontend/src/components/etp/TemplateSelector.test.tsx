@@ -161,10 +161,10 @@ describe('TemplateSelector', () => {
       );
 
       expect(
-        screen.getByText('Nenhum template disponivel'),
+        screen.getByText('Nenhum template disponível'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Os templates de ETP ainda nao foram configurados.'),
+        screen.getByText('Os templates de ETP ainda não foram configurados.'),
       ).toBeInTheDocument();
     });
   });
@@ -212,8 +212,8 @@ describe('TemplateSelector', () => {
       );
 
       expect(screen.getByText('Obras e Engenharia')).toBeInTheDocument();
-      expect(screen.getByText('Tecnologia da Informacao')).toBeInTheDocument();
-      expect(screen.getByText('Servicos')).toBeInTheDocument();
+      expect(screen.getByText('Tecnologia da Informação')).toBeInTheDocument();
+      expect(screen.getByText('Serviços')).toBeInTheDocument();
       expect(screen.getByText('Materiais')).toBeInTheDocument();
     });
 
@@ -227,9 +227,9 @@ describe('TemplateSelector', () => {
         '🏗️',
       );
       expect(
-        screen.getByLabelText('Tecnologia da Informacao'),
+        screen.getByLabelText('Tecnologia da Informação'),
       ).toHaveTextContent('💻');
-      expect(screen.getByLabelText('Servicos')).toHaveTextContent('🔧');
+      expect(screen.getByLabelText('Serviços')).toHaveTextContent('🔧');
       expect(screen.getByLabelText('Materiais')).toHaveTextContent('📦');
     });
 
@@ -239,7 +239,7 @@ describe('TemplateSelector', () => {
       );
 
       // Template 1 has 3 required fields, Template 2 has 2, etc.
-      expect(screen.getAllByText(/campos obrigatorios/)).toHaveLength(4);
+      expect(screen.getAllByText(/campos obrigatórios/)).toHaveLength(4);
     });
 
     it('should render legal references', () => {
