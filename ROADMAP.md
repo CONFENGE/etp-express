@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 620/651 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 621/651 (95%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                    |
 | ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-07 | #1242 | Feature  | Merge EtpTemplate entity and module structure (#1235) ✅     |
 | 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)          |
 | 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)      |
 | 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158     |
@@ -37,7 +38,7 @@
 |       | ↳ #1227 Frontend CreateETPWizard                        | ✅     |
 |       | ↳ #1228 Testes E2E                                      | ✅     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo     | 🟡     |
-|       | ↳ #1235 Create EtpTemplate entity and module            | 🟡 PR  |
+|       | ↳ #1235 Create EtpTemplate entity and module            | ✅     |
 |       | ↳ #1236 Seed 4 base templates                           | 🔴     |
 |       | ↳ #1237 Create templates API endpoints                  | 🔴     |
 |       | ↳ #1238 Create TemplateSelector frontend component      | 🔴     |
@@ -70,17 +71,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 14/20 (70%) - Epic #1161 em progresso (1/7 sub-issues em PR)
+**Progresso MVP Comercial:** 15/20 (75%) - Epic #1161 em progresso (1/7 sub-issues ✅)
 
 ---
 
-## Issues Abertas (31)
+## Issues Abertas (30)
 
-### P1 - High Priority (20 issues)
+### P1 - High Priority (19 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1235 | [TMPL-1161a] Create EtpTemplate entity and module structure 🟡  |
 | #1236 | [TMPL-1161b] Seed 4 base templates                              |
 | #1237 | [TMPL-1161c] Create templates API endpoints                     |
 | #1238 | [TMPL-1161d] Create TemplateSelector frontend component         |
