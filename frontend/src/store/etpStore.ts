@@ -31,6 +31,54 @@ interface ExportResult {
 }
 
 /**
+ * Backend SectionType enum values.
+ * Must match backend/src/entities/etp-section.entity.ts SectionType enum.
+ */
+type BackendSectionType =
+  | 'introducao'
+  | 'justificativa'
+  | 'descricao_solucao'
+  | 'requisitos'
+  | 'estimativa_valor'
+  | 'analise_riscos'
+  | 'criterios_selecao'
+  | 'criterios_medicao'
+  | 'adequacao_orcamentaria'
+  | 'declaracao_viabilidade'
+  | 'custom';
+
+/**
+ * Maps section number to backend SectionType enum value.
+ * Based on section-templates.json section titles and backend enum.
+ *
+ * @see backend/src/entities/etp-section.entity.ts SectionType enum
+ * @see frontend/public/data/section-templates.json
+ */
+const SECTION_NUMBER_TO_TYPE: Record<number, BackendSectionType> = {
+  1: 'justificativa', // I - Necessidade da Contratacao
+  2: 'introducao', // II - Objetivos da Contratacao
+  3: 'descricao_solucao', // III - Descricao da Solucao
+  4: 'requisitos', // IV - Requisitos da Contratacao
+  5: 'criterios_selecao', // V - Levantamento de Mercado
+  6: 'estimativa_valor', // VI - Estimativa de Precos
+  7: 'custom', // VII - Justificativa para Parcelamento
+  8: 'adequacao_orcamentaria', // VIII - Adequacao Orcamentaria
+  9: 'custom', // IX - Resultados Pretendidos
+  10: 'custom', // X - Providencias a serem Adotadas
+  11: 'analise_riscos', // XI - Possiveis Impactos Ambientais
+  12: 'declaracao_viabilidade', // XII - Declaracao de Viabilidade
+  13: 'custom', // XIII - Contratacoes Correlatas
+};
+
+/**
+ * Gets the backend SectionType for a given section number.
+ * Falls back to 'custom' for unmapped sections.
+ */
+function getSectionType(sectionNumber: number): BackendSectionType {
+  return SECTION_NUMBER_TO_TYPE[sectionNumber] || 'custom';
+}
+
+/**
  * Helper to extract filename from Content-Disposition header
  */
 function extractFilenameFromHeader(
@@ -311,10 +359,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
 
     try {
       // 1. Start async generation and get jobId
+      // Map section number to backend SectionType enum value (#1303)
+      const sectionType = getSectionType(sectionNumber);
+
       const response = await apiHelpers.post<{ data: AsyncSection }>(
         `/sections/etp/${request.etpId}/generate`,
         {
-          type: `section_${sectionNumber}`,
+          type: sectionType,
           title: `Seção ${sectionNumber}`,
           userInput: request.prompt || '',
           context: request.context,
@@ -446,10 +497,13 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     try {
       // For regenerate, we need to find the section ID first
       // The regenerate endpoint uses section ID, not section number
+      // Map section number to backend SectionType enum value (#1303)
+      const sectionType = getSectionType(sectionNumber);
+
       const response = await apiHelpers.post<{ data: AsyncSection }>(
         `/sections/etp/${request.etpId}/generate`,
         {
-          type: `section_${sectionNumber}`,
+          type: sectionType,
           title: `Seção ${sectionNumber}`,
           userInput: request.prompt || '',
           context: { ...request.context, regenerate: true },
