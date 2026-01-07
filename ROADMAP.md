@@ -1,24 +1,25 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 621/651 (95%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 622/651 (96%) | **Deploy:** LIVE
 
 ---
 
 ## Atualizações Recentes
 
-| Data       | PR    | Tipo     | Descrição                                                    |
-| ---------- | ----- | -------- | ------------------------------------------------------------ |
-| 2026-01-07 | #1242 | Feature  | Merge EtpTemplate entity and module structure (#1235) ✅     |
-| 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)          |
-| 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)      |
-| 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158     |
-| 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227  |
-| 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226 |
-| 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225  |
-| 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224 |
-| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223   |
-| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)        |
-| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)            |
+| Data       | PR    | Tipo     | Descrição                                                     |
+| ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1243 | Feature  | Seed 4 base ETP templates (Obras, TI, Serviços, Materiais) ✅ |
+| 2026-01-07 | #1242 | Feature  | Merge EtpTemplate entity and module structure (#1235) ✅      |
+| 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)           |
+| 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)       |
+| 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158      |
+| 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227   |
+| 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226  |
+| 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225   |
+| 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224  |
+| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223    |
+| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)         |
+| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)             |
 
 ---
 
@@ -39,7 +40,7 @@
 |       | ↳ #1228 Testes E2E                                      | ✅     |
 | #1161 | [Templates] Criar modelos pré-configurados por tipo     | 🟡     |
 |       | ↳ #1235 Create EtpTemplate entity and module            | ✅     |
-|       | ↳ #1236 Seed 4 base templates                           | 🔴     |
+|       | ↳ #1236 Seed 4 base templates                           | ✅     |
 |       | ↳ #1237 Create templates API endpoints                  | 🔴     |
 |       | ↳ #1238 Create TemplateSelector frontend component      | 🔴     |
 |       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | 🔴     |
@@ -71,17 +72,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 15/20 (75%) - Epic #1161 em progresso (1/7 sub-issues ✅)
+**Progresso MVP Comercial:** 16/20 (80%) - Epic #1161 em progresso (2/7 sub-issues ✅)
 
 ---
 
-## Issues Abertas (30)
+## Issues Abertas (29)
 
-### P1 - High Priority (19 issues)
+### P1 - High Priority (18 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1236 | [TMPL-1161b] Seed 4 base templates                              |
 | #1237 | [TMPL-1161c] Create templates API endpoints                     |
 | #1238 | [TMPL-1161d] Create TemplateSelector frontend component         |
 | #1239 | [TMPL-1161e] Integrate TemplateSelector into CreateETPWizard    |
@@ -127,7 +127,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 14/20  | 🔥 MÁXIMA      |
+| MVP Comercial          | 16/20  | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -146,14 +146,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 651   |
-| Issues Abertas    | 31    |
-| Issues Fechadas   | 620   |
-| Progresso         | 95%   |
+| Issues Abertas    | 29    |
+| Issues Fechadas   | 622   |
+| Progresso         | 96%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2401  |
+| Backend Tests     | 2496  |
 | Frontend Tests    | 1647  |
-| Total Tests       | 4048  |
+| Total Tests       | 4143  |
 
 ---
 
