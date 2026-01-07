@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 625/651 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 625/699 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -139,16 +139,98 @@
 | M9: Export/Import      | 16/16  | ✅             |
 | Go-Live B2G            | 14/14  | ✅             |
 
+### Milestones Futuros (Expansão Estratégica)
+
+> **Objetivo:** Expandir de gerador de ETP para plataforma completa de contratações públicas
+
+| Milestone                      | Issues | Prioridade | Ticket Potencial      |
+| ------------------------------ | ------ | ---------- | --------------------- |
+| M10: Termo de Referência       | 0/7    | Alta       | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
+| M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
+| M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
+| M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
+| M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
+| M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
+
+**Fluxo do Ciclo Completo:**
+
+```
+ETP → Termo de Referência → Pesquisa de Preços → Edital → Contrato
+```
+
+#### M10: Termo de Referência (#1247-#1253)
+
+Geração automática de TR a partir do ETP aprovado.
+
+- Entity TermoReferencia e relacionamentos
+- Geração automática com IA
+- Templates por categoria (Obras, TI, Serviços, Materiais)
+- Editor frontend e export PDF/DOCX
+
+#### M11: Pesquisa de Preços Formal (#1254-#1260)
+
+Módulo estruturado conforme IN SEGES/ME nº 65/2021.
+
+- Coleta automática multi-fonte (PNCP, SINAPI, SICRO, Atas RP)
+- Mapa comparativo de preços
+- Justificativa automática de metodologia
+- Relatório formal de pesquisa
+
+#### M12: Compliance TCE (#1261-#1267)
+
+Validação automática contra critérios TCU/TCE.
+
+- Mapeamento de critérios ALICE/SOFIA
+- Engine de validação com score 0-100
+- Selo de Conformidade visual
+- Alertas em tempo real durante preenchimento
+
+#### M13: Inteligência de Mercado (#1268-#1275)
+
+Dados proprietários e analytics avançados.
+
+- Preços reais de pregões (não tabelas)
+- Benchmark regional por porte de órgão
+- Alertas de sobrepreço vs mediana
+- API monetizável para terceiros
+
+#### M14: Geração de Edital (#1276-#1282)
+
+Templates de edital integrados ao processo.
+
+- Templates por modalidade (Pregão, Concorrência, Dispensa, Inexigibilidade)
+- Geração automática a partir de ETP+TR+Pesquisa
+- Validação de cláusulas obrigatórias
+
+#### M15: Gestão de Contratos (#1283-#1290)
+
+Fiscalização e execução contratual completa.
+
+- Ciclo de vida do contrato
+- Módulo de fiscalização (medições, ocorrências, atestes)
+- Alertas de vencimento e aditivos
+- Integração com Contratos Gov.br
+
+#### M16: Features Complementares (#1291-#1294)
+
+Oportunidades de mercado identificadas.
+
+- IA similar ao ALICE/TCU para detectar irregularidades
+- Suporte especial para MPEs (cotas, preferência)
+- Integração com sistemas estaduais TCE
+- White-label para grandes clientes
+
 ---
 
 ## Metricas
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 651   |
-| Issues Abertas    | 26    |
+| Issues Totais     | 699   |
+| Issues Abertas    | 74    |
 | Issues Fechadas   | 625   |
-| Progresso         | 96%   |
+| Progresso         | 89%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
