@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-06 | **Progresso:** 620/644 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-06 | **Progresso:** 620/651 (95%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                    |
 | ---------- | ----- | -------- | ------------------------------------------------------------ |
+| 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)          |
+| 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)      |
 | 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158     |
 | 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227  |
 | 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226 |
@@ -16,9 +18,6 @@
 | 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223   |
 | 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)        |
 | 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)            |
-| 2026-01-06 | #1220 | Feature  | Implementar preview de PDF antes do export (#1214)           |
-| 2026-01-06 | #1219 | Security | Fix critical jspdf Path Traversal CVE (GHSA-f8cm-6447-x5h2)  |
-| 2026-01-06 | #1217 | Feature  | Implementar auto-save durante edição (#1169)                 |
 
 ---
 
@@ -28,18 +27,25 @@
 
 ### Fase 1 - Happy Path Core (P1 CRÍTICO)
 
-| #     | Issue                                                  | Status |
-| ----- | ------------------------------------------------------ | ------ |
-| #1158 | [ETP] Expandir formulário de criação para 20-30 campos | ✅     |
-|       | ↳ #1223 Campos de Identificação                        | ✅     |
-|       | ↳ #1224 Campos de Objeto e Justificativa               | ✅     |
-|       | ↳ #1225 Campos de Requisitos e Riscos                  | ✅     |
-|       | ↳ #1226 Campos de Estimativa de Custos                 | ✅     |
-|       | ↳ #1227 Frontend CreateETPWizard                       | ✅     |
-|       | ↳ #1228 Testes E2E                                     | ✅     |
-| #1161 | [Templates] Criar modelos pré-configurados por tipo    | 🔴     |
-| #1215 | [UX] Validação em tempo real dos campos ETP            | ✅     |
-| #1169 | [UX] Implementar auto-save durante edição              | ✅     |
+| #     | Issue                                                   | Status |
+| ----- | ------------------------------------------------------- | ------ |
+| #1158 | [ETP] Expandir formulário de criação para 20-30 campos  | ✅     |
+|       | ↳ #1223 Campos de Identificação                         | ✅     |
+|       | ↳ #1224 Campos de Objeto e Justificativa                | ✅     |
+|       | ↳ #1225 Campos de Requisitos e Riscos                   | ✅     |
+|       | ↳ #1226 Campos de Estimativa de Custos                  | ✅     |
+|       | ↳ #1227 Frontend CreateETPWizard                        | ✅     |
+|       | ↳ #1228 Testes E2E                                      | ✅     |
+| #1161 | [Templates] Criar modelos pré-configurados por tipo     | 🟡     |
+|       | ↳ #1235 Create EtpTemplate entity and module            | 🟡 PR  |
+|       | ↳ #1236 Seed 4 base templates                           | 🔴     |
+|       | ↳ #1237 Create templates API endpoints                  | 🔴     |
+|       | ↳ #1238 Create TemplateSelector frontend component      | 🔴     |
+|       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | 🔴     |
+|       | ↳ #1240 Implement dynamic fields based on template      | 🔴     |
+|       | ↳ #1241 Add E2E tests for template-based ETP creation   | 🔴     |
+| #1215 | [UX] Validação em tempo real dos campos ETP             | ✅     |
+| #1169 | [UX] Implementar auto-save durante edição               | ✅     |
 
 ### Fase 2 - Experiência Guiada (P1)
 
@@ -64,16 +70,23 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 14/20 (70%) - Epic #1158 ✅ COMPLETO (6/6 sub-issues)
+**Progresso MVP Comercial:** 14/20 (70%) - Epic #1161 em progresso (1/7 sub-issues em PR)
 
 ---
 
-## Issues Abertas (24)
+## Issues Abertas (31)
 
-### P1 - High Priority (13 issues)
+### P1 - High Priority (20 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
+| #1235 | [TMPL-1161a] Create EtpTemplate entity and module structure 🟡  |
+| #1236 | [TMPL-1161b] Seed 4 base templates                              |
+| #1237 | [TMPL-1161c] Create templates API endpoints                     |
+| #1238 | [TMPL-1161d] Create TemplateSelector frontend component         |
+| #1239 | [TMPL-1161e] Integrate TemplateSelector into CreateETPWizard    |
+| #1240 | [TMPL-1161f] Implement dynamic fields based on template         |
+| #1241 | [TMPL-1161g] Add E2E tests for template-based ETP creation      |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -81,7 +94,7 @@
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
 | #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
 | #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
-| #1161 | [Templates] Criar modelos pré-configurados por tipo             |
+| #1161 | [Templates] Criar modelos pré-configurados por tipo (PARENT)    |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
@@ -114,7 +127,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 13/20  | 🔥 MÁXIMA      |
+| MVP Comercial          | 14/20  | 🔥 MÁXIMA      |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -132,15 +145,15 @@
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 644   |
-| Issues Abertas    | 24    |
+| Issues Totais     | 651   |
+| Issues Abertas    | 31    |
 | Issues Fechadas   | 620   |
-| Progresso         | 96%   |
+| Progresso         | 95%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 79%   |
-| Backend Tests     | 2379  |
+| Backend Tests     | 2401  |
 | Frontend Tests    | 1647  |
-| Total Tests       | 4026  |
+| Total Tests       | 4048  |
 
 ---
 
