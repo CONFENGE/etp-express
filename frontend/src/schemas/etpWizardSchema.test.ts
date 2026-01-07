@@ -272,8 +272,8 @@ describe('etpWizardSchema', () => {
   });
 
   describe('WIZARD_STEPS configuration', () => {
-    it('has exactly 5 steps', () => {
-      expect(WIZARD_STEPS).toHaveLength(5);
+    it('has exactly 6 steps (including template selection)', () => {
+      expect(WIZARD_STEPS).toHaveLength(6);
     });
 
     it('has unique step IDs', () => {
@@ -296,6 +296,9 @@ describe('etpWizardSchema', () => {
 
   describe('defaultWizardValues', () => {
     it('has all expected fields', () => {
+      // Step 0 fields (Template Selection)
+      expect(defaultWizardValues).toHaveProperty('templateId');
+
       // Step 1 fields
       expect(defaultWizardValues).toHaveProperty('title');
       expect(defaultWizardValues).toHaveProperty('orgaoEntidade');

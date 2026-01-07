@@ -1,6 +1,15 @@
 import { z } from 'zod';
 
 // ============================================
+// Step 0: Template Selection Schema
+// Issue #1239 - Integrate TemplateSelector into CreateETPWizard
+// ============================================
+
+export const step0Schema = z.object({
+  templateId: z.string().nullable().optional(),
+});
+
+// ============================================
 // Constants for field validation
 // ============================================
 
@@ -267,6 +276,8 @@ export const step5Schema = z.object({
 // ============================================
 
 export const etpWizardSchema = z.object({
+  // Step 0: Template Selection
+  ...step0Schema.shape,
   // Step 1: Identification
   ...step1Schema.shape,
   // Step 2: Object and Justification
@@ -283,6 +294,7 @@ export const etpWizardSchema = z.object({
 // Type Definitions
 // ============================================
 
+export type Step0FormData = z.infer<typeof step0Schema>;
 export type Step1FormData = z.infer<typeof step1Schema>;
 export type Step2FormData = z.infer<typeof step2Schema>;
 export type Step3FormData = z.infer<typeof step3Schema>;
@@ -303,6 +315,13 @@ export interface WizardStep {
 }
 
 export const WIZARD_STEPS: WizardStep[] = [
+  {
+    id: 0,
+    title: 'Tipo de Documento',
+    description: 'Selecione um template para iniciar',
+    schema: step0Schema,
+    fields: ['templateId'],
+  },
   {
     id: 1,
     title: 'Identificacao',
@@ -372,6 +391,8 @@ export const WIZARD_STEPS: WizardStep[] = [
 // ============================================
 
 export const defaultWizardValues: ETPWizardFormData = {
+  // Step 0: Template Selection
+  templateId: null,
   // Step 1
   title: '',
   orgaoEntidade: '',
