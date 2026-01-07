@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 633/701 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 634/701 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1308 | Fix      | Fix 'Gerar Sugestao' button error (#1303) ✅                  |
 | 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅              |
 | 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅               |
 | 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅              |
@@ -92,7 +93,7 @@
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
 | #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
-| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Backend  | 🔴     |
+| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
 | #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | 🔴     |
 | #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
 | #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | 🔴     |
@@ -247,10 +248,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 701   |
-| Issues Abertas    | 68    |
-| Issues Fechadas   | 633   |
+| Issues Abertas    | 67    |
+| Issues Fechadas   | 634   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 4     |
+| Bugs P0 Abertos   | 3     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
