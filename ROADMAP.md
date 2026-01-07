@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 628/699 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 630/701 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅         |
 | 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅      |
 | 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅    |
 | 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅    |
@@ -77,13 +78,29 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 20/20 (100%) - Epic #1161 Templates COMPLETO (7/7 sub-issues ✅) 🎉
+**Progresso MVP Comercial:** 23/28 (82%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164, #1166, #1167, #1168
 
 ---
 
-## Issues Abertas (23)
+## Bugs Criticos P0 (7 issues) - PRIORIDADE MAXIMA
 
-### P1 - High Priority (12 issues)
+> **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
+
+| #     | Issue                                                       | Area     |
+| ----- | ----------------------------------------------------------- | -------- |
+| #1304 | [P0] Erro ao salvar secao no ETP Editor                     | Backend  |
+| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor       | Backend  |
+| #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile   | Frontend |
+| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade     | Frontend |
+| #1300 | [P0] Textos sem acentuacao em toda UI                       | Frontend |
+| #1299 | [P0] System Admin nao ve botoes de gestao usuarios/managers | Frontend |
+| #1298 | [P0] Link 'Manual do Usuario' retorna 404                   | Frontend |
+
+---
+
+## Issues Abertas (70)
+
+### P1 - High Priority (11 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -126,7 +143,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 20/20  | ✅ COMPLETO    |
+| MVP Comercial          | 23/28  | 82% (5 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -226,10 +243,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 699   |
+| Issues Totais     | 701   |
 | Issues Abertas    | 71    |
-| Issues Fechadas   | 628   |
+| Issues Fechadas   | 630   |
 | Progresso         | 90%   |
+| Bugs P0 Abertos   | 7     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
