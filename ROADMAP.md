@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1309 | Fix      | Corrigir acentuação em toda UI (#1300) ✅                     |
 | 2026-01-07 | #1308 | Fix      | Fix 'Gerar Sugestao' button error (#1303) ✅                  |
 | 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅              |
 | 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅               |
@@ -86,7 +87,7 @@
 
 ---
 
-## Bugs Criticos P0 (4 issues restantes) - PRIORIDADE MAXIMA
+## Bugs Criticos P0 (3 issues restantes) - PRIORIDADE MAXIMA
 
 > **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
 
@@ -96,7 +97,7 @@
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
 | #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | 🔴     |
 | #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
-| #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | 🔴     |
+| #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | ✅     |
 | #1299 | [P0] System Admin nao ve botoes de gestao                 | Frontend | ✅     |
 | #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | ✅     |
 
