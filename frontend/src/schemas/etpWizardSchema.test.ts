@@ -272,8 +272,8 @@ describe('etpWizardSchema', () => {
   });
 
   describe('WIZARD_STEPS configuration', () => {
-    it('has exactly 6 steps (including template selection)', () => {
-      expect(WIZARD_STEPS).toHaveLength(6);
+    it('has exactly 7 steps (including template selection and dynamic fields)', () => {
+      expect(WIZARD_STEPS).toHaveLength(7);
     });
 
     it('has unique step IDs', () => {
