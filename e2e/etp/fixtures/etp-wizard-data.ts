@@ -269,3 +269,94 @@ export const scenarioData = {
     },
   },
 };
+
+/**
+ * Template-specific dynamic fields data for E2E tests
+ * Issue #1241 - E2E tests for template-based ETP creation
+ */
+export const templateDynamicFieldsData = {
+  /**
+   * OBRAS template dynamic fields
+   */
+  OBRAS: {
+    artRrt: 'ART-2024-001234567',
+    memorialDescritivo:
+      'Memorial descritivo completo para construcao de edificio de 3 andares com area total de 2000m2, incluindo especificacoes de materiais, acabamentos e sistemas prediais',
+    cronogramaFisicoFinanceiro:
+      'Fase 1: Fundacao (30 dias) - R$ 200.000\nFase 2: Estrutura (60 dias) - R$ 500.000\nFase 3: Acabamento (90 dias) - R$ 300.000',
+    bdiReferencia: 25.5,
+    projetoBasico: 'Projeto basico aprovado pelo CREA sob numero 2024/001',
+    licencasAmbientais:
+      'Licenca previa LP-2024-001 emitida pelo IBAMA em 15/03/2024',
+  },
+
+  /**
+   * TI template dynamic fields
+   */
+  TI: {
+    especificacoesTecnicas:
+      'Sistema web responsivo desenvolvido em React e Node.js, com suporte a 10.000 usuarios simultaneos, tempo de resposta menor que 2 segundos, banco de dados PostgreSQL',
+    nivelServico:
+      'Disponibilidade 99.9%, Tempo de resposta para incidentes criticos menor que 4 horas, Backup diario com retencao de 30 dias',
+    metodologiaTrabalho: 'agil',
+    requisitosSeguranca:
+      'Conformidade com ISO 27001, criptografia AES-256 para dados em repouso, TLS 1.3 para dados em transito, autenticacao multifator obrigatoria',
+    integracaoSistemas:
+      'Integracao via API REST com sistema de RH (SAP), SSO via SAML 2.0 com Active Directory',
+    lgpdConformidade:
+      'Consentimento explicito para coleta de dados pessoais, direito ao esquecimento implementado, DPO designado',
+  },
+
+  /**
+   * SERVICOS template dynamic fields
+   */
+  SERVICOS: {
+    produtividade:
+      '100 m2/dia por servente para limpeza de pisos ceramicos, 50 m2/dia para limpeza de vidros externos',
+    postosTrabalho: 15,
+    frequenciaServico: 'Segunda a sexta, 8h as 18h, sabados das 8h as 12h',
+    indicadoresDesempenho:
+      'Taxa de satisfacao maior que 90%\nTempo de resposta para chamados menor que 4 horas\nAbsenteismo menor que 5%',
+    uniformesEpi:
+      'Uniforme completo (camisa, calca, sapato antiderrapante), luvas latex, mascara PFF2, oculos de protecao',
+    convencaoColetiva:
+      'Sindicato dos Trabalhadores em Limpeza e Conservacao de Sao Paulo - SINDELSERV',
+  },
+
+  /**
+   * MATERIAIS template dynamic fields
+   */
+  MATERIAIS: {
+    especificacoesTecnicas:
+      'Notebook corporativo: Processador Intel Core i7 12a geracao ou superior, 16GB RAM DDR4 3200MHz, SSD NVMe 512GB, tela IPS 15.6 polegadas Full HD, webcam HD integrada',
+    garantiaMinima:
+      '36 meses contra defeitos de fabricacao com atendimento on-site',
+    assistenciaTecnica:
+      'Assistencia tecnica em ate 48 horas uteis para chamados em horario comercial, cobertura nacional on-site',
+    catalogo: 'CATMAT 449052 - Microcomputador portatil notebook',
+    normasAplicaveis:
+      'ABNT NBR IEC 60950-1 (Seguranca), Energy Star (Eficiencia energetica), INMETRO',
+    instalacaoTreinamento:
+      'Instalacao e configuracao inicial inclusa no fornecimento, treinamento de 4 horas para ate 20 usuarios finais',
+  },
+};
+
+/**
+ * Template names as displayed in the UI
+ */
+export const templateNames = {
+  OBRAS: 'Template para Obras de Engenharia',
+  TI: 'Template para Contratacoes de TI',
+  SERVICOS: 'Template para Servicos Continuos',
+  MATERIAIS: 'Template para Aquisicao de Materiais e Bens',
+};
+
+/**
+ * Template type labels as displayed in the UI
+ */
+export const templateTypeLabels = {
+  OBRAS: 'Obras e Engenharia',
+  TI: 'Tecnologia da Informacao',
+  SERVICOS: 'Servicos Continuos',
+  MATERIAIS: 'Materiais e Bens',
+};
