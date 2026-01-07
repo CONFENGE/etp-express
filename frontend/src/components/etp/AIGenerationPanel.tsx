@@ -33,7 +33,7 @@ export function AIGenerationPanel({
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            Sugestoes
+            Sugestões
           </CardTitle>
           {content && (
             <Badge variant="success">
@@ -90,11 +90,11 @@ export function AIGenerationPanel({
           <div className="text-center py-4">
             <Sparkles className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
             <p className="text-sm text-muted-foreground mb-4">
-              Gere sugestoes de conteudo para esta secao
+              Gere sugestões de conteúdo para esta seção
             </p>
             <Button onClick={onGenerate} size="sm" className="w-full">
               <Sparkles className="mr-2 h-4 w-4" />
-              Gerar Sugestao
+              Gerar Sugestão
             </Button>
           </div>
         )}

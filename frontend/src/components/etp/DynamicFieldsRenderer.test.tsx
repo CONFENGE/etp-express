@@ -45,7 +45,7 @@ describe('DynamicFieldsRenderer', () => {
 
       expect(
         screen.getByText(
-          /selecione um template no passo anterior para ver campos especificos/i,
+          /selecione um template no passo anterior para ver campos específicos/i,
         ),
       ).toBeInTheDocument();
     });
@@ -66,12 +66,12 @@ describe('DynamicFieldsRenderer', () => {
       render(<TestWrapper templateType={EtpTemplateType.OBRAS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Obras e Engenharia'),
+        screen.getByText('Campos Específicos - Obras e Engenharia'),
       ).toBeInTheDocument();
       expect(screen.getByLabelText(/art\/rrt/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/memorial descritivo/i)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/cronograma fisico-financeiro/i),
+        screen.getByLabelText(/cronograma físico-financeiro/i),
       ).toBeInTheDocument();
     });
 
@@ -89,7 +89,7 @@ describe('DynamicFieldsRenderer', () => {
     it('should render BDI field as number input', () => {
       render(<TestWrapper templateType={EtpTemplateType.OBRAS} />);
 
-      const bdiInput = screen.getByLabelText(/bdi de referencia/i);
+      const bdiInput = screen.getByLabelText(/bdi de referência/i);
       expect(bdiInput).toHaveAttribute('type', 'number');
     });
   });
@@ -99,14 +99,14 @@ describe('DynamicFieldsRenderer', () => {
       render(<TestWrapper templateType={EtpTemplateType.TI} />);
 
       expect(
-        screen.getByText('Campos Especificos - Tecnologia da Informacao'),
+        screen.getByText('Campos Específicos - Tecnologia da Informação'),
       ).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/especificacoes tecnicas/i),
+        screen.getByLabelText(/especificações técnicas/i),
       ).toBeInTheDocument();
-      expect(screen.getByLabelText(/niveis de servico/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/níveis de serviço/i)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/requisitos de seguranca/i),
+        screen.getByLabelText(/requisitos de segurança/i),
       ).toBeInTheDocument();
     });
 
@@ -126,9 +126,9 @@ describe('DynamicFieldsRenderer', () => {
       await user.click(methodologySelect);
 
       // Options should be visible
-      expect(screen.getByText('Agil (Scrum/Kanban)')).toBeInTheDocument();
+      expect(screen.getByText('Ágil (Scrum/Kanban)')).toBeInTheDocument();
       expect(screen.getByText('Cascata (Waterfall)')).toBeInTheDocument();
-      expect(screen.getByText('Hibrida')).toBeInTheDocument();
+      expect(screen.getByText('Híbrida')).toBeInTheDocument();
     });
   });
 
@@ -137,12 +137,12 @@ describe('DynamicFieldsRenderer', () => {
       render(<TestWrapper templateType={EtpTemplateType.SERVICOS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Servicos Continuos'),
+        screen.getByText('Campos Específicos - Serviços Contínuos'),
       ).toBeInTheDocument();
       expect(screen.getByLabelText(/produtividade/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/postos de trabalho/i)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/frequencia do servico/i),
+        screen.getByLabelText(/frequência do serviço/i),
       ).toBeInTheDocument();
     });
 
@@ -160,14 +160,14 @@ describe('DynamicFieldsRenderer', () => {
       render(<TestWrapper templateType={EtpTemplateType.MATERIAIS} />);
 
       expect(
-        screen.getByText('Campos Especificos - Materiais e Bens'),
+        screen.getByText('Campos Específicos - Materiais e Bens'),
       ).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/especificacoes tecnicas/i),
+        screen.getByLabelText(/especificações técnicas/i),
       ).toBeInTheDocument();
-      expect(screen.getByLabelText(/garantia minima/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/garantia mínima/i)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/codigo catmat\/catser/i),
+        screen.getByLabelText(/código catmat\/catser/i),
       ).toBeInTheDocument();
     });
   });

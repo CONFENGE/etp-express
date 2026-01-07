@@ -39,7 +39,7 @@ export function Step0TemplateSelection({ form }: Step0TemplateSelectionProps) {
       <div className="text-center mb-6">
         <h4 className="text-lg font-medium mb-2">Escolha um modelo de ETP</h4>
         <p className="text-sm text-muted-foreground">
-          Selecione um template pre-configurado para acelerar a criacao do seu
+          Selecione um template pré-configurado para acelerar a criação do seu
           ETP, ou comece com um documento em branco.
         </p>
       </div>

@@ -31,7 +31,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
   return (
     <div className="space-y-4">
       <FormField
-        label="Titulo do ETP"
+        label="Título do ETP"
         name="title"
         required
         error={errors.title?.message}
@@ -41,18 +41,18 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
           titleValue.length >= TITLE_MIN_LENGTH
         }
         charCount={{ current: titleValue.length, max: TITLE_MAX_LENGTH }}
-        helpText="Titulo descritivo do Estudo Tecnico Preliminar"
+        helpText="Título descritivo do Estudo Técnico Preliminar"
       >
         <Input
           id="title"
-          placeholder="Ex: Contratacao de Servicos de TI"
+          placeholder="Ex: Contratação de Serviços de TI"
           {...register('title')}
         />
       </FormField>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
-          label="Orgao/Entidade"
+          label="Órgão/Entidade"
           name="orgaoEntidade"
           error={errors.orgaoEntidade?.message}
           isValid={
@@ -61,7 +61,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
             orgaoValue.length > 0
           }
           charCount={{ current: orgaoValue.length, max: ORGAO_MAX_LENGTH }}
-          helpText="Orgao ou entidade requisitante"
+          helpText="Órgão ou entidade requisitante"
         >
           <Input
             id="orgaoEntidade"
@@ -71,7 +71,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
         </FormField>
 
         <FormField
-          label="Codigo UASG"
+          label="Código UASG"
           name="uasg"
           error={errors.uasg?.message}
           isValid={
@@ -79,7 +79,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
             touchedFields.uasg &&
             (watch('uasg') || '').length === 6
           }
-          helpText="6 digitos numericos"
+          helpText="6 dígitos numéricos"
         >
           <Input
             id="uasg"
@@ -103,7 +103,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
           current: unidadeValue.length,
           max: UNIDADE_DEMANDANTE_MAX_LENGTH,
         }}
-        helpText="Unidade demandante dentro do orgao"
+        helpText="Unidade demandante dentro do órgão"
       >
         <Input
           id="unidadeDemandante"
@@ -114,7 +114,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
-          label="Nome do Responsavel Tecnico"
+          label="Nome do Responsável Técnico"
           name="responsavelTecnicoNome"
           error={errors.responsavelTecnicoNome?.message}
           isValid={
@@ -126,17 +126,17 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
             current: nomeValue.length,
             max: RESPONSAVEL_NOME_MAX_LENGTH,
           }}
-          helpText="Nome completo do responsavel"
+          helpText="Nome completo do responsável"
         >
           <Input
             id="responsavelTecnicoNome"
-            placeholder="Ex: Joao Silva"
+            placeholder="Ex: João Silva"
             {...register('responsavelTecnicoNome')}
           />
         </FormField>
 
         <FormField
-          label="Matricula"
+          label="Matrícula"
           name="responsavelTecnicoMatricula"
           error={errors.responsavelTecnicoMatricula?.message}
           isValid={
@@ -148,7 +148,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
             current: matriculaValue.length,
             max: RESPONSAVEL_MATRICULA_MAX_LENGTH,
           }}
-          helpText="Matricula funcional (opcional)"
+          helpText="Matrícula funcional (opcional)"
         >
           <Input
             id="responsavelTecnicoMatricula"
@@ -159,7 +159,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
       </div>
 
       <FormField
-        label="Data de Elaboracao"
+        label="Data de Elaboração"
         name="dataElaboracao"
         error={errors.dataElaboracao?.message}
         isValid={
@@ -167,7 +167,7 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
           touchedFields.dataElaboracao &&
           (watch('dataElaboracao') || '').length > 0
         }
-        helpText="Data de elaboracao do ETP"
+        helpText="Data de elaboração do ETP"
       >
         <Input
           id="dataElaboracao"

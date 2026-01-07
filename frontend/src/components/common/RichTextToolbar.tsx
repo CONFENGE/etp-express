@@ -86,7 +86,7 @@ const RichTextToolbar: React.FC<RichTextToolbarProps> = ({
         className,
       )}
       role="toolbar"
-      aria-label="Formatacao de texto"
+      aria-label="Formatação de texto"
     >
       {/* Text Formatting */}
       <ToolbarButton

@@ -53,9 +53,9 @@ export function VersionTimeline({
     return (
       <div className="text-center py-8 text-muted-foreground">
         <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-        <p>Nenhuma versao encontrada</p>
+        <p>Nenhuma versão encontrada</p>
         <p className="text-sm mt-1">
-          As versoes serao criadas automaticamente ao editar o ETP
+          As versões serão criadas automaticamente ao editar o ETP
         </p>
       </div>
     );
@@ -154,8 +154,8 @@ export function VersionTimeline({
                   disabled={versions.length < 2}
                   title={
                     versions.length < 2
-                      ? 'Necessario pelo menos 2 versoes para comparar'
-                      : 'Comparar com outra versao'
+                      ? 'Necessário pelo menos 2 versões para comparar'
+                      : 'Comparar com outra versão'
                   }
                 >
                   <GitCompare className="h-3.5 w-3.5 mr-1" />
@@ -168,7 +168,7 @@ export function VersionTimeline({
                     size="sm"
                     onClick={() => onRestoreVersion(version)}
                     className="h-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                    title="Restaurar esta versao (cria backup antes)"
+                    title="Restaurar esta versão (cria backup antes)"
                   >
                     <RotateCcw className="h-3.5 w-3.5 mr-1" />
                     Restaurar

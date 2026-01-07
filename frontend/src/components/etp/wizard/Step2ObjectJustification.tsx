@@ -37,7 +37,7 @@ export function Step2ObjectJustification({
   return (
     <div className="space-y-4">
       <FormField
-        label="Objeto da Contratacao"
+        label="Objeto da Contratação"
         name="objeto"
         required
         error={errors.objeto?.message}
@@ -47,18 +47,18 @@ export function Step2ObjectJustification({
           objetoValue.length >= OBJETO_MIN_LENGTH
         }
         charCount={{ current: objetoValue.length, max: OBJETO_MAX_LENGTH }}
-        helpText="Descricao resumida do objeto a ser contratado"
+        helpText="Descrição resumida do objeto a ser contratado"
       >
         <Textarea
           id="objeto"
-          placeholder="Ex: Contratacao de empresa especializada em desenvolvimento de sistemas web"
+          placeholder="Ex: Contratação de empresa especializada em desenvolvimento de sistemas web"
           rows={2}
           {...register('objeto')}
         />
       </FormField>
 
       <FormField
-        label="Descricao Detalhada"
+        label="Descrição Detalhada"
         name="descricaoDetalhada"
         error={errors.descricaoDetalhada?.message}
         isValid={
@@ -70,11 +70,11 @@ export function Step2ObjectJustification({
           current: descricaoDetalhadaValue.length,
           max: DESCRICAO_DETALHADA_MAX_LENGTH,
         }}
-        helpText="Descricao tecnica detalhada do objeto"
+        helpText="Descrição técnica detalhada do objeto"
       >
         <Textarea
           id="descricaoDetalhada"
-          placeholder="Descreva detalhadamente as especificacoes tecnicas do objeto..."
+          placeholder="Descreva detalhadamente as especificações técnicas do objeto..."
           rows={4}
           {...register('descricaoDetalhada')}
         />
@@ -123,7 +123,7 @@ export function Step2ObjectJustification({
       </div>
 
       <FormField
-        label="Justificativa da Contratacao"
+        label="Justificativa da Contratação"
         name="justificativaContratacao"
         error={errors.justificativaContratacao?.message}
         isValid={
@@ -139,7 +139,7 @@ export function Step2ObjectJustification({
       >
         <Textarea
           id="justificativaContratacao"
-          placeholder="Descreva a justificativa tecnica e legal para a contratacao..."
+          placeholder="Descreva a justificativa técnica e legal para a contratação..."
           rows={4}
           {...register('justificativaContratacao')}
         />
@@ -158,11 +158,11 @@ export function Step2ObjectJustification({
           current: necessidadeValue.length,
           max: NECESSIDADE_MAX_LENGTH,
         }}
-        helpText="Descricao da necessidade que sera atendida"
+        helpText="Descrição da necessidade que será atendida"
       >
         <Textarea
           id="necessidadeAtendida"
-          placeholder="Ex: Atender a demanda de 10.000 usuarios internos..."
+          placeholder="Ex: Atender a demanda de 10.000 usuários internos..."
           rows={3}
           {...register('necessidadeAtendida')}
         />
@@ -181,11 +181,11 @@ export function Step2ObjectJustification({
           current: beneficiosValue.length,
           max: BENEFICIOS_MAX_LENGTH,
         }}
-        helpText="Beneficios esperados com a contratacao"
+        helpText="Benefícios esperados com a contratação"
       >
         <Textarea
           id="beneficiosEsperados"
-          placeholder="Ex: Reducao de 30% no tempo de processamento..."
+          placeholder="Ex: Redução de 30% no tempo de processamento..."
           rows={3}
           {...register('beneficiosEsperados')}
         />
