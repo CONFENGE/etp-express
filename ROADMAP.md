@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 630/701 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 631/701 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅              |
 | 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅         |
 | 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅      |
 | 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅    |
@@ -82,19 +83,19 @@
 
 ---
 
-## Bugs Criticos P0 (7 issues) - PRIORIDADE MAXIMA
+## Bugs Criticos P0 (6 issues) - PRIORIDADE MAXIMA
 
 > **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
 
-| #     | Issue                                                       | Area     |
-| ----- | ----------------------------------------------------------- | -------- |
-| #1304 | [P0] Erro ao salvar secao no ETP Editor                     | Backend  |
-| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor       | Backend  |
-| #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile   | Frontend |
-| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade     | Frontend |
-| #1300 | [P0] Textos sem acentuacao em toda UI                       | Frontend |
-| #1299 | [P0] System Admin nao ve botoes de gestao usuarios/managers | Frontend |
-| #1298 | [P0] Link 'Manual do Usuario' retorna 404                   | Frontend |
+| #     | Issue                                                     | Area     | Status |
+| ----- | --------------------------------------------------------- | -------- | ------ |
+| #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | 🔴     |
+| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Backend  | 🔴     |
+| #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | 🔴     |
+| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
+| #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | 🔴     |
+| #1299 | [P0] System Admin nao ve botoes de gestao                 | Frontend | ✅     |
+| #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | 🔴     |
 
 ---
 
@@ -244,15 +245,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 701   |
-| Issues Abertas    | 71    |
-| Issues Fechadas   | 630   |
+| Issues Abertas    | 70    |
+| Issues Fechadas   | 631   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 7     |
+| Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
-| Frontend Tests    | 1719  |
-| Total Tests       | 4215  |
+| Frontend Tests    | 1732  |
+| Total Tests       | 4228  |
 
 ---
 
