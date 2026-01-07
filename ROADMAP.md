@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 625/699 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 626/699 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅    |
 | 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅    |
 | 2026-01-07 | #1245 | Feature  | Add TemplateSelector frontend component (#1238) ✅            |
 | 2026-01-07 | #1244 | Test     | Add E2E integration tests for templates API endpoints (#1237) |
@@ -47,7 +48,7 @@
 |       | ↳ #1237 Create templates API endpoints                  | ✅     |
 |       | ↳ #1238 Create TemplateSelector frontend component      | ✅     |
 |       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | ✅     |
-|       | ↳ #1240 Implement dynamic fields based on template      | 🔴     |
+|       | ↳ #1240 Implement dynamic fields based on template      | ✅     |
 |       | ↳ #1241 Add E2E tests for template-based ETP creation   | 🔴     |
 | #1215 | [UX] Validação em tempo real dos campos ETP             | ✅     |
 | #1169 | [UX] Implementar auto-save durante edição               | ✅     |
@@ -75,17 +76,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 18/20 (90%) - Epic #1161 em progresso (5/7 sub-issues ✅)
+**Progresso MVP Comercial:** 19/20 (95%) - Epic #1161 em progresso (6/7 sub-issues ✅)
 
 ---
 
-## Issues Abertas (26)
+## Issues Abertas (25)
 
-### P1 - High Priority (15 issues)
+### P1 - High Priority (14 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1240 | [TMPL-1161f] Implement dynamic fields based on template         |
 | #1241 | [TMPL-1161g] Add E2E tests for template-based ETP creation      |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
