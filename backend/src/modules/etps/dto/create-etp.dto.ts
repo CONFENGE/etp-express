@@ -11,10 +11,20 @@ import {
   Min,
   IsEnum,
   IsInt,
+  IsUUID,
+  IsBoolean,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { NivelRisco } from '../../../entities/etp.entity';
+import {
+  NivelRisco,
+  ObrasDynamicFields,
+  TiDynamicFields,
+  ServicosDynamicFields,
+  MateriaisDynamicFields,
+} from '../../../entities/etp.entity';
+import { EtpTemplateType } from '../../../entities/etp-template.entity';
 
 /**
  * DTO para responsável técnico do ETP.
@@ -330,6 +340,48 @@ export class CreateEtpDto {
   // Fim dos Campos de Estimativa de Custos
   // ============================================
 
+  // ============================================
+  // Campos de Template e Campos Dinâmicos (Issue #1240)
+  // ============================================
+
+  @ApiPropertyOptional({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'ID do template utilizado para criar este ETP',
+  })
+  @IsOptional()
+  @IsUUID('4', { message: 'Template ID deve ser um UUID válido' })
+  templateId?: string;
+
+  @ApiPropertyOptional({
+    example: 'OBRAS',
+    description: 'Tipo de contratação do template',
+    enum: EtpTemplateType,
+  })
+  @IsOptional()
+  @IsEnum(EtpTemplateType, {
+    message: 'Tipo de template deve ser OBRAS, TI, SERVICOS ou MATERIAIS',
+  })
+  templateType?: EtpTemplateType;
+
+  @ApiPropertyOptional({
+    description: 'Campos dinâmicos específicos do tipo de contratação',
+    example: {
+      artRrt: '1234567890',
+      memorialDescritivo: 'Descrição técnica da obra...',
+    },
+  })
+  @IsOptional()
+  @IsObject()
+  dynamicFields?:
+    | ObrasDynamicFields
+    | TiDynamicFields
+    | ServicosDynamicFields
+    | MateriaisDynamicFields;
+
+  // ============================================
+  // Fim dos Campos de Template
+  // ============================================
+
   @ApiPropertyOptional({
     example: {
       unidadeRequisitante: 'Secretaria de Tecnologia',
@@ -346,4 +398,268 @@ export class CreateEtpDto {
     tags?: string[];
     [key: string]: unknown;
   };
+}
+
+// ============================================
+// DTOs de Campos Dinâmicos por Template
+// Issue #1240 - Implement dynamic fields based on template
+// ============================================
+
+/**
+ * DTO para campos dinâmicos de OBRAS/Engenharia.
+ */
+export class ObrasDynamicFieldsDto implements ObrasDynamicFields {
+  @ApiPropertyOptional({
+    example: '1234567890',
+    description: 'Número da ART ou RRT',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  artRrt?: string;
+
+  @ApiPropertyOptional({
+    example: 'Memorial descritivo detalhado da obra...',
+    description: 'Memorial descritivo da obra',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  memorialDescritivo?: string;
+
+  @ApiPropertyOptional({
+    example: 'Cronograma com 12 etapas...',
+    description: 'Cronograma físico-financeiro',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  cronogramaFisicoFinanceiro?: string;
+
+  @ApiPropertyOptional({
+    example: 25.5,
+    description: 'BDI de referência em percentual',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  bdiReferencia?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  projetoBasico?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  projetoExecutivo?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  licencasAmbientais?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  planilhaOrcamentaria?: string;
+}
+
+/**
+ * DTO para campos dinâmicos de TI/Software.
+ */
+export class TiDynamicFieldsDto implements TiDynamicFields {
+  @ApiPropertyOptional({
+    example: 'Sistema deve suportar 10.000 usuários simultâneos...',
+    description: 'Especificações técnicas detalhadas',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  especificacoesTecnicas?: string;
+
+  @ApiPropertyOptional({
+    example: 'Disponibilidade 99,9%, tempo de resposta < 2s',
+    description: 'Níveis de serviço (SLA)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  nivelServico?: string;
+
+  @ApiPropertyOptional({
+    example: 'agil',
+    description: 'Metodologia de trabalho',
+    enum: ['agil', 'cascata', 'hibrida'],
+  })
+  @IsOptional()
+  @IsString()
+  metodologiaTrabalho?: 'agil' | 'cascata' | 'hibrida';
+
+  @ApiPropertyOptional({
+    example: 'Conformidade com ISO 27001...',
+    description: 'Requisitos de segurança da informação',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  requisitosSeguranca?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  slaMetricas?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(10000)
+  arquiteturaTecnica?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  integracaoSistemas?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000)
+  lgpdConformidade?: string;
+}
+
+/**
+ * DTO para campos dinâmicos de SERVICOS.
+ */
+export class ServicosDynamicFieldsDto implements ServicosDynamicFields {
+  @ApiPropertyOptional({
+    example: '100 m²/dia por servente',
+    description: 'Produtividade do serviço',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  produtividade?: string;
+
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Número de postos de trabalho',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  postosTrabalho?: number;
+
+  @ApiPropertyOptional({
+    example: 'Segunda a sexta, 8h às 18h',
+    description: 'Frequência do serviço',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  frequenciaServico?: string;
+
+  @ApiPropertyOptional({
+    example: ['Taxa de satisfação > 90%', 'Tempo de resposta < 4h'],
+    description: 'Indicadores de desempenho',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  indicadoresDesempenho?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  materiaisEquipamentos?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  uniformesEpi?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  convencaoColetiva?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  transicaoContratual?: string;
+}
+
+/**
+ * DTO para campos dinâmicos de MATERIAIS.
+ */
+export class MateriaisDynamicFieldsDto implements MateriaisDynamicFields {
+  @ApiPropertyOptional({
+    example: '12 meses contra defeitos de fabricação',
+    description: 'Garantia mínima exigida',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  garantiaMinima?: string;
+
+  @ApiPropertyOptional({
+    example: 'Assistência técnica em até 48h úteis',
+    description: 'Requisitos de assistência técnica',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  assistenciaTecnica?: string;
+
+  @ApiPropertyOptional({
+    example: 'CATMAT 123456',
+    description: 'Código CATMAT/CATSER',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  catalogo?: string;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Se exige amostra para teste',
+  })
+  @IsOptional()
+  @IsBoolean()
+  amostraTeste?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  laudosTecnicos?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  normasAplicaveis?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  embalagensTransporte?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000)
+  instalacaoTreinamento?: string;
 }

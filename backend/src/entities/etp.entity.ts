@@ -13,6 +13,7 @@ import { Organization } from './organization.entity';
 import { EtpSection } from './etp-section.entity';
 import { EtpVersion } from './etp-version.entity';
 import { AuditLog } from './audit-log.entity';
+import { EtpTemplate, EtpTemplateType } from './etp-template.entity';
 
 export enum EtpStatus {
   DRAFT = 'draft',
@@ -31,6 +32,73 @@ export enum NivelRisco {
   MEDIO = 'MEDIO',
   ALTO = 'ALTO',
 }
+
+/**
+ * Campos dinâmicos específicos para template OBRAS/Engenharia.
+ * Issue #1240 - Implement dynamic fields based on template
+ */
+export interface ObrasDynamicFields {
+  artRrt?: string;
+  memorialDescritivo?: string;
+  cronogramaFisicoFinanceiro?: string;
+  bdiReferencia?: number;
+  projetoBasico?: string;
+  projetoExecutivo?: string;
+  licencasAmbientais?: string;
+  planilhaOrcamentaria?: string;
+}
+
+/**
+ * Campos dinâmicos específicos para template TI/Software.
+ */
+export interface TiDynamicFields {
+  especificacoesTecnicas?: string;
+  nivelServico?: string;
+  metodologiaTrabalho?: 'agil' | 'cascata' | 'hibrida';
+  requisitosSeguranca?: string;
+  slaMetricas?: string;
+  arquiteturaTecnica?: string;
+  integracaoSistemas?: string;
+  lgpdConformidade?: string;
+}
+
+/**
+ * Campos dinâmicos específicos para template SERVICOS.
+ */
+export interface ServicosDynamicFields {
+  produtividade?: string;
+  postosTrabalho?: number;
+  frequenciaServico?: string;
+  indicadoresDesempenho?: string[];
+  materiaisEquipamentos?: string;
+  uniformesEpi?: string;
+  convencaoColetiva?: string;
+  transicaoContratual?: string;
+}
+
+/**
+ * Campos dinâmicos específicos para template MATERIAIS.
+ */
+export interface MateriaisDynamicFields {
+  garantiaMinima?: string;
+  assistenciaTecnica?: string;
+  catalogo?: string;
+  amostraTeste?: boolean;
+  laudosTecnicos?: string;
+  normasAplicaveis?: string;
+  embalagensTransporte?: string;
+  instalacaoTreinamento?: string;
+}
+
+/**
+ * União de todos os tipos de campos dinâmicos.
+ */
+export type DynamicFieldsType =
+  | ObrasDynamicFields
+  | TiDynamicFields
+  | ServicosDynamicFields
+  | MateriaisDynamicFields
+  | null;
 
 @Entity('etps')
 export class Etp {
@@ -248,6 +316,70 @@ export class Etp {
 
   // ============================================
   // Fim dos Campos de Estimativa de Custos
+  // ============================================
+
+  // ============================================
+  // Campos de Template e Campos Dinâmicos (Issue #1240)
+  // ============================================
+
+  /**
+   * ID do template utilizado para criar este ETP.
+   * Nullable para ETPs criados sem template (em branco).
+   */
+  @Column({ type: 'uuid', nullable: true })
+  templateId: string;
+
+  /**
+   * Relação com o template de ETP.
+   */
+  @ManyToOne(() => EtpTemplate, { nullable: true })
+  @JoinColumn({ name: 'templateId' })
+  template: EtpTemplate;
+
+  /**
+   * Tipo de contratação do ETP.
+   * Copiado do template para consulta rápida.
+   * Nullable para ETPs sem template.
+   */
+  @Column({
+    type: 'enum',
+    enum: EtpTemplateType,
+    nullable: true,
+  })
+  templateType: EtpTemplateType;
+
+  /**
+   * Campos dinâmicos específicos do tipo de contratação.
+   * Armazena os dados dos campos específicos de cada template.
+   *
+   * Para OBRAS:
+   * - artRrt: string (número ART/RRT)
+   * - memorialDescritivo: string
+   * - cronogramaFisicoFinanceiro: string
+   * - bdiReferencia: number
+   *
+   * Para TI:
+   * - especificacoesTecnicas: string
+   * - nivelServico: string (SLA)
+   * - metodologiaTrabalho: 'agil' | 'cascata' | 'hibrida'
+   * - requisitosSeguranca: string
+   *
+   * Para SERVICOS:
+   * - produtividade: string
+   * - postosTrabalho: number
+   * - frequenciaServico: string
+   * - indicadoresDesempenho: string[]
+   *
+   * Para MATERIAIS:
+   * - garantiaMinima: string
+   * - assistenciaTecnica: string
+   * - catalogo: string (CATMAT/CATSER)
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  dynamicFields: DynamicFieldsType;
+
+  // ============================================
+  // Fim dos Campos de Template
   // ============================================
 
   @Column({
