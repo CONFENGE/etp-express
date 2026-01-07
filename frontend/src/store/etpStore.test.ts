@@ -35,12 +35,14 @@ vi.mock('@/lib/api', () => ({
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
+    patch: vi.fn(),
     delete: vi.fn(),
   },
   apiHelpers: {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
+    patch: vi.fn(),
     delete: vi.fn(),
   },
 }));
@@ -302,7 +304,7 @@ describe('etpStore', () => {
 
   describe('Teste 4: updateSection', () => {
     it('should update specific section in currentETP', async () => {
-      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
+      vi.mocked(apiHelpers.patch).mockResolvedValue(mockSection);
 
       const { result } = renderHook(() => useETPStore());
 
@@ -327,13 +329,11 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(apiHelpers.put).toHaveBeenCalledWith(
-        '/etps/etp-1/sections/section-1',
-        {
-          content: 'Conteúdo atualizado',
-          isCompleted: true,
-        },
-      );
+      // Note: etpId is passed for API consistency but backend route is /sections/:id
+      expect(apiHelpers.patch).toHaveBeenCalledWith('/sections/section-1', {
+        content: 'Conteúdo atualizado',
+        isCompleted: true,
+      });
       expect(result.current.currentETP?.sections[0]).toEqual(mockSection);
       expect(result.current.error).toBeNull();
     });
@@ -342,7 +342,7 @@ describe('etpStore', () => {
       // Este teste documenta um bug identificado: updateSection não reseta isLoading
       // quando currentETP é null (linha 156 do etpStore.ts retorna state sem modificar isLoading)
 
-      vi.mocked(apiHelpers.put).mockResolvedValue(mockSection);
+      vi.mocked(apiHelpers.patch).mockResolvedValue(mockSection);
 
       const { result } = renderHook(() => useETPStore());
 
@@ -356,7 +356,7 @@ describe('etpStore', () => {
       });
 
       // API call is made
-      expect(apiHelpers.put).toHaveBeenCalled();
+      expect(apiHelpers.patch).toHaveBeenCalled();
 
       // BUG: isLoading permanece true quando currentETP é null
       // Deveria ser false após a operação ser concluída
@@ -368,7 +368,7 @@ describe('etpStore', () => {
 
     it('should throw error on update failure', async () => {
       const errorMessage = 'Erro ao atualizar seção';
-      vi.mocked(apiHelpers.put).mockRejectedValue(new Error(errorMessage));
+      vi.mocked(apiHelpers.patch).mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useETPStore());
 
