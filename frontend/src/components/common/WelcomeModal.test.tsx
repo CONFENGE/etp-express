@@ -59,7 +59,7 @@ describe('WelcomeModal', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/elabore estudos tecnicos preliminares/i),
+          screen.getByText(/elabore estudos técnicos preliminares/i),
         ).toBeInTheDocument();
       });
     });
@@ -79,7 +79,7 @@ describe('WelcomeModal', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: /ler o manual do usuario/i }),
+          screen.getByRole('link', { name: /ler o manual do usuário/i }),
         ).toBeInTheDocument();
       });
     });
@@ -88,7 +88,7 @@ describe('WelcomeModal', () => {
       renderWelcomeModal({ forceOpen: true });
 
       await waitFor(() => {
-        expect(screen.getByText(/nao mostrar novamente/i)).toBeInTheDocument();
+        expect(screen.getByText(/não mostrar novamente/i)).toBeInTheDocument();
       });
     });
 
@@ -104,25 +104,16 @@ describe('WelcomeModal', () => {
   });
 
   describe('interactions', () => {
-    it('opens manual in new tab when manual button is clicked', async () => {
+    it('manual link navigates to internal user-manual page', async () => {
       renderWelcomeModal({ forceOpen: true });
 
       await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /ler o manual do usuario/i }),
-        ).toBeInTheDocument();
+        const manualLink = screen.getByRole('link', {
+          name: /ler o manual do usuário/i,
+        });
+        expect(manualLink).toBeInTheDocument();
+        expect(manualLink).toHaveAttribute('href', '/user-manual');
       });
-
-      const manualButton = screen.getByRole('button', {
-        name: /ler o manual do usuario/i,
-      });
-      fireEvent.click(manualButton);
-
-      expect(window.open).toHaveBeenCalledWith(
-        expect.stringContaining('MANUAL_USUARIO.md'),
-        '_blank',
-        'noopener,noreferrer',
-      );
     });
 
     it('closes modal when close button is clicked', async () => {
@@ -150,7 +141,7 @@ describe('WelcomeModal', () => {
       });
 
       // Find checkbox by its label
-      const checkboxLabel = screen.getByText(/nao mostrar novamente/i);
+      const checkboxLabel = screen.getByText(/não mostrar novamente/i);
       fireEvent.click(checkboxLabel);
 
       // Checkbox should be checked (the click on label toggles it)
@@ -197,12 +188,12 @@ describe('WelcomeModal', () => {
         const createButton = screen.getByRole('button', {
           name: /criar meu primeiro etp/i,
         });
-        const manualButton = screen.getByRole('button', {
-          name: /ler o manual do usuario/i,
+        const manualLink = screen.getByRole('link', {
+          name: /ler o manual do usuário/i,
         });
 
         expect(createButton).not.toHaveAttribute('tabindex', '-1');
-        expect(manualButton).not.toHaveAttribute('tabindex', '-1');
+        expect(manualLink).not.toHaveAttribute('tabindex', '-1');
       });
     });
   });

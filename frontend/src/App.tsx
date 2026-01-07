@@ -38,6 +38,9 @@ const PrivacyPolicy = lazy(() =>
 const TermsOfService = lazy(() =>
   import('@/pages/TermsOfService').then((m) => ({ default: m.TermsOfService })),
 );
+const UserManual = lazy(() =>
+  import('@/pages/UserManual').then((m) => ({ default: m.UserManual })),
+);
 const ForgotPassword = lazy(() =>
   import('@/pages/ForgotPassword').then((m) => ({ default: m.ForgotPassword })),
 );
@@ -230,6 +233,7 @@ const router = createBrowserRouter([
       },
       { path: '/privacy', element: <PrivacyPolicy /> },
       { path: '/terms', element: <TermsOfService /> },
+      { path: '/user-manual', element: <UserManual /> },
 
       // Protected Routes - Lazy-loaded for reduced initial bundle
       {
