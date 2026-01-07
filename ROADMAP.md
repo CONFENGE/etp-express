@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 624/651 (96%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 625/651 (96%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅    |
 | 2026-01-07 | #1245 | Feature  | Add TemplateSelector frontend component (#1238) ✅            |
 | 2026-01-07 | #1244 | Test     | Add E2E integration tests for templates API endpoints (#1237) |
 | 2026-01-07 | #1243 | Feature  | Seed 4 base ETP templates (Obras, TI, Serviços, Materiais) ✅ |
@@ -45,7 +46,7 @@
 |       | ↳ #1236 Seed 4 base templates                           | ✅     |
 |       | ↳ #1237 Create templates API endpoints                  | ✅     |
 |       | ↳ #1238 Create TemplateSelector frontend component      | ✅     |
-|       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | 🔴     |
+|       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | ✅     |
 |       | ↳ #1240 Implement dynamic fields based on template      | 🔴     |
 |       | ↳ #1241 Add E2E tests for template-based ETP creation   | 🔴     |
 | #1215 | [UX] Validação em tempo real dos campos ETP             | ✅     |
@@ -74,17 +75,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 18/20 (90%) - Epic #1161 em progresso (4/7 sub-issues ✅)
+**Progresso MVP Comercial:** 18/20 (90%) - Epic #1161 em progresso (5/7 sub-issues ✅)
 
 ---
 
-## Issues Abertas (27)
+## Issues Abertas (26)
 
-### P1 - High Priority (16 issues)
+### P1 - High Priority (15 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1239 | [TMPL-1161e] Integrate TemplateSelector into CreateETPWizard    |
 | #1240 | [TMPL-1161f] Implement dynamic fields based on template         |
 | #1241 | [TMPL-1161g] Add E2E tests for template-based ETP creation      |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
@@ -146,14 +146,14 @@
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 651   |
-| Issues Abertas    | 27    |
-| Issues Fechadas   | 624   |
+| Issues Abertas    | 26    |
+| Issues Fechadas   | 625   |
 | Progresso         | 96%   |
 | Backend Coverage  | 71%   |
-| Frontend Coverage | 79%   |
+| Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
-| Frontend Tests    | 1677  |
-| Total Tests       | 4173  |
+| Frontend Tests    | 1693  |
+| Total Tests       | 4189  |
 
 ---
 
