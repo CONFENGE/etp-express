@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { BookOpen, PlusCircle, X } from 'lucide-react';
 import {
   Dialog,
@@ -13,8 +13,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Welcome } from '@/assets/illustrations/Welcome';
 
 const WELCOME_MODAL_STORAGE_KEY = 'etp-express-welcome-dismissed';
-const MANUAL_URL =
-  'https://github.com/CONFENGE/etp-express/blob/master/docs/MANUAL_USUARIO.md';
 
 interface WelcomeModalProps {
   /**
@@ -66,8 +64,11 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
   }, [dontShowAgain, navigate]);
 
   const handleOpenManual = useCallback(() => {
-    window.open(MANUAL_URL, '_blank', 'noopener,noreferrer');
-  }, []);
+    if (dontShowAgain) {
+      localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
+    }
+    setIsOpen(false);
+  }, [dontShowAgain]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -83,7 +84,7 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
             Bem-vindo ao ETP Express!
           </DialogTitle>
           <DialogDescription id="welcome-description" className="text-base">
-            Elabore Estudos Tecnicos Preliminares em conformidade com a Lei
+            Elabore Estudos Técnicos Preliminares em conformidade com a Lei
             14.133/2021.
           </DialogDescription>
         </DialogHeader>
@@ -98,9 +99,12 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
               variant="outline"
               onClick={handleOpenManual}
               className="w-full"
+              asChild
             >
-              <BookOpen className="mr-2 h-4 w-4" />
-              Ler o manual do usuario
+              <Link to="/user-manual">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Ler o manual do usuário
+              </Link>
             </Button>
           </div>
 
@@ -114,7 +118,7 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
               htmlFor="dont-show-again"
               className="text-sm text-muted-foreground cursor-pointer select-none"
             >
-              Nao mostrar novamente
+              Não mostrar novamente
             </label>
           </div>
         </div>
