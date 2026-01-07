@@ -95,7 +95,7 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
         <DialogHeader>
           <DialogTitle>Criar Novo ETP</DialogTitle>
           <DialogDescription>
-            Preencha as informacoes do Estudo Tecnico Preliminar
+            Preencha as informações do Estudo Técnico Preliminar
           </DialogDescription>
         </DialogHeader>
 

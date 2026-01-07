@@ -113,7 +113,7 @@ describe('ETPEditorContent', () => {
     expect(screen.getByTestId('etp-content-textarea')).toBeInTheDocument();
   });
 
-  it('should render "Gerar Sugestao" button when onGenerateSection is provided', () => {
+  it('should render "Gerar Sugestão" button when onGenerateSection is provided', () => {
     const onGenerateSection = vi.fn();
 
     render(
@@ -128,7 +128,7 @@ describe('ETPEditorContent', () => {
     );
 
     const generateButtons = screen.getAllByRole('button', {
-      name: /gerar sugestao/i,
+      name: /gerar sugestão/i,
     });
     expect(generateButtons.length).toBeGreaterThan(0);
   });
@@ -149,14 +149,14 @@ describe('ETPEditorContent', () => {
     );
 
     const generateButton = screen.getAllByRole('button', {
-      name: /gerar sugestao/i,
+      name: /gerar sugestão/i,
     })[0];
     await user.click(generateButton);
 
     expect(onGenerateSection).toHaveBeenCalledWith(1);
   });
 
-  it('should not render "Gerar Sugestao" button when onGenerateSection is not provided', () => {
+  it('should not render "Gerar Sugestão" button when onGenerateSection is not provided', () => {
     render(
       <Tabs defaultValue="1">
         <ETPEditorContent

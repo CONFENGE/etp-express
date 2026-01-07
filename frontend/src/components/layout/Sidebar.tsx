@@ -115,8 +115,8 @@ export function Sidebar() {
               Dica
             </h3>
             <p className="text-xs text-a11y-secondary">
-              Use o botao "Gerar Sugestao" para criar sugestoes de conteudo para
-              cada secao.
+              Use o botão "Gerar Sugestão" para criar sugestões de conteúdo para
+              cada seção.
             </p>
           </div>
         </aside>

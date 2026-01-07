@@ -26,11 +26,11 @@ export function Step4Costs({ form }: Step4CostsProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
-          label="Valor Unitario (R$)"
+          label="Valor Unitário (R$)"
           name="valorUnitario"
           error={errors.valorUnitario?.message}
           isValid={!errors.valorUnitario && touchedFields.valorUnitario}
-          helpText="Valor unitario do item/servico"
+          helpText="Valor unitário do item/serviço"
         >
           <Input
             id="valorUnitario"
@@ -47,7 +47,7 @@ export function Step4Costs({ form }: Step4CostsProps) {
           name="valorEstimado"
           error={errors.valorEstimado?.message}
           isValid={!errors.valorEstimado && touchedFields.valorEstimado}
-          helpText="Valor total estimado da contratacao"
+          helpText="Valor total estimado da contratação"
         >
           <Input
             id="valorEstimado"
@@ -61,7 +61,7 @@ export function Step4Costs({ form }: Step4CostsProps) {
       </div>
 
       <FormField
-        label="Fonte de Pesquisa de Precos"
+        label="Fonte de Pesquisa de Preços"
         name="fontePesquisaPrecos"
         error={errors.fontePesquisaPrecos?.message}
         isValid={
@@ -73,18 +73,18 @@ export function Step4Costs({ form }: Step4CostsProps) {
           current: fontePrecosValue.length,
           max: FONTE_PRECOS_MAX_LENGTH,
         }}
-        helpText="Fontes utilizadas para pesquisa de precos"
+        helpText="Fontes utilizadas para pesquisa de preços"
       >
         <Textarea
           id="fontePesquisaPrecos"
-          placeholder="Ex: Painel de Precos do Governo Federal; SINAPI referencia 03/2024; 3 cotacoes de mercado anexas ao processo..."
+          placeholder="Ex: Painel de Preços do Governo Federal; SINAPI referência 03/2024; 3 cotações de mercado anexas ao processo..."
           rows={3}
           {...register('fontePesquisaPrecos')}
         />
       </FormField>
 
       <FormField
-        label="Dotacao Orcamentaria"
+        label="Dotação Orçamentária"
         name="dotacaoOrcamentaria"
         error={errors.dotacaoOrcamentaria?.message}
         isValid={
@@ -93,7 +93,7 @@ export function Step4Costs({ form }: Step4CostsProps) {
           dotacaoValue.length > 0
         }
         charCount={{ current: dotacaoValue.length, max: DOTACAO_MAX_LENGTH }}
-        helpText="Codigo da dotacao orcamentaria"
+        helpText="Código da dotação orçamentária"
       >
         <Input
           id="dotacaoOrcamentaria"

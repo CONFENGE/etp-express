@@ -172,7 +172,7 @@ describe('ConnectionStatus', () => {
       expect(banner).toHaveClass('fixed', 'bottom-4', 'left-4');
     });
 
-    it('should show "Sem conexao" text in banner', () => {
+    it('should show "Sem conexão" text in banner', () => {
       mockUseOnlineStatus.mockReturnValue({
         isOnline: false,
         wasOffline: true,
@@ -180,7 +180,7 @@ describe('ConnectionStatus', () => {
 
       render(<ConnectionStatus variant="banner" />);
 
-      expect(screen.getByText('Sem conexao')).toBeInTheDocument();
+      expect(screen.getByText('Sem conexão')).toBeInTheDocument();
     });
 
     it('should have destructive styling in banner', () => {

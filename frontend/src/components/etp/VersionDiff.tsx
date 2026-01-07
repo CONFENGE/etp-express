@@ -41,8 +41,8 @@ function MetadataChange({
   newValue: unknown;
 }): React.ReactElement {
   const fieldLabels: Record<string, string> = {
-    title: 'Titulo',
-    description: 'Descricao',
+    title: 'Título',
+    description: 'Descrição',
     objeto: 'Objeto',
     status: 'Status',
   };
@@ -149,7 +149,7 @@ export function VersionDiff({
     return (
       <div className="text-center py-8 text-muted-foreground">
         <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-        <p>Nenhuma diferenca encontrada entre as versoes</p>
+        <p>Nenhuma diferença encontrada entre as versões</p>
       </div>
     );
   }
@@ -201,7 +201,7 @@ export function VersionDiff({
           <CardHeader className="py-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <Edit3 className="h-4 w-4" />
-              Secoes ({differences.sections.added.length} adicionadas,{' '}
+              Seções ({differences.sections.added.length} adicionadas,{' '}
               {differences.sections.removed.length} removidas,{' '}
               {differences.sections.modified.length} modificadas)
             </CardTitle>
