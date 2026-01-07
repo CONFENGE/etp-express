@@ -1,19 +1,58 @@
 import { NavLink } from 'react-router';
-import { FileText, Home, PlusCircle, FileSearch } from 'lucide-react';
+import {
+  FileText,
+  Home,
+  PlusCircle,
+  FileSearch,
+  Shield,
+  Users,
+} from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
+import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { UserRole } from '@/types/user';
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  roles?: UserRole[];
+}
+
+const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Meus ETPs', href: '/etps', icon: FileText },
   { name: 'Import & Analysis', href: '/analysis', icon: FileSearch },
+  {
+    name: 'Administração',
+    href: '/admin',
+    icon: Shield,
+    roles: ['system_admin'],
+  },
+  {
+    name: 'Gerenciamento',
+    href: '/manager',
+    icon: Users,
+    roles: ['domain_manager'],
+  },
 ];
 
 export function Sidebar() {
   const { sidebarOpen } = useUIStore();
+  const user = useAuthStore((state) => state.user);
 
   if (!sidebarOpen) return null;
+
+  // Filter navigation items based on user role
+  const filteredNavigation = navigation.filter((item) => {
+    // If no roles specified, show to everyone
+    if (!item.roles) return true;
+    // If user not loaded yet, hide role-restricted items
+    if (!user) return false;
+    // Show if user has one of the required roles
+    return item.roles.includes(user.role);
+  });
 
   return (
     <aside
@@ -41,7 +80,7 @@ export function Sidebar() {
         </Button>
 
         <nav aria-label="Primary navigation" className="space-y-1">
-          {navigation.map((item) => (
+          {filteredNavigation.map((item) => (
             <NavLink
               key={item.name}
               to={item.href}
