@@ -63,7 +63,7 @@ export function Dashboard() {
                 <EmptyState
                   type="welcome"
                   title="Crie seu primeiro ETP"
-                  description="Crie Estudos Tecnicos Preliminares estruturados e em conformidade com a Lei 14.133/2021."
+                  description="Crie Estudos Técnicos Preliminares estruturados e em conformidade com a Lei 14.133/2021."
                   size="lg"
                 />
 
@@ -104,12 +104,12 @@ export function Dashboard() {
             <Card className="bg-muted/30">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Sugestoes contextuais
+                  Sugestões contextuais
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  Receba sugestoes para cada secao do seu ETP.
+                  Receba sugestões para cada seção do seu ETP.
                 </p>
               </CardContent>
             </Card>

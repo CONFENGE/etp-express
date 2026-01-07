@@ -93,7 +93,7 @@ describe('Step0TemplateSelection', () => {
 
       expect(screen.getByText('Escolha um modelo de ETP')).toBeInTheDocument();
       expect(
-        screen.getByText(/Selecione um template pre-configurado/),
+        screen.getByText(/Selecione um template pré-configurado/),
       ).toBeInTheDocument();
     });
 

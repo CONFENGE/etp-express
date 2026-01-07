@@ -22,17 +22,17 @@ const RISCO_OPTIONS = [
   {
     value: 'BAIXO',
     label: 'Baixo',
-    description: 'Impacto minimo, alta probabilidade de sucesso',
+    description: 'Impacto mínimo, alta probabilidade de sucesso',
   },
   {
     value: 'MEDIO',
-    label: 'Medio',
-    description: 'Impacto moderado, requer atencao e mitigacao',
+    label: 'Médio',
+    description: 'Impacto moderado, requer atenção e mitigação',
   },
   {
     value: 'ALTO',
     label: 'Alto',
-    description: 'Impacto significativo, requer plano de contingencia',
+    description: 'Impacto significativo, requer plano de contingência',
   },
 ];
 
@@ -51,11 +51,11 @@ export function Step5Risks({ form }: Step5RisksProps) {
   return (
     <div className="space-y-4">
       <FormField
-        label="Nivel de Risco"
+        label="Nível de Risco"
         name="nivelRisco"
         error={errors.nivelRisco?.message}
         isValid={!errors.nivelRisco && nivelRiscoValue !== undefined}
-        helpText="Nivel de risco geral da contratacao"
+        helpText="Nível de risco geral da contratação"
       >
         <Controller
           name="nivelRisco"
@@ -66,7 +66,7 @@ export function Step5Risks({ form }: Step5RisksProps) {
               onValueChange={(value) => field.onChange(value || undefined)}
             >
               <SelectTrigger id="nivelRisco">
-                <SelectValue placeholder="Selecione o nivel de risco" />
+                <SelectValue placeholder="Selecione o nível de risco" />
               </SelectTrigger>
               <SelectContent>
                 {RISCO_OPTIONS.map((option) => (
@@ -86,7 +86,7 @@ export function Step5Risks({ form }: Step5RisksProps) {
       </FormField>
 
       <FormField
-        label="Descricao dos Riscos"
+        label="Descrição dos Riscos"
         name="descricaoRiscos"
         error={errors.descricaoRiscos?.message}
         isValid={
@@ -98,18 +98,18 @@ export function Step5Risks({ form }: Step5RisksProps) {
           current: descricaoRiscosValue.length,
           max: RISCOS_MAX_LENGTH,
         }}
-        helpText="Descricao detalhada dos riscos identificados"
+        helpText="Descrição detalhada dos riscos identificados"
       >
         <Textarea
           id="descricaoRiscos"
-          placeholder="Ex: Risco de atraso na entrega devido a complexidade tecnica; Risco de dependencia de fornecedor unico..."
+          placeholder="Ex: Risco de atraso na entrega devido a complexidade técnica; Risco de dependência de fornecedor único..."
           rows={4}
           {...register('descricaoRiscos')}
         />
       </FormField>
 
       <FormField
-        label="Observacoes Adicionais"
+        label="Observações Adicionais"
         name="description"
         error={errors.description?.message}
         isValid={
@@ -121,11 +121,11 @@ export function Step5Risks({ form }: Step5RisksProps) {
           current: descriptionValue.length,
           max: DESCRIPTION_MAX_LENGTH,
         }}
-        helpText="Observacoes ou informacoes complementares"
+        helpText="Observações ou informações complementares"
       >
         <Textarea
           id="description"
-          placeholder="Informacoes adicionais sobre o ETP..."
+          placeholder="Informações adicionais sobre o ETP..."
           rows={3}
           {...register('description')}
         />

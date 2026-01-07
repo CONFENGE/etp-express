@@ -88,7 +88,7 @@ function TemplateCard({ template, selected, onSelect }: TemplateCardProps) {
             <span className="font-medium text-foreground">
               {template.requiredFields.length}
             </span>
-            <span>campos obrigatorios</span>
+            <span>campos obrigatórios</span>
           </div>
         </div>
 
@@ -174,9 +174,9 @@ function EmptyState() {
   return (
     <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
       <div className="text-4xl mb-4">📋</div>
-      <h3 className="text-lg font-semibold mb-2">Nenhum template disponivel</h3>
+      <h3 className="text-lg font-semibold mb-2">Nenhum template disponível</h3>
       <p className="text-muted-foreground">
-        Os templates de ETP ainda nao foram configurados.
+        Os templates de ETP ainda não foram configurados.
       </p>
     </div>
   );

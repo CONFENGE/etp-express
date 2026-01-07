@@ -33,16 +33,16 @@ const resetPasswordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, 'Senha deve ter no minimo 8 caracteres')
-      .max(128, 'Senha deve ter no maximo 128 caracteres')
+      .min(8, 'Senha deve ter no mínimo 8 caracteres')
+      .max(128, 'Senha deve ter no máximo 128 caracteres')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-        'Senha deve conter: letra maiuscula, letra minuscula, numero e caractere especial',
+        'Senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
       ),
     confirmPassword: z.string().min(1, 'Confirme sua senha'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'As senhas nao coincidem',
+    message: 'As senhas não coincidem',
     path: ['confirmPassword'],
   });
 
@@ -84,7 +84,7 @@ export function ResetPassword() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      showError('Token invalido. Solicite uma nova redefinicao de senha.');
+      showError('Token inválido. Solicite uma nova redefinição de senha.');
       return;
     }
 
@@ -122,10 +122,10 @@ export function ResetPassword() {
                 </div>
               </div>
               <CardTitle className="text-2xl" data-testid="error-message">
-                Link invalido
+                Link inválido
               </CardTitle>
               <CardDescription className="text-base">
-                O link de redefinicao de senha e invalido ou expirou. Por favor,
+                O link de redefinição de senha é inválido ou expirou. Por favor,
                 solicite um novo link.
               </CardDescription>
             </CardHeader>
@@ -165,7 +165,7 @@ export function ResetPassword() {
                 Senha redefinida!
               </CardTitle>
               <CardDescription className="text-base">
-                Sua senha foi alterada com sucesso. Voce ja pode fazer login com
+                Sua senha foi alterada com sucesso. Você já pode fazer login com
                 sua nova senha.
               </CardDescription>
             </CardHeader>
@@ -213,7 +213,7 @@ export function ResetPassword() {
             </CardTitle>
             <CardDescription className="text-center">
               Digite sua nova senha. Ela deve conter pelo menos 8 caracteres,
-              incluindo letra maiuscula, minuscula, numero e caractere especial.
+              incluindo letra maiúscula, minúscula, número e caractere especial.
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -222,7 +222,7 @@ export function ResetPassword() {
                 id="newPassword"
                 label="Nova senha"
                 required
-                hint="Min. 8 caracteres, maiuscula, minuscula, numero e especial"
+                hint="Min. 8 caracteres, maiúscula, minúscula, número e especial"
                 error={errors.newPassword?.message}
               >
                 <div className="relative">

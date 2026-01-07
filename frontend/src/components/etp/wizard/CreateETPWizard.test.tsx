@@ -72,20 +72,20 @@ describe('CreateETPWizard', () => {
       expect(screen.getAllByText('Tipo de Documento').length).toBeGreaterThan(
         0,
       );
-      expect(screen.getAllByText('Identificacao').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Identificação').length).toBeGreaterThan(0);
       expect(
         screen.getAllByText('Objeto e Justificativa').length,
       ).toBeGreaterThan(0);
-      expect(screen.getAllByText('Requisitos Tecnicos').length).toBeGreaterThan(
+      expect(screen.getAllByText('Requisitos Técnicos').length).toBeGreaterThan(
         0,
       );
-      expect(screen.getAllByText('Campos Especificos').length).toBeGreaterThan(
+      expect(screen.getAllByText('Campos Específicos').length).toBeGreaterThan(
         0,
       );
       expect(
         screen.getAllByText('Estimativa de Custos').length,
       ).toBeGreaterThan(0);
-      expect(screen.getAllByText('Analise de Riscos').length).toBeGreaterThan(
+      expect(screen.getAllByText('Análise de Riscos').length).toBeGreaterThan(
         0,
       );
     });
@@ -129,7 +129,7 @@ describe('CreateETPWizard', () => {
       await user.click(nextButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
     });
 
@@ -141,10 +141,10 @@ describe('CreateETPWizard', () => {
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
 
-      const titleInput = screen.getByLabelText(/titulo do etp/i);
+      const titleInput = screen.getByLabelText(/título do etp/i);
       await user.type(titleInput, 'Contratacao de Servicos de TI');
 
       const nextButton = screen.getByRole('button', { name: /proximo/i });
@@ -152,7 +152,7 @@ describe('CreateETPWizard', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByLabelText(/objeto da contratacao/i),
+          screen.getByLabelText(/objeto da contratação/i),
         ).toBeInTheDocument();
       });
     });
@@ -181,7 +181,7 @@ describe('CreateETPWizard', () => {
 
       // Wait for step 1
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
 
       // Go back
@@ -204,10 +204,10 @@ describe('CreateETPWizard', () => {
       // First advance from step 0 to step 1
       await user.click(screen.getByRole('button', { name: /proximo/i }));
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
 
-      const titleInput = screen.getByLabelText(/titulo do etp/i);
+      const titleInput = screen.getByLabelText(/título do etp/i);
       await user.type(titleInput, 'abc');
       fireEvent.blur(titleInput);
 
@@ -225,7 +225,7 @@ describe('CreateETPWizard', () => {
       // First advance from step 0 to step 1
       await user.click(screen.getByRole('button', { name: /proximo/i }));
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
 
       // Try to advance without filling title
@@ -234,7 +234,7 @@ describe('CreateETPWizard', () => {
 
       // Should still be on step 1 after attempting to advance
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
     });
   });
@@ -257,25 +257,25 @@ describe('CreateETPWizard', () => {
 
       // Advance from step 0 (template selection)
       await user.click(screen.getByRole('button', { name: /proximo/i }));
-      await waitFor(() => screen.getByLabelText(/titulo do etp/i));
+      await waitFor(() => screen.getByLabelText(/título do etp/i));
 
       // Fill step 1 and advance
       await user.type(
-        screen.getByLabelText(/titulo do etp/i),
+        screen.getByLabelText(/título do etp/i),
         'Contratacao de Servicos de TI',
       );
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       // Fill step 2 and advance
-      await waitFor(() => screen.getByLabelText(/objeto da contratacao/i));
+      await waitFor(() => screen.getByLabelText(/objeto da contratação/i));
       await user.type(
-        screen.getByLabelText(/objeto da contratacao/i),
+        screen.getByLabelText(/objeto da contratação/i),
         'Contratacao de empresa especializada em desenvolvimento',
       );
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       // Advance through step 3
-      await waitFor(() => screen.getByLabelText(/requisitos tecnicos/i));
+      await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       // Advance through step 4 (Dynamic Fields - no template selected shows info message)
@@ -285,7 +285,7 @@ describe('CreateETPWizard', () => {
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       // Advance through step 5 (Costs)
-      await waitFor(() => screen.getByLabelText(/valor unitario/i));
+      await waitFor(() => screen.getByLabelText(/valor unitário/i));
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
       // Should be on step 6 (Risks) with submit button
@@ -344,7 +344,7 @@ describe('CreateETPWizard', () => {
 
       // Should now be on step 1 (identification)
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
     });
 
@@ -364,7 +364,7 @@ describe('CreateETPWizard', () => {
 
       // Should now be on step 1 (identification)
       await waitFor(() => {
-        expect(screen.getByLabelText(/titulo do etp/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/título do etp/i)).toBeInTheDocument();
       });
     });
   });

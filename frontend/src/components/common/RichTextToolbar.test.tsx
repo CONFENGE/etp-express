@@ -203,7 +203,7 @@ describe('RichTextToolbar', () => {
       render(<RichTextToolbar editor={mockEditor} />);
       expect(screen.getByRole('toolbar')).toHaveAttribute(
         'aria-label',
-        'Formatacao de texto',
+        'Formatação de texto',
       );
     });
 

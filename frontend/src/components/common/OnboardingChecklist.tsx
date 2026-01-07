@@ -122,13 +122,13 @@ export function OnboardingChecklist({
                   />
                 )}
                 <CardTitle className="text-base">
-                  {allCompleted ? 'Parabens!' : 'Primeiros Passos'}
+                  {allCompleted ? 'Parabéns!' : 'Primeiros Passos'}
                 </CardTitle>
               </div>
               <CardDescription className="mt-1">
                 {allCompleted
-                  ? 'Voce completou todos os passos iniciais!'
-                  : 'Complete estas tarefas para comecar'}
+                  ? 'Você completou todos os passos iniciais!'
+                  : 'Complete estas tarefas para começar'}
               </CardDescription>
             </div>
             <div className="flex items-center gap-1">

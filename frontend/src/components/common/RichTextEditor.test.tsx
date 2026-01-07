@@ -100,7 +100,7 @@ describe('RichTextEditor', () => {
       await waitFor(() => {
         expect(screen.getByRole('toolbar')).toHaveAttribute(
           'aria-label',
-          'Formatacao de texto',
+          'Formatação de texto',
         );
       });
     });

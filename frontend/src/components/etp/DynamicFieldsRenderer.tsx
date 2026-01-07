@@ -50,7 +50,7 @@ interface TemplateFieldsConfig {
  */
 const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
   [EtpTemplateType.OBRAS]: {
-    title: 'Campos Especificos - Obras e Engenharia',
+    title: 'Campos Específicos - Obras e Engenharia',
     icon: '🏗️',
     fields: [
       {
@@ -59,7 +59,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         type: 'input',
         placeholder: 'Ex: 1234567890',
         helpText:
-          'Numero da Anotacao de Responsabilidade Tecnica ou Registro de Responsabilidade Tecnica',
+          'Número da Anotação de Responsabilidade Técnica ou Registro de Responsabilidade Técnica',
         required: true,
         maxLength: 50,
       },
@@ -68,15 +68,15 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         label: 'Memorial Descritivo',
         type: 'textarea',
         placeholder:
-          'Descreva detalhadamente as especificacoes tecnicas da obra...',
-        helpText: 'Descricao tecnica detalhada do projeto',
+          'Descreva detalhadamente as especificações técnicas da obra...',
+        helpText: 'Descrição técnica detalhada do projeto',
         required: true,
         maxLength: 10000,
         rows: 4,
       },
       {
         name: 'dynamicFields.cronogramaFisicoFinanceiro',
-        label: 'Cronograma Fisico-Financeiro',
+        label: 'Cronograma Físico-Financeiro',
         type: 'textarea',
         placeholder: 'Descreva as etapas e prazos da obra...',
         helpText: 'Cronograma com etapas, prazos e valores',
@@ -86,31 +86,31 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
       },
       {
         name: 'dynamicFields.bdiReferencia',
-        label: 'BDI de Referencia (%)',
+        label: 'BDI de Referência (%)',
         type: 'number',
         placeholder: 'Ex: 25.5',
         helpText:
-          'Bonificacao e Despesas Indiretas em percentual (conforme Acordao TCU 2.622/2013)',
+          'Bonificação e Despesas Indiretas em percentual (conforme Acórdão TCU 2.622/2013)',
         required: false,
         min: 0,
         max: 100,
       },
       {
         name: 'dynamicFields.projetoBasico',
-        label: 'Projeto Basico',
+        label: 'Projeto Básico',
         type: 'textarea',
-        placeholder: 'Informacoes do projeto basico...',
-        helpText: 'Resumo do projeto basico (se disponivel)',
+        placeholder: 'Informações do projeto básico...',
+        helpText: 'Resumo do projeto básico (se disponível)',
         required: false,
         maxLength: 10000,
         rows: 3,
       },
       {
         name: 'dynamicFields.licencasAmbientais',
-        label: 'Licencas Ambientais',
+        label: 'Licenças Ambientais',
         type: 'textarea',
-        placeholder: 'Licencas ambientais necessarias ou obtidas...',
-        helpText: 'Licencas ambientais requeridas para a obra',
+        placeholder: 'Licenças ambientais necessárias ou obtidas...',
+        helpText: 'Licenças ambientais requeridas para a obra',
         required: false,
         maxLength: 2000,
         rows: 2,
@@ -118,27 +118,27 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
     ],
   },
   [EtpTemplateType.TI]: {
-    title: 'Campos Especificos - Tecnologia da Informacao',
+    title: 'Campos Específicos - Tecnologia da Informação',
     icon: '💻',
     fields: [
       {
         name: 'dynamicFields.especificacoesTecnicas',
-        label: 'Especificacoes Tecnicas',
+        label: 'Especificações Técnicas',
         type: 'textarea',
         placeholder:
-          'Ex: Sistema deve suportar 10.000 usuarios simultaneos, tempo de resposta < 2s...',
-        helpText: 'Especificacoes tecnicas detalhadas do software/servico',
+          'Ex: Sistema deve suportar 10.000 usuários simultâneos, tempo de resposta < 2s...',
+        helpText: 'Especificações técnicas detalhadas do software/serviço',
         required: true,
         maxLength: 10000,
         rows: 4,
       },
       {
         name: 'dynamicFields.nivelServico',
-        label: 'Niveis de Servico (SLA)',
+        label: 'Níveis de Serviço (SLA)',
         type: 'textarea',
         placeholder:
-          'Ex: Disponibilidade 99.9%, tempo de resposta para incidentes criticos < 4h...',
-        helpText: 'Definicao dos niveis de servico esperados',
+          'Ex: Disponibilidade 99.9%, tempo de resposta para incidentes críticos < 4h...',
+        helpText: 'Definição dos níveis de serviço esperados',
         required: true,
         maxLength: 5000,
         rows: 3,
@@ -148,30 +148,30 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         label: 'Metodologia de Trabalho',
         type: 'select',
         placeholder: 'Selecione a metodologia',
-        helpText: 'Metodologia para execucao do projeto',
+        helpText: 'Metodologia para execução do projeto',
         required: true,
         options: [
-          { value: 'agil', label: 'Agil (Scrum/Kanban)' },
+          { value: 'agil', label: 'Ágil (Scrum/Kanban)' },
           { value: 'cascata', label: 'Cascata (Waterfall)' },
-          { value: 'hibrida', label: 'Hibrida' },
+          { value: 'hibrida', label: 'Híbrida' },
         ],
       },
       {
         name: 'dynamicFields.requisitosSeguranca',
-        label: 'Requisitos de Seguranca',
+        label: 'Requisitos de Segurança',
         type: 'textarea',
         placeholder: 'Ex: Conformidade com ISO 27001, criptografia AES-256...',
-        helpText: 'Requisitos de seguranca da informacao',
+        helpText: 'Requisitos de segurança da informação',
         required: true,
         maxLength: 5000,
         rows: 3,
       },
       {
         name: 'dynamicFields.integracaoSistemas',
-        label: 'Integracoes com Sistemas',
+        label: 'Integrações com Sistemas',
         type: 'textarea',
         placeholder:
-          'Ex: Integracao via API REST com sistema X, Single Sign-On...',
+          'Ex: Integração via API REST com sistema X, Single Sign-On...',
         helpText: 'Sistemas que precisam ser integrados',
         required: false,
         maxLength: 5000,
@@ -183,7 +183,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         type: 'textarea',
         placeholder: 'Medidas de conformidade com a LGPD...',
         helpText:
-          'Requisitos de conformidade com a Lei Geral de Protecao de Dados',
+          'Requisitos de conformidade com a Lei Geral de Proteção de Dados',
         required: false,
         maxLength: 3000,
         rows: 2,
@@ -191,7 +191,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
     ],
   },
   [EtpTemplateType.SERVICOS]: {
-    title: 'Campos Especificos - Servicos Continuos',
+    title: 'Campos Específicos - Serviços Contínuos',
     icon: '🔧',
     fields: [
       {
@@ -199,7 +199,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         label: 'Produtividade',
         type: 'textarea',
         placeholder: 'Ex: 100 m²/dia por servente para limpeza de pisos...',
-        helpText: 'Produtividade esperada por posto/funcao',
+        helpText: 'Produtividade esperada por posto/função',
         required: true,
         maxLength: 2000,
         rows: 2,
@@ -209,16 +209,16 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         label: 'Postos de Trabalho',
         type: 'number',
         placeholder: 'Ex: 10',
-        helpText: 'Numero de postos de trabalho necessarios',
+        helpText: 'Número de postos de trabalho necessários',
         required: true,
         min: 1,
       },
       {
         name: 'dynamicFields.frequenciaServico',
-        label: 'Frequencia do Servico',
+        label: 'Frequência do Serviço',
         type: 'input',
-        placeholder: 'Ex: Segunda a sexta, 8h as 18h',
-        helpText: 'Horarios e dias de execucao do servico',
+        placeholder: 'Ex: Segunda a sexta, 8h às 18h',
+        helpText: 'Horários e dias de execução do serviço',
         required: true,
         maxLength: 500,
       },
@@ -226,8 +226,8 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         name: 'dynamicFields.indicadoresDesempenho',
         label: 'Indicadores de Desempenho',
         type: 'textarea',
-        placeholder: 'Ex: Taxa de satisfacao > 90%, Tempo de resposta < 4h...',
-        helpText: 'KPIs para medicao de desempenho (um por linha)',
+        placeholder: 'Ex: Taxa de satisfação > 90%, Tempo de resposta < 4h...',
+        helpText: 'KPIs para medição de desempenho (um por linha)',
         required: false,
         maxLength: 2000,
         rows: 3,
@@ -237,7 +237,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
         label: 'Uniformes e EPIs',
         type: 'textarea',
         placeholder:
-          'Uniformes e equipamentos de protecao individual necessarios...',
+          'Uniformes e equipamentos de proteção individual necessários...',
         helpText: 'Uniformes e EPIs que devem ser fornecidos',
         required: false,
         maxLength: 2000,
@@ -245,76 +245,76 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
       },
       {
         name: 'dynamicFields.convencaoColetiva',
-        label: 'Convencao Coletiva',
+        label: 'Convenção Coletiva',
         type: 'input',
         placeholder: 'Ex: Sindicato dos Trabalhadores em Limpeza - SP',
-        helpText: 'Convencao coletiva de referencia para o servico',
+        helpText: 'Convenção coletiva de referência para o serviço',
         required: false,
         maxLength: 500,
       },
     ],
   },
   [EtpTemplateType.MATERIAIS]: {
-    title: 'Campos Especificos - Materiais e Bens',
+    title: 'Campos Específicos - Materiais e Bens',
     icon: '📦',
     fields: [
       {
         name: 'dynamicFields.especificacoesTecnicas',
-        label: 'Especificacoes Tecnicas',
+        label: 'Especificações Técnicas',
         type: 'textarea',
         placeholder:
-          'Ex: Processador Intel Core i7 12a geracao, 16GB RAM DDR4...',
-        helpText: 'Especificacoes tecnicas detalhadas do material/bem',
+          'Ex: Processador Intel Core i7 12ª geração, 16GB RAM DDR4...',
+        helpText: 'Especificações técnicas detalhadas do material/bem',
         required: true,
         maxLength: 5000,
         rows: 4,
       },
       {
         name: 'dynamicFields.garantiaMinima',
-        label: 'Garantia Minima',
+        label: 'Garantia Mínima',
         type: 'input',
-        placeholder: 'Ex: 12 meses contra defeitos de fabricacao',
-        helpText: 'Periodo minimo de garantia exigido',
+        placeholder: 'Ex: 12 meses contra defeitos de fabricação',
+        helpText: 'Período mínimo de garantia exigido',
         required: true,
         maxLength: 500,
       },
       {
         name: 'dynamicFields.assistenciaTecnica',
-        label: 'Assistencia Tecnica',
+        label: 'Assistência Técnica',
         type: 'textarea',
         placeholder:
-          'Ex: Assistencia tecnica em ate 48h uteis, com cobertura nacional...',
-        helpText: 'Requisitos de assistencia tecnica',
+          'Ex: Assistência técnica em até 48h úteis, com cobertura nacional...',
+        helpText: 'Requisitos de assistência técnica',
         required: false,
         maxLength: 2000,
         rows: 2,
       },
       {
         name: 'dynamicFields.catalogo',
-        label: 'Codigo CATMAT/CATSER',
+        label: 'Código CATMAT/CATSER',
         type: 'input',
         placeholder: 'Ex: CATMAT 123456',
-        helpText: 'Codigo no catalogo de materiais do governo',
+        helpText: 'Código no catálogo de materiais do governo',
         required: false,
         maxLength: 100,
       },
       {
         name: 'dynamicFields.normasAplicaveis',
-        label: 'Normas Aplicaveis',
+        label: 'Normas Aplicáveis',
         type: 'textarea',
         placeholder: 'Ex: ABNT NBR 5410, ISO 9001...',
-        helpText: 'Normas tecnicas que o produto deve atender',
+        helpText: 'Normas técnicas que o produto deve atender',
         required: false,
         maxLength: 2000,
         rows: 2,
       },
       {
         name: 'dynamicFields.instalacaoTreinamento',
-        label: 'Instalacao e Treinamento',
+        label: 'Instalação e Treinamento',
         type: 'textarea',
-        placeholder: 'Requisitos de instalacao e treinamento de usuarios...',
+        placeholder: 'Requisitos de instalação e treinamento de usuários...',
         helpText:
-          'Se aplicavel, descrever requisitos de instalacao e capacitacao',
+          'Se aplicável, descrever requisitos de instalação e capacitação',
         required: false,
         maxLength: 3000,
         rows: 2,
@@ -346,7 +346,7 @@ export function DynamicFieldsRenderer({
       <div className="p-4 bg-muted rounded-lg text-center">
         <Info className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          Selecione um template no passo anterior para ver campos especificos
+          Selecione um template no passo anterior para ver campos específicos
         </p>
       </div>
     );
@@ -385,7 +385,7 @@ export function DynamicFieldsRenderer({
         <div>
           <h3 className="font-semibold">{config.title}</h3>
           <p className="text-sm text-muted-foreground">
-            Campos especificos para este tipo de contratacao
+            Campos específicos para este tipo de contratação
           </p>
         </div>
       </div>
@@ -393,10 +393,10 @@ export function DynamicFieldsRenderer({
       {/* Required Fields Info */}
       <div className="flex items-center gap-2 text-sm">
         <Badge variant="destructive" className="text-xs">
-          Obrigatorio
+          Obrigatório
         </Badge>
         <span className="text-muted-foreground">
-          Campos marcados sao obrigatorios para este tipo de ETP
+          Campos marcados são obrigatórios para este tipo de ETP
         </span>
       </div>
 

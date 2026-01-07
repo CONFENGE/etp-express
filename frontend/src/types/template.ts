@@ -59,7 +59,7 @@ export const TEMPLATE_ICONS: Record<EtpTemplateType, string> = {
  */
 export const TEMPLATE_TYPE_LABELS: Record<EtpTemplateType, string> = {
   [EtpTemplateType.OBRAS]: 'Obras e Engenharia',
-  [EtpTemplateType.TI]: 'Tecnologia da Informacao',
-  [EtpTemplateType.SERVICOS]: 'Servicos',
+  [EtpTemplateType.TI]: 'Tecnologia da Informação',
+  [EtpTemplateType.SERVICOS]: 'Serviços',
   [EtpTemplateType.MATERIAIS]: 'Materiais',
 };

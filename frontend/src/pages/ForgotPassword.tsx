@@ -18,7 +18,7 @@ import {
 import { apiHelpers } from '@/lib/api';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email('Email invalido'),
+  email: z.string().email('Email inválido'),
 });
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
@@ -72,14 +72,14 @@ export function ForgotPassword() {
                 <span className="font-medium text-foreground">
                   {getValues('email')}
                 </span>{' '}
-                existir em nossa base, voce recebera instrucoes para redefinir
+                existir em nossa base, você receberá instruções para redefinir
                 sua senha.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted p-4 rounded-lg text-sm text-muted-foreground">
                 <p className="mb-2">
-                  <strong>Nao recebeu o email?</strong>
+                  <strong>Não recebeu o email?</strong>
                 </p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>Verifique sua pasta de spam</li>
@@ -138,7 +138,7 @@ export function ForgotPassword() {
               Esqueceu sua senha?
             </CardTitle>
             <CardDescription className="text-center">
-              Digite seu email para receber instrucoes de recuperacao
+              Digite seu email para receber instruções de recuperação
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -176,7 +176,7 @@ export function ForgotPassword() {
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    Enviar instrucoes
+                    Enviar instruções
                   </>
                 )}
               </Button>
