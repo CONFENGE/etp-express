@@ -10,12 +10,14 @@ import {
   ETPWizardFormData,
   WIZARD_STEPS,
   defaultWizardValues,
+  step0Schema,
   step1Schema,
   step2Schema,
   step3Schema,
   step4Schema,
   step5Schema,
 } from '@/schemas/etpWizardSchema';
+import { Step0TemplateSelection } from './Step0TemplateSelection';
 import { Step1Identification } from './Step1Identification';
 import { Step2ObjectJustification } from './Step2ObjectJustification';
 import { Step3Requirements } from './Step3Requirements';
@@ -29,6 +31,7 @@ interface CreateETPWizardProps {
 }
 
 const stepSchemas = [
+  step0Schema,
   step1Schema,
   step2Schema,
   step3Schema,
@@ -102,14 +105,16 @@ export function CreateETPWizard({
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <Step1Identification form={form} />;
+        return <Step0TemplateSelection form={form} />;
       case 1:
-        return <Step2ObjectJustification form={form} />;
+        return <Step1Identification form={form} />;
       case 2:
-        return <Step3Requirements form={form} />;
+        return <Step2ObjectJustification form={form} />;
       case 3:
-        return <Step4Costs form={form} />;
+        return <Step3Requirements form={form} />;
       case 4:
+        return <Step4Costs form={form} />;
+      case 5:
         return <Step5Risks form={form} />;
       default:
         return null;
@@ -140,7 +145,11 @@ export function CreateETPWizard({
                       : 'bg-muted text-muted-foreground',
                 )}
               >
-                {index < currentStep ? <Check className="w-4 h-4" /> : step.id}
+                {index < currentStep ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  index + 1
+                )}
               </div>
               <span className="hidden sm:inline text-sm font-medium">
                 {step.title}
