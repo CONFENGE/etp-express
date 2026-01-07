@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 627/699 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 628/699 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅      |
 | 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅    |
 | 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅    |
 | 2026-01-07 | #1245 | Feature  | Add TemplateSelector frontend component (#1238) ✅            |
@@ -42,14 +43,14 @@
 |       | ↳ #1226 Campos de Estimativa de Custos                  | ✅     |
 |       | ↳ #1227 Frontend CreateETPWizard                        | ✅     |
 |       | ↳ #1228 Testes E2E                                      | ✅     |
-| #1161 | [Templates] Criar modelos pré-configurados por tipo     | 🟡     |
+| #1161 | [Templates] Criar modelos pré-configurados por tipo     | ✅     |
 |       | ↳ #1235 Create EtpTemplate entity and module            | ✅     |
 |       | ↳ #1236 Seed 4 base templates                           | ✅     |
 |       | ↳ #1237 Create templates API endpoints                  | ✅     |
 |       | ↳ #1238 Create TemplateSelector frontend component      | ✅     |
 |       | ↳ #1239 Integrate TemplateSelector into CreateETPWizard | ✅     |
 |       | ↳ #1240 Implement dynamic fields based on template      | ✅     |
-|       | ↳ #1241 Add E2E tests for template-based ETP creation   | 🔴     |
+|       | ↳ #1241 Add E2E tests for template-based ETP creation   | ✅     |
 | #1215 | [UX] Validação em tempo real dos campos ETP             | ✅     |
 | #1169 | [UX] Implementar auto-save durante edição               | ✅     |
 
@@ -76,17 +77,16 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 19/20 (95%) - Epic #1161 em progresso (6/7 sub-issues ✅)
+**Progresso MVP Comercial:** 20/20 (100%) - Epic #1161 Templates COMPLETO (7/7 sub-issues ✅) 🎉
 
 ---
 
-## Issues Abertas (25)
+## Issues Abertas (23)
 
-### P1 - High Priority (14 issues)
+### P1 - High Priority (12 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1241 | [TMPL-1161g] Add E2E tests for template-based ETP creation      |
 | #1191 | [E2E] Create dedicated staging environment for E2E tests        |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
@@ -94,7 +94,6 @@
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
 | #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
 | #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
-| #1161 | [Templates] Criar modelos pré-configurados por tipo (PARENT)    |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
@@ -127,7 +126,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 17/20  | 🔥 MÁXIMA      |
+| MVP Comercial          | 20/20  | ✅ COMPLETO    |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -228,14 +227,14 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 699   |
-| Issues Abertas    | 74    |
-| Issues Fechadas   | 625   |
-| Progresso         | 89%   |
+| Issues Abertas    | 71    |
+| Issues Fechadas   | 628   |
+| Progresso         | 90%   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
-| Frontend Tests    | 1693  |
-| Total Tests       | 4189  |
+| Frontend Tests    | 1719  |
+| Total Tests       | 4215  |
 
 ---
 
