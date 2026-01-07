@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | -     | Audit    | Happy path simulation: 6 P0 bugs found (#1313-#1318) ⚠️        |
 | 2026-01-08 | #1312 | Fix      | Redesign Politica de Privacidade with responsive UI (#1302) ✅ |
 | 2026-01-07 | #1310 | Fix      | Redesign Termos de Uso page with responsive UI (#1301) ✅      |
 | 2026-01-07 | #1309 | Fix      | Corrigir acentuação em toda UI (#1300) ✅                      |
@@ -89,9 +90,22 @@
 
 ---
 
-## Bugs Criticos P0 (0 issues restantes) - TODOS RESOLVIDOS ✅
+## Bugs Criticos P0 (6 issues) - HAPPY PATH QUEBRADO ⚠️
 
-> **STATUS:** Todos os bugs P0 foram resolvidos. Sistema estável para produção.
+> **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
+
+### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
+
+| #     | Issue                                               | Area     | Status |
+| ----- | --------------------------------------------------- | -------- | ------ |
+| #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500    | Backend  | 🔴     |
+| #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404      | Backend  | 🔴     |
+| #1315 | [P0] Exportar PDF retorna erro 404                  | Backend  | 🔴     |
+| #1316 | [P0] Progresso mostra apenas "%" sem valor numérico | Frontend | 🔴     |
+| #1317 | [P0] Título do ETP não aparece no Editor            | Frontend | 🔴     |
+| #1318 | [P0] Tabs das seções fora de ordem numérica         | Frontend | 🔴     |
+
+### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
@@ -105,7 +119,7 @@
 
 ---
 
-## Issues Abertas (65)
+## Issues Abertas (71)
 
 ### P1 - High Priority (11 issues)
 
@@ -250,11 +264,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 701   |
-| Issues Abertas    | 65    |
+| Issues Totais     | 707   |
+| Issues Abertas    | 71    |
 | Issues Fechadas   | 636   |
-| Progresso         | 91%   |
-| Bugs P0 Abertos   | 0     |
+| Progresso         | 90%   |
+| Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
