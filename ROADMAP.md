@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 631/701 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 632/701 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅               |
 | 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅              |
 | 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅         |
 | 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅      |
@@ -83,7 +84,7 @@
 
 ---
 
-## Bugs Criticos P0 (6 issues) - PRIORIDADE MAXIMA
+## Bugs Criticos P0 (5 issues) - PRIORIDADE MAXIMA
 
 > **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
 
@@ -95,11 +96,11 @@
 | #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
 | #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | 🔴     |
 | #1299 | [P0] System Admin nao ve botoes de gestao                 | Frontend | ✅     |
-| #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | 🔴     |
+| #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | ✅     |
 
 ---
 
-## Issues Abertas (70)
+## Issues Abertas (69)
 
 ### P1 - High Priority (11 issues)
 
@@ -245,10 +246,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 701   |
-| Issues Abertas    | 70    |
-| Issues Fechadas   | 631   |
+| Issues Abertas    | 69    |
+| Issues Fechadas   | 632   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 6     |
+| Bugs P0 Abertos   | 5     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
