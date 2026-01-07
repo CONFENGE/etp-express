@@ -66,7 +66,7 @@ describe('CreateETPWizard', () => {
   };
 
   describe('rendering', () => {
-    it('renders all 6 step indicators', () => {
+    it('renders all 7 step indicators', () => {
       renderWizard();
       // Use getAllByText since step titles appear in both step indicators and current step heading
       expect(screen.getAllByText('Tipo de Documento').length).toBeGreaterThan(
@@ -77,6 +77,9 @@ describe('CreateETPWizard', () => {
         screen.getAllByText('Objeto e Justificativa').length,
       ).toBeGreaterThan(0);
       expect(screen.getAllByText('Requisitos Tecnicos').length).toBeGreaterThan(
+        0,
+      );
+      expect(screen.getAllByText('Campos Especificos').length).toBeGreaterThan(
         0,
       );
       expect(
@@ -275,11 +278,17 @@ describe('CreateETPWizard', () => {
       await waitFor(() => screen.getByLabelText(/requisitos tecnicos/i));
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
-      // Advance through step 4
+      // Advance through step 4 (Dynamic Fields - no template selected shows info message)
+      await waitFor(() =>
+        screen.getByText(/selecione um template no passo anterior/i),
+      );
+      await user.click(screen.getByRole('button', { name: /proximo/i }));
+
+      // Advance through step 5 (Costs)
       await waitFor(() => screen.getByLabelText(/valor unitario/i));
       await user.click(screen.getByRole('button', { name: /proximo/i }));
 
-      // Should be on step 5 (now index 5, was 4) with submit button
+      // Should be on step 6 (Risks) with submit button
       await waitFor(() => {
         expect(
           screen.getByRole('button', { name: /criar etp/i }),
