@@ -569,10 +569,11 @@ describe('etpStore', () => {
       });
 
       // Verify the POST call for async generation
+      // Section number 1 maps to 'justificativa' type (#1303)
       expect(apiHelpers.post).toHaveBeenCalledWith(
         `/sections/etp/${mockAIGenerationRequest.etpId}/generate`,
         expect.objectContaining({
-          type: `section_${mockAIGenerationRequest.sectionNumber}`,
+          type: 'justificativa',
         }),
       );
 
