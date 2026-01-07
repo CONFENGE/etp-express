@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 634/701 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 635/701 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1310 | Fix      | Redesign Termos de Uso page with responsive UI (#1301) ✅     |
 | 2026-01-07 | #1309 | Fix      | Corrigir acentuação em toda UI (#1300) ✅                     |
 | 2026-01-07 | #1308 | Fix      | Fix 'Gerar Sugestao' button error (#1303) ✅                  |
 | 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅              |
@@ -87,7 +88,7 @@
 
 ---
 
-## Bugs Criticos P0 (3 issues restantes) - PRIORIDADE MAXIMA
+## Bugs Criticos P0 (1 issue restante) - PRIORIDADE MAXIMA
 
 > **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
 
@@ -96,14 +97,14 @@
 | #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
 | #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | 🔴     |
-| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
+| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | ✅     |
 | #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | ✅     |
 | #1299 | [P0] System Admin nao ve botoes de gestao                 | Frontend | ✅     |
 | #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | ✅     |
 
 ---
 
-## Issues Abertas (69)
+## Issues Abertas (66)
 
 ### P1 - High Priority (11 issues)
 
@@ -249,10 +250,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 701   |
-| Issues Abertas    | 67    |
-| Issues Fechadas   | 634   |
-| Progresso         | 90%   |
-| Bugs P0 Abertos   | 3     |
+| Issues Abertas    | 66    |
+| Issues Fechadas   | 635   |
+| Progresso         | 91%   |
+| Bugs P0 Abertos   | 1     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
