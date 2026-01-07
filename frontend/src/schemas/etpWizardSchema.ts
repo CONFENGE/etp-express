@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EtpTemplateType } from '@/types/template';
 
 // ============================================
 // Step 0: Template Selection Schema
@@ -7,7 +8,68 @@ import { z } from 'zod';
 
 export const step0Schema = z.object({
   templateId: z.string().nullable().optional(),
+  templateType: z.nativeEnum(EtpTemplateType).nullable().optional(),
 });
+
+// ============================================
+// Dynamic Fields Schemas by Template Type
+// Issue #1240 - Implement dynamic fields based on template
+// ============================================
+
+export const obrasDynamicFieldsSchema = z.object({
+  artRrt: z.string().max(50).optional(),
+  memorialDescritivo: z.string().max(10000).optional(),
+  cronogramaFisicoFinanceiro: z.string().max(10000).optional(),
+  bdiReferencia: z.number().min(0).max(100).optional(),
+  projetoBasico: z.string().max(10000).optional(),
+  projetoExecutivo: z.string().max(10000).optional(),
+  licencasAmbientais: z.string().max(2000).optional(),
+  planilhaOrcamentaria: z.string().max(10000).optional(),
+});
+
+export const tiDynamicFieldsSchema = z.object({
+  especificacoesTecnicas: z.string().max(10000).optional(),
+  nivelServico: z.string().max(5000).optional(),
+  metodologiaTrabalho: z.enum(['agil', 'cascata', 'hibrida']).optional(),
+  requisitosSeguranca: z.string().max(5000).optional(),
+  slaMetricas: z.string().max(5000).optional(),
+  arquiteturaTecnica: z.string().max(10000).optional(),
+  integracaoSistemas: z.string().max(5000).optional(),
+  lgpdConformidade: z.string().max(3000).optional(),
+});
+
+export const servicosDynamicFieldsSchema = z.object({
+  produtividade: z.string().max(2000).optional(),
+  postosTrabalho: z.number().min(0).optional(),
+  frequenciaServico: z.string().max(500).optional(),
+  indicadoresDesempenho: z.string().max(2000).optional(),
+  materiaisEquipamentos: z.string().max(5000).optional(),
+  uniformesEpi: z.string().max(2000).optional(),
+  convencaoColetiva: z.string().max(500).optional(),
+  transicaoContratual: z.string().max(5000).optional(),
+});
+
+export const materiaisDynamicFieldsSchema = z.object({
+  especificacoesTecnicas: z.string().max(5000).optional(),
+  garantiaMinima: z.string().max(500).optional(),
+  assistenciaTecnica: z.string().max(2000).optional(),
+  catalogo: z.string().max(100).optional(),
+  amostraTeste: z.boolean().optional(),
+  laudosTecnicos: z.string().max(5000).optional(),
+  normasAplicaveis: z.string().max(2000).optional(),
+  embalagensTransporte: z.string().max(2000).optional(),
+  instalacaoTreinamento: z.string().max(3000).optional(),
+});
+
+export const dynamicFieldsSchema = z
+  .union([
+    obrasDynamicFieldsSchema,
+    tiDynamicFieldsSchema,
+    servicosDynamicFieldsSchema,
+    materiaisDynamicFieldsSchema,
+  ])
+  .nullable()
+  .optional();
 
 // ============================================
 // Constants for field validation
@@ -272,6 +334,15 @@ export const step5Schema = z.object({
 });
 
 // ============================================
+// Step 6: Dynamic Fields Schema (varies by template)
+// Issue #1240 - Implement dynamic fields based on template
+// ============================================
+
+export const step6Schema = z.object({
+  dynamicFields: dynamicFieldsSchema,
+});
+
+// ============================================
 // Complete ETP Wizard Schema
 // ============================================
 
@@ -288,6 +359,8 @@ export const etpWizardSchema = z.object({
   ...step4Schema.shape,
   // Step 5: Risk Analysis
   ...step5Schema.shape,
+  // Step 6: Dynamic Fields (Issue #1240)
+  ...step6Schema.shape,
 });
 
 // ============================================
@@ -300,6 +373,14 @@ export type Step2FormData = z.infer<typeof step2Schema>;
 export type Step3FormData = z.infer<typeof step3Schema>;
 export type Step4FormData = z.infer<typeof step4Schema>;
 export type Step5FormData = z.infer<typeof step5Schema>;
+export type Step6FormData = z.infer<typeof step6Schema>;
+export type ObrasDynamicFields = z.infer<typeof obrasDynamicFieldsSchema>;
+export type TiDynamicFields = z.infer<typeof tiDynamicFieldsSchema>;
+export type ServicosDynamicFields = z.infer<typeof servicosDynamicFieldsSchema>;
+export type MateriaisDynamicFields = z.infer<
+  typeof materiaisDynamicFieldsSchema
+>;
+export type DynamicFieldsType = z.infer<typeof dynamicFieldsSchema>;
 export type ETPWizardFormData = z.infer<typeof etpWizardSchema>;
 
 // ============================================
@@ -320,7 +401,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     title: 'Tipo de Documento',
     description: 'Selecione um template para iniciar',
     schema: step0Schema,
-    fields: ['templateId'],
+    fields: ['templateId', 'templateType'],
   },
   {
     id: 1,
@@ -367,6 +448,13 @@ export const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 4,
+    title: 'Campos Especificos',
+    description: 'Campos do tipo de contratacao',
+    schema: step6Schema,
+    fields: ['dynamicFields'],
+  },
+  {
+    id: 5,
     title: 'Estimativa de Custos',
     description: 'Valores e fontes de preco',
     schema: step4Schema,
@@ -378,7 +466,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     title: 'Analise de Riscos',
     description: 'Riscos e observacoes',
     schema: step5Schema,
@@ -393,6 +481,7 @@ export const WIZARD_STEPS: WizardStep[] = [
 export const defaultWizardValues: ETPWizardFormData = {
   // Step 0: Template Selection
   templateId: null,
+  templateType: null,
   // Step 1
   title: '',
   orgaoEntidade: '',
@@ -415,12 +504,14 @@ export const defaultWizardValues: ETPWizardFormData = {
   criteriosSustentabilidade: '',
   garantiaExigida: '',
   prazoExecucao: undefined,
-  // Step 4
+  // Step 4: Dynamic Fields (Issue #1240)
+  dynamicFields: null,
+  // Step 5
   valorUnitario: undefined,
   valorEstimado: undefined,
   fontePesquisaPrecos: '',
   dotacaoOrcamentaria: '',
-  // Step 5
+  // Step 6
   nivelRisco: undefined,
   descricaoRiscos: '',
   description: '',

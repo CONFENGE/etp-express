@@ -12,11 +12,13 @@ interface Step0TemplateSelectionProps {
 /**
  * Step 0 of the ETP Creation Wizard: Template Selection.
  * Issue #1239 - Integrate TemplateSelector into CreateETPWizard
+ * Issue #1240 - Store templateType for dynamic fields
  *
  * Features:
  * - Displays TemplateSelector component with available templates
  * - Option to proceed without a template (blank document)
  * - Selected template persists in form state
+ * - Stores templateType for dynamic fields rendering
  */
 export function Step0TemplateSelection({ form }: Step0TemplateSelectionProps) {
   const { setValue, watch } = form;
@@ -24,10 +26,12 @@ export function Step0TemplateSelection({ form }: Step0TemplateSelectionProps) {
 
   const handleTemplateSelect = (template: EtpTemplate) => {
     setValue('templateId', template.id, { shouldValidate: true });
+    setValue('templateType', template.type, { shouldValidate: true });
   };
 
   const handleBlankDocument = () => {
     setValue('templateId', null, { shouldValidate: true });
+    setValue('templateType', null, { shouldValidate: true });
   };
 
   return (

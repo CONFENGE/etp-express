@@ -1,0 +1,476 @@
+import { UseFormReturn } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FormField } from '@/components/form/FormField';
+import { EtpTemplateType } from '@/types/template';
+import { ETPWizardFormData } from '@/schemas/etpWizardSchema';
+import { Badge } from '@/components/ui/badge';
+import { Info } from 'lucide-react';
+
+interface DynamicFieldsRendererProps {
+  form: UseFormReturn<ETPWizardFormData>;
+  templateType: EtpTemplateType | null;
+}
+
+interface FieldOption {
+  value: string;
+  label: string;
+}
+
+interface DynamicFieldConfig {
+  name: string;
+  label: string;
+  type: 'input' | 'textarea' | 'number' | 'select';
+  placeholder: string;
+  helpText: string;
+  required: boolean;
+  maxLength?: number;
+  rows?: number;
+  min?: number;
+  max?: number;
+  options?: FieldOption[];
+}
+
+interface TemplateFieldsConfig {
+  title: string;
+  icon: string;
+  fields: DynamicFieldConfig[];
+}
+
+/**
+ * Dynamic fields configuration per template type.
+ * Issue #1240 - [TMPL-1161f] Implement dynamic fields based on template
+ */
+const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
+  [EtpTemplateType.OBRAS]: {
+    title: 'Campos Especificos - Obras e Engenharia',
+    icon: '🏗️',
+    fields: [
+      {
+        name: 'dynamicFields.artRrt',
+        label: 'ART/RRT',
+        type: 'input',
+        placeholder: 'Ex: 1234567890',
+        helpText:
+          'Numero da Anotacao de Responsabilidade Tecnica ou Registro de Responsabilidade Tecnica',
+        required: true,
+        maxLength: 50,
+      },
+      {
+        name: 'dynamicFields.memorialDescritivo',
+        label: 'Memorial Descritivo',
+        type: 'textarea',
+        placeholder:
+          'Descreva detalhadamente as especificacoes tecnicas da obra...',
+        helpText: 'Descricao tecnica detalhada do projeto',
+        required: true,
+        maxLength: 10000,
+        rows: 4,
+      },
+      {
+        name: 'dynamicFields.cronogramaFisicoFinanceiro',
+        label: 'Cronograma Fisico-Financeiro',
+        type: 'textarea',
+        placeholder: 'Descreva as etapas e prazos da obra...',
+        helpText: 'Cronograma com etapas, prazos e valores',
+        required: true,
+        maxLength: 10000,
+        rows: 4,
+      },
+      {
+        name: 'dynamicFields.bdiReferencia',
+        label: 'BDI de Referencia (%)',
+        type: 'number',
+        placeholder: 'Ex: 25.5',
+        helpText:
+          'Bonificacao e Despesas Indiretas em percentual (conforme Acordao TCU 2.622/2013)',
+        required: false,
+        min: 0,
+        max: 100,
+      },
+      {
+        name: 'dynamicFields.projetoBasico',
+        label: 'Projeto Basico',
+        type: 'textarea',
+        placeholder: 'Informacoes do projeto basico...',
+        helpText: 'Resumo do projeto basico (se disponivel)',
+        required: false,
+        maxLength: 10000,
+        rows: 3,
+      },
+      {
+        name: 'dynamicFields.licencasAmbientais',
+        label: 'Licencas Ambientais',
+        type: 'textarea',
+        placeholder: 'Licencas ambientais necessarias ou obtidas...',
+        helpText: 'Licencas ambientais requeridas para a obra',
+        required: false,
+        maxLength: 2000,
+        rows: 2,
+      },
+    ],
+  },
+  [EtpTemplateType.TI]: {
+    title: 'Campos Especificos - Tecnologia da Informacao',
+    icon: '💻',
+    fields: [
+      {
+        name: 'dynamicFields.especificacoesTecnicas',
+        label: 'Especificacoes Tecnicas',
+        type: 'textarea',
+        placeholder:
+          'Ex: Sistema deve suportar 10.000 usuarios simultaneos, tempo de resposta < 2s...',
+        helpText: 'Especificacoes tecnicas detalhadas do software/servico',
+        required: true,
+        maxLength: 10000,
+        rows: 4,
+      },
+      {
+        name: 'dynamicFields.nivelServico',
+        label: 'Niveis de Servico (SLA)',
+        type: 'textarea',
+        placeholder:
+          'Ex: Disponibilidade 99.9%, tempo de resposta para incidentes criticos < 4h...',
+        helpText: 'Definicao dos niveis de servico esperados',
+        required: true,
+        maxLength: 5000,
+        rows: 3,
+      },
+      {
+        name: 'dynamicFields.metodologiaTrabalho',
+        label: 'Metodologia de Trabalho',
+        type: 'select',
+        placeholder: 'Selecione a metodologia',
+        helpText: 'Metodologia para execucao do projeto',
+        required: true,
+        options: [
+          { value: 'agil', label: 'Agil (Scrum/Kanban)' },
+          { value: 'cascata', label: 'Cascata (Waterfall)' },
+          { value: 'hibrida', label: 'Hibrida' },
+        ],
+      },
+      {
+        name: 'dynamicFields.requisitosSeguranca',
+        label: 'Requisitos de Seguranca',
+        type: 'textarea',
+        placeholder: 'Ex: Conformidade com ISO 27001, criptografia AES-256...',
+        helpText: 'Requisitos de seguranca da informacao',
+        required: true,
+        maxLength: 5000,
+        rows: 3,
+      },
+      {
+        name: 'dynamicFields.integracaoSistemas',
+        label: 'Integracoes com Sistemas',
+        type: 'textarea',
+        placeholder:
+          'Ex: Integracao via API REST com sistema X, Single Sign-On...',
+        helpText: 'Sistemas que precisam ser integrados',
+        required: false,
+        maxLength: 5000,
+        rows: 2,
+      },
+      {
+        name: 'dynamicFields.lgpdConformidade',
+        label: 'Conformidade LGPD',
+        type: 'textarea',
+        placeholder: 'Medidas de conformidade com a LGPD...',
+        helpText:
+          'Requisitos de conformidade com a Lei Geral de Protecao de Dados',
+        required: false,
+        maxLength: 3000,
+        rows: 2,
+      },
+    ],
+  },
+  [EtpTemplateType.SERVICOS]: {
+    title: 'Campos Especificos - Servicos Continuos',
+    icon: '🔧',
+    fields: [
+      {
+        name: 'dynamicFields.produtividade',
+        label: 'Produtividade',
+        type: 'textarea',
+        placeholder: 'Ex: 100 m²/dia por servente para limpeza de pisos...',
+        helpText: 'Produtividade esperada por posto/funcao',
+        required: true,
+        maxLength: 2000,
+        rows: 2,
+      },
+      {
+        name: 'dynamicFields.postosTrabalho',
+        label: 'Postos de Trabalho',
+        type: 'number',
+        placeholder: 'Ex: 10',
+        helpText: 'Numero de postos de trabalho necessarios',
+        required: true,
+        min: 1,
+      },
+      {
+        name: 'dynamicFields.frequenciaServico',
+        label: 'Frequencia do Servico',
+        type: 'input',
+        placeholder: 'Ex: Segunda a sexta, 8h as 18h',
+        helpText: 'Horarios e dias de execucao do servico',
+        required: true,
+        maxLength: 500,
+      },
+      {
+        name: 'dynamicFields.indicadoresDesempenho',
+        label: 'Indicadores de Desempenho',
+        type: 'textarea',
+        placeholder: 'Ex: Taxa de satisfacao > 90%, Tempo de resposta < 4h...',
+        helpText: 'KPIs para medicao de desempenho (um por linha)',
+        required: false,
+        maxLength: 2000,
+        rows: 3,
+      },
+      {
+        name: 'dynamicFields.uniformesEpi',
+        label: 'Uniformes e EPIs',
+        type: 'textarea',
+        placeholder:
+          'Uniformes e equipamentos de protecao individual necessarios...',
+        helpText: 'Uniformes e EPIs que devem ser fornecidos',
+        required: false,
+        maxLength: 2000,
+        rows: 2,
+      },
+      {
+        name: 'dynamicFields.convencaoColetiva',
+        label: 'Convencao Coletiva',
+        type: 'input',
+        placeholder: 'Ex: Sindicato dos Trabalhadores em Limpeza - SP',
+        helpText: 'Convencao coletiva de referencia para o servico',
+        required: false,
+        maxLength: 500,
+      },
+    ],
+  },
+  [EtpTemplateType.MATERIAIS]: {
+    title: 'Campos Especificos - Materiais e Bens',
+    icon: '📦',
+    fields: [
+      {
+        name: 'dynamicFields.especificacoesTecnicas',
+        label: 'Especificacoes Tecnicas',
+        type: 'textarea',
+        placeholder:
+          'Ex: Processador Intel Core i7 12a geracao, 16GB RAM DDR4...',
+        helpText: 'Especificacoes tecnicas detalhadas do material/bem',
+        required: true,
+        maxLength: 5000,
+        rows: 4,
+      },
+      {
+        name: 'dynamicFields.garantiaMinima',
+        label: 'Garantia Minima',
+        type: 'input',
+        placeholder: 'Ex: 12 meses contra defeitos de fabricacao',
+        helpText: 'Periodo minimo de garantia exigido',
+        required: true,
+        maxLength: 500,
+      },
+      {
+        name: 'dynamicFields.assistenciaTecnica',
+        label: 'Assistencia Tecnica',
+        type: 'textarea',
+        placeholder:
+          'Ex: Assistencia tecnica em ate 48h uteis, com cobertura nacional...',
+        helpText: 'Requisitos de assistencia tecnica',
+        required: false,
+        maxLength: 2000,
+        rows: 2,
+      },
+      {
+        name: 'dynamicFields.catalogo',
+        label: 'Codigo CATMAT/CATSER',
+        type: 'input',
+        placeholder: 'Ex: CATMAT 123456',
+        helpText: 'Codigo no catalogo de materiais do governo',
+        required: false,
+        maxLength: 100,
+      },
+      {
+        name: 'dynamicFields.normasAplicaveis',
+        label: 'Normas Aplicaveis',
+        type: 'textarea',
+        placeholder: 'Ex: ABNT NBR 5410, ISO 9001...',
+        helpText: 'Normas tecnicas que o produto deve atender',
+        required: false,
+        maxLength: 2000,
+        rows: 2,
+      },
+      {
+        name: 'dynamicFields.instalacaoTreinamento',
+        label: 'Instalacao e Treinamento',
+        type: 'textarea',
+        placeholder: 'Requisitos de instalacao e treinamento de usuarios...',
+        helpText:
+          'Se aplicavel, descrever requisitos de instalacao e capacitacao',
+        required: false,
+        maxLength: 3000,
+        rows: 2,
+      },
+    ],
+  },
+};
+
+/**
+ * Renders dynamic form fields based on the selected template type.
+ * Fields are conditionally required based on template configuration.
+ *
+ * Issue #1240 - [TMPL-1161f] Implement dynamic fields based on template
+ */
+export function DynamicFieldsRenderer({
+  form,
+  templateType,
+}: DynamicFieldsRendererProps) {
+  const {
+    register,
+    formState: { errors },
+    watch,
+    setValue,
+  } = form;
+
+  // No template selected - show info message
+  if (!templateType) {
+    return (
+      <div className="p-4 bg-muted rounded-lg text-center">
+        <Info className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          Selecione um template no passo anterior para ver campos especificos
+        </p>
+      </div>
+    );
+  }
+
+  const config = DYNAMIC_FIELDS_CONFIG[templateType];
+  if (!config) {
+    return null;
+  }
+
+  // Helper to get nested error
+  const getNestedError = (name: string) => {
+    const parts = name.split('.');
+    let error: unknown = errors;
+    for (const part of parts) {
+      error = (error as Record<string, unknown>)?.[part];
+    }
+    return (error as { message?: string })?.message;
+  };
+
+  // Helper to get nested value
+  const getNestedValue = (name: string) => {
+    const parts = name.split('.');
+    let value: unknown = watch(parts[0] as keyof ETPWizardFormData);
+    for (let i = 1; i < parts.length; i++) {
+      value = (value as Record<string, unknown>)?.[parts[i]];
+    }
+    return value as string | number | undefined;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Section Header */}
+      <div className="flex items-center gap-3 pb-3 border-b">
+        <span className="text-2xl">{config.icon}</span>
+        <div>
+          <h3 className="font-semibold">{config.title}</h3>
+          <p className="text-sm text-muted-foreground">
+            Campos especificos para este tipo de contratacao
+          </p>
+        </div>
+      </div>
+
+      {/* Required Fields Info */}
+      <div className="flex items-center gap-2 text-sm">
+        <Badge variant="destructive" className="text-xs">
+          Obrigatorio
+        </Badge>
+        <span className="text-muted-foreground">
+          Campos marcados sao obrigatorios para este tipo de ETP
+        </span>
+      </div>
+
+      {/* Dynamic Fields */}
+      <div className="space-y-4">
+        {config.fields.map((field) => {
+          const fieldValue = getNestedValue(field.name) || '';
+          const error = getNestedError(field.name);
+
+          return (
+            <FormField
+              key={field.name}
+              label={field.label}
+              name={field.name}
+              required={field.required}
+              helpText={field.helpText}
+              error={error}
+              charCount={
+                field.maxLength
+                  ? {
+                      current: String(fieldValue).length,
+                      max: field.maxLength,
+                    }
+                  : undefined
+              }
+            >
+              {field.type === 'textarea' ? (
+                <Textarea
+                  id={field.name}
+                  placeholder={field.placeholder}
+                  rows={field.rows || 3}
+                  {...register(field.name as keyof ETPWizardFormData)}
+                />
+              ) : field.type === 'select' ? (
+                <Select
+                  value={String(fieldValue) || ''}
+                  onValueChange={(value) =>
+                    setValue(field.name as keyof ETPWizardFormData, value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={field.placeholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {field.options?.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : field.type === 'number' ? (
+                <Input
+                  id={field.name}
+                  type="number"
+                  placeholder={field.placeholder}
+                  min={field.min}
+                  max={field.max}
+                  {...register(field.name as keyof ETPWizardFormData, {
+                    valueAsNumber: true,
+                  })}
+                />
+              ) : (
+                <Input
+                  id={field.name}
+                  placeholder={field.placeholder}
+                  maxLength={field.maxLength}
+                  {...register(field.name as keyof ETPWizardFormData)}
+                />
+              )}
+            </FormField>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
