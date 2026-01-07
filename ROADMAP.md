@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 632/701 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-07 | **Progresso:** 633/701 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                     |
 | ---------- | ----- | -------- | ------------------------------------------------------------- |
+| 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅              |
 | 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅               |
 | 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅              |
 | 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅         |
@@ -84,13 +85,13 @@
 
 ---
 
-## Bugs Criticos P0 (5 issues) - PRIORIDADE MAXIMA
+## Bugs Criticos P0 (4 issues restantes) - PRIORIDADE MAXIMA
 
 > **ATENCAO:** Bugs de producao que afetam UX. Resolver antes de novas features.
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
-| #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | 🔴     |
+| #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Backend  | 🔴     |
 | #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | 🔴     |
 | #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | 🔴     |
@@ -246,10 +247,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 701   |
-| Issues Abertas    | 69    |
-| Issues Fechadas   | 632   |
+| Issues Abertas    | 68    |
+| Issues Fechadas   | 633   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 5     |
+| Bugs P0 Abertos   | 4     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
