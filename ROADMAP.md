@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 647/722 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 648/722 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1338 | Fix      | Skip Campos Específicos step when no template (#1330) ✅       |
 | 2026-01-08 | #1337 | Fix      | Auto-sync ETP status with completion percentage (#1331) ✅     |
 | 2026-01-08 | #1336 | Fix      | Persist welcome modal dismissal to localStorage (#1327) ✅     |
 | 2026-01-08 | #1335 | Fix      | Show detailed validation errors on ETP creation (#1325) ✅     |
@@ -109,7 +110,6 @@
 
 | #     | Issue                                                         | Area     | Status |
 | ----- | ------------------------------------------------------------- | -------- | ------ |
-| #1330 | [P0] Passo 5 do wizard inútil quando não há templates         | Frontend | 🔴     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador | Frontend | 🔴     |
 | #1328 | [P0] Conta demo sem templates - primeira impressão arruinada  | Frontend | 🔴     |
 
@@ -117,6 +117,7 @@
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | ✅     |
 | #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | ✅     |
 | #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | ✅     |
 | #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | ✅     |
@@ -284,10 +285,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 722   |
-| Issues Abertas    | 75    |
-| Issues Fechadas   | 647   |
+| Issues Abertas    | 74    |
+| Issues Fechadas   | 648   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 3     |
+| Bugs P0 Abertos   | 2     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2502  |
