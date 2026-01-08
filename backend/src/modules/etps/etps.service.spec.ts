@@ -126,18 +126,31 @@ describe('EtpsService', () => {
   });
 
   describe('findAll', () => {
-    it('should return paginated ETPs without user filter', async () => {
+    it('should return paginated ETPs filtered by organizationId and userId (Issue #1326)', async () => {
       const paginationDto: PaginationDto = { page: 1, limit: 10 };
       const mockEtps = [mockEtp, { ...mockEtp, id: 'etp-456' }];
 
       mockQueryBuilder.getManyAndCount.mockResolvedValue([mockEtps, 2]);
 
-      const result = await service.findAll(paginationDto, mockOrganizationId);
+      const result = await service.findAll(
+        paginationDto,
+        mockOrganizationId,
+        mockUser1Id,
+      );
 
       expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('etp');
       expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
         'etp.createdBy',
         'user',
+      );
+      // SECURITY: Must filter by both organizationId AND userId
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
       );
       expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
         'etp.updatedAt',
@@ -151,7 +164,7 @@ describe('EtpsService', () => {
       expect(result.meta.limit).toBe(10);
     });
 
-    it('should filter ETPs by userId when provided', async () => {
+    it('should always filter by userId to prevent data leakage (Issue #1326)', async () => {
       const paginationDto: PaginationDto = { page: 1, limit: 10 };
       const mockEtps = [mockEtp];
 
@@ -159,9 +172,14 @@ describe('EtpsService', () => {
 
       await service.findAll(paginationDto, mockOrganizationId, mockUser1Id);
 
+      // SECURITY (Issue #1326): userId filter is ALWAYS applied
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
         'etp.organizationId = :organizationId',
         { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
       );
     });
 
@@ -170,10 +188,25 @@ describe('EtpsService', () => {
 
       mockQueryBuilder.getManyAndCount.mockResolvedValue([[], 0]);
 
-      await service.findAll(paginationDto, mockOrganizationId);
+      await service.findAll(paginationDto, mockOrganizationId, mockUser1Id);
 
       expect(mockQueryBuilder.skip).toHaveBeenCalledWith(5); // (2-1) * 5
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(5);
+    });
+
+    it('should not return ETPs from other users in same organization (Issue #1326)', async () => {
+      const paginationDto: PaginationDto = { page: 1, limit: 10 };
+
+      // User 2 queries - should only get their own ETPs
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([[], 0]);
+
+      await service.findAll(paginationDto, mockOrganizationId, mockUser2Id);
+
+      // SECURITY: Query must filter by user2's ID, not showing user1's ETPs
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser2Id },
+      );
     });
   });
 
@@ -575,7 +608,7 @@ describe('EtpsService', () => {
   });
 
   describe('getStatistics', () => {
-    it('should return statistics without user filter', async () => {
+    it('should return statistics filtered by organizationId and userId (Issue #1326)', async () => {
       mockQueryBuilder.getCount.mockResolvedValue(10);
       mockQueryBuilder.getRawMany.mockResolvedValue([
         { status: 'draft', count: '5' },
@@ -584,8 +617,20 @@ describe('EtpsService', () => {
       ]);
       mockQueryBuilder.getRawOne.mockResolvedValue({ avgCompletion: '67.5' });
 
-      const result = await service.getStatistics(mockOrganizationId);
+      const result = await service.getStatistics(
+        mockOrganizationId,
+        mockUser1Id,
+      );
 
+      // SECURITY (Issue #1326): Must filter by both organizationId AND userId
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
+      );
       expect(result.total).toBe(10);
       expect(result.byStatus).toEqual({
         draft: 5,
@@ -595,7 +640,7 @@ describe('EtpsService', () => {
       expect(result.averageCompletion).toBe('67.50');
     });
 
-    it('should filter statistics by userId when provided', async () => {
+    it('should always filter statistics by userId to prevent data leakage (Issue #1326)', async () => {
       mockQueryBuilder.getCount.mockResolvedValue(5);
       mockQueryBuilder.getRawMany.mockResolvedValue([
         { status: 'draft', count: '3' },
@@ -608,9 +653,14 @@ describe('EtpsService', () => {
         mockUser1Id,
       );
 
+      // SECURITY (Issue #1326): userId filter is ALWAYS applied
       expect(mockQueryBuilder.where).toHaveBeenCalledWith(
         'etp.organizationId = :organizationId',
         { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
       );
       expect(result.total).toBe(5);
     });
@@ -620,10 +670,30 @@ describe('EtpsService', () => {
       mockQueryBuilder.getRawMany.mockResolvedValue([]);
       mockQueryBuilder.getRawOne.mockResolvedValue({ avgCompletion: null });
 
-      const result = await service.getStatistics(mockOrganizationId);
+      const result = await service.getStatistics(
+        mockOrganizationId,
+        mockUser1Id,
+      );
 
       expect(result.total).toBe(0);
       expect(result.averageCompletion).toBe('0.00');
+    });
+
+    it('should not include ETPs from other users in statistics (Issue #1326)', async () => {
+      mockQueryBuilder.getCount.mockResolvedValue(2);
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'draft', count: '2' },
+      ]);
+      mockQueryBuilder.getRawOne.mockResolvedValue({ avgCompletion: '0.0' });
+
+      // User 2 queries - should only get their own stats
+      await service.getStatistics(mockOrganizationId, mockUser2Id);
+
+      // SECURITY: Query must filter by user2's ID, not showing user1's stats
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser2Id },
+      );
     });
   });
 });

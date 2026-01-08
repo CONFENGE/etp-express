@@ -7,6 +7,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -49,7 +51,43 @@ import { DISCLAIMER } from '../../common/constants/messages';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class EtpsController {
+  private readonly logger = new Logger(EtpsController.name);
+
   constructor(private readonly etpsService: EtpsService) {}
+
+  /**
+   * Validates that userId is present in the JWT token.
+   * SECURITY (Issue #1326): Prevents data leakage if token is malformed.
+   */
+  private validateUserId(userId: string | null | undefined): string {
+    if (!userId) {
+      this.logger.error(
+        'SECURITY: Attempt to access ETPs without userId in token',
+      );
+      throw new UnauthorizedException(
+        'User ID not found in authentication token',
+      );
+    }
+    return userId;
+  }
+
+  /**
+   * Validates that organizationId is present in the JWT token.
+   * SECURITY: Prevents cross-tenant data access if token is malformed.
+   */
+  private validateOrganizationId(
+    organizationId: string | null | undefined,
+  ): string {
+    if (!organizationId) {
+      this.logger.error(
+        'SECURITY: Attempt to access ETPs without organizationId in token',
+      );
+      throw new UnauthorizedException(
+        'Organization ID not found in authentication token',
+      );
+    }
+    return organizationId;
+  }
 
   /**
    * Creates a new ETP for the authenticated user.
@@ -83,10 +121,15 @@ export class EtpsController {
   /**
    * Retrieves paginated list of ETPs for the authenticated user.
    *
+   * @remarks
+   * SECURITY (Issue #1326): Validates userId and organizationId before querying
+   * to prevent cross-user or cross-tenant data access.
+   *
    * @param paginationDto - Pagination parameters (page, limit)
-   * @param userId - Current user ID (extracted from JWT token)
+   * @param rawOrganizationId - Organization ID (extracted from JWT token)
+   * @param rawUserId - Current user ID (extracted from JWT token)
    * @returns Paginated ETP list with metadata
-   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
    */
   @Get()
   @ApiOperation({ summary: 'Listar ETPs com paginação' })
@@ -95,26 +138,39 @@ export class EtpsController {
   @ApiResponse({ status: 200, description: 'Lista de ETPs' })
   async findAll(
     @Query() paginationDto: PaginationDto,
-    @CurrentUser('organizationId') organizationId: string,
-    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') rawOrganizationId: string,
+    @CurrentUser('id') rawUserId: string,
   ) {
+    // SECURITY (Issue #1326): Validate required claims before query
+    const organizationId = this.validateOrganizationId(rawOrganizationId);
+    const userId = this.validateUserId(rawUserId);
+
     return this.etpsService.findAll(paginationDto, organizationId, userId);
   }
 
   /**
    * Retrieves ETP statistics for the authenticated user.
    *
-   * @param userId - Current user ID (extracted from JWT token)
+   * @remarks
+   * SECURITY (Issue #1326): Validates userId and organizationId before querying
+   * to prevent cross-user or cross-tenant data access.
+   *
+   * @param rawOrganizationId - Organization ID (extracted from JWT token)
+   * @param rawUserId - Current user ID (extracted from JWT token)
    * @returns ETP statistics (total, by status, etc.) with disclaimer message
-   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
    */
   @Get('statistics')
   @ApiOperation({ summary: 'Obter estatísticas dos ETPs' })
   @ApiResponse({ status: 200, description: 'Estatísticas' })
   async getStatistics(
-    @CurrentUser('organizationId') organizationId: string,
-    @CurrentUser('id') userId: string,
+    @CurrentUser('organizationId') rawOrganizationId: string,
+    @CurrentUser('id') rawUserId: string,
   ) {
+    // SECURITY (Issue #1326): Validate required claims before query
+    const organizationId = this.validateOrganizationId(rawOrganizationId);
+    const userId = this.validateUserId(rawUserId);
+
     const stats = await this.etpsService.getStatistics(organizationId, userId);
     return {
       data: stats,
