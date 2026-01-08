@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 639/714 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 640/714 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1320 | Fix      | Fix PDF export 404 error - P0 BLOQUEADOR (#1315) ✅            |
 | 2026-01-08 | #1319 | Fix      | CreateETPPage for /etps/new route - P0 BLOQUEADOR (#1313) ✅   |
 | 2026-01-08 | -     | Audit    | Happy path simulation: 6 P0 bugs found (#1313-#1318) ⚠️        |
 | 2026-01-08 | #1312 | Fix      | Redesign Politica de Privacidade with responsive UI (#1302) ✅ |
@@ -91,7 +92,7 @@
 
 ---
 
-## Bugs Criticos P0 (5 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (4 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
@@ -100,7 +101,6 @@
 | #     | Issue                                               | Area     | Status |
 | ----- | --------------------------------------------------- | -------- | ------ |
 | #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404      | Backend  | 🔴     |
-| #1315 | [P0] Exportar PDF retorna erro 404                  | Backend  | 🔴     |
 | #1316 | [P0] Progresso mostra apenas "%" sem valor numérico | Frontend | 🔴     |
 | #1317 | [P0] Título do ETP não aparece no Editor            | Frontend | 🔴     |
 | #1318 | [P0] Tabs das seções fora de ordem numérica         | Frontend | 🔴     |
@@ -109,6 +109,7 @@
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
+| #1315 | [P0] Exportar PDF retorna erro 404                        | Frontend | ✅     |
 | #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500          | Frontend | ✅     |
 | #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
