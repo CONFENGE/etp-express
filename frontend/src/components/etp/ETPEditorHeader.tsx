@@ -89,16 +89,19 @@ export function ETPEditorHeader({
     }
   };
 
+  // Fallback title when etpTitle is empty or undefined (#1317)
+  const displayTitle = etpTitle?.trim() || 'ETP sem titulo';
+
   return (
     <div className="flex items-center justify-between">
       <div>
         <h1 className="text-3xl font-bold" data-testid="etp-title">
-          {etpTitle}
+          {displayTitle}
           {isDirty && (
             <span
               className="ml-2 text-amber-500"
-              title="Alterações não salvas"
-              aria-label="Alterações não salvas"
+              title="Alteracoes nao salvas"
+              aria-label="Alteracoes nao salvas"
               data-testid="unsaved-indicator"
             >
               *
