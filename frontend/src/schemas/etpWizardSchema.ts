@@ -109,34 +109,34 @@ export const step1Schema = z.object({
     .string()
     .min(
       TITLE_MIN_LENGTH,
-      `Titulo deve ter no minimo ${TITLE_MIN_LENGTH} caracteres`,
+      `Título deve ter no mínimo ${TITLE_MIN_LENGTH} caracteres`,
     )
     .max(
       TITLE_MAX_LENGTH,
-      `Titulo deve ter no maximo ${TITLE_MAX_LENGTH} caracteres`,
+      `Título deve ter no máximo ${TITLE_MAX_LENGTH} caracteres`,
     ),
   orgaoEntidade: z
     .string()
     .min(
       ORGAO_MIN_LENGTH,
-      `Orgao/Entidade deve ter no minimo ${ORGAO_MIN_LENGTH} caracteres`,
+      `Órgão/Entidade deve ter no mínimo ${ORGAO_MIN_LENGTH} caracteres`,
     )
     .max(
       ORGAO_MAX_LENGTH,
-      `Orgao/Entidade deve ter no maximo ${ORGAO_MAX_LENGTH} caracteres`,
+      `Órgão/Entidade deve ter no máximo ${ORGAO_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
   uasg: z
     .string()
-    .regex(/^\d{6}$/, 'UASG deve conter exatamente 6 digitos numericos')
+    .regex(/^\d{6}$/, 'UASG deve conter exatamente 6 dígitos numéricos')
     .optional()
     .or(z.literal('')),
   unidadeDemandante: z
     .string()
     .max(
       UNIDADE_DEMANDANTE_MAX_LENGTH,
-      `Unidade demandante deve ter no maximo ${UNIDADE_DEMANDANTE_MAX_LENGTH} caracteres`,
+      `Unidade demandante deve ter no máximo ${UNIDADE_DEMANDANTE_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -144,11 +144,11 @@ export const step1Schema = z.object({
     .string()
     .min(
       RESPONSAVEL_NOME_MIN_LENGTH,
-      `Nome deve ter no minimo ${RESPONSAVEL_NOME_MIN_LENGTH} caracteres`,
+      `Nome deve ter no mínimo ${RESPONSAVEL_NOME_MIN_LENGTH} caracteres`,
     )
     .max(
       RESPONSAVEL_NOME_MAX_LENGTH,
-      `Nome deve ter no maximo ${RESPONSAVEL_NOME_MAX_LENGTH} caracteres`,
+      `Nome deve ter no máximo ${RESPONSAVEL_NOME_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -156,7 +156,7 @@ export const step1Schema = z.object({
     .string()
     .max(
       RESPONSAVEL_MATRICULA_MAX_LENGTH,
-      `Matricula deve ter no maximo ${RESPONSAVEL_MATRICULA_MAX_LENGTH} caracteres`,
+      `Matrícula deve ter no máximo ${RESPONSAVEL_MATRICULA_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -172,30 +172,30 @@ export const step2Schema = z.object({
     .string()
     .min(
       OBJETO_MIN_LENGTH,
-      `Objeto deve ter no minimo ${OBJETO_MIN_LENGTH} caracteres`,
+      `Objeto deve ter no mínimo ${OBJETO_MIN_LENGTH} caracteres`,
     )
     .max(
       OBJETO_MAX_LENGTH,
-      `Objeto deve ter no maximo ${OBJETO_MAX_LENGTH} caracteres`,
+      `Objeto deve ter no máximo ${OBJETO_MAX_LENGTH} caracteres`,
     ),
   descricaoDetalhada: z
     .string()
     .max(
       DESCRICAO_DETALHADA_MAX_LENGTH,
-      `Descricao detalhada deve ter no maximo ${DESCRICAO_DETALHADA_MAX_LENGTH} caracteres`,
+      `Descrição detalhada deve ter no máximo ${DESCRICAO_DETALHADA_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
   quantidadeEstimada: z
     .number()
-    .min(1, 'Quantidade deve ser no minimo 1')
+    .min(1, 'Quantidade deve ser no mínimo 1')
     .optional()
     .or(z.nan().transform(() => undefined)),
   unidadeMedida: z
     .string()
     .max(
       UNIDADE_MEDIDA_MAX_LENGTH,
-      `Unidade de medida deve ter no maximo ${UNIDADE_MEDIDA_MAX_LENGTH} caracteres`,
+      `Unidade de medida deve ter no máximo ${UNIDADE_MEDIDA_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -203,11 +203,11 @@ export const step2Schema = z.object({
     .string()
     .min(
       JUSTIFICATIVA_MIN_LENGTH,
-      `Justificativa deve ter no minimo ${JUSTIFICATIVA_MIN_LENGTH} caracteres`,
+      `Justificativa deve ter no mínimo ${JUSTIFICATIVA_MIN_LENGTH} caracteres`,
     )
     .max(
       JUSTIFICATIVA_MAX_LENGTH,
-      `Justificativa deve ter no maximo ${JUSTIFICATIVA_MAX_LENGTH} caracteres`,
+      `Justificativa deve ter no máximo ${JUSTIFICATIVA_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -215,7 +215,7 @@ export const step2Schema = z.object({
     .string()
     .max(
       NECESSIDADE_MAX_LENGTH,
-      `Necessidade atendida deve ter no maximo ${NECESSIDADE_MAX_LENGTH} caracteres`,
+      `Necessidade atendida deve ter no máximo ${NECESSIDADE_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -223,7 +223,7 @@ export const step2Schema = z.object({
     .string()
     .max(
       BENEFICIOS_MAX_LENGTH,
-      `Beneficios esperados deve ter no maximo ${BENEFICIOS_MAX_LENGTH} caracteres`,
+      `Benefícios esperados deve ter no máximo ${BENEFICIOS_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -246,7 +246,7 @@ export const step3Schema = z.object({
     .string()
     .max(
       REQUISITOS_QUALIFICACAO_MAX_LENGTH,
-      `Requisitos de qualificacao deve ter no maximo ${REQUISITOS_QUALIFICACAO_MAX_LENGTH} caracteres`,
+      `Requisitos de qualificação deve ter no máximo ${REQUISITOS_QUALIFICACAO_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -254,7 +254,7 @@ export const step3Schema = z.object({
     .string()
     .max(
       SUSTENTABILIDADE_MAX_LENGTH,
-      `Criterios de sustentabilidade deve ter no maximo ${SUSTENTABILIDADE_MAX_LENGTH} caracteres`,
+      `Critérios de sustentabilidade deve ter no máximo ${SUSTENTABILIDADE_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -262,14 +262,14 @@ export const step3Schema = z.object({
     .string()
     .max(
       GARANTIA_MAX_LENGTH,
-      `Garantia exigida deve ter no maximo ${GARANTIA_MAX_LENGTH} caracteres`,
+      `Garantia exigida deve ter no máximo ${GARANTIA_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
   prazoExecucao: z
     .number()
-    .int('Prazo deve ser um numero inteiro')
-    .min(1, 'Prazo deve ser no minimo 1 dia')
+    .int('Prazo deve ser um número inteiro')
+    .min(1, 'Prazo deve ser no mínimo 1 dia')
     .optional()
     .or(z.nan().transform(() => undefined)),
 });
@@ -281,7 +281,7 @@ export const step3Schema = z.object({
 export const step4Schema = z.object({
   valorUnitario: z
     .number()
-    .min(0, 'Valor unitario deve ser maior ou igual a 0')
+    .min(0, 'Valor unitário deve ser maior ou igual a 0')
     .optional()
     .or(z.nan().transform(() => undefined)),
   valorEstimado: z
@@ -293,7 +293,7 @@ export const step4Schema = z.object({
     .string()
     .max(
       FONTE_PRECOS_MAX_LENGTH,
-      `Fonte de pesquisa de precos deve ter no maximo ${FONTE_PRECOS_MAX_LENGTH} caracteres`,
+      `Fonte de pesquisa de preços deve ter no máximo ${FONTE_PRECOS_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -301,7 +301,7 @@ export const step4Schema = z.object({
     .string()
     .max(
       DOTACAO_MAX_LENGTH,
-      `Dotacao orcamentaria deve ter no maximo ${DOTACAO_MAX_LENGTH} caracteres`,
+      `Dotação orçamentária deve ter no máximo ${DOTACAO_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -319,7 +319,7 @@ export const step5Schema = z.object({
     .string()
     .max(
       RISCOS_MAX_LENGTH,
-      `Descricao de riscos deve ter no maximo ${RISCOS_MAX_LENGTH} caracteres`,
+      `Descrição de riscos deve ter no máximo ${RISCOS_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -327,7 +327,7 @@ export const step5Schema = z.object({
     .string()
     .max(
       DESCRIPTION_MAX_LENGTH,
-      `Descricao deve ter no maximo ${DESCRIPTION_MAX_LENGTH} caracteres`,
+      `Descrição deve ter no máximo ${DESCRIPTION_MAX_LENGTH} caracteres`,
     )
     .optional()
     .or(z.literal('')),
@@ -462,7 +462,7 @@ export const WIZARD_STEPS: WizardStep[] = [
   {
     id: 5,
     title: 'Estimativa de Custos',
-    description: 'Valores e fontes de preco',
+    description: 'Valores e fontes de preço',
     schema: step4Schema,
     fields: [
       'valorUnitario',

@@ -245,7 +245,7 @@ describe('CreateETPWizard', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/titulo deve ter no minimo 5 caracteres/i),
+          screen.getByText(/título deve ter no mínimo 5 caracteres/i),
         ).toBeInTheDocument();
       });
     });

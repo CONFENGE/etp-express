@@ -61,7 +61,7 @@ export function Step0TemplateSelection({ form }: Step0TemplateSelectionProps) {
         </Button>
         {selectedTemplateId === null && (
           <p className="text-xs text-muted-foreground text-center mt-2">
-            Documento em branco selecionado - todos os campos serao opcionais
+            Documento em branco selecionado - todos os campos serão opcionais
           </p>
         )}
       </div>

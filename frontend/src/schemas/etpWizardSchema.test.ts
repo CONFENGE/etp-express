@@ -32,7 +32,7 @@ describe('etpWizardSchema', () => {
       };
 
       expect(() => step1Schema.parse(invalidData)).toThrow(
-        /minimo 5 caracteres/,
+        /mínimo 5 caracteres/,
       );
     });
 
@@ -42,7 +42,7 @@ describe('etpWizardSchema', () => {
       };
 
       expect(() => step1Schema.parse(invalidData)).toThrow(
-        /maximo 200 caracteres/,
+        /máximo 200 caracteres/,
       );
     });
 
@@ -52,7 +52,7 @@ describe('etpWizardSchema', () => {
         uasg: '12345', // Only 5 digits
       };
 
-      expect(() => step1Schema.parse(invalidData)).toThrow(/6 digitos/);
+      expect(() => step1Schema.parse(invalidData)).toThrow(/6 dígitos/);
     });
 
     it('accepts valid UASG format', () => {
@@ -96,7 +96,7 @@ describe('etpWizardSchema', () => {
       };
 
       expect(() => step2Schema.parse(invalidData)).toThrow(
-        /minimo 10 caracteres/,
+        /mínimo 10 caracteres/,
       );
     });
 
@@ -106,7 +106,7 @@ describe('etpWizardSchema', () => {
         quantidadeEstimada: 0,
       };
 
-      expect(() => step2Schema.parse(invalidData)).toThrow(/minimo 1/);
+      expect(() => step2Schema.parse(invalidData)).toThrow(/mínimo 1/);
     });
 
     it('rejects justificativa shorter than 50 characters', () => {
@@ -116,7 +116,7 @@ describe('etpWizardSchema', () => {
       };
 
       expect(() => step2Schema.parse(invalidData)).toThrow(
-        /minimo 50 caracteres/,
+        /mínimo 50 caracteres/,
       );
     });
   });
@@ -139,7 +139,7 @@ describe('etpWizardSchema', () => {
         prazoExecucao: 0,
       };
 
-      expect(() => step3Schema.parse(invalidData)).toThrow(/minimo 1 dia/);
+      expect(() => step3Schema.parse(invalidData)).toThrow(/mínimo 1 dia/);
     });
 
     it('rejects non-integer prazoExecucao', () => {
@@ -147,7 +147,7 @@ describe('etpWizardSchema', () => {
         prazoExecucao: 10.5,
       };
 
-      expect(() => step3Schema.parse(invalidData)).toThrow(/numero inteiro/);
+      expect(() => step3Schema.parse(invalidData)).toThrow(/número inteiro/);
     });
   });
 

@@ -12,17 +12,17 @@ vi.mock('@/store/onboardingStore', () => ({
     {
       id: 'complete-tour',
       label: 'Completar o tour guiado',
-      description: 'Conheca as principais funcionalidades do sistema',
+      description: 'Conheça as principais funcionalidades do sistema',
     },
     {
       id: 'create-first-etp',
       label: 'Criar seu primeiro ETP',
-      description: 'Inicie um novo Estudo Tecnico Preliminar',
+      description: 'Inicie um novo Estudo Técnico Preliminar',
     },
     {
       id: 'generate-suggestion',
-      label: 'Gerar uma sugestao de conteudo',
-      description: 'Use a IA para gerar sugestoes para uma secao',
+      label: 'Gerar uma sugestão de conteúdo',
+      description: 'Use a IA para gerar sugestões para uma seção',
     },
     {
       id: 'export-etp',
@@ -113,7 +113,7 @@ describe('OnboardingChecklist', () => {
       expect(screen.getByText('Completar o tour guiado')).toBeInTheDocument();
       expect(screen.getByText('Criar seu primeiro ETP')).toBeInTheDocument();
       expect(
-        screen.getByText('Gerar uma sugestao de conteudo'),
+        screen.getByText('Gerar uma sugestão de conteúdo'),
       ).toBeInTheDocument();
       expect(screen.getByText('Exportar um ETP')).toBeInTheDocument();
     });
