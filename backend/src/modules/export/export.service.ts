@@ -1,10 +1,16 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as puppeteer from 'puppeteer';
 import * as Handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 import {
   Document,
   Packer,
@@ -42,11 +48,35 @@ export enum ExportFormat {
   DOCX = 'docx',
 }
 
+/**
+ * Known Chromium executable paths across different environments.
+ * Order matters - most common production paths first.
+ *
+ * @see https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
+ */
+const CHROMIUM_PATHS = [
+  // Nixpacks/Nix paths
+  '/nix/store/chromium/bin/chromium',
+  '/run/current-system/sw/bin/chromium',
+  // Common Linux paths
+  '/usr/bin/chromium-browser',
+  '/usr/bin/chromium',
+  '/usr/bin/google-chrome',
+  '/usr/bin/google-chrome-stable',
+  // Alpine Linux (Docker)
+  '/usr/lib/chromium/chromium',
+  // macOS
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  // Snap package (Ubuntu)
+  '/snap/bin/chromium',
+];
+
 @Injectable()
 export class ExportService {
   private readonly logger = new Logger(ExportService.name);
   private template: HandlebarsTemplateDelegate;
   private readonly htmlParser: HtmlToDocxParser;
+  private chromiumPath: string | undefined;
 
   constructor(
     @InjectRepository(Etp)
@@ -57,6 +87,73 @@ export class ExportService {
     this.loadTemplate();
     this.registerHandlebarsHelpers();
     this.htmlParser = new HtmlToDocxParser();
+    this.detectChromiumPath();
+  }
+
+  /**
+   * Detects and caches the Chromium executable path.
+   * Tries environment variable first, then known paths, then `which` command.
+   *
+   * @remarks
+   * This detection runs once at startup to avoid repeated filesystem checks.
+   * Falls back to letting Puppeteer use its bundled Chromium if no system
+   * Chromium is found.
+   */
+  private detectChromiumPath(): void {
+    // 1. Check environment variable (highest priority)
+    const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
+    if (envPath && this.isValidExecutable(envPath)) {
+      this.chromiumPath = envPath;
+      this.logger.log(`Using Chromium from env: ${envPath}`);
+      return;
+    }
+
+    // 2. Try known paths
+    for (const candidatePath of CHROMIUM_PATHS) {
+      if (this.isValidExecutable(candidatePath)) {
+        this.chromiumPath = candidatePath;
+        this.logger.log(`Found Chromium at: ${candidatePath}`);
+        return;
+      }
+    }
+
+    // 3. Try `which` command (Unix)
+    try {
+      const whichResult = execSync(
+        'which chromium chromium-browser google-chrome 2>/dev/null',
+        {
+          encoding: 'utf-8',
+        },
+      )
+        .trim()
+        .split('\n')[0];
+      if (whichResult && this.isValidExecutable(whichResult)) {
+        this.chromiumPath = whichResult;
+        this.logger.log(`Found Chromium via 'which': ${whichResult}`);
+        return;
+      }
+    } catch {
+      // 'which' command not available or failed - continue
+    }
+
+    // 4. Let Puppeteer use its bundled Chromium
+    this.chromiumPath = undefined;
+    this.logger.warn(
+      'No system Chromium found. Puppeteer will use bundled Chromium. ' +
+        'This may cause issues in containerized environments without proper dependencies.',
+    );
+  }
+
+  /**
+   * Checks if a file exists and is executable.
+   */
+  private isValidExecutable(filePath: string): boolean {
+    try {
+      fs.accessSync(filePath, fs.constants.X_OK);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private loadTemplate() {
@@ -93,6 +190,21 @@ export class ExportService {
     });
   }
 
+  /**
+   * Exports an ETP to PDF format using Puppeteer (headless Chromium).
+   *
+   * @param etpId - The ETP UUID to export
+   * @returns Buffer containing the PDF file
+   * @throws {NotFoundException} If ETP not found
+   * @throws {InternalServerErrorException} If PDF generation fails
+   *
+   * @remarks
+   * Uses system Chromium if available (detected at startup), otherwise falls
+   * back to Puppeteer's bundled Chromium. Includes detailed error logging
+   * for troubleshooting production issues.
+   *
+   * @see Issue #1342 - PDF export 500 error fix
+   */
   async exportToPDF(etpId: string): Promise<Buffer> {
     this.logger.log(`Exporting ETP ${etpId} to PDF`);
 
@@ -102,16 +214,30 @@ export class ExportService {
     let browser: puppeteer.Browser | null = null;
 
     try {
-      browser = await puppeteer.launch({
+      const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
         headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--single-process', // Helps in containerized environments
         ],
-      });
+      };
+
+      // Use detected Chromium path if available
+      if (this.chromiumPath) {
+        launchOptions.executablePath = this.chromiumPath;
+        this.logger.debug(
+          `Launching Puppeteer with Chromium: ${this.chromiumPath}`,
+        );
+      } else {
+        this.logger.debug('Launching Puppeteer with bundled Chromium');
+      }
+
+      browser = await puppeteer.launch(launchOptions);
+      this.logger.debug('Browser launched successfully');
 
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -127,12 +253,51 @@ export class ExportService {
         printBackground: true,
       });
 
-      this.logger.log('PDF generated successfully');
+      this.logger.log(
+        `PDF generated successfully for ETP ${etpId} (${pdfBuffer.length} bytes)`,
+      );
       return Buffer.from(pdfBuffer);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `Failed to generate PDF for ETP ${etpId}: ${errorMessage}`,
+        errorStack,
+      );
+
+      // Provide more specific error message based on common issues
+      if (
+        errorMessage.includes('Could not find Chrome') ||
+        errorMessage.includes('Failed to launch') ||
+        errorMessage.includes('ENOENT')
+      ) {
+        throw new InternalServerErrorException(
+          'Chromium nao encontrado no servidor. ' +
+            'Verifique a instalacao do Puppeteer/Chromium no ambiente de producao.',
+        );
+      }
+
+      if (
+        errorMessage.includes('Navigation timeout') ||
+        errorMessage.includes('net::ERR_')
+      ) {
+        throw new InternalServerErrorException(
+          'Erro ao renderizar o documento PDF. ' +
+            'Tente novamente ou exporte em formato DOCX.',
+        );
+      }
+
+      throw new InternalServerErrorException(
+        `Erro ao gerar PDF: ${errorMessage}. ` +
+          'Tente novamente ou exporte em formato DOCX como alternativa.',
+      );
     } finally {
       if (browser) {
         try {
           await browser.close();
+          this.logger.debug('Browser closed successfully');
         } catch (closeError) {
           this.logger.error(
             `Failed to close browser after PDF export: ${closeError instanceof Error ? closeError.message : 'Unknown error'}`,

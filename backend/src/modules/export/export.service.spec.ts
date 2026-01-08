@@ -249,16 +249,20 @@ describe('ExportService', () => {
       const result = await service.exportToPDF('etp-123');
 
       expect(result).toBeInstanceOf(Buffer);
-      expect(puppeteer.launch).toHaveBeenCalledWith({
-        headless: true,
-        executablePath: undefined,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-        ],
-      });
+      // Verify Puppeteer was launched with correct args (#1342)
+      expect(puppeteer.launch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          headless: true,
+          args: expect.arrayContaining([
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--disable-software-rasterizer',
+            '--single-process',
+          ]),
+        }),
+      );
       expect(mockBrowser.newPage).toHaveBeenCalled();
       expect(mockPage.setContent).toHaveBeenCalled();
       expect(mockPage.pdf).toHaveBeenCalledWith({
@@ -285,8 +289,9 @@ describe('ExportService', () => {
       );
       mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
 
+      // Error is now wrapped in InternalServerErrorException with helpful message (#1342)
       await expect(service.exportToPDF('etp-123')).rejects.toThrow(
-        'PDF generation failed',
+        /Erro ao gerar PDF.*PDF generation failed/,
       );
 
       expect(mockBrowser.close).toHaveBeenCalled();
