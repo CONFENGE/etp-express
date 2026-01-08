@@ -120,11 +120,13 @@ describe('DemoService', () => {
 
   const mockOrganizationRepository = {
     findOne: jest.fn(),
+    save: jest.fn(),
   };
 
   const mockUserRepository = {
     findOne: jest.fn(),
     count: jest.fn(),
+    save: jest.fn(),
   };
 
   const mockEtpRepository = {
@@ -239,6 +241,56 @@ describe('DemoService', () => {
     });
   });
 
+  describe('ensureDemoOrganizationActive (Issue #1341)', () => {
+    it('should return false when organization is already active', async () => {
+      const activeOrg = { ...mockDemoOrganization, isActive: true };
+
+      const result = await service.ensureDemoOrganizationActive(activeOrg);
+
+      expect(result).toBe(false);
+      expect(mockOrganizationRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should reactivate organization and return true when inactive', async () => {
+      const inactiveOrg = { ...mockDemoOrganization, isActive: false };
+      mockOrganizationRepository.save.mockResolvedValue({
+        ...inactiveOrg,
+        isActive: true,
+      });
+
+      const result = await service.ensureDemoOrganizationActive(inactiveOrg);
+
+      expect(result).toBe(true);
+      expect(inactiveOrg.isActive).toBe(true);
+      expect(mockOrganizationRepository.save).toHaveBeenCalledWith(inactiveOrg);
+    });
+  });
+
+  describe('ensureDemoUserActive (Issue #1341)', () => {
+    it('should return false when user is already active', async () => {
+      const activeUser = { ...mockDemoUser, isActive: true };
+
+      const result = await service.ensureDemoUserActive(activeUser);
+
+      expect(result).toBe(false);
+      expect(mockUserRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should reactivate user and return true when inactive', async () => {
+      const inactiveUser = { ...mockDemoUser, isActive: false };
+      mockUserRepository.save.mockResolvedValue({
+        ...inactiveUser,
+        isActive: true,
+      });
+
+      const result = await service.ensureDemoUserActive(inactiveUser);
+
+      expect(result).toBe(true);
+      expect(inactiveUser.isActive).toBe(true);
+      expect(mockUserRepository.save).toHaveBeenCalledWith(inactiveUser);
+    });
+  });
+
   describe('resetDemoData', () => {
     it('should return error when demo organization not found', async () => {
       mockOrganizationRepository.findOne.mockResolvedValue(null);
@@ -330,6 +382,45 @@ describe('DemoService', () => {
       expect(result.deletedVersions).toBe(0);
       expect(result.deletedAuditLogs).toBe(0);
       expect(result.createdEtps).toBe(3); // Should still create sample ETPs
+    });
+
+    it('should reactivate inactive organization and user during reset (Issue #1341)', async () => {
+      const inactiveOrg = { ...mockDemoOrganization, isActive: false };
+      const inactiveUser = { ...mockDemoUser, isActive: false };
+
+      mockOrganizationRepository.findOne.mockResolvedValue(inactiveOrg);
+      mockOrganizationRepository.save.mockResolvedValue({
+        ...inactiveOrg,
+        isActive: true,
+      });
+      mockUserRepository.findOne.mockResolvedValue(inactiveUser);
+      mockUserRepository.save.mockResolvedValue({
+        ...inactiveUser,
+        isActive: true,
+      });
+      mockEtpRepository.find.mockResolvedValue([]);
+
+      const result = await service.resetDemoData();
+
+      expect(result.success).toBe(true);
+      expect(result.organizationReactivated).toBe(true);
+      expect(result.userReactivated).toBe(true);
+      expect(mockOrganizationRepository.save).toHaveBeenCalled();
+      expect(mockUserRepository.save).toHaveBeenCalled();
+    });
+
+    it('should not reactivate when organization and user are already active (Issue #1341)', async () => {
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
+      mockUserRepository.findOne.mockResolvedValue(mockDemoUser);
+      mockEtpRepository.find.mockResolvedValue([]);
+
+      const result = await service.resetDemoData();
+
+      expect(result.success).toBe(true);
+      expect(result.organizationReactivated).toBe(false);
+      expect(result.userReactivated).toBe(false);
     });
   });
 
