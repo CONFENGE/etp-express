@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-07 | **Progresso:** 638/714 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 639/714 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1319 | Fix      | CreateETPPage for /etps/new route - P0 BLOQUEADOR (#1313) ✅   |
 | 2026-01-08 | -     | Audit    | Happy path simulation: 6 P0 bugs found (#1313-#1318) ⚠️        |
 | 2026-01-08 | #1312 | Fix      | Redesign Politica de Privacidade with responsive UI (#1302) ✅ |
 | 2026-01-07 | #1310 | Fix      | Redesign Termos de Uso page with responsive UI (#1301) ✅      |
@@ -90,7 +91,7 @@
 
 ---
 
-## Bugs Criticos P0 (6 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (5 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
@@ -98,7 +99,6 @@
 
 | #     | Issue                                               | Area     | Status |
 | ----- | --------------------------------------------------- | -------- | ------ |
-| #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500    | Backend  | 🔴     |
 | #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404      | Backend  | 🔴     |
 | #1315 | [P0] Exportar PDF retorna erro 404                  | Backend  | 🔴     |
 | #1316 | [P0] Progresso mostra apenas "%" sem valor numérico | Frontend | 🔴     |
@@ -109,6 +109,7 @@
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
+| #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500          | Frontend | ✅     |
 | #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
 | #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | ✅     |
@@ -265,10 +266,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 714   |
-| Issues Abertas    | 76    |
-| Issues Fechadas   | 638   |
-| Progresso         | 89%   |
-| Bugs P0 Abertos   | 6     |
+| Issues Abertas    | 75    |
+| Issues Fechadas   | 639   |
+| Progresso         | 90%   |
+| Bugs P0 Abertos   | 5     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
