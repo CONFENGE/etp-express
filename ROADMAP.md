@@ -109,14 +109,17 @@
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #     | Issue                                                        | Area     | Status |
-| ----- | ------------------------------------------------------------ | -------- | ------ |
-| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada | Frontend | 🔴     |
+| #   | Issue | Area | Status |
+| --- | ----- | ---- | ------ |
+| -   | -     | -    | -      |
+
+> Nenhum bug P0 ativo no momento.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | ✅     |
 | #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | ✅     |
 | #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | ✅     |
