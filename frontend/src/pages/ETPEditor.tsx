@@ -33,7 +33,7 @@ import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
-  const { currentETP, fetchETP, updateETP, isLoading } = useETPs();
+  const { currentETP, fetchETP, updateSection, isLoading } = useETPs();
   const { success, error } = useToast();
   const [activeSection, setActiveSection] = useState(1);
   const [content, setContent] = useState('');
@@ -55,13 +55,15 @@ export function ETPEditor() {
   const performAutoSave = useCallback(async () => {
     if (!currentETP || !id) return;
 
-    await updateETP(id, {
-      sections: (currentETP.sections ?? []).map((s) =>
-        s.sectionNumber === activeSection ? { ...s, content } : s,
-      ),
-    });
+    // Find the current section to get its ID (#1314)
+    const currentSection = currentETP.sections?.find(
+      (s) => s.sectionNumber === activeSection,
+    );
+    if (!currentSection?.id) return;
+
+    await updateSection(id, currentSection.id, { content });
     setLastSavedContent(content);
-  }, [currentETP, id, updateETP, activeSection, content]);
+  }, [currentETP, id, updateSection, activeSection, content]);
 
   const autoSave = useAutoSave(content, {
     delay: 30000, // 30 seconds as specified in issue
@@ -197,14 +199,19 @@ export function ETPEditor() {
   const handleSave = useCallback(async () => {
     if (!currentETP || !id) return;
 
+    // Find the current section to get its ID (#1314)
+    const currentSection = currentETP.sections?.find(
+      (s) => s.sectionNumber === activeSection,
+    );
+    if (!currentSection?.id) {
+      error('Seção não encontrada');
+      return;
+    }
+
     setIsSaving(true);
     try {
-      // Defensive coding: handle undefined sections array (#1194)
-      await updateETP(id, {
-        sections: (currentETP.sections ?? []).map((s) =>
-          s.sectionNumber === activeSection ? { ...s, content } : s,
-        ),
-      });
+      // Use updateSection instead of updateETP to call PATCH /sections/:id (#1314)
+      await updateSection(id, currentSection.id, { content });
       // Reset dirty state after successful save (#610)
       setLastSavedContent(content);
       success('Seção salva com sucesso!');
@@ -213,7 +220,7 @@ export function ETPEditor() {
     } finally {
       setIsSaving(false);
     }
-  }, [currentETP, id, updateETP, activeSection, content, success, error]);
+  }, [currentETP, id, updateSection, activeSection, content, success, error]);
 
   const handleGenerateAll = useCallback(async () => {
     // Generate all sections sequentially
