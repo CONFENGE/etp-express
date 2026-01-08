@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 648/722 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 652/729 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️              |
 | 2026-01-08 | #1339 | Fix      | Corrigir acentuação em textos da interface (#1329) ✅          |
 | 2026-01-08 | #1338 | Fix      | Skip Campos Específicos step when no template (#1330) ✅       |
 | 2026-01-08 | #1337 | Fix      | Auto-sync ETP status with completion percentage (#1331) ✅     |
@@ -103,17 +104,23 @@
 
 ---
 
-## Bugs Criticos P0 (5 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (7 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #   | Issue | Area | Status |
-| --- | ----- | ---- | ------ |
-| -   | -     | -    | -      |
+| #     | Issue                                                          | Area           | Status |
+| ----- | -------------------------------------------------------------- | -------------- | ------ |
+| #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | 🔴     |
+| #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | 🔴     |
+| #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | 🔴     |
+| #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
+| #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo         | Frontend/UX    | 🔴     |
+| #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
+| #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
 
-> Nenhum bug P0 ativo no momento.
+> **7 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
@@ -143,7 +150,7 @@
 
 ---
 
-## Issues Abertas (78)
+## Issues Abertas (77)
 
 ### P1 - High Priority (11 issues)
 
@@ -288,11 +295,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 722   |
-| Issues Abertas    | 73    |
-| Issues Fechadas   | 649   |
-| Progresso         | 90%   |
-| Bugs P0 Abertos   | 1     |
+| Issues Totais     | 729   |
+| Issues Abertas    | 77    |
+| Issues Fechadas   | 652   |
+| Progresso         | 89%   |
+| Bugs P0 Abertos   | 7     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2502  |
