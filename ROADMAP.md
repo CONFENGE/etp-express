@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅             |
 | 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                         |
 | 2026-01-08 | #1323 | Fix      | Show fallback title when ETP title is empty (#1317) ✅         |
 | 2026-01-08 | #1322 | Fix      | Map completionPercentage to progress for display (#1316) ✅    |
@@ -96,40 +97,40 @@
 
 ---
 
-## Bugs Criticos P0 (8 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (7 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #     | Issue                                                                     | Area             | Status |
-| ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
-| #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | 🔴     |
-| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | 🔴     |
-| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | 🔴     |
-| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | 🔴     |
-| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Frontend         | 🔴     |
-| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | 🔴     |
-| #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | 🔴     |
-| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | 🔴     |
+| #     | Issue                                                                | Area             | Status |
+| ----- | -------------------------------------------------------------------- | ---------------- | ------ |
+| #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente  | Frontend         | 🔴     |
+| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard   | Backend/Frontend | 🔴     |
+| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                | Frontend         | 🔴     |
+| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador        | Frontend         | 🔴     |
+| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada         | Frontend         | 🔴     |
+| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação     | Frontend         | 🔴     |
+| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado | Backend/Frontend | 🔴     |
 
 ### Bugs P0 Resolvidos (Anteriores)
 
-| #     | Issue                                                     | Area     | Status |
-| ----- | --------------------------------------------------------- | -------- | ------ |
-| #1318 | [P0] Tabs das seções fora de ordem numérica               | Frontend | ✅     |
-| #1317 | [P0] Título do ETP não aparece no Editor                  | Frontend | ✅     |
-| #1316 | [P0] Progresso mostra apenas "%" sem valor numérico       | Frontend | ✅     |
-| #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404            | Frontend | ✅     |
-| #1315 | [P0] Exportar PDF retorna erro 404                        | Frontend | ✅     |
-| #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500          | Frontend | ✅     |
-| #1304 | [P0] Erro ao salvar secao no ETP Editor                   | Backend  | ✅     |
-| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor     | Frontend | ✅     |
-| #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile | Frontend | ✅     |
-| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade   | Frontend | ✅     |
-| #1300 | [P0] Textos sem acentuacao em toda UI                     | Frontend | ✅     |
-| #1299 | [P0] System Admin nao ve botoes de gestao                 | Frontend | ✅     |
-| #1298 | [P0] Link 'Manual do Usuario' retorna 404                 | Frontend | ✅     |
+| #     | Issue                                                                     | Area             | Status |
+| ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | ✅     |
+| #1318 | [P0] Tabs das seções fora de ordem numérica                               | Frontend         | ✅     |
+| #1317 | [P0] Título do ETP não aparece no Editor                                  | Frontend         | ✅     |
+| #1316 | [P0] Progresso mostra apenas "%" sem valor numérico                       | Frontend         | ✅     |
+| #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404                            | Frontend         | ✅     |
+| #1315 | [P0] Exportar PDF retorna erro 404                                        | Frontend         | ✅     |
+| #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500                          | Frontend         | ✅     |
+| #1304 | [P0] Erro ao salvar secao no ETP Editor                                   | Backend          | ✅     |
+| #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor                     | Frontend         | ✅     |
+| #1302 | [P0] Politica de Privacidade - UI mediocre e falta mobile                 | Frontend         | ✅     |
+| #1301 | [P0] Termos de Uso - UI mediocre e falta responsividade                   | Frontend         | ✅     |
+| #1300 | [P0] Textos sem acentuacao em toda UI                                     | Frontend         | ✅     |
+| #1299 | [P0] System Admin nao ve botoes de gestao                                 | Frontend         | ✅     |
+| #1298 | [P0] Link 'Manual do Usuario' retorna 404                                 | Frontend         | ✅     |
 
 ---
 
