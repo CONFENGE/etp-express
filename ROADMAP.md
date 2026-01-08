@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1336 | Fix      | Persist welcome modal dismissal to localStorage (#1327) ✅     |
 | 2026-01-08 | #1335 | Fix      | Show detailed validation errors on ETP creation (#1325) ✅     |
 | 2026-01-08 | #1334 | Fix      | Prevent wizard premature submission via Enter key (#1332) ✅   |
 | 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅             |
@@ -111,12 +112,12 @@
 | #1330 | [P0] Passo 5 do wizard inútil quando não há templates              | Frontend         | 🔴     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador      | Frontend         | 🔴     |
 | #1328 | [P0] Conta demo sem templates - primeira impressão arruinada       | Frontend         | 🔴     |
-| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação   | Frontend         | 🔴     |
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | ✅     |
 | #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | ✅     |
 | #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | ✅     |
 | #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | ✅     |
@@ -285,7 +286,7 @@ Oportunidades de mercado identificadas.
 | Issues Abertas    | 76    |
 | Issues Fechadas   | 646   |
 | Progresso         | 89%   |
-| Bugs P0 Abertos   | 5     |
+| Bugs P0 Abertos   | 4     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2502  |
