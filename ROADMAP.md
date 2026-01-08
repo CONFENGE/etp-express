@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 653/729 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 653/733 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | -     | Audit    | Admin happy path: 9 bugs (4 novos P0 #1351-#1355) ⚠️           |
 | 2026-01-08 | #1349 | Fix      | Robust Chromium detection for PDF export (#1342) ✅            |
 | 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅     |
 | 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️         |
@@ -107,7 +108,7 @@
 
 ---
 
-## Bugs Criticos P0 (7 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (11 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
@@ -122,8 +123,12 @@
 | #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo         | Frontend/UX    | 🔴     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
+| #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | 🔴     |
+| #1352 | [P0] Estatisticas Admin retornam zeros (erro 500)              | Backend/Admin  | 🔴     |
+| #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado       | Frontend/i18n  | 🔴     |
+| #1355 | [P0] REGRESSAO: Export PDF ainda falha erro 500 (#1342)        | Backend/Export | 🔴     |
 
-> **5 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
+> **9 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
@@ -300,11 +305,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 729   |
-| Issues Abertas    | 76    |
+| Issues Totais     | 733   |
+| Issues Abertas    | 80    |
 | Issues Fechadas   | 653   |
-| Progresso         | 90%   |
-| Bugs P0 Abertos   | 5     |
+| Progresso         | 89%   |
+| Bugs P0 Abertos   | 9     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
