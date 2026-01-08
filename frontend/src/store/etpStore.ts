@@ -624,8 +624,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   ) => {
     set({ isLoading: true, error: null });
     try {
-      const { signal, ...exportOptions } = options || {};
-      const response = await api.post(`/etps/${id}/export/pdf`, exportOptions, {
+      const { signal } = options || {};
+      // Backend export route is GET /export/etp/:id/pdf (#1315)
+      const response = await api.get(`/export/etp/${id}/pdf`, {
         responseType: 'blob',
         signal,
       });
