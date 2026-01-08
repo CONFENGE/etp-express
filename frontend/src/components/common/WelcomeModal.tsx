@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Welcome } from '@/assets/illustrations/Welcome';
 
 const WELCOME_MODAL_STORAGE_KEY = 'etp-express-welcome-dismissed';
@@ -29,12 +28,11 @@ interface WelcomeModalProps {
  * - Shows brief system explanation
  * - Link to user manual
  * - CTA to create first ETP
- * - "Don't show again" option (persisted in localStorage)
+ * - Automatically dismissed after first view (persisted in localStorage)
  */
 export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     if (forceOpen) {
@@ -48,30 +46,33 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
     }
   }, [forceOpen]);
 
+  // Always persist dismissal to localStorage when closing (#1327)
   const handleClose = useCallback(() => {
-    if (dontShowAgain) {
-      localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
-    }
+    localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
     setIsOpen(false);
-  }, [dontShowAgain]);
+  }, []);
 
   const handleCreateETP = useCallback(() => {
-    if (dontShowAgain) {
-      localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
-    }
+    localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
     setIsOpen(false);
     navigate('/etps/new');
-  }, [dontShowAgain, navigate]);
+  }, [navigate]);
 
   const handleOpenManual = useCallback(() => {
-    if (dontShowAgain) {
+    localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
+    setIsOpen(false);
+  }, []);
+
+  // Handle dialog open state changes (ESC key, clicking outside) - always persist
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open) {
       localStorage.setItem(WELCOME_MODAL_STORAGE_KEY, 'true');
     }
-    setIsOpen(false);
-  }, [dontShowAgain]);
+    setIsOpen(open);
+  }, []);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         className="sm:max-w-md"
         aria-describedby="welcome-description"
@@ -106,20 +107,6 @@ export function WelcomeModal({ forceOpen = false }: WelcomeModalProps) {
                 Ler o manual do usuário
               </Link>
             </Button>
-          </div>
-
-          <div className="flex items-center space-x-2 pt-2">
-            <Checkbox
-              id="dont-show-again"
-              checked={dontShowAgain}
-              onCheckedChange={(checked) => setDontShowAgain(checked === true)}
-            />
-            <label
-              htmlFor="dont-show-again"
-              className="text-sm text-muted-foreground cursor-pointer select-none"
-            >
-              Não mostrar novamente
-            </label>
           </div>
         </div>
 
