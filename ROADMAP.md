@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1349 | Fix      | Robust Chromium detection for PDF export (#1342) ✅            |
 | 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅     |
 | 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️         |
 | 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️              |
@@ -115,19 +116,20 @@
 | #     | Issue                                                          | Area           | Status |
 | ----- | -------------------------------------------------------------- | -------------- | ------ |
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | ✅     |
-| #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | 🔴     |
+| #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | ✅     |
 | #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | 🔴     |
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
 | #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo         | Frontend/UX    | 🔴     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
 
-> **6 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
+> **5 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1342 | [P0] Exportacao PDF falha com erro 500 - Chromium detection               | Backend/Export   | ✅     |
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403                | Backend/Auth     | ✅     |
 | #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | ✅     |
@@ -302,7 +304,7 @@ Oportunidades de mercado identificadas.
 | Issues Abertas    | 76    |
 | Issues Fechadas   | 653   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 6     |
+| Bugs P0 Abertos   | 5     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
