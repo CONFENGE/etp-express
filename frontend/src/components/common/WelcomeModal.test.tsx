@@ -17,6 +17,10 @@ function renderWelcomeModal(props = {}) {
 describe('WelcomeModal', () => {
   beforeEach(() => {
     window.open = vi.fn();
+    // Reset localStorage mock before each test
+    vi.mocked(localStorage.getItem).mockReset();
+    vi.mocked(localStorage.setItem).mockReset();
+    vi.mocked(localStorage.removeItem).mockReset();
   });
 
   afterEach(() => {
@@ -25,8 +29,8 @@ describe('WelcomeModal', () => {
 
   describe('visibility', () => {
     it('opens automatically for first-time users', async () => {
-      // Clear localStorage before this specific test
-      localStorage.removeItem('etp-express-welcome-dismissed');
+      // Simulate first-time user (no dismissed value in localStorage)
+      vi.mocked(localStorage.getItem).mockReturnValue(null);
       renderWelcomeModal();
 
       await waitFor(() => {
@@ -84,14 +88,6 @@ describe('WelcomeModal', () => {
       });
     });
 
-    it('displays checkbox for "dont show again"', async () => {
-      renderWelcomeModal({ forceOpen: true });
-
-      await waitFor(() => {
-        expect(screen.getByText(/não mostrar novamente/i)).toBeInTheDocument();
-      });
-    });
-
     it('displays Welcome illustration', async () => {
       renderWelcomeModal({ forceOpen: true });
 
@@ -133,20 +129,36 @@ describe('WelcomeModal', () => {
       });
     });
 
-    it('checkbox can be toggled', async () => {
-      renderWelcomeModal({ forceOpen: true });
+    it('persists dismissal to localStorage when close button is clicked', async () => {
+      // Simulate first-time user
+      vi.mocked(localStorage.getItem).mockReturnValue(null);
+      renderWelcomeModal();
 
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      // Find checkbox by its label
-      const checkboxLabel = screen.getByText(/não mostrar novamente/i);
-      fireEvent.click(checkboxLabel);
+      // Click close button
+      const closeButton = screen.getByRole('button', { name: /fechar/i });
+      fireEvent.click(closeButton);
 
-      // Checkbox should be checked (the click on label toggles it)
-      const checkbox = screen.getByRole('checkbox');
-      expect(checkbox).toHaveAttribute('data-state', 'checked');
+      // Check localStorage.setItem was called with correct arguments
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'etp-express-welcome-dismissed',
+        'true',
+      );
+    });
+
+    it('does not reopen after being dismissed (#1327)', async () => {
+      // Simulate returning user who already dismissed the modal
+      vi.mocked(localStorage.getItem).mockReturnValue('true');
+
+      renderWelcomeModal();
+
+      // Modal should NOT appear because localStorage indicates it was dismissed
+      // Wait a bit to ensure useEffect has run
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
