@@ -11,6 +11,7 @@ export function useETPs() {
     fetchETP,
     createETP,
     updateETP,
+    updateSection,
     deleteETP,
     setCurrentETP,
   } = useETPStore();
@@ -35,6 +36,7 @@ export function useETPs() {
     fetchETP,
     createETP,
     updateETP,
+    updateSection,
     deleteETP,
     setCurrentETP,
   };
