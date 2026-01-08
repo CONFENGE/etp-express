@@ -1,6 +1,6 @@
 # Backend-specific nixpacks configuration
 # Optimized for Node.js 20 LTS with system Chromium for Puppeteer
-# Last updated: 2025-12-14 - Issue #670
+# Last updated: 2026-01-08 - Issue #1342 (PDF export fix)
 
 [phases.setup]
 nixPkgs = ['nodejs_20', 'chromium']
@@ -9,6 +9,9 @@ nixPkgs = ['nodejs_20', 'chromium']
 cmd = "npm run migration:run:prod && npm run start:prod"
 
 [variables]
+# Skip Puppeteer's bundled Chromium download - we use system Chromium
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
-PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+# Nixpacks installs chromium in the PATH, let our code auto-detect it
+# The ExportService will search common paths and use `which` if needed
+# Note: Do NOT set PUPPETEER_EXECUTABLE_PATH to a hardcoded path as it varies
 NODE_ENV = "production"
