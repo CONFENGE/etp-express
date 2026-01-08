@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1335 | Fix      | Show detailed validation errors on ETP creation (#1325) ✅     |
 | 2026-01-08 | #1334 | Fix      | Prevent wizard premature submission via Enter key (#1332) ✅   |
 | 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅             |
 | 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                         |
@@ -98,25 +99,25 @@
 
 ---
 
-## Bugs Criticos P0 (6 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (5 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #     | Issue                                                                | Area             | Status |
-| ----- | -------------------------------------------------------------------- | ---------------- | ------ |
-| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard   | Backend/Frontend | 🔴     |
-| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                | Frontend         | 🔴     |
-| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador        | Frontend         | 🔴     |
-| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada         | Frontend         | 🔴     |
-| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação     | Frontend         | 🔴     |
-| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado | Backend/Frontend | 🔴     |
+| #     | Issue                                                              | Area             | Status |
+| ----- | ------------------------------------------------------------------ | ---------------- | ------ |
+| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard | Backend/Frontend | 🔴     |
+| #1330 | [P0] Passo 5 do wizard inútil quando não há templates              | Frontend         | 🔴     |
+| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador      | Frontend         | 🔴     |
+| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada       | Frontend         | 🔴     |
+| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação   | Frontend         | 🔴     |
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | ✅     |
 | #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | ✅     |
 | #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | ✅     |
 | #1318 | [P0] Tabs das seções fora de ordem numérica                               | Frontend         | ✅     |
@@ -281,10 +282,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 722   |
-| Issues Abertas    | 77    |
-| Issues Fechadas   | 645   |
+| Issues Abertas    | 76    |
+| Issues Fechadas   | 646   |
 | Progresso         | 89%   |
-| Bugs P0 Abertos   | 6     |
+| Bugs P0 Abertos   | 5     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2502  |
