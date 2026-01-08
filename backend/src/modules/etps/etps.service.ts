@@ -116,22 +116,26 @@ export class EtpsService {
   }
 
   /**
-   * Retrieves paginated list of ETPs with optional user filtering.
+   * Retrieves paginated list of ETPs for a specific user.
    *
    * @remarks
    * Returns ETPs ordered by most recently updated first. Supports pagination
    * to handle large datasets efficiently.
    *
-   * Multi-Tenancy (MT-05): ALWAYS filters by organizationId to ensure column-based
+   * SECURITY (Issue #1326): ALWAYS filters by BOTH organizationId AND userId to
+   * prevent cross-user data access. This is a critical security requirement.
+   *
+   * Multi-Tenancy (MT-05): Filters by organizationId to ensure column-based
    * isolation. Users can only see ETPs from their own organization.
    *
-   * When userId is provided, additionally filters to show only ETPs owned by that user.
+   * User Isolation: ALWAYS filters by userId to ensure users only see their own ETPs.
+   * This prevents data leakage between users of the same organization.
    *
    * Eagerly loads the 'createdBy' user relationship for each ETP.
    *
    * @param paginationDto - Pagination parameters (page number and limit)
    * @param organizationId - Organization ID (required for multi-tenancy isolation)
-   * @param userId - Optional user ID to filter ETPs by owner
+   * @param userId - User ID (required for user-level data isolation)
    * @returns Paginated result with ETPs, total count, and pagination metadata
    *
    * @example
@@ -150,19 +154,18 @@ export class EtpsService {
   async findAll(
     paginationDto: PaginationDto,
     organizationId: string,
-    userId?: string,
+    userId: string,
   ) {
     const { page = 1, limit = 10 } = paginationDto;
     const skip = (page - 1) * limit;
 
+    // SECURITY (Issue #1326): Always filter by both organizationId AND userId
+    // to prevent cross-user data leakage within the same organization
     const queryBuilder = this.etpsRepository
       .createQueryBuilder('etp')
       .leftJoinAndSelect('etp.createdBy', 'user')
-      .where('etp.organizationId = :organizationId', { organizationId });
-
-    if (userId) {
-      queryBuilder.andWhere('etp.createdById = :userId', { userId });
-    }
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId });
 
     const [etps, total] = await queryBuilder
       .orderBy('etp.updatedAt', 'DESC')
@@ -696,37 +699,40 @@ export class EtpsService {
   // ============================================================================
 
   /**
-   * Retrieves aggregated statistics about ETPs.
+   * Retrieves aggregated statistics about ETPs for a specific user.
    *
    * @remarks
+   * SECURITY (Issue #1326): ALWAYS filters by BOTH organizationId AND userId to
+   * prevent cross-user data access. This is a critical security requirement.
+   *
    * Provides dashboard-style metrics including:
    * - Total ETP count
    * - Count by status (DRAFT, IN_PROGRESS, COMPLETED, etc.)
    * - Average completion percentage across all ETPs
    *
-   * When userId is provided, statistics are filtered to that user's ETPs only.
-   * Useful for user dashboards and admin analytics.
+   * Statistics are ALWAYS filtered to the specific user's ETPs only.
+   * Useful for user dashboards.
    *
-   * @param userId - Optional user ID to filter statistics to specific user
+   * @param organizationId - Organization ID (required for multi-tenancy isolation)
+   * @param userId - User ID (required for user-level data isolation)
    * @returns Statistics object with total, byStatus breakdown, and averageCompletion
    *
    * @example
    * ```ts
-   * const stats = await etpsService.getStatistics('user-uuid-123');
+   * const stats = await etpsService.getStatistics('org-uuid-456', 'user-uuid-123');
    *
    * console.log(stats.total); // 15
    * console.log(stats.byStatus); // { draft: 5, in_progress: 8, completed: 2 }
    * console.log(stats.averageCompletion); // "67.50"
    * ```
    */
-  async getStatistics(organizationId: string, userId?: string) {
+  async getStatistics(organizationId: string, userId: string) {
+    // SECURITY (Issue #1326): Always filter by both organizationId AND userId
+    // to prevent cross-user data leakage within the same organization
     const queryBuilder = this.etpsRepository
       .createQueryBuilder('etp')
-      .where('etp.organizationId = :organizationId', { organizationId });
-
-    if (userId) {
-      queryBuilder.andWhere('etp.createdById = :userId', { userId });
-    }
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId });
 
     const total = await queryBuilder.getCount();
 

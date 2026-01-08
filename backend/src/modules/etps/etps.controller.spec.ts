@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { EtpsController } from './etps.controller';
 import { EtpsService } from './etps.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -242,6 +246,33 @@ describe('EtpsController', () => {
         mockUserId,
       );
     });
+
+    // SECURITY TESTS (Issue #1326)
+    it('should throw UnauthorizedException when userId is missing (Issue #1326)', async () => {
+      // Act & Assert - Controller validates userId before calling service
+      await expect(
+        controller.findAll(paginationDto, mockOrganizationId, null as any),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.findAll(paginationDto, mockOrganizationId, undefined as any),
+      ).rejects.toThrow(UnauthorizedException);
+
+      // Service should NOT be called when validation fails
+      expect(service.findAll).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException when organizationId is missing (Issue #1326)', async () => {
+      // Act & Assert - Controller validates organizationId before calling service
+      await expect(
+        controller.findAll(paginationDto, null as any, mockUserId),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.findAll(paginationDto, undefined as any, mockUserId),
+      ).rejects.toThrow(UnauthorizedException);
+
+      // Service should NOT be called when validation fails
+      expect(service.findAll).not.toHaveBeenCalled();
+    });
   });
 
   describe('getStatistics', () => {
@@ -295,6 +326,33 @@ describe('EtpsController', () => {
       // Assert
       expect(result.disclaimer).toBeDefined();
       expect(result.disclaimer).toContain('ETP Express pode cometer erros');
+    });
+
+    // SECURITY TESTS (Issue #1326)
+    it('should throw UnauthorizedException when userId is missing (Issue #1326)', async () => {
+      // Act & Assert - Controller validates userId before calling service
+      await expect(
+        controller.getStatistics(mockOrganizationId, null as any),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.getStatistics(mockOrganizationId, undefined as any),
+      ).rejects.toThrow(UnauthorizedException);
+
+      // Service should NOT be called when validation fails
+      expect(service.getStatistics).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException when organizationId is missing (Issue #1326)', async () => {
+      // Act & Assert - Controller validates organizationId before calling service
+      await expect(
+        controller.getStatistics(null as any, mockUserId),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.getStatistics(undefined as any, mockUserId),
+      ).rejects.toThrow(UnauthorizedException);
+
+      // Service should NOT be called when validation fails
+      expect(service.getStatistics).not.toHaveBeenCalled();
     });
   });
 
