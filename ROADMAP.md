@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 643/714 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 644/722 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                         |
 | 2026-01-08 | #1323 | Fix      | Show fallback title when ETP title is empty (#1317) ✅         |
 | 2026-01-08 | #1322 | Fix      | Map completionPercentage to progress for display (#1316) ✅    |
 | 2026-01-08 | #1321 | Fix      | Fix save section 404 - use PATCH /sections/:id (#1314) ✅      |
@@ -95,20 +96,28 @@
 
 ---
 
-## Bugs Criticos P0 (1 issue) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (8 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #     | Issue                                       | Area     | Status |
-| ----- | ------------------------------------------- | -------- | ------ |
-| #1318 | [P0] Tabs das seções fora de ordem numérica | Frontend | 🔴     |
+| #     | Issue                                                                     | Area             | Status |
+| ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | 🔴     |
+| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | 🔴     |
+| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | 🔴     |
+| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | 🔴     |
+| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Frontend         | 🔴     |
+| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | 🔴     |
+| #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | 🔴     |
+| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | 🔴     |
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
+| #1318 | [P0] Tabs das seções fora de ordem numérica               | Frontend | ✅     |
 | #1317 | [P0] Título do ETP não aparece no Editor                  | Frontend | ✅     |
 | #1316 | [P0] Progresso mostra apenas "%" sem valor numérico       | Frontend | ✅     |
 | #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404            | Frontend | ✅     |
@@ -124,7 +133,7 @@
 
 ---
 
-## Issues Abertas (76)
+## Issues Abertas (78)
 
 ### P1 - High Priority (11 issues)
 
@@ -269,11 +278,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 714   |
-| Issues Abertas    | 72    |
-| Issues Fechadas   | 642   |
-| Progresso         | 90%   |
-| Bugs P0 Abertos   | 1     |
+| Issues Totais     | 722   |
+| Issues Abertas    | 78    |
+| Issues Fechadas   | 644   |
+| Progresso         | 89%   |
+| Bugs P0 Abertos   | 8     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
