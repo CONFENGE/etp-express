@@ -32,6 +32,9 @@ const ETPs = lazy(() =>
 const ETPEditor = lazy(() =>
   import('@/pages/ETPEditor').then((m) => ({ default: m.ETPEditor })),
 );
+const CreateETPPage = lazy(() =>
+  import('@/pages/CreateETPPage').then((m) => ({ default: m.CreateETPPage })),
+);
 const PrivacyPolicy = lazy(() =>
   import('@/pages/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy })),
 );
@@ -257,6 +260,16 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ETPs />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        // IMPORTANT: /etps/new MUST be defined before /etps/:id to prevent
+        // "new" from being interpreted as an ETP ID (#1313)
+        path: '/etps/new',
+        element: (
+          <ProtectedRoute>
+            <CreateETPPage />
           </ProtectedRoute>
         ),
       },
