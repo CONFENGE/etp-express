@@ -118,7 +118,7 @@
 | ----- | -------------------------------------------------------------- | -------------- | ------ |
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | ✅     |
 | #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | ✅     |
-| #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | 🔴     |
+| #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | ✅     |
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
 | #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo         | Frontend/UX    | 🔴     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
