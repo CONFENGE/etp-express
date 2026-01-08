@@ -66,9 +66,17 @@ describe('CreateETPWizard', () => {
   };
 
   describe('rendering', () => {
-    it('renders all 7 step indicators', () => {
+    it('renders all 7 step indicators when template is selected', async () => {
+      const user = userEvent.setup();
       renderWizard();
-      // Use getAllByText since step titles appear in both step indicators and current step heading
+
+      // Select a template first
+      const templateCard = screen
+        .getByText('Template para Obras')
+        .closest('[role="option"]');
+      await user.click(templateCard!);
+
+      // Now all 7 steps should be visible including Campos Específicos
       expect(screen.getAllByText('Tipo de Documento').length).toBeGreaterThan(
         0,
       );
@@ -82,6 +90,30 @@ describe('CreateETPWizard', () => {
       expect(screen.getAllByText('Campos Específicos').length).toBeGreaterThan(
         0,
       );
+      expect(
+        screen.getAllByText('Estimativa de Custos').length,
+      ).toBeGreaterThan(0);
+      expect(screen.getAllByText('Análise de Riscos').length).toBeGreaterThan(
+        0,
+      );
+    });
+
+    // #1330 - When no template is selected, "Campos Específicos" step should be hidden
+    it('renders only 6 step indicators when no template is selected', () => {
+      renderWizard();
+      // Use getAllByText since step titles appear in both step indicators and current step heading
+      expect(screen.getAllByText('Tipo de Documento').length).toBeGreaterThan(
+        0,
+      );
+      expect(screen.getAllByText('Identificação').length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText('Objeto e Justificativa').length,
+      ).toBeGreaterThan(0);
+      expect(screen.getAllByText('Requisitos Técnicos').length).toBeGreaterThan(
+        0,
+      );
+      // "Campos Específicos" should NOT be visible when no template selected
+      expect(screen.queryByText('Campos Específicos')).not.toBeInTheDocument();
       expect(
         screen.getAllByText('Estimativa de Custos').length,
       ).toBeGreaterThan(0);
@@ -251,7 +283,8 @@ describe('CreateETPWizard', () => {
   });
 
   describe('submit', () => {
-    it('shows submit button on last step', async () => {
+    // #1330 - Updated to skip step 4 (Campos Específicos) when no template selected
+    it('shows submit button on last step (skipping Campos Específicos when no template)', async () => {
       const user = userEvent.setup();
       renderWizard();
 
@@ -274,17 +307,12 @@ describe('CreateETPWizard', () => {
       );
       await user.click(screen.getByRole('button', { name: /próximo/i }));
 
-      // Advance through step 3
+      // Advance through step 3 (requirements)
       await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
       await user.click(screen.getByRole('button', { name: /próximo/i }));
 
-      // Advance through step 4 (Dynamic Fields - no template selected shows info message)
-      await waitFor(() =>
-        screen.getByText(/selecione um template no passo anterior/i),
-      );
-      await user.click(screen.getByRole('button', { name: /próximo/i }));
-
-      // Advance through step 5 (Costs)
+      // #1330 - Step 4 (Campos Específicos) is SKIPPED when no template selected
+      // Should go directly to step 5 (Costs)
       await waitFor(() => screen.getByLabelText(/valor unitário/i));
       await user.click(screen.getByRole('button', { name: /próximo/i }));
 
@@ -416,6 +444,7 @@ describe('CreateETPWizard', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
+    // #1330 - Updated to skip step 4 (Campos Específicos) when no template selected
     it('only submits form on last step when Criar ETP is clicked', async () => {
       const user = userEvent.setup();
       // Mock successful submission
@@ -446,13 +475,8 @@ describe('CreateETPWizard', () => {
       await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
       await user.click(screen.getByRole('button', { name: /próximo/i }));
 
-      // Advance through step 4 (dynamic fields)
-      await waitFor(() =>
-        screen.getByText(/selecione um template no passo anterior/i),
-      );
-      await user.click(screen.getByRole('button', { name: /próximo/i }));
-
-      // Advance through step 5 (costs)
+      // #1330 - Step 4 (Campos Específicos) is SKIPPED when no template selected
+      // Should go directly to step 5 (costs)
       await waitFor(() => screen.getByLabelText(/valor unitário/i));
       await user.click(screen.getByRole('button', { name: /próximo/i }));
 
@@ -468,6 +492,127 @@ describe('CreateETPWizard', () => {
       // Now onSubmit should be called
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  // #1330 - Tests for skipping dynamic fields step when no template is selected
+  describe('step skipping (#1330)', () => {
+    it('skips Campos Específicos step when no template is selected', async () => {
+      const user = userEvent.setup();
+      renderWizard();
+
+      // Do not select a template, just proceed with blank document
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+      await waitFor(() => screen.getByLabelText(/título do etp/i));
+
+      // Fill step 1
+      await user.type(
+        screen.getByLabelText(/título do etp/i),
+        'Contratacao de Servicos de TI',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Fill step 2
+      await waitFor(() => screen.getByLabelText(/objeto da contratação/i));
+      await user.type(
+        screen.getByLabelText(/objeto da contratação/i),
+        'Contratacao de empresa especializada em desenvolvimento',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Step 3 (requirements)
+      await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Should go directly to Costs (step 5), NOT Campos Específicos (step 4)
+      await waitFor(() => {
+        expect(screen.getByLabelText(/valor unitário/i)).toBeInTheDocument();
+      });
+
+      // The "selecione um template" message should NOT appear
+      expect(
+        screen.queryByText(/selecione um template no passo anterior/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows Campos Específicos step when a template is selected', async () => {
+      const user = userEvent.setup();
+      renderWizard();
+
+      // Select a template
+      const templateCard = screen
+        .getByText('Template para Obras')
+        .closest('[role="option"]');
+      await user.click(templateCard!);
+
+      // Proceed through steps
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+      await waitFor(() => screen.getByLabelText(/título do etp/i));
+
+      // Fill step 1
+      await user.type(
+        screen.getByLabelText(/título do etp/i),
+        'Contratacao de Obras',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Fill step 2
+      await waitFor(() => screen.getByLabelText(/objeto da contratação/i));
+      await user.type(
+        screen.getByLabelText(/objeto da contratação/i),
+        'Contratacao de empresa para obra civil',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Step 3 (requirements)
+      await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Should be on Campos Específicos (step 4) with template-specific fields
+      // Template OBRAS should show ART/RRT field
+      await waitFor(() => {
+        expect(screen.getByLabelText(/art\/rrt/i)).toBeInTheDocument();
+      });
+    });
+
+    it('handles back navigation correctly when step is skipped', async () => {
+      const user = userEvent.setup();
+      renderWizard();
+
+      // No template selected
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+      await waitFor(() => screen.getByLabelText(/título do etp/i));
+
+      // Fill step 1
+      await user.type(
+        screen.getByLabelText(/título do etp/i),
+        'Contratacao de Servicos de TI',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Fill step 2
+      await waitFor(() => screen.getByLabelText(/objeto da contratação/i));
+      await user.type(
+        screen.getByLabelText(/objeto da contratação/i),
+        'Contratacao de empresa especializada',
+      );
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Step 3 (requirements)
+      await waitFor(() => screen.getByLabelText(/requisitos técnicos/i));
+      await user.click(screen.getByRole('button', { name: /próximo/i }));
+
+      // Should be on Costs (step 5)
+      await waitFor(() => screen.getByLabelText(/valor unitário/i));
+
+      // Go back - should go to step 3, NOT step 4 (which is skipped)
+      await user.click(screen.getByRole('button', { name: /voltar/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText(/requisitos técnicos/i),
+        ).toBeInTheDocument();
       });
     });
   });
