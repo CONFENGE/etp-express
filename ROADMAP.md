@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 652/729 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 653/729 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅     |
 | 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️         |
 | 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️              |
 | 2026-01-08 | #1339 | Fix      | Corrigir acentuação em textos da interface (#1329) ✅          |
@@ -113,7 +114,7 @@
 
 | #     | Issue                                                          | Area           | Status |
 | ----- | -------------------------------------------------------------- | -------------- | ------ |
-| #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | 🔴     |
+| #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | ✅     |
 | #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | 🔴     |
 | #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | 🔴     |
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
@@ -121,12 +122,13 @@
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
 
-> **7 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
+> **6 bugs P0 ativos** - Detectados em simulacao de happy path por consultor de licitacoes.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403                | Backend/Auth     | ✅     |
 | #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | ✅     |
 | #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | ✅     |
@@ -297,15 +299,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 729   |
-| Issues Abertas    | 77    |
-| Issues Fechadas   | 652   |
-| Progresso         | 89%   |
-| Bugs P0 Abertos   | 7     |
+| Issues Abertas    | 76    |
+| Issues Fechadas   | 653   |
+| Progresso         | 90%   |
+| Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2502  |
-| Frontend Tests    | 1738  |
-| Total Tests       | 4240  |
+| Backend Tests     | 2515  |
+| Frontend Tests    | 1742  |
+| Total Tests       | 4257  |
 
 ---
 
