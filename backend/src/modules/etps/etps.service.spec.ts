@@ -575,6 +575,170 @@ describe('EtpsService', () => {
       });
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
+
+    // Issue #1331: Auto-sync status tests
+    describe('status auto-sync (Issue #1331)', () => {
+      it('should auto-transition from DRAFT to IN_PROGRESS when completion > 0%', async () => {
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.DRAFT,
+          sections: [
+            { status: SectionStatus.GENERATED },
+            { status: SectionStatus.PENDING },
+          ],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // 1 completed out of 2 = 50%, should auto-transition to IN_PROGRESS
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 50,
+            status: EtpStatus.IN_PROGRESS,
+          }),
+        );
+      });
+
+      it('should auto-transition from DRAFT to IN_PROGRESS when completion = 100%', async () => {
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.DRAFT,
+          sections: [
+            { status: SectionStatus.APPROVED },
+            { status: SectionStatus.GENERATED },
+          ],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // 2 completed out of 2 = 100%, should auto-transition to IN_PROGRESS
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 100,
+            status: EtpStatus.IN_PROGRESS,
+          }),
+        );
+      });
+
+      it('should NOT change status when already IN_PROGRESS and completion = 100%', async () => {
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.IN_PROGRESS,
+          sections: [
+            { status: SectionStatus.APPROVED },
+            { status: SectionStatus.REVIEWED },
+          ],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // Already IN_PROGRESS, should remain IN_PROGRESS (not auto-complete)
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 100,
+            status: EtpStatus.IN_PROGRESS,
+          }),
+        );
+      });
+
+      it('should NOT change status when already COMPLETED', async () => {
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.COMPLETED,
+          sections: [
+            { status: SectionStatus.APPROVED },
+            { status: SectionStatus.REVIEWED },
+          ],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // Already COMPLETED, should remain COMPLETED
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 100,
+            status: EtpStatus.COMPLETED,
+          }),
+        );
+      });
+
+      it('should NOT change status when completion = 0% (no sections completed)', async () => {
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.DRAFT,
+          sections: [
+            { status: SectionStatus.PENDING },
+            { status: SectionStatus.GENERATING },
+          ],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // 0% completion, should remain DRAFT
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 0,
+            status: EtpStatus.DRAFT,
+          }),
+        );
+      });
+
+      it('should NOT change status when no sections exist', async () => {
+        const etpWithoutSections = {
+          ...mockEtp,
+          status: EtpStatus.DRAFT,
+          sections: [],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithoutSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        // No sections = 0% completion, should remain DRAFT
+        expect(mockRepository.save).toHaveBeenCalledWith(
+          expect.objectContaining({
+            completionPercentage: 0,
+            status: EtpStatus.DRAFT,
+          }),
+        );
+      });
+
+      it('should log status transition when auto-sync occurs', async () => {
+        const loggerSpy = jest.spyOn(service['logger'], 'log');
+        const etpWithSections = {
+          ...mockEtp,
+          status: EtpStatus.DRAFT,
+          sections: [{ status: SectionStatus.GENERATED }],
+        } as any;
+
+        mockRepository.findOne.mockResolvedValue(etpWithSections);
+        mockRepository.save.mockImplementation((etp) => Promise.resolve(etp));
+
+        await service.updateCompletionPercentage('etp-123', mockOrganizationId);
+
+        expect(loggerSpy).toHaveBeenCalledWith(
+          expect.stringContaining(
+            'auto-transitioned from DRAFT to IN_PROGRESS',
+          ),
+        );
+      });
+    });
   });
 
   describe('remove', () => {
