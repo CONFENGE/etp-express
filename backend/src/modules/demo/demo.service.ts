@@ -79,6 +79,10 @@ export interface DemoResetResult {
   deletedVersions: number;
   deletedAuditLogs: number;
   createdEtps: number;
+  /** @see Issue #1341 - Indicates if org was reactivated */
+  organizationReactivated?: boolean;
+  /** @see Issue #1341 - Indicates if user was reactivated */
+  userReactivated?: boolean;
   error?: string;
 }
 
@@ -126,6 +130,64 @@ export class DemoService {
     return this.organizationRepository.findOne({
       where: { cnpj: DEMO_ORGANIZATION_CNPJ },
     });
+  }
+
+  /**
+   * Ensures the demo organization is active (isActive = true).
+   *
+   * This method is called during resetDemoData() to prevent 403 errors
+   * when the demo user tries to access the system. If the organization
+   * was accidentally suspended, this will reactivate it.
+   *
+   * @see Issue #1341 - Demo user cannot create ETPs due to 403 error
+   * @param organization - The demo organization to ensure is active
+   * @returns true if organization was reactivated, false if already active
+   */
+  async ensureDemoOrganizationActive(
+    organization: Organization,
+  ): Promise<boolean> {
+    if (organization.isActive) {
+      return false;
+    }
+
+    this.logger.warn(
+      `Demo organization was INACTIVE. Reactivating to prevent 403 errors. (ID: ${organization.id})`,
+    );
+
+    organization.isActive = true;
+    await this.organizationRepository.save(organization);
+
+    this.logger.log(
+      `Demo organization reactivated successfully (ID: ${organization.id})`,
+    );
+
+    return true;
+  }
+
+  /**
+   * Ensures the demo user is active (isActive = true).
+   *
+   * @see Issue #1341 - Demo user cannot create ETPs due to 403 error
+   * @param user - The demo user to ensure is active
+   * @returns true if user was reactivated, false if already active
+   */
+  async ensureDemoUserActive(user: User): Promise<boolean> {
+    if (user.isActive) {
+      return false;
+    }
+
+    this.logger.warn(
+      `Demo user was INACTIVE. Reactivating to prevent 403 errors. (Email: ${user.email})`,
+    );
+
+    user.isActive = true;
+    await this.userRepository.save(user);
+
+    this.logger.log(
+      `Demo user reactivated successfully (Email: ${user.email})`,
+    );
+
+    return true;
   }
 
   /**
@@ -183,9 +245,10 @@ export class DemoService {
    *
    * Operações (em transação):
    * 1. Busca organização demo pelo CNPJ
-   * 2. Busca todos os ETPs da organização
-   * 3. Deleta audit logs, versions, sections, e ETPs
-   * 4. Recria ETPs de exemplo
+   * 2. Garante que organização e usuário demo estão ativos (Issue #1341)
+   * 3. Busca todos os ETPs da organização
+   * 4. Deleta audit logs, versions, sections, e ETPs
+   * 5. Recria ETPs de exemplo
    *
    * @returns DemoResetResult com estatísticas da operação
    */
@@ -210,6 +273,10 @@ export class DemoService {
       };
     }
 
+    // Issue #1341: Ensure demo organization is active to prevent 403 errors
+    const organizationReactivated =
+      await this.ensureDemoOrganizationActive(demoOrg);
+
     // Buscar usuário demo para atribuir os ETPs de exemplo
     const demoUser = await this.findDemoUser(demoOrg.id);
 
@@ -223,9 +290,13 @@ export class DemoService {
         deletedVersions: 0,
         deletedAuditLogs: 0,
         createdEtps: 0,
+        organizationReactivated,
         error: 'Demo user not found for organization ' + demoOrg.id,
       };
     }
+
+    // Issue #1341: Ensure demo user is active to prevent 403 errors
+    const userReactivated = await this.ensureDemoUserActive(demoUser);
 
     // Executar em transação para garantir consistência
     const queryRunner = this.dataSource.createQueryRunner();
@@ -305,6 +376,8 @@ export class DemoService {
         deletedVersions,
         deletedAuditLogs,
         createdEtps,
+        organizationReactivated,
+        userReactivated,
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -321,6 +394,8 @@ export class DemoService {
         deletedVersions: 0,
         deletedAuditLogs: 0,
         createdEtps: 0,
+        organizationReactivated,
+        userReactivated,
         error: error.message,
       };
     } finally {
