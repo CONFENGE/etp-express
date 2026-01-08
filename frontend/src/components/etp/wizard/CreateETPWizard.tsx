@@ -58,6 +58,10 @@ export function CreateETPWizard({
 
   const { handleSubmit, trigger, getValues } = form;
 
+  // Calculate derived state early to use in handlers
+  const progressPercentage = ((currentStep + 1) / WIZARD_STEPS.length) * 100;
+  const isLastStep = currentStep === WIZARD_STEPS.length - 1;
+
   const validateCurrentStep = useCallback(async () => {
     const currentStepConfig = WIZARD_STEPS[currentStep];
     const result = await trigger(
@@ -99,11 +103,23 @@ export function CreateETPWizard({
   };
 
   const handleFormSubmit = async (data: ETPWizardFormData) => {
+    // Only allow submit on last step - prevents accidental submission via Enter key
+    if (!isLastStep) {
+      return;
+    }
     await onSubmit(data);
   };
 
-  const progressPercentage = ((currentStep + 1) / WIZARD_STEPS.length) * 100;
-  const isLastStep = currentStep === WIZARD_STEPS.length - 1;
+  // Prevent form submission when pressing Enter on input fields (except on last step)
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (
+      event.key === 'Enter' &&
+      !isLastStep &&
+      (event.target as HTMLElement).tagName !== 'TEXTAREA'
+    ) {
+      event.preventDefault();
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -178,8 +194,10 @@ export function CreateETPWizard({
       </div>
 
       {/* Form Content */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Prevents accidental form submission via Enter key (#1332) */}
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
+        onKeyDown={handleKeyDown}
         className="flex-1 flex flex-col"
       >
         <div className="flex-1 py-4 overflow-y-auto max-h-[400px]">
@@ -227,7 +245,7 @@ export function CreateETPWizard({
               </Button>
             ) : (
               <Button type="button" onClick={handleNext} disabled={isLoading}>
-                Proximo
+                Próximo
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             )}
