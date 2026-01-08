@@ -76,7 +76,7 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
       </FormField>
 
       <FormField
-        label="Criterios de Sustentabilidade"
+        label="Critérios de Sustentabilidade"
         name="criteriosSustentabilidade"
         error={errors.criteriosSustentabilidade?.message}
         isValid={
