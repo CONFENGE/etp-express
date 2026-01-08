@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 641/714 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 642/714 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1322 | Fix      | Map completionPercentage to progress for display (#1316) ✅    |
 | 2026-01-08 | #1321 | Fix      | Fix save section 404 - use PATCH /sections/:id (#1314) ✅      |
 | 2026-01-08 | #1320 | Fix      | Fix PDF export 404 error - P0 BLOQUEADOR (#1315) ✅            |
 | 2026-01-08 | #1319 | Fix      | CreateETPPage for /etps/new route - P0 BLOQUEADOR (#1313) ✅   |
@@ -93,22 +94,22 @@
 
 ---
 
-## Bugs Criticos P0 (3 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (2 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
 ### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
 
-| #     | Issue                                               | Area     | Status |
-| ----- | --------------------------------------------------- | -------- | ------ |
-| #1316 | [P0] Progresso mostra apenas "%" sem valor numérico | Frontend | 🔴     |
-| #1317 | [P0] Título do ETP não aparece no Editor            | Frontend | 🔴     |
-| #1318 | [P0] Tabs das seções fora de ordem numérica         | Frontend | 🔴     |
+| #     | Issue                                       | Area     | Status |
+| ----- | ------------------------------------------- | -------- | ------ |
+| #1317 | [P0] Título do ETP não aparece no Editor    | Frontend | 🔴     |
+| #1318 | [P0] Tabs das seções fora de ordem numérica | Frontend | 🔴     |
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                     | Area     | Status |
 | ----- | --------------------------------------------------------- | -------- | ------ |
+| #1316 | [P0] Progresso mostra apenas "%" sem valor numérico       | Frontend | ✅     |
 | #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404            | Frontend | ✅     |
 | #1315 | [P0] Exportar PDF retorna erro 404                        | Frontend | ✅     |
 | #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500          | Frontend | ✅     |
@@ -268,10 +269,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 714   |
-| Issues Abertas    | 74    |
-| Issues Fechadas   | 640   |
+| Issues Abertas    | 73    |
+| Issues Fechadas   | 641   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 3     |
+| Bugs P0 Abertos   | 2     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2496  |
