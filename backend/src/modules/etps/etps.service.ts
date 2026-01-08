@@ -522,6 +522,7 @@ export class EtpsService {
 
   /**
    * Automatically calculates and updates ETP completion percentage based on section status.
+   * Also auto-syncs the ETP status based on completion (Issue #1331).
    *
    * @remarks
    * Called by SectionsService whenever sections are created, updated, or deleted.
@@ -530,6 +531,11 @@ export class EtpsService {
    *
    * If ETP has no sections, completion is set to 0%. This method is idempotent
    * and safe to call repeatedly.
+   *
+   * **Status Auto-Sync (Issue #1331):**
+   * - If completionPercentage > 0 and status is DRAFT, auto-transition to IN_PROGRESS
+   * - Status COMPLETED is only set manually by the user (requires human validation)
+   * - This ensures dashboard counters are consistent with actual ETP progress
    *
    * **Security (Issue #758):**
    * Validates organizationId to prevent cross-tenant data access. Only ETPs
@@ -565,7 +571,25 @@ export class EtpsService {
       etp.completionPercentage = (completedSections / totalSections) * 100;
     }
 
+    // Issue #1331: Auto-sync status based on completion percentage
+    // If any progress has been made and ETP is still in DRAFT, move to IN_PROGRESS
+    // This ensures dashboard counters are consistent with actual progress
+    const previousStatus = etp.status;
+    if (etp.completionPercentage > 0 && etp.status === EtpStatus.DRAFT) {
+      etp.status = EtpStatus.IN_PROGRESS;
+      this.logger.log(
+        `ETP ${id} auto-transitioned from DRAFT to IN_PROGRESS (completion: ${etp.completionPercentage}%)`,
+      );
+    }
+
     await this.etpsRepository.save(etp);
+
+    // Log status change for debugging
+    if (previousStatus !== etp.status) {
+      this.logger.log(
+        `ETP ${id} status sync: ${previousStatus} -> ${etp.status}`,
+      );
+    }
   }
 
   /**
