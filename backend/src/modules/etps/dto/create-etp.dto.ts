@@ -45,8 +45,13 @@ export class ResponsavelTecnicoDto {
 }
 
 export class CreateEtpDto {
-  @ApiProperty({ example: 'ETP - Contratação de Serviços de TI' })
-  @IsString()
+  @ApiProperty({
+    example: 'ETP - Contratação de Serviços de TI',
+    description: 'Título do ETP (min: 5, max: 200 caracteres)',
+  })
+  @IsString({ message: 'Título deve ser uma string' })
+  @MinLength(5, { message: 'Título deve ter no mínimo 5 caracteres' })
+  @MaxLength(200, { message: 'Título deve ter no máximo 200 caracteres' })
   title: string;
 
   @ApiPropertyOptional({
@@ -59,8 +64,15 @@ export class CreateEtpDto {
   @ApiProperty({
     example:
       'Contratação de empresa especializada em desenvolvimento de sistemas web',
+    description: 'Objeto da contratação (min: 10, max: 500 caracteres)',
   })
-  @IsString()
+  @IsString({ message: 'Objeto deve ser uma string' })
+  @MinLength(10, {
+    message: 'Objeto da contratação deve ter no mínimo 10 caracteres',
+  })
+  @MaxLength(500, {
+    message: 'Objeto da contratação deve ter no máximo 500 caracteres',
+  })
   objeto: string;
 
   @ApiPropertyOptional({ example: '2023/001234' })
