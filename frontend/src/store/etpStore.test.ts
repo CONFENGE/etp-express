@@ -665,7 +665,8 @@ describe('etpStore', () => {
       const mockBlob = new Blob(['mock pdf content'], {
         type: 'application/pdf',
       });
-      vi.mocked(api.post).mockResolvedValue({
+      // exportPDF now uses GET instead of POST (#1315)
+      vi.mocked(api.get).mockResolvedValue({
         data: mockBlob,
         headers: {
           'content-disposition': 'attachment; filename="ETP-etp-1.pdf"',
@@ -685,9 +686,9 @@ describe('etpStore', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(api.post).toHaveBeenCalledWith(
-        '/etps/etp-1/export/pdf',
-        {},
+      // Verify GET call to correct export endpoint (#1315)
+      expect(api.get).toHaveBeenCalledWith(
+        '/export/etp/etp-1/pdf',
         expect.objectContaining({
           responseType: 'blob',
           signal: abortController.signal,
@@ -729,7 +730,8 @@ describe('etpStore', () => {
       // Create a CanceledError that simulates axios abort
       const canceledError = new Error('Request aborted');
       canceledError.name = 'CanceledError';
-      vi.mocked(api.post).mockRejectedValue(canceledError);
+      // exportPDF now uses GET instead of POST (#1315)
+      vi.mocked(api.get).mockRejectedValue(canceledError);
 
       const { result } = renderHook(() => useETPStore());
       const abortController = new AbortController();
@@ -783,7 +785,8 @@ describe('etpStore', () => {
 
     it('should still set error for non-abort errors in exportPDF', async () => {
       const errorMessage = 'Network error';
-      vi.mocked(api.post).mockRejectedValue(new Error(errorMessage));
+      // exportPDF now uses GET instead of POST (#1315)
+      vi.mocked(api.get).mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useETPStore());
 
