@@ -52,13 +52,17 @@ export enum ExportFormat {
  * Known Chromium executable paths across different environments.
  * Order matters - most common production paths first.
  *
+ * Note: Nix/Nixpacks paths are detected dynamically via glob patterns
+ * since they include version hashes (e.g., /nix/store/<hash>-chromium-<version>/bin/chromium)
+ *
  * @see https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
+ * @see https://nixos.wiki/wiki/Chromium
  */
-const CHROMIUM_PATHS = [
-  // Nixpacks/Nix paths
-  '/nix/store/chromium/bin/chromium',
+const CHROMIUM_STATIC_PATHS = [
+  // Nix symlink paths (may exist if properly configured)
   '/run/current-system/sw/bin/chromium',
-  // Common Linux paths
+  '/run/current-system/sw/bin/chromium-browser',
+  // Common Linux paths (including chromium-browser variant)
   '/usr/bin/chromium-browser',
   '/usr/bin/chromium',
   '/usr/bin/google-chrome',
@@ -92,12 +96,19 @@ export class ExportService {
 
   /**
    * Detects and caches the Chromium executable path.
-   * Tries environment variable first, then known paths, then `which` command.
+   * Detection order:
+   *   1. PUPPETEER_EXECUTABLE_PATH env var
+   *   2. Nix store glob patterns (dynamic discovery for Nixpacks)
+   *   3. Static known paths (common Linux/macOS locations)
+   *   4. `which` command (Unix shell detection)
+   *   5. Puppeteer bundled Chromium (fallback)
    *
    * @remarks
    * This detection runs once at startup to avoid repeated filesystem checks.
-   * Falls back to letting Puppeteer use its bundled Chromium if no system
-   * Chromium is found.
+   * The Nix glob patterns are checked early because Railway/Nixpacks uses
+   * Nix paths with version hashes that can't be hardcoded.
+   *
+   * @see Issue #1355 - PDF export regression fix
    */
   private detectChromiumPath(): void {
     // 1. Check environment variable (highest priority)
@@ -108,8 +119,16 @@ export class ExportService {
       return;
     }
 
-    // 2. Try known paths
-    for (const candidatePath of CHROMIUM_PATHS) {
+    // 2. Try Nix store glob patterns (for Railway/Nixpacks)
+    const nixChromium = this.findChromiumInNixStore();
+    if (nixChromium) {
+      this.chromiumPath = nixChromium;
+      this.logger.log(`Found Chromium in Nix store: ${nixChromium}`);
+      return;
+    }
+
+    // 3. Try static known paths
+    for (const candidatePath of CHROMIUM_STATIC_PATHS) {
       if (this.isValidExecutable(candidatePath)) {
         this.chromiumPath = candidatePath;
         this.logger.log(`Found Chromium at: ${candidatePath}`);
@@ -117,10 +136,10 @@ export class ExportService {
       }
     }
 
-    // 3. Try `which` command (Unix)
+    // 4. Try `which` command (Unix) - includes chromium-browser
     try {
       const whichResult = execSync(
-        'which chromium chromium-browser google-chrome 2>/dev/null',
+        'which chromium-browser chromium google-chrome 2>/dev/null || true',
         {
           encoding: 'utf-8',
         },
@@ -136,12 +155,70 @@ export class ExportService {
       // 'which' command not available or failed - continue
     }
 
-    // 4. Let Puppeteer use its bundled Chromium
+    // 5. Let Puppeteer use its bundled Chromium (may not be available if PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true)
     this.chromiumPath = undefined;
     this.logger.warn(
-      'No system Chromium found. Puppeteer will use bundled Chromium. ' +
-        'This may cause issues in containerized environments without proper dependencies.',
+      'No system Chromium found. PDF export may fail if PUPPETEER_SKIP_CHROMIUM_DOWNLOAD is enabled. ' +
+        'Check that chromium is installed via nixpacks.toml or aptPkgs.',
     );
+  }
+
+  /**
+   * Searches for Chromium executable in the Nix store.
+   * This is necessary because Nix paths include version hashes that can't be hardcoded.
+   *
+   * @returns Path to Chromium executable if found, undefined otherwise
+   *
+   * @example
+   * Finds paths like: /nix/store/abc123-chromium-120.0.6099.109/bin/chromium
+   */
+  private findChromiumInNixStore(): string | undefined {
+    const nixStorePath = '/nix/store';
+
+    // Check if we're in a Nix environment first
+    if (!fs.existsSync(nixStorePath)) {
+      return undefined;
+    }
+
+    this.logger.debug('Searching for Chromium in Nix store...');
+
+    try {
+      const storeEntries = fs.readdirSync(nixStorePath);
+
+      // Look for chromium directories (includes ungoogled-chromium)
+      const chromiumDirs = storeEntries.filter(
+        (entry) =>
+          entry.includes('-chromium-') || entry.includes('-ungoogled-chromium'),
+      );
+
+      this.logger.debug(
+        `Found ${chromiumDirs.length} chromium directories in Nix store`,
+      );
+
+      // Sort by name to get consistent results (often includes version)
+      chromiumDirs.sort().reverse(); // Most recent version first
+
+      // Check each chromium directory for the binary
+      for (const dir of chromiumDirs) {
+        const binPaths = [
+          path.join(nixStorePath, dir, 'bin', 'chromium'),
+          path.join(nixStorePath, dir, 'bin', 'chromium-browser'),
+        ];
+
+        for (const binPath of binPaths) {
+          if (this.isValidExecutable(binPath)) {
+            this.logger.debug(`Found Chromium at: ${binPath}`);
+            return binPath;
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.debug(
+        `Error scanning Nix store: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+
+    return undefined;
   }
 
   /**
