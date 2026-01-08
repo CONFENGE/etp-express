@@ -394,6 +394,7 @@ describe('ETPEditor', () => {
 
   const mockFetchETP = vi.fn();
   const mockUpdateETP = vi.fn();
+  const mockUpdateSection = vi.fn();
   const mockSuccessToast = vi.fn();
   const mockErrorToast = vi.fn();
 
@@ -415,6 +416,7 @@ describe('ETPEditor', () => {
       fetchETP: mockFetchETP,
       createETP: vi.fn(),
       updateETP: mockUpdateETP,
+      updateSection: mockUpdateSection,
       deleteETP: vi.fn(),
       setCurrentETP: vi.fn(),
     });
@@ -553,12 +555,12 @@ describe('ETPEditor', () => {
   });
 
   /**
-   * Teste 5: Botão "Salvar" chama updateETP do store
+   * Teste 5: Botão "Salvar" chama updateSection do store (#1314)
    */
-  it('chama updateETP ao clicar no botão Salvar', async () => {
+  it('chama updateSection ao clicar no botão Salvar', async () => {
     const user = userEvent.setup();
 
-    mockUpdateETP.mockResolvedValueOnce(undefined);
+    mockUpdateSection.mockResolvedValueOnce(undefined);
 
     render(
       <BrowserRouter>
@@ -586,16 +588,13 @@ describe('ETPEditor', () => {
     const saveButton = screen.getByRole('button', { name: /Salvar/i });
     await user.click(saveButton);
 
-    // Verifica que updateETP foi chamado
+    // Verifica que updateSection foi chamado com os parâmetros corretos (#1314)
     await waitFor(() => {
-      expect(mockUpdateETP).toHaveBeenCalledWith('etp-123', {
-        sections: expect.arrayContaining([
-          expect.objectContaining({
-            sectionNumber: 1,
-            content: 'Conteúdo modificado',
-          }),
-        ]),
-      });
+      expect(mockUpdateSection).toHaveBeenCalledWith(
+        'etp-123', // etpId
+        'section-1', // sectionId
+        { content: 'Conteúdo modificado' },
+      );
     });
 
     // Verifica que o toast de sucesso foi exibido
@@ -641,6 +640,7 @@ describe('ETPEditor', () => {
       fetchETP: mockFetchETP,
       createETP: vi.fn(),
       updateETP: mockUpdateETP,
+      updateSection: mockUpdateSection,
       deleteETP: vi.fn(),
       setCurrentETP: vi.fn(),
     });
@@ -661,12 +661,12 @@ describe('ETPEditor', () => {
   });
 
   /**
-   * Teste extra: Verifica erro ao salvar
+   * Teste extra: Verifica erro ao salvar (#1314)
    */
-  it('exibe toast de erro quando updateETP falha', async () => {
+  it('exibe toast de erro quando updateSection falha', async () => {
     const user = userEvent.setup();
 
-    mockUpdateETP.mockRejectedValueOnce(new Error('Erro ao salvar'));
+    mockUpdateSection.mockRejectedValueOnce(new Error('Erro ao salvar'));
 
     render(
       <BrowserRouter>
