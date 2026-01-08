@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️         |
 | 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️              |
 | 2026-01-08 | #1339 | Fix      | Corrigir acentuação em textos da interface (#1329) ✅          |
 | 2026-01-08 | #1338 | Fix      | Skip Campos Específicos step when no template (#1330) ✅       |
