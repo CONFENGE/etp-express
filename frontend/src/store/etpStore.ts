@@ -624,28 +624,9 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   ) => {
     set({ isLoading: true, error: null });
     try {
-      const { signal, ...exportOptions } = options || {};
-      // Note: Backend export route is GET /export/etp/:id/pdf (#1315)
-      // POST data is sent via query params for GET compatibility
-      const queryParams = new URLSearchParams();
-      if (exportOptions.includeMetadata !== undefined) {
-        queryParams.set(
-          'includeMetadata',
-          String(exportOptions.includeMetadata),
-        );
-      }
-      if (exportOptions.includeSections !== undefined) {
-        queryParams.set(
-          'includeSections',
-          String(exportOptions.includeSections),
-        );
-      }
-      if (exportOptions.watermark) {
-        queryParams.set('watermark', exportOptions.watermark);
-      }
-      const queryString = queryParams.toString();
-      const url = `/export/etp/${id}/pdf${queryString ? `?${queryString}` : ''}`;
-      const response = await api.get(url, {
+      const { signal } = options || {};
+      // Backend export route is GET /export/etp/:id/pdf (#1315)
+      const response = await api.get(`/export/etp/${id}/pdf`, {
         responseType: 'blob',
         signal,
       });
