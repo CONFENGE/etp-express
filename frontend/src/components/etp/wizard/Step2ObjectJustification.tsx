@@ -112,11 +112,11 @@ export function Step2ObjectJustification({
             current: unidadeMedidaValue.length,
             max: UNIDADE_MEDIDA_MAX_LENGTH,
           }}
-          helpText="Ex: unidade, mes, hora, m2"
+          helpText="Ex: unidade, mês, hora, m²"
         >
           <Input
             id="unidadeMedida"
-            placeholder="Ex: mes"
+            placeholder="Ex: mês"
             {...register('unidadeMedida')}
           />
         </FormField>
@@ -135,7 +135,7 @@ export function Step2ObjectJustification({
           current: justificativaValue.length,
           max: JUSTIFICATIVA_MAX_LENGTH,
         }}
-        helpText={`Justificativa tecnica e legal (min: ${JUSTIFICATIVA_MIN_LENGTH} caracteres)`}
+        helpText={`Justificativa técnica e legal (min: ${JUSTIFICATIVA_MIN_LENGTH} caracteres)`}
       >
         <Textarea
           id="justificativaContratacao"
@@ -169,7 +169,7 @@ export function Step2ObjectJustification({
       </FormField>
 
       <FormField
-        label="Beneficios Esperados"
+        label="Benefícios Esperados"
         name="beneficiosEsperados"
         error={errors.beneficiosEsperados?.message}
         isValid={
