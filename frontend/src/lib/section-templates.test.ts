@@ -117,6 +117,54 @@ describe('section-templates', () => {
         'Failed to load section templates: Not Found',
       );
     });
+
+    it('should sort templates by section number (#1318)', async () => {
+      // Templates in wrong order (matching the bug report)
+      const unorderedTemplates: SectionTemplate[] = [
+        {
+          number: 1,
+          title: 'Section 1',
+          description: 'First section',
+          requiredWords: 100,
+          aiPrompt: 'Generate section 1',
+        },
+        {
+          number: 4,
+          title: 'Section 4',
+          description: 'Fourth section',
+          requiredWords: 100,
+          aiPrompt: 'Generate section 4',
+        },
+        {
+          number: 2,
+          title: 'Section 2',
+          description: 'Second section',
+          requiredWords: 100,
+          aiPrompt: 'Generate section 2',
+        },
+        {
+          number: 3,
+          title: 'Section 3',
+          description: 'Third section',
+          requiredWords: 100,
+          aiPrompt: 'Generate section 3',
+        },
+      ];
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => unorderedTemplates,
+      });
+
+      const templates = await loadSectionTemplates();
+
+      // Verify templates are sorted by number
+      expect(templates.map((t) => t.number)).toEqual([1, 2, 3, 4]);
+      expect(templates[0].number).toBe(1);
+      expect(templates[1].number).toBe(2);
+      expect(templates[2].number).toBe(3);
+      expect(templates[3].number).toBe(4);
+    });
   });
 
   describe('getSectionTemplates', () => {
