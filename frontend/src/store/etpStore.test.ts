@@ -172,8 +172,13 @@ describe('etpStore', () => {
     it('should populate ETPs array on successful fetch', async () => {
       const mockETPs = [mockETP, { ...mockETP, id: 'etp-2', title: 'ETP 2' }];
       // API returns paginated response (#982)
+      // Backend returns completionPercentage which gets mapped to progress (#1316)
+      const mockBackendETPs = mockETPs.map((etp) => ({
+        ...etp,
+        completionPercentage: etp.progress,
+      }));
       vi.mocked(apiHelpers.get).mockResolvedValue({
-        data: mockETPs,
+        data: mockBackendETPs,
         meta: { total: 2, page: 1, perPage: 10, totalPages: 1 },
       });
 
@@ -216,7 +221,11 @@ describe('etpStore', () => {
 
   describe('Teste 2: fetchETP', () => {
     it('should set currentETP on successful fetch', async () => {
-      vi.mocked(apiHelpers.get).mockResolvedValue(mockETP);
+      // Backend returns ETP wrapped in { data: ETP, disclaimer: string } (#1316)
+      // Also returns completionPercentage which gets mapped to progress
+      vi.mocked(apiHelpers.get).mockResolvedValue({
+        data: { ...mockETP, completionPercentage: mockETP.progress },
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -256,7 +265,11 @@ describe('etpStore', () => {
 
   describe('Teste 3: createETP', () => {
     it('should add ETP to array and return ID on successful creation', async () => {
-      vi.mocked(apiHelpers.post).mockResolvedValue(mockETP);
+      // Backend returns ETP wrapped in { data: ETP, disclaimer: string } (#1316)
+      // Also returns completionPercentage which gets mapped to progress
+      vi.mocked(apiHelpers.post).mockResolvedValue({
+        data: { ...mockETP, completionPercentage: mockETP.progress },
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -451,7 +464,11 @@ describe('etpStore', () => {
   describe('Additional coverage tests', () => {
     it('should update ETP in array on updateETP', async () => {
       const updatedETP = { ...mockETP, title: 'ETP Atualizado' };
-      vi.mocked(apiHelpers.put).mockResolvedValue(updatedETP);
+      // Backend returns ETP wrapped in { data: ETP, disclaimer: string } (#1316)
+      // Also returns completionPercentage which gets mapped to progress
+      vi.mocked(apiHelpers.put).mockResolvedValue({
+        data: { ...updatedETP, completionPercentage: updatedETP.progress },
+      });
 
       const { result } = renderHook(() => useETPStore());
 
@@ -479,9 +496,10 @@ describe('etpStore', () => {
       const { result } = renderHook(() => useETPStore());
 
       // Setup: populate etps array (API returns paginated response #982)
+      // Backend returns completionPercentage which gets mapped to progress (#1316)
       await act(async () => {
         vi.mocked(apiHelpers.get).mockResolvedValue({
-          data: [mockETP],
+          data: [{ ...mockETP, completionPercentage: mockETP.progress }],
           meta: { total: 1, page: 1, perPage: 10, totalPages: 1 },
         });
         await result.current.fetchETPs();

@@ -31,6 +31,42 @@ interface ExportResult {
 }
 
 /**
+ * Backend ETP response type with completionPercentage field.
+ * The backend returns `completionPercentage` but frontend type expects `progress`.
+ * @see Issue #1316 - Progress display fix
+ */
+interface BackendETP extends Omit<ETP, 'progress'> {
+  completionPercentage?: number;
+  progress?: number;
+}
+
+/**
+ * Maps backend ETP response to frontend ETP type.
+ * Converts `completionPercentage` → `progress` for compatibility.
+ *
+ * @param backendEtp - ETP data from backend API
+ * @returns ETP object with `progress` field properly set
+ * @see Issue #1316 - Fix progress display showing only '%' without value
+ */
+function mapBackendETPToFrontend(backendEtp: BackendETP): ETP {
+  const { completionPercentage, ...rest } = backendEtp;
+  return {
+    ...rest,
+    // Use completionPercentage from backend, fallback to progress if already mapped, default to 0
+    progress: completionPercentage ?? rest.progress ?? 0,
+  } as ETP;
+}
+
+/**
+ * Maps array of backend ETPs to frontend ETPs.
+ * @param backendEtps - Array of ETP data from backend API
+ * @returns Array of ETP objects with `progress` field properly set
+ */
+function mapBackendETPs(backendEtps: BackendETP[]): ETP[] {
+  return backendEtps.map(mapBackendETPToFrontend);
+}
+
+/**
  * Backend SectionType enum values.
  * Must match backend/src/entities/etp-section.entity.ts SectionType enum.
  */
@@ -209,10 +245,12 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     set({ isLoading: true, error: null });
     try {
       // API returns paginated response: { data: ETP[], meta: {...}, disclaimer: string }
-      const response = await apiHelpers.get<{ data: ETP[]; meta: unknown }>(
-        '/etps',
-      );
-      set({ etps: response.data, isLoading: false });
+      // Backend returns `completionPercentage`, map to frontend `progress` (#1316)
+      const response = await apiHelpers.get<{
+        data: BackendETP[];
+        meta: unknown;
+      }>('/etps');
+      set({ etps: mapBackendETPs(response.data), isLoading: false });
     } catch (error) {
       set({
         error: getContextualErrorMessage('carregar', 'ETPs', error),
@@ -224,8 +262,14 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   fetchETP: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const etp = await apiHelpers.get<ETP>(`/etps/${id}`);
-      set({ currentETP: etp, isLoading: false });
+      // Backend returns `completionPercentage`, map to frontend `progress` (#1316)
+      const response = await apiHelpers.get<{ data: BackendETP }>(
+        `/etps/${id}`,
+      );
+      set({
+        currentETP: mapBackendETPToFrontend(response.data),
+        isLoading: false,
+      });
     } catch (error) {
       set({
         error: getContextualErrorMessage('carregar', 'o ETP', error),
@@ -237,7 +281,12 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   createETP: async (data: Partial<ETP>) => {
     set({ isLoading: true, error: null });
     try {
-      const etp = await apiHelpers.post<ETP>('/etps', data);
+      // Backend returns `completionPercentage`, map to frontend `progress` (#1316)
+      const response = await apiHelpers.post<{ data: BackendETP }>(
+        '/etps',
+        data,
+      );
+      const etp = mapBackendETPToFrontend(response.data);
       set((state) => ({
         etps: [etp, ...state.etps],
         currentETP: etp,
@@ -256,7 +305,12 @@ export const useETPStore = create<ETFState>((set, _get) => ({
   updateETP: async (id: string, data: Partial<ETP>) => {
     set({ isLoading: true, error: null });
     try {
-      const updated = await apiHelpers.put<ETP>(`/etps/${id}`, data);
+      // Backend returns `completionPercentage`, map to frontend `progress` (#1316)
+      const response = await apiHelpers.put<{ data: BackendETP }>(
+        `/etps/${id}`,
+        data,
+      );
+      const updated = mapBackendETPToFrontend(response.data);
       set((state) => ({
         etps: state.etps.map((etp) => (etp.id === id ? updated : etp)),
         currentETP: state.currentETP?.id === id ? updated : state.currentETP,
