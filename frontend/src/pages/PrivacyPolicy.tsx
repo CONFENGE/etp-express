@@ -114,7 +114,7 @@ export function PrivacyPolicy() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  Versao 2.0
+                  Versão 2.0
                 </span>
                 <span className="hidden sm:inline">|</span>
                 <span>Atualizada: 22/11/2025</span>
@@ -125,14 +125,14 @@ export function PrivacyPolicy() {
 
         {/* Content */}
         <div className="space-y-6 sm:space-y-8">
-          {/* 1. Identificacao do Controlador */}
+          {/* 1. Identificação do Controlador */}
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
                   1
                 </span>
-                Identificacao do Controlador
+                Identificação do Controlador
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -142,13 +142,13 @@ export function PrivacyPolicy() {
                     Controlador de Dados
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    ETP Express - Sistema de Geracao de Estudos Tecnicos
+                    ETP Express - Sistema de Geração de Estudos Técnicos
                     Preliminares
                   </p>
                 </div>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="font-semibold text-sm mb-1">
-                    Contato para Protecao de Dados
+                    Contato para Proteção de Dados
                   </p>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="h-4 w-4 text-primary" />
@@ -159,30 +159,30 @@ export function PrivacyPolicy() {
             </CardContent>
           </Card>
 
-          {/* 2. Introducao */}
+          {/* 2. Introdução */}
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
                   2
                 </span>
-                Introducao
+                Introdução
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                O ETP Express esta comprometido com a protecao da privacidade e
-                dos dados pessoais de seus usuarios. Esta Politica de
+                O ETP Express está comprometido com a proteção da privacidade e
+                dos dados pessoais de seus usuários. Esta Política de
                 Privacidade descreve como coletamos, usamos, armazenamos,
-                compartilhamos e protegemos suas informacoes pessoais em
-                conformidade com a Lei Geral de Protecao de Dados (LGPD - Lei
+                compartilhamos e protegemos suas informações pessoais em
+                conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei
                 13.709/2018).
               </p>
               <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
                   <strong>Compromisso LGPD:</strong> Seguimos rigorosamente os
-                  principios de finalidade, adequacao, necessidade,
-                  transparencia, seguranca e prevencao.
+                  princípios de finalidade, adequação, necessidade,
+                  transparência, segurança e prevenção.
                 </p>
               </div>
             </CardContent>
@@ -211,11 +211,11 @@ export function PrivacyPolicy() {
                       cells: [
                         'Nome completo',
                         'Sim',
-                        'Identificacao do usuario',
+                        'Identificação do usuário',
                       ],
                     },
                     {
-                      cells: ['Email', 'Sim', 'Autenticacao e comunicacao'],
+                      cells: ['Email', 'Sim', 'Autenticação e comunicação'],
                     },
                     {
                       cells: ['Senha', 'Sim', 'Acesso seguro a conta'],
@@ -224,12 +224,12 @@ export function PrivacyPolicy() {
                     {
                       cells: [
                         'Orgao/Instituicao',
-                        'Nao',
-                        'Contextualizacao dos ETPs',
+                        'Não',
+                        'Contextualização dos ETPs',
                       ],
                     },
                     {
-                      cells: ['Cargo', 'Nao', 'Contextualizacao dos ETPs'],
+                      cells: ['Cargo', 'Não', 'Contextualização dos ETPs'],
                     },
                   ]}
                 />
@@ -245,7 +245,7 @@ export function PrivacyPolicy() {
                   <div className="bg-muted p-3 rounded-lg">
                     <h5 className="font-semibold text-sm">Endereco IP</h5>
                     <p className="text-xs text-muted-foreground">
-                      Seguranca e prevencao de fraudes
+                      Segurança e prevenção de fraudes
                     </p>
                   </div>
                   <div className="bg-muted p-3 rounded-lg">
@@ -287,12 +287,12 @@ export function PrivacyPolicy() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
                   <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2 text-sm sm:text-base">
-                    Execucao do Servico
+                    Execução do Serviço
                   </h4>
                   <ul className="list-disc pl-5 text-sm text-green-700 dark:text-green-300 space-y-1">
-                    <li>Autenticacao e acesso ao sistema</li>
-                    <li>Criacao e gerenciamento de ETPs</li>
-                    <li>Geracao de secoes com IA</li>
+                    <li>Autenticação e acesso ao sistema</li>
+                    <li>Criação e gerenciamento de ETPs</li>
+                    <li>Geração de seções com IA</li>
                   </ul>
                 </div>
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -300,7 +300,7 @@ export function PrivacyPolicy() {
                     Seguranca
                   </h4>
                   <ul className="list-disc pl-5 text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                    <li>Prevencao de fraudes</li>
+                    <li>Prevenção de fraudes</li>
                     <li>Auditoria de acoes</li>
                     <li>Conformidade legal</li>
                   </ul>
@@ -325,8 +325,8 @@ export function PrivacyPolicy() {
                 rows={[
                   {
                     cells: [
-                      'Autenticacao e ETPs',
-                      'Execucao de contrato',
+                      'Autenticação e ETPs',
+                      'Execução de contrato',
                       'Art. 7, V',
                     ],
                   },
@@ -336,7 +336,7 @@ export function PrivacyPolicy() {
                   },
                   {
                     cells: [
-                      'Transferencia internacional',
+                      'Transferência internacional',
                       'Consentimento especifico',
                       'Art. 33',
                     ],
@@ -344,7 +344,7 @@ export function PrivacyPolicy() {
                   {
                     cells: [
                       'Logs de auditoria',
-                      'Obrigacao legal',
+                      'Obrigação legal',
                       'Art. 7, II',
                     ],
                   },
@@ -378,7 +378,7 @@ export function PrivacyPolicy() {
                           OpenAI
                         </span>,
                         'Estados Unidos',
-                        'Geracao de texto com IA',
+                        'Geração de texto com IA',
                       ],
                     },
                     {
@@ -405,14 +405,14 @@ export function PrivacyPolicy() {
               <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   <strong>Importante:</strong> Dados pessoais diretos (nome,
-                  email) NAO sao enviados aos provedores de IA. Apenas o
-                  conteudo dos ETPs e processado.
+                  email) NÃO são enviados aos provedores de IA. Apenas o
+                  conteúdo dos ETPs é processado.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* 7. Transferencia Internacional */}
+          {/* 7. Transferência Internacional */}
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
@@ -420,15 +420,15 @@ export function PrivacyPolicy() {
                   7
                 </span>
                 <Globe className="h-5 w-5" />
-                Transferencia Internacional de Dados
+                Transferência Internacional de Dados
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                Seus dados sao transferidos para os Estados Unidos, onde estao
+                Seus dados são transferidos para os Estados Unidos, onde estão
                 localizados os servidores de nossos provedores. Esta
-                transferencia e realizada com base no seu{' '}
-                <strong>consentimento especifico</strong> (LGPD Art. 33, VIII).
+                transferência é realizada com base no seu{' '}
+                <strong>consentimento específico</strong> (LGPD Art. 33, VIII).
               </p>
               <div className="bg-muted p-4 rounded-lg">
                 <h4 className="font-semibold mb-3 text-sm sm:text-base">
@@ -450,7 +450,7 @@ export function PrivacyPolicy() {
                   <div className="flex items-start gap-2">
                     <Lock className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-xs sm:text-sm text-muted-foreground">
-                      Clausulas contratuais de protecao
+                      Cláusulas contratuais de proteção
                     </span>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export function PrivacyPolicy() {
             </CardContent>
           </Card>
 
-          {/* 8. Retencao */}
+          {/* 8. Retenção */}
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
@@ -466,7 +466,7 @@ export function PrivacyPolicy() {
                   8
                 </span>
                 <Clock className="h-5 w-5" />
-                Retencao de Dados
+                Retenção de Dados
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -504,19 +504,19 @@ export function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-muted-foreground text-sm sm:text-base">
-                Conforme a LGPD (Art. 18), voce possui os seguintes direitos:
+                Conforme a LGPD (Art. 18), você possui os seguintes direitos:
               </p>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="bg-muted p-3 rounded-lg">
                   <h5 className="font-semibold text-sm">
-                    Confirmacao e acesso
+                    Confirmação e acesso
                   </h5>
                   <p className="text-xs text-muted-foreground">
-                    Confirmar se tratamos seus dados e obter copia
+                    Confirmar se tratamos seus dados e obter cópia
                   </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
-                  <h5 className="font-semibold text-sm">Correcao</h5>
+                  <h5 className="font-semibold text-sm">Correção</h5>
                   <p className="text-xs text-muted-foreground">
                     Corrigir dados incompletos ou desatualizados
                   </p>
@@ -528,19 +528,19 @@ export function PrivacyPolicy() {
                   </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
-                  <h5 className="font-semibold text-sm">Eliminacao</h5>
+                  <h5 className="font-semibold text-sm">Eliminação</h5>
                   <p className="text-xs text-muted-foreground">
-                    Solicitar exclusao de dados
+                    Solicitar exclusão de dados
                   </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
-                  <h5 className="font-semibold text-sm">Revogacao</h5>
+                  <h5 className="font-semibold text-sm">Revogação</h5>
                   <p className="text-xs text-muted-foreground">
                     Revogar consentimento a qualquer momento
                   </p>
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
-                  <h5 className="font-semibold text-sm">Informacao</h5>
+                  <h5 className="font-semibold text-sm">Informação</h5>
                   <p className="text-xs text-muted-foreground">
                     Saber com quem compartilhamos seus dados
                   </p>
@@ -555,7 +555,7 @@ export function PrivacyPolicy() {
                 </h4>
                 <p className="text-sm text-muted-foreground mb-3">
                   Entre em contato pelo email abaixo com o assunto "[LGPD]
-                  Solicitacao de [direito]":
+                  Solicitação de [direito]":
                 </p>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
@@ -603,7 +603,7 @@ export function PrivacyPolicy() {
                     <li>Acesso restrito por necessidade</li>
                     <li>Logs de auditoria</li>
                     <li>Procedimentos de resposta a incidentes</li>
-                    <li>Rotacao periodica de secrets</li>
+                    <li>Rotação periódica de secrets</li>
                   </ul>
                 </div>
               </div>
@@ -633,7 +633,7 @@ export function PrivacyPolicy() {
               <Separator />
               <div className="bg-muted p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground mb-2">
-                  Caso nao esteja satisfeito com nossa resposta, voce pode
+                  Caso não esteja satisfeito com nossa resposta, você pode
                   contatar a ANPD:
                 </p>
                 <a
@@ -656,12 +656,12 @@ export function PrivacyPolicy() {
                 Reconhecimento e Consentimento
               </p>
               <p className="text-sm text-muted-foreground mb-4 leading-relaxed max-w-2xl mx-auto">
-                Ao utilizar o {APP_NAME}, voce declara ter lido e concordado com
-                esta Politica de Privacidade.
+                Ao utilizar o {APP_NAME}, você declara ter lido e concordado com
+                esta Política de Privacidade.
               </p>
               <Separator className="my-4 max-w-md mx-auto" />
               <p className="text-xs text-muted-foreground max-w-xl mx-auto">
-                Esta politica e regida pela legislacao brasileira, especialmente
+                Esta política é regida pela legislação brasileira, especialmente
                 a LGPD (Lei 13.709/2018).
               </p>
             </CardContent>
