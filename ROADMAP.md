@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 644/722 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 645/722 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1334 | Fix      | Prevent wizard premature submission via Enter key (#1332) ✅   |
 | 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅             |
 | 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                         |
 | 2026-01-08 | #1323 | Fix      | Show fallback title when ETP title is empty (#1317) ✅         |
@@ -97,7 +98,7 @@
 
 ---
 
-## Bugs Criticos P0 (7 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 (6 issues) - HAPPY PATH QUEBRADO ⚠️
 
 > **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
 
@@ -105,7 +106,6 @@
 
 | #     | Issue                                                                | Area             | Status |
 | ----- | -------------------------------------------------------------------- | ---------------- | ------ |
-| #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente  | Frontend         | 🔴     |
 | #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard   | Backend/Frontend | 🔴     |
 | #1330 | [P0] Passo 5 do wizard inútil quando não há templates                | Frontend         | 🔴     |
 | #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador        | Frontend         | 🔴     |
@@ -117,6 +117,7 @@
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | ✅     |
 | #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | ✅     |
 | #1318 | [P0] Tabs das seções fora de ordem numérica                               | Frontend         | ✅     |
 | #1317 | [P0] Título do ETP não aparece no Editor                                  | Frontend         | ✅     |
@@ -280,15 +281,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 722   |
-| Issues Abertas    | 78    |
-| Issues Fechadas   | 644   |
+| Issues Abertas    | 77    |
+| Issues Fechadas   | 645   |
 | Progresso         | 89%   |
-| Bugs P0 Abertos   | 8     |
+| Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2496  |
-| Frontend Tests    | 1734  |
-| Total Tests       | 4230  |
+| Backend Tests     | 2502  |
+| Frontend Tests    | 1738  |
+| Total Tests       | 4240  |
 
 ---
 
