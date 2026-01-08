@@ -11,6 +11,20 @@ describe('ETPEditorHeader', () => {
     expect(screen.getByTestId('etp-title')).toBeInTheDocument();
   });
 
+  // Fallback title tests (#1317)
+  it('should show fallback title when etpTitle is empty string', () => {
+    render(<ETPEditorHeader etpTitle="" onSave={() => {}} />);
+
+    expect(screen.getByText('ETP sem titulo')).toBeInTheDocument();
+    expect(screen.getByTestId('etp-title')).toBeInTheDocument();
+  });
+
+  it('should show fallback title when etpTitle is whitespace only', () => {
+    render(<ETPEditorHeader etpTitle="   " onSave={() => {}} />);
+
+    expect(screen.getByText('ETP sem titulo')).toBeInTheDocument();
+  });
+
   it('should render ETP description when provided with data-testid', () => {
     render(
       <ETPEditorHeader
