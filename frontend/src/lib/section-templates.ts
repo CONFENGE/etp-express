@@ -22,7 +22,8 @@ export async function loadSectionTemplates(): Promise<SectionTemplate[]> {
       );
     }
     const templates = (await response.json()) as SectionTemplate[];
-    cachedTemplates = templates;
+    // Sort templates by section number to ensure correct tab order (#1318)
+    cachedTemplates = templates.sort((a, b) => a.number - b.number);
     return cachedTemplates;
   } catch (error) {
     logger.error('Error loading section templates', error);
