@@ -52,6 +52,45 @@ export function fallbackAuthCleanup(): void {
   window.location.href = '/login';
 }
 
+/**
+ * Extracts user-friendly validation error messages from NestJS/class-validator responses.
+ * NestJS returns validation errors in format: { message: string[] | string }
+ *
+ * @param errorData - Error response data from backend
+ * @returns Formatted validation message or null
+ */
+function extractValidationMessage(errorData: unknown): string | null {
+  if (typeof errorData !== 'object' || errorData === null) {
+    return null;
+  }
+
+  const data = errorData as Record<string, unknown>;
+  const message = data.message;
+
+  // NestJS class-validator returns array of validation messages
+  if (Array.isArray(message)) {
+    // Filter out empty messages and join with semicolon
+    const validMessages = message.filter(
+      (m) => typeof m === 'string' && m.trim(),
+    );
+    if (validMessages.length > 0) {
+      // Limit to first 3 errors to avoid overwhelming the user
+      const displayMessages = validMessages.slice(0, 3);
+      const hasMore = validMessages.length > 3;
+      return hasMore
+        ? `${displayMessages.join('; ')} (e mais ${validMessages.length - 3} erro(s))`
+        : displayMessages.join('; ');
+    }
+  }
+
+  // Single string message
+  if (typeof message === 'string' && message.trim()) {
+    return message;
+  }
+
+  return null;
+}
+
 // Response interceptor - Handle errors globally
 api.interceptors.response.use(
   (response) => response,
@@ -87,6 +126,17 @@ api.interceptors.response.use(
 
     // Extract original error data
     const errorData = error.response?.data || {};
+
+    // Handle 400 validation errors specially - extract detailed validation messages
+    if (statusCode === 400 && typeof errorData === 'object') {
+      const validationMessage = extractValidationMessage(errorData);
+      return Promise.reject({
+        ...errorData,
+        message: validationMessage || friendlyMessage,
+        originalMessage: (errorData as Record<string, unknown>).message,
+        isValidationError: true,
+      });
+    }
 
     // Enhance error with friendly message if available
     if (friendlyMessage && typeof errorData === 'object') {

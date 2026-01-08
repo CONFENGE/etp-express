@@ -82,8 +82,12 @@ export function CreateETPPage() {
         markETPCreated();
         success('ETP criado com sucesso!');
         navigate(`/etps/${etp.id}`);
-      } catch {
-        error('Erro ao criar ETP. Tente novamente.');
+      } catch (err: unknown) {
+        // Extract detailed error message from API response
+        const errorMessage =
+          (err as { message?: string })?.message ||
+          'Erro ao criar ETP. Tente novamente.';
+        error(errorMessage);
       } finally {
         setIsLoading(false);
       }
