@@ -393,7 +393,12 @@ export interface WizardStep {
   description: string;
   schema: z.ZodSchema;
   fields: string[];
+  /** If true, this step can be skipped when no template is selected */
+  skipWhenNoTemplate?: boolean;
 }
+
+/** Step index for "Campos Específicos" (Dynamic Fields) - can be skipped when no template */
+export const DYNAMIC_FIELDS_STEP = 4;
 
 export const WIZARD_STEPS: WizardStep[] = [
   {
@@ -452,6 +457,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     description: 'Campos do tipo de contratação',
     schema: step6Schema,
     fields: ['dynamicFields'],
+    skipWhenNoTemplate: true, // #1330 - Skip this step when no template is selected
   },
   {
     id: 5,
