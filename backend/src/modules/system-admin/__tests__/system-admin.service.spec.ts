@@ -589,4 +589,89 @@ describe('SystemAdminService', () => {
       expect(result.domainsByOrganization[0].domainCount).toBe(3);
     });
   });
+
+  describe('cleanupTestDomains', () => {
+    it('should delete all test domains matching pattern test-e2e-*.example.com', async () => {
+      const testDomains = [
+        {
+          ...mockDomain,
+          id: 'test-1',
+          domain: 'test-e2e-1234567890.example.com',
+        },
+        {
+          ...mockDomain,
+          id: 'test-2',
+          domain: 'test-e2e-9876543210.example.com',
+        },
+        {
+          ...mockDomain,
+          id: 'test-3',
+          domain: 'test-e2e-1111111111.example.com',
+        },
+      ];
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue(testDomains),
+      };
+
+      mockDomainRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockDomainRepository.remove.mockResolvedValue(testDomains);
+
+      const result = await service.cleanupTestDomains();
+
+      expect(mockDomainRepository.createQueryBuilder).toHaveBeenCalledWith(
+        'domain',
+      );
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'domain.domain LIKE :pattern',
+        {
+          pattern: 'test-e2e-%.example.com',
+        },
+      );
+      expect(mockDomainRepository.remove).toHaveBeenCalledWith(testDomains);
+      expect(result.deleted).toBe(3);
+    });
+
+    it('should return 0 deleted when no test domains exist', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+      };
+
+      mockDomainRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+      const result = await service.cleanupTestDomains();
+
+      expect(mockDomainRepository.remove).not.toHaveBeenCalled();
+      expect(result.deleted).toBe(0);
+    });
+
+    it('should not delete real domains that do not match the pattern', async () => {
+      // Only test domains match the pattern
+      const testDomains = [
+        {
+          ...mockDomain,
+          id: 'test-1',
+          domain: 'test-e2e-1234567890.example.com',
+        },
+      ];
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue(testDomains),
+      };
+
+      mockDomainRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockDomainRepository.remove.mockResolvedValue(testDomains);
+
+      await service.cleanupTestDomains();
+
+      // The real domain 'lages.sc.gov.br' is not in the removed domains
+      expect(mockDomainRepository.remove).toHaveBeenCalledWith(testDomains);
+      expect(testDomains.some((d) => d.domain === 'lages.sc.gov.br')).toBe(
+        false,
+      );
+    });
+  });
 });
