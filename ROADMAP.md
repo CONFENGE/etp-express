@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 665/743 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-09 | **Progresso:** 666/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1375 | Fix      | Fix ETP creation 400 error - remove invalid fields (#1371) ✅   |
 | 2026-01-09 | #1370 | Feature  | Add status distribution chart to Dashboard (#1365) ✅           |
 | 2026-01-09 | #1369 | Feature  | Add average completion time metric card (#1364) ✅              |
 | 2026-01-09 | #1368 | Feature  | Add success rate metric card to Dashboard (#1363) ✅            |
@@ -123,23 +124,23 @@
 
 ---
 
-## Bugs Criticos P0 - 4 NOVOS DETECTADOS ⚠️
+## Bugs Criticos P0 - 3 RESTANTES ⚠️
 
-> **STATUS:** 4 novos bugs P0 detectados. Happy path com problemas.
+> **STATUS:** 3 bugs P0 restantes. #1371 (BLOQUEANTE) resolvido via PR #1375.
 
 ### Bugs P0 Abertos (2026-01-09)
 
-| #     | Issue                                                              | Area             | Status |
-| ----- | ------------------------------------------------------------------ | ---------------- | ------ |
-| #1374 | [P0] Badge de status ausente em alguns cards de ETP                | Frontend/UX      | 🔴     |
-| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes            | Frontend/UX      | 🔴     |
-| #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível  | Frontend/UX      | 🔴     |
-| #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400 | Backend/Frontend | 🔴     |
+| #     | Issue                                                             | Area        | Status |
+| ----- | ----------------------------------------------------------------- | ----------- | ------ |
+| #1374 | [P0] Badge de status ausente em alguns cards de ETP               | Frontend/UX | 🔴     |
+| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes           | Frontend/UX | 🔴     |
+| #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível | Frontend/UX | 🔴     |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400        | Backend/Frontend | ✅     |
 | #1355 | [P0] REGRESSAO: Export PDF erro 500 - Nix detection                       | Backend/Export   | ✅     |
 | #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado                  | Frontend/i18n    | ✅     |
 | #1352 | [P0] Estatisticas Admin retornam zeros                                    | Backend/Admin    | ✅     |
@@ -322,15 +323,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 78    |
-| Issues Fechadas   | 665   |
-| Progresso         | 89%   |
-| Bugs P0 Abertos   | 4     |
+| Issues Abertas    | 77    |
+| Issues Fechadas   | 666   |
+| Progresso         | 90%   |
+| Bugs P0 Abertos   | 3     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2515  |
-| Frontend Tests    | 1742  |
-| Total Tests       | 4257  |
+| Backend Tests     | 2552  |
+| Frontend Tests    | 1817  |
+| Total Tests       | 4369  |
 
 ---
 
