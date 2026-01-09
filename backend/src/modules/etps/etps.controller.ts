@@ -240,6 +240,56 @@ export class EtpsController {
   }
 
   /**
+   * Retrieves the average completion time metric for ETPs.
+   *
+   * @remarks
+   * Part of the advanced metrics feature (Issue #1364).
+   * SECURITY (Issue #1326): Validates userId and organizationId before querying.
+   *
+   * @param rawOrganizationId - Organization ID (extracted from JWT token)
+   * @param rawUserId - Current user ID (extracted from JWT token)
+   * @returns Average completion time data with formatted duration
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
+   */
+  @Get('metrics/avg-completion-time')
+  @ApiOperation({ summary: 'Obter tempo médio de criação de ETPs' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tempo médio calculado',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            avgTimeMinutes: { type: 'number', example: 2880 },
+            formatted: { type: 'string', example: '2 dias' },
+            completedCount: { type: 'number', example: 15 },
+          },
+        },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async getAvgCompletionTime(
+    @CurrentUser('organizationId') rawOrganizationId: string,
+    @CurrentUser('id') rawUserId: string,
+  ) {
+    // SECURITY (Issue #1326): Validate required claims before query
+    const organizationId = this.validateOrganizationId(rawOrganizationId);
+    const userId = this.validateUserId(rawUserId);
+
+    const avgTime = await this.etpsService.getAvgCompletionTime(
+      organizationId,
+      userId,
+    );
+    return {
+      data: avgTime,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
    * Retrieves a single ETP by ID with all sections.
    *
    * @remarks

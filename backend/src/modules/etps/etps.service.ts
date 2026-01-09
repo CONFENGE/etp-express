@@ -783,6 +783,102 @@ export class EtpsService {
   }
 
   /**
+   * Retrieves the average completion time metric for ETPs.
+   *
+   * @remarks
+   * Average completion time is calculated as the mean time between ETP creation
+   * and completion (status = COMPLETED), in minutes. Also provides a formatted
+   * human-readable string (e.g., "2 dias 4h" or "45 min").
+   *
+   * SECURITY (Issue #1326): ALWAYS filters by BOTH organizationId AND userId to
+   * prevent cross-user data access.
+   *
+   * @param organizationId - Organization ID (required for multi-tenancy isolation)
+   * @param userId - User ID (required for user-level data isolation)
+   * @returns Average completion time object with raw minutes and formatted string
+   *
+   * @example
+   * ```ts
+   * const result = await etpsService.getAvgCompletionTime('org-uuid', 'user-uuid');
+   * console.log(result.avgTimeMinutes); // 2880 (2 days in minutes)
+   * console.log(result.formatted); // '2 dias'
+   * console.log(result.completedCount); // 15
+   * ```
+   */
+  async getAvgCompletionTime(
+    organizationId: string,
+    userId: string,
+  ): Promise<{
+    avgTimeMinutes: number;
+    formatted: string;
+    completedCount: number;
+  }> {
+    // Query only completed ETPs with both creation and completion timestamps
+    const completedEtps = await this.etpsRepository
+      .createQueryBuilder('etp')
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId })
+      .andWhere('etp.status = :status', { status: EtpStatus.COMPLETED })
+      .select(['etp.createdAt', 'etp.updatedAt'])
+      .getMany();
+
+    if (completedEtps.length === 0) {
+      return {
+        avgTimeMinutes: 0,
+        formatted: 'Sem dados',
+        completedCount: 0,
+      };
+    }
+
+    // Calculate average time in minutes (updatedAt - createdAt for completed ETPs)
+    const totalMinutes = completedEtps.reduce((sum, etp) => {
+      const createdAt = new Date(etp.createdAt).getTime();
+      const completedAt = new Date(etp.updatedAt).getTime();
+      const diffMinutes = (completedAt - createdAt) / (1000 * 60);
+      return sum + diffMinutes;
+    }, 0);
+
+    const avgMinutes = totalMinutes / completedEtps.length;
+
+    return {
+      avgTimeMinutes: Math.round(avgMinutes),
+      formatted: this.formatDuration(avgMinutes),
+      completedCount: completedEtps.length,
+    };
+  }
+
+  /**
+   * Formats a duration in minutes to a human-readable string.
+   *
+   * @param minutes - Duration in minutes
+   * @returns Formatted string (e.g., "2 dias 4h", "3h 30min", "45 min")
+   */
+  private formatDuration(minutes: number): string {
+    if (minutes < 1) {
+      return 'Menos de 1 min';
+    }
+
+    const days = Math.floor(minutes / (60 * 24));
+    const hours = Math.floor((minutes % (60 * 24)) / 60);
+    const mins = Math.round(minutes % 60);
+
+    const parts: string[] = [];
+
+    if (days > 0) {
+      parts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+    }
+    if (hours > 0) {
+      parts.push(`${hours}h`);
+    }
+    if (mins > 0 && days === 0) {
+      // Only show minutes if less than a day
+      parts.push(`${mins} min`);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : 'Menos de 1 min';
+  }
+
+  /**
    * Retrieves the success rate metric for ETPs.
    *
    * @remarks
