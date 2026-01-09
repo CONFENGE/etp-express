@@ -6,64 +6,65 @@
 
 ## Atualizações Recentes
 
-| Data       | PR    | Tipo     | Descrição                                                       |
-| ---------- | ----- | -------- | --------------------------------------------------------------- |
-| 2026-01-09 | #1377 | Fix      | Fix status badge missing for 'review' status ETPs (#1374) ✅    |
-| 2026-01-09 | #1375 | Fix      | Fix ETP creation 400 error - remove invalid fields (#1371) ✅   |
-| 2026-01-09 | #1370 | Feature  | Add status distribution chart to Dashboard (#1365) ✅           |
-| 2026-01-09 | #1369 | Feature  | Add average completion time metric card (#1364) ✅              |
-| 2026-01-09 | #1368 | Feature  | Add success rate metric card to Dashboard (#1363) ✅            |
-| 2026-01-09 | #1362 | Fix      | Add Brazilian date format support to CreateETPWizard (#1347) ✅ |
-| 2026-01-09 | #1361 | Fix      | Remove intrusive AI generation banner trigger (#1346) ✅        |
-| 2026-01-09 | #1360 | Fix      | Show ETP author name in Dashboard for Admin (#1351) ✅          |
-| 2026-01-09 | #1359 | Fix      | Sync progress between ETP list and detail views (#1344) ✅      |
-| 2026-01-09 | #1358 | Fix      | Show section titles in ETP Editor tabs (#1345) ✅               |
-| 2026-01-09 | #1357 | Fix      | Fix Admin statistics zeros + translate to Portuguese (#1352) ✅ |
-| 2026-01-08 | #1356 | Fix      | Improve Chromium detection for Nix/Nixpacks (#1355) ✅          |
-| 2026-01-08 | -     | Audit    | Admin happy path: 9 bugs (4 novos P0 #1351-#1355) ⚠️            |
-| 2026-01-08 | #1349 | Fix      | Robust Chromium detection for PDF export (#1342) ✅             |
-| 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅      |
-| 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️          |
-| 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️               |
-| 2026-01-08 | #1339 | Fix      | Corrigir acentuação em textos da interface (#1329) ✅           |
-| 2026-01-08 | #1338 | Fix      | Skip Campos Específicos step when no template (#1330) ✅        |
-| 2026-01-08 | #1337 | Fix      | Auto-sync ETP status with completion percentage (#1331) ✅      |
-| 2026-01-08 | #1336 | Fix      | Persist welcome modal dismissal to localStorage (#1327) ✅      |
-| 2026-01-08 | #1335 | Fix      | Show detailed validation errors on ETP creation (#1325) ✅      |
-| 2026-01-08 | #1334 | Fix      | Prevent wizard premature submission via Enter key (#1332) ✅    |
-| 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅              |
-| 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                          |
-| 2026-01-08 | #1323 | Fix      | Show fallback title when ETP title is empty (#1317) ✅          |
-| 2026-01-08 | #1322 | Fix      | Map completionPercentage to progress for display (#1316) ✅     |
-| 2026-01-08 | #1321 | Fix      | Fix save section 404 - use PATCH /sections/:id (#1314) ✅       |
-| 2026-01-08 | #1320 | Fix      | Fix PDF export 404 error - P0 BLOQUEADOR (#1315) ✅             |
-| 2026-01-08 | #1319 | Fix      | CreateETPPage for /etps/new route - P0 BLOQUEADOR (#1313) ✅    |
-| 2026-01-08 | -     | Audit    | Happy path simulation: 6 P0 bugs found (#1313-#1318) ⚠️         |
-| 2026-01-08 | #1312 | Fix      | Redesign Politica de Privacidade with responsive UI (#1302) ✅  |
-| 2026-01-07 | #1310 | Fix      | Redesign Termos de Uso page with responsive UI (#1301) ✅       |
-| 2026-01-07 | #1309 | Fix      | Corrigir acentuação em toda UI (#1300) ✅                       |
-| 2026-01-07 | #1308 | Fix      | Fix 'Gerar Sugestao' button error (#1303) ✅                    |
-| 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅                |
-| 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅                 |
-| 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅                |
-| 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅           |
-| 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅        |
-| 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅      |
-| 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅      |
-| 2026-01-07 | #1245 | Feature  | Add TemplateSelector frontend component (#1238) ✅              |
-| 2026-01-07 | #1244 | Test     | Add E2E integration tests for templates API endpoints (#1237)   |
-| 2026-01-07 | #1243 | Feature  | Seed 4 base ETP templates (Obras, TI, Serviços, Materiais) ✅   |
-| 2026-01-07 | #1242 | Feature  | Merge EtpTemplate entity and module structure (#1235) ✅        |
-| 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)             |
-| 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)         |
-| 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158        |
-| 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227     |
-| 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226    |
-| 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225     |
-| 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224    |
-| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223      |
-| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)           |
-| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)               |
+| Data       | PR    | Tipo     | Descrição                                                         |
+| ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-09 | #1378 | Fix      | Fix onboarding checklist not recognizing existing ETPs (#1373) ✅ |
+| 2026-01-09 | #1377 | Fix      | Fix status badge missing for 'review' status ETPs (#1374) ✅      |
+| 2026-01-09 | #1375 | Fix      | Fix ETP creation 400 error - remove invalid fields (#1371) ✅     |
+| 2026-01-09 | #1370 | Feature  | Add status distribution chart to Dashboard (#1365) ✅             |
+| 2026-01-09 | #1369 | Feature  | Add average completion time metric card (#1364) ✅                |
+| 2026-01-09 | #1368 | Feature  | Add success rate metric card to Dashboard (#1363) ✅              |
+| 2026-01-09 | #1362 | Fix      | Add Brazilian date format support to CreateETPWizard (#1347) ✅   |
+| 2026-01-09 | #1361 | Fix      | Remove intrusive AI generation banner trigger (#1346) ✅          |
+| 2026-01-09 | #1360 | Fix      | Show ETP author name in Dashboard for Admin (#1351) ✅            |
+| 2026-01-09 | #1359 | Fix      | Sync progress between ETP list and detail views (#1344) ✅        |
+| 2026-01-09 | #1358 | Fix      | Show section titles in ETP Editor tabs (#1345) ✅                 |
+| 2026-01-09 | #1357 | Fix      | Fix Admin statistics zeros + translate to Portuguese (#1352) ✅   |
+| 2026-01-08 | #1356 | Fix      | Improve Chromium detection for Nix/Nixpacks (#1355) ✅            |
+| 2026-01-08 | -     | Audit    | Admin happy path: 9 bugs (4 novos P0 #1351-#1355) ⚠️              |
+| 2026-01-08 | #1349 | Fix      | Robust Chromium detection for PDF export (#1342) ✅               |
+| 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅        |
+| 2026-01-08 | -     | Audit    | Consultor test: confirmados 7 P0 bugs (#1341-#1347) ⚠️            |
+| 2026-01-08 | -     | Audit    | Happy path test: 7 P0 bugs found (#1341-#1347) ⚠️                 |
+| 2026-01-08 | #1339 | Fix      | Corrigir acentuação em textos da interface (#1329) ✅             |
+| 2026-01-08 | #1338 | Fix      | Skip Campos Específicos step when no template (#1330) ✅          |
+| 2026-01-08 | #1337 | Fix      | Auto-sync ETP status with completion percentage (#1331) ✅        |
+| 2026-01-08 | #1336 | Fix      | Persist welcome modal dismissal to localStorage (#1327) ✅        |
+| 2026-01-08 | #1335 | Fix      | Show detailed validation errors on ETP creation (#1325) ✅        |
+| 2026-01-08 | #1334 | Fix      | Prevent wizard premature submission via Enter key (#1332) ✅      |
+| 2026-01-08 | #1333 | Security | **CRITICAL** Fix dashboard data leakage (#1326) ✅                |
+| 2026-01-08 | #1324 | Fix      | Sort section tabs by number (#1318) ✅                            |
+| 2026-01-08 | #1323 | Fix      | Show fallback title when ETP title is empty (#1317) ✅            |
+| 2026-01-08 | #1322 | Fix      | Map completionPercentage to progress for display (#1316) ✅       |
+| 2026-01-08 | #1321 | Fix      | Fix save section 404 - use PATCH /sections/:id (#1314) ✅         |
+| 2026-01-08 | #1320 | Fix      | Fix PDF export 404 error - P0 BLOQUEADOR (#1315) ✅               |
+| 2026-01-08 | #1319 | Fix      | CreateETPPage for /etps/new route - P0 BLOQUEADOR (#1313) ✅      |
+| 2026-01-08 | -     | Audit    | Happy path simulation: 6 P0 bugs found (#1313-#1318) ⚠️           |
+| 2026-01-08 | #1312 | Fix      | Redesign Politica de Privacidade with responsive UI (#1302) ✅    |
+| 2026-01-07 | #1310 | Fix      | Redesign Termos de Uso page with responsive UI (#1301) ✅         |
+| 2026-01-07 | #1309 | Fix      | Corrigir acentuação em toda UI (#1300) ✅                         |
+| 2026-01-07 | #1308 | Fix      | Fix 'Gerar Sugestao' button error (#1303) ✅                      |
+| 2026-01-07 | #1307 | Fix      | Correct API route for section updates (#1304) ✅                  |
+| 2026-01-07 | #1306 | Fix      | Add UserManual page and fix 404 link (#1298) ✅                   |
+| 2026-01-07 | #1305 | Fix      | Add role-based admin navigation links (#1299) ✅                  |
+| 2026-01-07 | -     | Audit    | Sync ROADMAP: add P0 bugs, close epics #1158/#1161 ✅             |
+| 2026-01-07 | #1296 | Test     | Add E2E tests for template-based ETP creation (#1241) ✅          |
+| 2026-01-07 | #1295 | Feature  | Implement dynamic fields based on template type (#1240) ✅        |
+| 2026-01-07 | #1246 | Feature  | Integrate TemplateSelector into CreateETPWizard (#1239) ✅        |
+| 2026-01-07 | #1245 | Feature  | Add TemplateSelector frontend component (#1238) ✅                |
+| 2026-01-07 | #1244 | Test     | Add E2E integration tests for templates API endpoints (#1237)     |
+| 2026-01-07 | #1243 | Feature  | Seed 4 base ETP templates (Obras, TI, Serviços, Materiais) ✅     |
+| 2026-01-07 | #1242 | Feature  | Merge EtpTemplate entity and module structure (#1235) ✅          |
+| 2026-01-06 | #1242 | Feature  | Add EtpTemplate entity and module structure (#1235)               |
+| 2026-01-06 | -     | Planning | Desmembrar #1161 em 7 sub-issues atômicas (#1235-#1241)           |
+| 2026-01-06 | #1234 | Test     | Add E2E tests for CreateETPWizard - Completes Epic #1158          |
+| 2026-01-06 | #1233 | Feature  | Add multi-step CreateETPWizard component - Epic #1158 #1227       |
+| 2026-01-06 | #1232 | Feature  | Add estimativa de custos fields - Epic #1158 sub-issue #1226      |
+| 2026-01-06 | #1231 | Feature  | Add requisitos e riscos fields - Epic #1158 sub-issue #1225       |
+| 2026-01-06 | #1230 | Feature  | Add objeto/justificativa fields - Epic #1158 sub-issue #1224      |
+| 2026-01-06 | #1229 | Feature  | Add ETP identification fields - Epic #1158 sub-issue #1223        |
+| 2026-01-06 | #1222 | Feature  | Persist SINAPI/SICRO gov prices to PostgreSQL (#1165)             |
+| 2026-01-06 | #1221 | Feature  | Complete onboarding wizard with checklist (#1213)                 |
 
 ---
 
@@ -125,20 +126,19 @@
 
 ---
 
-## Bugs Criticos P0 - 1 RESTANTE ⚠️
+## Bugs Criticos P0 - 0 RESTANTES ✅
 
-> **STATUS:** 1 bug P0 restante. #1374 resolvido via PR #1377.
+> **STATUS:** Todos os bugs P0 foram resolvidos! #1373 resolvido via PR #1378.
 
 ### Bugs P0 Abertos (2026-01-09)
 
-| #     | Issue                                                   | Area        | Status |
-| ----- | ------------------------------------------------------- | ----------- | ------ |
-| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes | Frontend/UX | 🔴     |
+Nenhum bug P0 aberto! 🎉
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes                   | Frontend/UX      | ✅     |
 | #1374 | [P0] Badge de status ausente em alguns cards de ETP                       | Frontend/UX      | ✅     |
 | #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível         | Frontend/UX      | ✅     |
 | #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400        | Backend/Frontend | ✅     |
@@ -327,7 +327,7 @@ Oportunidades de mercado identificadas.
 | Issues Abertas    | 76    |
 | Issues Fechadas   | 667   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 1     |
+| Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2552  |
