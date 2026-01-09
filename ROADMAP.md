@@ -122,12 +122,12 @@
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | ✅     |
 | #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | ✅     |
 | #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | ✅     |
-| #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
+| #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | ✅     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
 | #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | 🔴     |
 
-> **5 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
+> **4 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
