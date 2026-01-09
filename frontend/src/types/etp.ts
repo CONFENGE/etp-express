@@ -12,7 +12,7 @@ export interface ETP {
   id: string;
   title: string;
   description?: string;
-  status: 'draft' | 'in_progress' | 'under_review' | 'completed';
+  status: 'draft' | 'in_progress' | 'review' | 'completed';
   progress: number;
   userId: string;
   createdAt: string;
