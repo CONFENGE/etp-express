@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 666/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-09 | **Progresso:** 667/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1377 | Fix      | Fix status badge missing for 'review' status ETPs (#1374) ✅    |
 | 2026-01-09 | #1375 | Fix      | Fix ETP creation 400 error - remove invalid fields (#1371) ✅   |
 | 2026-01-09 | #1370 | Feature  | Add status distribution chart to Dashboard (#1365) ✅           |
 | 2026-01-09 | #1369 | Feature  | Add average completion time metric card (#1364) ✅              |
@@ -124,21 +125,21 @@
 
 ---
 
-## Bugs Criticos P0 - 2 RESTANTES ⚠️
+## Bugs Criticos P0 - 1 RESTANTE ⚠️
 
-> **STATUS:** 2 bugs P0 restantes. #1372 resolvido via PR #1376.
+> **STATUS:** 1 bug P0 restante. #1374 resolvido via PR #1377.
 
 ### Bugs P0 Abertos (2026-01-09)
 
 | #     | Issue                                                   | Area        | Status |
 | ----- | ------------------------------------------------------- | ----------- | ------ |
-| #1374 | [P0] Badge de status ausente em alguns cards de ETP     | Frontend/UX | 🔴     |
 | #1373 | [P0] Onboarding checklist não reconhece ETPs existentes | Frontend/UX | 🔴     |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1374 | [P0] Badge de status ausente em alguns cards de ETP                       | Frontend/UX      | ✅     |
 | #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível         | Frontend/UX      | ✅     |
 | #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400        | Backend/Frontend | ✅     |
 | #1355 | [P0] REGRESSAO: Export PDF erro 500 - Nix detection                       | Backend/Export   | ✅     |
@@ -323,10 +324,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 77    |
-| Issues Fechadas   | 666   |
+| Issues Abertas    | 76    |
+| Issues Fechadas   | 667   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 3     |
+| Bugs P0 Abertos   | 1     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2552  |
