@@ -20,9 +20,8 @@ const SESSION_KEY = 'demo-banner-dismissed';
  * Hook to manage demo user conversion banner state.
  *
  * The banner is shown only for demo users after specific trigger events:
- * - AI generation completion
  * - ETP completion (100% progress)
- * - PDF export
+ * - PDF/DOCX export
  *
  * When the user closes the banner, it remains hidden until the next trigger.
  *
@@ -32,9 +31,11 @@ const SESSION_KEY = 'demo-banner-dismissed';
  * ```tsx
  * const { showBanner, triggerBanner, dismissBanner } = useDemoConversion();
  *
- * // After AI generation
- * await generateSection();
- * triggerBanner('ai_generation');
+ * // After ETP completion
+ * triggerBanner('etp_completion');
+ *
+ * // After PDF export
+ * triggerBanner('pdf_export');
  *
  * // In render
  * {showBanner && <DemoConversionBanner onClose={dismissBanner} />}
