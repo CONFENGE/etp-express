@@ -98,7 +98,7 @@
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
-|       | ↳ #1364 Métrica de tempo médio                | 🔴     |
+|       | ↳ #1364 Métrica de tempo médio                | ✅     |
 |       | ↳ #1365 Gráfico distribuição por status       | 🔴     |
 |       | ↳ #1366 Filtro por período                    | 🔴     |
 |       | ↳ #1367 Ranking de produtividade (Admin)      | 🔴     |
