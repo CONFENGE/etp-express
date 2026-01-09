@@ -19,12 +19,16 @@ export interface AuthorizedDomain {
 
 /**
  * Global platform statistics for System Admin dashboard.
+ * Aligned with backend GlobalStatistics interface.
  */
 export interface GlobalStatistics {
   totalDomains: number;
   activeDomains: number;
+  inactiveDomains: number;
   totalUsers: number;
-  activeUsers: number;
+  totalOrganizations: number;
+  totalEtps: number;
+  domainsByOrganization: { organizationName: string; domainCount: number }[];
 }
 
 /**

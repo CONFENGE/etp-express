@@ -298,10 +298,20 @@ export class SystemAdminService {
     const totalOrganizations = await this.organizationRepository.count();
 
     // Get ETP count (using raw query since we don't have Etp repository here)
-    const etpCountResult = await this.authorizedDomainRepository.manager.query(
-      'SELECT COUNT(*) as count FROM etps',
-    );
-    const totalEtps = parseInt(etpCountResult[0]?.count ?? '0', 10);
+    // Using try/catch for robustness in case table doesn't exist or query fails
+    let totalEtps = 0;
+    try {
+      const etpCountResult =
+        await this.authorizedDomainRepository.manager.query(
+          'SELECT COUNT(*) as count FROM etps',
+        );
+      totalEtps = parseInt(etpCountResult[0]?.count ?? '0', 10);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to count ETPs: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      // Continue with 0 ETPs rather than failing the entire statistics request
+    }
 
     // Get domains by organization
     const domainsByOrganization = await this.authorizedDomainRepository

@@ -2,7 +2,7 @@ import {
   Building2,
   CheckCircle,
   Users,
-  UserCheck,
+  FileText,
   LucideIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,28 +31,28 @@ interface StatisticsCardsProps {
 export function StatisticsCards({ statistics, loading }: StatisticsCardsProps) {
   const cards: StatCardData[] = [
     {
-      label: 'Total Domains',
+      label: 'Total de Dominios',
       value: statistics?.totalDomains ?? 0,
       icon: Building2,
-      description: 'Registered domains',
+      description: 'Dominios registrados',
     },
     {
-      label: 'Active Domains',
+      label: 'Dominios Ativos',
       value: statistics?.activeDomains ?? 0,
       icon: CheckCircle,
-      description: 'Currently active',
+      description: 'Atualmente ativos',
     },
     {
-      label: 'Total Users',
+      label: 'Total de Usuarios',
       value: statistics?.totalUsers ?? 0,
       icon: Users,
-      description: 'Registered users',
+      description: 'Usuarios ativos',
     },
     {
-      label: 'Active Users',
-      value: statistics?.activeUsers ?? 0,
-      icon: UserCheck,
-      description: 'Active this month',
+      label: 'Total de ETPs',
+      value: statistics?.totalEtps ?? 0,
+      icon: FileText,
+      description: 'Documentos criados',
     },
   ];
 
