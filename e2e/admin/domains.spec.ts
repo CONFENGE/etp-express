@@ -7,12 +7,13 @@
  *
  * @issue #957
  * @see #936 - Original implementation
+ * @see #1354 - Cleanup of E2E test domains
  * @group e2e
  * @group admin
  * @priority P1
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
 
 /**
  * Test configuration for domain management tests
@@ -109,6 +110,70 @@ test.describe('Admin Domain Management - Happy Path', () => {
         body: screenshot,
         contentType: 'image/png',
       });
+    }
+  });
+
+  /**
+   * Cleanup after all tests - remove E2E test domains from database
+   *
+   * @see #1354 - Cleanup of E2E test domains
+   * @description Calls the backend cleanup endpoint to remove all domains
+   * matching the pattern test-e2e-*.example.com
+   */
+  test.afterAll(async () => {
+    const apiUrl = process.env.E2E_API_URL || 'http://localhost:3000';
+
+    try {
+      // Create API context
+      const apiContext = await request.newContext({
+        baseURL: apiUrl,
+      });
+
+      // Login to get access token
+      const loginResponse = await apiContext.post('/api/v1/auth/login', {
+        data: {
+          email: TEST_CONFIG.admin.email,
+          password: TEST_CONFIG.admin.password,
+        },
+      });
+
+      if (!loginResponse.ok()) {
+        console.warn(
+          '[E2E Cleanup] Failed to login for cleanup:',
+          loginResponse.status(),
+        );
+        await apiContext.dispose();
+        return;
+      }
+
+      const loginData = await loginResponse.json();
+      const accessToken = loginData.access_token;
+
+      // Call cleanup endpoint
+      const cleanupResponse = await apiContext.delete(
+        '/api/v1/system-admin/domains/cleanup-test-domains',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (cleanupResponse.ok()) {
+        const result = await cleanupResponse.json();
+        console.log(
+          `[E2E Cleanup] Successfully cleaned up ${result.deleted} test domain(s)`,
+        );
+      } else {
+        console.warn(
+          '[E2E Cleanup] Cleanup endpoint returned:',
+          cleanupResponse.status(),
+        );
+      }
+
+      await apiContext.dispose();
+    } catch (error) {
+      console.warn('[E2E Cleanup] Failed to cleanup test domains:', error);
     }
   });
 

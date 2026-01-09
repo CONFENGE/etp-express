@@ -393,4 +393,39 @@ export class SystemAdminService {
 
     return reactivatedDomain;
   }
+
+  /**
+   * Cleans up E2E test domains from the database.
+   *
+   * Removes all domains matching the pattern `test-e2e-*.example.com`.
+   * These domains are created by E2E tests and should not persist in production.
+   *
+   * @returns Object with count of deleted domains
+   */
+  async cleanupTestDomains(): Promise<{ deleted: number }> {
+    // Find all test domains matching pattern test-e2e-*.example.com
+    const testDomains = await this.authorizedDomainRepository
+      .createQueryBuilder('domain')
+      .where('domain.domain LIKE :pattern', {
+        pattern: 'test-e2e-%.example.com',
+      })
+      .getMany();
+
+    if (testDomains.length === 0) {
+      this.logger.log('No E2E test domains found to cleanup');
+      return { deleted: 0 };
+    }
+
+    // Collect domain names for logging
+    const domainNames = testDomains.map((d) => d.domain);
+
+    // Delete all test domains
+    await this.authorizedDomainRepository.remove(testDomains);
+
+    this.logger.warn(
+      `E2E TEST DOMAINS CLEANUP: Deleted ${testDomains.length} domain(s): ${domainNames.join(', ')}`,
+    );
+
+    return { deleted: testDomains.length };
+  }
 }
