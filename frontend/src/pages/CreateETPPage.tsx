@@ -41,8 +41,7 @@ export function CreateETPPage() {
           title: data.title,
           description: data.description || undefined,
           objeto: data.objeto,
-          status: 'draft' as const,
-          progress: 0,
+          // Note: status and progress are automatically set by the backend
           // Identification fields
           orgaoEntidade: data.orgaoEntidade || undefined,
           uasg: data.uasg || undefined,
