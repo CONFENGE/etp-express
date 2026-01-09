@@ -11,6 +11,28 @@ export interface ETP {
   currentVersion?: number;
 }
 
+/**
+ * Section status values (must match backend SectionStatus enum)
+ * @see backend/src/entities/etp-section.entity.ts
+ */
+export type SectionStatus =
+  | 'pending'
+  | 'generating'
+  | 'generated'
+  | 'reviewed'
+  | 'approved';
+
+/**
+ * Statuses that count toward ETP completion (100% progress)
+ * Used to calculate progress consistently with backend
+ * @see Issue #1344 - Fix progress inconsistency
+ */
+export const COMPLETED_SECTION_STATUSES: SectionStatus[] = [
+  'generated',
+  'reviewed',
+  'approved',
+];
+
 export interface Section {
   id: string;
   etpId: string;
@@ -21,6 +43,11 @@ export interface Section {
   isCompleted: boolean;
   aiGenerated: boolean;
   hasEnrichmentWarning?: boolean;
+  /**
+   * Section status from backend (Issue #1344)
+   * Used for progress calculation to ensure consistency
+   */
+  status?: SectionStatus;
   metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;

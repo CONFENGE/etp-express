@@ -10,6 +10,7 @@ import {
   GenerationStatus,
   AsyncSection,
   DataSourceStatusInfo,
+  COMPLETED_SECTION_STATUSES,
 } from '@/types/etp';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
@@ -64,6 +65,28 @@ function mapBackendETPToFrontend(backendEtp: BackendETP): ETP {
  */
 function mapBackendETPs(backendEtps: BackendETP[]): ETP[] {
   return backendEtps.map(mapBackendETPToFrontend);
+}
+
+/**
+ * Calculates ETP completion percentage based on section statuses.
+ * Uses the same logic as backend: count sections with status 'generated', 'reviewed', or 'approved'
+ * and divide by total sections.
+ *
+ * @param sections - Array of sections to calculate progress from
+ * @returns Progress percentage (0-100), or 0 if no sections
+ * @see Issue #1344 - Ensure frontend progress calculation matches backend
+ * @see backend/src/modules/etps/etps.service.ts updateCompletionPercentage()
+ */
+function calculateProgress(sections: Section[]): number {
+  if (!sections || sections.length === 0) {
+    return 0;
+  }
+
+  const completedSections = sections.filter((s) =>
+    COMPLETED_SECTION_STATUSES.includes(s.status ?? 'pending'),
+  ).length;
+
+  return (completedSections / sections.length) * 100;
 }
 
 /**
@@ -367,10 +390,15 @@ export const useETPStore = create<ETFState>((set, _get) => ({
           section.id === sectionId ? updated : section,
         );
 
+        // Issue #1344: Recalculate progress locally after section update
+        // This ensures consistency between list and detail views
+        const newProgress = calculateProgress(updatedSections);
+
         return {
           currentETP: {
             ...state.currentETP,
             sections: updatedSections,
+            progress: newProgress,
           },
           isLoading: false,
         };
@@ -464,13 +492,35 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       );
 
       if (!signal.aborted) {
-        set({
-          aiGenerating: false,
-          generationStatus: 'completed',
-          generationProgress: 100,
-          generationJobId: null,
-          // Store data source status for display (#756)
-          dataSourceStatus: pollResult.dataSourceStatus || null,
+        // Issue #1344: Update currentETP with generated section and recalculate progress
+        // This ensures progress is consistent between list and detail views
+        set((state) => {
+          const updatedSections = state.currentETP?.sections.map((section) =>
+            section.sectionNumber === sectionNumber
+              ? { ...section, ...pollResult.section }
+              : section,
+          );
+
+          const newProgress = updatedSections
+            ? calculateProgress(updatedSections)
+            : (state.currentETP?.progress ?? 0);
+
+          return {
+            aiGenerating: false,
+            generationStatus: 'completed',
+            generationProgress: 100,
+            generationJobId: null,
+            // Store data source status for display (#756)
+            dataSourceStatus: pollResult.dataSourceStatus || null,
+            // Issue #1344: Update ETP sections and progress
+            currentETP: state.currentETP
+              ? {
+                  ...state.currentETP,
+                  sections: updatedSections || state.currentETP.sections,
+                  progress: newProgress,
+                }
+              : null,
+          };
         });
       }
 
@@ -602,13 +652,35 @@ export const useETPStore = create<ETFState>((set, _get) => ({
       );
 
       if (!signal.aborted) {
-        set({
-          aiGenerating: false,
-          generationStatus: 'completed',
-          generationProgress: 100,
-          generationJobId: null,
-          // Store data source status for display (#756)
-          dataSourceStatus: pollResult.dataSourceStatus || null,
+        // Issue #1344: Update currentETP with regenerated section and recalculate progress
+        // This ensures progress is consistent between list and detail views
+        set((state) => {
+          const updatedSections = state.currentETP?.sections.map((section) =>
+            section.sectionNumber === sectionNumber
+              ? { ...section, ...pollResult.section }
+              : section,
+          );
+
+          const newProgress = updatedSections
+            ? calculateProgress(updatedSections)
+            : (state.currentETP?.progress ?? 0);
+
+          return {
+            aiGenerating: false,
+            generationStatus: 'completed',
+            generationProgress: 100,
+            generationJobId: null,
+            // Store data source status for display (#756)
+            dataSourceStatus: pollResult.dataSourceStatus || null,
+            // Issue #1344: Update ETP sections and progress
+            currentETP: state.currentETP
+              ? {
+                  ...state.currentETP,
+                  sections: updatedSections || state.currentETP.sections,
+                  progress: newProgress,
+                }
+              : null,
+          };
         });
       }
 
