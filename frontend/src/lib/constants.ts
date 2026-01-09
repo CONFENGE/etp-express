@@ -15,21 +15,21 @@ export const ROUTES = {
 export const ETP_STATUS = {
   DRAFT: 'draft',
   IN_PROGRESS: 'in_progress',
-  UNDER_REVIEW: 'under_review',
+  REVIEW: 'review',
   COMPLETED: 'completed',
 } as const;
 
 export const ETP_STATUS_LABELS = {
   [ETP_STATUS.DRAFT]: 'Rascunho',
   [ETP_STATUS.IN_PROGRESS]: 'Em Progresso',
-  [ETP_STATUS.UNDER_REVIEW]: 'Em Revisão',
+  [ETP_STATUS.REVIEW]: 'Em Revisão',
   [ETP_STATUS.COMPLETED]: 'Concluído',
 } as const;
 
 export const ETP_STATUS_COLORS = {
   [ETP_STATUS.DRAFT]: 'bg-gray-100 text-gray-800',
   [ETP_STATUS.IN_PROGRESS]: 'bg-blue-100 text-blue-800',
-  [ETP_STATUS.UNDER_REVIEW]: 'bg-yellow-100 text-yellow-800',
+  [ETP_STATUS.REVIEW]: 'bg-yellow-100 text-yellow-800',
   [ETP_STATUS.COMPLETED]: 'bg-green-100 text-green-800',
 } as const;
 
