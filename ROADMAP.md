@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 657/733 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-09 | **Progresso:** 664/739 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1368 | Feature  | Add success rate metric card to Dashboard (#1363) ✅            |
 | 2026-01-09 | #1362 | Fix      | Add Brazilian date format support to CreateETPWizard (#1347) ✅ |
 | 2026-01-09 | #1361 | Fix      | Remove intrusive AI generation banner trigger (#1346) ✅        |
 | 2026-01-09 | #1360 | Fix      | Show ETP author name in Dashboard for Admin (#1351) ✅          |
@@ -96,6 +97,11 @@
 | #1214 | [Export] Preview de documento antes do export | ✅     |
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
+|       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
+|       | ↳ #1364 Métrica de tempo médio                | 🔴     |
+|       | ↳ #1365 Gráfico distribuição por status       | 🔴     |
+|       | ↳ #1366 Filtro por período                    | 🔴     |
+|       | ↳ #1367 Ranking de produtividade (Admin)      | 🔴     |
 
 ### Fase 3 - Credibilidade Institucional (P1)
 
@@ -111,51 +117,42 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 23/28 (82%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164, #1166, #1167, #1168
+**Progresso MVP Comercial:** 24/33 (73%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164 (4 sub-issues), #1166, #1167, #1168
 
 ---
 
-## Bugs Criticos P0 (11 issues) - HAPPY PATH QUEBRADO ⚠️
+## Bugs Criticos P0 - TODOS RESOLVIDOS ✅
 
-> **ATENCAO:** Bugs críticos detectados em simulação de happy path. Sistema com funcionalidades core quebradas.
+> **STATUS:** Todos os bugs P0 detectados foram resolvidos. Happy path funcionando corretamente.
 
-### Novos Bugs P0 (2026-01-08) - BLOQUEADORES
-
-| #     | Issue                                                          | Area           | Status |
-| ----- | -------------------------------------------------------------- | -------------- | ------ |
-| #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403     | Backend/Auth   | ✅     |
-| #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | ✅     |
-| #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | ✅     |
-| #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | ✅     |
-| #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | ✅     |
-| #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | ✅     |
-| #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | ✅     |
-
-> **0 bugs P0 ativos** - Todos os bugs P0 detectados em auditorias foram resolvidos! ✅
-
-### Bugs P0 Resolvidos (Anteriores)
+### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
-| #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo                    | Frontend/UX      | ✅     |
-| #1352 | [P0] Estatisticas Admin retornam zeros (interface misalign)               | Backend/Admin    | ✅     |
+| #1355 | [P0] REGRESSAO: Export PDF erro 500 - Nix detection                       | Backend/Export   | ✅     |
 | #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado                  | Frontend/i18n    | ✅     |
-| #1355 | [P0] REGRESSAO: Export PDF ainda falha erro 500 - Nix detection           | Backend/Export   | ✅     |
-| #1342 | [P0] Exportacao PDF falha com erro 500 - Chromium detection               | Backend/Export   | ✅     |
+| #1352 | [P0] Estatisticas Admin retornam zeros                                    | Backend/Admin    | ✅     |
+| #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria                  | Frontend/UX      | ✅     |
+| #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro              | Frontend/UX      | ✅     |
+| #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo               | Frontend/UX      | ✅     |
+| #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo                    | Frontend/UX      | ✅     |
+| #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe            | Frontend         | ✅     |
+| #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao                | Backend/Seed     | ✅     |
+| #1342 | [P0] Exportacao PDF falha com erro 500                                    | Backend/Export   | ✅     |
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403                | Backend/Auth     | ✅     |
-| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
-| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | ✅     |
-| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | ✅     |
-| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | ✅     |
-| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | ✅     |
-| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | ✅     |
 | #1332 | [P0] Botão Próximo no passo 6 dispara criação do ETP prematuramente       | Frontend         | ✅     |
+| #1331 | [P0] Inconsistência: ETP mostra 100% mas 0 Concluídos no dashboard        | Backend/Frontend | ✅     |
+| #1330 | [P0] Passo 5 do wizard inútil quando não há templates                     | Frontend         | ✅     |
+| #1329 | [P0] Textos sem acentuação em toda interface - aspecto amador             | Frontend         | ✅     |
+| #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
+| #1327 | [P0] Modal de boas-vindas aparece repetidamente a cada navegação          | Frontend         | ✅     |
 | #1326 | [P0] **SECURITY** Dashboard mostra ETP de outro usuário - vazamento dados | Backend/Frontend | ✅     |
+| #1325 | [P0] Erro genérico ao criar ETP - usuário não sabe o que está errado      | Backend/Frontend | ✅     |
 | #1318 | [P0] Tabs das seções fora de ordem numérica                               | Frontend         | ✅     |
 | #1317 | [P0] Título do ETP não aparece no Editor                                  | Frontend         | ✅     |
 | #1316 | [P0] Progresso mostra apenas "%" sem valor numérico                       | Frontend         | ✅     |
-| #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404                            | Frontend         | ✅     |
 | #1315 | [P0] Exportar PDF retorna erro 404                                        | Frontend         | ✅     |
+| #1314 | [P0] BLOQUEADOR: Salvar seção retorna erro 404                            | Frontend         | ✅     |
 | #1313 | [P0] BLOQUEADOR: Criar novo ETP retorna erro 500                          | Frontend         | ✅     |
 | #1304 | [P0] Erro ao salvar secao no ETP Editor                                   | Backend          | ✅     |
 | #1303 | [P0] Erro ao clicar em 'Gerar Sugestao' no ETP Editor                     | Frontend         | ✅     |
@@ -167,7 +164,7 @@
 
 ---
 
-## Issues Abertas (77)
+## Issues Abertas (76)
 
 ### P1 - High Priority (11 issues)
 
@@ -185,10 +182,11 @@
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
 | #1073 | [QA] Criar testes de integração com APIs governamentais reais   |
 
-### P2 - Medium Priority (10 issues)
+### P2 - Medium Priority (11 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
+| #1354 | [P2] Lixo de testes E2E em produção - domínios test-e2e-\*       |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
@@ -212,7 +210,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 23/28  | 82% (5 restam) |
+| MVP Comercial          | 24/33  | 73% (9 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -312,11 +310,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 733   |
-| Issues Abertas    | 76    |
-| Issues Fechadas   | 657   |
+| Issues Totais     | 739   |
+| Issues Abertas    | 75    |
+| Issues Fechadas   | 664   |
 | Progresso         | 90%   |
-| Bugs P0 Abertos   | 1     |
+| Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
