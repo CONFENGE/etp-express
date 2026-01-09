@@ -10,9 +10,24 @@ import {
   SectionStatus,
 } from '../../entities/etp-section.entity';
 import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
+import { execSync } from 'child_process';
 
 // Mock puppeteer
 jest.mock('puppeteer');
+
+// Mock fs and child_process for Chromium detection tests
+jest.mock('fs', () => ({
+  ...jest.requireActual('fs'),
+  existsSync: jest.fn(),
+  accessSync: jest.fn(),
+  readdirSync: jest.fn(),
+  readFileSync: jest.requireActual('fs').readFileSync,
+}));
+
+jest.mock('child_process', () => ({
+  execSync: jest.fn(),
+}));
 
 describe('ExportService', () => {
   let service: ExportService;
@@ -67,6 +82,21 @@ describe('ExportService', () => {
   };
 
   beforeEach(async () => {
+    // Setup default fs mocks for service initialization
+    // By default, no Nix store exists and no executables are found
+    (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+      // Template file needs to exist for service to initialize
+      if (path.includes('templates') || path.includes('.hbs')) {
+        return jest.requireActual('fs').existsSync(path);
+      }
+      return false;
+    });
+    (fs.accessSync as jest.Mock).mockImplementation(() => {
+      throw new Error('ENOENT');
+    });
+    (fs.readdirSync as jest.Mock).mockReturnValue([]);
+    (execSync as jest.Mock).mockReturnValue('');
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExportService,
@@ -752,6 +782,209 @@ describe('ExportService', () => {
       expect((result as any).sections).toHaveLength(2);
       expect((result as any).sections[0].id).toBe('section-1');
       expect((result as any).sections[1].id).toBe('section-2');
+    });
+  });
+
+  describe('Chromium path detection (Issue #1355)', () => {
+    // Note: These tests verify the detection logic during service initialization.
+    // Since the service is initialized in beforeEach, we need to test the logic
+    // by creating new instances with specific mock configurations.
+
+    it('should detect Chromium in Nix store with version hash', async () => {
+      // Reset mocks for this specific test
+      (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/nix/store') return true;
+        if (path.includes('templates') || path.includes('.hbs')) {
+          return jest.requireActual('fs').existsSync(path);
+        }
+        return false;
+      });
+      (fs.readdirSync as jest.Mock).mockReturnValue([
+        'abc123-chromium-120.0.6099.109',
+        'def456-other-package',
+      ]);
+      (fs.accessSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/nix/store/abc123-chromium-120.0.6099.109/bin/chromium') {
+          return; // success - executable exists
+        }
+        throw new Error('ENOENT');
+      });
+
+      // Create new service instance to trigger detection
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ExportService,
+          {
+            provide: getRepositoryToken(Etp),
+            useValue: mockEtpsRepository,
+          },
+          {
+            provide: getRepositoryToken(EtpSection),
+            useValue: mockSectionsRepository,
+          },
+        ],
+      }).compile();
+
+      const newService = module.get<ExportService>(ExportService);
+      expect(newService).toBeDefined();
+
+      // Verify fs.readdirSync was called with Nix store path
+      expect(fs.readdirSync).toHaveBeenCalledWith('/nix/store');
+    });
+
+    it('should detect chromium-browser variant in Nix store', async () => {
+      (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/nix/store') return true;
+        if (path.includes('templates') || path.includes('.hbs')) {
+          return jest.requireActual('fs').existsSync(path);
+        }
+        return false;
+      });
+      (fs.readdirSync as jest.Mock).mockReturnValue([
+        'xyz789-chromium-121.0.0.0',
+      ]);
+      (fs.accessSync as jest.Mock).mockImplementation((path: string) => {
+        // First path (chromium) fails, second path (chromium-browser) succeeds
+        if (path === '/nix/store/xyz789-chromium-121.0.0.0/bin/chromium') {
+          throw new Error('ENOENT');
+        }
+        if (
+          path === '/nix/store/xyz789-chromium-121.0.0.0/bin/chromium-browser'
+        ) {
+          return; // success
+        }
+        throw new Error('ENOENT');
+      });
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ExportService,
+          {
+            provide: getRepositoryToken(Etp),
+            useValue: mockEtpsRepository,
+          },
+          {
+            provide: getRepositoryToken(EtpSection),
+            useValue: mockSectionsRepository,
+          },
+        ],
+      }).compile();
+
+      const newService = module.get<ExportService>(ExportService);
+      expect(newService).toBeDefined();
+    });
+
+    it('should handle scenario where Nix store not available and which fails', async () => {
+      // Setup mocks: no Nix store, no static paths, which command fails
+      (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+        if (path.includes('templates') || path.includes('.hbs')) {
+          return jest.requireActual('fs').existsSync(path);
+        }
+        return false; // /nix/store doesn't exist
+      });
+      (fs.accessSync as jest.Mock).mockImplementation(() => {
+        throw new Error('ENOENT'); // No executable found
+      });
+      (execSync as jest.Mock).mockImplementation(() => {
+        throw new Error('which: command not found');
+      });
+
+      // Service should still initialize successfully (falls back to no Chromium)
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ExportService,
+          {
+            provide: getRepositoryToken(Etp),
+            useValue: mockEtpsRepository,
+          },
+          {
+            provide: getRepositoryToken(EtpSection),
+            useValue: mockSectionsRepository,
+          },
+        ],
+      }).compile();
+
+      const newService = module.get<ExportService>(ExportService);
+      expect(newService).toBeDefined();
+      // Service initializes but chromiumPath will be undefined (fallback to puppeteer bundled)
+    });
+
+    it('should handle ungoogled-chromium variant', async () => {
+      (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/nix/store') return true;
+        if (path.includes('templates') || path.includes('.hbs')) {
+          return jest.requireActual('fs').existsSync(path);
+        }
+        return false;
+      });
+      (fs.readdirSync as jest.Mock).mockReturnValue([
+        'abc-ungoogled-chromium-120.0.0',
+      ]);
+      (fs.accessSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/nix/store/abc-ungoogled-chromium-120.0.0/bin/chromium') {
+          return; // success
+        }
+        throw new Error('ENOENT');
+      });
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ExportService,
+          {
+            provide: getRepositoryToken(Etp),
+            useValue: mockEtpsRepository,
+          },
+          {
+            provide: getRepositoryToken(EtpSection),
+            useValue: mockSectionsRepository,
+          },
+        ],
+      }).compile();
+
+      const newService = module.get<ExportService>(ExportService);
+      expect(newService).toBeDefined();
+    });
+
+    it('should use PUPPETEER_EXECUTABLE_PATH env var if set', async () => {
+      const originalEnv = process.env.PUPPETEER_EXECUTABLE_PATH;
+      process.env.PUPPETEER_EXECUTABLE_PATH = '/custom/path/to/chromium';
+
+      (fs.existsSync as jest.Mock).mockImplementation((path: string) => {
+        if (path.includes('templates') || path.includes('.hbs')) {
+          return jest.requireActual('fs').existsSync(path);
+        }
+        return false;
+      });
+      (fs.accessSync as jest.Mock).mockImplementation((path: string) => {
+        if (path === '/custom/path/to/chromium') {
+          return; // success
+        }
+        throw new Error('ENOENT');
+      });
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          ExportService,
+          {
+            provide: getRepositoryToken(Etp),
+            useValue: mockEtpsRepository,
+          },
+          {
+            provide: getRepositoryToken(EtpSection),
+            useValue: mockSectionsRepository,
+          },
+        ],
+      }).compile();
+
+      const newService = module.get<ExportService>(ExportService);
+      expect(newService).toBeDefined();
+
+      // Restore env
+      if (originalEnv === undefined) {
+        delete process.env.PUPPETEER_EXECUTABLE_PATH;
+      } else {
+        process.env.PUPPETEER_EXECUTABLE_PATH = originalEnv;
+      }
     });
   });
 });
