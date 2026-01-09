@@ -21,8 +21,13 @@ describe('AdminDashboard', () => {
   const mockStatistics: GlobalStatistics = {
     totalDomains: 10,
     activeDomains: 8,
+    inactiveDomains: 2,
     totalUsers: 100,
-    activeUsers: 85,
+    totalOrganizations: 5,
+    totalEtps: 250,
+    domainsByOrganization: [
+      { organizationName: 'Prefeitura de Lages', domainCount: 3 },
+    ],
   };
 
   const mockDomains: AuthorizedDomain[] = [
@@ -73,9 +78,9 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('System Admin')).toBeInTheDocument();
+      expect(screen.getByText('Administracao do Sistema')).toBeInTheDocument();
       expect(
-        screen.getByText('Manage domains and users across the platform'),
+        screen.getByText('Gerencie dominios e usuarios da plataforma'),
       ).toBeInTheDocument();
     });
 
@@ -91,7 +96,7 @@ describe('AdminDashboard', () => {
       renderWithRouter(<AdminDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /manage domains/i,
+        name: /gerenciar dominios/i,
       });
       expect(manageButton).toBeInTheDocument();
       expect(manageButton).toHaveAttribute('href', '/admin/domains');
@@ -110,10 +115,10 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('Total Domains')).toBeInTheDocument();
-      expect(screen.getByText('Active Domains')).toBeInTheDocument();
-      expect(screen.getByText('Total Users')).toBeInTheDocument();
-      expect(screen.getByText('Active Users')).toBeInTheDocument();
+      expect(screen.getByText('Total de Dominios')).toBeInTheDocument();
+      expect(screen.getByText('Dominios Ativos')).toBeInTheDocument();
+      expect(screen.getByText('Total de Usuarios')).toBeInTheDocument();
+      expect(screen.getByText('Total de ETPs')).toBeInTheDocument();
     });
 
     it('should show statistics values', () => {
@@ -130,7 +135,7 @@ describe('AdminDashboard', () => {
       expect(screen.getByText('10')).toBeInTheDocument();
       expect(screen.getByText('8')).toBeInTheDocument();
       expect(screen.getByText('100')).toBeInTheDocument();
-      expect(screen.getByText('85')).toBeInTheDocument();
+      expect(screen.getByText('250')).toBeInTheDocument();
     });
   });
 
@@ -146,8 +151,10 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('Recent Domains')).toBeInTheDocument();
-      expect(screen.getByText('Last 5 registered domains')).toBeInTheDocument();
+      expect(screen.getByText('Dominios Recentes')).toBeInTheDocument();
+      expect(
+        screen.getByText('Ultimos 5 dominios registrados'),
+      ).toBeInTheDocument();
     });
 
     it('should display domain list items', () => {
@@ -176,8 +183,8 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('Active')).toBeInTheDocument();
-      expect(screen.getByText('Inactive')).toBeInTheDocument();
+      expect(screen.getByText('Ativo')).toBeInTheDocument();
+      expect(screen.getByText('Inativo')).toBeInTheDocument();
     });
 
     it('should show user count and manager info', () => {
@@ -191,8 +198,8 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText(/5 \/ 10 users/i)).toBeInTheDocument();
-      expect(screen.getByText(/Manager: John Doe/i)).toBeInTheDocument();
+      expect(screen.getByText(/5 \/ 10 usuarios/i)).toBeInTheDocument();
+      expect(screen.getByText(/Gestor: John Doe/i)).toBeInTheDocument();
     });
 
     it('should show empty state when no domains', () => {
@@ -206,9 +213,11 @@ describe('AdminDashboard', () => {
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('No domains registered yet')).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: /add your first domain/i }),
+        screen.getByText('Nenhum dominio registrado ainda'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: /adicionar primeiro dominio/i }),
       ).toBeInTheDocument();
     });
 
@@ -307,7 +316,7 @@ describe('AdminDashboard', () => {
       renderWithRouter(<AdminDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /manage domains/i,
+        name: /gerenciar dominios/i,
       });
       // Button should have responsive width classes
       expect(manageButton).toHaveClass('w-full', 'sm:w-auto');
@@ -327,7 +336,7 @@ describe('AdminDashboard', () => {
       renderWithRouter(<AdminDashboard />);
 
       const h1 = screen.getByRole('heading', { level: 1 });
-      expect(h1).toHaveTextContent('System Admin');
+      expect(h1).toHaveTextContent('Administracao do Sistema');
     });
 
     it('should have accessible links with proper text', () => {
@@ -358,8 +367,8 @@ describe('AdminDashboard', () => {
       renderWithRouter(<AdminDashboard />);
 
       // Card descriptions should be present
-      expect(screen.getByText('Registered domains')).toBeInTheDocument();
-      expect(screen.getByText('Currently active')).toBeInTheDocument();
+      expect(screen.getByText('Dominios registrados')).toBeInTheDocument();
+      expect(screen.getByText('Atualmente ativos')).toBeInTheDocument();
     });
   });
 });

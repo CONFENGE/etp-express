@@ -7,18 +7,23 @@ describe('StatisticsCards', () => {
   const mockStatistics: GlobalStatistics = {
     totalDomains: 10,
     activeDomains: 8,
+    inactiveDomains: 2,
     totalUsers: 100,
-    activeUsers: 85,
+    totalOrganizations: 5,
+    totalEtps: 250,
+    domainsByOrganization: [
+      { organizationName: 'Prefeitura de Lages', domainCount: 3 },
+    ],
   };
 
   describe('Rendering with data', () => {
     it('should render 4 statistics cards', () => {
       render(<StatisticsCards statistics={mockStatistics} loading={false} />);
 
-      expect(screen.getByText('Total Domains')).toBeInTheDocument();
-      expect(screen.getByText('Active Domains')).toBeInTheDocument();
-      expect(screen.getByText('Total Users')).toBeInTheDocument();
-      expect(screen.getByText('Active Users')).toBeInTheDocument();
+      expect(screen.getByText('Total de Dominios')).toBeInTheDocument();
+      expect(screen.getByText('Dominios Ativos')).toBeInTheDocument();
+      expect(screen.getByText('Total de Usuarios')).toBeInTheDocument();
+      expect(screen.getByText('Total de ETPs')).toBeInTheDocument();
     });
 
     it('should display correct statistics values', () => {
@@ -27,16 +32,16 @@ describe('StatisticsCards', () => {
       expect(screen.getByText('10')).toBeInTheDocument();
       expect(screen.getByText('8')).toBeInTheDocument();
       expect(screen.getByText('100')).toBeInTheDocument();
-      expect(screen.getByText('85')).toBeInTheDocument();
+      expect(screen.getByText('250')).toBeInTheDocument();
     });
 
     it('should display card descriptions', () => {
       render(<StatisticsCards statistics={mockStatistics} loading={false} />);
 
-      expect(screen.getByText('Registered domains')).toBeInTheDocument();
-      expect(screen.getByText('Currently active')).toBeInTheDocument();
-      expect(screen.getByText('Registered users')).toBeInTheDocument();
-      expect(screen.getByText('Active this month')).toBeInTheDocument();
+      expect(screen.getByText('Dominios registrados')).toBeInTheDocument();
+      expect(screen.getByText('Atualmente ativos')).toBeInTheDocument();
+      expect(screen.getByText('Usuarios ativos')).toBeInTheDocument();
+      expect(screen.getByText('Documentos criados')).toBeInTheDocument();
     });
   });
 
