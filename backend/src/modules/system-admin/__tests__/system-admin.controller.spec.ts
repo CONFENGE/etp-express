@@ -49,6 +49,7 @@ describe('SystemAdminController', () => {
     suspendDomain: jest.fn(),
     reactivateDomain: jest.fn(),
     getStatistics: jest.fn(),
+    cleanupTestDomains: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -217,6 +218,30 @@ describe('SystemAdminController', () => {
       expect(result.totalDomains).toBe(10);
       expect(result.activeDomains).toBe(8);
       expect(result.inactiveDomains).toBe(2);
+    });
+  });
+
+  describe('cleanupTestDomains', () => {
+    it('should cleanup E2E test domains and return count', async () => {
+      mockSystemAdminService.cleanupTestDomains.mockResolvedValue({
+        deleted: 15,
+      });
+
+      const result = await controller.cleanupTestDomains();
+
+      expect(service.cleanupTestDomains).toHaveBeenCalled();
+      expect(result).toEqual({ deleted: 15 });
+    });
+
+    it('should return 0 deleted when no test domains exist', async () => {
+      mockSystemAdminService.cleanupTestDomains.mockResolvedValue({
+        deleted: 0,
+      });
+
+      const result = await controller.cleanupTestDomains();
+
+      expect(service.cleanupTestDomains).toHaveBeenCalled();
+      expect(result).toEqual({ deleted: 0 });
     });
   });
 });
