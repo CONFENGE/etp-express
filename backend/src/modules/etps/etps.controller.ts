@@ -179,6 +179,67 @@ export class EtpsController {
   }
 
   /**
+   * Retrieves the success rate metric for ETPs (completed / total).
+   *
+   * @remarks
+   * Part of the advanced metrics feature (Issue #1363).
+   * SECURITY (Issue #1326): Validates userId and organizationId before querying.
+   *
+   * @param periodDays - Number of days to consider (default: 30)
+   * @param rawOrganizationId - Organization ID (extracted from JWT token)
+   * @param rawUserId - Current user ID (extracted from JWT token)
+   * @returns Success rate data with trend indicator
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
+   */
+  @Get('metrics/success-rate')
+  @ApiOperation({ summary: 'Obter taxa de sucesso dos ETPs' })
+  @ApiQuery({
+    name: 'periodDays',
+    required: false,
+    type: Number,
+    description: 'Número de dias para o período de cálculo (padrão: 30)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Taxa de sucesso calculada',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            rate: { type: 'number', example: 75.5 },
+            trend: { type: 'string', enum: ['up', 'down', 'stable'] },
+            completedCount: { type: 'number', example: 15 },
+            totalCount: { type: 'number', example: 20 },
+            previousRate: { type: 'number', example: 60.0 },
+          },
+        },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async getSuccessRate(
+    @Query('periodDays') periodDays: number = 30,
+    @CurrentUser('organizationId') rawOrganizationId: string,
+    @CurrentUser('id') rawUserId: string,
+  ) {
+    // SECURITY (Issue #1326): Validate required claims before query
+    const organizationId = this.validateOrganizationId(rawOrganizationId);
+    const userId = this.validateUserId(rawUserId);
+
+    const successRate = await this.etpsService.getSuccessRate(
+      organizationId,
+      userId,
+      periodDays,
+    );
+    return {
+      data: successRate,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
    * Retrieves a single ETP by ID with all sections.
    *
    * @remarks
