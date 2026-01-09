@@ -44,12 +44,33 @@ describe('ETPEditorSidebar', () => {
         sections={mockSections}
         onGenerateAll={mockOnGenerateAll}
         isGenerating={false}
+        isGenerateAllDisabled={false}
       />,
     );
 
     const button = screen.getByRole('button', { name: /gerar todas seções/i });
     expect(button).toBeInTheDocument();
     expect(button).not.toBeDisabled();
+  });
+
+  it('should display button disabled with "Em breve" badge by default (#1372)', () => {
+    const mockOnGenerateAll = vi.fn();
+    render(
+      <ETPEditorSidebar
+        sections={mockSections}
+        onGenerateAll={mockOnGenerateAll}
+        isGenerating={false}
+      />,
+    );
+
+    const button = screen.getByRole('button', { name: /gerar todas seções/i });
+    expect(button).toBeInTheDocument();
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute(
+      'title',
+      'Funcionalidade em desenvolvimento',
+    );
+    expect(screen.getByText('Em breve')).toBeInTheDocument();
   });
 
   it('should display button with loading text when generating', () => {
@@ -67,7 +88,7 @@ describe('ETPEditorSidebar', () => {
     expect(button).toBeDisabled();
   });
 
-  it('should call onGenerateAll when button is clicked', async () => {
+  it('should call onGenerateAll when button is clicked (when enabled)', async () => {
     const mockOnGenerateAll = vi.fn();
     const user = userEvent.setup();
 
@@ -76,6 +97,7 @@ describe('ETPEditorSidebar', () => {
         sections={mockSections}
         onGenerateAll={mockOnGenerateAll}
         isGenerating={false}
+        isGenerateAllDisabled={false}
       />,
     );
 
@@ -83,6 +105,25 @@ describe('ETPEditorSidebar', () => {
     await user.click(button);
 
     expect(mockOnGenerateAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT call onGenerateAll when button is disabled (#1372)', async () => {
+    const mockOnGenerateAll = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ETPEditorSidebar
+        sections={mockSections}
+        onGenerateAll={mockOnGenerateAll}
+        isGenerating={false}
+        isGenerateAllDisabled={true}
+      />,
+    );
+
+    const button = screen.getByRole('button', { name: /gerar todas seções/i });
+    await user.click(button);
+
+    expect(mockOnGenerateAll).not.toHaveBeenCalled();
   });
 
   it('should display 0/0 when sections array is empty', () => {
