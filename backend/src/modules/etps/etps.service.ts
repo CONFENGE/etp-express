@@ -975,4 +975,102 @@ export class EtpsService {
       previousRate: parseFloat(previousRate.toFixed(1)),
     };
   }
+
+  /**
+   * Retrieves the distribution of ETPs by status.
+   *
+   * @remarks
+   * Part of the advanced metrics feature (Issue #1365).
+   * Returns count and percentage for each status with localized labels and colors.
+   *
+   * SECURITY (Issue #1326): ALWAYS filters by BOTH organizationId AND userId to
+   * prevent cross-user data access.
+   *
+   * @param organizationId - Organization ID (required for multi-tenancy isolation)
+   * @param userId - User ID (required for user-level data isolation)
+   * @returns Array of status distribution objects with count, percentage, label and color
+   *
+   * @example
+   * ```ts
+   * const result = await etpsService.getStatusDistribution('org-uuid', 'user-uuid');
+   * // [
+   * //   { status: 'draft', label: 'Rascunho', count: 5, percentage: 25.0, color: '#6B7280' },
+   * //   { status: 'in_progress', label: 'Em Andamento', count: 10, percentage: 50.0, color: '#3B82F6' },
+   * //   ...
+   * // ]
+   * ```
+   */
+  async getStatusDistribution(
+    organizationId: string,
+    userId: string,
+  ): Promise<
+    Array<{
+      status: string;
+      label: string;
+      count: number;
+      percentage: number;
+      color: string;
+    }>
+  > {
+    // Status labels and colors (Portuguese localization)
+    const statusConfig: Record<
+      string,
+      { label: string; color: string; order: number }
+    > = {
+      [EtpStatus.DRAFT]: { label: 'Rascunho', color: '#6B7280', order: 1 },
+      [EtpStatus.IN_PROGRESS]: {
+        label: 'Em Andamento',
+        color: '#3B82F6',
+        order: 2,
+      },
+      [EtpStatus.REVIEW]: { label: 'Em Revisao', color: '#F59E0B', order: 3 },
+      [EtpStatus.COMPLETED]: {
+        label: 'Concluido',
+        color: '#10B981',
+        order: 4,
+      },
+      [EtpStatus.ARCHIVED]: { label: 'Arquivado', color: '#9CA3AF', order: 5 },
+    };
+
+    // Query ETPs grouped by status
+    const queryBuilder = this.etpsRepository
+      .createQueryBuilder('etp')
+      .select('etp.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId })
+      .groupBy('etp.status');
+
+    const rawResults = await queryBuilder.getRawMany();
+
+    // Calculate total for percentage
+    const total = rawResults.reduce(
+      (sum, item) => sum + parseInt(item.count),
+      0,
+    );
+
+    // Transform results with labels and colors
+    const distribution = rawResults
+      .map((item) => {
+        const config = statusConfig[item.status] || {
+          label: item.status,
+          color: '#6B7280',
+          order: 99,
+        };
+        const count = parseInt(item.count);
+        return {
+          status: item.status,
+          label: config.label,
+          count,
+          percentage:
+            total > 0 ? parseFloat(((count / total) * 100).toFixed(1)) : 0,
+          color: config.color,
+          _order: config.order,
+        };
+      })
+      .sort((a, b) => a._order - b._order)
+      .map(({ _order, ...rest }) => rest); // Remove internal _order field
+
+    return distribution;
+  }
 }
