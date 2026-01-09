@@ -115,6 +115,52 @@ export class SystemAdminController {
     return this.systemAdminService.findAllDomains();
   }
 
+  // ============================================
+  // CLEANUP OPERATIONS
+  // ============================================
+
+  /**
+   * Cleans up E2E test domains from the database.
+   *
+   * Removes all domains matching the pattern `test-e2e-*.example.com`.
+   * These are artifacts from E2E test execution that shouldn't persist.
+   *
+   * IMPORTANT: This route MUST be defined BEFORE routes with :id parameter
+   * to prevent 'cleanup-test-domains' from being parsed as a UUID.
+   *
+   * @returns Object with count of deleted domains
+   */
+  @Delete('domains/cleanup-test-domains')
+  @ApiOperation({
+    summary: 'Cleanup E2E test domains',
+    description:
+      'Removes all domains matching pattern test-e2e-*.example.com. ' +
+      'These are leftover artifacts from E2E test execution. ' +
+      'Use this endpoint to clean up test data from production.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Test domains cleaned up successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        deleted: { type: 'number', example: 15 },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid JWT' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - SYSTEM_ADMIN role required',
+  })
+  async cleanupTestDomains(): Promise<{ deleted: number }> {
+    return this.systemAdminService.cleanupTestDomains();
+  }
+
+  // ============================================
+  // DOMAIN DETAIL OPERATIONS
+  // ============================================
+
   /**
    * Retrieves a single domain by ID.
    *
@@ -357,45 +403,6 @@ export class SystemAdminController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AuthorizedDomain> {
     return this.systemAdminService.reactivateDomain(id);
-  }
-
-  // ============================================
-  // CLEANUP OPERATIONS
-  // ============================================
-
-  /**
-   * Cleans up E2E test domains from the database.
-   *
-   * Removes all domains matching the pattern `test-e2e-*.example.com`.
-   * These are artifacts from E2E test execution that shouldn't persist.
-   *
-   * @returns Object with count of deleted domains
-   */
-  @Delete('domains/cleanup-test-domains')
-  @ApiOperation({
-    summary: 'Cleanup E2E test domains',
-    description:
-      'Removes all domains matching pattern test-e2e-*.example.com. ' +
-      'These are leftover artifacts from E2E test execution. ' +
-      'Use this endpoint to clean up test data from production.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Test domains cleaned up successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        deleted: { type: 'number', example: 15 },
-      },
-    },
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid JWT' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - SYSTEM_ADMIN role required',
-  })
-  async cleanupTestDomains(): Promise<{ deleted: number }> {
-    return this.systemAdminService.cleanupTestDomains();
   }
 
   // ============================================
