@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 664/739 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-09 | **Progresso:** 665/743 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1370 | Feature  | Add status distribution chart to Dashboard (#1365) ✅           |
+| 2026-01-09 | #1369 | Feature  | Add average completion time metric card (#1364) ✅              |
 | 2026-01-09 | #1368 | Feature  | Add success rate metric card to Dashboard (#1363) ✅            |
 | 2026-01-09 | #1362 | Fix      | Add Brazilian date format support to CreateETPWizard (#1347) ✅ |
 | 2026-01-09 | #1361 | Fix      | Remove intrusive AI generation banner trigger (#1346) ✅        |
@@ -99,7 +101,7 @@
 | #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
 |       | ↳ #1364 Métrica de tempo médio                | ✅     |
-|       | ↳ #1365 Gráfico distribuição por status       | 🔴     |
+|       | ↳ #1365 Gráfico distribuição por status       | ✅     |
 |       | ↳ #1366 Filtro por período                    | 🔴     |
 |       | ↳ #1367 Ranking de produtividade (Admin)      | 🔴     |
 
@@ -117,13 +119,22 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 24/33 (73%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164 (4 sub-issues), #1166, #1167, #1168
+**Progresso MVP Comercial:** 26/33 (79%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164 (2 sub-issues), #1166, #1167, #1168
 
 ---
 
-## Bugs Criticos P0 - TODOS RESOLVIDOS ✅
+## Bugs Criticos P0 - 4 NOVOS DETECTADOS ⚠️
 
-> **STATUS:** Todos os bugs P0 detectados foram resolvidos. Happy path funcionando corretamente.
+> **STATUS:** 4 novos bugs P0 detectados. Happy path com problemas.
+
+### Bugs P0 Abertos (2026-01-09)
+
+| #     | Issue                                                              | Area             | Status |
+| ----- | ------------------------------------------------------------------ | ---------------- | ------ |
+| #1374 | [P0] Badge de status ausente em alguns cards de ETP                | Frontend/UX      | 🔴     |
+| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes            | Frontend/UX      | 🔴     |
+| #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível  | Frontend/UX      | 🔴     |
+| #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400 | Backend/Frontend | 🔴     |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
@@ -164,7 +175,7 @@
 
 ---
 
-## Issues Abertas (76)
+## Issues Abertas (78)
 
 ### P1 - High Priority (11 issues)
 
@@ -210,7 +221,7 @@
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 24/33  | 73% (9 restam) |
+| MVP Comercial          | 26/33  | 79% (7 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -310,11 +321,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 739   |
-| Issues Abertas    | 75    |
-| Issues Fechadas   | 664   |
-| Progresso         | 90%   |
-| Bugs P0 Abertos   | 0     |
+| Issues Totais     | 743   |
+| Issues Abertas    | 78    |
+| Issues Fechadas   | 665   |
+| Progresso         | 89%   |
+| Bugs P0 Abertos   | 4     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
