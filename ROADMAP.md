@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-09 | #1379 | Fix      | Add E2E test domains cleanup endpoint (#1354) ✅                  |
 | 2026-01-09 | #1378 | Fix      | Fix onboarding checklist not recognizing existing ETPs (#1373) ✅ |
 | 2026-01-09 | #1377 | Fix      | Fix status badge missing for 'review' status ETPs (#1374) ✅      |
 | 2026-01-09 | #1375 | Fix      | Fix ETP creation 400 error - remove invalid fields (#1371) ✅     |
@@ -195,11 +196,10 @@ Nenhum bug P0 aberto! 🎉
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
 | #1073 | [QA] Criar testes de integração com APIs governamentais reais   |
 
-### P2 - Medium Priority (11 issues)
+### P2 - Medium Priority (10 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
-| #1354 | [P2] Lixo de testes E2E em produção - domínios test-e2e-\*       |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
