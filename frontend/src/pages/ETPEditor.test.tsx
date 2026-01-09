@@ -151,7 +151,12 @@ vi.mock('@/components/etp/ETPEditorTabsList', () => ({
   ETPEditorTabsList: ({
     sections,
   }: {
-    sections: Array<{ id: string; title: string; completed: boolean }>;
+    sections: Array<{
+      id: string;
+      title: string;
+      fullTitle?: string;
+      completed: boolean;
+    }>;
   }) => (
     <div role="tablist">
       {sections.map((section, index) => (
@@ -159,6 +164,7 @@ vi.mock('@/components/etp/ETPEditorTabsList', () => ({
           key={section.id}
           role="tab"
           data-state={index === 0 ? 'active' : 'inactive'}
+          title={section.fullTitle} // Support tooltip (#1345)
         >
           {section.title}
         </button>
@@ -505,7 +511,8 @@ describe('ETPEditor', () => {
     // Tab da seção 1 é a primeira (index 0) e deve estar ativa
     const section1Tab = tabs[0];
     expect(section1Tab).toHaveAttribute('data-state', 'active');
-    expect(section1Tab).toHaveTextContent('1');
+    // #1345: Now tabs show short title like "I - Necessidade" instead of just "1"
+    expect(section1Tab).toHaveTextContent(/I - Necessidade/i);
 
     // Verifica que o conteúdo da seção 1 está exibido via ETPEditorContent
     expect(
