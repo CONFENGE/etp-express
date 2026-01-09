@@ -88,11 +88,11 @@ describe('useDemoConversion', () => {
       expect(result.current.showBanner).toBe(false);
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
-      expect(result.current.lastTrigger).toBe('ai_generation');
+      expect(result.current.lastTrigger).toBe('etp_completion');
     });
 
     it('should NOT show banner for regular users', () => {
@@ -101,22 +101,10 @@ describe('useDemoConversion', () => {
       const { result } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(false);
-    });
-
-    it('should set correct trigger type for ai_generation', () => {
-      setupAuthMock(mockDemoUser);
-
-      const { result } = renderHook(() => useDemoConversion());
-
-      act(() => {
-        result.current.triggerBanner('ai_generation');
-      });
-
-      expect(result.current.lastTrigger).toBe('ai_generation');
     });
 
     it('should set correct trigger type for etp_completion', () => {
@@ -154,7 +142,7 @@ describe('useDemoConversion', () => {
       const { result } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(false);
@@ -171,7 +159,7 @@ describe('useDemoConversion', () => {
       const { result } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
@@ -185,7 +173,7 @@ describe('useDemoConversion', () => {
       const { result } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
@@ -221,7 +209,7 @@ describe('useDemoConversion', () => {
       const { result } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
         result.current.dismissBanner();
       });
 
@@ -241,7 +229,7 @@ describe('useDemoConversion', () => {
       const { result, rerender } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
@@ -259,7 +247,7 @@ describe('useDemoConversion', () => {
       const { result, rerender } = renderHook(() => useDemoConversion());
 
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
@@ -288,7 +276,7 @@ describe('useDemoConversion', () => {
 
       // Should still work without crashing
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);
@@ -309,7 +297,7 @@ describe('useDemoConversion', () => {
 
       // Should show banner since invalid value means not recently dismissed
       act(() => {
-        result.current.triggerBanner('ai_generation');
+        result.current.triggerBanner('etp_completion');
       });
 
       expect(result.current.showBanner).toBe(true);

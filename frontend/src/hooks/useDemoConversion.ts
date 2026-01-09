@@ -3,11 +3,16 @@ import { useAuthStore } from '@/store/authStore';
 
 /**
  * Trigger events that should show the conversion banner for demo users.
+ *
+ * Only completion events trigger the banner to avoid interrupting active work:
+ * - etp_completion: User finished the ETP (100% progress)
+ * - pdf_export: User exported the document (PDF or DOCX)
+ *
+ * Note: 'ai_generation' was removed (#1346) as it was considered intrusive
+ * during active work. The banner should only appear after successful completion
+ * of a workflow, not during intermediate steps.
  */
-export type DemoConversionTrigger =
-  | 'ai_generation'
-  | 'etp_completion'
-  | 'pdf_export';
+export type DemoConversionTrigger = 'etp_completion' | 'pdf_export';
 
 const SESSION_KEY = 'demo-banner-dismissed';
 
@@ -15,9 +20,8 @@ const SESSION_KEY = 'demo-banner-dismissed';
  * Hook to manage demo user conversion banner state.
  *
  * The banner is shown only for demo users after specific trigger events:
- * - AI generation completion
  * - ETP completion (100% progress)
- * - PDF export
+ * - PDF/DOCX export
  *
  * When the user closes the banner, it remains hidden until the next trigger.
  *
@@ -27,9 +31,11 @@ const SESSION_KEY = 'demo-banner-dismissed';
  * ```tsx
  * const { showBanner, triggerBanner, dismissBanner } = useDemoConversion();
  *
- * // After AI generation
- * await generateSection();
- * triggerBanner('ai_generation');
+ * // After ETP completion
+ * triggerBanner('etp_completion');
+ *
+ * // After PDF export
+ * triggerBanner('pdf_export');
  *
  * // In render
  * {showBanner && <DemoConversionBanner onClose={dismissBanner} />}

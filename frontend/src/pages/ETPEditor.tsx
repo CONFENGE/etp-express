@@ -245,8 +245,9 @@ export function ETPEditor() {
           // Mark onboarding task as completed (#1213)
           markSuggestionGenerated();
 
-          // Trigger demo conversion banner after successful AI generation (#475)
-          triggerBanner('ai_generation');
+          // Note: Demo conversion banner is NOT triggered here (#1346)
+          // Banner only appears after completion events (ETP 100% or export)
+          // to avoid interrupting active work during AI generation
         }
       } catch (err) {
         const message =
@@ -254,14 +255,7 @@ export function ETPEditor() {
         error(message);
       }
     },
-    [
-      id,
-      storeGenerateSection,
-      success,
-      markSuggestionGenerated,
-      triggerBanner,
-      error,
-    ],
+    [id, storeGenerateSection, success, markSuggestionGenerated, error],
   );
 
   // Handle cancel export (#612) - must be before early return
