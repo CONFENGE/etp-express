@@ -274,13 +274,28 @@ export function ETPEditor() {
   }, [success]);
 
   // Memoized computed values for tabs, content, and sidebar (#457)
+  // Fix: Show section title in tabs instead of just number (#1345)
   const sectionsForTabs = useMemo(
     () =>
-      sectionTemplates.map((template) => ({
-        id: String(template.number),
-        title: String(template.number),
-        completed: false, // TODO: calcular baseado em currentETP.sections
-      })),
+      sectionTemplates.map((template) => {
+        // Extract short title for tab display: "I - Necessidade da Contratação" → "I - Necessidade"
+        // Split by " - " and take first two words of the second part
+        const parts = template.title.split(' - ');
+        const romanNumeral = parts[0] || String(template.number);
+        const titlePart = parts[1] || '';
+        // Take first word of title part for compact display
+        const shortTitle = titlePart.split(' ')[0] || '';
+        const tabTitle = shortTitle
+          ? `${romanNumeral} - ${shortTitle}`
+          : romanNumeral;
+
+        return {
+          id: String(template.number),
+          title: tabTitle,
+          fullTitle: template.title, // Full title for tooltip (#1345)
+          completed: false, // TODO: calcular baseado em currentETP.sections
+        };
+      }),
     [sectionTemplates],
   );
 
