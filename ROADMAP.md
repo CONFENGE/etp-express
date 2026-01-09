@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1358 | Fix      | Show section titles in ETP Editor tabs (#1345) ✅               |
 | 2026-01-09 | #1357 | Fix      | Fix Admin statistics zeros + translate to Portuguese (#1352) ✅ |
 | 2026-01-08 | #1356 | Fix      | Improve Chromium detection for Nix/Nixpacks (#1355) ✅          |
 | 2026-01-08 | -     | Audit    | Admin happy path: 9 bugs (4 novos P0 #1351-#1355) ⚠️            |
@@ -122,17 +123,17 @@
 | #1342 | [P0] Exportacao PDF falha com erro 500                         | Backend/Export | ✅     |
 | #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | ✅     |
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | 🔴     |
-| #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo         | Frontend/UX    | 🔴     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
 | #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | 🔴     |
 
-> **6 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
+> **5 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1345 | [P0] Tabs de secoes mostram apenas numeros, nao titulo                    | Frontend/UX      | ✅     |
 | #1352 | [P0] Estatisticas Admin retornam zeros (interface misalign)               | Backend/Admin    | ✅     |
 | #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado                  | Frontend/i18n    | ✅     |
 | #1355 | [P0] REGRESSAO: Export PDF ainda falha erro 500 - Nix detection           | Backend/Export   | ✅     |
@@ -311,7 +312,7 @@ Oportunidades de mercado identificadas.
 | Issues Abertas    | 77    |
 | Issues Fechadas   | 656   |
 | Progresso         | 89%   |
-| Bugs P0 Abertos   | 6     |
+| Bugs P0 Abertos   | 5     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
