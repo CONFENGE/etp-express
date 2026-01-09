@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-08 | **Progresso:** 653/733 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-08 | **Progresso:** 654/733 (89%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                      |
 | ---------- | ----- | -------- | -------------------------------------------------------------- |
+| 2026-01-08 | #1356 | Fix      | Improve Chromium detection for Nix/Nixpacks (#1355) ✅         |
 | 2026-01-08 | -     | Audit    | Admin happy path: 9 bugs (4 novos P0 #1351-#1355) ⚠️           |
 | 2026-01-08 | #1349 | Fix      | Robust Chromium detection for PDF export (#1342) ✅            |
 | 2026-01-08 | #1348 | Fix      | Fix demo user 403 error - self-healing demo org (#1341) ✅     |
@@ -126,14 +127,14 @@
 | #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | 🔴     |
 | #1352 | [P0] Estatisticas Admin retornam zeros (erro 500)              | Backend/Admin  | 🔴     |
 | #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado       | Frontend/i18n  | 🔴     |
-| #1355 | [P0] REGRESSAO: Export PDF ainda falha erro 500 (#1342)        | Backend/Export | 🔴     |
 
-> **9 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
+> **8 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1355 | [P0] REGRESSAO: Export PDF ainda falha erro 500 - Nix detection           | Backend/Export   | ✅     |
 | #1342 | [P0] Exportacao PDF falha com erro 500 - Chromium detection               | Backend/Export   | ✅     |
 | #1341 | [P0] Usuario demo nao consegue criar novos ETPs - Erro 403                | Backend/Auth     | ✅     |
 | #1328 | [P0] Conta demo sem templates - primeira impressão arruinada              | Deploy           | ✅     |
@@ -306,10 +307,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 733   |
-| Issues Abertas    | 80    |
-| Issues Fechadas   | 653   |
+| Issues Abertas    | 79    |
+| Issues Fechadas   | 654   |
 | Progresso         | 89%   |
-| Bugs P0 Abertos   | 9     |
+| Bugs P0 Abertos   | 8     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
