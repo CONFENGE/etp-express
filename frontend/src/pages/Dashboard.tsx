@@ -223,37 +223,49 @@ export function Dashboard() {
               <SkeletonRecentItems count={5} />
             ) : (
               <div className="space-y-4">
-                {recentETPs.map((etp) => (
-                  <Link
-                    key={etp.id}
-                    to={`/etps/${etp.id}`}
-                    className="block p-4 rounded-lg border hover:bg-accent transition-colors"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{etp.title}</h3>
-                        {etp.description && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {etp.description}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs bg-secondary px-2 py-1 rounded">
-                            {ETP_STATUS_LABELS[etp.status]}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(etp.updatedAt)}
-                          </span>
+                {recentETPs.map((etp) => {
+                  // Check if ETP was created by another user (#1351)
+                  const isOtherUser =
+                    etp.createdBy && etp.createdBy.id !== user?.id;
+
+                  return (
+                    <Link
+                      key={etp.id}
+                      to={`/etps/${etp.id}`}
+                      className="block p-4 rounded-lg border hover:bg-accent transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{etp.title}</h3>
+                          {/* Show author name if ETP belongs to another user (#1351) */}
+                          {isOtherUser && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              Por: {etp.createdBy?.name}
+                            </p>
+                          )}
+                          {etp.description && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {etp.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs bg-secondary px-2 py-1 rounded">
+                              {ETP_STATUS_LABELS[etp.status]}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDate(etp.updatedAt)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-primary">
+                            {etp.progress}%
+                          </div>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-primary">
-                          {etp.progress}%
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </CardContent>
