@@ -781,4 +781,102 @@ export class EtpsService {
       ).toFixed(2),
     };
   }
+
+  /**
+   * Retrieves the success rate metric for ETPs.
+   *
+   * @remarks
+   * Success rate is calculated as: (completed ETPs / total ETPs) * 100
+   * Also includes trend comparison with previous period.
+   *
+   * SECURITY (Issue #1326): ALWAYS filters by BOTH organizationId AND userId to
+   * prevent cross-user data access.
+   *
+   * @param organizationId - Organization ID (required for multi-tenancy isolation)
+   * @param userId - User ID (required for user-level data isolation)
+   * @param periodDays - Number of days to consider for current period (default: 30)
+   * @returns Success rate object with rate percentage and trend
+   *
+   * @example
+   * ```ts
+   * const result = await etpsService.getSuccessRate('org-uuid', 'user-uuid', 30);
+   * console.log(result.rate); // 75.5
+   * console.log(result.trend); // 'up' | 'down' | 'stable'
+   * console.log(result.completedCount); // 15
+   * console.log(result.totalCount); // 20
+   * ```
+   */
+  async getSuccessRate(
+    organizationId: string,
+    userId: string,
+    periodDays: number = 30,
+  ): Promise<{
+    rate: number;
+    trend: 'up' | 'down' | 'stable';
+    completedCount: number;
+    totalCount: number;
+    previousRate: number;
+  }> {
+    const now = new Date();
+    const periodStart = new Date(
+      now.getTime() - periodDays * 24 * 60 * 60 * 1000,
+    );
+    const previousPeriodStart = new Date(
+      periodStart.getTime() - periodDays * 24 * 60 * 60 * 1000,
+    );
+
+    // Current period stats
+    const currentQueryBuilder = this.etpsRepository
+      .createQueryBuilder('etp')
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId })
+      .andWhere('etp.createdAt >= :periodStart', { periodStart });
+
+    const currentTotal = await currentQueryBuilder.getCount();
+    const currentCompleted = await currentQueryBuilder
+      .clone()
+      .andWhere('etp.status = :status', { status: EtpStatus.COMPLETED })
+      .getCount();
+
+    // Previous period stats for trend calculation
+    const previousQueryBuilder = this.etpsRepository
+      .createQueryBuilder('etp')
+      .where('etp.organizationId = :organizationId', { organizationId })
+      .andWhere('etp.createdById = :userId', { userId })
+      .andWhere('etp.createdAt >= :previousPeriodStart', {
+        previousPeriodStart,
+      })
+      .andWhere('etp.createdAt < :periodStart', { periodStart });
+
+    const previousTotal = await previousQueryBuilder.getCount();
+    const previousCompleted = await previousQueryBuilder
+      .clone()
+      .andWhere('etp.status = :status', { status: EtpStatus.COMPLETED })
+      .getCount();
+
+    // Calculate rates
+    const currentRate =
+      currentTotal > 0 ? (currentCompleted / currentTotal) * 100 : 0;
+    const previousRate =
+      previousTotal > 0 ? (previousCompleted / previousTotal) * 100 : 0;
+
+    // Determine trend
+    let trend: 'up' | 'down' | 'stable';
+    const rateDiff = currentRate - previousRate;
+    if (Math.abs(rateDiff) < 1) {
+      trend = 'stable';
+    } else if (rateDiff > 0) {
+      trend = 'up';
+    } else {
+      trend = 'down';
+    }
+
+    return {
+      rate: parseFloat(currentRate.toFixed(1)),
+      trend,
+      completedCount: currentCompleted,
+      totalCount: currentTotal,
+      previousRate: parseFloat(previousRate.toFixed(1)),
+    };
+  }
 }

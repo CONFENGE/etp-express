@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
+import { useSuccessRate } from '@/hooks/useSuccessRate';
 import {
   SkeletonRecentItems,
   SkeletonStats,
@@ -19,6 +20,7 @@ import {
 import { EmptyState } from '@/components/common/EmptyState';
 import { WelcomeModal } from '@/components/common/WelcomeModal';
 import { OnboardingChecklist } from '@/components/common/OnboardingChecklist';
+import { SuccessRateCard } from '@/components/metrics';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -27,6 +29,9 @@ export function Dashboard() {
   const { user } = useAuth();
   // useETPs hook auto-fetches when etps.length === 0, no manual fetch needed (#983)
   const { etps, isLoading } = useETPs();
+  // Success rate metric (#1363)
+  const { data: successRateData, isLoading: isLoadingSuccessRate } =
+    useSuccessRate({ periodDays: 30 });
 
   const stats = useMemo(() => {
     return etps.reduce(
@@ -153,7 +158,7 @@ export function Dashboard() {
           <SkeletonStats />
         ) : (
           <div
-            className="grid gap-4 md:grid-cols-3"
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
             data-tour="dashboard-stats"
           >
             <Card>
@@ -181,7 +186,7 @@ export function Dashboard() {
               <CardContent>
                 <div className="text-2xl font-bold">{stats.inProgress}</div>
                 <p className="text-xs text-muted-foreground">
-                  Aguardando conclusão
+                  Aguardando conclusao
                 </p>
               </CardContent>
             </Card>
@@ -189,7 +194,7 @@ export function Dashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Concluídos
+                  Concluidos
                 </CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
@@ -200,6 +205,12 @@ export function Dashboard() {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Success Rate Card (#1363) */}
+            <SuccessRateCard
+              data={successRateData}
+              isLoading={isLoadingSuccessRate}
+            />
           </div>
         )}
 
