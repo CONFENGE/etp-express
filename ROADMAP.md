@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1362 | Fix      | Add Brazilian date format support to CreateETPWizard (#1347) ✅ |
 | 2026-01-09 | #1361 | Fix      | Remove intrusive AI generation banner trigger (#1346) ✅        |
 | 2026-01-09 | #1360 | Fix      | Show ETP author name in Dashboard for Admin (#1351) ✅          |
 | 2026-01-09 | #1359 | Fix      | Sync progress between ETP list and detail views (#1344) ✅      |
@@ -127,10 +128,10 @@
 | #1343 | [P0] Templates de ETP nao disponiveis no wizard de criacao     | Backend/Seed   | ✅     |
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | ✅     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | ✅     |
-| #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
+| #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | ✅     |
 | #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | ✅     |
 
-> **1 bug P0 ativo** - Detectados em auditoria Admin + Consultor happy paths.
+> **0 bugs P0 ativos** - Todos os bugs P0 detectados em auditorias foram resolvidos! ✅
 
 ### Bugs P0 Resolvidos (Anteriores)
 
