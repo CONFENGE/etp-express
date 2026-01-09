@@ -14,6 +14,7 @@ import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
 import { useSuccessRate } from '@/hooks/useSuccessRate';
 import { useAvgCompletionTime } from '@/hooks/useAvgCompletionTime';
+import { useStatusDistribution } from '@/hooks/useStatusDistribution';
 import {
   SkeletonRecentItems,
   SkeletonStats,
@@ -21,7 +22,11 @@ import {
 import { EmptyState } from '@/components/common/EmptyState';
 import { WelcomeModal } from '@/components/common/WelcomeModal';
 import { OnboardingChecklist } from '@/components/common/OnboardingChecklist';
-import { SuccessRateCard, AvgCompletionTimeCard } from '@/components/metrics';
+import {
+  SuccessRateCard,
+  AvgCompletionTimeCard,
+  StatusDistributionChart,
+} from '@/components/metrics';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -36,6 +41,9 @@ export function Dashboard() {
   // Average completion time metric (#1364)
   const { data: avgCompletionTimeData, isLoading: isLoadingAvgTime } =
     useAvgCompletionTime();
+  // Status distribution metric (#1365)
+  const { data: statusDistributionData, isLoading: isLoadingDistribution } =
+    useStatusDistribution();
 
   const stats = useMemo(() => {
     return etps.reduce(
@@ -224,73 +232,83 @@ export function Dashboard() {
           </div>
         )}
 
-        <Card data-tour="recent-etps">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>ETPs Recentes</CardTitle>
-                <CardDescription>Seus estudos mais recentes</CardDescription>
-              </div>
-              <Button asChild>
-                <Link to="/etps/new">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Novo ETP
-                </Link>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <SkeletonRecentItems count={5} />
-            ) : (
-              <div className="space-y-4">
-                {recentETPs.map((etp) => {
-                  // Check if ETP was created by another user (#1351)
-                  const isOtherUser =
-                    etp.createdBy && etp.createdBy.id !== user?.id;
+        {/* Status Distribution Chart and Recent ETPs row */}
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Status Distribution Chart (#1365) */}
+          <StatusDistributionChart
+            data={statusDistributionData}
+            isLoading={isLoadingDistribution}
+            className="md:col-span-1"
+          />
 
-                  return (
-                    <Link
-                      key={etp.id}
-                      to={`/etps/${etp.id}`}
-                      className="block p-4 rounded-lg border hover:bg-accent transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{etp.title}</h3>
-                          {/* Show author name if ETP belongs to another user (#1351) */}
-                          {isOtherUser && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              Por: {etp.createdBy?.name}
-                            </p>
-                          )}
-                          {etp.description && (
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {etp.description}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs bg-secondary px-2 py-1 rounded">
-                              {ETP_STATUS_LABELS[etp.status]}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatDate(etp.updatedAt)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-primary">
-                            {etp.progress}%
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+          <Card data-tour="recent-etps" className="md:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>ETPs Recentes</CardTitle>
+                  <CardDescription>Seus estudos mais recentes</CardDescription>
+                </div>
+                <Button asChild>
+                  <Link to="/etps/new">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Novo ETP
+                  </Link>
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <SkeletonRecentItems count={5} />
+              ) : (
+                <div className="space-y-4">
+                  {recentETPs.map((etp) => {
+                    // Check if ETP was created by another user (#1351)
+                    const isOtherUser =
+                      etp.createdBy && etp.createdBy.id !== user?.id;
+
+                    return (
+                      <Link
+                        key={etp.id}
+                        to={`/etps/${etp.id}`}
+                        className="block p-4 rounded-lg border hover:bg-accent transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{etp.title}</h3>
+                            {/* Show author name if ETP belongs to another user (#1351) */}
+                            {isOtherUser && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Por: {etp.createdBy?.name}
+                              </p>
+                            )}
+                            {etp.description && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {etp.description}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                                {ETP_STATUS_LABELS[etp.status]}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(etp.updatedAt)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-primary">
+                              {etp.progress}%
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </MainLayout>
   );

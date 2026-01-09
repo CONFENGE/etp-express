@@ -240,6 +240,61 @@ export class EtpsController {
   }
 
   /**
+   * Retrieves the distribution of ETPs by status.
+   *
+   * @remarks
+   * Part of the advanced metrics feature (Issue #1365).
+   * SECURITY (Issue #1326): Validates userId and organizationId before querying.
+   *
+   * @param rawOrganizationId - Organization ID (extracted from JWT token)
+   * @param rawUserId - Current user ID (extracted from JWT token)
+   * @returns Array with status distribution data
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
+   */
+  @Get('metrics/distribution-by-status')
+  @ApiOperation({ summary: 'Obter distribuição de ETPs por status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Distribuição por status calculada',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              status: { type: 'string', example: 'draft' },
+              label: { type: 'string', example: 'Rascunho' },
+              count: { type: 'number', example: 5 },
+              percentage: { type: 'number', example: 25.0 },
+              color: { type: 'string', example: '#6B7280' },
+            },
+          },
+        },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async getStatusDistribution(
+    @CurrentUser('organizationId') rawOrganizationId: string,
+    @CurrentUser('id') rawUserId: string,
+  ) {
+    // SECURITY (Issue #1326): Validate required claims before query
+    const organizationId = this.validateOrganizationId(rawOrganizationId);
+    const userId = this.validateUserId(rawUserId);
+
+    const distribution = await this.etpsService.getStatusDistribution(
+      organizationId,
+      userId,
+    );
+    return {
+      data: distribution,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
    * Retrieves the average completion time metric for ETPs.
    *
    * @remarks
