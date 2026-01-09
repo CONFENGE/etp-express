@@ -84,10 +84,10 @@ describe('OnboardingChecklist', () => {
     });
   });
 
-  const renderChecklist = () => {
+  const renderChecklist = (props?: { hasETPs?: boolean }) => {
     return render(
       <MemoryRouter>
-        <OnboardingChecklist />
+        <OnboardingChecklist {...props} />
       </MemoryRouter>,
     );
   };
@@ -215,6 +215,41 @@ describe('OnboardingChecklist', () => {
 
       // Should not call completeTask if already in completedTasks
       expect(mockCompleteTask).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('auto-complete ETP task when user has existing ETPs (#1373)', () => {
+    it('should complete create-first-etp task when hasETPs is true', () => {
+      renderChecklist({ hasETPs: true });
+
+      // The useMemo should trigger completeTask for create-first-etp
+      expect(mockCompleteTask).toHaveBeenCalledWith('create-first-etp');
+    });
+
+    it('should not complete create-first-etp task when hasETPs is false', () => {
+      renderChecklist({ hasETPs: false });
+
+      // Should not call completeTask for create-first-etp
+      expect(mockCompleteTask).not.toHaveBeenCalledWith('create-first-etp');
+    });
+
+    it('should not complete create-first-etp task if already completed', () => {
+      vi.mocked(useOnboardingStore).mockReturnValue({
+        ...vi.mocked(useOnboardingStore)(),
+        completedTasks: ['create-first-etp'],
+      });
+
+      renderChecklist({ hasETPs: true });
+
+      // Should not call completeTask if already in completedTasks
+      expect(mockCompleteTask).not.toHaveBeenCalledWith('create-first-etp');
+    });
+
+    it('should not complete create-first-etp task when hasETPs is undefined', () => {
+      renderChecklist();
+
+      // Should not call completeTask when hasETPs is not provided (defaults to false)
+      expect(mockCompleteTask).not.toHaveBeenCalledWith('create-first-etp');
     });
   });
 
