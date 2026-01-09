@@ -1144,4 +1144,141 @@ describe('EtpsService', () => {
       expect(result.completedCount).toBe(2);
     });
   });
+
+  describe('getStatusDistribution (Issue #1365)', () => {
+    it('should return status distribution with labels and colors', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'draft', count: '5' },
+        { status: 'in_progress', count: '10' },
+        { status: 'completed', count: '5' },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({
+        status: 'draft',
+        label: 'Rascunho',
+        count: 5,
+        percentage: 25,
+        color: '#6B7280',
+      });
+      expect(result[1]).toEqual({
+        status: 'in_progress',
+        label: 'Em Andamento',
+        count: 10,
+        percentage: 50,
+        color: '#3B82F6',
+      });
+      expect(result[2]).toEqual({
+        status: 'completed',
+        label: 'Concluido',
+        count: 5,
+        percentage: 25,
+        color: '#10B981',
+      });
+    });
+
+    it('should return empty array when no ETPs exist', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it('should filter by organizationId and userId (Issue #1326)', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+      await service.getStatusDistribution(mockOrganizationId, mockUser1Id);
+
+      // SECURITY: Must filter by both organizationId AND userId
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
+      );
+    });
+
+    it('should calculate correct percentages', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'draft', count: '3' },
+        { status: 'completed', count: '7' },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result[0].percentage).toBe(30);
+      expect(result[1].percentage).toBe(70);
+    });
+
+    it('should return 100% for single status', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'draft', count: '5' },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].percentage).toBe(100);
+    });
+
+    it('should include all status types with proper labels', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'draft', count: '1' },
+        { status: 'in_progress', count: '1' },
+        { status: 'review', count: '1' },
+        { status: 'completed', count: '1' },
+        { status: 'archived', count: '1' },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result).toHaveLength(5);
+
+      const labels = result.map((r) => r.label);
+      expect(labels).toContain('Rascunho');
+      expect(labels).toContain('Em Andamento');
+      expect(labels).toContain('Em Revisao');
+      expect(labels).toContain('Concluido');
+      expect(labels).toContain('Arquivado');
+    });
+
+    it('should sort results by status order', async () => {
+      // Return in wrong order
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        { status: 'completed', count: '2' },
+        { status: 'draft', count: '1' },
+        { status: 'in_progress', count: '3' },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      // Should be ordered: draft, in_progress, completed
+      expect(result[0].status).toBe('draft');
+      expect(result[1].status).toBe('in_progress');
+      expect(result[2].status).toBe('completed');
+    });
+  });
 });
