@@ -42,8 +42,13 @@ describe('adminStore', () => {
   const mockStatistics: GlobalStatistics = {
     totalDomains: 10,
     activeDomains: 8,
+    inactiveDomains: 2,
     totalUsers: 100,
-    activeUsers: 85,
+    totalOrganizations: 5,
+    totalEtps: 250,
+    domainsByOrganization: [
+      { organizationName: 'Prefeitura de Lages', domainCount: 3 },
+    ],
   };
 
   const mockCreateDomainDto: CreateDomainDto = {
