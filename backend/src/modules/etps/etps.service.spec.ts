@@ -51,6 +51,7 @@ describe('EtpsService', () => {
     getRawMany: jest.fn(),
     getRawOne: jest.fn(),
     getCount: jest.fn(),
+    clone: jest.fn().mockReturnThis(),
   };
 
   const mockRepository = {
@@ -857,6 +858,124 @@ describe('EtpsService', () => {
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'etp.createdById = :userId',
         { userId: mockUser2Id },
+      );
+    });
+  });
+
+  describe('getSuccessRate (Issue #1363)', () => {
+    it('should return success rate with trend for current period', async () => {
+      // Mock for current period: 15 total, 10 completed
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(15) // currentTotal
+        .mockResolvedValueOnce(10) // currentCompleted
+        .mockResolvedValueOnce(12) // previousTotal
+        .mockResolvedValueOnce(6); // previousCompleted
+
+      const result = await service.getSuccessRate(
+        mockOrganizationId,
+        mockUser1Id,
+        30,
+      );
+
+      // Current rate: 10/15 * 100 = 66.67%
+      // Previous rate: 6/12 * 100 = 50%
+      // Trend: 66.67 - 50 = +16.67 (up)
+      expect(result.rate).toBeCloseTo(66.7, 1);
+      expect(result.trend).toBe('up');
+      expect(result.completedCount).toBe(10);
+      expect(result.totalCount).toBe(15);
+      expect(result.previousRate).toBeCloseTo(50, 1);
+    });
+
+    it('should return stable trend when rate difference is less than 1%', async () => {
+      // Mock rates that are very close
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(100) // currentTotal
+        .mockResolvedValueOnce(70) // currentCompleted (70%)
+        .mockResolvedValueOnce(100) // previousTotal
+        .mockResolvedValueOnce(70); // previousCompleted (70%)
+
+      const result = await service.getSuccessRate(
+        mockOrganizationId,
+        mockUser1Id,
+        30,
+      );
+
+      expect(result.trend).toBe('stable');
+    });
+
+    it('should return down trend when current rate is lower', async () => {
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(20) // currentTotal
+        .mockResolvedValueOnce(8) // currentCompleted (40%)
+        .mockResolvedValueOnce(20) // previousTotal
+        .mockResolvedValueOnce(12); // previousCompleted (60%)
+
+      const result = await service.getSuccessRate(
+        mockOrganizationId,
+        mockUser1Id,
+        30,
+      );
+
+      expect(result.trend).toBe('down');
+      expect(result.rate).toBeCloseTo(40, 1);
+      expect(result.previousRate).toBeCloseTo(60, 1);
+    });
+
+    it('should return 0% rate when no ETPs exist in current period', async () => {
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(0) // currentTotal
+        .mockResolvedValueOnce(0) // currentCompleted
+        .mockResolvedValueOnce(5) // previousTotal
+        .mockResolvedValueOnce(3); // previousCompleted
+
+      const result = await service.getSuccessRate(
+        mockOrganizationId,
+        mockUser1Id,
+        30,
+      );
+
+      expect(result.rate).toBe(0);
+      expect(result.completedCount).toBe(0);
+      expect(result.totalCount).toBe(0);
+    });
+
+    it('should filter by organizationId and userId (Issue #1326)', async () => {
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(10)
+        .mockResolvedValueOnce(5)
+        .mockResolvedValueOnce(10)
+        .mockResolvedValueOnce(5);
+
+      await service.getSuccessRate(mockOrganizationId, mockUser1Id, 30);
+
+      // SECURITY: Must filter by both organizationId AND userId
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
+      );
+    });
+
+    it('should use custom period days parameter', async () => {
+      mockQueryBuilder.getCount
+        .mockResolvedValueOnce(5)
+        .mockResolvedValueOnce(3)
+        .mockResolvedValueOnce(5)
+        .mockResolvedValueOnce(3);
+
+      // Use 7 days period instead of default 30
+      await service.getSuccessRate(mockOrganizationId, mockUser1Id, 7);
+
+      // Verify that andWhere was called with date filter
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdAt >= :periodStart',
+        expect.objectContaining({
+          periodStart: expect.any(Date),
+        }),
       );
     });
   });
