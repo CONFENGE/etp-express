@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 656/733 (89%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-09 | **Progresso:** 657/733 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                       |
 | ---------- | ----- | -------- | --------------------------------------------------------------- |
+| 2026-01-09 | #1360 | Fix      | Show ETP author name in Dashboard for Admin (#1351) ✅          |
+| 2026-01-09 | #1359 | Fix      | Sync progress between ETP list and detail views (#1344) ✅      |
 | 2026-01-09 | #1358 | Fix      | Show section titles in ETP Editor tabs (#1345) ✅               |
 | 2026-01-09 | #1357 | Fix      | Fix Admin statistics zeros + translate to Portuguese (#1352) ✅ |
 | 2026-01-08 | #1356 | Fix      | Improve Chromium detection for Nix/Nixpacks (#1355) ✅          |
@@ -125,9 +127,9 @@
 | #1344 | [P0] Inconsistencia no indicador de progresso lista vs detalhe | Frontend       | ✅     |
 | #1346 | [P0] Banner de vendas intrusivo durante uso do sistema demo    | Frontend/UX    | 🔴     |
 | #1347 | [P0] Campo de data aceita apenas formato ISO, nao brasileiro   | Frontend/UX    | 🔴     |
-| #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | 🔴     |
+| #1351 | [P0] Dashboard Admin mostra ETPs sem identificar autoria       | Frontend/UX    | ✅     |
 
-> **4 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
+> **2 bugs P0 ativos** - Detectados em auditoria Admin + Consultor happy paths.
 
 ### Bugs P0 Resolvidos (Anteriores)
 
@@ -309,10 +311,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 733   |
-| Issues Abertas    | 77    |
-| Issues Fechadas   | 656   |
-| Progresso         | 89%   |
-| Bugs P0 Abertos   | 5     |
+| Issues Abertas    | 76    |
+| Issues Fechadas   | 657   |
+| Progresso         | 90%   |
+| Bugs P0 Abertos   | 2     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2515  |
