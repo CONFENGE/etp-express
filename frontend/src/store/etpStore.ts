@@ -32,29 +32,47 @@ interface ExportResult {
 }
 
 /**
+ * Backend user type for createdBy relation.
+ * @see Issue #1351 - Admin dashboard ETP authorship identification
+ */
+interface BackendUser {
+  id: string;
+  name: string;
+  email?: string;
+}
+
+/**
  * Backend ETP response type with completionPercentage field.
  * The backend returns `completionPercentage` but frontend type expects `progress`.
  * @see Issue #1316 - Progress display fix
+ * @see Issue #1351 - Admin dashboard ETP authorship identification
  */
-interface BackendETP extends Omit<ETP, 'progress'> {
+interface BackendETP extends Omit<ETP, 'progress' | 'createdBy'> {
   completionPercentage?: number;
   progress?: number;
+  createdBy?: BackendUser;
 }
 
 /**
  * Maps backend ETP response to frontend ETP type.
  * Converts `completionPercentage` → `progress` for compatibility.
+ * Maps `createdBy` user relation for authorship display.
  *
  * @param backendEtp - ETP data from backend API
  * @returns ETP object with `progress` field properly set
  * @see Issue #1316 - Fix progress display showing only '%' without value
+ * @see Issue #1351 - Admin dashboard ETP authorship identification
  */
 function mapBackendETPToFrontend(backendEtp: BackendETP): ETP {
-  const { completionPercentage, ...rest } = backendEtp;
+  const { completionPercentage, createdBy, ...rest } = backendEtp;
   return {
     ...rest,
     // Use completionPercentage from backend, fallback to progress if already mapped, default to 0
     progress: completionPercentage ?? rest.progress ?? 0,
+    // Map createdBy user for authorship display (#1351)
+    createdBy: createdBy
+      ? { id: createdBy.id, name: createdBy.name }
+      : undefined,
   } as ETP;
 }
 

@@ -1,3 +1,13 @@
+/**
+ * User reference for ETP authorship display.
+ * Used to show author name in Dashboard when viewing other users' ETPs.
+ * @see Issue #1351 - Admin dashboard ETP authorship identification
+ */
+export interface ETPAuthor {
+  id: string;
+  name: string;
+}
+
 export interface ETP {
   id: string;
   title: string;
@@ -9,6 +19,12 @@ export interface ETP {
   updatedAt: string;
   sections: Section[];
   currentVersion?: number;
+  /**
+   * Author information for ETP authorship display.
+   * Populated from backend's createdBy relation.
+   * @see Issue #1351 - Admin dashboard ETP authorship identification
+   */
+  createdBy?: ETPAuthor;
 }
 
 /**
