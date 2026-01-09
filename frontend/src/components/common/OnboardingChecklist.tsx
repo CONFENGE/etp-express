@@ -33,6 +33,8 @@ interface OnboardingChecklistProps {
   className?: string;
   /** Default expanded state */
   defaultExpanded?: boolean;
+  /** Whether user has existing ETPs (for auto-completing 'create-first-etp' task) */
+  hasETPs?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ interface OnboardingChecklistProps {
 export function OnboardingChecklist({
   className,
   defaultExpanded = true,
+  hasETPs = false,
 }: OnboardingChecklistProps) {
   const navigate = useNavigate();
   const { handleRestart: restartTour } = useTour();
@@ -66,6 +69,14 @@ export function OnboardingChecklist({
       completeTask('complete-tour');
     }
   }, [hasCompletedTour, completedTasks, completeTask]);
+
+  // Auto-complete 'create-first-etp' task if user has existing ETPs (#1373)
+  // This handles ETPs created via seed, import, or any method other than wizard
+  useMemo(() => {
+    if (hasETPs && !completedTasks.includes('create-first-etp')) {
+      completeTask('create-first-etp');
+    }
+  }, [hasETPs, completedTasks, completeTask]);
 
   const completionPercentage = getCompletionPercentage();
   const allCompleted = completionPercentage === 100;

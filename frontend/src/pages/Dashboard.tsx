@@ -164,7 +164,10 @@ export function Dashboard() {
         </div>
 
         {/* Onboarding Checklist for new users */}
-        <OnboardingChecklist data-tour="onboarding-checklist" />
+        <OnboardingChecklist
+          data-tour="onboarding-checklist"
+          hasETPs={stats.total > 0}
+        />
 
         {isLoading ? (
           <SkeletonStats />
