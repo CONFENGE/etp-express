@@ -3,11 +3,16 @@ import { useAuthStore } from '@/store/authStore';
 
 /**
  * Trigger events that should show the conversion banner for demo users.
+ *
+ * Only completion events trigger the banner to avoid interrupting active work:
+ * - etp_completion: User finished the ETP (100% progress)
+ * - pdf_export: User exported the document (PDF or DOCX)
+ *
+ * Note: 'ai_generation' was removed (#1346) as it was considered intrusive
+ * during active work. The banner should only appear after successful completion
+ * of a workflow, not during intermediate steps.
  */
-export type DemoConversionTrigger =
-  | 'ai_generation'
-  | 'etp_completion'
-  | 'pdf_export';
+export type DemoConversionTrigger = 'etp_completion' | 'pdf_export';
 
 const SESSION_KEY = 'demo-banner-dismissed';
 
