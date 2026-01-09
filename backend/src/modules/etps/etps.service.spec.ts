@@ -45,6 +45,7 @@ describe('EtpsService', () => {
     skip: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     getManyAndCount: jest.fn(),
+    getMany: jest.fn(),
     select: jest.fn().mockReturnThis(),
     addSelect: jest.fn().mockReturnThis(),
     groupBy: jest.fn().mockReturnThis(),
@@ -977,6 +978,170 @@ describe('EtpsService', () => {
           periodStart: expect.any(Date),
         }),
       );
+    });
+  });
+
+  describe('getAvgCompletionTime (Issue #1364)', () => {
+    it('should return average completion time in minutes with formatted string', async () => {
+      const now = new Date();
+      const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+
+      const completedEtps = [
+        { createdAt: twoDaysAgo, updatedAt: now },
+        { createdAt: twoDaysAgo, updatedAt: now },
+      ];
+
+      mockQueryBuilder.getMany.mockResolvedValue(completedEtps);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      // 2 days = 2880 minutes
+      expect(result.avgTimeMinutes).toBeCloseTo(2880, -2);
+      expect(result.formatted).toContain('dias');
+      expect(result.completedCount).toBe(2);
+    });
+
+    it('should return "Sem dados" when no completed ETPs exist', async () => {
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.avgTimeMinutes).toBe(0);
+      expect(result.formatted).toBe('Sem dados');
+      expect(result.completedCount).toBe(0);
+    });
+
+    it('should filter by organizationId and userId (Issue #1326)', async () => {
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      await service.getAvgCompletionTime(mockOrganizationId, mockUser1Id);
+
+      // SECURITY: Must filter by both organizationId AND userId
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'etp.organizationId = :organizationId',
+        { organizationId: mockOrganizationId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.createdById = :userId',
+        { userId: mockUser1Id },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'etp.status = :status',
+        { status: EtpStatus.COMPLETED },
+      );
+    });
+
+    it('should format duration as hours when less than a day', async () => {
+      const now = new Date();
+      const fourHoursAgo = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: fourHoursAgo, updatedAt: now },
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.avgTimeMinutes).toBeCloseTo(240, -1);
+      expect(result.formatted).toContain('h');
+      expect(result.completedCount).toBe(1);
+    });
+
+    it('should format duration as minutes when less than an hour', async () => {
+      const now = new Date();
+      const thirtyMinsAgo = new Date(now.getTime() - 30 * 60 * 1000);
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: thirtyMinsAgo, updatedAt: now },
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.avgTimeMinutes).toBeCloseTo(30, 0);
+      expect(result.formatted).toContain('min');
+      expect(result.completedCount).toBe(1);
+    });
+
+    it('should format duration as "Menos de 1 min" for very short times', async () => {
+      const now = new Date();
+      const tenSecondsAgo = new Date(now.getTime() - 10 * 1000);
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: tenSecondsAgo, updatedAt: now },
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.formatted).toBe('Menos de 1 min');
+    });
+
+    it('should format duration with days and hours for multi-day completions', async () => {
+      const now = new Date();
+      const twoDaysAndFourHoursAgo = new Date(
+        now.getTime() - (2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+      );
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: twoDaysAndFourHoursAgo, updatedAt: now },
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.formatted).toContain('2 dias');
+      expect(result.formatted).toContain('4h');
+    });
+
+    it('should use singular "dia" for single day', async () => {
+      const now = new Date();
+      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: oneDayAgo, updatedAt: now },
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      expect(result.formatted).toContain('1 dia');
+    });
+
+    it('should calculate average across multiple completed ETPs', async () => {
+      const now = new Date();
+      const oneDayAgo = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+      const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { createdAt: oneDayAgo, updatedAt: now }, // 1 day
+        { createdAt: threeDaysAgo, updatedAt: now }, // 3 days
+      ]);
+
+      const result = await service.getAvgCompletionTime(
+        mockOrganizationId,
+        mockUser1Id,
+      );
+
+      // Average of 1 day and 3 days = 2 days = 2880 minutes
+      expect(result.avgTimeMinutes).toBeCloseTo(2880, -2);
+      expect(result.completedCount).toBe(2);
     });
   });
 });

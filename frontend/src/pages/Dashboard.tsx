@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
 import { useSuccessRate } from '@/hooks/useSuccessRate';
+import { useAvgCompletionTime } from '@/hooks/useAvgCompletionTime';
 import {
   SkeletonRecentItems,
   SkeletonStats,
@@ -20,7 +21,7 @@ import {
 import { EmptyState } from '@/components/common/EmptyState';
 import { WelcomeModal } from '@/components/common/WelcomeModal';
 import { OnboardingChecklist } from '@/components/common/OnboardingChecklist';
-import { SuccessRateCard } from '@/components/metrics';
+import { SuccessRateCard, AvgCompletionTimeCard } from '@/components/metrics';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 
@@ -32,6 +33,9 @@ export function Dashboard() {
   // Success rate metric (#1363)
   const { data: successRateData, isLoading: isLoadingSuccessRate } =
     useSuccessRate({ periodDays: 30 });
+  // Average completion time metric (#1364)
+  const { data: avgCompletionTimeData, isLoading: isLoadingAvgTime } =
+    useAvgCompletionTime();
 
   const stats = useMemo(() => {
     return etps.reduce(
@@ -158,7 +162,7 @@ export function Dashboard() {
           <SkeletonStats />
         ) : (
           <div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
             data-tour="dashboard-stats"
           >
             <Card>
@@ -210,6 +214,12 @@ export function Dashboard() {
             <SuccessRateCard
               data={successRateData}
               isLoading={isLoadingSuccessRate}
+            />
+
+            {/* Average Completion Time Card (#1364) */}
+            <AvgCompletionTimeCard
+              data={avgCompletionTimeData}
+              isLoading={isLoadingAvgTime}
             />
           </div>
         )}
