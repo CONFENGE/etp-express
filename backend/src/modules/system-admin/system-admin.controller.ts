@@ -360,6 +360,45 @@ export class SystemAdminController {
   }
 
   // ============================================
+  // CLEANUP OPERATIONS
+  // ============================================
+
+  /**
+   * Cleans up E2E test domains from the database.
+   *
+   * Removes all domains matching the pattern `test-e2e-*.example.com`.
+   * These are artifacts from E2E test execution that shouldn't persist.
+   *
+   * @returns Object with count of deleted domains
+   */
+  @Delete('domains/cleanup-test-domains')
+  @ApiOperation({
+    summary: 'Cleanup E2E test domains',
+    description:
+      'Removes all domains matching pattern test-e2e-*.example.com. ' +
+      'These are leftover artifacts from E2E test execution. ' +
+      'Use this endpoint to clean up test data from production.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Test domains cleaned up successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        deleted: { type: 'number', example: 15 },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid JWT' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - SYSTEM_ADMIN role required',
+  })
+  async cleanupTestDomains(): Promise<{ deleted: number }> {
+    return this.systemAdminService.cleanupTestDomains();
+  }
+
+  // ============================================
   // STATISTICS
   // ============================================
 
