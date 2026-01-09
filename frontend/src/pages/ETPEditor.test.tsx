@@ -211,19 +211,34 @@ vi.mock('@/components/etp/ETPEditorSidebar', () => ({
     sections,
     onGenerateAll,
     isGenerating,
+    isGenerateAllDisabled = true,
   }: {
     sections: Array<{ id: string; title: string; completed: boolean }>;
     onGenerateAll: () => void;
     isGenerating: boolean;
+    isGenerateAllDisabled?: boolean;
   }) => (
     <div>
       <div>
         {sections.filter((s) => s.completed).length}/{sections.length} seções
         geradas
       </div>
-      <button onClick={onGenerateAll} disabled={isGenerating}>
-        {isGenerating ? 'Gerando...' : 'Gerar Todas Seções'}
-      </button>
+      <div className="relative">
+        <button
+          onClick={onGenerateAll}
+          disabled={isGenerating || isGenerateAllDisabled}
+          title={
+            isGenerateAllDisabled
+              ? 'Funcionalidade em desenvolvimento'
+              : undefined
+          }
+        >
+          {isGenerating ? 'Gerando...' : 'Gerar Todas Seções'}
+        </button>
+        {isGenerateAllDisabled && (
+          <span data-testid="coming-soon-badge">Em breve</span>
+        )}
+      </div>
     </div>
   ),
 }));
@@ -665,6 +680,41 @@ describe('ETPEditor', () => {
     expect(
       screen.getByText(/Carregando (templates\.\.\.|ETP\.\.\.)/),
     ).toBeInTheDocument();
+  });
+
+  /**
+   * Teste: Verifica que botão "Gerar Todas Seções" está desabilitado com badge "Em breve" (#1372)
+   */
+  it('exibe botão "Gerar Todas Seções" desabilitado com badge "Em breve"', async () => {
+    render(
+      <BrowserRouter>
+        <ETPEditor />
+      </BrowserRouter>,
+    );
+
+    // Aguarda templates carregarem
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /Gerar Todas Seções/i }),
+      ).toBeInTheDocument();
+    });
+
+    // Verifica que o botão está desabilitado
+    const generateAllButton = screen.getByRole('button', {
+      name: /Gerar Todas Seções/i,
+    });
+    expect(generateAllButton).toBeDisabled();
+
+    // Verifica que o tooltip está presente
+    expect(generateAllButton).toHaveAttribute(
+      'title',
+      'Funcionalidade em desenvolvimento',
+    );
+
+    // Verifica que o badge "Em breve" é exibido
+    expect(screen.getByTestId('coming-soon-badge')).toHaveTextContent(
+      'Em breve',
+    );
   });
 
   /**

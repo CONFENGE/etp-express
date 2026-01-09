@@ -224,9 +224,9 @@ export function ETPEditor() {
 
   const handleGenerateAll = useCallback(async () => {
     // Generate all sections sequentially
-    // For MVP, show message that this is still in development
-    success('Funcionalidade em desenvolvimento');
-  }, [success]);
+    // TODO: Implement batch generation in future milestone
+    // This handler is currently disabled via isGenerateAllDisabled prop (#1372)
+  }, []);
 
   const handleGenerateSection = useCallback(
     async (sectionNumber: number) => {
@@ -555,6 +555,7 @@ export function ETPEditor() {
               sections={sectionsForSidebar}
               onGenerateAll={handleGenerateAll}
               isGenerating={aiGenerating}
+              isGenerateAllDisabled={true}
             />
 
             {/* Version History (#1162) */}
