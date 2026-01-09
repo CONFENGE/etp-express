@@ -1,6 +1,7 @@
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { FormField } from '@/components/form/FormField';
+import { DatePickerBR } from '@/components/ui/date-picker-br';
 import {
   ETPWizardFormData,
   TITLE_MIN_LENGTH,
@@ -18,6 +19,7 @@ interface Step1IdentificationProps {
 export function Step1Identification({ form }: Step1IdentificationProps) {
   const {
     register,
+    control,
     formState: { errors, touchedFields },
     watch,
   } = form;
@@ -167,12 +169,20 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
           touchedFields.dataElaboracao &&
           (watch('dataElaboracao') || '').length > 0
         }
-        helpText="Data de elaboração do ETP"
+        helpText="Formato: DD/MM/AAAA (ex: 08/01/2026)"
       >
-        <Input
-          id="dataElaboracao"
-          type="date"
-          {...register('dataElaboracao')}
+        <Controller
+          name="dataElaboracao"
+          control={control}
+          render={({ field }) => (
+            <DatePickerBR
+              id="dataElaboracao"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          )}
         />
       </FormField>
     </div>
