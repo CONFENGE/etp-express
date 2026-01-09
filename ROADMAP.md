@@ -124,22 +124,22 @@
 
 ---
 
-## Bugs Criticos P0 - 3 RESTANTES ⚠️
+## Bugs Criticos P0 - 2 RESTANTES ⚠️
 
-> **STATUS:** 3 bugs P0 restantes. #1371 (BLOQUEANTE) resolvido via PR #1375.
+> **STATUS:** 2 bugs P0 restantes. #1372 resolvido via PR #1376.
 
 ### Bugs P0 Abertos (2026-01-09)
 
-| #     | Issue                                                             | Area        | Status |
-| ----- | ----------------------------------------------------------------- | ----------- | ------ |
-| #1374 | [P0] Badge de status ausente em alguns cards de ETP               | Frontend/UX | 🔴     |
-| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes           | Frontend/UX | 🔴     |
-| #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível | Frontend/UX | 🔴     |
+| #     | Issue                                                   | Area        | Status |
+| ----- | ------------------------------------------------------- | ----------- | ------ |
+| #1374 | [P0] Badge de status ausente em alguns cards de ETP     | Frontend/UX | 🔴     |
+| #1373 | [P0] Onboarding checklist não reconhece ETPs existentes | Frontend/UX | 🔴     |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
 | #     | Issue                                                                     | Area             | Status |
 | ----- | ------------------------------------------------------------------------- | ---------------- | ------ |
+| #1372 | [P0] Botão 'Gerar Todas Seções' exibe funcionalidade indisponível         | Frontend/UX      | ✅     |
 | #1371 | [P0] BLOQUEANTE: Criação de novo ETP via wizard falha com erro 400        | Backend/Frontend | ✅     |
 | #1355 | [P0] REGRESSAO: Export PDF erro 500 - Nix detection                       | Backend/Export   | ✅     |
 | #1353 | [P0] Pagina Admin parcialmente em ingles - i18n quebrado                  | Frontend/i18n    | ✅     |
