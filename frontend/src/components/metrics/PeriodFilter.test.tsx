@@ -68,9 +68,9 @@ describe('PeriodFilter', () => {
     // Open the select dropdown
     fireEvent.click(screen.getByRole('combobox'));
 
-    // Check all options are present
+    // Check all options are present (use getAllByText since selected option appears in both trigger and dropdown)
     PERIOD_OPTIONS.forEach((option) => {
-      expect(screen.getByText(option.label)).toBeInTheDocument();
+      expect(screen.getAllByText(option.label).length).toBeGreaterThanOrEqual(1);
     });
   });
 

@@ -823,7 +823,9 @@ export class EtpsService {
 
     // Apply period filter if periodDays > 0 (#1366)
     if (periodDays > 0) {
-      const periodStart = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000);
+      const periodStart = new Date(
+        Date.now() - periodDays * 24 * 60 * 60 * 1000,
+      );
       queryBuilder.andWhere('etp.createdAt >= :periodStart', { periodStart });
     }
 
@@ -1052,7 +1054,9 @@ export class EtpsService {
 
     // Apply period filter if periodDays > 0 (#1366)
     if (periodDays > 0) {
-      const periodStart = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000);
+      const periodStart = new Date(
+        Date.now() - periodDays * 24 * 60 * 60 * 1000,
+      );
       queryBuilder.andWhere('etp.createdAt >= :periodStart', { periodStart });
     }
 
@@ -1091,4 +1095,3 @@ export class EtpsService {
     return distribution;
   }
 }
-
