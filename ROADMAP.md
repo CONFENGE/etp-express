@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 672/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 673/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1391 | Feature  | Add compliance scorecard component to ETP Editor (#1386) ✅       |
 | 2026-01-10 | #1390 | Feature  | Add REST endpoints for compliance validation (#1385) ✅           |
 | 2026-01-10 | #1389 | Feature  | Add TCU compliance checklist seeder (#1384) ✅                    |
 | 2026-01-10 | #1388 | Feature  | Add ComplianceChecklist entity and validation service (#1383) ✅  |
@@ -119,12 +120,12 @@
 
 | #     | Issue                                                 | Status |
 | ----- | ----------------------------------------------------- | ------ |
-| #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🟡     |
+| #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | ✅     |
 |       | ↳ #1382 Pesquisa requisitos TCU                       | ✅     |
 |       | ↳ #1383 Entity ComplianceChecklist + ValidationService| ✅     |
 |       | ↳ #1384 Seed checklists TCU                           | ✅     |
 |       | ↳ #1385 Endpoints REST validação                      | ✅     |
-|       | ↳ #1386 Componente indicador conformidade             | 🔴     |
+|       | ↳ #1386 Componente indicador conformidade             | ✅     |
 | #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | ✅     |
 
 ### Fase 4 - Operacional (P2)
@@ -134,7 +135,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 30/33 (91%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163 (1 sub-issue), #1166, #1167, #1168
+**Progresso MVP Comercial:** 31/33 (94%) - Epics #1158, #1161, #1163 e #1164 COMPLETAS ✅ | Restam: #1166, #1167, #1168
 
 ---
 
@@ -189,9 +190,9 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (74)
+## Issues Abertas (73)
 
-### P1 - High Priority (10 issues)
+### P1 - High Priority (9 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -200,7 +201,6 @@ Nenhum bug P0 aberto! 🎉
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
-| #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
@@ -233,7 +233,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 30/33  | 91% (3 restam) |
+| MVP Comercial          | 31/33  | 94% (3 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -334,15 +334,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 71    |
-| Issues Fechadas   | 672   |
-| Progresso         | 90%   |
+| Issues Abertas    | 70    |
+| Issues Fechadas   | 673   |
+| Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2633  |
-| Frontend Tests    | 1841  |
-| Total Tests       | 4474  |
+| Frontend Tests    | 1876  |
+| Total Tests       | 4509  |
 
 ---
 
