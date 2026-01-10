@@ -139,7 +139,11 @@ describe('ChatController', () => {
     it('should pass limit parameter when provided', async () => {
       chatService.getHistory.mockResolvedValue(mockHistoryItems.slice(0, 1));
 
-      const result = await controller.getHistory(mockEtpId, 10, mockUser as User);
+      const result = await controller.getHistory(
+        mockEtpId,
+        10,
+        mockUser as User,
+      );
 
       expect(chatService.getHistory).toHaveBeenCalledWith(
         mockEtpId,
