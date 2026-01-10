@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 674/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 675/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1400 | Feature  | Implement chat API endpoints with rate limiting (#1393) ✅        |
 | 2026-01-10 | #1399 | Feature  | Add ChatMessage entity and Chat module structure (#1392) ✅       |
 | 2026-01-10 | #1391 | Feature  | Add compliance scorecard component to ETP Editor (#1386) ✅       |
 | 2026-01-10 | #1390 | Feature  | Add REST endpoints for compliance validation (#1385) ✅           |
@@ -111,7 +112,7 @@
 | #1214 | [Export] Preview de documento antes do export | ✅     |
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🟡     |
 |       | ↳ #1392 ChatMessage entity e módulo backend   | ✅     |
-|       | ↳ #1393 API endpoints com rate limiting       | 🔴     |
+|       | ↳ #1393 API endpoints com rate limiting       | ✅     |
 |       | ↳ #1394 Integração AI com contexto ETP        | 🔴     |
 |       | ↳ #1395 ChatWidget componente React           | 🔴     |
 |       | ↳ #1396 Integração no ETP Editor              | 🔴     |
@@ -143,7 +144,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 31/33 (94%) - Epics #1158, #1161, #1163 e #1164 COMPLETAS ✅ | Restam: #1166, #1167, #1168
+**Progresso MVP Comercial:** 32/33 (97%) - Epics #1158, #1161, #1163 e #1164 COMPLETAS ✅ | Restam: #1166, #1167, #1168
 
 ---
 
@@ -241,7 +242,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 31/33  | 94% (3 restam) |
+| MVP Comercial          | 32/33  | 97% (3 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -342,8 +343,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 69    |
-| Issues Fechadas   | 674   |
+| Issues Abertas    | 68    |
+| Issues Fechadas   | 675   |
 | Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
