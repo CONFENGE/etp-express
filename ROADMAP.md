@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 669/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 670/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1388 | Feature  | Add ComplianceChecklist entity and validation service (#1383) ✅  |
 | 2026-01-10 | #1387 | Docs     | TCU requirements research - compliance foundation (#1382) ✅      |
 | 2026-01-10 | #1381 | Feature  | Add productivity ranking endpoint and component (#1367) ✅        |
 | 2026-01-10 | #1380 | Feature  | Add period filter for dashboard metrics (#1366) ✅                |
@@ -118,7 +119,7 @@
 | ----- | ----------------------------------------------------- | ------ |
 | #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🟡     |
 |       | ↳ #1382 Pesquisa requisitos TCU                       | ✅     |
-|       | ↳ #1383 Entity ComplianceChecklist                    | 🔴     |
+|       | ↳ #1383 Entity ComplianceChecklist + ValidationService| ✅     |
 |       | ↳ #1384 Seed checklists TCU                           | 🔴     |
 |       | ↳ #1385 Endpoints REST validação                      | 🔴     |
 |       | ↳ #1386 Componente indicador conformidade             | 🔴     |
@@ -331,15 +332,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 74    |
-| Issues Fechadas   | 669   |
+| Issues Abertas    | 73    |
+| Issues Fechadas   | 670   |
 | Progresso         | 90%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2552  |
+| Backend Tests     | 2591  |
 | Frontend Tests    | 1841  |
-| Total Tests       | 4393  |
+| Total Tests       | 4432  |
 
 ---
 
