@@ -252,6 +252,12 @@ export class EtpsController {
    * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
    */
   @Get('metrics/distribution-by-status')
+  @ApiQuery({
+    name: 'periodDays',
+    required: false,
+    type: Number,
+    description: 'Periodo em dias (0 = todo periodo)',
+  })
   @ApiOperation({ summary: 'Obter distribuição de ETPs por status' })
   @ApiResponse({
     status: 200,
@@ -277,6 +283,7 @@ export class EtpsController {
     },
   })
   async getStatusDistribution(
+    @Query('periodDays') periodDays: number = 0,
     @CurrentUser('organizationId') rawOrganizationId: string,
     @CurrentUser('id') rawUserId: string,
   ) {
@@ -287,6 +294,7 @@ export class EtpsController {
     const distribution = await this.etpsService.getStatusDistribution(
       organizationId,
       userId,
+      periodDays,
     );
     return {
       data: distribution,
@@ -307,6 +315,12 @@ export class EtpsController {
    * @throws {UnauthorizedException} 401 - If JWT token is invalid, missing, or lacks required claims
    */
   @Get('metrics/avg-completion-time')
+  @ApiQuery({
+    name: 'periodDays',
+    required: false,
+    type: Number,
+    description: 'Periodo em dias (0 = todo periodo)',
+  })
   @ApiOperation({ summary: 'Obter tempo médio de criação de ETPs' })
   @ApiResponse({
     status: 200,
@@ -327,6 +341,7 @@ export class EtpsController {
     },
   })
   async getAvgCompletionTime(
+    @Query('periodDays') periodDays: number = 0,
     @CurrentUser('organizationId') rawOrganizationId: string,
     @CurrentUser('id') rawUserId: string,
   ) {
@@ -337,6 +352,7 @@ export class EtpsController {
     const avgTime = await this.etpsService.getAvgCompletionTime(
       organizationId,
       userId,
+      periodDays,
     );
     return {
       data: avgTime,

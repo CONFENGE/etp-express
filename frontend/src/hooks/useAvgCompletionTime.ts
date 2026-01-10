@@ -16,6 +16,8 @@ export interface AvgCompletionTimeData {
 }
 
 interface UseAvgCompletionTimeOptions {
+  /** Number of days for the calculation period (default: 0 = all time) (#1366) */
+  periodDays?: number;
   /** Whether to fetch automatically on mount */
   autoFetch?: boolean;
 }
@@ -28,13 +30,14 @@ interface UseAvgCompletionTimeReturn {
   /** Error message if any */
   error: string | null;
   /** Fetch/refresh the average completion time data */
-  fetch: () => Promise<void>;
+  fetch: (periodDays?: number) => Promise<void>;
 }
 
 /**
  * Hook to fetch ETP average completion time metric.
  *
  * Part of the advanced metrics feature (Issue #1364).
+ * Updated in Issue #1366 to support period filtering.
  * Fetches the average time between ETP creation and completion.
  *
  * @param options - Configuration options
@@ -42,7 +45,7 @@ interface UseAvgCompletionTimeReturn {
  *
  * @example
  * ```tsx
- * const { data, isLoading, error, fetch } = useAvgCompletionTime();
+ * const { data, isLoading, error, fetch } = useAvgCompletionTime({ periodDays: 30 });
  *
  * if (data) {
  *   console.log(`Average completion time: ${data.formatted}`);
@@ -52,29 +55,35 @@ interface UseAvgCompletionTimeReturn {
 export function useAvgCompletionTime(
   options: UseAvgCompletionTimeOptions = {},
 ): UseAvgCompletionTimeReturn {
-  const { autoFetch = true } = options;
+  const { periodDays = 0, autoFetch = true } = options;
 
   const [data, setData] = useState<AvgCompletionTimeData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const fetch = useCallback(
+    async (days?: number) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const response = await apiHelpers.get<{ data: AvgCompletionTimeData }>(
-        `/etps/metrics/avg-completion-time`,
-      );
-      setData(response.data);
-    } catch (err) {
-      setError(
-        getContextualErrorMessage('carregar', 'tempo medio de criacao', err),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        const queryPeriod = days ?? periodDays;
+        // Build query string - only add periodDays if > 0 (#1366)
+        const queryParams = queryPeriod > 0 ? `?periodDays=${queryPeriod}` : '';
+        const response = await apiHelpers.get<{ data: AvgCompletionTimeData }>(
+          `/etps/metrics/avg-completion-time${queryParams}`,
+        );
+        setData(response.data);
+      } catch (err) {
+        setError(
+          getContextualErrorMessage('carregar', 'tempo medio de criacao', err),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [periodDays],
+  );
 
   useEffect(() => {
     if (autoFetch) {

@@ -808,17 +808,28 @@ export class EtpsService {
   async getAvgCompletionTime(
     organizationId: string,
     userId: string,
+    periodDays: number = 0,
   ): Promise<{
     avgTimeMinutes: number;
     formatted: string;
     completedCount: number;
   }> {
     // Query only completed ETPs with both creation and completion timestamps
-    const completedEtps = await this.etpsRepository
+    const queryBuilder = this.etpsRepository
       .createQueryBuilder('etp')
       .where('etp.organizationId = :organizationId', { organizationId })
       .andWhere('etp.createdById = :userId', { userId })
-      .andWhere('etp.status = :status', { status: EtpStatus.COMPLETED })
+      .andWhere('etp.status = :status', { status: EtpStatus.COMPLETED });
+
+    // Apply period filter if periodDays > 0 (#1366)
+    if (periodDays > 0) {
+      const periodStart = new Date(
+        Date.now() - periodDays * 24 * 60 * 60 * 1000,
+      );
+      queryBuilder.andWhere('etp.createdAt >= :periodStart', { periodStart });
+    }
+
+    const completedEtps = await queryBuilder
       .select(['etp.createdAt', 'etp.updatedAt'])
       .getMany();
 
@@ -1003,6 +1014,7 @@ export class EtpsService {
   async getStatusDistribution(
     organizationId: string,
     userId: string,
+    periodDays: number = 0,
   ): Promise<
     Array<{
       status: string;
@@ -1038,8 +1050,17 @@ export class EtpsService {
       .select('etp.status', 'status')
       .addSelect('COUNT(*)', 'count')
       .where('etp.organizationId = :organizationId', { organizationId })
-      .andWhere('etp.createdById = :userId', { userId })
-      .groupBy('etp.status');
+      .andWhere('etp.createdById = :userId', { userId });
+
+    // Apply period filter if periodDays > 0 (#1366)
+    if (periodDays > 0) {
+      const periodStart = new Date(
+        Date.now() - periodDays * 24 * 60 * 60 * 1000,
+      );
+      queryBuilder.andWhere('etp.createdAt >= :periodStart', { periodStart });
+    }
+
+    queryBuilder.groupBy('etp.status');
 
     const rawResults = await queryBuilder.getRawMany();
 
