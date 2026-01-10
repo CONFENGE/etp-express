@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-09 | **Progresso:** 667/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 669/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1381 | Feature  | Add productivity ranking endpoint and component (#1367) ✅        |
+| 2026-01-10 | #1380 | Feature  | Add period filter for dashboard metrics (#1366) ✅                |
 | 2026-01-09 | #1379 | Fix      | Add E2E test domains cleanup endpoint (#1354) ✅                  |
 | 2026-01-09 | #1378 | Fix      | Fix onboarding checklist not recognizing existing ETPs (#1373) ✅ |
 | 2026-01-09 | #1377 | Fix      | Fix status badge missing for 'review' status ETPs (#1374) ✅      |
@@ -102,12 +104,12 @@
 | #1213 | [UX] Wizard de onboarding para primeiro uso   | ✅     |
 | #1214 | [Export] Preview de documento antes do export | ✅     |
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
-| #1164 | [Dashboard] Adicionar métricas avançadas      | 🔴     |
+| #1164 | [Dashboard] Adicionar métricas avançadas      | ✅     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
 |       | ↳ #1364 Métrica de tempo médio                | ✅     |
 |       | ↳ #1365 Gráfico distribuição por status       | ✅     |
-|       | ↳ #1366 Filtro por período                    | 🔴     |
-|       | ↳ #1367 Ranking de produtividade (Admin)      | 🔴     |
+|       | ↳ #1366 Filtro por período                    | ✅     |
+|       | ↳ #1367 Ranking de produtividade (Admin)      | ✅     |
 
 ### Fase 3 - Credibilidade Institucional (P1)
 
@@ -123,7 +125,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 26/33 (79%) - Epics #1158 e #1161 COMPLETAS ✅ | Restam: #1163, #1164 (2 sub-issues), #1166, #1167, #1168
+**Progresso MVP Comercial:** 28/33 (85%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163, #1166, #1167, #1168
 
 ---
 
@@ -178,9 +180,9 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (78)
+## Issues Abertas (74)
 
-### P1 - High Priority (11 issues)
+### P1 - High Priority (10 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -189,7 +191,6 @@ Nenhum bug P0 aberto! 🎉
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
 | #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
-| #1164 | [Dashboard] Adicionar métricas avançadas (MVP Comercial)        |
 | #1163 | [Conformidade] Templates TCU/TCES (MVP Comercial)               |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
@@ -223,7 +224,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 26/33  | 79% (7 restam) |
+| MVP Comercial          | 28/33  | 85% (5 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -324,15 +325,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 76    |
-| Issues Fechadas   | 667   |
+| Issues Abertas    | 74    |
+| Issues Fechadas   | 669   |
 | Progresso         | 90%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2552  |
-| Frontend Tests    | 1817  |
-| Total Tests       | 4369  |
+| Frontend Tests    | 1841  |
+| Total Tests       | 4393  |
 
 ---
 
