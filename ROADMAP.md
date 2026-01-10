@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 673/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 674/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1399 | Feature  | Add ChatMessage entity and Chat module structure (#1392) ✅       |
 | 2026-01-10 | #1391 | Feature  | Add compliance scorecard component to ETP Editor (#1386) ✅       |
 | 2026-01-10 | #1390 | Feature  | Add REST endpoints for compliance validation (#1385) ✅           |
 | 2026-01-10 | #1389 | Feature  | Add TCU compliance checklist seeder (#1384) ✅                    |
@@ -108,7 +109,14 @@
 | ----- | --------------------------------------------- | ------ |
 | #1213 | [UX] Wizard de onboarding para primeiro uso   | ✅     |
 | #1214 | [Export] Preview de documento antes do export | ✅     |
-| #1167 | [Assistente] Implementar chatbot para dúvidas | 🔴     |
+| #1167 | [Assistente] Implementar chatbot para dúvidas | 🟡     |
+|       | ↳ #1392 ChatMessage entity e módulo backend   | ✅     |
+|       | ↳ #1393 API endpoints com rate limiting       | 🔴     |
+|       | ↳ #1394 Integração AI com contexto ETP        | 🔴     |
+|       | ↳ #1395 ChatWidget componente React           | 🔴     |
+|       | ↳ #1396 Integração no ETP Editor              | 🔴     |
+|       | ↳ #1397 Sugestões proativas e hints           | 🔴     |
+|       | ↳ #1398 Testes E2E e documentação             | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | ✅     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
 |       | ↳ #1364 Métrica de tempo médio                | ✅     |
@@ -334,15 +342,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 70    |
-| Issues Fechadas   | 673   |
+| Issues Abertas    | 69    |
+| Issues Fechadas   | 674   |
 | Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2633  |
+| Backend Tests     | 2660  |
 | Frontend Tests    | 1876  |
-| Total Tests       | 4509  |
+| Total Tests       | 4536  |
 
 ---
 
