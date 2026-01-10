@@ -53,6 +53,7 @@ describe('AdminDashboard', () => {
 
   const mockFetchStatistics = vi.fn();
   const mockFetchDomains = vi.fn();
+  const mockFetchProductivityRanking = vi.fn();
 
   const renderWithRouter = (ui: React.ReactElement) => {
     return render(<BrowserRouter>{ui}</BrowserRouter>);
@@ -74,6 +75,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -91,6 +95,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -111,6 +118,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -128,6 +138,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -147,6 +160,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -164,6 +180,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -179,6 +198,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -194,6 +216,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -209,6 +234,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: [],
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -228,6 +256,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -245,6 +276,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: [],
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -263,6 +297,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -280,6 +317,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -295,6 +335,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -311,6 +354,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -331,6 +377,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -346,6 +395,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -362,6 +414,9 @@ describe('AdminDashboard', () => {
         fetchStatistics: mockFetchStatistics,
         fetchDomains: mockFetchDomains,
         domains: mockDomains,
+        productivityRanking: null,
+        rankingLoading: false,
+        fetchProductivityRanking: mockFetchProductivityRanking,
       });
 
       renderWithRouter(<AdminDashboard />);

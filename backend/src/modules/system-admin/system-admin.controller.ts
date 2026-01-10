@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -15,8 +16,13 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
-import { SystemAdminService, GlobalStatistics } from './system-admin.service';
+import {
+  SystemAdminService,
+  GlobalStatistics,
+  ProductivityRankingResponse,
+} from './system-admin.service';
 import { CreateDomainDto } from './dto/create-domain.dto';
 import { UpdateDomainDto } from './dto/update-domain.dto';
 import { AssignManagerDto } from './dto/assign-manager.dto';
@@ -456,5 +462,94 @@ export class SystemAdminController {
   })
   async getStatistics(): Promise<GlobalStatistics> {
     return this.systemAdminService.getStatistics();
+  }
+
+  // ============================================
+  // PRODUCTIVITY METRICS (#1367)
+  // ============================================
+
+  /**
+   * Retrieves user productivity ranking based on ETP creation and completion.
+   *
+   * Part of advanced metrics feature (Issue #1367).
+   * Returns a paginated list of users ranked by productivity.
+   *
+   * @param periodDays - Number of days to consider (0 = all time, default: 0)
+   * @param page - Page number (1-based, default: 1)
+   * @param limit - Items per page (max 100, default: 10)
+   * @returns Paginated productivity ranking
+   */
+  @Get('metrics/productivity-ranking')
+  @ApiOperation({
+    summary: 'Get user productivity ranking',
+    description:
+      'Returns a paginated ranking of users by their ETP productivity. ' +
+      'Users are ranked by ETPs completed, then by ETPs created. ' +
+      'Supports filtering by time period.',
+  })
+  @ApiQuery({
+    name: 'periodDays',
+    required: false,
+    type: Number,
+    description: 'Number of days to consider (0 = all time, default: 0)',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (1-based, default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (max 100, default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Productivity ranking retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        ranking: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              position: { type: 'number', example: 1 },
+              userId: {
+                type: 'string',
+                example: '550e8400-e29b-41d4-a716-446655440000',
+              },
+              userName: { type: 'string', example: 'Maria Silva' },
+              userEmail: { type: 'string', example: 'maria@prefeitura.gov.br' },
+              etpsCreated: { type: 'number', example: 15 },
+              etpsCompleted: { type: 'number', example: 12 },
+              completionRate: { type: 'number', example: 80.0 },
+            },
+          },
+        },
+        totalUsers: { type: 'number', example: 45 },
+        page: { type: 'number', example: 1 },
+        limit: { type: 'number', example: 10 },
+        totalPages: { type: 'number', example: 5 },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid JWT' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - SYSTEM_ADMIN role required',
+  })
+  async getProductivityRanking(
+    @Query('periodDays') periodDays: number = 0,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<ProductivityRankingResponse> {
+    return this.systemAdminService.getProductivityRanking(
+      periodDays,
+      page,
+      limit,
+    );
   }
 }
