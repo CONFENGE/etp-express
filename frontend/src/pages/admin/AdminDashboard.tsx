@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatisticsCards } from '@/components/admin/StatisticsCards';
+import { ProductivityRanking } from '@/components/admin/ProductivityRanking';
 import { useAdminStore } from '@/store/adminStore';
 
 /**
@@ -130,6 +131,9 @@ export function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* Productivity Ranking (#1367) */}
+        <ProductivityRanking />
       </div>
     </div>
   );
