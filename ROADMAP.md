@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 670/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 671/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1389 | Feature  | Add TCU compliance checklist seeder (#1384) ✅                    |
 | 2026-01-10 | #1388 | Feature  | Add ComplianceChecklist entity and validation service (#1383) ✅  |
 | 2026-01-10 | #1387 | Docs     | TCU requirements research - compliance foundation (#1382) ✅      |
 | 2026-01-10 | #1381 | Feature  | Add productivity ranking endpoint and component (#1367) ✅        |
@@ -120,7 +121,7 @@
 | #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🟡     |
 |       | ↳ #1382 Pesquisa requisitos TCU                       | ✅     |
 |       | ↳ #1383 Entity ComplianceChecklist + ValidationService| ✅     |
-|       | ↳ #1384 Seed checklists TCU                           | 🔴     |
+|       | ↳ #1384 Seed checklists TCU                           | ✅     |
 |       | ↳ #1385 Endpoints REST validação                      | 🔴     |
 |       | ↳ #1386 Componente indicador conformidade             | 🔴     |
 | #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | ✅     |
@@ -132,7 +133,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 28/33 (85%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163, #1166, #1167, #1168
+**Progresso MVP Comercial:** 29/33 (88%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163 (2 sub-issues), #1166, #1167, #1168
 
 ---
 
@@ -332,8 +333,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 73    |
-| Issues Fechadas   | 670   |
+| Issues Abertas    | 72    |
+| Issues Fechadas   | 671   |
 | Progresso         | 90%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
