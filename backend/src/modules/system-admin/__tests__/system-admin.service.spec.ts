@@ -10,6 +10,7 @@ import { SystemAdminService } from '../system-admin.service';
 import { AuthorizedDomain } from '../../../entities/authorized-domain.entity';
 import { User, UserRole } from '../../../entities/user.entity';
 import { Organization } from '../../../entities/organization.entity';
+import { Etp, EtpStatus } from '../../../entities/etp.entity';
 import { CreateDomainDto } from '../dto/create-domain.dto';
 import { UpdateDomainDto } from '../dto/update-domain.dto';
 import { AssignManagerDto } from '../dto/assign-manager.dto';
@@ -19,6 +20,7 @@ describe('SystemAdminService', () => {
   let authorizedDomainRepository: Repository<AuthorizedDomain>;
   let userRepository: Repository<User>;
   let organizationRepository: Repository<Organization>;
+  let etpRepository: Repository<Etp>;
 
   const mockDomain: AuthorizedDomain = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -96,6 +98,10 @@ describe('SystemAdminService', () => {
     count: jest.fn(),
   };
 
+  const mockEtpRepository = {
+    createQueryBuilder: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -112,6 +118,10 @@ describe('SystemAdminService', () => {
           provide: getRepositoryToken(Organization),
           useValue: mockOrganizationRepository,
         },
+        {
+          provide: getRepositoryToken(Etp),
+          useValue: mockEtpRepository,
+        },
       ],
     }).compile();
 
@@ -123,6 +133,7 @@ describe('SystemAdminService', () => {
     organizationRepository = module.get<Repository<Organization>>(
       getRepositoryToken(Organization),
     );
+    etpRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
 
     jest.clearAllMocks();
   });
@@ -672,6 +683,183 @@ describe('SystemAdminService', () => {
       expect(testDomains.some((d) => d.domain === 'lages.sc.gov.br')).toBe(
         false,
       );
+    });
+  });
+
+  describe('getProductivityRanking', () => {
+    const createMockQueryBuilder = (rawResults: unknown[]) => ({
+      select: jest.fn().mockReturnThis(),
+      addSelect: jest.fn().mockReturnThis(),
+      innerJoin: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      groupBy: jest.fn().mockReturnThis(),
+      addGroupBy: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      addOrderBy: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      clone: jest.fn().mockReturnThis(),
+      getRawMany: jest.fn().mockResolvedValue(rawResults),
+    });
+
+    it('should return paginated productivity ranking', async () => {
+      const rawResults = [
+        {
+          userId: 'user-1',
+          userName: 'Maria Silva',
+          userEmail: 'maria@prefeitura.gov.br',
+          etpsCreated: '10',
+          etpsCompleted: '8',
+        },
+        {
+          userId: 'user-2',
+          userName: 'Joao Santos',
+          userEmail: 'joao@prefeitura.gov.br',
+          etpsCreated: '5',
+          etpsCompleted: '4',
+        },
+      ];
+
+      const mockQB = createMockQueryBuilder(rawResults);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 10);
+
+      expect(mockEtpRepository.createQueryBuilder).toHaveBeenCalledWith('etp');
+      expect(result.ranking).toHaveLength(2);
+      expect(result.ranking[0].position).toBe(1);
+      expect(result.ranking[0].userName).toBe('Maria Silva');
+      expect(result.ranking[0].etpsCreated).toBe(10);
+      expect(result.ranking[0].etpsCompleted).toBe(8);
+      expect(result.ranking[0].completionRate).toBe(80);
+      expect(result.totalUsers).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(10);
+    });
+
+    it('should apply period filter when periodDays > 0', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      await service.getProductivityRanking(30, 1, 10);
+
+      expect(mockQB.andWhere).toHaveBeenCalledWith(
+        'etp.createdAt >= :periodStart',
+        expect.objectContaining({ periodStart: expect.any(Date) }),
+      );
+    });
+
+    it('should not apply period filter when periodDays is 0', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      await service.getProductivityRanking(0, 1, 10);
+
+      // Only the user.isActive filter should be applied
+      expect(mockQB.andWhere).not.toHaveBeenCalledWith(
+        'etp.createdAt >= :periodStart',
+        expect.anything(),
+      );
+    });
+
+    it('should handle empty results', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 10);
+
+      expect(result.ranking).toHaveLength(0);
+      expect(result.totalUsers).toBe(0);
+      expect(result.totalPages).toBe(0);
+    });
+
+    it('should calculate completion rate correctly', async () => {
+      const rawResults = [
+        {
+          userId: 'user-1',
+          userName: 'Test User',
+          userEmail: 'test@example.com',
+          etpsCreated: '3',
+          etpsCompleted: '2',
+        },
+      ];
+
+      const mockQB = createMockQueryBuilder(rawResults);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 10);
+
+      // 2/3 = 66.666... should be rounded to 66.7
+      expect(result.ranking[0].completionRate).toBe(66.7);
+    });
+
+    it('should handle zero ETPs created (avoid division by zero)', async () => {
+      const rawResults = [
+        {
+          userId: 'user-1',
+          userName: 'Test User',
+          userEmail: 'test@example.com',
+          etpsCreated: '0',
+          etpsCompleted: '0',
+        },
+      ];
+
+      const mockQB = createMockQueryBuilder(rawResults);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 10);
+
+      expect(result.ranking[0].completionRate).toBe(0);
+    });
+
+    it('should enforce maximum limit of 100', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 500);
+
+      expect(result.limit).toBe(100);
+      expect(mockQB.limit).toHaveBeenCalledWith(100);
+    });
+
+    it('should enforce minimum page of 1', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, -5, 10);
+
+      expect(result.page).toBe(1);
+      expect(mockQB.offset).toHaveBeenCalledWith(0);
+    });
+
+    it('should calculate correct offset for pagination', async () => {
+      const mockQB = createMockQueryBuilder([]);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      await service.getProductivityRanking(0, 3, 10);
+
+      // Page 3 with limit 10 = offset 20
+      expect(mockQB.offset).toHaveBeenCalledWith(20);
+    });
+
+    it('should calculate totalPages correctly', async () => {
+      // Mock 25 total users
+      const users25 = Array.from({ length: 25 }, (_, i) => ({
+        userId: `user-${i}`,
+        userName: `User ${i}`,
+        userEmail: `user${i}@example.com`,
+        etpsCreated: '5',
+        etpsCompleted: '3',
+      }));
+
+      const mockQB = createMockQueryBuilder(users25);
+      mockEtpRepository.createQueryBuilder.mockReturnValue(mockQB);
+
+      const result = await service.getProductivityRanking(0, 1, 10);
+
+      // 25 users / 10 per page = 3 pages (ceiling)
+      expect(result.totalPages).toBe(3);
     });
   });
 });

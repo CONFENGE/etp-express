@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { AuthorizedDomain } from '../../entities/authorized-domain.entity';
 import { User, UserRole } from '../../entities/user.entity';
 import { Organization } from '../../entities/organization.entity';
+import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { CreateDomainDto } from './dto/create-domain.dto';
 import { UpdateDomainDto } from './dto/update-domain.dto';
 import { AssignManagerDto } from './dto/assign-manager.dto';
@@ -25,6 +26,44 @@ export interface GlobalStatistics {
   totalOrganizations: number;
   totalEtps: number;
   domainsByOrganization: { organizationName: string; domainCount: number }[];
+}
+
+/**
+ * Single user entry in the productivity ranking.
+ * Part of advanced metrics feature (Issue #1367).
+ */
+export interface ProductivityRankingItem {
+  /** Ranking position (1-based) */
+  position: number;
+  /** User ID */
+  userId: string;
+  /** User name */
+  userName: string;
+  /** User email */
+  userEmail: string;
+  /** Total ETPs created by user in the period */
+  etpsCreated: number;
+  /** Total ETPs completed by user in the period */
+  etpsCompleted: number;
+  /** Completion rate (completed/created * 100) */
+  completionRate: number;
+}
+
+/**
+ * Response interface for productivity ranking.
+ * Part of advanced metrics feature (Issue #1367).
+ */
+export interface ProductivityRankingResponse {
+  /** List of users ranked by productivity */
+  ranking: ProductivityRankingItem[];
+  /** Total number of users with ETPs */
+  totalUsers: number;
+  /** Current page (1-based) */
+  page: number;
+  /** Items per page */
+  limit: number;
+  /** Total pages available */
+  totalPages: number;
 }
 
 /**
@@ -49,6 +88,8 @@ export class SystemAdminService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
+    @InjectRepository(Etp)
+    private readonly etpRepository: Repository<Etp>,
   ) {}
 
   /**
@@ -427,5 +468,98 @@ export class SystemAdminService {
     );
 
     return { deleted: testDomains.length };
+  }
+
+  /**
+   * Retrieves productivity ranking of users based on ETP creation and completion.
+   *
+   * Part of the advanced metrics feature (Issue #1367).
+   * Returns a paginated list of users ranked by their productivity metrics.
+   *
+   * @param periodDays - Number of days to consider (0 = all time)
+   * @param page - Page number (1-based)
+   * @param limit - Items per page (max 100)
+   * @returns Paginated productivity ranking
+   *
+   * @example
+   * ```ts
+   * const result = await systemAdminService.getProductivityRanking(30, 1, 10);
+   * // Returns top 10 users by productivity in the last 30 days
+   * ```
+   */
+  async getProductivityRanking(
+    periodDays: number = 0,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<ProductivityRankingResponse> {
+    // Ensure valid pagination
+    const validPage = Math.max(1, page);
+    const validLimit = Math.min(100, Math.max(1, limit));
+    const offset = (validPage - 1) * validLimit;
+
+    // Build base query for ETPs grouped by creator
+    const queryBuilder = this.etpRepository
+      .createQueryBuilder('etp')
+      .select('etp.createdById', 'userId')
+      .addSelect('COUNT(etp.id)', 'etpsCreated')
+      .addSelect(
+        `SUM(CASE WHEN etp.status = '${EtpStatus.COMPLETED}' THEN 1 ELSE 0 END)`,
+        'etpsCompleted',
+      )
+      .innerJoin('etp.createdBy', 'user')
+      .addSelect('user.name', 'userName')
+      .addSelect('user.email', 'userEmail')
+      .where('user.isActive = :isActive', { isActive: true })
+      .groupBy('etp.createdById')
+      .addGroupBy('user.name')
+      .addGroupBy('user.email');
+
+    // Apply period filter if periodDays > 0
+    if (periodDays > 0) {
+      const periodStart = new Date(
+        Date.now() - periodDays * 24 * 60 * 60 * 1000,
+      );
+      queryBuilder.andWhere('etp.createdAt >= :periodStart', { periodStart });
+    }
+
+    // Get total count for pagination
+    const countQuery = queryBuilder.clone();
+    const totalUsersRaw = await countQuery.getRawMany();
+    const totalUsers = totalUsersRaw.length;
+    const totalPages = Math.ceil(totalUsers / validLimit);
+
+    // Apply ordering and pagination
+    queryBuilder
+      .orderBy('etpsCompleted', 'DESC')
+      .addOrderBy('etpsCreated', 'DESC')
+      .offset(offset)
+      .limit(validLimit);
+
+    const rawResults = await queryBuilder.getRawMany();
+
+    // Transform results with ranking positions
+    const ranking: ProductivityRankingItem[] = rawResults.map((row, index) => {
+      const created = parseInt(row.etpsCreated, 10);
+      const completed = parseInt(row.etpsCompleted, 10);
+      const rate = created > 0 ? (completed / created) * 100 : 0;
+
+      return {
+        position: offset + index + 1,
+        userId: row.userId,
+        userName: row.userName,
+        userEmail: row.userEmail,
+        etpsCreated: created,
+        etpsCompleted: completed,
+        completionRate: parseFloat(rate.toFixed(1)),
+      };
+    });
+
+    return {
+      ranking,
+      totalUsers,
+      page: validPage,
+      limit: validLimit,
+      totalPages,
+    };
   }
 }

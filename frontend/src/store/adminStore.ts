@@ -41,6 +41,32 @@ export interface CreateDomainDto {
 }
 
 /**
+ * Single user entry in the productivity ranking.
+ * Part of advanced metrics feature (Issue #1367).
+ */
+export interface ProductivityRankingItem {
+  position: number;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  etpsCreated: number;
+  etpsCompleted: number;
+  completionRate: number;
+}
+
+/**
+ * Response interface for productivity ranking.
+ * Part of advanced metrics feature (Issue #1367).
+ */
+export interface ProductivityRankingResponse {
+  ranking: ProductivityRankingItem[];
+  totalUsers: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/**
  * Admin state store for System Admin domain management.
  *
  * @security
@@ -50,11 +76,18 @@ export interface CreateDomainDto {
 interface AdminState {
   domains: AuthorizedDomain[];
   statistics: GlobalStatistics | null;
+  productivityRanking: ProductivityRankingResponse | null;
   loading: boolean;
+  rankingLoading: boolean;
   error: string | null;
 
   fetchDomains: () => Promise<void>;
   fetchStatistics: () => Promise<void>;
+  fetchProductivityRanking: (
+    periodDays?: number,
+    page?: number,
+    limit?: number,
+  ) => Promise<void>;
   createDomain: (data: CreateDomainDto) => Promise<void>;
   deleteDomain: (id: string) => Promise<void>;
   assignManager: (domainId: string, userId: string) => Promise<void>;
@@ -64,7 +97,9 @@ interface AdminState {
 export const useAdminStore = create<AdminState>((set, get) => ({
   domains: [],
   statistics: null,
+  productivityRanking: null,
   loading: false,
+  rankingLoading: false,
   error: null,
 
   /**
@@ -97,6 +132,38 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     } catch (error) {
       set({
         error: getContextualErrorMessage('carregar', 'estatísticas', error),
+      });
+    }
+  },
+
+  /**
+   * Fetches productivity ranking of users.
+   * Part of advanced metrics feature (Issue #1367).
+   */
+  fetchProductivityRanking: async (
+    periodDays: number = 0,
+    page: number = 1,
+    limit: number = 10,
+  ) => {
+    set({ rankingLoading: true });
+    try {
+      const params = new URLSearchParams();
+      if (periodDays > 0) params.append('periodDays', periodDays.toString());
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+
+      const response = await apiHelpers.get<ProductivityRankingResponse>(
+        `/system-admin/metrics/productivity-ranking?${params.toString()}`,
+      );
+      set({ productivityRanking: response, rankingLoading: false });
+    } catch (error) {
+      set({
+        error: getContextualErrorMessage(
+          'carregar',
+          'ranking de produtividade',
+          error,
+        ),
+        rankingLoading: false,
       });
     }
   },
