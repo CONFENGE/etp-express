@@ -80,7 +80,9 @@ describe('ChatService', () => {
     chatMessageRepository.create.mockImplementation(
       (data) => ({ ...data, id: 'new-msg-id' }) as ChatMessage,
     );
-    chatMessageRepository.save.mockImplementation(async (msg) => msg as ChatMessage);
+    chatMessageRepository.save.mockImplementation(
+      async (msg) => msg as ChatMessage,
+    );
   });
 
   afterEach(() => {

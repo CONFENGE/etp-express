@@ -92,7 +92,8 @@ export class ChatService {
       content: placeholderContent,
       metadata: assistantMetadata,
     });
-    const savedAssistant = await this.chatMessageRepository.save(assistantMessage);
+    const savedAssistant =
+      await this.chatMessageRepository.save(assistantMessage);
 
     this.logger.log(
       `Chat message processed for ETP ${etpId} by user ${userId} in ${latencyMs}ms`,
