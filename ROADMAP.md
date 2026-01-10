@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 671/743 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-10 | **Progresso:** 672/743 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1390 | Feature  | Add REST endpoints for compliance validation (#1385) ✅           |
 | 2026-01-10 | #1389 | Feature  | Add TCU compliance checklist seeder (#1384) ✅                    |
 | 2026-01-10 | #1388 | Feature  | Add ComplianceChecklist entity and validation service (#1383) ✅  |
 | 2026-01-10 | #1387 | Docs     | TCU requirements research - compliance foundation (#1382) ✅      |
@@ -122,7 +123,7 @@
 |       | ↳ #1382 Pesquisa requisitos TCU                       | ✅     |
 |       | ↳ #1383 Entity ComplianceChecklist + ValidationService| ✅     |
 |       | ↳ #1384 Seed checklists TCU                           | ✅     |
-|       | ↳ #1385 Endpoints REST validação                      | 🔴     |
+|       | ↳ #1385 Endpoints REST validação                      | ✅     |
 |       | ↳ #1386 Componente indicador conformidade             | 🔴     |
 | #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | ✅     |
 
@@ -133,7 +134,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 29/33 (88%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163 (2 sub-issues), #1166, #1167, #1168
+**Progresso MVP Comercial:** 30/33 (91%) - Epics #1158, #1161 e #1164 COMPLETAS ✅ | Restam: #1163 (1 sub-issue), #1166, #1167, #1168
 
 ---
 
@@ -232,7 +233,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 28/33  | 85% (5 restam) |
+| MVP Comercial          | 30/33  | 91% (3 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -333,15 +334,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 72    |
-| Issues Fechadas   | 671   |
+| Issues Abertas    | 71    |
+| Issues Fechadas   | 672   |
 | Progresso         | 90%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2591  |
+| Backend Tests     | 2633  |
 | Frontend Tests    | 1841  |
-| Total Tests       | 4432  |
+| Total Tests       | 4474  |
 
 ---
 
