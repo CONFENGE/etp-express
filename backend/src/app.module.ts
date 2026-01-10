@@ -36,6 +36,7 @@ import { GovDataSyncModule } from './modules/gov-data-sync/gov-data-sync.module'
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { SemanticCacheModule } from './modules/cache/semantic-cache.module';
 import { TemplatesModule } from './modules/templates/templates.module';
+import { ComplianceModule } from './modules/compliance/compliance.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -226,6 +227,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     FeatureFlagsModule,
     SemanticCacheModule,
     TemplatesModule,
+    ComplianceModule,
     HealthModule,
   ],
   controllers: [AppController],
