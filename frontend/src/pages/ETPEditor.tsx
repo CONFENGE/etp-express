@@ -18,6 +18,7 @@ import { ETPEditorProgress } from '@/components/etp/ETPEditorProgress';
 import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
+import { ComplianceScorecard } from '@/components/etp/ComplianceScorecard';
 import { VersionHistory } from '@/components/etp/VersionHistory';
 import { ExportPreviewModal } from '@/components/etp/ExportPreviewModal';
 import { useETPStore } from '@/store/etpStore';
@@ -557,6 +558,16 @@ export function ETPEditor() {
               isGenerating={aiGenerating}
               isGenerateAllDisabled={true}
             />
+
+            {/* Compliance Scorecard (#1386) */}
+            {id && (
+              <ComplianceScorecard
+                etpId={id}
+                onNavigateToSection={(sectionId) =>
+                  setActiveSection(Number(sectionId))
+                }
+              />
+            )}
 
             {/* Version History (#1162) */}
             {id && (
