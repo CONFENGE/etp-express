@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-10 | #1387 | Docs     | TCU requirements research - compliance foundation (#1382) ⏳      |
 | 2026-01-10 | #1381 | Feature  | Add productivity ranking endpoint and component (#1367) ✅        |
 | 2026-01-10 | #1380 | Feature  | Add period filter for dashboard metrics (#1366) ✅                |
 | 2026-01-09 | #1379 | Fix      | Add E2E test domains cleanup endpoint (#1354) ✅                  |
@@ -115,7 +116,12 @@
 
 | #     | Issue                                                 | Status |
 | ----- | ----------------------------------------------------- | ------ |
-| #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🔴     |
+| #1163 | [Conformidade] Templates baseados em modelos TCU/TCES | 🟡     |
+|       | ↳ #1382 Pesquisa requisitos TCU                       | ⏳     |
+|       | ↳ #1383 Entity ComplianceChecklist                    | 🔴     |
+|       | ↳ #1384 Seed checklists TCU                           | 🔴     |
+|       | ↳ #1385 Endpoints REST validação                      | 🔴     |
+|       | ↳ #1386 Componente indicador conformidade             | 🔴     |
 | #1165 | [Preços] Persistir histórico SINAPI/SICRO em banco    | ✅     |
 
 ### Fase 4 - Operacional (P2)
