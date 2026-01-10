@@ -3,6 +3,8 @@ import { ChatController } from '../chat.controller';
 import { ChatService } from '../chat.service';
 import { SendMessageDto, ChatResponseDto, ChatHistoryItemDto } from '../dto';
 import { User, UserRole } from '../../../entities/user.entity';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { UserThrottlerGuard } from '../../../common/guards/user-throttler.guard';
 
 describe('ChatController', () => {
   let controller: ChatController;
@@ -42,6 +44,9 @@ describe('ChatController', () => {
     },
   ];
 
+  // Mock guards to always pass (we test controller logic, not guards)
+  const mockGuard = { canActivate: jest.fn(() => true) };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChatController],
@@ -55,7 +60,12 @@ describe('ChatController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockGuard)
+      .overrideGuard(UserThrottlerGuard)
+      .useValue(mockGuard)
+      .compile();
 
     controller = module.get<ChatController>(ChatController);
     chatService = module.get(ChatService);
@@ -66,7 +76,7 @@ describe('ChatController', () => {
   });
 
   describe('sendMessage', () => {
-    it('should call chatService.sendMessage with correct parameters', async () => {
+    it('should call chatService.sendMessage with correct parameters including organizationId', async () => {
       const dto: SendMessageDto = {
         message: 'O que devo escrever na justificativa?',
         contextField: 'Justificativa',
@@ -83,6 +93,7 @@ describe('ChatController', () => {
         dto,
         mockEtpId,
         mockUser.id,
+        mockUser.organizationId,
       );
       expect(result).toEqual(mockChatResponse);
     });
@@ -103,6 +114,7 @@ describe('ChatController', () => {
         dto,
         mockEtpId,
         mockUser.id,
+        mockUser.organizationId,
       );
       expect(result).toEqual(mockChatResponse);
     });
@@ -119,7 +131,7 @@ describe('ChatController', () => {
   });
 
   describe('getHistory', () => {
-    it('should call chatService.getHistory with correct parameters', async () => {
+    it('should call chatService.getHistory with correct parameters including organizationId', async () => {
       chatService.getHistory.mockResolvedValue(mockHistoryItems);
 
       const result = await controller.getHistory(
@@ -131,6 +143,7 @@ describe('ChatController', () => {
       expect(chatService.getHistory).toHaveBeenCalledWith(
         mockEtpId,
         mockUser.id,
+        mockUser.organizationId,
         undefined,
       );
       expect(result).toEqual(mockHistoryItems);
@@ -148,6 +161,7 @@ describe('ChatController', () => {
       expect(chatService.getHistory).toHaveBeenCalledWith(
         mockEtpId,
         mockUser.id,
+        mockUser.organizationId,
         10,
       );
       expect(result).toHaveLength(1);
@@ -167,7 +181,7 @@ describe('ChatController', () => {
   });
 
   describe('clearHistory', () => {
-    it('should call chatService.clearHistory and return success', async () => {
+    it('should call chatService.clearHistory with correct parameters including organizationId', async () => {
       chatService.clearHistory.mockResolvedValue(5);
 
       const result = await controller.clearHistory(mockEtpId, mockUser as User);
@@ -175,6 +189,7 @@ describe('ChatController', () => {
       expect(chatService.clearHistory).toHaveBeenCalledWith(
         mockEtpId,
         mockUser.id,
+        mockUser.organizationId,
       );
       expect(result).toEqual({ success: true, deletedCount: 5 });
     });

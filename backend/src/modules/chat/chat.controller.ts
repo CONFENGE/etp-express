@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,10 +19,13 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { ChatService } from './chat.service';
 import { SendMessageDto, ChatResponseDto, ChatHistoryItemDto } from './dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { UserThrottlerGuard } from '../../common/guards/user-throttler.guard';
 
 /**
  * Controller for ETP chatbot functionality.
@@ -32,14 +36,20 @@ import { User } from '../../entities/user.entity';
  * - Clearing conversation history
  *
  * All endpoints require authentication and are scoped to specific ETPs.
- * Rate limiting will be added in issue #1393.
+ * Rate limiting: 30 messages per minute per user (implemented in #1393).
  *
- * Issue #1392 - [CHAT-1167a] Create ChatMessage entity and backend module structure
+ * Security:
+ * - JwtAuthGuard: All endpoints require valid JWT token
+ * - UserThrottlerGuard: Rate limiting based on user ID (not IP)
+ * - ETP authorization: User must own ETP or be admin of the organization
+ *
+ * Issue #1393 - [CHAT-1167b] Implement chat API endpoints with rate limiting
  * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
  */
 @ApiTags('Chat')
 @ApiBearerAuth()
 @Controller('chat')
+@UseGuards(JwtAuthGuard)
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
@@ -51,10 +61,13 @@ export class ChatController {
    * - The field/section the user is working on
    * - Conversation history
    *
-   * Rate limit: 30 messages per minute (to be implemented in #1393)
+   * Rate limit: 30 messages per minute per user (enforced by UserThrottlerGuard).
+   * Authorization: User must own the ETP or be admin of the organization.
    */
   @Post('etp/:etpId/message')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(UserThrottlerGuard)
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @ApiOperation({
     summary: 'Send a message to the ETP chatbot',
     description:
@@ -93,7 +106,12 @@ export class ChatController {
     @Body() dto: SendMessageDto,
     @CurrentUser() user: User,
   ): Promise<ChatResponseDto> {
-    return this.chatService.sendMessage(dto, etpId, user.id);
+    return this.chatService.sendMessage(
+      dto,
+      etpId,
+      user.id,
+      user.organizationId,
+    );
   }
 
   /**
@@ -134,7 +152,12 @@ export class ChatController {
     @Query('limit') limit?: number,
     @CurrentUser() user?: User,
   ): Promise<ChatHistoryItemDto[]> {
-    return this.chatService.getHistory(etpId, user!.id, limit);
+    return this.chatService.getHistory(
+      etpId,
+      user!.id,
+      user!.organizationId,
+      limit,
+    );
   }
 
   /**
@@ -176,7 +199,11 @@ export class ChatController {
     @Param('etpId', ParseUUIDPipe) etpId: string,
     @CurrentUser() user: User,
   ): Promise<{ success: boolean; deletedCount: number }> {
-    const deletedCount = await this.chatService.clearHistory(etpId, user.id);
+    const deletedCount = await this.chatService.clearHistory(
+      etpId,
+      user.id,
+      user.organizationId,
+    );
     return { success: true, deletedCount };
   }
 }

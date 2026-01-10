@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ChatService } from '../chat.service';
 import {
   ChatMessage,
@@ -17,11 +17,13 @@ describe('ChatService', () => {
 
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
+  const mockOrganizationId = 'org-1';
 
   const mockEtp = {
     id: mockEtpId,
     title: 'ETP Test',
     objeto: 'Contratacao de servicos',
+    organizationId: mockOrganizationId,
   } as Etp;
 
   const mockUserMessage: ChatMessage = {
@@ -96,7 +98,12 @@ describe('ChatService', () => {
         contextField: 'Justificativa',
       };
 
-      const result = await service.sendMessage(dto, mockEtpId, mockUserId);
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toBeDefined();
       expect(result.id).toBe('new-msg-id');
@@ -104,7 +111,7 @@ describe('ChatService', () => {
       expect(result.metadata.latencyMs).toBeGreaterThanOrEqual(0);
       expect(etpRepository.findOne).toHaveBeenCalledWith({
         where: { id: mockEtpId },
-        select: ['id', 'title', 'objeto'],
+        select: ['id', 'title', 'objeto', 'organizationId'],
       });
       expect(chatMessageRepository.save).toHaveBeenCalledTimes(2); // user + assistant
     });
@@ -115,8 +122,24 @@ describe('ChatService', () => {
       const dto: SendMessageDto = { message: 'Test message' };
 
       await expect(
-        service.sendMessage(dto, 'non-existent', mockUserId),
+        service.sendMessage(
+          dto,
+          'non-existent',
+          mockUserId,
+          mockOrganizationId,
+        ),
       ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when user organization does not own ETP', async () => {
+      const otherOrgEtp = { ...mockEtp, organizationId: 'other-org' };
+      etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
+
+      const dto: SendMessageDto = { message: 'Test message' };
+
+      await expect(
+        service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should save user message with contextField metadata', async () => {
@@ -125,7 +148,7 @@ describe('ChatService', () => {
         contextField: 'Estimativa de Custos',
       };
 
-      await service.sendMessage(dto, mockEtpId, mockUserId);
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
 
       expect(chatMessageRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -141,7 +164,7 @@ describe('ChatService', () => {
     it('should save user message without metadata when no contextField', async () => {
       const dto: SendMessageDto = { message: 'Pergunta generica' };
 
-      await service.sendMessage(dto, mockEtpId, mockUserId);
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
 
       expect(chatMessageRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -159,7 +182,12 @@ describe('ChatService', () => {
         message: 'Qual legislacao se aplica a este caso?',
       };
 
-      const result = await service.sendMessage(dto, mockEtpId, mockUserId);
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result.content).toContain('Lei 14.133/2021');
     });
@@ -169,7 +197,12 @@ describe('ChatService', () => {
         message: 'Como pesquisar precos para esta contratacao?',
       };
 
-      const result = await service.sendMessage(dto, mockEtpId, mockUserId);
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result.content).toContain('precos');
     });
@@ -179,7 +212,12 @@ describe('ChatService', () => {
         message: 'Olá, como funciona?',
       };
 
-      const result = await service.sendMessage(dto, mockEtpId, mockUserId);
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result.content).toContain('funcionalidade');
       expect(result.content).toContain('desenvolvimento');
@@ -193,7 +231,11 @@ describe('ChatService', () => {
         mockAssistantMessage,
       ]);
 
-      const result = await service.getHistory(mockEtpId, mockUserId);
+      const result = await service.getHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toHaveLength(2);
       expect(result[0].role).toBe('user');
@@ -205,10 +247,30 @@ describe('ChatService', () => {
       });
     });
 
+    it('should validate ETP access before returning history', async () => {
+      chatMessageRepository.find.mockResolvedValue([mockUserMessage]);
+
+      await service.getHistory(mockEtpId, mockUserId, mockOrganizationId);
+
+      expect(etpRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockEtpId },
+        select: ['id', 'title', 'objeto', 'organizationId'],
+      });
+    });
+
+    it('should throw ForbiddenException when user organization does not own ETP', async () => {
+      const otherOrgEtp = { ...mockEtp, organizationId: 'other-org' };
+      etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
+
+      await expect(
+        service.getHistory(mockEtpId, mockUserId, mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
     it('should respect limit parameter', async () => {
       chatMessageRepository.find.mockResolvedValue([mockUserMessage]);
 
-      await service.getHistory(mockEtpId, mockUserId, 10);
+      await service.getHistory(mockEtpId, mockUserId, mockOrganizationId, 10);
 
       expect(chatMessageRepository.find).toHaveBeenCalledWith(
         expect.objectContaining({ take: 10 }),
@@ -218,7 +280,7 @@ describe('ChatService', () => {
     it('should cap limit at 100', async () => {
       chatMessageRepository.find.mockResolvedValue([]);
 
-      await service.getHistory(mockEtpId, mockUserId, 200);
+      await service.getHistory(mockEtpId, mockUserId, mockOrganizationId, 200);
 
       expect(chatMessageRepository.find).toHaveBeenCalledWith(
         expect.objectContaining({ take: 100 }),
@@ -228,7 +290,11 @@ describe('ChatService', () => {
     it('should return empty array when no messages', async () => {
       chatMessageRepository.find.mockResolvedValue([]);
 
-      const result = await service.getHistory(mockEtpId, mockUserId);
+      const result = await service.getHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toHaveLength(0);
     });
@@ -239,7 +305,11 @@ describe('ChatService', () => {
         { ...mockUserMessage, createdAt },
       ]);
 
-      const result = await service.getHistory(mockEtpId, mockUserId);
+      const result = await service.getHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result[0]).toEqual({
         id: mockUserMessage.id,
@@ -254,7 +324,11 @@ describe('ChatService', () => {
     it('should delete all messages for ETP and user', async () => {
       chatMessageRepository.delete.mockResolvedValue({ affected: 5, raw: {} });
 
-      const result = await service.clearHistory(mockEtpId, mockUserId);
+      const result = await service.clearHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toBe(5);
       expect(chatMessageRepository.delete).toHaveBeenCalledWith({
@@ -263,10 +337,34 @@ describe('ChatService', () => {
       });
     });
 
+    it('should validate ETP access before clearing history', async () => {
+      chatMessageRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
+
+      await service.clearHistory(mockEtpId, mockUserId, mockOrganizationId);
+
+      expect(etpRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockEtpId },
+        select: ['id', 'title', 'objeto', 'organizationId'],
+      });
+    });
+
+    it('should throw ForbiddenException when user organization does not own ETP', async () => {
+      const otherOrgEtp = { ...mockEtp, organizationId: 'other-org' };
+      etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
+
+      await expect(
+        service.clearHistory(mockEtpId, mockUserId, mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
     it('should return 0 when no messages to delete', async () => {
       chatMessageRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
 
-      const result = await service.clearHistory(mockEtpId, mockUserId);
+      const result = await service.clearHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toBe(0);
     });
@@ -274,7 +372,11 @@ describe('ChatService', () => {
     it('should return 0 when affected is undefined', async () => {
       chatMessageRepository.delete.mockResolvedValue({ raw: {} } as any);
 
-      const result = await service.clearHistory(mockEtpId, mockUserId);
+      const result = await service.clearHistory(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       expect(result).toBe(0);
     });

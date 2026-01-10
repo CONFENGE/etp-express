@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -18,10 +23,14 @@ import { SendMessageDto, ChatResponseDto, ChatHistoryItemDto } from './dto';
  * - Retrieving chat history for an ETP
  * - Clearing conversation history
  *
+ * Security:
+ * - All operations verify that the user's organization owns the ETP
+ * - Users can only access their own chat history within their organization
+ *
  * Note: AI integration will be implemented in issue #1394 (CHAT-1167c).
  * This service currently provides the message persistence layer.
  *
- * Issue #1392 - [CHAT-1167a] Create ChatMessage entity and backend module structure
+ * Issue #1393 - [CHAT-1167b] Implement chat API endpoints with rate limiting
  * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
  */
 @Injectable()
@@ -44,24 +53,21 @@ export class ChatService {
    * @param dto - Message content and optional context
    * @param etpId - ETP being edited
    * @param userId - User sending the message
+   * @param organizationId - User's organization ID for authorization
    * @returns ChatResponseDto with assistant response
+   * @throws NotFoundException if ETP doesn't exist
+   * @throws ForbiddenException if user's organization doesn't own the ETP
    */
   async sendMessage(
     dto: SendMessageDto,
     etpId: string,
     userId: string,
+    organizationId: string,
   ): Promise<ChatResponseDto> {
     const startTime = Date.now();
 
-    // Verify ETP exists and user has access
-    const etp = await this.etpRepository.findOne({
-      where: { id: etpId },
-      select: ['id', 'title', 'objeto'],
-    });
-
-    if (!etp) {
-      throw new NotFoundException(`ETP com ID ${etpId} nao encontrado`);
-    }
+    // Verify ETP exists and user's organization has access
+    await this.validateEtpAccess(etpId, organizationId);
 
     // Save user message
     const userMessage = this.chatMessageRepository.create({
@@ -114,14 +120,21 @@ export class ChatService {
    *
    * @param etpId - ETP ID
    * @param userId - User ID
+   * @param organizationId - User's organization ID for authorization
    * @param limit - Maximum number of messages to return (default: 50)
    * @returns Array of chat history items ordered by creation time
+   * @throws NotFoundException if ETP doesn't exist
+   * @throws ForbiddenException if user's organization doesn't own the ETP
    */
   async getHistory(
     etpId: string,
     userId: string,
+    organizationId: string,
     limit: number = 50,
   ): Promise<ChatHistoryItemDto[]> {
+    // Verify ETP exists and user's organization has access
+    await this.validateEtpAccess(etpId, organizationId);
+
     const messages = await this.chatMessageRepository.find({
       where: { etpId, userId },
       order: { createdAt: 'ASC' },
@@ -141,9 +154,19 @@ export class ChatService {
    *
    * @param etpId - ETP ID
    * @param userId - User ID
+   * @param organizationId - User's organization ID for authorization
    * @returns Number of messages deleted
+   * @throws NotFoundException if ETP doesn't exist
+   * @throws ForbiddenException if user's organization doesn't own the ETP
    */
-  async clearHistory(etpId: string, userId: string): Promise<number> {
+  async clearHistory(
+    etpId: string,
+    userId: string,
+    organizationId: string,
+  ): Promise<number> {
+    // Verify ETP exists and user's organization has access
+    await this.validateEtpAccess(etpId, organizationId);
+
     const result = await this.chatMessageRepository.delete({ etpId, userId });
     const deletedCount = result.affected || 0;
 
@@ -178,6 +201,41 @@ export class ChatService {
     }
 
     return queryBuilder.getCount();
+  }
+
+  /**
+   * Validates that the user's organization has access to the ETP.
+   *
+   * @param etpId - ETP ID to validate
+   * @param organizationId - User's organization ID
+   * @returns The validated ETP entity
+   * @throws NotFoundException if ETP doesn't exist
+   * @throws ForbiddenException if user's organization doesn't own the ETP
+   */
+  private async validateEtpAccess(
+    etpId: string,
+    organizationId: string,
+  ): Promise<Etp> {
+    const etp = await this.etpRepository.findOne({
+      where: { id: etpId },
+      select: ['id', 'title', 'objeto', 'organizationId'],
+    });
+
+    if (!etp) {
+      throw new NotFoundException(`ETP com ID ${etpId} nao encontrado`);
+    }
+
+    // Multi-Tenancy: Validate organizationId
+    if (etp.organizationId !== organizationId) {
+      this.logger.warn(
+        `IDOR attempt: Organization ${organizationId} attempted to access chat for ETP ${etpId} from organization ${etp.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Voce nao tem permissao para acessar o chat deste ETP',
+      );
+    }
+
+    return etp;
   }
 
   /**
