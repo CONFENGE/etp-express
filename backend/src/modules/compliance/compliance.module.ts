@@ -5,6 +5,7 @@ import { ComplianceChecklistItem } from '../../entities/compliance-checklist-ite
 import { Etp } from '../../entities/etp.entity';
 import { ComplianceValidationService } from './compliance-validation.service';
 import { ComplianceChecklistSeeder } from './compliance-checklist.seeder';
+import { ComplianceController } from './compliance.controller';
 
 /**
  * Modulo de Conformidade TCU/TCE.
@@ -14,6 +15,7 @@ import { ComplianceChecklistSeeder } from './compliance-checklist.seeder';
  *
  * Issue #1383 - [TCU-1163b] Criar entity ComplianceChecklist e service de validacao
  * Issue #1384 - [TCU-1163c] Seed checklist de conformidade TCU por tipo de ETP
+ * Issue #1385 - [TCU-1163d] Criar endpoints REST para validacao de conformidade
  * Parent: #1163 - [Conformidade] Templates baseados em modelos TCU/TCES
  *
  * Componentes:
@@ -21,9 +23,9 @@ import { ComplianceChecklistSeeder } from './compliance-checklist.seeder';
  * - ComplianceChecklistItem: Entity para itens individuais
  * - ComplianceValidationService: Service para validacao de ETPs
  * - ComplianceChecklistSeeder: Auto-seed de checklists TCU no bootstrap
+ * - ComplianceController: Endpoints REST para validacao
  *
  * Proximas issues que dependem deste modulo:
- * - #1385: Criar endpoints REST para validacao de conformidade
  * - #1386: Componente indicador de conformidade no ETP Editor
  */
 @Module({
@@ -34,6 +36,7 @@ import { ComplianceChecklistSeeder } from './compliance-checklist.seeder';
       Etp,
     ]),
   ],
+  controllers: [ComplianceController],
   providers: [ComplianceValidationService, ComplianceChecklistSeeder],
   exports: [ComplianceValidationService],
 })
