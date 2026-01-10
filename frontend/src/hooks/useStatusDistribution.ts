@@ -29,6 +29,8 @@ export interface StatusDistributionItem {
 export type StatusDistributionData = StatusDistributionItem[];
 
 interface UseStatusDistributionOptions {
+  /** Number of days for the calculation period (default: 0 = all time) (#1366) */
+  periodDays?: number;
   /** Whether to fetch automatically on mount */
   autoFetch?: boolean;
 }
@@ -41,13 +43,14 @@ interface UseStatusDistributionReturn {
   /** Error message if any */
   error: string | null;
   /** Fetch/refresh the distribution data */
-  fetch: () => Promise<void>;
+  fetch: (periodDays?: number) => Promise<void>;
 }
 
 /**
  * Hook to fetch ETP status distribution metric.
  *
  * Part of the advanced metrics feature (Issue #1365).
+ * Updated in Issue #1366 to support period filtering.
  * Fetches the distribution of ETPs by status for donut chart visualization.
  *
  * @param options - Configuration options
@@ -55,7 +58,7 @@ interface UseStatusDistributionReturn {
  *
  * @example
  * ```tsx
- * const { data, isLoading, error, fetch } = useStatusDistribution();
+ * const { data, isLoading, error, fetch } = useStatusDistribution({ periodDays: 30 });
  *
  * if (data) {
  *   console.log(`Total statuses: ${data.length}`);
@@ -68,29 +71,35 @@ interface UseStatusDistributionReturn {
 export function useStatusDistribution(
   options: UseStatusDistributionOptions = {},
 ): UseStatusDistributionReturn {
-  const { autoFetch = true } = options;
+  const { periodDays = 0, autoFetch = true } = options;
 
   const [data, setData] = useState<StatusDistributionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const fetch = useCallback(
+    async (days?: number) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const response = await apiHelpers.get<{ data: StatusDistributionData }>(
-        '/etps/metrics/distribution-by-status',
-      );
-      setData(response.data);
-    } catch (err) {
-      setError(
-        getContextualErrorMessage('carregar', 'distribuicao por status', err),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        const queryPeriod = days ?? periodDays;
+        // Build query string - only add periodDays if > 0 (#1366)
+        const queryParams = queryPeriod > 0 ? `?periodDays=${queryPeriod}` : '';
+        const response = await apiHelpers.get<{ data: StatusDistributionData }>(
+          `/etps/metrics/distribution-by-status${queryParams}`,
+        );
+        setData(response.data);
+      } catch (err) {
+        setError(
+          getContextualErrorMessage('carregar', 'distribuicao por status', err),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [periodDays],
+  );
 
   useEffect(() => {
     if (autoFetch) {

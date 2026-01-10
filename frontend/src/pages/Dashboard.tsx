@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -26,6 +26,7 @@ import {
   SuccessRateCard,
   AvgCompletionTimeCard,
   StatusDistributionChart,
+  PeriodFilter,
 } from '@/components/metrics';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
@@ -33,17 +34,35 @@ import { formatDate } from '@/lib/utils';
 export function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Period filter state (#1366)
+  const [periodDays, setPeriodDays] = useState(30);
+
+  // Stable callback to prevent re-renders
+  const handlePeriodChange = useCallback((days: number) => {
+    setPeriodDays(days);
+  }, []);
+
   // useETPs hook auto-fetches when etps.length === 0, no manual fetch needed (#983)
   const { etps, isLoading } = useETPs();
-  // Success rate metric (#1363)
-  const { data: successRateData, isLoading: isLoadingSuccessRate } =
-    useSuccessRate({ periodDays: 30 });
-  // Average completion time metric (#1364)
-  const { data: avgCompletionTimeData, isLoading: isLoadingAvgTime } =
-    useAvgCompletionTime();
-  // Status distribution metric (#1365)
-  const { data: statusDistributionData, isLoading: isLoadingDistribution } =
-    useStatusDistribution();
+
+  // Success rate metric (#1363) - now uses periodDays filter (#1366)
+  const {
+    data: successRateData,
+    isLoading: isLoadingSuccessRate,
+  } = useSuccessRate({ periodDays, autoFetch: true });
+
+  // Average completion time metric (#1364) - now uses periodDays filter (#1366)
+  const {
+    data: avgCompletionTimeData,
+    isLoading: isLoadingAvgTime,
+  } = useAvgCompletionTime({ periodDays, autoFetch: true });
+
+  // Status distribution metric (#1365) - now uses periodDays filter (#1366)
+  const {
+    data: statusDistributionData,
+    isLoading: isLoadingDistribution,
+  } = useStatusDistribution({ periodDays, autoFetch: true });
 
   const stats = useMemo(() => {
     return etps.reduce(
@@ -70,7 +89,7 @@ export function Dashboard() {
               Bem-vindo, {user?.name}!
             </h1>
             <p className="text-muted-foreground">
-              Gerencie seus Estudos Técnicos Preliminares
+              Gerencie seus Estudos Tecnicos Preliminares
             </p>
           </div>
 
@@ -80,7 +99,7 @@ export function Dashboard() {
                 <EmptyState
                   type="welcome"
                   title="Crie seu primeiro ETP"
-                  description="Crie Estudos Técnicos Preliminares estruturados e em conformidade com a Lei 14.133/2021."
+                  description="Crie Estudos Tecnicos Preliminares estruturados e em conformidade com a Lei 14.133/2021."
                   size="lg"
                 />
 
@@ -112,7 +131,7 @@ export function Dashboard() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  Todas as seções exigidas pela legislação organizadas de forma
+                  Todas as secoes exigidas pela legislacao organizadas de forma
                   clara.
                 </p>
               </CardContent>
@@ -121,12 +140,12 @@ export function Dashboard() {
             <Card className="bg-muted/30">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Sugestões contextuais
+                  Sugestoes contextuais
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  Receba sugestões para cada seção do seu ETP.
+                  Receba sugestoes para cada secao do seu ETP.
                 </p>
               </CardContent>
             </Card>
@@ -134,7 +153,7 @@ export function Dashboard() {
             <Card className="bg-muted/30">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Exportação fácil
+                  Exportacao facil
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -154,13 +173,22 @@ export function Dashboard() {
     <MainLayout>
       <WelcomeModal />
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Bem-vindo, {user?.name}!
-          </h1>
-          <p className="text-muted-foreground">
-            Gerencie seus Estudos Técnicos Preliminares
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Bem-vindo, {user?.name}!
+            </h1>
+            <p className="text-muted-foreground">
+              Gerencie seus Estudos Tecnicos Preliminares
+            </p>
+          </div>
+
+          {/* Period Filter (#1366) */}
+          <PeriodFilter
+            onPeriodChange={handlePeriodChange}
+            defaultPeriod={30}
+            className="self-start sm:self-auto"
+          />
         </div>
 
         {/* Onboarding Checklist for new users */}
