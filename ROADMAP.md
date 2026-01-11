@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 686/746 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 687/746 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1417 | Feature  | Implement Atas de Registro de Preços search with price extraction (#1413) ✅ |
 | 2026-01-11 | #1411 | Feature  | Add PesquisaPrecos entity and module (#1255) ✅ - **M11 started** |
 | 2026-01-11 | #1410 | Feature  | Add TR export to PDF/DOCX with official formatting (#1252) ✅ - **M10 COMPLETE** |
 | 2026-01-11 | #1409 | Feature  | Implement TR Editor frontend (#1251) ✅ - M10 progress 4/6        |
@@ -297,7 +298,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) - 2/7 IN PROGRESS
+#### M11: Pesquisa de Preços Formal (#1254-#1260) - 3/7 IN PROGRESS
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 
@@ -307,6 +308,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 |       | ↳ #1255 Entity PesquisaPrecos com metodologia | ✅     |
 |       | ↳ #1256 Coleta automática multi-fonte         | 🔄     |
 |       |   ↳ #1412 Integrar PriceAggregation           | ✅     |
+|       |   ↳ #1413 Busca em Atas de Registro de Preços | ✅     |
 |       | ↳ #1257 Mapa comparativo de preços            | 🔴     |
 |       | ↳ #1258 Justificativa automática metodologia  | 🔴     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
@@ -370,14 +372,14 @@ Oportunidades de mercado identificadas.
 | ----------------- | ----- |
 | Issues Totais     | 746   |
 | Issues Abertas    | 60    |
-| Issues Fechadas   | 686   |
+| Issues Fechadas   | 687   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2924  |
+| Backend Tests     | 2935  |
 | Frontend Tests    | 2013  |
-| Total Tests       | 4937  |
+| Total Tests       | 4948  |
 
 ---
 
