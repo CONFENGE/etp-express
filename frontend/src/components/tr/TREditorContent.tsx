@@ -43,7 +43,7 @@ export const TREditorContent = memo(function TREditorContent({
               type="number"
               step="0.01"
               min="0"
-              value={value as number || ''}
+              value={(value as number) || ''}
               onChange={(e) =>
                 onFieldChange('valorEstimado', parseFloat(e.target.value) || 0)
               }

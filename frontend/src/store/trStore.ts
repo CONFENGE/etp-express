@@ -60,9 +60,8 @@ export const useTRStore = create<TRState>((set, _get) => ({
   fetchTRs: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiHelpers.get<TermoReferencia[]>(
-        '/termo-referencia',
-      );
+      const response =
+        await apiHelpers.get<TermoReferencia[]>('/termo-referencia');
       set({ trs: response, isLoading: false });
     } catch (error) {
       set({

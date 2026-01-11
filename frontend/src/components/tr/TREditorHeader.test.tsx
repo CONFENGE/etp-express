@@ -52,7 +52,10 @@ describe('TREditorHeader', () => {
 
   it('should render different status badges', () => {
     const { rerender } = renderWithRouter(
-      <TREditorHeader {...defaultProps} status={TermoReferenciaStatus.REVIEW} />,
+      <TREditorHeader
+        {...defaultProps}
+        status={TermoReferenciaStatus.REVIEW}
+      />,
     );
 
     expect(screen.getByText('Em Revisao')).toBeInTheDocument();

@@ -135,8 +135,9 @@ export interface CreateTermoReferenciaDto {
 /**
  * DTO for updating a TR
  */
-export interface UpdateTermoReferenciaDto
-  extends Partial<Omit<CreateTermoReferenciaDto, 'etpId'>> {
+export interface UpdateTermoReferenciaDto extends Partial<
+  Omit<CreateTermoReferenciaDto, 'etpId'>
+> {
   status?: TermoReferenciaStatus;
 }
 
@@ -177,13 +178,15 @@ export const TR_SECTION_TEMPLATES: TRSectionTemplate[] = [
     description: 'Definicao do objeto da contratacao',
     field: 'objeto',
     isRequired: true,
-    placeholder: 'Descreva de forma clara e precisa o objeto a ser contratado...',
+    placeholder:
+      'Descreva de forma clara e precisa o objeto a ser contratado...',
   },
   {
     number: 2,
     title: 'Fundamentacao Legal',
     shortTitle: 'Legal',
-    description: 'Referencias aos dispositivos legais que embasam a contratacao',
+    description:
+      'Referencias aos dispositivos legais que embasam a contratacao',
     field: 'fundamentacaoLegal',
     isRequired: false,
     placeholder: 'Ex: Lei 14.133/2021, art. 75, inciso II...',
