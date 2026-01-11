@@ -25,6 +25,7 @@ import {
   GovApiHealthStatus,
   ContractSearchFilters,
   GovApiContract,
+  GovApiPriceReference,
 } from '../interfaces/gov-api.interface';
 import { GovApiClient, createGovApiClient } from '../utils/gov-api-client';
 import { GovApiCache } from '../utils/gov-api-cache';
@@ -32,10 +33,12 @@ import {
   PncpContratacao,
   PncpContrato,
   PncpAta,
+  PncpAtaItem,
   PncpPaginatedResponse,
   PncpContratacaoSearchParams,
   PncpContratoSearchParams,
   PncpAtaSearchParams,
+  PncpAtaRegistroPrecoSearchParams,
   PNCP_MODALIDADE_NAMES,
 } from './pncp.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
@@ -365,6 +368,410 @@ export class PncpService implements IGovApiService {
     await this.cache.set(this.source, cacheKey, response);
 
     return response;
+  }
+
+  /**
+   * Search for Atas de Registro de Preços with price extraction
+   *
+   * This method searches for valid Atas (Sistema de Registro de Preços) and extracts
+   * unit prices from their items, normalizing them to GovApiPriceReference format
+   * for use in price research.
+   *
+   * @param params Search parameters with extended filters
+   * @returns Response with price references extracted from Atas
+   *
+   * @example
+   * ```typescript
+   * const prices = await pncpService.searchAtasRegistroPreco({
+   *   dataInicial: '20240101',
+   *   dataFinal: '20241231',
+   *   ufOrgao: 'DF',
+   *   apenasVigentes: true,
+   * });
+   * ```
+   */
+  async searchAtasRegistroPreco(
+    params: PncpAtaRegistroPrecoSearchParams,
+  ): Promise<GovApiResponse<GovApiPriceReference[]>> {
+    const cacheKey = this.buildCacheKey(
+      'atas-registro-preco',
+      '',
+      params as unknown as Record<string, unknown>,
+    );
+
+    // Try cache first (24h TTL for atas)
+    const cached = await this.cache.get<GovApiResponse<GovApiPriceReference[]>>(
+      this.source,
+      cacheKey,
+    );
+    if (cached) {
+      return {
+        ...cached,
+        cached: true,
+        status: cached.status || SearchStatus.SUCCESS,
+      };
+    }
+
+    // Check circuit breaker before making request
+    if (!this.client.isAvailable()) {
+      this.logger.warn(
+        'Circuit breaker is open, returning SERVICE_UNAVAILABLE response for Atas search',
+      );
+      return this.createAtasServiceUnavailableResponse(
+        'Circuit breaker is open',
+      );
+    }
+
+    // Build search params
+    const searchParams: Record<string, unknown> = {
+      dataInicial: params.dataInicial,
+      dataFinal: params.dataFinal,
+      pagina: params.pagina || 1,
+      tamanhoPagina: params.tamanhoPagina || MAX_PAGE_SIZE,
+    };
+
+    if (params.cnpjOrgao) {
+      searchParams.cnpjOrgao = params.cnpjOrgao;
+    }
+
+    try {
+      // 1. Fetch atas list
+      const atasResponse = await this.client.get<
+        PncpPaginatedResponse<PncpAta>
+      >('/v1/atas', { params: searchParams });
+
+      this.logger.debug(
+        `Found ${atasResponse.totalRegistros} atas, processing ${atasResponse.data.length} from page ${atasResponse.numeroPagina}`,
+      );
+
+      // 2. Filter by vigência if requested
+      let filteredAtas = atasResponse.data;
+      if (params.apenasVigentes) {
+        const today = new Date();
+        filteredAtas = atasResponse.data.filter((ata) => {
+          const vigenciaFim = new Date(ata.dataVigenciaFim);
+          return vigenciaFim >= today;
+        });
+        this.logger.debug(
+          `Filtered to ${filteredAtas.length} vigent atas (${atasResponse.data.length - filteredAtas.length} expired)`,
+        );
+      }
+
+      // 3. Filter by UF if specified
+      if (params.ufOrgao) {
+        filteredAtas = filteredAtas.filter(
+          (ata) => ata.unidadeOrgao?.ufSigla === params.ufOrgao,
+        );
+        this.logger.debug(
+          `Filtered to ${filteredAtas.length} atas from UF ${params.ufOrgao}`,
+        );
+      }
+
+      // 4. Fetch items for each ata and normalize to price references
+      const priceReferences: GovApiPriceReference[] = [];
+
+      for (const ata of filteredAtas) {
+        try {
+          const items = await this.fetchAtaItems(ata);
+          const normalizedPrices = this.normalizeAtaItemsToPriceReferences(
+            ata,
+            items,
+          );
+          priceReferences.push(...normalizedPrices);
+        } catch (error) {
+          // Log but continue with other atas
+          this.logger.warn(
+            `Failed to fetch items for ata ${ata.numeroControlePNCP}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      }
+
+      this.logger.log(
+        `Extracted ${priceReferences.length} price references from ${filteredAtas.length} atas`,
+      );
+
+      const result: GovApiResponse<GovApiPriceReference[]> = {
+        data: priceReferences,
+        total: priceReferences.length,
+        page: atasResponse.numeroPagina,
+        perPage: searchParams.tamanhoPagina as number,
+        source: this.source,
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+        statusMessage: getStatusMessage(SearchStatus.SUCCESS),
+      };
+
+      // Cache with 24h TTL (configured in GovApiCache)
+      await this.cache.set(this.source, cacheKey, result);
+
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Search Atas Registro de Preço failed: ${errorMessage}`,
+      );
+
+      const isTimeout =
+        errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
+      const isRateLimited =
+        errorMessage.includes('429') || errorMessage.includes('rate limit');
+
+      if (isTimeout) {
+        return this.createAtasTimeoutResponse(errorMessage);
+      }
+      if (isRateLimited) {
+        return this.createAtasRateLimitedResponse(errorMessage);
+      }
+
+      return this.createAtasServiceUnavailableResponse(errorMessage);
+    }
+  }
+
+  /**
+   * Fetch items for a specific Ata
+   *
+   * @param ata The ata to fetch items for
+   * @returns Array of ata items
+   */
+  private async fetchAtaItems(ata: PncpAta): Promise<PncpAtaItem[]> {
+    const cacheKey = `ata-items:${ata.numeroControlePNCP}`;
+
+    // Check cache
+    const cached = await this.cache.get<PncpAtaItem[]>(this.source, cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      // Parse control number to build URL
+      // Format: CNPJ-TIPO-SEQUENCIAL/ANO
+      const match = ata.numeroControlePNCP.match(
+        /^(\d{14})-(\d)-(\d{6})\/(\d{4})$/,
+      );
+      if (!match) {
+        this.logger.warn(
+          `Invalid ata control number format: ${ata.numeroControlePNCP}`,
+        );
+        return [];
+      }
+
+      const [, cnpj, , sequencial, ano] = match;
+
+      // Fetch ata items from PNCP API
+      // Endpoint: /v1/orgaos/{cnpj}/atas/{ano}/{sequencial}/itens
+      const itemsResponse = await this.client.get<{ itens: PncpAtaItem[] }>(
+        `/v1/orgaos/${cnpj}/atas/${ano}/${sequencial}/itens`,
+      );
+
+      const items = itemsResponse.itens || [];
+
+      // Cache items
+      await this.cache.set(this.source, cacheKey, items);
+
+      return items;
+    } catch (error) {
+      // If API doesn't support items endpoint or returns error, return empty
+      this.logger.debug(
+        `Could not fetch items for ata ${ata.numeroControlePNCP}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return [];
+    }
+  }
+
+  /**
+   * Normalize ata items to GovApiPriceReference format
+   *
+   * @param ata The source ata
+   * @param items Items from the ata
+   * @returns Array of normalized price references
+   */
+  private normalizeAtaItemsToPriceReferences(
+    ata: PncpAta,
+    items: PncpAtaItem[],
+  ): GovApiPriceReference[] {
+    const priceRefs: GovApiPriceReference[] = [];
+
+    for (const item of items) {
+      // Skip items without valid price
+      if (!item.valorUnitario || item.valorUnitario <= 0) {
+        continue;
+      }
+
+      const reference: GovApiPriceReference = {
+        id: `${ata.numeroControlePNCP}-item-${item.numeroItem}`,
+        title: this.truncate(item.descricao, 200),
+        description: this.buildAtaItemDescription(ata, item),
+        source: this.source,
+        url: `https://pncp.gov.br/app/atas/${ata.numeroControlePNCP}`,
+        relevance: 1.0,
+        fetchedAt: new Date(),
+        codigo: `ARP-${ata.anoAta}-${ata.sequencialAta}-${item.numeroItem}`,
+        descricao: item.descricao,
+        unidade: item.unidadeMedida || 'UN',
+        precoUnitario: item.valorUnitario,
+        mesReferencia: this.extractMonthReference(ata.dataVigenciaInicio),
+        uf: ata.unidadeOrgao?.ufSigla || 'BR',
+        desonerado: false,
+        categoria: 'ata_registro_preco',
+        metadata: {
+          numeroAta: ata.numeroAta,
+          anoAta: ata.anoAta,
+          orgaoGerenciador: ata.orgaoEntidade?.razaoSocial,
+          cnpjOrgao: ata.orgaoEntidade?.cnpj,
+          vigenciaInicio: ata.dataVigenciaInicio,
+          vigenciaFim: ata.dataVigenciaFim,
+          fornecedor: item.fornecedor?.nomeRazaoSocial,
+          cnpjFornecedor: item.fornecedor?.cpfCnpj,
+          marca: item.marca,
+          modelo: item.modelo,
+          objetoContratacao: ata.contratacao?.objetoCompra,
+        },
+      };
+
+      priceRefs.push(reference);
+    }
+
+    return priceRefs;
+  }
+
+  /**
+   * Build description for an ata item
+   */
+  private buildAtaItemDescription(ata: PncpAta, item: PncpAtaItem): string {
+    const parts: string[] = [];
+
+    parts.push(`Ata de Registro de Preços nº ${ata.numeroAta}/${ata.anoAta}`);
+
+    if (ata.orgaoEntidade?.razaoSocial) {
+      parts.push(`Órgão Gerenciador: ${ata.orgaoEntidade.razaoSocial}`);
+    }
+
+    if (item.fornecedor?.nomeRazaoSocial) {
+      parts.push(`Fornecedor: ${item.fornecedor.nomeRazaoSocial}`);
+    }
+
+    if (item.marca) {
+      parts.push(`Marca: ${item.marca}`);
+    }
+
+    parts.push(
+      `Vigência: ${this.formatDateBR(ata.dataVigenciaInicio)} a ${this.formatDateBR(ata.dataVigenciaFim)}`,
+    );
+
+    return parts.join(' | ');
+  }
+
+  /**
+   * Extract month reference from date string (YYYY-MM)
+   */
+  private extractMonthReference(dateStr: string): string {
+    try {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}`;
+    } catch {
+      return new Date().toISOString().slice(0, 7);
+    }
+  }
+
+  /**
+   * Format date to Brazilian format (DD/MM/YYYY)
+   */
+  private formatDateBR(dateStr: string): string {
+    try {
+      const date = new Date(dateStr);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  /**
+   * Create SERVICE_UNAVAILABLE response for Atas search
+   */
+  private createAtasServiceUnavailableResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.SERVICE_UNAVAILABLE,
+      statusMessage: getStatusMessage(SearchStatus.SERVICE_UNAVAILABLE),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create TIMEOUT response for Atas search
+   */
+  private createAtasTimeoutResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.TIMEOUT,
+      statusMessage: getStatusMessage(SearchStatus.TIMEOUT),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.TIMEOUT,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create RATE_LIMITED response for Atas search
+   */
+  private createAtasRateLimitedResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.RATE_LIMITED,
+      statusMessage: getStatusMessage(SearchStatus.RATE_LIMITED),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.RATE_LIMITED,
+          error,
+        },
+      ],
+    };
   }
 
   /**
