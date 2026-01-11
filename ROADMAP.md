@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 679/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 680/743 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1405 | Test     | Add E2E tests and documentation for chatbot (#1398) ✅ **EPIC #1167 COMPLETE** |
 | 2026-01-11 | #1404 | Feature  | Add proactive suggestions and field validation hints (#1397) ✅   |
 | 2026-01-11 | #1403 | Feature  | Integrate ChatWidget into ETP Editor (#1396) ✅                   |
 | 2026-01-11 | #1402 | Feature  | ChatWidget React components for ETP chatbot (#1395) ✅            |
@@ -114,14 +115,14 @@
 | ----- | --------------------------------------------- | ------ |
 | #1213 | [UX] Wizard de onboarding para primeiro uso   | ✅     |
 | #1214 | [Export] Preview de documento antes do export | ✅     |
-| #1167 | [Assistente] Implementar chatbot para dúvidas | 🟡     |
+| #1167 | [Assistente] Implementar chatbot para dúvidas | ✅     |
 |       | ↳ #1392 ChatMessage entity e módulo backend   | ✅     |
 |       | ↳ #1393 API endpoints com rate limiting       | ✅     |
 |       | ↳ #1394 Integração AI com contexto ETP        | ✅     |
 |       | ↳ #1395 ChatWidget componente React           | ✅     |
 |       | ↳ #1396 Integração no ETP Editor              | ✅     |
 |       | ↳ #1397 Sugestões proativas e hints           | ✅     |
-|       | ↳ #1398 Testes E2E e documentação             | 🔴     |
+|       | ↳ #1398 Testes E2E e documentação             | ✅     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | ✅     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
 |       | ↳ #1364 Métrica de tempo médio                | ✅     |
@@ -148,7 +149,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 32/33 (97%) - Epics #1158, #1161, #1163 e #1164 COMPLETAS ✅ | Restam: #1166, #1167, #1168
+**Progresso MVP Comercial:** 33/35 (94%) - Epics #1158, #1161, #1163, #1164 e #1167 COMPLETAS ✅ | Restam: #1166, #1168
 
 ---
 
@@ -203,9 +204,9 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (73)
+## Issues Abertas (72)
 
-### P1 - High Priority (9 issues)
+### P1 - High Priority (8 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
@@ -213,7 +214,6 @@ Nenhum bug P0 aberto! 🎉
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
-| #1167 | [Assistente] Implementar chatbot para dúvidas (MVP Comercial)   |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
@@ -246,7 +246,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 32/33  | 97% (3 restam) |
+| MVP Comercial          | 33/35  | 94% (2 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -347,9 +347,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 65    |
-| Issues Fechadas   | 678   |
-| Progresso         | 91%   |
+| Issues Abertas    | 64    |
+| Issues Fechadas   | 679   |
+| Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
