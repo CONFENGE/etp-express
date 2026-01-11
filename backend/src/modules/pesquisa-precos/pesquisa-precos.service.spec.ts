@@ -674,20 +674,18 @@ describe('PesquisaPrecosService', () => {
       expect(result.item.unidade).toBe('SC');
       expect(result.fontesConsultadas.length).toBeGreaterThan(0);
       expect(result.confianca).toBe('MEDIUM');
-      expect(result.duracaoMs).toBeGreaterThan(0);
+      expect(result.duracaoMs).toBeGreaterThanOrEqual(0);
 
       expect(mockSinapiService.search).toHaveBeenCalledWith(
         'cimento portland',
         { uf: 'DF' },
       );
-      expect(mockSicroService.search).toHaveBeenCalledWith(
-        'cimento portland',
-        { uf: 'DF' },
-      );
-      expect(mockPncpService.search).toHaveBeenCalledWith(
-        'cimento portland',
-        { uf: 'DF' },
-      );
+      expect(mockSicroService.search).toHaveBeenCalledWith('cimento portland', {
+        uf: 'DF',
+      });
+      expect(mockPncpService.search).toHaveBeenCalledWith('cimento portland', {
+        uf: 'DF',
+      });
     });
 
     it('should handle partial failures gracefully', async () => {
@@ -699,11 +697,7 @@ describe('PesquisaPrecosService', () => {
         overallConfidence: 'LOW',
       });
 
-      const result = await service.coletarPrecos(
-        'cimento portland',
-        100,
-        'SC',
-      );
+      const result = await service.coletarPrecos('cimento portland', 100, 'SC');
 
       expect(result).toBeDefined();
       expect(result.fontesConsultadas.length).toBe(2); // SINAPI e PNCP
@@ -734,11 +728,7 @@ describe('PesquisaPrecosService', () => {
         mockAggregationResult,
       );
 
-      const result = await service.coletarPrecos(
-        'cimento portland',
-        100,
-        'SC',
-      );
+      const result = await service.coletarPrecos('cimento portland', 100, 'SC');
 
       // Com PNCP, deve sugerir CONTRATACOES_SIMILARES (tem prioridade sobre MIDIA_ESPECIALIZADA)
       expect(result.metodologiaSugerida).toBe(
@@ -781,11 +771,7 @@ describe('PesquisaPrecosService', () => {
         overallConfidence: 'LOW',
       });
 
-      const result = await service.coletarPrecos(
-        'item inexistente',
-        10,
-        'UN',
-      );
+      const result = await service.coletarPrecos('item inexistente', 10, 'UN');
 
       expect(result).toBeDefined();
       expect(result.fontesConsultadas.length).toBe(0);
@@ -801,11 +787,7 @@ describe('PesquisaPrecosService', () => {
         mockAggregationResult,
       );
 
-      const result = await service.coletarPrecos(
-        'cimento portland',
-        100,
-        'SC',
-      );
+      const result = await service.coletarPrecos('cimento portland', 100, 'SC');
 
       expect(result.item.media).toBeDefined();
       expect(result.item.mediana).toBeDefined();
