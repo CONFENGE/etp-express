@@ -38,6 +38,7 @@ import { SemanticCacheModule } from './modules/cache/semantic-cache.module';
 import { TemplatesModule } from './modules/templates/templates.module';
 import { ComplianceModule } from './modules/compliance/compliance.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { TermoReferenciaModule } from './modules/termo-referencia/termo-referencia.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -230,6 +231,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     TemplatesModule,
     ComplianceModule,
     ChatModule,
+    TermoReferenciaModule,
     HealthModule,
   ],
   controllers: [AppController],
