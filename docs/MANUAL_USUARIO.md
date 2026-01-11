@@ -24,16 +24,21 @@
 6. [Exportação de Documentos](#6-exportação-de-documentos)
  - [Exportar para PDF](#61-exportar-para-pdf)
  - [Exportar para DOCX](#62-exportar-para-docx)
-7. [Import & Analysis](#7-import--analysis)
- - [Importando Documentos](#71-importando-documentos)
- - [Análise de Qualidade](#72-análise-de-qualidade)
- - [Convertendo para ETP](#73-convertendo-para-etp)
-8. [Gestão de Usuários](#8-gestão-de-usuários)
- - [Criando Usuários](#81-criando-usuários)
- - [Editando Usuários](#82-editando-usuários)
- - [Gerenciando Acessos](#83-gerenciando-acessos)
-9. [Perguntas Frequentes (FAQ)](#9-perguntas-frequentes-faq)
-10. [Suporte](#10-suporte)
+7. [Assistente de ETP (Chatbot)](#7-assistente-de-etp-chatbot)
+ - [Como Usar](#71-como-usar)
+ - [Exemplos de Perguntas](#72-exemplos-de-perguntas)
+ - [Sugestões Proativas](#73-sugestões-proativas)
+ - [Limites de Uso](#74-limites-de-uso)
+8. [Import & Analysis](#8-import--analysis)
+ - [Importando Documentos](#81-importando-documentos)
+ - [Análise de Qualidade](#82-análise-de-qualidade)
+ - [Convertendo para ETP](#83-convertendo-para-etp)
+9. [Gestão de Usuários](#9-gestão-de-usuários)
+ - [Criando Usuários](#91-criando-usuários)
+ - [Editando Usuários](#92-editando-usuários)
+ - [Gerenciando Acessos](#93-gerenciando-acessos)
+10. [Perguntas Frequentes (FAQ)](#10-perguntas-frequentes-faq)
+11. [Suporte](#11-suporte)
 
 ---
 
@@ -254,18 +259,91 @@ Se necessário, você pode cancelar uma exportação em andamento clicando no bo
 
 ---
 
-## 7. Import & Analysis
+## 7. Assistente de ETP (Chatbot)
+
+O ETP Express inclui um **Assistente de IA** integrado para ajudá-lo durante o preenchimento do seu ETP. O assistente está disponivel diretamente no Editor de ETP e pode responder duvidas, oferecer sugestoes e orientar sobre melhores praticas.
+
+### 7.1 Como Usar
+
+1. Abra um ETP existente ou crie um novo
+2. No canto inferior direito da tela, você verá um **botão flutuante** com icone de chat
+3. Clique no botão para abrir o painel do assistente
+4. Digite sua pergunta ou duvida no campo de texto
+5. Pressione **Enter** ou clique no botão de enviar
+6. O assistente responderá com base no contexto do seu ETP
+
+> **Dica**: O assistente conhece o conteúdo do seu ETP atual e pode fornecer respostas contextualizadas com base nas informações já preenchidas.
+
+### 7.2 Exemplos de Perguntas
+
+O assistente pode ajudar com diversas questões relacionadas ao preenchimento do ETP:
+
+**Duvidas sobre Conteúdo:**
+- "O que devo escrever na justificativa da contratação?"
+- "Como posso melhorar a descrição da solução?"
+- "Quais requisitos técnicos são recomendados para contratações de TI?"
+
+**Orientação Legal:**
+- "Qual legislação se aplica a este tipo de contratação?"
+- "Quais são as seções obrigatórias segundo a Lei 14.133/2021?"
+- "Preciso incluir critérios de sustentabilidade?"
+
+**Melhores Práticas:**
+- "Como fazer uma boa pesquisa de preços?"
+- "Quais riscos devo considerar nesta contratação?"
+- "Como justificar o parcelamento ou não do objeto?"
+
+**Sugestões de Chips:**
+
+O assistente também oferece **sugestoes rapidas** em formato de chips clicaveis. Basta clicar em uma sugestão para enviá-la automaticamente.
+
+### 7.3 Sugestões Proativas
+
+O assistente monitora seu progresso e oferece **sugestoes proativas** quando detecta oportunidades de ajuda:
+
+- **Campos Vazios**: Quando uma seção importante está vazia, o assistente pode sugerir como preenchê-la
+- **Validações**: Se detectar inconsistências ou informações faltantes, oferece orientação
+- **Dicas Contextuais**: Com base no tipo de contratação (Obras, TI, Serviços, Materiais), sugere conteúdo relevante
+
+As sugestoes proativas aparecem como **banners** na parte superior do chat, com botões para:
+- **Ajudar**: Envia automaticamente uma pergunta relacionada
+- **Ignorar**: Descarta a sugestão
+
+> **Indicador Visual**: Quando há sugestões importantes pendentes, o botão do chat exibe um indicador amarelo pulsante.
+
+### 7.4 Limites de Uso
+
+Para garantir a qualidade do serviço, existem alguns limites de uso:
+
+| Limite | Valor | Descrição |
+| ------ | ----- | --------- |
+| **Mensagens por minuto** | 30 | Máximo de 30 mensagens por minuto |
+| **Histórico** | Sessão | Mensagens são mantidas durante a sessão |
+
+**Se atingir o limite:**
+- Aguarde alguns segundos antes de enviar novas mensagens
+- Uma mensagem de aviso será exibida
+
+**Gerenciando o Histórico:**
+- Clique no icone de **lixeira** para limpar o histórico de mensagens
+- O sistema pedirá confirmação antes de apagar
+
+> **Importante**: O assistente é uma ferramenta de apoio. Sempre revise as sugestoes e adapte-as à realidade do seu órgão e da contratação específica.
+
+---
+
+## 8. Import & Analysis
 
 O módulo de **Import & Analysis** permite importar e analisar ETPs existentes.
 
-### 7.1 Importando Documentos
+### 8.1 Importando Documentos
 
 1. No menu lateral, clique em **"Import & Analysis"**
 2. Arraste um arquivo ou clique para selecionar
 3. Formatos aceitos: **PDF** ou **DOCX**
 4. Clique em **"Analisar Documento"**
 
-### 7.2 Análise de Qualidade
+### 8.2 Análise de Qualidade
 
 O sistema avalia o documento em três dimensões:
 
@@ -281,7 +359,7 @@ Resultados apresentados:
 - **Veredito**: Aprovado, Necessita Revisão ou Reprovado
 - **Issues encontradas**: Críticas, Importantes e Sugestões
 
-### 7.3 Convertendo para ETP
+### 8.3 Convertendo para ETP
 
 Após a análise, você pode converter o documento para o sistema:
 
@@ -294,11 +372,11 @@ Após a análise, você pode converter o documento para o sistema:
 
 ---
 
-## 8. Gestão de Usuários
+## 9. Gestão de Usuários
 
 > **Nota**: Esta funcionalidade está disponível apenas para usuários com perfil de **Gestor de Domínio**.
 
-### 8.1 Criando Usuários
+### 9.1 Criando Usuários
 
 1. Acesse **"Gerenciamento" > "Usuários"**
 2. Clique em **"Novo Usuário"**
@@ -310,14 +388,14 @@ Após a análise, você pode converter o documento para o sistema:
 4. Clique em **"Criar"**
 5. O usuário receberá um email com instruções de acesso
 
-### 8.2 Editando Usuários
+### 9.2 Editando Usuários
 
 1. Na lista de usuários, localize o usuário desejado
 2. Clique no ícone de **edição** (lápis)
 3. Altere os campos necessários
 4. Clique em **"Salvar"**
 
-### 8.3 Gerenciando Acessos
+### 9.3 Gerenciando Acessos
 
 **Ativar/Desativar Usuário:**
 
@@ -344,7 +422,7 @@ Cada domínio possui uma quota máxima de usuários. O indicador de quota mostra
 
 ---
 
-## 9. Perguntas Frequentes (FAQ)
+## 10. Perguntas Frequentes (FAQ)
 
 ### Acesso e Conta
 
@@ -387,6 +465,20 @@ R: Use PDF para documentos finais. Use DOCX se precisar fazer ajustes de formata
 **P: A exportação está demorando muito. É normal?**
 R: A geração pode levar alguns segundos dependendo do tamanho do documento. Se ultrapassar 1 minuto, tente novamente.
 
+### Assistente (Chatbot)
+
+**P: O assistente não responde. O que fazer?**
+R: Verifique sua conexão com a internet. Se o problema persistir, recarregue a página e tente novamente.
+
+**P: Posso confiar nas respostas do assistente?**
+R: O assistente é uma ferramenta de apoio baseada em IA. Sempre revise as sugestões e valide as informações com fontes oficiais.
+
+**P: O assistente pode ver meus dados pessoais?**
+R: O assistente tem acesso ao conteúdo do ETP que você está editando para fornecer respostas contextualizadas. Dados pessoais de cadastro não são acessados.
+
+**P: Por que aparece "limite de mensagens"?**
+R: Para garantir a qualidade do serviço, há um limite de 30 mensagens por minuto. Aguarde alguns segundos e tente novamente.
+
 ### Problemas Técnicos
 
 **P: A página não carrega corretamente.**
@@ -400,7 +492,7 @@ R: Verifique sua conexão com a internet. Se o problema persistir, tente acessar
 
 ---
 
-## 10. Suporte
+## 11. Suporte
 
 ### Canais de Atendimento
 
@@ -447,8 +539,9 @@ Ao reportar um problema, inclua:
 ## Histórico de Versões
 
 | Versão | Data | Alterações |
-| ------ | -------- | ------------------------ |
+| ------ | -------- | ----------------------------------------------- |
 | 1.0 | Jan/2026 | Versão inicial do manual |
+| 1.1 | Jan/2026 | Adição da seção Assistente de ETP (Chatbot) #1398 |
 
 ---
 
