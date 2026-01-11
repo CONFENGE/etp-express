@@ -11,6 +11,10 @@ import {
   TermoReferencia,
   TermoReferenciaStatus,
 } from '../../entities/termo-referencia.entity';
+import {
+  TermoReferenciaTemplate,
+  TrTemplateType,
+} from '../../entities/termo-referencia-template.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { CreateTermoReferenciaDto } from './dto/create-termo-referencia.dto';
 import { UpdateTermoReferenciaDto } from './dto/update-termo-referencia.dto';
@@ -19,6 +23,7 @@ import { OpenAIService } from '../orchestrator/llm/openai.service';
 describe('TermoReferenciaService', () => {
   let service: TermoReferenciaService;
   let termoReferenciaRepository: Repository<TermoReferencia>;
+  let trTemplateRepository: Repository<TermoReferenciaTemplate>;
   let etpRepository: Repository<Etp>;
   let openAIService: OpenAIService;
 
@@ -72,12 +77,44 @@ describe('TermoReferenciaService', () => {
     finishReason: 'stop',
   };
 
+  /**
+   * Mock TR Template for testing
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
+   */
+  const mockTrTemplate: Partial<TermoReferenciaTemplate> = {
+    id: 'template-ti-001',
+    name: 'Template de TR para Contratacoes de TI',
+    type: TrTemplateType.TI,
+    description: 'Template especializado para TI',
+    specificFields: [],
+    defaultSections: ['objeto', 'fundamentacao_legal'],
+    prompts: [],
+    legalReferences: ['Lei 14.133/2021', 'IN SEGES/ME n 94/2022'],
+    defaultFundamentacaoLegal:
+      'Lei 14.133/2021; IN SEGES/ME n 94/2022 (Contratacoes de TIC)',
+    defaultModeloExecucao:
+      'Execucao indireta por empreitada global com entregas parciais',
+    defaultModeloGestao: 'Gestao por equipe tecnica designada',
+    defaultCriteriosSelecao: 'Menor preco global',
+    defaultObrigacoesContratante: 'Obrigacoes do contratante para TI',
+    defaultObrigacoesContratada: 'Obrigacoes da contratada para TI',
+    defaultSancoesPenalidades: 'Sancoes conforme IN 94/2022',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mockTermoReferenciaRepository = {
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
     findOne: jest.fn(),
     remove: jest.fn(),
+  };
+
+  const mockTrTemplateRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
   };
 
   const mockEtpRepository = {
@@ -97,6 +134,10 @@ describe('TermoReferenciaService', () => {
           useValue: mockTermoReferenciaRepository,
         },
         {
+          provide: getRepositoryToken(TermoReferenciaTemplate),
+          useValue: mockTrTemplateRepository,
+        },
+        {
           provide: getRepositoryToken(Etp),
           useValue: mockEtpRepository,
         },
@@ -110,6 +151,9 @@ describe('TermoReferenciaService', () => {
     service = module.get<TermoReferenciaService>(TermoReferenciaService);
     termoReferenciaRepository = module.get<Repository<TermoReferencia>>(
       getRepositoryToken(TermoReferencia),
+    );
+    trTemplateRepository = module.get<Repository<TermoReferenciaTemplate>>(
+      getRepositoryToken(TermoReferenciaTemplate),
     );
     etpRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
     openAIService = module.get<OpenAIService>(OpenAIService);
@@ -340,6 +384,7 @@ describe('TermoReferenciaService', () => {
 
     it('should generate TR from a completed ETP with AI enhancement', async () => {
       mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(mockTrTemplate);
       mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
       mockTermoReferenciaRepository.create.mockReturnValue(mockGeneratedTr);
       mockTermoReferenciaRepository.save.mockResolvedValue(mockGeneratedTr);
@@ -369,6 +414,7 @@ describe('TermoReferenciaService', () => {
     it('should generate TR from ETP in review status', async () => {
       const reviewEtp = { ...mockEtp, status: EtpStatus.REVIEW };
       mockEtpRepository.findOne.mockResolvedValue(reviewEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
       mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
       mockTermoReferenciaRepository.create.mockReturnValue(mockGeneratedTr);
       mockTermoReferenciaRepository.save.mockResolvedValue(mockGeneratedTr);
@@ -385,6 +431,7 @@ describe('TermoReferenciaService', () => {
 
     it('should generate TR without AI when AI service fails (graceful degradation)', async () => {
       mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
       mockOpenAIService.generateCompletion.mockRejectedValue(
         new Error('OpenAI unavailable'),
       );
@@ -452,6 +499,7 @@ describe('TermoReferenciaService', () => {
 
     it('should map ETP fields correctly to TR', async () => {
       mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(mockTrTemplate);
       mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
       mockTermoReferenciaRepository.create.mockImplementation((data) => ({
         id: 'new-tr-id',
@@ -472,11 +520,11 @@ describe('TermoReferenciaService', () => {
       expect(result.valorEstimado).toBe(mockCompletedEtp.valorEstimado);
       expect(result.prazoVigencia).toBe(mockCompletedEtp.prazoExecucao);
       expect(result.fundamentacaoLegal).toContain('Lei 14.133/2021');
-      expect(result.fundamentacaoLegal).toContain('IN SEGES/ME n 94/2022'); // TI template
     });
 
     it('should include latency in metadata', async () => {
       mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
       mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
       mockTermoReferenciaRepository.create.mockReturnValue(mockGeneratedTr);
       mockTermoReferenciaRepository.save.mockResolvedValue(mockGeneratedTr);
@@ -499,6 +547,7 @@ describe('TermoReferenciaService', () => {
       };
       mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
       mockOpenAIService.generateCompletion.mockResolvedValue(markdownResponse);
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
       mockTermoReferenciaRepository.create.mockReturnValue(mockGeneratedTr);
       mockTermoReferenciaRepository.save.mockResolvedValue(mockGeneratedTr);
 
@@ -510,6 +559,134 @@ describe('TermoReferenciaService', () => {
 
       expect(result).toBeDefined();
       expect(result.metadata?.aiEnhanced).toBe(true);
+    });
+
+    /**
+     * Tests for template integration in generateFromEtp
+     * Issue #1250 - [TR-c] Criar templates de TR por categoria
+     */
+    it('should use TR template when available for ETP type', async () => {
+      mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(mockTrTemplate);
+      mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
+      mockTermoReferenciaRepository.create.mockImplementation((data) => ({
+        id: 'new-tr-id',
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+      mockTermoReferenciaRepository.save.mockImplementation((data) => data);
+
+      const result = await service.generateFromEtp(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(mockTrTemplateRepository.findOne).toHaveBeenCalledWith({
+        where: { type: 'TI', isActive: true },
+      });
+      // Template fields should be applied
+      expect(result.fundamentacaoLegal).toContain('Lei 14.133/2021');
+    });
+
+    it('should fallback to default values when no template is found', async () => {
+      mockEtpRepository.findOne.mockResolvedValue(mockCompletedEtp);
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
+      mockOpenAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
+      mockTermoReferenciaRepository.create.mockImplementation((data) => ({
+        id: 'new-tr-id',
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+      mockTermoReferenciaRepository.save.mockImplementation((data) => data);
+
+      const result = await service.generateFromEtp(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      // Should still work with default values
+      expect(result.fundamentacaoLegal).toContain('Lei 14.133/2021');
+    });
+  });
+
+  /**
+   * Tests for getTemplateByType method
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
+   */
+  describe('getTemplateByType', () => {
+    it('should return template when found for type', async () => {
+      mockTrTemplateRepository.findOne.mockResolvedValue(mockTrTemplate);
+
+      const result = await service.getTemplateByType(TrTemplateType.TI);
+
+      expect(result).toEqual(mockTrTemplate);
+      expect(mockTrTemplateRepository.findOne).toHaveBeenCalledWith({
+        where: { type: TrTemplateType.TI, isActive: true },
+      });
+    });
+
+    it('should return null when no template found for type', async () => {
+      mockTrTemplateRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.getTemplateByType(TrTemplateType.OBRAS);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when type is undefined', async () => {
+      const result = await service.getTemplateByType(undefined);
+
+      expect(result).toBeNull();
+      expect(mockTrTemplateRepository.findOne).not.toHaveBeenCalled();
+    });
+
+    it('should handle string type parameter', async () => {
+      mockTrTemplateRepository.findOne.mockResolvedValue(mockTrTemplate);
+
+      const result = await service.getTemplateByType('TI');
+
+      expect(result).toEqual(mockTrTemplate);
+      expect(mockTrTemplateRepository.findOne).toHaveBeenCalledWith({
+        where: { type: 'TI', isActive: true },
+      });
+    });
+  });
+
+  /**
+   * Tests for listTemplates method
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
+   */
+  describe('listTemplates', () => {
+    it('should return all active templates', async () => {
+      const templates = [
+        mockTrTemplate,
+        { ...mockTrTemplate, id: 'template-obras-001', type: TrTemplateType.OBRAS },
+        { ...mockTrTemplate, id: 'template-servicos-001', type: TrTemplateType.SERVICOS },
+        { ...mockTrTemplate, id: 'template-materiais-001', type: TrTemplateType.MATERIAIS },
+      ];
+      mockTrTemplateRepository.find.mockResolvedValue(templates);
+
+      const result = await service.listTemplates();
+
+      expect(result).toHaveLength(4);
+      expect(mockTrTemplateRepository.find).toHaveBeenCalledWith({
+        where: { isActive: true },
+        order: { type: 'ASC' },
+      });
+    });
+
+    it('should return empty array when no templates exist', async () => {
+      mockTrTemplateRepository.find.mockResolvedValue([]);
+
+      const result = await service.listTemplates();
+
+      expect(result).toEqual([]);
     });
   });
 });

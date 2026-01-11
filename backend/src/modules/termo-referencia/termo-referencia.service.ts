@@ -11,6 +11,10 @@ import {
   TermoReferencia,
   TermoReferenciaStatus,
 } from '../../entities/termo-referencia.entity';
+import {
+  TermoReferenciaTemplate,
+  TrTemplateType,
+} from '../../entities/termo-referencia-template.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
 import {
   CreateTermoReferenciaDto,
@@ -32,6 +36,7 @@ import { OpenAIService, LLMResponse } from '../orchestrator/llm/openai.service';
  * - TR herda organizationId do ETP de origem
  *
  * Issue #1248 - [TR-a] Criar entity TermoReferencia e relacionamentos
+ * Issue #1250 - [TR-c] Criar templates de TR por categoria
  * Parent: #1247 - [TR] Modulo de Termo de Referencia - EPIC
  */
 @Injectable()
@@ -41,6 +46,8 @@ export class TermoReferenciaService {
   constructor(
     @InjectRepository(TermoReferencia)
     private readonly termoReferenciaRepository: Repository<TermoReferencia>,
+    @InjectRepository(TermoReferenciaTemplate)
+    private readonly trTemplateRepository: Repository<TermoReferenciaTemplate>,
     @InjectRepository(Etp)
     private readonly etpRepository: Repository<Etp>,
     private readonly openAIService: OpenAIService,
@@ -249,10 +256,14 @@ export class TermoReferenciaService {
       );
     }
 
-    // 4. Mapear campos do ETP para TR
-    const trData = this.mapEtpToTr(etp);
+    // 4. Buscar template especifico por tipo de contratacao
+    // Os tipos de ETP e TR template sao equivalentes (OBRAS, TI, SERVICOS, MATERIAIS)
+    const template = await this.getTemplateByType(etp.templateType);
 
-    // 5. Enriquecer textos com IA
+    // 5. Mapear campos do ETP para TR usando template
+    const trData = this.mapEtpToTr(etp, template);
+
+    // 6. Enriquecer textos com IA
     let aiResponse: LLMResponse | null = null;
     let aiEnhanced = false;
     try {
@@ -269,7 +280,7 @@ export class TermoReferenciaService {
       // Continua sem enriquecimento de IA
     }
 
-    // 6. Criar TR no banco de dados
+    // 7. Criar TR no banco de dados
     const termoReferencia = this.termoReferenciaRepository.create({
       ...trData,
       etpId,
@@ -283,10 +294,10 @@ export class TermoReferenciaService {
     const latencyMs = Date.now() - startTime;
 
     this.logger.log(
-      `TR ${saved.id} generated from ETP ${etpId} in ${latencyMs}ms (AI enhanced: ${aiEnhanced})`,
+      `TR ${saved.id} generated from ETP ${etpId} in ${latencyMs}ms (AI enhanced: ${aiEnhanced}, template: ${template?.type || 'none'})`,
     );
 
-    // 7. Montar resposta com metadados
+    // 8. Montar resposta com metadados
     return {
       id: saved.id,
       etpId: saved.etpId,
@@ -316,12 +327,126 @@ export class TermoReferenciaService {
   }
 
   /**
+   * Busca o template de TR pelo tipo de contratacao.
+   * Retorna null se nao encontrar template ativo para o tipo.
+   *
+   * @param type Tipo de contratacao (OBRAS, TI, SERVICOS, MATERIAIS)
+   * @returns Template encontrado ou null
+   *
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
+   */
+  async getTemplateByType(
+    type: TrTemplateType | string | undefined,
+  ): Promise<TermoReferenciaTemplate | null> {
+    if (!type) {
+      this.logger.debug('No template type specified, using default values');
+      return null;
+    }
+
+    // Mapear tipo de ETP para tipo de TR template
+    const trType = type as TrTemplateType;
+
+    const template = await this.trTemplateRepository.findOne({
+      where: {
+        type: trType,
+        isActive: true,
+      },
+    });
+
+    if (template) {
+      this.logger.debug(`Found TR template for type ${type}: ${template.name}`);
+    } else {
+      this.logger.debug(`No active TR template found for type ${type}`);
+    }
+
+    return template;
+  }
+
+  /**
+   * Lista todos os templates de TR ativos.
+   *
+   * @returns Lista de templates ativos
+   *
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
+   */
+  async listTemplates(): Promise<TermoReferenciaTemplate[]> {
+    return this.trTemplateRepository.find({
+      where: { isActive: true },
+      order: { type: 'ASC' },
+    });
+  }
+
+  /**
    * Mapeia campos do ETP para estrutura do TR.
-   * Realiza conversao basica sem enriquecimento de IA.
+   * Utiliza template especifico se disponivel, senao usa valores padrao.
+   *
+   * Issue #1250 - [TR-c] Criar templates de TR por categoria
    */
   private mapEtpToTr(
     etp: Etp,
+    template: TermoReferenciaTemplate | null,
   ): Partial<TermoReferencia> & { _aiResponse?: LLMResponse } {
+    // Se houver template, usar textos padrao do template
+    if (template) {
+      this.logger.debug(`Applying template ${template.name} to TR generation`);
+
+      return {
+        // Objeto - mantido do ETP
+        objeto: etp.objeto || etp.title,
+
+        // Descricao da solucao - combina descricoes do ETP
+        descricaoSolucao: this.combineTexts([
+          etp.descricaoDetalhada,
+          etp.description,
+          etp.beneficiosEsperados,
+        ]),
+
+        // Requisitos - combina requisitos tecnicos e de qualificacao
+        requisitosContratacao: this.combineTexts([
+          etp.requisitosTecnicos,
+          etp.requisitosQualificacao,
+          etp.criteriosSustentabilidade,
+        ]),
+
+        // Valores financeiros
+        valorEstimado: etp.valorEstimado,
+        dotacaoOrcamentaria: etp.dotacaoOrcamentaria,
+
+        // Prazo de vigencia (converte de prazoExecucao)
+        prazoVigencia: etp.prazoExecucao,
+
+        // Usar textos do template
+        fundamentacaoLegal:
+          template.defaultFundamentacaoLegal ||
+          this.generateFundamentacaoLegal(etp),
+        modeloExecucao:
+          template.defaultModeloExecucao || this.determineModeloExecucao(etp),
+        modeloGestao:
+          template.defaultModeloGestao || this.getDefaultModeloGestao(),
+        criteriosSelecao:
+          template.defaultCriteriosSelecao ||
+          'Menor preco global, conforme art. 33 da Lei 14.133/2021.',
+        obrigacoesContratante:
+          template.defaultObrigacoesContratante ||
+          this.getDefaultObrigacoesContratante(),
+        obrigacoesContratada:
+          template.defaultObrigacoesContratada ||
+          this.getDefaultObrigacoesContratada(),
+        sancoesPenalidades:
+          template.defaultSancoesPenalidades ||
+          this.getDefaultSancoesPenalidades(),
+
+        // Garantia contratual
+        garantiaContratual: etp.garantiaExigida,
+
+        // Especificacoes tecnicas (se houver campos dinamicos)
+        especificacoesTecnicas: etp.dynamicFields
+          ? { ...etp.dynamicFields }
+          : undefined,
+      };
+    }
+
+    // Fallback: usar valores padrao quando nao ha template
     return {
       // Objeto - mantido do ETP
       objeto: etp.objeto || etp.title,
