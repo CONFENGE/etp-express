@@ -19,9 +19,13 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
  */
 export class CreateTrTemplatesTable1768350000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create enum for TR template type
+    // Create enum for TR template type (IF NOT EXISTS for idempotency)
     await queryRunner.query(`
-      CREATE TYPE "tr_template_type_enum" AS ENUM ('OBRAS', 'TI', 'SERVICOS', 'MATERIAIS')
+      DO $$ BEGIN
+        CREATE TYPE "tr_template_type_enum" AS ENUM ('OBRAS', 'TI', 'SERVICOS', 'MATERIAIS');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
     `);
 
     // Create tr_templates table
