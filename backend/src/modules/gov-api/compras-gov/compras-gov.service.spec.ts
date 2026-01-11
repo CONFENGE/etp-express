@@ -7,7 +7,9 @@ import {
   ComprasGovLicitacaoRaw,
   ComprasGovListResponse,
   ComprasGovModalidade,
+  ComprasGovPregaoItemRaw,
 } from './compras-gov.types';
+import { SearchStatus } from '../types/search-result';
 
 // Mock GovApiClient
 jest.mock('../utils/gov-api-client', () => ({
@@ -632,6 +634,362 @@ describe('ComprasGovService', () => {
             orgao: 170001,
           }),
         }),
+      );
+    });
+  });
+
+  describe('searchPregaoItens()', () => {
+    const mockPregaoItem: ComprasGovPregaoItemRaw = {
+      numero_item: 1,
+      descricao: 'Papel A4, 75g/m², pacote 500 folhas',
+      quantidade: 10000,
+      unidade_fornecimento: 'PCT',
+      valor_unitario_homologado: 25.5,
+      valor_unitario_estimado: 30.0,
+      valor_total_homologado: 255000.0,
+      codigo_material: '123456',
+      cnpj_vencedor: '12345678000199',
+      nome_vencedor: 'Papelaria Exemplo LTDA',
+      marca: 'Chamex',
+      modelo: 'A4 75g',
+      situacao: 'Homologado',
+    };
+
+    it('should search pregão items by date range', async () => {
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(mockClient.get).toHaveBeenCalledWith(
+        '/licitacoes/v1/licitacoes.json',
+        expect.objectContaining({
+          params: expect.objectContaining({
+            modalidade: ComprasGovModalidade.PREGAO,
+            data_publicacao_min: '2024-01-01',
+            data_publicacao_max: '2024-12-31',
+          }),
+        }),
+      );
+
+      expect(result.source).toBe('comprasgov');
+    });
+
+    it('should return cached results when available', async () => {
+      const cachedResponse = {
+        data: [
+          {
+            id: 'PREGAO-12345-2024-item-1',
+            title: 'Papel A4',
+            description: 'Test',
+            source: 'comprasgov' as const,
+            relevance: 1.0,
+            fetchedAt: new Date(),
+            codigo: 'PRG-170001-12345-1',
+            descricao: 'Papel A4',
+            unidade: 'PCT',
+            precoUnitario: 25.5,
+            mesReferencia: '2024-06',
+            uf: 'DF',
+            desonerado: false,
+            categoria: 'pregao_comprasgov',
+          },
+        ],
+        total: 1,
+        page: 1,
+        perPage: 100,
+        source: 'comprasgov' as const,
+        cached: true,
+        isFallback: false,
+        timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+      };
+
+      mockCache.get.mockResolvedValue(cachedResponse);
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(mockCache.get).toHaveBeenCalled();
+      expect(mockClient.get).not.toHaveBeenCalled();
+      expect(result.cached).toBe(true);
+    });
+
+    it('should apply UF filter correctly', async () => {
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+        uf_uasg: 'DF',
+      });
+
+      expect(mockClient.get).toHaveBeenCalledWith(
+        '/licitacoes/v1/licitacoes.json',
+        expect.objectContaining({
+          params: expect.objectContaining({
+            uf_uasg: 'DF',
+          }),
+        }),
+      );
+    });
+
+    it('should return SERVICE_UNAVAILABLE when circuit breaker is open', async () => {
+      mockClient.isAvailable.mockReturnValue(false);
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(mockClient.get).not.toHaveBeenCalled();
+      expect(result.status).toBe(SearchStatus.SERVICE_UNAVAILABLE);
+      expect(result.isFallback).toBe(true);
+    });
+
+    it('should normalize pregão items to GovApiPriceReference format', async () => {
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(result.data.length).toBeGreaterThan(0);
+      const priceRef = result.data[0];
+
+      // Verify GovApiPriceReference structure
+      expect(priceRef.codigo).toContain('PRG-');
+      expect(priceRef.descricao).toBe('Papel A4, 75g/m², pacote 500 folhas');
+      expect(priceRef.unidade).toBe('PCT');
+      expect(priceRef.precoUnitario).toBe(25.5); // Homologated price
+      expect(priceRef.categoria).toBe('pregao_comprasgov');
+      expect(priceRef.source).toBe('comprasgov');
+    });
+
+    it('should include metadata in normalized price reference', async () => {
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      const priceRef = result.data[0];
+
+      // Verify metadata
+      expect(priceRef.metadata).toBeDefined();
+      expect(priceRef.metadata?.fornecedor).toBe('Papelaria Exemplo LTDA');
+      expect(priceRef.metadata?.marca).toBe('Chamex');
+      expect(priceRef.metadata?.codigoCatmat).toBe('123456');
+      expect(priceRef.metadata?.valorHomologado).toBe(25.5);
+    });
+
+    it('should skip items without valid price', async () => {
+      const itemWithoutPrice: ComprasGovPregaoItemRaw = {
+        ...mockPregaoItem,
+        valor_unitario_homologado: 0,
+        valor_unitario_estimado: 0,
+      };
+
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([itemWithoutPrice]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should filter only homologated items when apenasHomologados is true', async () => {
+      const itemWithoutHomologated: ComprasGovPregaoItemRaw = {
+        ...mockPregaoItem,
+        valor_unitario_homologado: undefined, // No homologated price
+        valor_unitario_estimado: 30.0,
+      };
+
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([itemWithoutHomologated]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+        apenasHomologados: true,
+      });
+
+      // Should be empty since item doesn't have homologated price
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should use estimated price when homologated is not available', async () => {
+      const itemWithEstimated: ComprasGovPregaoItemRaw = {
+        ...mockPregaoItem,
+        valor_unitario_homologado: undefined,
+        valor_unitario_estimado: 30.0,
+      };
+
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([itemWithEstimated]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+        apenasHomologados: false, // Allow estimated
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].precoUnitario).toBe(30.0); // Estimated price
+    });
+
+    it('should handle timeout errors', async () => {
+      mockClient.get.mockRejectedValue(new Error('Request timeout ETIMEDOUT'));
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(result.status).toBe(SearchStatus.TIMEOUT);
+      expect(result.data).toHaveLength(0);
+    });
+
+    it('should handle rate limit errors', async () => {
+      mockClient.get.mockRejectedValue(new Error('429 Too Many Requests'));
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(result.status).toBe(SearchStatus.RATE_LIMITED);
+      expect(result.data).toHaveLength(0);
+    });
+
+    it('should continue processing if one pregão items fetch fails', async () => {
+      let callCount = 0;
+      const secondPregao: ComprasGovLicitacaoRaw = {
+        ...mockLicitacao,
+        identificador: 'PREGAO-12346-2024',
+        numero_aviso: 12346,
+      };
+
+      const twoPregaoResponse: ComprasGovListResponse<ComprasGovLicitacaoRaw> =
+        {
+          ...mockApiResponse,
+          _embedded: {
+            licitacoes: [mockLicitacao, secondPregao],
+          },
+        };
+
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(twoPregaoResponse);
+        }
+        if (path.includes('/itens.json')) {
+          callCount++;
+          if (callCount === 1) {
+            // First pregão items fetch fails
+            return Promise.reject(new Error('Network error'));
+          }
+          // Second pregão items fetch succeeds
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      const result = await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      // Should have prices from second pregão only
+      expect(result.data.length).toBe(1);
+      expect(result.status).toBe(SearchStatus.SUCCESS);
+    });
+
+    it('should cache successful results', async () => {
+      mockClient.get.mockImplementation((path: string) => {
+        if (path === '/licitacoes/v1/licitacoes.json') {
+          return Promise.resolve(mockApiResponse);
+        }
+        if (path.includes('/itens.json')) {
+          return Promise.resolve([mockPregaoItem]);
+        }
+        return Promise.reject(new Error('Unknown endpoint'));
+      });
+
+      await service.searchPregaoItens({
+        data_publicacao_min: '2024-01-01',
+        data_publicacao_max: '2024-12-31',
+      });
+
+      expect(mockCache.set).toHaveBeenCalledWith(
+        'comprasgov',
+        expect.any(String),
+        expect.objectContaining({
+          data: expect.any(Array),
+          source: 'comprasgov',
+        }),
+        expect.any(Number),
       );
     });
   });
