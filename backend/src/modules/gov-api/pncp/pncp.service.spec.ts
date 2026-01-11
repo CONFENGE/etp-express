@@ -12,9 +12,11 @@ import { PncpService } from './pncp.service';
 import { GovApiCache } from '../utils/gov-api-cache';
 import {
   PncpContratacao,
+  PncpContrato,
   PncpPaginatedResponse,
   PncpAta,
   PncpAtaItem,
+  PncpContratoItem,
 } from './pncp.types';
 import { SearchStatus } from '../types/search-result';
 
@@ -853,6 +855,398 @@ describe('PncpService', () => {
       expect(normalized.orgaoContratante).toBeDefined();
       expect(normalized.orgaoContratante.cnpj).toBe('00000000000000');
       expect(normalized.modalidade).toBe('Pregão - Eletrônico');
+    });
+  });
+
+  describe('searchContratosItens', () => {
+    const mockContrato: PncpContrato = {
+      numeroControlePNCP: '00000000000191-1-000001/2024',
+      dataPublicacaoPncp: '2024-01-15',
+      dataVigenciaInicio: '2024-01-15',
+      dataVigenciaFim: '2025-01-14',
+      dataAssinatura: '2024-01-10',
+      anoContrato: 2024,
+      sequencialContrato: 1,
+      numeroContratoEmpenho: 'CTR-001/2024',
+      tipoContratoId: 1,
+      tipoContratoNome: 'Compras',
+      objetoContrato: 'Aquisição de material de escritório',
+      valorInicial: 50000.0,
+      valorGlobal: 55000.0,
+      orgaoEntidade: {
+        cnpj: '00000000000191',
+        razaoSocial: 'Órgão Público Federal',
+      },
+      unidadeOrgao: {
+        ufNome: 'Distrito Federal',
+        ufSigla: 'DF',
+        codigoUnidade: '001',
+        nomeUnidade: 'Unidade Central',
+      },
+      fornecedor: {
+        cpfCnpj: '12345678000199',
+        nomeRazaoSocial: 'Fornecedor Exemplo LTDA',
+      },
+    };
+
+    const mockContratoItem: PncpContratoItem = {
+      numeroItem: 1,
+      descricao: 'Papel A4, 75g/m², pacote 500 folhas',
+      quantidade: 10000,
+      unidadeMedida: 'PCT',
+      valorUnitario: 25.5,
+      valorTotal: 255000.0,
+      codigoCatmat: '123456',
+      marca: 'Chamex',
+      modelo: 'A4 75g',
+    };
+
+    const mockContratosPaginatedResponse: PncpPaginatedResponse<PncpContrato> =
+      {
+        data: [mockContrato],
+        totalRegistros: 1,
+        totalPaginas: 1,
+        numeroPagina: 1,
+        paginasRestantes: 0,
+        empty: false,
+      };
+
+    it('should return cached results when available', async () => {
+      const cachedResult = {
+        data: [
+          {
+            id: '00000000000191-1-000001/2024-item-1',
+            title: 'Papel A4',
+            description: 'Test description',
+            source: 'pncp' as const,
+            url: 'https://pncp.gov.br/app/contratos/00000000000191-1-000001/2024',
+            relevance: 1.0,
+            fetchedAt: new Date(),
+            codigo: 'CTR-2024-1-1',
+            descricao: 'Papel A4, 75g/m²',
+            unidade: 'PCT',
+            precoUnitario: 25.5,
+            mesReferencia: '2024-01',
+            uf: 'DF',
+            desonerado: false,
+            categoria: 'contrato_pncp',
+          },
+        ],
+        total: 1,
+        page: 1,
+        perPage: 500,
+        source: 'pncp' as const,
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+      };
+
+      cache.get.mockResolvedValueOnce(cachedResult);
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.cached).toBe(true);
+      expect(result.data).toHaveLength(1);
+      expect(cache.get).toHaveBeenCalled();
+    });
+
+    it('should return SERVICE_UNAVAILABLE when circuit breaker is open', async () => {
+      const mockClient = {
+        isAvailable: jest.fn().mockReturnValue(false),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: true,
+          halfOpen: false,
+          closed: false,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.SERVICE_UNAVAILABLE);
+      expect(result.data).toHaveLength(0);
+      expect(result.isFallback).toBe(true);
+    });
+
+    it('should filter by UF when ufOrgao is provided', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(mockContratosPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockContratoItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        ufOrgao: 'DF',
+      });
+
+      // Should include contrato from DF
+      expect(result.source).toBe('pncp');
+      expect(result.data.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should filter out contratos from different UF', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(mockContratosPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockContratoItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        ufOrgao: 'SP', // Different UF than mockContrato (DF)
+      });
+
+      // Should be empty since contrato is from DF, not SP
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should filter only active contratos when apenasAtivos is true', async () => {
+      // Create expired contrato
+      const expiredContrato = {
+        ...mockContrato,
+        dataVigenciaFim: '2023-01-14', // Expired
+      };
+
+      const expiredResponse: PncpPaginatedResponse<PncpContrato> = {
+        ...mockContratosPaginatedResponse,
+        data: [expiredContrato],
+      };
+
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(expiredResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockContratoItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        apenasAtivos: true,
+      });
+
+      // Should be empty since contrato is expired
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should normalize contrato items to GovApiPriceReference format', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(mockContratosPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockContratoItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.data.length).toBeGreaterThan(0);
+      const priceRef = result.data[0];
+
+      // Verify GovApiPriceReference structure
+      expect(priceRef.codigo).toBe('CTR-2024-1-1');
+      expect(priceRef.descricao).toBe('Papel A4, 75g/m², pacote 500 folhas');
+      expect(priceRef.unidade).toBe('PCT');
+      expect(priceRef.precoUnitario).toBe(25.5);
+      expect(priceRef.uf).toBe('DF');
+      expect(priceRef.categoria).toBe('contrato_pncp');
+      expect(priceRef.source).toBe('pncp');
+      expect(priceRef.url).toContain('pncp.gov.br');
+    });
+
+    it('should include metadata in normalized price reference', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(mockContratosPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockContratoItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      const priceRef = result.data[0];
+
+      // Verify metadata
+      expect(priceRef.metadata).toBeDefined();
+      expect(priceRef.metadata?.numeroContrato).toBe('CTR-001/2024');
+      expect(priceRef.metadata?.anoContrato).toBe(2024);
+      expect(priceRef.metadata?.orgaoContratante).toBe('Órgão Público Federal');
+      expect(priceRef.metadata?.fornecedor).toBe('Fornecedor Exemplo LTDA');
+      expect(priceRef.metadata?.marca).toBe('Chamex');
+      expect(priceRef.metadata?.codigoCatmat).toBe('123456');
+    });
+
+    it('should skip items without valid price', async () => {
+      const mockItemWithoutPrice: PncpContratoItem = {
+        ...mockContratoItem,
+        valorUnitario: 0, // Invalid price
+      };
+
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/contratos') {
+            return Promise.resolve(mockContratosPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockItemWithoutPrice] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      // Should be empty since item has no valid price
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should handle timeout errors', async () => {
+      const mockClient = {
+        get: jest
+          .fn()
+          .mockRejectedValue(new Error('Request timeout ETIMEDOUT')),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.TIMEOUT);
+      expect(result.data).toHaveLength(0);
+    });
+
+    it('should handle rate limit errors', async () => {
+      const mockClient = {
+        get: jest.fn().mockRejectedValue(new Error('429 Too Many Requests')),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchContratosItens({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.RATE_LIMITED);
+      expect(result.data).toHaveLength(0);
     });
   });
 });

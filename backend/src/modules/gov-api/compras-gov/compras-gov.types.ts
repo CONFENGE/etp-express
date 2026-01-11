@@ -326,7 +326,7 @@ function buildLicitacaoUrl(licitacao: ComprasGovLicitacaoRaw): string {
  */
 export function buildCacheKey(
   endpoint: string,
-  filters: ComprasGovSearchFilters,
+  filters: ComprasGovSearchFilters | ComprasGovPregaoItemSearchFilters,
 ): string {
   const sortedFilters = Object.entries(filters)
     .filter(([, value]) => value !== undefined && value !== null)
@@ -335,4 +335,96 @@ export function buildCacheKey(
     .join('&');
 
   return `${endpoint}:${sortedFilters}`;
+}
+
+/**
+ * Raw API response structure for pregao items
+ * Based on Compras.gov.br API /pregao/itens endpoint
+ */
+export interface ComprasGovPregaoItemRaw {
+  /** Item number */
+  numero_item: number;
+  /** Item description */
+  descricao: string;
+  /** Quantity */
+  quantidade: number;
+  /** Unit of measurement */
+  unidade_fornecimento: string;
+  /** Unit price (homologated) */
+  valor_unitario_homologado?: number;
+  /** Estimated unit price */
+  valor_unitario_estimado?: number;
+  /** Total value */
+  valor_total_homologado?: number;
+  /** CATMAT code (material) */
+  codigo_material?: string;
+  /** CATSER code (service) */
+  codigo_servico?: string;
+  /** Winning supplier CNPJ */
+  cnpj_vencedor?: string;
+  /** Winning supplier name */
+  nome_vencedor?: string;
+  /** Item status */
+  situacao?: string;
+  /** Discount percentage */
+  percentual_desconto?: number;
+  /** Brand/manufacturer */
+  marca?: string;
+  /** Model */
+  modelo?: string;
+}
+
+/**
+ * Search parameters for pregao items
+ */
+export interface ComprasGovPregaoItemSearchFilters {
+  /** Minimum publication date (YYYY-MM-DD) */
+  data_publicacao_min?: string;
+  /** Maximum publication date (YYYY-MM-DD) */
+  data_publicacao_max?: string;
+  /** State abbreviation */
+  uf_uasg?: string;
+  /** UASG code */
+  uasg?: number;
+  /** Filter only electronic pregões */
+  pregao_eletronico?: boolean;
+  /** Filter only homologated items */
+  apenasHomologados?: boolean;
+  /** Offset for pagination */
+  offset?: number;
+}
+
+/**
+ * Extended contract type for Compras.gov.br pregão item prices
+ * Includes unit prices from homologated pregões
+ */
+export interface ComprasGovPregaoItemPrice {
+  /** Item ID (pregao + item number) */
+  id: string;
+  /** Item description */
+  descricao: string;
+  /** Unit of measurement */
+  unidade: string;
+  /** Unit price (homologated or estimated) */
+  precoUnitario: number;
+  /** UASG code */
+  uasg: number;
+  /** UASG name */
+  uasgNome: string;
+  /** State */
+  uf: string;
+  /** Pregão number */
+  numeroPregao: number;
+  /** Publication date */
+  dataPublicacao: Date;
+  /** Winning supplier */
+  fornecedor?: string;
+  /** CNPJ supplier */
+  cnpjFornecedor?: string;
+  /** CATMAT code */
+  codigoCatmat?: string;
+  /** CATSER code */
+  codigoCatser?: string;
+  /** Brand */
+  marca?: string;
 }

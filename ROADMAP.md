@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 687/746 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 688/746 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1418 | Feature  | Expand PNCP/Compras.gov price search with contract/pregão items (#1414) ✅ |
 | 2026-01-11 | #1417 | Feature  | Implement Atas de Registro de Preços search with price extraction (#1413) ✅ |
 | 2026-01-11 | #1411 | Feature  | Add PesquisaPrecos entity and module (#1255) ✅ - **M11 started** |
 | 2026-01-11 | #1410 | Feature  | Add TR export to PDF/DOCX with official formatting (#1252) ✅ - **M10 COMPLETE** |
@@ -272,7 +273,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/6    | ✅         | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 1/7    | Alta       | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 4/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -298,7 +299,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) - 3/7 IN PROGRESS
+#### M11: Pesquisa de Preços Formal (#1254-#1260) - 4/7 IN PROGRESS
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 
@@ -309,6 +310,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 |       | ↳ #1256 Coleta automática multi-fonte         | 🔄     |
 |       |   ↳ #1412 Integrar PriceAggregation           | ✅     |
 |       |   ↳ #1413 Busca em Atas de Registro de Preços | ✅     |
+|       |   ↳ #1414 Expandir busca PNCP/Compras.gov     | ✅     |
 |       | ↳ #1257 Mapa comparativo de preços            | 🔴     |
 |       | ↳ #1258 Justificativa automática metodologia  | 🔴     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
