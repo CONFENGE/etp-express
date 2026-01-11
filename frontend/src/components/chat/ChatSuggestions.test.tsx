@@ -118,7 +118,7 @@ describe('ChatSuggestions', () => {
   describe('Icons', () => {
     it('should render icons for each suggestion', () => {
       const onSelect = vi.fn();
-      const { container } = render(<ChatSuggestions onSelect={onSelect} />);
+      render(<ChatSuggestions onSelect={onSelect} />);
 
       // Each button should have an SVG icon
       const buttons = screen.getAllByRole('button');
