@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 683/744 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 684/744 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1409 | Feature  | Implement TR Editor frontend (#1251) ✅ - M10 progress 4/6        |
 | 2026-01-11 | #1408 | Feature  | Implement TR templates by category (#1250) ✅ - M10 progress 3/6  |
 | 2026-01-11 | #1407 | Feature  | Implement automatic TR generation from ETP (#1249) ✅             |
 | 2026-01-11 | #1406 | Feature  | Create TermoReferencia entity and module for M10 (#1248) ✅       |
@@ -267,7 +268,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 3/6    | Alta       | +R$ 500/mês           |
+| M10: Termo de Referência       | 4/6    | Alta       | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
@@ -291,7 +292,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1248 Entity TermoReferencia e módulo       | ✅     |
 |       | ↳ #1249 Geração automática com IA             | ✅     |
 |       | ↳ #1250 Templates por categoria               | ✅     |
-|       | ↳ #1251 Editor TR no frontend                 | 🔴     |
+|       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | 🔴     |
 
 #### M11: Pesquisa de Preços Formal (#1254-#1260)
@@ -354,15 +355,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 744   |
-| Issues Abertas    | 61    |
-| Issues Fechadas   | 683   |
+| Issues Abertas    | 60    |
+| Issues Fechadas   | 684   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 2705  |
-| Frontend Tests    | 1984  |
-| Total Tests       | 4689  |
+| Frontend Tests    | 2013  |
+| Total Tests       | 4873  |
 
 ---
 
