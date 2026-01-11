@@ -1,6 +1,6 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageCircle, X, Trash2, AlertCircle, RefreshCw } from 'lucide-react';
+import { MessageCircle, X, Trash2, AlertCircle, RefreshCw, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +13,10 @@ import { ChatMessageList } from './ChatMessageList';
 import { ChatInput } from './ChatInput';
 import { ChatSuggestions } from './ChatSuggestions';
 import { useChat } from './hooks/useChat';
+import {
+  useProactiveSuggestions,
+  ProactiveSuggestion,
+} from './hooks/useProactiveSuggestions';
 
 /**
  * Props for ChatWidget component
@@ -56,6 +60,10 @@ export const ChatWidget = memo(function ChatWidget({
 }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Set<string>>(
+    new Set(),
+  );
+  const [showProactiveHint, setShowProactiveHint] = useState(true);
 
   const {
     messages,
@@ -65,6 +73,32 @@ export const ChatWidget = memo(function ChatWidget({
     clearHistory,
     retryLastMessage,
   } = useChat(etpId);
+
+  const {
+    suggestions: proactiveSuggestions = [],
+    highPriorityCount = 0,
+    getSuggestionForField,
+  } = useProactiveSuggestions(etpId, currentField, {
+    enabled: isOpen,
+    refreshInterval: 60000, // Refresh every minute when open
+  });
+
+  // Get the most relevant suggestion for current context
+  const currentFieldSuggestion = currentField && getSuggestionForField
+    ? getSuggestionForField(currentField)
+    : undefined;
+
+  // Get the highest priority undismissed suggestion
+  const activeProactiveSuggestion: ProactiveSuggestion | undefined =
+    (proactiveSuggestions || [])
+      .filter((s) => !dismissedSuggestions.has(s.field))
+      .find((s) => s.priority === 'high') ||
+    currentFieldSuggestion;
+
+  // Reset showProactiveHint when field changes
+  useEffect(() => {
+    setShowProactiveHint(true);
+  }, [currentField]);
 
   /**
    * Handle sending a message with optional context
@@ -93,6 +127,27 @@ export const ChatWidget = memo(function ChatWidget({
     await clearHistory();
     setShowClearConfirm(false);
   }, [clearHistory]);
+
+  /**
+   * Handle clicking the proactive suggestion help button
+   */
+  const handleProactiveSuggestionClick = useCallback(
+    (suggestion: ProactiveSuggestion) => {
+      if (suggestion.helpPrompt) {
+        sendMessage(suggestion.helpPrompt, suggestion.field);
+      }
+      setShowProactiveHint(false);
+    },
+    [sendMessage],
+  );
+
+  /**
+   * Dismiss a proactive suggestion
+   */
+  const handleDismissSuggestion = useCallback((field: string) => {
+    setDismissedSuggestions((prev) => new Set(prev).add(field));
+    setShowProactiveHint(false);
+  }, []);
 
   /**
    * Open the chat panel
@@ -136,6 +191,16 @@ export const ChatWidget = memo(function ChatWidget({
             aria-label={`${messages.length} mensagens`}
           >
             {messages.length > 9 ? '9+' : messages.length}
+          </span>
+        )}
+
+        {/* Proactive suggestions indicator - shows when there are high priority suggestions */}
+        {highPriorityCount > 0 && !isOpen && messages.length === 0 && (
+          <span
+            className="absolute -top-1 -right-1 h-5 w-5 bg-amber-500 rounded-full flex items-center justify-center animate-pulse"
+            aria-label={`${highPriorityCount} sugestoes importantes`}
+          >
+            <Lightbulb className="h-3 w-3 text-white" />
           </span>
         )}
       </Button>
@@ -219,6 +284,72 @@ export const ChatWidget = memo(function ChatWidget({
                     <RefreshCw className="h-3 w-3 mr-1" />
                     Tentar novamente
                   </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Proactive Suggestion Banner */}
+          {activeProactiveSuggestion && showProactiveHint && !isLoading && (
+            <div
+              className={cn(
+                'flex-shrink-0 mx-4 mt-2 p-3 rounded-apple',
+                activeProactiveSuggestion.priority === 'high'
+                  ? 'bg-amber-50 border border-amber-200'
+                  : 'bg-blue-50 border border-blue-200',
+              )}
+            >
+              <div className="flex items-start gap-2">
+                <Lightbulb
+                  className={cn(
+                    'h-4 w-4 flex-shrink-0 mt-0.5',
+                    activeProactiveSuggestion.priority === 'high'
+                      ? 'text-amber-600'
+                      : 'text-blue-600',
+                  )}
+                />
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={cn(
+                      'text-apple-sm',
+                      activeProactiveSuggestion.priority === 'high'
+                        ? 'text-amber-800'
+                        : 'text-blue-800',
+                    )}
+                  >
+                    {activeProactiveSuggestion.message}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    {activeProactiveSuggestion.helpPrompt && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          handleProactiveSuggestionClick(activeProactiveSuggestion)
+                        }
+                        className={cn(
+                          'h-7 px-2 text-xs',
+                          activeProactiveSuggestion.priority === 'high'
+                            ? 'text-amber-700 hover:bg-amber-100'
+                            : 'text-blue-700 hover:bg-blue-100',
+                        )}
+                      >
+                        <Lightbulb className="h-3 w-3 mr-1" />
+                        Ajudar
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        handleDismissSuggestion(activeProactiveSuggestion.field)
+                      }
+                      className="h-7 px-2 text-xs text-gray-500 hover:bg-gray-100"
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Ignorar
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
