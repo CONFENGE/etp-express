@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 680/743 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 681/744 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1406 | Feature  | Create TermoReferencia entity and module for M10 (#1248) ✅       |
 | 2026-01-11 | #1405 | Test     | Add E2E tests and documentation for chatbot (#1398) ✅ **EPIC #1167 COMPLETE** |
 | 2026-01-11 | #1404 | Feature  | Add proactive suggestions and field validation hints (#1397) ✅   |
 | 2026-01-11 | #1403 | Feature  | Integrate ChatWidget into ETP Editor (#1396) ✅                   |
@@ -264,7 +265,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 0/7    | Alta       | +R$ 500/mês           |
+| M10: Termo de Referência       | 1/6    | Alta       | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
@@ -282,10 +283,14 @@ ETP → Termo de Referência → Pesquisa de Preços → Edital → Contrato
 
 Geração automática de TR a partir do ETP aprovado.
 
-- Entity TermoReferencia e relacionamentos
-- Geração automática com IA
-- Templates por categoria (Obras, TI, Serviços, Materiais)
-- Editor frontend e export PDF/DOCX
+| #     | Issue                                         | Status |
+| ----- | --------------------------------------------- | ------ |
+| #1247 | [TR] Modulo de Termo de Referencia - EPIC     | 🔄     |
+|       | ↳ #1248 Entity TermoReferencia e módulo       | ✅     |
+|       | ↳ #1249 Geração automática com IA             | 🔴     |
+|       | ↳ #1250 Templates por categoria               | 🔴     |
+|       | ↳ #1251 Editor TR no frontend                 | 🔴     |
+|       | ↳ #1252 Export TR em PDF/DOCX                 | 🔴     |
 
 #### M11: Pesquisa de Preços Formal (#1254-#1260)
 
@@ -346,9 +351,9 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 743   |
-| Issues Abertas    | 64    |
-| Issues Fechadas   | 679   |
+| Issues Totais     | 744   |
+| Issues Abertas    | 63    |
+| Issues Fechadas   | 681   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
