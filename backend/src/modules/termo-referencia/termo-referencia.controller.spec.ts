@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TermoReferenciaController } from './termo-referencia.controller';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import {
   TermoReferencia,
   TermoReferenciaStatus,
@@ -47,6 +48,12 @@ describe('TermoReferenciaController', () => {
     generateFromEtp: jest.fn(),
   };
 
+  const mockExportService = {
+    exportToPDF: jest.fn(),
+    exportToDocx: jest.fn(),
+    exportToJSON: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TermoReferenciaController],
@@ -54,6 +61,10 @@ describe('TermoReferenciaController', () => {
         {
           provide: TermoReferenciaService,
           useValue: mockService,
+        },
+        {
+          provide: TermoReferenciaExportService,
+          useValue: mockExportService,
         },
       ],
     }).compile();
