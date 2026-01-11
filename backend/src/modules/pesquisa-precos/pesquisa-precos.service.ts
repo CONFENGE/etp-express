@@ -10,10 +10,53 @@ import {
   PesquisaPrecos,
   PesquisaPrecosStatus,
   ItemPesquisado,
+  MetodologiaPesquisa,
+  FonteConsultada,
 } from '../../entities/pesquisa-precos.entity';
 import { Etp } from '../../entities/etp.entity';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { CreatePesquisaPrecosDto, UpdatePesquisaPrecosDto } from './dto';
+import { SinapiService } from '../gov-api/sinapi/sinapi.service';
+import { SicroService } from '../gov-api/sicro/sicro.service';
+import { PncpService } from '../gov-api/pncp/pncp.service';
+import { PriceAggregationService } from '../gov-api/price-aggregation/price-aggregation.service';
+import {
+  GovApiPriceReference,
+  GovApiContract,
+  GovApiSource,
+} from '../gov-api/interfaces/gov-api.interface';
+
+/**
+ * Resultado da coleta de precos para um item.
+ *
+ * @see Issue #1412 - [Pesquisa-b1] Integrar PriceAggregation no PesquisaPrecosService
+ */
+export interface ColetaResult {
+  /** Item pesquisado com precos coletados */
+  item: ItemPesquisado;
+  /** Fontes consultadas com sucesso */
+  fontesConsultadas: FonteConsultada[];
+  /** Total de fontes que retornaram precos */
+  totalFontes: number;
+  /** Nivel de confianca baseado em fontes e variancia */
+  confianca: 'HIGH' | 'MEDIUM' | 'LOW';
+  /** Metodologia sugerida baseada nas fontes */
+  metodologiaSugerida: MetodologiaPesquisa;
+  /** Duracao da coleta em ms */
+  duracaoMs: number;
+}
+
+/**
+ * Opcoes para coleta de precos.
+ */
+export interface ColetaOptions {
+  /** UF para filtrar precos (default: 'DF') */
+  uf?: string;
+  /** Excluir outliers na agregacao (default: true) */
+  excluirOutliers?: boolean;
+  /** Timeout por fonte em ms (default: 10000) */
+  timeoutMs?: number;
+}
 
 /**
  * Service para gerenciamento de Pesquisas de Precos.
@@ -23,6 +66,7 @@ import { CreatePesquisaPrecosDto, UpdatePesquisaPrecosDto } from './dto';
  * - Calculos estatisticos (media, mediana, menor preco)
  * - Validacao de relacionamento com ETP/TR
  * - Isolamento multi-tenant via organizationId
+ * - Coleta automatica de precos multi-fonte (#1412)
  *
  * Seguranca:
  * - Todas operacoes verificam se o usuario pertence a organizacao
@@ -30,6 +74,7 @@ import { CreatePesquisaPrecosDto, UpdatePesquisaPrecosDto } from './dto';
  *
  * @see IN SEGES/ME n 65/2021 - Pesquisa de precos para contratacoes
  * @see Issue #1255 - [Pesquisa-a] Criar entity PesquisaPrecos
+ * @see Issue #1412 - [Pesquisa-b1] Integrar PriceAggregation no PesquisaPrecosService
  * Parent: #1254 - [Pesquisa] Modulo de Pesquisa de Precos - EPIC
  */
 @Injectable()
@@ -43,6 +88,10 @@ export class PesquisaPrecosService {
     private readonly etpRepository: Repository<Etp>,
     @InjectRepository(TermoReferencia)
     private readonly termoReferenciaRepository: Repository<TermoReferencia>,
+    private readonly sinapiService: SinapiService,
+    private readonly sicroService: SicroService,
+    private readonly pncpService: PncpService,
+    private readonly priceAggregationService: PriceAggregationService,
   ) {}
 
   /**
@@ -322,5 +371,315 @@ export class PesquisaPrecosService {
     const stdDev = Math.sqrt(avgSquaredDiff);
 
     return (stdDev / mean) * 100;
+  }
+
+  // ============================================
+  // Coleta Automatica de Precos (#1412)
+  // ============================================
+
+  /**
+   * Coleta precos de multiplas fontes governamentais para um item.
+   *
+   * Fontes consultadas (ordem de prioridade conforme IN 65/2021):
+   * 1. SINAPI - Tabela de precos de construcao civil
+   * 2. SICRO - Tabela de precos de infraestrutura rodoviaria
+   * 3. PNCP - Contratos publicos similares
+   *
+   * @param itemDescricao Descricao do item para pesquisa
+   * @param quantidade Quantidade estimada do item
+   * @param unidade Unidade de medida do item
+   * @param options Opcoes de coleta
+   * @returns Resultado da coleta com item, fontes e confianca
+   *
+   * @example
+   * ```typescript
+   * const result = await service.coletarPrecos(
+   *   'cimento portland cp-ii 50kg',
+   *   100,
+   *   'SC',
+   *   { uf: 'DF' }
+   * );
+   * ```
+   *
+   * @see Issue #1412 - [Pesquisa-b1] Integrar PriceAggregation no PesquisaPrecosService
+   */
+  async coletarPrecos(
+    itemDescricao: string,
+    quantidade: number,
+    unidade: string,
+    options: ColetaOptions = {},
+  ): Promise<ColetaResult> {
+    const startTime = Date.now();
+    const { uf = 'DF', excluirOutliers = true, timeoutMs = 10000 } = options;
+
+    this.logger.log(
+      `Iniciando coleta de precos para: "${itemDescricao}" (${quantidade} ${unidade})`,
+    );
+
+    // Buscar precos de cada fonte em paralelo com timeout
+    const [sinapiResult, sicroResult, pncpResult] = await Promise.allSettled([
+      this.fetchWithTimeout(
+        () => this.sinapiService.search(itemDescricao, { uf }),
+        timeoutMs,
+        'SINAPI',
+      ),
+      this.fetchWithTimeout(
+        () => this.sicroService.search(itemDescricao, { uf }),
+        timeoutMs,
+        'SICRO',
+      ),
+      this.fetchWithTimeout(
+        () => this.pncpService.search(itemDescricao, { uf }),
+        timeoutMs,
+        'PNCP',
+      ),
+    ]);
+
+    // Extrair precos de cada fonte
+    const sinapiPrices = this.extractPriceReferences(sinapiResult, 'sinapi');
+    const sicroPrices = this.extractPriceReferences(sicroResult, 'sicro');
+    const contractPrices = this.extractContracts(pncpResult);
+
+    // Registrar fontes consultadas
+    const fontesConsultadas = this.buildFontesConsultadas(
+      sinapiResult,
+      sicroResult,
+      pncpResult,
+    );
+
+    this.logger.debug(
+      `Precos encontrados: SINAPI=${sinapiPrices.length}, SICRO=${sicroPrices.length}, PNCP=${contractPrices.length}`,
+    );
+
+    // Agregar precos usando PriceAggregationService
+    const aggregationResult = this.priceAggregationService.aggregatePrices(
+      itemDescricao,
+      sinapiPrices,
+      sicroPrices,
+      contractPrices,
+      { excludeOutliers: excluirOutliers },
+    );
+
+    // Converter para formato ItemPesquisado
+    const item = this.buildItemPesquisado(
+      itemDescricao,
+      quantidade,
+      unidade,
+      aggregationResult,
+    );
+
+    // Determinar metodologia baseada nas fontes
+    const metodologiaSugerida = this.determinarMetodologia(fontesConsultadas);
+
+    const duracaoMs = Date.now() - startTime;
+    this.logger.log(
+      `Coleta concluida em ${duracaoMs}ms: ${fontesConsultadas.length} fontes, confianca: ${aggregationResult.overallConfidence}`,
+    );
+
+    return {
+      item,
+      fontesConsultadas,
+      totalFontes: fontesConsultadas.length,
+      confianca: aggregationResult.overallConfidence,
+      metodologiaSugerida,
+      duracaoMs,
+    };
+  }
+
+  /**
+   * Executa uma funcao async com timeout.
+   */
+  private async fetchWithTimeout<T>(
+    fn: () => Promise<T>,
+    timeoutMs: number,
+    sourceName: string,
+  ): Promise<T> {
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`Timeout: ${sourceName} demorou mais de ${timeoutMs}ms`)),
+        timeoutMs,
+      ),
+    );
+
+    return Promise.race([fn(), timeoutPromise]);
+  }
+
+  /**
+   * Extrai referencias de preco de resultado SINAPI/SICRO.
+   */
+  private extractPriceReferences(
+    result: PromiseSettledResult<unknown>,
+    source: GovApiSource,
+  ): GovApiPriceReference[] {
+    if (result.status === 'rejected') {
+      this.logger.warn(`Falha ao buscar ${source.toUpperCase()}: ${result.reason}`);
+      return [];
+    }
+
+    const response = result.value as { data?: GovApiPriceReference[] };
+    if (!response?.data || !Array.isArray(response.data)) {
+      return [];
+    }
+
+    return response.data.filter(
+      (item): item is GovApiPriceReference =>
+        item !== null &&
+        typeof item === 'object' &&
+        'precoUnitario' in item &&
+        typeof item.precoUnitario === 'number',
+    );
+  }
+
+  /**
+   * Extrai contratos de resultado PNCP.
+   */
+  private extractContracts(
+    result: PromiseSettledResult<unknown>,
+  ): GovApiContract[] {
+    if (result.status === 'rejected') {
+      this.logger.warn(`Falha ao buscar PNCP: ${result.reason}`);
+      return [];
+    }
+
+    const response = result.value as { data?: GovApiContract[] };
+    if (!response?.data || !Array.isArray(response.data)) {
+      return [];
+    }
+
+    return response.data.filter(
+      (item): item is GovApiContract =>
+        item !== null &&
+        typeof item === 'object' &&
+        'valorTotal' in item &&
+        typeof item.valorTotal === 'number',
+    );
+  }
+
+  /**
+   * Constroi lista de fontes consultadas.
+   */
+  private buildFontesConsultadas(
+    sinapiResult: PromiseSettledResult<unknown>,
+    sicroResult: PromiseSettledResult<unknown>,
+    pncpResult: PromiseSettledResult<unknown>,
+  ): FonteConsultada[] {
+    const fontes: FonteConsultada[] = [];
+    const now = new Date().toISOString();
+
+    if (sinapiResult.status === 'fulfilled') {
+      fontes.push({
+        tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+        nome: 'SINAPI - Sistema Nacional de Pesquisa de Custos',
+        dataConsulta: now,
+        referencia: 'https://www.caixa.gov.br/sinapi',
+        observacoes: 'Tabela de precos de construcao civil',
+      });
+    }
+
+    if (sicroResult.status === 'fulfilled') {
+      fontes.push({
+        tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+        nome: 'SICRO - Sistema de Custos Referenciais de Obras',
+        dataConsulta: now,
+        referencia: 'https://www.gov.br/dnit/sicro',
+        observacoes: 'Tabela de precos de infraestrutura rodoviaria',
+      });
+    }
+
+    if (pncpResult.status === 'fulfilled') {
+      fontes.push({
+        tipo: MetodologiaPesquisa.CONTRATACOES_SIMILARES,
+        nome: 'PNCP - Portal Nacional de Contratacoes Publicas',
+        dataConsulta: now,
+        referencia: 'https://pncp.gov.br',
+        observacoes: 'Contratos publicos similares',
+      });
+    }
+
+    return fontes;
+  }
+
+  /**
+   * Constroi ItemPesquisado a partir do resultado da agregacao.
+   */
+  private buildItemPesquisado(
+    descricao: string,
+    quantidade: number,
+    unidade: string,
+    aggregation: ReturnType<PriceAggregationService['aggregatePrices']>,
+  ): ItemPesquisado {
+    const precos: ItemPesquisado['precos'] = [];
+
+    // Converter agregacoes em precos
+    for (const agg of aggregation.aggregations) {
+      for (const source of agg.sources) {
+        precos.push({
+          fonte: this.getSourceDisplayName(source.source),
+          valor: source.price,
+          data: source.date instanceof Date ? source.date.toISOString() : String(source.date),
+          observacao: source.reference,
+        });
+      }
+    }
+
+    // Calcular estatisticas
+    const valores = precos.map((p) => p.valor);
+    const media = valores.length > 0 ? this.calculateMean(valores) : 0;
+    const mediana = valores.length > 0 ? this.calculateMedian(valores) : 0;
+    const menorPreco = valores.length > 0 ? Math.min(...valores) : 0;
+
+    return {
+      descricao,
+      quantidade,
+      unidade,
+      precos,
+      media: Math.round(media * 100) / 100,
+      mediana: Math.round(mediana * 100) / 100,
+      menorPreco: Math.round(menorPreco * 100) / 100,
+      precoAdotado: Math.round(mediana * 100) / 100, // Adotar mediana por padrao
+      justificativaPreco: aggregation.methodologySummary,
+    };
+  }
+
+  /**
+   * Determina a metodologia baseada nas fontes consultadas.
+   * Segue ordem de preferencia da IN 65/2021.
+   */
+  private determinarMetodologia(fontes: FonteConsultada[]): MetodologiaPesquisa {
+    // Verificar tipos de fontes disponiveis
+    const tipos = fontes.map((f) => f.tipo);
+
+    // Ordem de preferencia conforme Art. 5 da IN 65/2021
+    if (tipos.includes(MetodologiaPesquisa.PAINEL_PRECOS)) {
+      return MetodologiaPesquisa.PAINEL_PRECOS;
+    }
+    if (tipos.includes(MetodologiaPesquisa.CONTRATACOES_SIMILARES)) {
+      return MetodologiaPesquisa.CONTRATACOES_SIMILARES;
+    }
+    if (tipos.includes(MetodologiaPesquisa.MIDIA_ESPECIALIZADA)) {
+      return MetodologiaPesquisa.MIDIA_ESPECIALIZADA;
+    }
+    if (tipos.includes(MetodologiaPesquisa.SITES_ELETRONICOS)) {
+      return MetodologiaPesquisa.SITES_ELETRONICOS;
+    }
+    if (tipos.includes(MetodologiaPesquisa.PESQUISA_FORNECEDORES)) {
+      return MetodologiaPesquisa.PESQUISA_FORNECEDORES;
+    }
+
+    // Default: midia especializada (SINAPI/SICRO)
+    return MetodologiaPesquisa.MIDIA_ESPECIALIZADA;
+  }
+
+  /**
+   * Retorna nome de exibicao para fonte.
+   */
+  private getSourceDisplayName(source: GovApiSource): string {
+    const names: Record<GovApiSource, string> = {
+      pncp: 'PNCP',
+      comprasgov: 'Compras.gov.br',
+      sinapi: 'SINAPI',
+      sicro: 'SICRO',
+    };
+    return names[source] || source.toUpperCase();
   }
 }
