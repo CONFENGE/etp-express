@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 678/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 679/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1404 | Feature  | Add proactive suggestions and field validation hints (#1397) ✅   |
 | 2026-01-11 | #1403 | Feature  | Integrate ChatWidget into ETP Editor (#1396) ✅                   |
 | 2026-01-11 | #1402 | Feature  | ChatWidget React components for ETP chatbot (#1395) ✅            |
 | 2026-01-11 | #1401 | Feature  | AI chat completion with ETP context injection (#1394) ✅          |
@@ -119,7 +120,7 @@
 |       | ↳ #1394 Integração AI com contexto ETP        | ✅     |
 |       | ↳ #1395 ChatWidget componente React           | ✅     |
 |       | ↳ #1396 Integração no ETP Editor              | ✅     |
-|       | ↳ #1397 Sugestões proativas e hints           | 🔴     |
+|       | ↳ #1397 Sugestões proativas e hints           | ✅     |
 |       | ↳ #1398 Testes E2E e documentação             | 🔴     |
 | #1164 | [Dashboard] Adicionar métricas avançadas      | ✅     |
 |       | ↳ #1363 Taxa de sucesso de ETPs               | ✅     |
@@ -346,15 +347,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 66    |
-| Issues Fechadas   | 677   |
+| Issues Abertas    | 65    |
+| Issues Fechadas   | 678   |
 | Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2660  |
-| Frontend Tests    | 1973  |
-| Total Tests       | 4633  |
+| Backend Tests     | 2705  |
+| Frontend Tests    | 1984  |
+| Total Tests       | 4689  |
 
 ---
 
