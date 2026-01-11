@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,7 +19,9 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import {
   CreateTermoReferenciaDto,
   UpdateTermoReferenciaDto,
@@ -54,6 +57,7 @@ import { TermoReferencia } from '../../entities/termo-referencia.entity';
 export class TermoReferenciaController {
   constructor(
     private readonly termoReferenciaService: TermoReferenciaService,
+    private readonly termoReferenciaExportService: TermoReferenciaExportService,
   ) {}
 
   /**
@@ -273,5 +277,189 @@ export class TermoReferenciaController {
     @CurrentUser() user: User,
   ): Promise<void> {
     return this.termoReferenciaService.remove(id, user.organizationId);
+  }
+
+  // ============================================
+  // EXPORT ENDPOINTS
+  // Issue #1252 - [TR-e] Export TR em PDF/DOCX
+  // ============================================
+
+  /**
+   * Exporta um TR para PDF.
+   *
+   * Gera um documento PDF com formatacao oficial conforme Lei 14.133/2021.
+   * Inclui cabecalho, sumario, secoes numeradas e rodape com paginacao.
+   */
+  @Get(':id/export/pdf')
+  @ApiOperation({
+    summary: 'Exportar TR para PDF',
+    description:
+      'Gera um documento PDF formatado do Termo de Referencia com layout oficial.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'PDF gerado com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'TR nao encontrado',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Erro ao gerar PDF',
+  })
+  async exportPDF(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    const pdfBuffer = await this.termoReferenciaExportService.exportToPDF(
+      id,
+      user.organizationId,
+    );
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="TR-${id}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+  }
+
+  /**
+   * Exporta um TR para DOCX.
+   *
+   * Gera um documento Word editavel com formatacao ABNT NBR.
+   * Permite edicao posterior pelo usuario.
+   */
+  @Get(':id/export/docx')
+  @ApiOperation({
+    summary: 'Exportar TR para DOCX',
+    description:
+      'Gera um documento Word (.docx) editavel do Termo de Referencia.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'DOCX gerado com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'TR nao encontrado',
+  })
+  async exportDOCX(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    const docxBuffer = await this.termoReferenciaExportService.exportToDocx(
+      id,
+      user.organizationId,
+    );
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'Content-Disposition': `attachment; filename="TR-${id}.docx"`,
+      'Content-Length': docxBuffer.length,
+    });
+
+    res.send(docxBuffer);
+  }
+
+  /**
+   * Exporta um TR para JSON.
+   *
+   * Retorna os dados do TR em formato JSON para integracao ou backup.
+   */
+  @Get(':id/export/json')
+  @ApiOperation({
+    summary: 'Exportar TR para JSON',
+    description:
+      'Exporta os dados do Termo de Referencia em formato JSON estruturado.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'JSON gerado com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'TR nao encontrado',
+  })
+  async exportJSON(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    const jsonData = await this.termoReferenciaExportService.exportToJSON(
+      id,
+      user.organizationId,
+    );
+
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="TR-${id}.json"`,
+    });
+
+    res.json(jsonData);
+  }
+
+  /**
+   * Preview do TR em PDF (inline no browser).
+   *
+   * Permite visualizacao previa do PDF sem baixar o arquivo.
+   */
+  @Get(':id/export/preview')
+  @ApiOperation({
+    summary: 'Preview do TR em PDF',
+    description:
+      'Gera um PDF para visualizacao previa no browser (Content-Disposition: inline).',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'PDF gerado para preview',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'TR nao encontrado',
+  })
+  async previewPDF(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    const pdfBuffer = await this.termoReferenciaExportService.exportToPDF(
+      id,
+      user.organizationId,
+    );
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename="TR-${id}-preview.pdf"`,
+      'Content-Length': pdfBuffer.length,
+      'Cache-Control': 'private, max-age=300',
+    });
+
+    res.send(pdfBuffer);
   }
 }

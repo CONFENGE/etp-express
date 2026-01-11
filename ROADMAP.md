@@ -250,7 +250,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 33/35  | 94% (2 restam) |
+| MVP Comercial          | 34/35  | 97% (1 resta)  |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -268,7 +268,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 4/6    | Alta       | +R$ 500/mês           |
+| M10: Termo de Referência       | 5/6    | Alta       | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
