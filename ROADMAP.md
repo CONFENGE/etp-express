@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 682/744 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 683/744 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1408 | Feature  | Implement TR templates by category (#1250) ✅ - M10 progress 3/6  |
 | 2026-01-11 | #1407 | Feature  | Implement automatic TR generation from ETP (#1249) ✅             |
 | 2026-01-11 | #1406 | Feature  | Create TermoReferencia entity and module for M10 (#1248) ✅       |
 | 2026-01-11 | #1405 | Test     | Add E2E tests and documentation for chatbot (#1398) ✅ **EPIC #1167 COMPLETE** |
@@ -266,7 +267,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 2/6    | Alta       | +R$ 500/mês           |
+| M10: Termo de Referência       | 3/6    | Alta       | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
@@ -289,7 +290,7 @@ Geração automática de TR a partir do ETP aprovado.
 | #1247 | [TR] Modulo de Termo de Referencia - EPIC     | 🔄     |
 |       | ↳ #1248 Entity TermoReferencia e módulo       | ✅     |
 |       | ↳ #1249 Geração automática com IA             | ✅     |
-|       | ↳ #1250 Templates por categoria               | 🔴     |
+|       | ↳ #1250 Templates por categoria               | ✅     |
 |       | ↳ #1251 Editor TR no frontend                 | 🔴     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | 🔴     |
 
@@ -353,8 +354,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 744   |
-| Issues Abertas    | 62    |
-| Issues Fechadas   | 682   |
+| Issues Abertas    | 61    |
+| Issues Fechadas   | 683   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
