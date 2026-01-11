@@ -496,7 +496,10 @@ export class PesquisaPrecosService {
   ): Promise<T> {
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error(`Timeout: ${sourceName} demorou mais de ${timeoutMs}ms`)),
+        () =>
+          reject(
+            new Error(`Timeout: ${sourceName} demorou mais de ${timeoutMs}ms`),
+          ),
         timeoutMs,
       ),
     );
@@ -512,7 +515,9 @@ export class PesquisaPrecosService {
     source: GovApiSource,
   ): GovApiPriceReference[] {
     if (result.status === 'rejected') {
-      this.logger.warn(`Falha ao buscar ${source.toUpperCase()}: ${result.reason}`);
+      this.logger.warn(
+        `Falha ao buscar ${source.toUpperCase()}: ${result.reason}`,
+      );
       return [];
     }
 
@@ -616,7 +621,10 @@ export class PesquisaPrecosService {
         precos.push({
           fonte: this.getSourceDisplayName(source.source),
           valor: source.price,
-          data: source.date instanceof Date ? source.date.toISOString() : String(source.date),
+          data:
+            source.date instanceof Date
+              ? source.date.toISOString()
+              : String(source.date),
           observacao: source.reference,
         });
       }
@@ -645,7 +653,9 @@ export class PesquisaPrecosService {
    * Determina a metodologia baseada nas fontes consultadas.
    * Segue ordem de preferencia da IN 65/2021.
    */
-  private determinarMetodologia(fontes: FonteConsultada[]): MetodologiaPesquisa {
+  private determinarMetodologia(
+    fontes: FonteConsultada[],
+  ): MetodologiaPesquisa {
     // Verificar tipos de fontes disponiveis
     const tipos = fontes.map((f) => f.tipo);
 
