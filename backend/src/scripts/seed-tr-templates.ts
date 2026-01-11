@@ -704,7 +704,9 @@ async function seedTrTemplates(): Promise<void> {
     await dataSource.initialize();
     console.log('Database connection established');
 
-    const templateRepository = dataSource.getRepository(TermoReferenciaTemplate);
+    const templateRepository = dataSource.getRepository(
+      TermoReferenciaTemplate,
+    );
 
     const results = await Promise.all(
       TR_TEMPLATES_DATA.map((templateData) =>

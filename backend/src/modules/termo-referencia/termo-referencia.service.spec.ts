@@ -666,9 +666,21 @@ describe('TermoReferenciaService', () => {
     it('should return all active templates', async () => {
       const templates = [
         mockTrTemplate,
-        { ...mockTrTemplate, id: 'template-obras-001', type: TrTemplateType.OBRAS },
-        { ...mockTrTemplate, id: 'template-servicos-001', type: TrTemplateType.SERVICOS },
-        { ...mockTrTemplate, id: 'template-materiais-001', type: TrTemplateType.MATERIAIS },
+        {
+          ...mockTrTemplate,
+          id: 'template-obras-001',
+          type: TrTemplateType.OBRAS,
+        },
+        {
+          ...mockTrTemplate,
+          id: 'template-servicos-001',
+          type: TrTemplateType.SERVICOS,
+        },
+        {
+          ...mockTrTemplate,
+          id: 'template-materiais-001',
+          type: TrTemplateType.MATERIAIS,
+        },
       ];
       mockTrTemplateRepository.find.mockResolvedValue(templates);
 
