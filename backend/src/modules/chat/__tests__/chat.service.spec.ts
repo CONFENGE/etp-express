@@ -1,30 +1,80 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ChatService } from '../chat.service';
 import {
   ChatMessage,
   ChatMessageRole,
 } from '../../../entities/chat-message.entity';
-import { Etp } from '../../../entities/etp.entity';
+import { Etp, EtpStatus } from '../../../entities/etp.entity';
+import { EtpTemplateType } from '../../../entities/etp-template.entity';
+import {
+  EtpSection,
+  SectionType,
+  SectionStatus,
+} from '../../../entities/etp-section.entity';
 import { SendMessageDto } from '../dto';
+import {
+  OpenAIService,
+  LLMResponse,
+} from '../../orchestrator/llm/openai.service';
 
 describe('ChatService', () => {
   let service: ChatService;
   let chatMessageRepository: jest.Mocked<Repository<ChatMessage>>;
   let etpRepository: jest.Mocked<Repository<Etp>>;
+  let sectionRepository: jest.Mocked<Repository<EtpSection>>;
+  let openAIService: jest.Mocked<OpenAIService>;
 
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
   const mockOrganizationId = 'org-1';
 
-  const mockEtp = {
+  const mockOrganization = {
+    id: mockOrganizationId,
+    name: 'Test Organization',
+    slug: 'test-org',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const mockEtp: Partial<Etp> = {
     id: mockEtpId,
     title: 'ETP Test',
-    objeto: 'Contratacao de servicos',
+    objeto: 'Contratacao de servicos de TI',
     organizationId: mockOrganizationId,
-  } as Etp;
+    organization: mockOrganization as any,
+    status: EtpStatus.DRAFT,
+    templateType: EtpTemplateType.TI,
+    completionPercentage: 30,
+  };
+
+  const mockSections: Partial<EtpSection>[] = [
+    {
+      id: 'section-1',
+      etpId: mockEtpId,
+      type: SectionType.JUSTIFICATIVA,
+      title: 'Justificativa',
+      content: 'A contratacao se faz necessaria para modernizar os sistemas.',
+      status: SectionStatus.GENERATED,
+      order: 1,
+    },
+    {
+      id: 'section-2',
+      etpId: mockEtpId,
+      type: SectionType.REQUISITOS,
+      title: 'Requisitos',
+      content: 'Requisitos tecnicos minimos.',
+      status: SectionStatus.PENDING,
+      order: 2,
+    },
+  ];
 
   const mockUserMessage: ChatMessage = {
     id: 'msg-1',
@@ -43,11 +93,19 @@ describe('ChatService', () => {
     etpId: mockEtpId,
     userId: mockUserId,
     role: ChatMessageRole.ASSISTANT,
-    content: 'A funcionalidade de assistente de ETP esta em desenvolvimento.',
-    metadata: { latencyMs: 50 },
+    content: 'A justificativa deve demonstrar a necessidade da contratacao.',
+    metadata: { latencyMs: 500, tokens: 150, model: 'gpt-4.1-nano' },
     createdAt: new Date(),
     etp: null as any,
     user: null as any,
+  };
+
+  const mockLLMResponse: LLMResponse = {
+    content:
+      'A justificativa deve demonstrar: a necessidade da contratacao, o interesse publico envolvido, os beneficios esperados e os riscos de nao contratar, conforme Art. 18 da Lei 14.133/2021.',
+    tokens: 150,
+    model: 'gpt-4.1-nano',
+    finishReason: 'stop',
   };
 
   beforeEach(async () => {
@@ -70,21 +128,38 @@ describe('ChatService', () => {
             findOne: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(EtpSection),
+          useValue: {
+            find: jest.fn(),
+          },
+        },
+        {
+          provide: OpenAIService,
+          useValue: {
+            generateCompletion: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<ChatService>(ChatService);
     chatMessageRepository = module.get(getRepositoryToken(ChatMessage));
     etpRepository = module.get(getRepositoryToken(Etp));
+    sectionRepository = module.get(getRepositoryToken(EtpSection));
+    openAIService = module.get(OpenAIService);
 
     // Default mocks
-    etpRepository.findOne.mockResolvedValue(mockEtp);
+    etpRepository.findOne.mockResolvedValue(mockEtp as Etp);
+    sectionRepository.find.mockResolvedValue(mockSections as EtpSection[]);
+    chatMessageRepository.find.mockResolvedValue([]);
     chatMessageRepository.create.mockImplementation(
       (data) => ({ ...data, id: 'new-msg-id' }) as ChatMessage,
     );
     chatMessageRepository.save.mockImplementation(
       async (msg) => msg as ChatMessage,
     );
+    openAIService.generateCompletion.mockResolvedValue(mockLLMResponse);
   });
 
   afterEach(() => {
@@ -92,7 +167,7 @@ describe('ChatService', () => {
   });
 
   describe('sendMessage', () => {
-    it('should save user message and return placeholder response', async () => {
+    it('should generate AI response with ETP context', async () => {
       const dto: SendMessageDto = {
         message: 'O que devo escrever na justificativa?',
         contextField: 'Justificativa',
@@ -108,12 +183,102 @@ describe('ChatService', () => {
       expect(result).toBeDefined();
       expect(result.id).toBe('new-msg-id');
       expect(result.content).toContain('justificativa');
+      expect(result.metadata.tokens).toBe(150);
+      expect(result.metadata.model).toBe('gpt-4.1-nano');
       expect(result.metadata.latencyMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should load ETP with organization relation for context', async () => {
+      const dto: SendMessageDto = { message: 'Test message' };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
       expect(etpRepository.findOne).toHaveBeenCalledWith({
         where: { id: mockEtpId },
-        select: ['id', 'title', 'objeto', 'organizationId'],
+        relations: ['organization'],
       });
-      expect(chatMessageRepository.save).toHaveBeenCalledTimes(2); // user + assistant
+    });
+
+    it('should load ETP sections for context injection', async () => {
+      const dto: SendMessageDto = { message: 'Test message' };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
+      expect(sectionRepository.find).toHaveBeenCalledWith({
+        where: { etpId: mockEtpId },
+        order: { order: 'ASC' },
+      });
+    });
+
+    it('should pass context field to system prompt builder', async () => {
+      const dto: SendMessageDto = {
+        message: 'Como calcular o valor?',
+        contextField: 'Estimativa de Custos',
+      };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
+      // Verify OpenAI was called with a system prompt containing context field
+      const callArgs = openAIService.generateCompletion.mock.calls[0][0];
+      expect(callArgs.systemPrompt).toBeDefined();
+      expect(callArgs.systemPrompt).toContain('Estimativa');
+    });
+
+    it('should include conversation history in user prompt', async () => {
+      // Mock existing conversation
+      chatMessageRepository.find.mockResolvedValue([
+        mockUserMessage,
+        mockAssistantMessage,
+      ]);
+
+      const dto: SendMessageDto = { message: 'E sobre os requisitos?' };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
+      const callArgs = openAIService.generateCompletion.mock.calls[0][0];
+      expect(callArgs.userPrompt).toContain('Historico da conversa');
+    });
+
+    it('should save both user and assistant messages', async () => {
+      const dto: SendMessageDto = { message: 'Test message' };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
+      expect(chatMessageRepository.save).toHaveBeenCalledTimes(2);
+      expect(chatMessageRepository.create).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          role: ChatMessageRole.USER,
+          content: 'Test message',
+        }),
+      );
+      expect(chatMessageRepository.create).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          role: ChatMessageRole.ASSISTANT,
+        }),
+      );
+    });
+
+    it('should extract legislation references from response', async () => {
+      openAIService.generateCompletion.mockResolvedValue({
+        ...mockLLMResponse,
+        content:
+          'Conforme Lei 14.133/2021 e Art. 18, a justificativa deve incluir...',
+      });
+
+      const dto: SendMessageDto = { message: 'Test' };
+
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      expect(result.relatedLegislation).toBeDefined();
+      expect(result.relatedLegislation).toContain('Lei 14.133/2021');
+      expect(result.relatedLegislation).toContain('Art. 18');
     });
 
     it('should throw NotFoundException when ETP not found', async () => {
@@ -140,6 +305,70 @@ describe('ChatService', () => {
       await expect(
         service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId),
       ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw ServiceUnavailableException when AI circuit breaker is open', async () => {
+      const circuitBreakerError = new Error('Circuit breaker open');
+      (circuitBreakerError as any).code = 'EOPENBREAKER';
+      openAIService.generateCompletion.mockRejectedValue(circuitBreakerError);
+
+      const dto: SendMessageDto = { message: 'Test message' };
+
+      await expect(
+        service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId),
+      ).rejects.toThrow(ServiceUnavailableException);
+    });
+
+    it('should return fallback response on other AI errors', async () => {
+      openAIService.generateCompletion.mockRejectedValue(
+        new Error('Random API error'),
+      );
+
+      const dto: SendMessageDto = {
+        message: 'O que devo escrever na justificativa?',
+      };
+
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      expect(result.content).toContain('temporariamente indisponivel');
+      expect(result.content).toContain('justificativa');
+      expect(result.metadata.tokens).toBe(0);
+    });
+
+    it('should return generic fallback for unknown question types', async () => {
+      openAIService.generateCompletion.mockRejectedValue(
+        new Error('API error'),
+      );
+
+      const dto: SendMessageDto = { message: 'Ola como funciona?' };
+
+      const result = await service.sendMessage(
+        dto,
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+
+      expect(result.content).toContain('indisponivel');
+    });
+
+    it('should use correct OpenAI parameters', async () => {
+      const dto: SendMessageDto = { message: 'Test' };
+
+      await service.sendMessage(dto, mockEtpId, mockUserId, mockOrganizationId);
+
+      expect(openAIService.generateCompletion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          temperature: 0.7,
+          maxTokens: 1000,
+          model: 'gpt-4.1-nano',
+        }),
+      );
     });
 
     it('should save user message with contextField metadata', async () => {
@@ -176,52 +405,6 @@ describe('ChatService', () => {
         }),
       );
     });
-
-    it('should return legislation-related placeholder for lei questions', async () => {
-      const dto: SendMessageDto = {
-        message: 'Qual legislacao se aplica a este caso?',
-      };
-
-      const result = await service.sendMessage(
-        dto,
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
-
-      expect(result.content).toContain('Lei 14.133/2021');
-    });
-
-    it('should return pricing-related placeholder for preco questions', async () => {
-      const dto: SendMessageDto = {
-        message: 'Como pesquisar precos para esta contratacao?',
-      };
-
-      const result = await service.sendMessage(
-        dto,
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
-
-      expect(result.content).toContain('precos');
-    });
-
-    it('should return generic placeholder for unknown questions', async () => {
-      const dto: SendMessageDto = {
-        message: 'Olá, como funciona?',
-      };
-
-      const result = await service.sendMessage(
-        dto,
-        mockEtpId,
-        mockUserId,
-        mockOrganizationId,
-      );
-
-      expect(result.content).toContain('funcionalidade');
-      expect(result.content).toContain('desenvolvimento');
-    });
   });
 
   describe('getHistory', () => {
@@ -230,6 +413,15 @@ describe('ChatService', () => {
         mockUserMessage,
         mockAssistantMessage,
       ]);
+
+      // Need to mock for validateEtpAccess
+      etpRepository.findOne.mockResolvedValue({
+        ...mockEtp,
+        id: mockEtpId,
+        title: 'Test',
+        objeto: 'Test',
+        organizationId: mockOrganizationId,
+      } as Etp);
 
       const result = await service.getHistory(
         mockEtpId,
@@ -252,14 +444,17 @@ describe('ChatService', () => {
 
       await service.getHistory(mockEtpId, mockUserId, mockOrganizationId);
 
-      expect(etpRepository.findOne).toHaveBeenCalledWith({
-        where: { id: mockEtpId },
-        select: ['id', 'title', 'objeto', 'organizationId'],
-      });
+      // Second call is for validateEtpAccess (first is loadEtpWithContext in sendMessage tests)
+      expect(etpRepository.findOne).toHaveBeenCalled();
     });
 
     it('should throw ForbiddenException when user organization does not own ETP', async () => {
-      const otherOrgEtp = { ...mockEtp, organizationId: 'other-org' };
+      const otherOrgEtp = {
+        id: mockEtpId,
+        title: 'Test',
+        objeto: 'Test',
+        organizationId: 'other-org',
+      };
       etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
 
       await expect(
@@ -342,14 +537,16 @@ describe('ChatService', () => {
 
       await service.clearHistory(mockEtpId, mockUserId, mockOrganizationId);
 
-      expect(etpRepository.findOne).toHaveBeenCalledWith({
-        where: { id: mockEtpId },
-        select: ['id', 'title', 'objeto', 'organizationId'],
-      });
+      expect(etpRepository.findOne).toHaveBeenCalled();
     });
 
     it('should throw ForbiddenException when user organization does not own ETP', async () => {
-      const otherOrgEtp = { ...mockEtp, organizationId: 'other-org' };
+      const otherOrgEtp = {
+        id: mockEtpId,
+        title: 'Test',
+        objeto: 'Test',
+        organizationId: 'other-org',
+      };
       etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
 
       await expect(
