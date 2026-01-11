@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 676/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 677/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1402 | Feature  | ChatWidget React components for ETP chatbot (#1395) ✅            |
 | 2026-01-11 | #1401 | Feature  | AI chat completion with ETP context injection (#1394) ✅          |
 | 2026-01-10 | #1400 | Feature  | Implement chat API endpoints with rate limiting (#1393) ✅        |
 | 2026-01-10 | #1399 | Feature  | Add ChatMessage entity and Chat module structure (#1392) ✅       |
@@ -115,7 +116,7 @@
 |       | ↳ #1392 ChatMessage entity e módulo backend   | ✅     |
 |       | ↳ #1393 API endpoints com rate limiting       | ✅     |
 |       | ↳ #1394 Integração AI com contexto ETP        | ✅     |
-|       | ↳ #1395 ChatWidget componente React           | 🔴     |
+|       | ↳ #1395 ChatWidget componente React           | ✅     |
 |       | ↳ #1396 Integração no ETP Editor              | 🔴     |
 |       | ↳ #1397 Sugestões proativas e hints           | 🔴     |
 |       | ↳ #1398 Testes E2E e documentação             | 🔴     |
@@ -344,8 +345,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 743   |
-| Issues Abertas    | 68    |
-| Issues Fechadas   | 675   |
+| Issues Abertas    | 67    |
+| Issues Fechadas   | 676   |
 | Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
