@@ -5,6 +5,7 @@ import { TermoReferenciaTemplate } from '../../entities/termo-referencia-templat
 import { Etp } from '../../entities/etp.entity';
 import { TermoReferenciaController } from './termo-referencia.controller';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -16,13 +17,14 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - Isolamento multi-tenant via organizationId
  * - Geracao automatica de TR a partir de ETP com IA
  * - Templates pre-configurados por categoria (Obras, TI, Servicos, Materiais)
+ * - Export para PDF/DOCX com formatacao oficial
  *
  * Issues relacionadas:
  * - #1248: Entity TermoReferencia e relacionamentos (DONE)
  * - #1249: Geracao automatica de TR a partir de ETP (DONE)
  * - #1250: Templates de TR por categoria (DONE)
- * - #1251: Editor de TR no frontend
- * - #1252: Export TR em PDF/DOCX
+ * - #1251: Editor de TR no frontend (DONE)
+ * - #1252: Export TR em PDF/DOCX (DONE)
  *
  * Parent: #1247 - [TR] Modulo de Termo de Referencia - EPIC
  */
@@ -32,7 +34,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     OrchestratorModule, // Provides OpenAIService for AI-powered TR generation
   ],
   controllers: [TermoReferenciaController],
-  providers: [TermoReferenciaService],
-  exports: [TermoReferenciaService],
+  providers: [TermoReferenciaService, TermoReferenciaExportService],
+  exports: [TermoReferenciaService, TermoReferenciaExportService],
 })
 export class TermoReferenciaModule {}
