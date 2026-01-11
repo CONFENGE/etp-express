@@ -252,6 +252,54 @@ export interface PncpAta {
 }
 
 /**
+ * Item de Ata de Registro de Preços from PNCP API
+ * Represents individual price items within an Ata
+ */
+export interface PncpAtaItem {
+  /** Número sequencial do item */
+  numeroItem: number;
+  /** Descrição do item */
+  descricao: string;
+  /** Quantidade */
+  quantidade: number;
+  /** Unidade de medida */
+  unidadeMedida: string;
+  /** Valor unitário */
+  valorUnitario: number;
+  /** Valor total do item */
+  valorTotal?: number;
+  /** Marca/Fabricante (opcional) */
+  marca?: string;
+  /** Modelo (opcional) */
+  modelo?: string;
+  /** Fornecedor vencedor */
+  fornecedor?: {
+    cpfCnpj: string;
+    nomeRazaoSocial: string;
+  };
+  /** Situação do item */
+  situacaoItem?: string;
+}
+
+/**
+ * Ata de Registro de Preços with items
+ */
+export interface PncpAtaWithItems extends PncpAta {
+  /** Itens da ata */
+  itens: PncpAtaItem[];
+}
+
+/**
+ * Search parameters for Atas de Registro de Preços with extended filters
+ */
+export interface PncpAtaRegistroPrecoSearchParams extends PncpAtaSearchParams {
+  /** UF do órgão gerenciador */
+  ufOrgao?: string;
+  /** Filtrar apenas atas vigentes */
+  apenasVigentes?: boolean;
+}
+
+/**
  * PNCP API paginated response wrapper
  */
 export interface PncpPaginatedResponse<T> {
