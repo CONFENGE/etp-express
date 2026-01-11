@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-10 | **Progresso:** 675/743 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 676/743 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1401 | Feature  | AI chat completion with ETP context injection (#1394) ✅          |
 | 2026-01-10 | #1400 | Feature  | Implement chat API endpoints with rate limiting (#1393) ✅        |
 | 2026-01-10 | #1399 | Feature  | Add ChatMessage entity and Chat module structure (#1392) ✅       |
 | 2026-01-10 | #1391 | Feature  | Add compliance scorecard component to ETP Editor (#1386) ✅       |
@@ -113,7 +114,7 @@
 | #1167 | [Assistente] Implementar chatbot para dúvidas | 🟡     |
 |       | ↳ #1392 ChatMessage entity e módulo backend   | ✅     |
 |       | ↳ #1393 API endpoints com rate limiting       | ✅     |
-|       | ↳ #1394 Integração AI com contexto ETP        | 🔴     |
+|       | ↳ #1394 Integração AI com contexto ETP        | ✅     |
 |       | ↳ #1395 ChatWidget componente React           | 🔴     |
 |       | ↳ #1396 Integração no ETP Editor              | 🔴     |
 |       | ↳ #1397 Sugestões proativas e hints           | 🔴     |
