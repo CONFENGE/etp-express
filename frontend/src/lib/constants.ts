@@ -10,6 +10,8 @@ export const ROUTES = {
   ETPS: '/etps',
   ETP_EDITOR: (id: string) => `/etps/${id}`,
   ETP_PREVIEW: (id: string) => `/etps/${id}/preview`,
+  // Termo de Referencia routes (#1251)
+  TR_EDITOR: (id: string) => `/trs/${id}`,
 } as const;
 
 export const ETP_STATUS = {

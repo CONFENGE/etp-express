@@ -54,6 +54,13 @@ const AnalysisPage = lazy(() =>
   import('@/pages/AnalysisPage').then((m) => ({ default: m.AnalysisPage })),
 );
 
+// Termo de Referencia Editor (#1251)
+const TermoReferenciaEditor = lazy(() =>
+  import('@/pages/TermoReferenciaEditor').then((m) => ({
+    default: m.TermoReferenciaEditor,
+  })),
+);
+
 // Admin pages - lazy-loaded (only accessed by system admins)
 const AdminDashboard = lazy(() =>
   import('@/pages/admin/AdminDashboard').then((m) => ({
@@ -286,6 +293,15 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AnalysisPage />
+          </ProtectedRoute>
+        ),
+      },
+      // Termo de Referencia Editor (#1251)
+      {
+        path: '/trs/:id',
+        element: (
+          <ProtectedRoute>
+            <TermoReferenciaEditor />
           </ProtectedRoute>
         ),
       },
