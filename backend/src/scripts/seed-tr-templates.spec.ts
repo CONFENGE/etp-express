@@ -43,7 +43,9 @@ describe('Seed TR Templates Script', () => {
     });
 
     it('should have correct name', () => {
-      expect(obrasTemplate?.name).toBe('Template de TR para Obras de Engenharia');
+      expect(obrasTemplate?.name).toBe(
+        'Template de TR para Obras de Engenharia',
+      );
     });
 
     it('should have description mentioning key characteristics', () => {
@@ -166,7 +168,9 @@ describe('Seed TR Templates Script', () => {
     });
 
     it('should have correct name', () => {
-      expect(servicosTemplate?.name).toBe('Template de TR para Servicos Continuos');
+      expect(servicosTemplate?.name).toBe(
+        'Template de TR para Servicos Continuos',
+      );
     });
 
     it('should have description mentioning workforce', () => {
@@ -207,7 +211,9 @@ describe('Seed TR Templates Script', () => {
     });
 
     it('should have default sections including transicao_contratual and repactuacao', () => {
-      expect(servicosTemplate?.defaultSections).toContain('transicao_contratual');
+      expect(servicosTemplate?.defaultSections).toContain(
+        'transicao_contratual',
+      );
       expect(servicosTemplate?.defaultSections).toContain('repactuacao');
     });
   });
@@ -265,7 +271,9 @@ describe('Seed TR Templates Script', () => {
     });
 
     it('should have criterios_selecao mentioning menor preco por item', () => {
-      expect(materiaisTemplate?.defaultCriteriosSelecao).toContain('Menor preco por item');
+      expect(materiaisTemplate?.defaultCriteriosSelecao).toContain(
+        'Menor preco por item',
+      );
     });
   });
 
@@ -287,7 +295,9 @@ describe('Seed TR Templates Script', () => {
         });
 
         it('should have at least 1 required specific field', () => {
-          const requiredFields = template.specificFields.filter((f) => f.required);
+          const requiredFields = template.specificFields.filter(
+            (f) => f.required,
+          );
           expect(requiredFields.length).toBeGreaterThanOrEqual(1);
         });
 
@@ -332,8 +342,12 @@ describe('Seed TR Templates Script', () => {
           expect(template.defaultModeloExecucao.length).toBeGreaterThan(50);
           expect(template.defaultModeloGestao.length).toBeGreaterThan(50);
           expect(template.defaultCriteriosSelecao.length).toBeGreaterThan(50);
-          expect(template.defaultObrigacoesContratante.length).toBeGreaterThan(50);
-          expect(template.defaultObrigacoesContratada.length).toBeGreaterThan(50);
+          expect(template.defaultObrigacoesContratante.length).toBeGreaterThan(
+            50,
+          );
+          expect(template.defaultObrigacoesContratada.length).toBeGreaterThan(
+            50,
+          );
           expect(template.defaultSancoesPenalidades.length).toBeGreaterThan(50);
         });
       });
