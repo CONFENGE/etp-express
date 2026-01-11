@@ -39,6 +39,7 @@ import { TemplatesModule } from './modules/templates/templates.module';
 import { ComplianceModule } from './modules/compliance/compliance.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { TermoReferenciaModule } from './modules/termo-referencia/termo-referencia.module';
+import { PesquisaPrecosModule } from './modules/pesquisa-precos/pesquisa-precos.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -232,6 +233,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     ComplianceModule,
     ChatModule,
     TermoReferenciaModule,
+    PesquisaPrecosModule,
     HealthModule,
   ],
   controllers: [AppController],
