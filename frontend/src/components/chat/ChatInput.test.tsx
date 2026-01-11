@@ -62,7 +62,6 @@ describe('ChatInput', () => {
     });
 
     it('should show error styling when over character limit', async () => {
-      const user = userEvent.setup();
       const onSend = vi.fn();
       render(<ChatInput onSend={onSend} />);
 

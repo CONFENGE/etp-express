@@ -19,6 +19,7 @@ import { ETPEditorTabsList } from '@/components/etp/ETPEditorTabsList';
 import { ETPEditorContent } from '@/components/etp/ETPEditorContent';
 import { ETPEditorSidebar } from '@/components/etp/ETPEditorSidebar';
 import { ComplianceScorecard } from '@/components/etp/ComplianceScorecard';
+import { ChatWidget } from '@/components/chat';
 import { VersionHistory } from '@/components/etp/VersionHistory';
 import { ExportPreviewModal } from '@/components/etp/ExportPreviewModal';
 import { useETPStore } from '@/store/etpStore';
@@ -315,6 +316,12 @@ export function ETPEditor() {
       })),
     [sectionTemplates],
   );
+
+  // Get current section title for ChatWidget context (#1396)
+  const currentSectionTitle = useMemo(() => {
+    const template = sectionTemplates.find((t) => t.number === activeSection);
+    return template?.title;
+  }, [sectionTemplates, activeSection]);
 
   // Handle PDF export with demo conversion trigger (#475), AbortController (#603), and progress (#612)
   const handleExportPDF = useCallback(async () => {
@@ -614,6 +621,14 @@ export function ETPEditor() {
         onRetry={preview.retry}
         onDownload={handleExportPDF}
       />
+
+      {/* Chat Widget for AI assistant (#1396) */}
+      {id && (
+        <ChatWidget
+          etpId={id}
+          currentField={currentSectionTitle}
+        />
+      )}
     </MainLayout>
   );
 }
