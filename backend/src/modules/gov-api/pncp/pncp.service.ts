@@ -34,11 +34,13 @@ import {
   PncpContrato,
   PncpAta,
   PncpAtaItem,
+  PncpContratoItem,
   PncpPaginatedResponse,
   PncpContratacaoSearchParams,
   PncpContratoSearchParams,
   PncpAtaSearchParams,
   PncpAtaRegistroPrecoSearchParams,
+  PncpContratoItemSearchParams,
   PNCP_MODALIDADE_NAMES,
 } from './pncp.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
@@ -751,6 +753,391 @@ export class PncpService implements IGovApiService {
    * Create RATE_LIMITED response for Atas search
    */
   private createAtasRateLimitedResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.RATE_LIMITED,
+      statusMessage: getStatusMessage(SearchStatus.RATE_LIMITED),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.RATE_LIMITED,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Search for contract items with unit prices from PNCP
+   *
+   * This method fetches contracts from the last 12 months (configurable) and extracts
+   * unit prices from their items, normalizing them to GovApiPriceReference format
+   * for use in price research.
+   *
+   * @param params Search parameters with extended filters
+   * @returns Response with price references extracted from contract items
+   *
+   * @example
+   * ```typescript
+   * const prices = await pncpService.searchContratosItens({
+   *   dataInicial: '20240101',
+   *   dataFinal: '20241231',
+   *   ufOrgao: 'DF',
+   *   apenasAtivos: true,
+   * });
+   * ```
+   */
+  async searchContratosItens(
+    params: PncpContratoItemSearchParams,
+  ): Promise<GovApiResponse<GovApiPriceReference[]>> {
+    const cacheKey = this.buildCacheKey(
+      'contratos-itens',
+      '',
+      params as unknown as Record<string, unknown>,
+    );
+
+    // Try cache first (24h TTL for contract items)
+    const cached = await this.cache.get<GovApiResponse<GovApiPriceReference[]>>(
+      this.source,
+      cacheKey,
+    );
+    if (cached) {
+      return {
+        ...cached,
+        cached: true,
+        status: cached.status || SearchStatus.SUCCESS,
+      };
+    }
+
+    // Check circuit breaker before making request
+    if (!this.client.isAvailable()) {
+      this.logger.warn(
+        'Circuit breaker is open, returning SERVICE_UNAVAILABLE response for Contratos Items search',
+      );
+      return this.createContratosItensServiceUnavailableResponse(
+        'Circuit breaker is open',
+      );
+    }
+
+    // Build search params
+    const searchParams: PncpContratoSearchParams = {
+      dataInicial: params.dataInicial,
+      dataFinal: params.dataFinal,
+      pagina: params.pagina || 1,
+      tamanhoPagina: params.tamanhoPagina || MAX_PAGE_SIZE,
+    };
+
+    if (params.cnpjOrgao) {
+      searchParams.cnpjOrgao = params.cnpjOrgao;
+    }
+
+    try {
+      // 1. Fetch contratos list
+      const contratosResponse = await this.client.get<
+        PncpPaginatedResponse<PncpContrato>
+      >('/v1/contratos', { params: searchParams });
+
+      this.logger.debug(
+        `Found ${contratosResponse.totalRegistros} contratos, processing ${contratosResponse.data.length} from page ${contratosResponse.numeroPagina}`,
+      );
+
+      // 2. Filter by UF if specified
+      let filteredContratos = contratosResponse.data;
+      if (params.ufOrgao) {
+        filteredContratos = contratosResponse.data.filter(
+          (contrato) => contrato.unidadeOrgao?.ufSigla === params.ufOrgao,
+        );
+        this.logger.debug(
+          `Filtered to ${filteredContratos.length} contratos from UF ${params.ufOrgao}`,
+        );
+      }
+
+      // 3. Filter by active status if requested
+      if (params.apenasAtivos) {
+        const today = new Date();
+        filteredContratos = filteredContratos.filter((contrato) => {
+          const vigenciaFim = new Date(contrato.dataVigenciaFim);
+          return vigenciaFim >= today;
+        });
+        this.logger.debug(
+          `Filtered to ${filteredContratos.length} active contratos`,
+        );
+      }
+
+      // 4. Fetch items for each contrato and normalize to price references
+      const priceReferences: GovApiPriceReference[] = [];
+
+      for (const contrato of filteredContratos) {
+        try {
+          const items = await this.fetchContratoItems(contrato);
+          const normalizedPrices = this.normalizeContratoItemsToPriceReferences(
+            contrato,
+            items,
+          );
+          priceReferences.push(...normalizedPrices);
+        } catch (error) {
+          // Log but continue with other contratos
+          this.logger.warn(
+            `Failed to fetch items for contrato ${contrato.numeroControlePNCP}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      }
+
+      this.logger.log(
+        `Extracted ${priceReferences.length} price references from ${filteredContratos.length} contratos`,
+      );
+
+      const result: GovApiResponse<GovApiPriceReference[]> = {
+        data: priceReferences,
+        total: priceReferences.length,
+        page: contratosResponse.numeroPagina,
+        perPage: searchParams.tamanhoPagina || MAX_PAGE_SIZE,
+        source: this.source,
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+        statusMessage: getStatusMessage(SearchStatus.SUCCESS),
+      };
+
+      // Cache with 24h TTL
+      await this.cache.set(this.source, cacheKey, result);
+
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Search Contratos Items failed: ${errorMessage}`);
+
+      const isTimeout =
+        errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
+      const isRateLimited =
+        errorMessage.includes('429') || errorMessage.includes('rate limit');
+
+      if (isTimeout) {
+        return this.createContratosItensTimeoutResponse(errorMessage);
+      }
+      if (isRateLimited) {
+        return this.createContratosItensRateLimitedResponse(errorMessage);
+      }
+
+      return this.createContratosItensServiceUnavailableResponse(errorMessage);
+    }
+  }
+
+  /**
+   * Fetch items for a specific Contrato
+   *
+   * @param contrato The contrato to fetch items for
+   * @returns Array of contrato items
+   */
+  private async fetchContratoItems(
+    contrato: PncpContrato,
+  ): Promise<PncpContratoItem[]> {
+    const cacheKey = `contrato-items:${contrato.numeroControlePNCP}`;
+
+    // Check cache
+    const cached = await this.cache.get<PncpContratoItem[]>(
+      this.source,
+      cacheKey,
+    );
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      // Parse control number to build URL
+      // Format: CNPJ-TIPO-SEQUENCIAL/ANO
+      const match = contrato.numeroControlePNCP.match(
+        /^(\d{14})-(\d)-(\d{6})\/(\d{4})$/,
+      );
+      if (!match) {
+        this.logger.warn(
+          `Invalid contrato control number format: ${contrato.numeroControlePNCP}`,
+        );
+        return [];
+      }
+
+      const [, cnpj, , sequencial, ano] = match;
+
+      // Fetch contrato items from PNCP API
+      // Endpoint: /v1/orgaos/{cnpj}/contratos/{ano}/{sequencial}/itens
+      const itemsResponse = await this.client.get<{
+        itens: PncpContratoItem[];
+      }>(`/v1/orgaos/${cnpj}/contratos/${ano}/${sequencial}/itens`);
+
+      const items = itemsResponse.itens || [];
+
+      // Cache items
+      await this.cache.set(this.source, cacheKey, items);
+
+      return items;
+    } catch (error) {
+      // If API doesn't support items endpoint or returns error, return empty
+      this.logger.debug(
+        `Could not fetch items for contrato ${contrato.numeroControlePNCP}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return [];
+    }
+  }
+
+  /**
+   * Normalize contrato items to GovApiPriceReference format
+   *
+   * @param contrato The source contrato
+   * @param items Items from the contrato
+   * @returns Array of normalized price references
+   */
+  private normalizeContratoItemsToPriceReferences(
+    contrato: PncpContrato,
+    items: PncpContratoItem[],
+  ): GovApiPriceReference[] {
+    const priceRefs: GovApiPriceReference[] = [];
+
+    for (const item of items) {
+      // Skip items without valid price
+      if (!item.valorUnitario || item.valorUnitario <= 0) {
+        continue;
+      }
+
+      const reference: GovApiPriceReference = {
+        id: `${contrato.numeroControlePNCP}-item-${item.numeroItem}`,
+        title: this.truncate(item.descricao, 200),
+        description: this.buildContratoItemDescription(contrato, item),
+        source: this.source,
+        url: `https://pncp.gov.br/app/contratos/${contrato.numeroControlePNCP}`,
+        relevance: 1.0,
+        fetchedAt: new Date(),
+        codigo: `CTR-${contrato.anoContrato}-${contrato.sequencialContrato}-${item.numeroItem}`,
+        descricao: item.descricao,
+        unidade: item.unidadeMedida || 'UN',
+        precoUnitario: item.valorUnitario,
+        mesReferencia: this.extractMonthReference(contrato.dataAssinatura),
+        uf: contrato.unidadeOrgao?.ufSigla || 'BR',
+        desonerado: false,
+        categoria: 'contrato_pncp',
+        metadata: {
+          numeroContrato: contrato.numeroContratoEmpenho,
+          anoContrato: contrato.anoContrato,
+          orgaoContratante: contrato.orgaoEntidade?.razaoSocial,
+          cnpjOrgao: contrato.orgaoEntidade?.cnpj,
+          vigenciaInicio: contrato.dataVigenciaInicio,
+          vigenciaFim: contrato.dataVigenciaFim,
+          fornecedor: contrato.fornecedor?.nomeRazaoSocial,
+          cnpjFornecedor: contrato.fornecedor?.cpfCnpj,
+          tipoContrato: contrato.tipoContratoNome,
+          valorGlobal: contrato.valorGlobal,
+          objetoContrato: contrato.objetoContrato,
+          marca: item.marca,
+          modelo: item.modelo,
+          codigoCatmat: item.codigoCatmat,
+          codigoCatser: item.codigoCatser,
+        },
+      };
+
+      priceRefs.push(reference);
+    }
+
+    return priceRefs;
+  }
+
+  /**
+   * Build description for a contrato item
+   */
+  private buildContratoItemDescription(
+    contrato: PncpContrato,
+    item: PncpContratoItem,
+  ): string {
+    const parts: string[] = [];
+
+    parts.push(`Contrato nº ${contrato.numeroContratoEmpenho}`);
+
+    if (contrato.orgaoEntidade?.razaoSocial) {
+      parts.push(`Órgão: ${contrato.orgaoEntidade.razaoSocial}`);
+    }
+
+    if (contrato.fornecedor?.nomeRazaoSocial) {
+      parts.push(`Fornecedor: ${contrato.fornecedor.nomeRazaoSocial}`);
+    }
+
+    if (item.marca) {
+      parts.push(`Marca: ${item.marca}`);
+    }
+
+    parts.push(
+      `Vigência: ${this.formatDateBR(contrato.dataVigenciaInicio)} a ${this.formatDateBR(contrato.dataVigenciaFim)}`,
+    );
+
+    return parts.join(' | ');
+  }
+
+  /**
+   * Create SERVICE_UNAVAILABLE response for Contratos Items search
+   */
+  private createContratosItensServiceUnavailableResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.SERVICE_UNAVAILABLE,
+      statusMessage: getStatusMessage(SearchStatus.SERVICE_UNAVAILABLE),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.SERVICE_UNAVAILABLE,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create TIMEOUT response for Contratos Items search
+   */
+  private createContratosItensTimeoutResponse(
+    error: string,
+  ): GovApiResponse<GovApiPriceReference[]> {
+    return {
+      data: [],
+      total: 0,
+      page: 1,
+      perPage: MAX_PAGE_SIZE,
+      source: this.source,
+      cached: false,
+      isFallback: true,
+      timestamp: new Date(),
+      status: SearchStatus.TIMEOUT,
+      statusMessage: getStatusMessage(SearchStatus.TIMEOUT),
+      sourceStatuses: [
+        {
+          name: this.source,
+          status: SearchStatus.TIMEOUT,
+          error,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Create RATE_LIMITED response for Contratos Items search
+   */
+  private createContratosItensRateLimitedResponse(
     error: string,
   ): GovApiResponse<GovApiPriceReference[]> {
     return {
