@@ -401,6 +401,57 @@ export const PNCP_SITUACAO_NAMES: Record<number, string> = {
 };
 
 /**
+ * Item de Contrato from PNCP API
+ * Represents individual items within a contract with unit prices
+ */
+export interface PncpContratoItem {
+  /** Número sequencial do item */
+  numeroItem: number;
+  /** Descrição do item */
+  descricao: string;
+  /** Quantidade contratada */
+  quantidade: number;
+  /** Unidade de medida */
+  unidadeMedida: string;
+  /** Valor unitário */
+  valorUnitario: number;
+  /** Valor total do item */
+  valorTotal?: number;
+  /** Código CATMAT (material) */
+  codigoCatmat?: string;
+  /** Código CATSER (serviço) */
+  codigoCatser?: string;
+  /** Código padrão item (PDM ou outro) */
+  codigoPadrao?: string;
+  /** Marca/Fabricante (opcional) */
+  marca?: string;
+  /** Modelo (opcional) */
+  modelo?: string;
+  /** Situação do item */
+  situacaoItem?: string;
+}
+
+/**
+ * Search parameters for contratos items by period
+ */
+export interface PncpContratoItemSearchParams {
+  /** Data inicial de publicação (YYYYMMDD) */
+  dataInicial: string;
+  /** Data final de publicação (YYYYMMDD) */
+  dataFinal: string;
+  /** UF do órgão (opcional) */
+  ufOrgao?: string;
+  /** CNPJ do órgão (opcional) */
+  cnpjOrgao?: string;
+  /** Filtrar apenas contratos ativos */
+  apenasAtivos?: boolean;
+  /** Página (1-indexed) */
+  pagina?: number;
+  /** Tamanho da página (max 500) */
+  tamanhoPagina?: number;
+}
+
+/**
  * Mapping from PNCP categoria code to human-readable name
  */
 export const PNCP_CATEGORIA_NAMES: Record<number, string> = {

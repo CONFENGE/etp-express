@@ -265,7 +265,7 @@ export interface GovApiContract extends GovApiSearchResult {
 }
 
 /**
- * Price reference data structure from SINAPI/SICRO
+ * Price reference data structure from SINAPI/SICRO/PNCP/Compras.gov
  */
 export interface GovApiPriceReference extends GovApiSearchResult {
   /** Item code */
@@ -284,4 +284,20 @@ export interface GovApiPriceReference extends GovApiSearchResult {
   desonerado: boolean;
   /** Category */
   categoria: string;
+  /** Additional metadata for extended sources (PNCP contratos, Compras.gov pregões) */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Filters for searching contract items (PNCP/Compras.gov)
+ */
+export interface ContractItemSearchFilters extends GovApiFilterOptions {
+  /** Filter by item description */
+  descricaoItem?: string;
+  /** Filter by CATMAT code (material) */
+  codigoCatmat?: string;
+  /** Filter by CATSER code (service) */
+  codigoCatser?: string;
+  /** Maximum age in months (default: 12) */
+  maxAgeMonths?: number;
 }
