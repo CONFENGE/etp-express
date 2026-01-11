@@ -27,6 +27,16 @@ import {
  */
 export class CreateComplianceChecklistTables1768060000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Ensure etp_template_type_enum exists (may have been skipped if migration ran out of order)
+    // This is a safety measure for production databases that missed the CreateEtpTemplatesTable migration
+    await queryRunner.query(`
+      DO $$ BEGIN
+        CREATE TYPE "etp_template_type_enum" AS ENUM ('OBRAS', 'TI', 'SERVICOS', 'MATERIAIS');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
     // Create enum for compliance standards
     await queryRunner.query(`
       CREATE TYPE "compliance_standard_enum" AS ENUM (
