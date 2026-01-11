@@ -647,4 +647,236 @@ describe('ChatService', () => {
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('getProactiveSuggestions', () => {
+    it('should return suggestions for empty sections', async () => {
+      const emptySections: Partial<EtpSection>[] = [
+        {
+          id: 'section-1',
+          etpId: mockEtpId,
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Justificativa',
+          content: '',
+          status: SectionStatus.PENDING,
+          order: 1,
+        },
+      ];
+      sectionRepository.find.mockResolvedValue(emptySections as EtpSection[]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      expect(result.suggestions).toBeDefined();
+      const emptySuggestion = result.suggestions.find(
+        (s) => s.field === 'Justificativa' && s.type === 'incomplete',
+      );
+      expect(emptySuggestion).toBeDefined();
+      expect(emptySuggestion!.priority).toBe('high');
+    });
+
+    it('should return suggestions for short content sections', async () => {
+      const shortSections: Partial<EtpSection>[] = [
+        {
+          id: 'section-1',
+          etpId: mockEtpId,
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Justificativa',
+          content: 'Muito curto', // Less than 100 chars
+          status: SectionStatus.GENERATED,
+          order: 1,
+        },
+      ];
+      sectionRepository.find.mockResolvedValue(shortSections as EtpSection[]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      const improvementSuggestion = result.suggestions.find(
+        (s) => s.field === 'Justificativa' && s.type === 'improvement',
+      );
+      expect(improvementSuggestion).toBeDefined();
+      expect(improvementSuggestion!.priority).toBe('medium');
+    });
+
+    it('should detect missing required sections', async () => {
+      // No sections provided
+      sectionRepository.find.mockResolvedValue([]);
+
+      // ETP with complete basic fields
+      const etpWithFields = {
+        ...mockEtp,
+        title: 'ETP Test with long title',
+        objeto:
+          'Contratacao de servicos de TI para modernizacao de sistemas legados da organizacao',
+      };
+      etpRepository.findOne.mockResolvedValue(etpWithFields as Etp);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      const missingSuggestions = result.suggestions.filter(
+        (s) => s.type === 'warning',
+      );
+      expect(missingSuggestions.length).toBeGreaterThan(0);
+    });
+
+    it('should filter suggestions by field when provided', async () => {
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+        'Justificativa',
+      );
+
+      // All returned suggestions should relate to Justificativa
+      result.suggestions.forEach((s) => {
+        expect(s.field.toLowerCase()).toBe('justificativa');
+      });
+    });
+
+    it('should sort suggestions by priority (high first)', async () => {
+      const mixedSections: Partial<EtpSection>[] = [
+        {
+          id: 'section-1',
+          etpId: mockEtpId,
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Justificativa',
+          content: 'Muito curto', // medium priority
+          status: SectionStatus.GENERATED,
+          order: 1,
+        },
+        {
+          id: 'section-2',
+          etpId: mockEtpId,
+          type: SectionType.REQUISITOS,
+          title: 'Requisitos',
+          content: '', // high priority - empty
+          status: SectionStatus.PENDING,
+          order: 2,
+        },
+      ];
+      sectionRepository.find.mockResolvedValue(mixedSections as EtpSection[]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      // First suggestion should be high priority
+      if (result.suggestions.length > 0) {
+        expect(result.suggestions[0].priority).toBe('high');
+      }
+    });
+
+    it('should count high priority suggestions correctly', async () => {
+      const emptySections: Partial<EtpSection>[] = [
+        {
+          id: 'section-1',
+          etpId: mockEtpId,
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Justificativa',
+          content: '', // empty - high priority
+          status: SectionStatus.PENDING,
+          order: 1,
+        },
+        {
+          id: 'section-2',
+          etpId: mockEtpId,
+          type: SectionType.REQUISITOS,
+          title: 'Requisitos',
+          content: '', // empty - high priority
+          status: SectionStatus.PENDING,
+          order: 2,
+        },
+      ];
+      sectionRepository.find.mockResolvedValue(emptySections as EtpSection[]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      expect(result.highPriorityCount).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should include helpPrompt in suggestions', async () => {
+      const emptySections: Partial<EtpSection>[] = [
+        {
+          id: 'section-1',
+          etpId: mockEtpId,
+          type: SectionType.JUSTIFICATIVA,
+          title: 'Justificativa',
+          content: '',
+          status: SectionStatus.PENDING,
+          order: 1,
+        },
+      ];
+      sectionRepository.find.mockResolvedValue(emptySections as EtpSection[]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      const suggestion = result.suggestions.find(
+        (s) => s.field === 'Justificativa',
+      );
+      expect(suggestion?.helpPrompt).toBeDefined();
+      expect(suggestion?.helpPrompt).toContain('Justificativa');
+    });
+
+    it('should validate ETP access before generating suggestions', async () => {
+      const otherOrgEtp = {
+        id: mockEtpId,
+        title: 'Test',
+        objeto: 'Test',
+        organizationId: 'other-org',
+      };
+      etpRepository.findOne.mockResolvedValue(otherOrgEtp as Etp);
+
+      await expect(
+        service.getProactiveSuggestions(mockEtpId, mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should check ETP basic fields for completeness', async () => {
+      // ETP with empty title and objeto
+      const incompleteEtp = {
+        ...mockEtp,
+        title: 'Short', // Less than 10 chars
+        objeto: 'Too short', // Less than 50 chars
+      };
+      etpRepository.findOne.mockResolvedValue(incompleteEtp as Etp);
+      sectionRepository.find.mockResolvedValue([]);
+
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      const titleSuggestion = result.suggestions.find(
+        (s) => s.field === 'Titulo',
+      );
+      const objetoSuggestion = result.suggestions.find(
+        (s) => s.field === 'Objeto',
+      );
+
+      expect(titleSuggestion).toBeDefined();
+      expect(objetoSuggestion).toBeDefined();
+    });
+
+    it('should return totalIssues count', async () => {
+      const result = await service.getProactiveSuggestions(
+        mockEtpId,
+        mockOrganizationId,
+      );
+
+      expect(result.totalIssues).toBe(result.suggestions.length);
+    });
+  });
 });
