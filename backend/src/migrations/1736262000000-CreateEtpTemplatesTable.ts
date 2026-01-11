@@ -21,9 +21,13 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
  */
 export class CreateEtpTemplatesTable1736262000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create enum type for template types
+    // Create enum type for template types (idempotent)
     await queryRunner.query(`
-      CREATE TYPE "etp_template_type_enum" AS ENUM ('OBRAS', 'TI', 'SERVICOS', 'MATERIAIS')
+      DO $$ BEGIN
+        CREATE TYPE "etp_template_type_enum" AS ENUM ('OBRAS', 'TI', 'SERVICOS', 'MATERIAIS');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
     `);
 
     // Create etp_templates table
