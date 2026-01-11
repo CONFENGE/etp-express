@@ -33,6 +33,7 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 - **Export Profissional**: PDF, JSON, XML e DOCX com disclaimers obrigatorios
 - **Import & Analise**: Upload PDF/DOCX para analise e conversao em ETP
 - **SSE/Streaming**: Feedback em tempo real durante geracao de secoes
+- **Assistente IA (Chatbot)**: Chat contextual no editor com sugestoes proativas
 - **Analytics de UX**: Telemetria para melhoria continua
 - **Cache LLM Inteligente**: OpenAI (24h TTL) + Exa (7d TTL) - economia ~80% custos
 - **Circuit Breaker Resiliente**: Opossum para OpenAI/Exa - degradacao graciosa
@@ -53,6 +54,7 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 5. ✅ Exportação em PDF (com aviso destacado), JSON e XML
 6. ✅ Validação obrigatória de seções mínimas (I, IV, VI, VIII, XIII)
 7. ✅ Interface moderna, responsiva e acessível (WCAG 2.1 AA)
+8. ✅ **Assistente IA (Chatbot)**: Chat contextual para duvidas durante elaboração do ETP
 
 ---
 
@@ -954,10 +956,11 @@ npm run lint
 2. **Novo ETP**: Clique em "Criar ETP" e preencha título e objeto
 3. **Preencher Seções**: Navegue pelas 13 seções usando as tabs
 4. **Usar IA**: Clique em "Gerar com IA" para sugestões automáticas
-5. **Revisar Criticamente**: ⚠ **SEMPRE** revise antes de aceitar
-6. **Buscar Referências**: Use "Buscar Similares" para fundamentação
-7. **Validar**: Verifique se seções obrigatórias estão completas (I, IV, VI, VIII, XIII)
-8. **Exportar**: Gere PDF/JSON/XML quando completo
+5. **Tirar Duvidas**: Use o **Assistente IA** (botão de chat no canto inferior direito) para duvidas contextuais
+6. **Revisar Criticamente**: ⚠ **SEMPRE** revise antes de aceitar
+7. **Buscar Referências**: Use "Buscar Similares" para fundamentação
+8. **Validar**: Verifique se seções obrigatórias estão completas (I, IV, VI, VIII, XIII)
+9. **Exportar**: Gere PDF/JSON/XML quando completo
 
 ### Seções Obrigatórias (Lei 14.133/2021)
 
