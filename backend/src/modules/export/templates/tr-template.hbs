@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo de Referência - {{tr.objeto}}</title>
+    <style>
+        @page {
+            margin: 2.5cm 2cm;
+            size: A4;
+            @top-center {
+                content: "TERMO DE REFERÊNCIA";
+                font-family: 'Arial', sans-serif;
+                font-size: 10pt;
+                color: #666;
+            }
+            @bottom-center {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Arial', sans-serif;
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px double #000;
+        }
+
+        .header .org-logo {
+            margin-bottom: 10px;
+        }
+
+        .header .org-name {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 5px 0;
+        }
+
+        .header h1 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header .doc-number {
+            font-size: 11pt;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .header .version {
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .toc {
+            margin: 20px 0 30px 0;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            page-break-after: always;
+        }
+
+        .toc h2 {
+            font-size: 14pt;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            font-size: 11pt;
+        }
+
+        .toc li a {
+            text-decoration: none;
+            color: #000;
+        }
+
+        .toc li a:hover {
+            text-decoration: underline;
+        }
+
+        .toc .toc-number {
+            display: inline-block;
+            width: 30px;
+            font-weight: bold;
+        }
+
+        .section {
+            margin: 25px 0;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 20px 0 12px 0;
+            padding: 8px 0;
+            border-bottom: 2px solid #333;
+            text-transform: uppercase;
+            color: #1a365d;
+        }
+
+        .section-number {
+            margin-right: 10px;
+        }
+
+        .section-content {
+            text-align: justify;
+            margin: 12px 0;
+            padding-left: 5px;
+        }
+
+        .section-content p {
+            margin: 10px 0;
+            text-indent: 2em;
+        }
+
+        .metadata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+
+        .metadata-table th,
+        .metadata-table td {
+            border: 1px solid #333;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .metadata-table th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            width: 35%;
+        }
+
+        .metadata-table td {
+            background-color: #fff;
+        }
+
+        .valor-estimado {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a365d;
+            padding: 15px;
+            background-color: #f0f4f8;
+            border: 2px solid #1a365d;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .cronograma-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .cronograma-table th,
+        .cronograma-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .cronograma-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .obrigacoes-list {
+            margin: 10px 0 10px 20px;
+            padding: 0;
+        }
+
+        .obrigacoes-list li {
+            margin: 8px 0;
+            text-align: justify;
+        }
+
+        .disclaimer {
+            margin: 30px 0 20px 0;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 4px;
+            font-size: 10pt;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .assinaturas {
+            margin-top: 60px;
+            page-break-inside: avoid;
+        }
+
+        .assinatura-box {
+            display: inline-block;
+            width: 45%;
+            margin: 30px 2%;
+            text-align: center;
+        }
+
+        .assinatura-linha {
+            border-top: 1px solid #000;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .assinatura-cargo {
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #666;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .subsection {
+            margin: 15px 0 15px 15px;
+        }
+
+        .subsection-title {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 15px 0 8px 0;
+            color: #333;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        .legal-ref {
+            font-style: italic;
+            color: #555;
+            font-size: 11pt;
+        }
+
+        .highlight-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 11pt;
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO -->
+    <div class="header">
+        {{#if tr.organization.name}}
+        <div class="org-name">{{tr.organization.name}}</div>
+        {{/if}}
+        <h1>Termo de Referência</h1>
+        {{#if etpNumeroProcesso}}
+        <div class="doc-number">Processo nº {{etpNumeroProcesso}}</div>
+        {{/if}}
+        <div class="version">Versão {{tr.versao}} | {{formatDate tr.createdAt}}</div>
+    </div>
+
+    <!-- SUMÁRIO -->
+    <div class="toc">
+        <h2>Sumário</h2>
+        <ul>
+            <li><span class="toc-number">1.</span> DO OBJETO</li>
+            <li><span class="toc-number">2.</span> DA FUNDAMENTAÇÃO LEGAL</li>
+            <li><span class="toc-number">3.</span> DA DESCRIÇÃO DA SOLUÇÃO</li>
+            <li><span class="toc-number">4.</span> DOS REQUISITOS DA CONTRATAÇÃO</li>
+            <li><span class="toc-number">5.</span> DO MODELO DE EXECUÇÃO</li>
+            <li><span class="toc-number">6.</span> DO MODELO DE GESTÃO</li>
+            <li><span class="toc-number">7.</span> DOS CRITÉRIOS DE SELEÇÃO</li>
+            <li><span class="toc-number">8.</span> DO VALOR ESTIMADO</li>
+            <li><span class="toc-number">9.</span> DA DOTAÇÃO ORÇAMENTÁRIA</li>
+            <li><span class="toc-number">10.</span> DO PRAZO DE VIGÊNCIA</li>
+            <li><span class="toc-number">11.</span> DAS OBRIGAÇÕES DO CONTRATANTE</li>
+            <li><span class="toc-number">12.</span> DAS OBRIGAÇÕES DA CONTRATADA</li>
+            <li><span class="toc-number">13.</span> DAS SANÇÕES E PENALIDADES</li>
+            {{#if tr.garantiaContratual}}
+            <li><span class="toc-number">14.</span> DA GARANTIA CONTRATUAL</li>
+            {{/if}}
+            {{#if tr.condicoesPagamento}}
+            <li><span class="toc-number">15.</span> DAS CONDIÇÕES DE PAGAMENTO</li>
+            {{/if}}
+        </ul>
+    </div>
+
+    <!-- AVISO IMPORTANTE -->
+    <div class="disclaimer">
+        <strong>⚠️ IMPORTANTE:</strong> Este documento foi gerado com auxílio de sistema assistivo baseado em Inteligência Artificial.
+        Todo o conteúdo deve ser revisado e validado por profissional qualificado antes de qualquer encaminhamento oficial.
+        O sistema pode conter imprecisões e não substitui a responsabilidade técnica e administrativa do servidor público.
+    </div>
+
+    <!-- 1. DO OBJETO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">1.</span> DO OBJETO</h2>
+        <div class="section-content">
+            {{{formatText tr.objeto}}}
+        </div>
+    </div>
+
+    <!-- 2. DA FUNDAMENTAÇÃO LEGAL -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">2.</span> DA FUNDAMENTAÇÃO LEGAL</h2>
+        <div class="section-content">
+            {{#if tr.fundamentacaoLegal}}
+            {{{formatText tr.fundamentacaoLegal}}}
+            {{else}}
+            <p>A presente contratação encontra amparo legal nos seguintes dispositivos:</p>
+            <ul>
+                <li>Lei nº 14.133, de 1º de abril de 2021 - Lei de Licitações e Contratos Administrativos;</li>
+                <li>Instrução Normativa SEGES/ME nº 40, de 22 de maio de 2020;</li>
+                <li>Instrução Normativa SEGES/ME nº 65, de 7 de julho de 2021.</li>
+            </ul>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 3. DA DESCRIÇÃO DA SOLUÇÃO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">3.</span> DA DESCRIÇÃO DA SOLUÇÃO</h2>
+        <div class="section-content">
+            {{#if tr.descricaoSolucao}}
+            {{{formatText tr.descricaoSolucao}}}
+            {{else}}
+            <p class="legal-ref">[Descrição da solução não informada]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 4. DOS REQUISITOS DA CONTRATAÇÃO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">4.</span> DOS REQUISITOS DA CONTRATAÇÃO</h2>
+        <div class="section-content">
+            {{#if tr.requisitosContratacao}}
+            {{{formatText tr.requisitosContratacao}}}
+            {{else}}
+            <p class="legal-ref">[Requisitos da contratação não informados]</p>
+            {{/if}}
+        </div>
+
+        {{#if tr.especificacoesTecnicas}}
+        <div class="subsection">
+            <h3 class="subsection-title">4.1 Especificações Técnicas</h3>
+            <div class="highlight-box">
+                {{{formatJson tr.especificacoesTecnicas}}}
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- 5. DO MODELO DE EXECUÇÃO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">5.</span> DO MODELO DE EXECUÇÃO</h2>
+        <div class="section-content">
+            {{#if tr.modeloExecucao}}
+            {{{formatText tr.modeloExecucao}}}
+            {{else}}
+            <p class="legal-ref">[Modelo de execução não informado]</p>
+            {{/if}}
+        </div>
+
+        {{#if tr.localExecucao}}
+        <div class="subsection">
+            <h3 class="subsection-title">5.1 Local de Execução</h3>
+            <p>{{tr.localExecucao}}</p>
+        </div>
+        {{/if}}
+
+        {{#if tr.cronograma}}
+        <div class="subsection">
+            <h3 class="subsection-title">5.2 Cronograma de Execução</h3>
+            {{{formatCronograma tr.cronograma}}}
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- 6. DO MODELO DE GESTÃO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">6.</span> DO MODELO DE GESTÃO</h2>
+        <div class="section-content">
+            {{#if tr.modeloGestao}}
+            {{{formatText tr.modeloGestao}}}
+            {{else}}
+            <p class="legal-ref">[Modelo de gestão não informado]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 7. DOS CRITÉRIOS DE SELEÇÃO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">7.</span> DOS CRITÉRIOS DE SELEÇÃO DO FORNECEDOR</h2>
+        <div class="section-content">
+            {{#if tr.criteriosSelecao}}
+            {{{formatText tr.criteriosSelecao}}}
+            {{else}}
+            <p class="legal-ref">[Critérios de seleção não informados]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 8. DO VALOR ESTIMADO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">8.</span> DO VALOR ESTIMADO</h2>
+        <div class="section-content">
+            {{#if tr.valorEstimado}}
+            <div class="valor-estimado">
+                R$ {{formatCurrency tr.valorEstimado}}
+            </div>
+            <p>O valor estimado foi obtido através de pesquisa de preços realizada conforme metodologia estabelecida na Instrução Normativa SEGES/ME nº 65/2021.</p>
+            {{else}}
+            <p class="legal-ref">[Valor estimado não informado - pesquisa de preços pendente]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 9. DA DOTAÇÃO ORÇAMENTÁRIA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">9.</span> DA DOTAÇÃO ORÇAMENTÁRIA</h2>
+        <div class="section-content">
+            {{#if tr.dotacaoOrcamentaria}}
+            <p>As despesas decorrentes desta contratação correrão por conta da seguinte dotação orçamentária:</p>
+            <div class="highlight-box">
+                <strong>Dotação:</strong> {{tr.dotacaoOrcamentaria}}
+            </div>
+            {{else}}
+            <p class="legal-ref">[Dotação orçamentária a ser indicada no momento da contratação]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 10. DO PRAZO DE VIGÊNCIA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">10.</span> DO PRAZO DE VIGÊNCIA</h2>
+        <div class="section-content">
+            {{#if tr.prazoVigencia}}
+            <p>O prazo de vigência do contrato será de <strong>{{tr.prazoVigencia}} dias</strong>, contados a partir da data de sua assinatura, podendo ser prorrogado nos termos da Lei nº 14.133/2021.</p>
+            {{else}}
+            <p class="legal-ref">[Prazo de vigência não informado]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 11. DAS OBRIGAÇÕES DO CONTRATANTE -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">11.</span> DAS OBRIGAÇÕES DO CONTRATANTE</h2>
+        <div class="section-content">
+            {{#if tr.obrigacoesContratante}}
+            {{{formatText tr.obrigacoesContratante}}}
+            {{else}}
+            <p>São obrigações do CONTRATANTE:</p>
+            <ul class="obrigacoes-list">
+                <li>Receber o objeto no prazo e condições estabelecidas;</li>
+                <li>Verificar minuciosamente a conformidade do objeto recebido;</li>
+                <li>Comunicar à contratada qualquer irregularidade encontrada;</li>
+                <li>Acompanhar e fiscalizar a execução do contrato;</li>
+                <li>Efetuar o pagamento conforme condições pactuadas.</li>
+            </ul>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 12. DAS OBRIGAÇÕES DA CONTRATADA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">12.</span> DAS OBRIGAÇÕES DA CONTRATADA</h2>
+        <div class="section-content">
+            {{#if tr.obrigacoesContratada}}
+            {{{formatText tr.obrigacoesContratada}}}
+            {{else}}
+            <p>São obrigações da CONTRATADA:</p>
+            <ul class="obrigacoes-list">
+                <li>Executar o objeto conforme especificações do Termo de Referência;</li>
+                <li>Responsabilizar-se pelos encargos trabalhistas, previdenciários e fiscais;</li>
+                <li>Manter as condições de habilitação durante toda a vigência;</li>
+                <li>Comunicar imediatamente qualquer problema na execução;</li>
+                <li>Reparar, corrigir ou substituir, às suas expensas, o objeto em que se verificarem vícios.</li>
+            </ul>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 13. DAS SANÇÕES E PENALIDADES -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">13.</span> DAS SANÇÕES E PENALIDADES</h2>
+        <div class="section-content">
+            {{#if tr.sancoesPenalidades}}
+            {{{formatText tr.sancoesPenalidades}}}
+            {{else}}
+            <p>O descumprimento das obrigações assumidas sujeitará a contratada às sanções previstas na Lei nº 14.133/2021, garantido o direito ao contraditório e à ampla defesa:</p>
+            <ul class="obrigacoes-list">
+                <li>Advertência;</li>
+                <li>Multa de até 30% sobre o valor do contrato;</li>
+                <li>Impedimento de licitar e contratar;</li>
+                <li>Declaração de inidoneidade para licitar ou contratar.</li>
+            </ul>
+            {{/if}}
+        </div>
+    </div>
+
+    {{#if tr.garantiaContratual}}
+    <!-- 14. DA GARANTIA CONTRATUAL -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">14.</span> DA GARANTIA CONTRATUAL</h2>
+        <div class="section-content">
+            {{{formatText tr.garantiaContratual}}}
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if tr.condicoesPagamento}}
+    <!-- 15. DAS CONDIÇÕES DE PAGAMENTO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">15.</span> DAS CONDIÇÕES DE PAGAMENTO</h2>
+        <div class="section-content">
+            {{{formatText tr.condicoesPagamento}}}
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if tr.subcontratacao}}
+    <!-- SUBCONTRATAÇÃO -->
+    <div class="section">
+        <h2 class="section-title">DA SUBCONTRATAÇÃO</h2>
+        <div class="section-content">
+            {{{formatText tr.subcontratacao}}}
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="page-break"></div>
+
+    <!-- ASSINATURAS -->
+    <div class="assinaturas">
+        <h2 class="section-title">RESPONSÁVEIS</h2>
+
+        <table class="metadata-table">
+            <tr>
+                <th>Data de Elaboração</th>
+                <td>{{formatDate tr.createdAt}}</td>
+            </tr>
+            <tr>
+                <th>Última Atualização</th>
+                <td>{{formatDate tr.updatedAt}}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{formatStatus tr.status}}</td>
+            </tr>
+            {{#if tr.createdBy.name}}
+            <tr>
+                <th>Elaborado por</th>
+                <td>{{tr.createdBy.name}}</td>
+            </tr>
+            {{/if}}
+        </table>
+
+        <div style="margin-top: 50px;">
+            <div class="assinatura-box">
+                <div class="assinatura-linha"></div>
+                <p>Elaborador do TR</p>
+                <p class="assinatura-cargo">Equipe de Planejamento</p>
+            </div>
+            <div class="assinatura-box">
+                <div class="assinatura-linha"></div>
+                <p>Autoridade Competente</p>
+                <p class="assinatura-cargo">Aprovação</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <div class="footer">
+        <p>Documento gerado pelo sistema ETP Express em {{formatDate generatedAt}}</p>
+        <p>Sistema assistivo - Validação humana obrigatória</p>
+    </div>
+</body>
+</html>
