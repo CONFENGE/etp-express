@@ -8,6 +8,7 @@ import {
 import { User, UserRole } from '../../entities/user.entity';
 import { CreateTermoReferenciaDto } from './dto/create-termo-referencia.dto';
 import { UpdateTermoReferenciaDto } from './dto/update-termo-referencia.dto';
+import { GenerateTrResponseDto } from './dto/generate-tr.dto';
 
 describe('TermoReferenciaController', () => {
   let controller: TermoReferenciaController;
@@ -43,6 +44,7 @@ describe('TermoReferenciaController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    generateFromEtp: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -167,6 +169,70 @@ describe('TermoReferenciaController', () => {
         'tr-001',
         mockOrganizationId,
       );
+    });
+  });
+
+  /**
+   * Tests for generateFromEtp endpoint
+   * Issue #1249 - [TR-b] Implementar geracao automatica TR a partir do ETP
+   */
+  describe('generateFromEtp', () => {
+    const mockGeneratedTr: GenerateTrResponseDto = {
+      id: 'tr-generated-001',
+      etpId: mockEtpId,
+      objeto: 'Objeto do ETP',
+      fundamentacaoLegal: 'Lei 14.133/2021',
+      status: TermoReferenciaStatus.DRAFT,
+      versao: 1,
+      createdAt: new Date(),
+      metadata: {
+        tokens: 500,
+        model: 'gpt-4.1-nano',
+        latencyMs: 1500,
+        aiEnhanced: true,
+      },
+    };
+
+    it('should generate TR from an ETP', async () => {
+      mockService.generateFromEtp.mockResolvedValue(mockGeneratedTr);
+
+      const result = await controller.generateFromEtp(
+        mockEtpId,
+        mockUser as User,
+      );
+
+      expect(result).toEqual(mockGeneratedTr);
+      expect(mockService.generateFromEtp).toHaveBeenCalledWith(
+        mockEtpId,
+        mockUserId,
+        mockOrganizationId,
+      );
+    });
+
+    it('should pass correct parameters to service', async () => {
+      mockService.generateFromEtp.mockResolvedValue(mockGeneratedTr);
+
+      await controller.generateFromEtp(mockEtpId, mockUser as User);
+
+      expect(mockService.generateFromEtp).toHaveBeenCalledWith(
+        mockEtpId,
+        mockUser.id,
+        mockUser.organizationId,
+      );
+    });
+
+    it('should return TR with metadata including AI enhancement info', async () => {
+      mockService.generateFromEtp.mockResolvedValue(mockGeneratedTr);
+
+      const result = await controller.generateFromEtp(
+        mockEtpId,
+        mockUser as User,
+      );
+
+      expect(result.metadata).toBeDefined();
+      expect(result.metadata?.aiEnhanced).toBe(true);
+      expect(result.metadata?.tokens).toBe(500);
+      expect(result.metadata?.latencyMs).toBe(1500);
     });
   });
 });
