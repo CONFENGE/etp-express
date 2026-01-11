@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-11 | **Progresso:** 685/745 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-11 | **Progresso:** 686/746 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-11 | #1411 | Feature  | Add PesquisaPrecos entity and module (#1255) ✅ - **M11 started** |
 | 2026-01-11 | #1410 | Feature  | Add TR export to PDF/DOCX with official formatting (#1252) ✅ - **M10 COMPLETE** |
 | 2026-01-11 | #1409 | Feature  | Implement TR Editor frontend (#1251) ✅ - M10 progress 4/6        |
 | 2026-01-11 | #1408 | Feature  | Implement TR templates by category (#1250) ✅ - M10 progress 3/6  |
@@ -270,7 +271,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/6    | ✅         | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 0/7    | Alta       | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 1/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -296,10 +297,21 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260)
+#### M11: Pesquisa de Preços Formal (#1254-#1260) - 1/7 IN PROGRESS
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 
+| #     | Issue                                         | Status |
+| ----- | --------------------------------------------- | ------ |
+| #1254 | [Pesquisa] Modulo de Pesquisa de Precos - EPIC| 🔄     |
+|       | ↳ #1255 Entity PesquisaPrecos com metodologia | ✅     |
+|       | ↳ #1256 Coleta automática multi-fonte         | 🔴     |
+|       | ↳ #1257 Mapa comparativo de preços            | 🔴     |
+|       | ↳ #1258 Justificativa automática metodologia  | 🔴     |
+|       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
+|       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
+
+Features:
 - Coleta automática multi-fonte (PNCP, SINAPI, SICRO, Atas RP)
 - Mapa comparativo de preços
 - Justificativa automática de metodologia
@@ -355,9 +367,9 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 745   |
+| Issues Totais     | 746   |
 | Issues Abertas    | 60    |
-| Issues Fechadas   | 685   |
+| Issues Fechadas   | 686   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
