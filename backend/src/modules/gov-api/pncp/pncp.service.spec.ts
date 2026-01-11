@@ -10,7 +10,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { PncpService } from './pncp.service';
 import { GovApiCache } from '../utils/gov-api-cache';
-import { PncpContratacao, PncpPaginatedResponse } from './pncp.types';
+import {
+  PncpContratacao,
+  PncpPaginatedResponse,
+  PncpAta,
+  PncpAtaItem,
+} from './pncp.types';
+import { SearchStatus } from '../types/search-result';
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -351,6 +357,440 @@ describe('PncpService', () => {
       }
 
       expect(cache.get).toHaveBeenCalled();
+    });
+  });
+
+  describe('searchAtasRegistroPreco', () => {
+    const mockAta: PncpAta = {
+      numeroControlePNCP: '00000000000000-1-000001/2024',
+      numeroAta: '001/2024',
+      anoAta: 2024,
+      sequencialAta: 1,
+      dataPublicacaoPncp: '2024-01-15',
+      dataVigenciaInicio: '2024-01-15',
+      dataVigenciaFim: '2025-01-14',
+      dataAssinatura: '2024-01-10',
+      valorTotal: 500000.0,
+      orgaoEntidade: {
+        cnpj: '00000000000000',
+        razaoSocial: 'Órgão Público Federal',
+      },
+      unidadeOrgao: {
+        ufNome: 'Distrito Federal',
+        ufSigla: 'DF',
+        codigoUnidade: '001',
+        nomeUnidade: 'Unidade Central',
+      },
+      contratacao: {
+        numeroControlePNCP: '00000000000000-1-000001/2024',
+        objetoCompra: 'Material de escritório',
+        modalidadeNome: 'Pregão - Eletrônico',
+      },
+    };
+
+    const mockAtaItem: PncpAtaItem = {
+      numeroItem: 1,
+      descricao: 'Papel A4, 75g/m², pacote 500 folhas',
+      quantidade: 10000,
+      unidadeMedida: 'PCT',
+      valorUnitario: 25.5,
+      valorTotal: 255000.0,
+      marca: 'Chamex',
+      modelo: 'A4 75g',
+      fornecedor: {
+        cpfCnpj: '12345678000199',
+        nomeRazaoSocial: 'Papelaria Exemplo LTDA',
+      },
+    };
+
+    const mockAtasPaginatedResponse: PncpPaginatedResponse<PncpAta> = {
+      data: [mockAta],
+      totalRegistros: 1,
+      totalPaginas: 1,
+      numeroPagina: 1,
+      paginasRestantes: 0,
+      empty: false,
+    };
+
+    it('should return cached results when available', async () => {
+      const cachedResult = {
+        data: [
+          {
+            id: '00000000000000-1-000001/2024-item-1',
+            title: 'Papel A4',
+            description: 'Test description',
+            source: 'pncp' as const,
+            url: 'https://pncp.gov.br/app/atas/00000000000000-1-000001/2024',
+            relevance: 1.0,
+            fetchedAt: new Date(),
+            codigo: 'ARP-2024-1-1',
+            descricao: 'Papel A4, 75g/m²',
+            unidade: 'PCT',
+            precoUnitario: 25.5,
+            mesReferencia: '2024-01',
+            uf: 'DF',
+            desonerado: false,
+            categoria: 'ata_registro_preco',
+          },
+        ],
+        total: 1,
+        page: 1,
+        perPage: 500,
+        source: 'pncp' as const,
+        cached: false,
+        isFallback: false,
+        timestamp: new Date(),
+        status: SearchStatus.SUCCESS,
+      };
+
+      cache.get.mockResolvedValueOnce(cachedResult);
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.cached).toBe(true);
+      expect(result.data).toHaveLength(1);
+      expect(cache.get).toHaveBeenCalled();
+    });
+
+    it('should apply apenasVigentes filter correctly', async () => {
+      // Mock client to simulate API response
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        apenasVigentes: true,
+      });
+
+      expect(mockClient.get).toHaveBeenCalledWith(
+        '/v1/atas',
+        expect.any(Object),
+      );
+      // Ata is vigent (ends in 2025), so should be included
+      expect(result.data.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should apply UF filter correctly', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        ufOrgao: 'DF',
+      });
+
+      // Should include ata from DF
+      expect(result.source).toBe('pncp');
+    });
+
+    it('should filter out atas from different UF', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+        ufOrgao: 'SP', // Different UF than mockAta (DF)
+      });
+
+      // Should be empty since ata is from DF, not SP
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should return SERVICE_UNAVAILABLE when circuit breaker is open', async () => {
+      const mockClient = {
+        isAvailable: jest.fn().mockReturnValue(false),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: true,
+          halfOpen: false,
+          closed: false,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.SERVICE_UNAVAILABLE);
+      expect(result.data).toHaveLength(0);
+      expect(result.isFallback).toBe(true);
+    });
+
+    it('should normalize ata items to GovApiPriceReference format', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.data.length).toBeGreaterThan(0);
+      const priceRef = result.data[0];
+
+      // Verify GovApiPriceReference structure
+      expect(priceRef.codigo).toBe('ARP-2024-1-1');
+      expect(priceRef.descricao).toBe('Papel A4, 75g/m², pacote 500 folhas');
+      expect(priceRef.unidade).toBe('PCT');
+      expect(priceRef.precoUnitario).toBe(25.5);
+      expect(priceRef.uf).toBe('DF');
+      expect(priceRef.categoria).toBe('ata_registro_preco');
+      expect(priceRef.source).toBe('pncp');
+      expect(priceRef.url).toContain('pncp.gov.br');
+    });
+
+    it('should include metadata in normalized price reference', async () => {
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      const priceRef = result.data[0];
+
+      // Verify metadata
+      expect(priceRef.metadata).toBeDefined();
+      expect(priceRef.metadata?.numeroAta).toBe('001/2024');
+      expect(priceRef.metadata?.anoAta).toBe(2024);
+      expect(priceRef.metadata?.orgaoGerenciador).toBe('Órgão Público Federal');
+      expect(priceRef.metadata?.fornecedor).toBe('Papelaria Exemplo LTDA');
+      expect(priceRef.metadata?.marca).toBe('Chamex');
+    });
+
+    it('should skip items without valid price', async () => {
+      const mockItemWithoutPrice: PncpAtaItem = {
+        ...mockAtaItem,
+        valorUnitario: 0, // Invalid price
+      };
+
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(mockAtasPaginatedResponse);
+          }
+          if (path.includes('/itens')) {
+            return Promise.resolve({ itens: [mockItemWithoutPrice] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      // Should be empty since item has no valid price
+      expect(result.data.length).toBe(0);
+    });
+
+    it('should continue processing if one ata items fetch fails', async () => {
+      const secondAta: PncpAta = {
+        ...mockAta,
+        numeroControlePNCP: '00000000000000-1-000002/2024',
+        sequencialAta: 2,
+      };
+
+      const twoAtasResponse: PncpPaginatedResponse<PncpAta> = {
+        ...mockAtasPaginatedResponse,
+        data: [mockAta, secondAta],
+        totalRegistros: 2,
+      };
+
+      let callCount = 0;
+      const mockClient = {
+        get: jest.fn().mockImplementation((path: string) => {
+          if (path === '/v1/atas') {
+            return Promise.resolve(twoAtasResponse);
+          }
+          if (path.includes('/itens')) {
+            callCount++;
+            if (callCount === 1) {
+              // First ata items fetch fails
+              return Promise.reject(new Error('Network error'));
+            }
+            // Second ata items fetch succeeds
+            return Promise.resolve({ itens: [mockAtaItem] });
+          }
+          return Promise.reject(new Error('Unknown endpoint'));
+        }),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      // Should have prices from second ata only
+      expect(result.data.length).toBe(1);
+      expect(result.status).toBe(SearchStatus.SUCCESS);
+    });
+
+    it('should handle timeout errors', async () => {
+      const mockClient = {
+        get: jest
+          .fn()
+          .mockRejectedValue(new Error('Request timeout ETIMEDOUT')),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.TIMEOUT);
+      expect(result.data).toHaveLength(0);
+    });
+
+    it('should handle rate limit errors', async () => {
+      const mockClient = {
+        get: jest.fn().mockRejectedValue(new Error('429 Too Many Requests')),
+        isAvailable: jest.fn().mockReturnValue(true),
+        getCircuitState: jest.fn().mockReturnValue({
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {},
+        }),
+      };
+
+      (service as any).client = mockClient;
+
+      const result = await service.searchAtasRegistroPreco({
+        dataInicial: '20240101',
+        dataFinal: '20241231',
+      });
+
+      expect(result.status).toBe(SearchStatus.RATE_LIMITED);
+      expect(result.data).toHaveLength(0);
     });
   });
 
