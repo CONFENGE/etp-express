@@ -14,7 +14,13 @@ import {
 } from '../../entities/chat-message.entity';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
-import { SendMessageDto, ChatResponseDto, ChatHistoryItemDto } from './dto';
+import {
+  SendMessageDto,
+  ChatResponseDto,
+  ChatHistoryItemDto,
+  ProactiveSuggestionDto,
+  ProactiveSuggestionsResponseDto,
+} from './dto';
 import { OpenAIService, LLMResponse } from '../orchestrator/llm/openai.service';
 import {
   buildSystemPrompt,
@@ -493,5 +499,225 @@ export class ChatService {
       'Por favor, tente novamente em alguns minutos. ' +
       'Enquanto isso, consulte a documentacao da Lei 14.133/2021 e as INs aplicaveis.'
     );
+  }
+
+  /**
+   * Get proactive suggestions for an ETP based on content analysis.
+   *
+   * Analyzes the ETP content to detect:
+   * - Empty or incomplete sections
+   * - Short content that may need expansion
+   * - Potential compliance issues
+   *
+   * @param etpId - ETP ID to analyze
+   * @param organizationId - User's organization ID for authorization
+   * @param field - Optional specific field to focus on
+   * @returns ProactiveSuggestionsResponseDto with suggestions array and counts
+   *
+   * Issue #1397 - [CHAT-1167f] Add proactive suggestions and field validation hints
+   * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
+   */
+  async getProactiveSuggestions(
+    etpId: string,
+    organizationId: string,
+    field?: string,
+  ): Promise<ProactiveSuggestionsResponseDto> {
+    // Validate access
+    const etp = await this.validateEtpAccess(etpId, organizationId);
+
+    // Load sections
+    const sections = await this.loadEtpSections(etpId);
+
+    // Detect issues and generate suggestions
+    const suggestions: ProactiveSuggestionDto[] = [];
+
+    // 1. Check ETP basic fields
+    this.checkEtpBasicFields(etp, suggestions);
+
+    // 2. Check sections for completeness
+    this.checkSectionCompleteness(sections, suggestions, field);
+
+    // 3. Check for inconsistencies
+    this.checkInconsistencies(etp, sections, suggestions);
+
+    // Filter by field if specified
+    const filteredSuggestions = field
+      ? suggestions.filter((s) => s.field.toLowerCase() === field.toLowerCase())
+      : suggestions;
+
+    // Sort by priority: high > medium > low
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    filteredSuggestions.sort(
+      (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
+    );
+
+    const highPriorityCount = filteredSuggestions.filter(
+      (s) => s.priority === 'high',
+    ).length;
+
+    this.logger.log(
+      `Generated ${filteredSuggestions.length} suggestions for ETP ${etpId} (${highPriorityCount} high priority)`,
+    );
+
+    return {
+      suggestions: filteredSuggestions,
+      totalIssues: filteredSuggestions.length,
+      highPriorityCount,
+    };
+  }
+
+  /**
+   * Check ETP basic fields for completeness.
+   */
+  private checkEtpBasicFields(
+    etp: Etp,
+    suggestions: ProactiveSuggestionDto[],
+  ): void {
+    // Check title
+    if (!etp.title || etp.title.trim().length < 10) {
+      suggestions.push({
+        type: 'incomplete',
+        field: 'Titulo',
+        message:
+          'O titulo do ETP esta vazio ou muito curto. Um titulo claro ajuda na identificacao do documento.',
+        priority: 'high',
+        helpPrompt: 'Me ajude a criar um titulo adequado para este ETP',
+      });
+    }
+
+    // Check objeto
+    if (!etp.objeto || etp.objeto.trim().length < 50) {
+      suggestions.push({
+        type: 'incomplete',
+        field: 'Objeto',
+        message:
+          'A descricao do objeto esta ausente ou incompleta. Este campo e obrigatorio conforme a Lei 14.133/2021.',
+        priority: 'high',
+        helpPrompt:
+          'Me ajude a descrever o objeto da contratacao de forma completa',
+      });
+    }
+  }
+
+  /**
+   * Check sections for completeness and content quality.
+   */
+  private checkSectionCompleteness(
+    sections: EtpSection[],
+    suggestions: ProactiveSuggestionDto[],
+    focusField?: string,
+  ): void {
+    // Minimum content lengths by section type
+    const minContentLengths: Record<string, number> = {
+      justificativa: 100,
+      requisitos: 80,
+      riscos: 60,
+      estimativa: 50,
+      default: 30,
+    };
+
+    for (const section of sections) {
+      // Skip if focusing on a specific field that doesn't match
+      if (
+        focusField &&
+        !section.title.toLowerCase().includes(focusField.toLowerCase())
+      ) {
+        continue;
+      }
+
+      const sectionType = section.title.toLowerCase();
+      const minLength =
+        minContentLengths[sectionType] || minContentLengths.default;
+
+      // Check for empty or very short content
+      if (!section.content || section.content.trim().length === 0) {
+        suggestions.push({
+          type: 'incomplete',
+          field: section.title,
+          message: `A secao "${section.title}" esta vazia. Posso ajudar a preenche-la?`,
+          priority: 'high',
+          helpPrompt: `Me ajude a preencher a secao "${section.title}" deste ETP`,
+        });
+      } else if (section.content.trim().length < minLength) {
+        suggestions.push({
+          type: 'improvement',
+          field: section.title,
+          message: `A secao "${section.title}" parece estar incompleta (${section.content.trim().length} caracteres). Recomendo expandir com mais detalhes.`,
+          priority: 'medium',
+          helpPrompt: `Me ajude a melhorar e expandir a secao "${section.title}"`,
+        });
+      }
+    }
+
+    // Check for required sections that might be missing
+    const requiredSections = [
+      'Justificativa',
+      'Objeto',
+      'Requisitos',
+      'Riscos',
+      'Estimativa de Custos',
+    ];
+    const existingSectionTitles = sections.map((s) => s.title.toLowerCase());
+
+    for (const required of requiredSections) {
+      if (
+        focusField &&
+        !required.toLowerCase().includes(focusField.toLowerCase())
+      ) {
+        continue;
+      }
+
+      const hasSection = existingSectionTitles.some(
+        (title) =>
+          title.includes(required.toLowerCase()) ||
+          required.toLowerCase().includes(title),
+      );
+
+      if (!hasSection) {
+        suggestions.push({
+          type: 'warning',
+          field: required,
+          message: `A secao "${required}" nao foi encontrada. Esta secao e recomendada para um ETP completo.`,
+          priority: 'medium',
+          helpPrompt: `Me ajude a criar a secao "${required}" para este ETP`,
+        });
+      }
+    }
+  }
+
+  /**
+   * Check for inconsistencies between ETP fields and sections.
+   * Currently checks for common issues in section content quality.
+   */
+  private checkInconsistencies(
+    _etp: Etp,
+    sections: EtpSection[],
+    suggestions: ProactiveSuggestionDto[],
+  ): void {
+    // Check for sections with very similar content (potential copy-paste)
+    const sectionContents = sections
+      .filter((s) => s.content && s.content.trim().length > 50)
+      .map((s) => ({
+        title: s.title,
+        content: s.content!.trim().toLowerCase(),
+      }));
+
+    for (let i = 0; i < sectionContents.length; i++) {
+      for (let j = i + 1; j < sectionContents.length; j++) {
+        // Simple similarity check - if sections share significant content
+        const a = sectionContents[i];
+        const b = sectionContents[j];
+
+        if (a.content === b.content) {
+          suggestions.push({
+            type: 'warning',
+            field: b.title,
+            message: `A secao "${b.title}" parece ter conteudo identico a "${a.title}". Cada secao deve ter conteudo especifico.`,
+            priority: 'medium',
+            helpPrompt: `Me ajude a diferenciar o conteudo das secoes "${a.title}" e "${b.title}"`,
+          });
+        }
+      }
+    }
   }
 }

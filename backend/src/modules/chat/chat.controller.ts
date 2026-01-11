@@ -21,7 +21,12 @@ import {
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { ChatService } from './chat.service';
-import { SendMessageDto, ChatResponseDto, ChatHistoryItemDto } from './dto';
+import {
+  SendMessageDto,
+  ChatResponseDto,
+  ChatHistoryItemDto,
+  ProactiveSuggestionsResponseDto,
+} from './dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -205,5 +210,63 @@ export class ChatController {
       user.organizationId,
     );
     return { success: true, deletedCount };
+  }
+
+  /**
+   * Get proactive AI suggestions for an ETP.
+   *
+   * Analyzes the ETP content and returns suggestions for:
+   * - Empty or incomplete sections
+   * - Potential improvements to existing content
+   * - Warnings about inconsistencies or compliance issues
+   *
+   * Suggestions are prioritized (high/medium/low) and include
+   * user-friendly messages with optional help prompts.
+   *
+   * Issue #1397 - [CHAT-1167f] Add proactive suggestions and field validation hints
+   * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
+   */
+  @Get('etp/:etpId/suggestions')
+  @ApiOperation({
+    summary: 'Get proactive AI suggestions for an ETP',
+    description:
+      'Analyzes the ETP content and returns suggestions for incomplete fields, ' +
+      'potential improvements, and warnings about inconsistencies.',
+  })
+  @ApiParam({
+    name: 'etpId',
+    description: 'UUID of the ETP being analyzed',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiQuery({
+    name: 'field',
+    description: 'Optional field to focus suggestions on',
+    required: false,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Suggestions retrieved successfully',
+    type: ProactiveSuggestionsResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - authentication required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'ETP not found or user does not have access',
+  })
+  async getProactiveSuggestions(
+    @Param('etpId', ParseUUIDPipe) etpId: string,
+    @Query('field') field?: string,
+    @CurrentUser() user?: User,
+  ): Promise<ProactiveSuggestionsResponseDto> {
+    return this.chatService.getProactiveSuggestions(
+      etpId,
+      user!.organizationId,
+      field,
+    );
   }
 }
