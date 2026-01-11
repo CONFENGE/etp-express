@@ -19,7 +19,11 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { TermoReferenciaService } from './termo-referencia.service';
-import { CreateTermoReferenciaDto, UpdateTermoReferenciaDto } from './dto';
+import {
+  CreateTermoReferenciaDto,
+  UpdateTermoReferenciaDto,
+  GenerateTrResponseDto,
+} from './dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -80,6 +84,60 @@ export class TermoReferenciaController {
   ): Promise<TermoReferencia> {
     return this.termoReferenciaService.create(
       dto,
+      user.id,
+      user.organizationId,
+    );
+  }
+
+  /**
+   * Gera um Termo de Referencia automaticamente a partir de um ETP.
+   *
+   * Processo:
+   * 1. Valida que o ETP existe e pertence a organizacao do usuario
+   * 2. Valida que o ETP esta com status 'completed' ou 'review'
+   * 3. Mapeia campos do ETP para estrutura do TR
+   * 4. Enriquece textos com IA (obrigacoes, modelo de gestao, sancoes)
+   * 5. Cria o TR vinculado ao ETP
+   *
+   * Issue #1249 - [TR-b] Implementar geracao automatica TR a partir do ETP
+   * Parent: #1247 - [TR] Modulo de Termo de Referencia - EPIC
+   */
+  @Post('generate/:etpId')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Gerar TR a partir de ETP',
+    description:
+      'Gera automaticamente um Termo de Referencia a partir de um ETP aprovado, ' +
+      'incluindo enriquecimento de textos via IA.',
+  })
+  @ApiParam({
+    name: 'etpId',
+    description: 'ID do ETP de origem',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'TR gerado com sucesso',
+    type: GenerateTrResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'ETP nao esta com status aprovado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para acessar este ETP',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'ETP nao encontrado',
+  })
+  async generateFromEtp(
+    @Param('etpId', ParseUUIDPipe) etpId: string,
+    @CurrentUser() user: User,
+  ): Promise<GenerateTrResponseDto> {
+    return this.termoReferenciaService.generateFromEtp(
+      etpId,
       user.id,
       user.organizationId,
     );
