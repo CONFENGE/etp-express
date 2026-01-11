@@ -142,7 +142,9 @@ export function useChat(
         setMessages(historyMessages);
       } catch (err) {
         // History fetch failure is not critical - just log it
-        logger.warn('Failed to fetch chat history', err);
+        logger.warn('Failed to fetch chat history', {
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     };
 
