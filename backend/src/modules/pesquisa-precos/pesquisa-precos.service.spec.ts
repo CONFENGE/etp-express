@@ -13,6 +13,7 @@ import { Etp } from '../../entities/etp.entity';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { CreatePesquisaPrecosDto } from './dto/create-pesquisa-precos.dto';
 import { UpdatePesquisaPrecosDto } from './dto/update-pesquisa-precos.dto';
+import { ColetarPrecosDto } from './dto/coletar-precos.dto';
 import { SinapiService } from '../gov-api/sinapi/sinapi.service';
 import { SicroService } from '../gov-api/sicro/sicro.service';
 import { PncpService } from '../gov-api/pncp/pncp.service';
@@ -793,6 +794,461 @@ describe('PesquisaPrecosService', () => {
       expect(result.item.mediana).toBeDefined();
       expect(result.item.menorPreco).toBeDefined();
       expect(result.item.precoAdotado).toBe(result.item.mediana); // Por padrao, adota mediana
+    });
+  });
+
+  // ============================================
+  // Testes para coletarPrecosParaPesquisa (#1415)
+  // ============================================
+
+  describe('coletarPrecosParaPesquisa', () => {
+    const mockSinapiPrices = {
+      data: [
+        {
+          id: 'sinapi-1',
+          codigo: '00001',
+          descricao: 'Cimento Portland CP-II',
+          unidade: 'SC',
+          precoUnitario: 35.5,
+          mesReferencia: '2026-01',
+          uf: 'DF',
+          desonerado: false,
+          source: 'sinapi',
+          title: 'Cimento Portland CP-II',
+          description: 'Cimento Portland CP-II 50kg',
+          relevance: 0.95,
+          fetchedAt: new Date(),
+        },
+      ],
+      total: 1,
+      page: 1,
+      perPage: 10,
+      source: 'sinapi',
+      cached: false,
+      isFallback: false,
+      timestamp: new Date(),
+    };
+
+    const mockSicroPrices = {
+      data: [
+        {
+          id: 'sicro-1',
+          codigo: 'S0001',
+          descricao: 'Cimento Portland',
+          unidade: 'SC',
+          precoUnitario: 36.0,
+          mesReferencia: '2026-01',
+          uf: 'DF',
+          desonerado: false,
+          source: 'sicro',
+          title: 'Cimento Portland',
+          description: 'Cimento Portland para obras rodoviarias',
+          relevance: 0.9,
+          fetchedAt: new Date(),
+        },
+      ],
+      total: 1,
+      page: 1,
+      perPage: 10,
+      source: 'sicro',
+      cached: false,
+      isFallback: false,
+      timestamp: new Date(),
+    };
+
+    const mockPncpContracts = {
+      data: [
+        {
+          id: 'pncp-1',
+          numero: '001/2026',
+          ano: 2026,
+          orgaoContratante: {
+            cnpj: '00000000000191',
+            nome: 'Orgao Federal',
+            uf: 'DF',
+          },
+          objeto: 'Aquisicao de cimento',
+          valorTotal: 35000,
+          modalidade: 'pregao',
+          status: 'homologado',
+          dataPublicacao: new Date(),
+          source: 'pncp',
+          title: 'Aquisicao de cimento',
+          description: 'Aquisicao de cimento para obras',
+          relevance: 0.85,
+          fetchedAt: new Date(),
+        },
+      ],
+      total: 1,
+      page: 1,
+      perPage: 10,
+      source: 'pncp',
+      cached: false,
+      isFallback: false,
+      timestamp: new Date(),
+    };
+
+    const mockAggregationResult = {
+      query: 'cimento portland',
+      aggregations: [
+        {
+          description: 'Preco agregado',
+          averagePrice: 35.5,
+          medianPrice: 35.5,
+          minPrice: 35.0,
+          maxPrice: 36.0,
+          sources: [
+            {
+              source: 'sinapi' as const,
+              code: '00001',
+              price: 35.5,
+              date: new Date(),
+              reference: 'SINAPI 00001',
+              unit: 'SC',
+              uf: 'DF',
+            },
+            {
+              source: 'sicro' as const,
+              code: 'S0001',
+              price: 36.0,
+              date: new Date(),
+              reference: 'SICRO S0001',
+              unit: 'SC',
+              uf: 'DF',
+            },
+          ],
+          sourceCount: 2,
+          confidence: 'MEDIUM' as const,
+          coefficientOfVariation: 0.05,
+          methodology: 'Media de 2 fontes',
+          outliersExcluded: false,
+          outlierCount: 0,
+          unit: 'SC',
+          legalReference: 'Lei 14.133/2021',
+        },
+      ],
+      unmatchedPrices: [],
+      totalPricesAnalyzed: 2,
+      sourcesConsulted: ['sinapi', 'sicro'] as const,
+      overallConfidence: 'MEDIUM' as const,
+      timestamp: new Date(),
+      methodologySummary: 'Pesquisa de precos realizada em 2 fontes.',
+    };
+
+    const coletarPrecosDto: ColetarPrecosDto = {
+      itens: [
+        {
+          descricao: 'Cimento Portland CP-II 50kg',
+          quantidade: 100,
+          unidade: 'SC',
+        },
+        {
+          descricao: 'Areia lavada m3',
+          quantidade: 50,
+          unidade: 'M3',
+        },
+      ],
+      options: {
+        uf: 'DF',
+        timeoutMs: 30000,
+      },
+    };
+
+    it('should collect prices for a price research successfully', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+      });
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.pesquisaId).toBe('pesq-001');
+      expect(result.totalItens).toBe(2);
+      expect(result.resultados).toHaveLength(2);
+      expect(result.pesquisaAtualizada).toBe(true);
+      expect(result.duracaoTotalMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should throw NotFoundException when research not found', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.coletarPrecosParaPesquisa(
+          'non-existent',
+          coletarPrecosDto,
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when research belongs to another org', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        organizationId: 'different-org',
+      });
+
+      await expect(
+        service.coletarPrecosParaPesquisa(
+          'pesq-001',
+          coletarPrecosDto,
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should use default options when not provided', async () => {
+      const dtoWithoutOptions: ColetarPrecosDto = {
+        itens: [
+          {
+            descricao: 'Cimento Portland CP-II 50kg',
+            quantidade: 100,
+            unidade: 'SC',
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        dtoWithoutOptions,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      // Default UF should be 'DF'
+      expect(mockSinapiService.search).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ uf: 'DF' }),
+      );
+    });
+
+    it('should handle partial source failures gracefully', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockRejectedValue(new Error('SICRO unavailable'));
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue({
+        ...mockAggregationResult,
+        overallConfidence: 'LOW',
+      });
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.resultados).toHaveLength(2);
+      // Should still have some results even with partial failure
+    });
+
+    it('should handle all source failures for an item gracefully', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockRejectedValue(new Error('SINAPI error'));
+      mockSicroService.search.mockRejectedValue(new Error('SICRO error'));
+      mockPncpService.search.mockRejectedValue(new Error('PNCP error'));
+      mockPriceAggregationService.aggregatePrices.mockReturnValue({
+        ...mockAggregationResult,
+        aggregations: [],
+        overallConfidence: 'LOW',
+      });
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.confiancaGeral).toBe('LOW');
+      // Should still return a result, even if no prices found
+    });
+
+    it('should append new items to existing items in the research', async () => {
+      const existingItems: ItemPesquisado[] = [
+        {
+          descricao: 'Item existente',
+          quantidade: 10,
+          unidade: 'UN',
+          precos: [{ fonte: 'Teste', valor: 100, data: '2026-01-01' }],
+        },
+      ];
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: existingItems,
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      // Verify that save was called with merged items (existing + new)
+      expect(mockPesquisaPrecosRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          itens: expect.arrayContaining([
+            expect.objectContaining({ descricao: 'Item existente' }),
+          ]),
+        }),
+      );
+    });
+
+    it('should consolidate unique sources across all items', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(result.fontesConsolidadas).toBeDefined();
+      // Should not have duplicates
+      const fonteNames = result.fontesConsolidadas.map((f) => f.nome);
+      const uniqueNames = [...new Set(fonteNames)];
+      expect(fonteNames.length).toBe(uniqueNames.length);
+    });
+
+    it('should calculate overall confidence based on individual results', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue({
+        ...mockAggregationResult,
+        overallConfidence: 'HIGH',
+      });
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(['HIGH', 'MEDIUM', 'LOW']).toContain(result.confiancaGeral);
+    });
+
+    it('should add codigo to item when provided', async () => {
+      const dtoWithCodigo: ColetarPrecosDto = {
+        itens: [
+          {
+            descricao: 'Cimento Portland CP-II 50kg',
+            quantidade: 100,
+            unidade: 'SC',
+            codigo: 'CATMAT-123456',
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        dtoWithCodigo,
+        mockOrganizationId,
+      );
+
+      expect(result.resultados[0].item.codigo).toBe('CATMAT-123456');
+    });
+
+    it('should count items with prices correctly', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        itens: [],
+        fontesConsultadas: [],
+      });
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaPrecos);
+      mockSinapiService.search.mockResolvedValue(mockSinapiPrices);
+      mockSicroService.search.mockResolvedValue(mockSicroPrices);
+      mockPncpService.search.mockResolvedValue(mockPncpContracts);
+      mockPriceAggregationService.aggregatePrices.mockReturnValue(
+        mockAggregationResult,
+      );
+
+      const result = await service.coletarPrecosParaPesquisa(
+        'pesq-001',
+        coletarPrecosDto,
+        mockOrganizationId,
+      );
+
+      expect(result.totalItens).toBe(2);
+      expect(result.itensComPrecos).toBeLessThanOrEqual(result.totalItens);
     });
   });
 });
