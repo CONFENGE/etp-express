@@ -1251,4 +1251,356 @@ describe('PesquisaPrecosService', () => {
       expect(result.itensComPrecos).toBeLessThanOrEqual(result.totalItens);
     });
   });
+
+  // ============================================
+  // Testes para gerarMapaComparativo (#1257)
+  // ============================================
+
+  describe('gerarMapaComparativo', () => {
+    const mockPesquisaComItens: Partial<PesquisaPrecos> = {
+      ...mockPesquisaPrecos,
+      itens: mockItens,
+      metodologia: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+      metodologiasComplementares: [MetodologiaPesquisa.CONTRATACOES_SIMILARES],
+    };
+
+    it('should generate price comparison map successfully', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.pesquisaId).toBe('pesq-001');
+      expect(result.mapaComparativo).toBeDefined();
+      expect(result.mapaComparativo.itens).toHaveLength(2);
+      expect(result.pesquisaAtualizada).toBe(true);
+      expect(result.duracaoMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should calculate statistics correctly for each item', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const primeiroItem = result.mapaComparativo.itens[0];
+
+      // Computador: precos = [3000, 3200, 2800]
+      // Media = (3000 + 3200 + 2800) / 3 = 3000
+      // Mediana = 3000 (valor do meio quando ordenado: 2800, 3000, 3200)
+      // Menor = 2800
+      // Maior = 3200
+      expect(primeiroItem.media).toBe(3000);
+      expect(primeiroItem.mediana).toBe(3000);
+      expect(primeiroItem.menorPreco).toBe(2800);
+      expect(primeiroItem.maiorPreco).toBe(3200);
+      expect(primeiroItem.desvioPadrao).toBeGreaterThan(0);
+      expect(primeiroItem.coeficienteVariacao).toBeGreaterThan(0);
+    });
+
+    it('should identify outliers correctly', async () => {
+      // Para ser um outlier, o valor precisa estar fora de 2 desvios padrao
+      // Com valores proximos e um outlier extremo, conseguimos testar a logica
+      const pesquisaComOutliers: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: [
+          {
+            descricao: 'Item com outlier',
+            unidade: 'un',
+            quantidade: 10,
+            precos: [
+              { fonte: 'A', valor: 100, data: '2026-01-10' },
+              { fonte: 'B', valor: 100, data: '2026-01-10' },
+              { fonte: 'C', valor: 100, data: '2026-01-10' },
+              { fonte: 'D', valor: 100, data: '2026-01-10' },
+              { fonte: 'E', valor: 100, data: '2026-01-10' },
+              { fonte: 'F', valor: 1000, data: '2026-01-10' }, // Outlier extremo
+            ],
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        pesquisaComOutliers,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaComOutliers);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const item = result.mapaComparativo.itens[0];
+      expect(item.outliersExcluidos).toBeGreaterThan(0);
+
+      // Verificar que pelo menos um preco e marcado como outlier
+      const outlierFonte = item.fontes.find((f) => f.isOutlier);
+      expect(outlierFonte).toBeDefined();
+      expect(outlierFonte?.valor).toBe(1000);
+    });
+
+    it('should generate summary correctly', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const resumo = result.mapaComparativo.resumo;
+
+      expect(resumo.totalItens).toBe(2);
+      expect(resumo.totalFontes).toBe(3); // Fornecedor A, B, C
+      expect(resumo.fontes).toContain('Fornecedor A');
+      expect(resumo.fontes).toContain('Fornecedor B');
+      expect(resumo.fontes).toContain('Fornecedor C');
+      expect(resumo.valorTotalEstimado).toBeGreaterThan(0);
+      expect(resumo.menorValorTotal).toBeGreaterThan(0);
+      expect(resumo.economiaPotencial).toBeDefined();
+      expect(resumo.dataGeracao).toBeDefined();
+      expect(resumo.versao).toBe(1);
+    });
+
+    it('should return empty map for research without items', async () => {
+      const pesquisaSemItens: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: [],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaSemItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      expect(result.mapaComparativo.itens).toHaveLength(0);
+      expect(result.mapaComparativo.resumo.totalItens).toBe(0);
+      expect(result.mapaComparativo.resumo.valorTotalEstimado).toBe(0);
+      expect(result.pesquisaAtualizada).toBe(false);
+    });
+
+    it('should return empty map for research with null items', async () => {
+      const pesquisaSemItens: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: null as unknown as ItemPesquisado[],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaSemItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      expect(result.mapaComparativo.itens).toHaveLength(0);
+      expect(result.pesquisaAtualizada).toBe(false);
+    });
+
+    it('should throw NotFoundException when research not found', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.gerarMapaComparativo('non-existent', mockOrganizationId),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when research belongs to another org', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        organizationId: 'different-org',
+      });
+
+      await expect(
+        service.gerarMapaComparativo('pesq-001', mockOrganizationId),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should use precoAdotado when available', async () => {
+      const pesquisaComPrecoAdotado: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: [
+          {
+            descricao: 'Item com preco adotado',
+            unidade: 'un',
+            quantidade: 10,
+            precoAdotado: 150,
+            justificativaPreco: 'Justificativa customizada',
+            precos: [
+              { fonte: 'A', valor: 100, data: '2026-01-10' },
+              { fonte: 'B', valor: 200, data: '2026-01-10' },
+            ],
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        pesquisaComPrecoAdotado,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        pesquisaComPrecoAdotado,
+      );
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const item = result.mapaComparativo.itens[0];
+      expect(item.precoAdotado).toBe(150);
+      expect(item.justificativa).toBe('Justificativa customizada');
+      expect(item.valorTotal).toBe(1500); // 150 * 10
+    });
+
+    it('should generate methodology description correctly', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      expect(result.mapaComparativo.metodologia).toContain(
+        'Midia Especializada',
+      );
+      expect(result.mapaComparativo.metodologia).toContain(
+        'Contratacoes Similares',
+      );
+      expect(result.mapaComparativo.metodologia).toContain(
+        'IN SEGES/ME n 65/2021',
+      );
+    });
+
+    it('should include legal reference', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      expect(result.mapaComparativo.referenciaLegal).toBe(
+        'IN SEGES/ME n 65/2021 e Lei 14.133/2021',
+      );
+    });
+
+    it('should calculate economia potencial correctly', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const resumo = result.mapaComparativo.resumo;
+
+      // economia = valorTotalEstimado - menorValorTotal
+      expect(resumo.economiaPotencial).toBe(
+        resumo.valorTotalEstimado - resumo.menorValorTotal,
+      );
+    });
+
+    it('should handle items with no prices', async () => {
+      const pesquisaComItemSemPrecos: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: [
+          {
+            descricao: 'Item sem precos',
+            unidade: 'un',
+            quantidade: 10,
+            precos: [],
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        pesquisaComItemSemPrecos,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        pesquisaComItemSemPrecos,
+      );
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const item = result.mapaComparativo.itens[0];
+      expect(item.media).toBe(0);
+      expect(item.mediana).toBe(0);
+      expect(item.menorPreco).toBe(0);
+      expect(item.quantidadeFontes).toBe(0);
+    });
+
+    it('should save map to research', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComItens,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(mockPesquisaComItens);
+
+      await service.gerarMapaComparativo('pesq-001', mockOrganizationId);
+
+      expect(mockPesquisaPrecosRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mapaComparativo: expect.objectContaining({
+            itens: expect.any(Array),
+            resumo: expect.any(Object),
+          }),
+        }),
+      );
+    });
+
+    it('should calculate CV correctly', async () => {
+      const pesquisaCV: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        itens: [
+          {
+            descricao: 'Item teste CV',
+            unidade: 'un',
+            quantidade: 1,
+            precos: [
+              { fonte: 'A', valor: 100, data: '2026-01-10' },
+              { fonte: 'B', valor: 100, data: '2026-01-10' },
+              { fonte: 'C', valor: 100, data: '2026-01-10' },
+            ],
+          },
+        ],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaCV);
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaCV);
+
+      const result = await service.gerarMapaComparativo(
+        'pesq-001',
+        mockOrganizationId,
+      );
+
+      const item = result.mapaComparativo.itens[0];
+      // Quando todos os precos sao iguais, CV = 0
+      expect(item.coeficienteVariacao).toBe(0);
+    });
+  });
 });
