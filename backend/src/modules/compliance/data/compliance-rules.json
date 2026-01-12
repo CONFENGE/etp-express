@@ -1,0 +1,1208 @@
+{
+  "$schema": "./compliance-rules.schema.json",
+  "version": "1.0.0",
+  "lastUpdated": "2026-01-12",
+  "description": "Criterios de conformidade TCU/TCE para validacao automatica de ETPs. Baseado na Lei 14.133/2021, IN SEGES 58/2022, IN SEGES 65/2021 e acordaos do TCU.",
+  "references": [
+    {
+      "id": "LEI_14133",
+      "name": "Lei 14.133/2021",
+      "description": "Nova Lei de Licitacoes e Contratos Administrativos",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm"
+    },
+    {
+      "id": "IN_SEGES_58",
+      "name": "IN SEGES 58/2022",
+      "description": "Regulamenta ETP Digital no ambito federal",
+      "url": "https://www.gov.br/compras/pt-br/acesso-a-informacao/legislacao/instrucoes-normativas/instrucao-normativa-seges-no-58-de-8-de-agosto-de-2022"
+    },
+    {
+      "id": "IN_SEGES_65",
+      "name": "IN SEGES 65/2021",
+      "description": "Procedimentos para pesquisa de precos",
+      "url": "https://www.gov.br/compras/pt-br/acesso-a-informacao/legislacao/instrucoes-normativas/instrucao-normativa-seges-me-no-65-de-7-de-julho-de-2021"
+    },
+    {
+      "id": "IN_SGD_94",
+      "name": "IN SGD 94/2022",
+      "description": "Contratacoes de TIC",
+      "url": "https://www.gov.br/governodigital/pt-br/contratacoes/instrucao-normativa-sgd-me-no-94"
+    },
+    {
+      "id": "LGPD",
+      "name": "Lei 13.709/2018",
+      "description": "Lei Geral de Protecao de Dados",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+    },
+    {
+      "id": "ACORDAO_2622",
+      "name": "Acordao TCU 2622/2013",
+      "description": "Parametros de BDI para obras publicas",
+      "url": "https://portal.tcu.gov.br/sumarios-e-relatorios/acordao-2622-2013-plenario/"
+    },
+    {
+      "id": "IN_SEGES_5",
+      "name": "IN SEGES 5/2017",
+      "description": "Servicos continuados com dedicacao exclusiva de mao de obra",
+      "url": "https://www.gov.br/compras/pt-br/acesso-a-informacao/legislacao/instrucoes-normativas"
+    }
+  ],
+  "severityLevels": {
+    "CRITICAL": {
+      "weight": 1.0,
+      "description": "Obrigatorio por lei - ausencia pode anular o processo",
+      "color": "#dc3545"
+    },
+    "HIGH": {
+      "weight": 0.8,
+      "description": "Altamente recomendado - ausencia gera apontamento grave",
+      "color": "#fd7e14"
+    },
+    "MEDIUM": {
+      "weight": 0.5,
+      "description": "Recomendado - ausencia gera apontamento moderado",
+      "color": "#ffc107"
+    },
+    "LOW": {
+      "weight": 0.2,
+      "description": "Opcional - agrega valor mas nao e obrigatorio",
+      "color": "#28a745"
+    }
+  },
+  "categories": {
+    "IDENTIFICATION": {
+      "name": "Identificacao",
+      "description": "Dados de identificacao do ETP e responsaveis",
+      "order": 1
+    },
+    "JUSTIFICATION": {
+      "name": "Justificativa",
+      "description": "Descricao da necessidade e analise de alternativas",
+      "order": 2
+    },
+    "REQUIREMENTS": {
+      "name": "Requisitos",
+      "description": "Especificacoes tecnicas e requisitos da contratacao",
+      "order": 3
+    },
+    "PRICING": {
+      "name": "Estimativa de Precos",
+      "description": "Pesquisa de precos e estimativa de valor",
+      "order": 4
+    },
+    "RISKS": {
+      "name": "Riscos",
+      "description": "Analise de riscos e medidas de mitigacao",
+      "order": 5
+    },
+    "CONCLUSION": {
+      "name": "Conclusao",
+      "description": "Posicionamento conclusivo sobre viabilidade",
+      "order": 6
+    },
+    "DOCUMENTATION": {
+      "name": "Documentacao",
+      "description": "Documentos complementares e anexos",
+      "order": 7
+    },
+    "COMPLIANCE": {
+      "name": "Conformidade Legal",
+      "description": "Requisitos de conformidade com legislacao especifica",
+      "order": 8
+    }
+  },
+  "rules": [
+    {
+      "id": "TCU-001",
+      "code": "REJ-001",
+      "requirement": "Descricao da necessidade da contratacao",
+      "description": "O ETP deve descrever claramente o problema a ser resolvido sob a perspectiva do interesse publico, com quantificacao do impacto e dados que fundamentem a necessidade.",
+      "severity": "CRITICAL",
+      "category": "JUSTIFICATION",
+      "legalReference": "Art. 18, par. 1o, I - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["justificativaContratacao", "necessidadeAtendida"],
+      "sectionRequired": "justificativa",
+      "keywords": ["necessidade", "demanda", "problema", "interesse publico", "motivacao"],
+      "minLength": 100,
+      "validationRegex": null,
+      "fixSuggestion": "Descreva o problema especifico que a contratacao resolve, quantifique o impacto (custos, riscos, usuarios afetados) e demonstre o interesse publico envolvido.",
+      "examples": {
+        "bad": "A contratacao visa atender as necessidades operacionais do orgao.",
+        "good": "O orgao atualmente opera com sistema de gestao de documentos desenvolvido em 2010, que apresenta vulnerabilidades de seguranca e indisponibilidade media de 15 horas/mes, impactando o atendimento de aproximadamente 5.000 cidadaos mensais."
+      }
+    },
+    {
+      "id": "TCU-002",
+      "code": "REJ-002",
+      "requirement": "Analise de alternativas de solucao",
+      "description": "Levantamento de mercado com analise de pelo menos 3 alternativas de solucao, com comparativo tecnico e economico e justificativa da escolha.",
+      "severity": "CRITICAL",
+      "category": "JUSTIFICATION",
+      "legalReference": "Art. 18, par. 1o, V - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["descricaoDetalhada"],
+      "sectionRequired": "requisitos",
+      "keywords": ["alternativa", "solucao", "opcao", "comparativo", "viabilidade", "analise"],
+      "minLength": 150,
+      "validationRegex": null,
+      "fixSuggestion": "Liste ao menos 3 alternativas de solucao, analise pros/contras de cada uma e justifique tecnicamente a escolha da opcao selecionada.",
+      "examples": {
+        "bad": "A solucao proposta e a mais adequada.",
+        "good": "Foram analisadas 3 alternativas: A) Desenvolvimento interno (custo R$ 500k, prazo 18 meses); B) Aquisicao de software COTS (custo R$ 300k, prazo 6 meses); C) Contratacao SaaS (custo R$ 200k/ano, prazo 2 meses). Optou-se pela alternativa C considerando menor custo inicial e rapida implantacao."
+      }
+    },
+    {
+      "id": "TCU-003",
+      "code": null,
+      "requirement": "Estimativa de quantidades com memoria de calculo",
+      "description": "Estimativas de quantidades para a contratacao acompanhadas de memorias de calculo e documentos que lhes dao suporte.",
+      "severity": "CRITICAL",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, IV - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["quantidadeEstimada", "unidadeMedida"],
+      "sectionRequired": "requisitos",
+      "keywords": ["quantidade", "volume", "unidade", "memoria", "calculo", "estimativa"],
+      "minLength": 50,
+      "validationRegex": null,
+      "fixSuggestion": "Detalhe as quantidades com base em levantamentos tecnicos e inclua a memoria de calculo utilizada.",
+      "examples": {
+        "bad": "Quantidade estimada: 100 unidades.",
+        "good": "Quantidade estimada: 100 unidades. Memoria de calculo: consumo medio mensal de 8 unidades x 12 meses = 96 unidades, acrescido de 4% de margem de seguranca."
+      }
+    },
+    {
+      "id": "TCU-004",
+      "code": "REJ-003",
+      "requirement": "Estimativa de precos com pesquisa de mercado",
+      "description": "Estimativa de valor da contratacao com pesquisa de precos em pelo menos 3 fontes, priorizando Painel de Precos, contratacoes similares e tabelas oficiais.",
+      "severity": "CRITICAL",
+      "category": "PRICING",
+      "legalReference": "Art. 18, par. 1o, VI - Lei 14.133/2021; IN SEGES 65/2021",
+      "referenceIds": ["LEI_14133", "IN_SEGES_65"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["fontePesquisaPrecos", "valorEstimado"],
+      "sectionRequired": "custos",
+      "keywords": ["preco", "valor", "estimativa", "orcamento", "pesquisa", "PNCP", "cotacao"],
+      "minLength": 50,
+      "validationRegex": null,
+      "fixSuggestion": "Realize pesquisa de precos em minimo 3 fontes: PNCP/Painel de Precos, contratacoes similares, cotacoes de fornecedores. Utilize mediana para valor estimado.",
+      "examples": {
+        "bad": "Valor estimado: R$ 100.000,00 conforme cotacao do fornecedor.",
+        "good": "Pesquisa de precos realizada em 4 fontes: Painel de Precos (R$ 95k), PNCP pregao 2025 (R$ 102k), Cotacao A (R$ 98k), Cotacao B (R$ 105k). Mediana: R$ 100k. Data-base: janeiro/2026."
+      }
+    },
+    {
+      "id": "TCU-005",
+      "code": "REJ-004",
+      "requirement": "Referencia de precos SINAPI/SICRO",
+      "description": "Estimativa de valor para obras e servicos de engenharia com referencia obrigatoria a tabelas SINAPI ou SICRO, informando data-base e codigos utilizados.",
+      "severity": "CRITICAL",
+      "category": "PRICING",
+      "legalReference": "Art. 23, Lei 14.133/2021; IN SEGES 65/2021; Acordao TCU 2622/2013",
+      "referenceIds": ["LEI_14133", "IN_SEGES_65", "ACORDAO_2622"],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": ["fontePesquisaPrecos", "valorEstimado"],
+      "sectionRequired": "custos",
+      "keywords": ["SINAPI", "SICRO", "preco", "referencia", "data-base", "BDI"],
+      "minLength": 50,
+      "validationRegex": "(SINAPI|SICRO)",
+      "fixSuggestion": "Cite obrigatoriamente SINAPI ou SICRO como referencia de precos, informando mes/ano da tabela e codigos dos servicos.",
+      "examples": {
+        "bad": "Valor estimado conforme cotacoes de mercado.",
+        "good": "Referencia: SINAPI 01/2026 - SP. Codigos: 87879 (R$ 45,50), 94965 (R$ 125,30). BDI aplicado: 24,23% (Acordao TCU 2622/2013). Valor total com BDI: R$ 212.580,00."
+      }
+    },
+    {
+      "id": "TCU-006",
+      "code": "REJ-010",
+      "requirement": "Justificativa para parcelamento ou nao",
+      "description": "Justificativa explicita da decisao de parcelar ou nao parcelar o objeto da contratacao.",
+      "severity": "CRITICAL",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, VIII - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["parcelamento", "lote", "divisao", "interdependencia", "escala", "agrupamento"],
+      "minLength": 50,
+      "validationRegex": null,
+      "fixSuggestion": "Inclua secao especifica justificando a decisao de parcelar ou nao parcelar o objeto, citando motivos tecnicos e economicos.",
+      "examples": {
+        "bad": "O objeto nao sera parcelado.",
+        "good": "Optou-se por nao parcelar o objeto tendo em vista: (a) interdependencia tecnica entre os modulos do sistema; (b) necessidade de garantia unica; (c) economia de escala na contratacao integrada."
+      }
+    },
+    {
+      "id": "TCU-007",
+      "code": "REJ-009",
+      "requirement": "Posicionamento conclusivo sobre viabilidade",
+      "description": "Conclusao explicita sobre a viabilidade tecnica e economica da contratacao e recomendacao sobre prosseguimento.",
+      "severity": "CRITICAL",
+      "category": "CONCLUSION",
+      "legalReference": "Art. 18, par. 1o, XIII - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "conclusao",
+      "keywords": ["viavel", "viabilidade", "conclusao", "recomenda", "adequado", "prosseguir"],
+      "minLength": 80,
+      "validationRegex": null,
+      "fixSuggestion": "Inclua posicionamento conclusivo explicito sobre viabilidade tecnica e economica, e recomendacao sobre prosseguir com Termo de Referencia.",
+      "examples": {
+        "bad": "A contratacao atende as necessidades.",
+        "good": "Diante da analise realizada, conclui-se que a contratacao e VIAVEL tecnicamente (existem fornecedores qualificados) e economicamente (valor compativel com mercado). Recomenda-se prosseguir com a elaboracao do Termo de Referencia."
+      }
+    },
+    {
+      "id": "TCU-008",
+      "code": "REJ-007",
+      "requirement": "Analise de riscos com mitigacao",
+      "description": "Identificacao dos riscos da contratacao com classificacao por probabilidade/impacto e definicao de medidas de mitigacao.",
+      "severity": "HIGH",
+      "category": "RISKS",
+      "legalReference": "Art. 18, par. 1o, XII - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["descricaoRiscos", "nivelRisco"],
+      "sectionRequired": "riscos",
+      "keywords": ["risco", "mitigacao", "contingencia", "probabilidade", "impacto"],
+      "minLength": 80,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique riscos tecnicos e operacionais, classifique por probabilidade/impacto e defina medidas de mitigacao com responsaveis.",
+      "examples": {
+        "bad": "Existem riscos na contratacao.",
+        "good": "Riscos identificados: (1) Atraso na entrega - probabilidade media, impacto alto - mitigacao: clausula de multa de 0,5%/dia; (2) Descontinuidade do fornecedor - probabilidade baixa, impacto critico - mitigacao: exigencia de codigo-fonte em escrow."
+      }
+    },
+    {
+      "id": "TCU-009",
+      "code": "REJ-005",
+      "requirement": "ART/RRT do responsavel tecnico",
+      "description": "Identificacao do responsavel tecnico (engenheiro/arquiteto) com numero da ART ou RRT emitida para o projeto.",
+      "severity": "HIGH",
+      "category": "DOCUMENTATION",
+      "legalReference": "Lei 5.194/1966; Lei 12.378/2010",
+      "referenceIds": [],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": ["responsavelTecnico"],
+      "sectionRequired": "identificacao",
+      "keywords": ["ART", "RRT", "CREA", "CAU", "responsavel", "tecnico", "engenheiro"],
+      "minLength": null,
+      "validationRegex": "(ART|RRT)\\s*[:\\-]?\\s*\\d+",
+      "fixSuggestion": "Identifique o profissional responsavel tecnico (engenheiro/arquiteto) e cite o numero da ART ou RRT do projeto.",
+      "examples": {
+        "bad": "Projeto elaborado pela equipe tecnica.",
+        "good": "Responsavel Tecnico: Eng. Civil Fulano de Tal - CREA-XX 00000/D. ART de projeto: 0000000000000."
+      }
+    },
+    {
+      "id": "TCU-010",
+      "code": "REJ-006",
+      "requirement": "Especificacoes tecnicas nao restritivas",
+      "description": "Especificacoes tecnicas dos materiais ou servicos de forma precisa e sem direcionamento a marca ou fornecedor especifico.",
+      "severity": "HIGH",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 47, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["requisitosTecnicos"],
+      "sectionRequired": "requisitos",
+      "keywords": ["especificacao", "tecnica", "requisito", "funcionalidade", "desempenho"],
+      "minLength": 80,
+      "validationRegex": null,
+      "fixSuggestion": "Especifique por caracteristicas de desempenho, evitando direcionamento para marca. Se necessario citar marca, adicione 'ou similar/equivalente'.",
+      "examples": {
+        "bad": "Deve ser equipamento da marca X, modelo Y.",
+        "good": "Servidor de rack 2U com processador minimo 16 nucleos, 64GB RAM DDR4, 2TB SSD NVMe, fonte redundante 800W. Referencia: Dell R750 ou equivalente."
+      }
+    },
+    {
+      "id": "TCU-011",
+      "code": null,
+      "requirement": "Cronograma fisico-financeiro",
+      "description": "Cronograma previsto para execucao da obra com etapas, marcos e previsao de desembolso.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 46, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": ["prazoExecucao"],
+      "sectionRequired": "custos",
+      "keywords": ["cronograma", "etapa", "parcela", "desembolso", "prazo", "marco"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Adicione cronograma fisico-financeiro com etapas de execucao, marcos e previsao de desembolso por periodo.",
+      "examples": {
+        "bad": "Prazo de execucao: 12 meses.",
+        "good": "Cronograma: Etapa 1 (meses 1-3): Fundacao - R$ 150k (25%); Etapa 2 (meses 4-6): Estrutura - R$ 200k (33%); Etapa 3 (meses 7-10): Acabamento - R$ 180k (30%); Etapa 4 (meses 11-12): Instalacoes - R$ 70k (12%)."
+      }
+    },
+    {
+      "id": "TCU-012",
+      "code": null,
+      "requirement": "Memorial descritivo",
+      "description": "Memorial descritivo com especificacoes tecnicas dos servicos a serem executados.",
+      "severity": "MEDIUM",
+      "category": "DOCUMENTATION",
+      "legalReference": "Art. 6o, XXV - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": ["requisitosTecnicos"],
+      "sectionRequired": "requisitos",
+      "keywords": ["memorial", "especificacao", "descritivo", "tecnico"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Elabore memorial descritivo detalhando especificacoes tecnicas dos servicos de engenharia.",
+      "examples": {
+        "bad": null,
+        "good": "Memorial Descritivo: 1. Fundacao - estacas pre-moldadas de concreto, carga admissivel 30tf; 2. Estrutura - concreto armado fck 30MPa, aco CA-50..."
+      }
+    },
+    {
+      "id": "TCU-013",
+      "code": null,
+      "requirement": "Niveis de servico (SLA)",
+      "description": "Definicao de niveis de servico com metricas objetivas de disponibilidade, tempo de resposta e penalidades.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI", "SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["SLA", "nivel de servico", "disponibilidade", "tempo de resposta", "uptime"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Defina SLAs com metricas mensuraveis: disponibilidade (ex: 99,5%), tempo de resposta para incidentes e penalidades por descumprimento.",
+      "examples": {
+        "bad": "O servico deve ter alta disponibilidade.",
+        "good": "SLAs: Disponibilidade minima 99,5% (janela 24x7); Tempo de resposta: P1 (critico) 2h, P2 (alto) 4h, P3 (medio) 8h; Penalidade: desconto de 0,5% por hora de indisponibilidade acima do limite."
+      }
+    },
+    {
+      "id": "TCU-014",
+      "code": null,
+      "requirement": "Requisitos de seguranca da informacao",
+      "description": "Especificacao de requisitos de seguranca: criptografia, autenticacao, auditoria e conformidade.",
+      "severity": "HIGH",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022; Decreto 9.637/2018",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["seguranca", "criptografia", "autenticacao", "auditoria", "PNSI"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Especifique requisitos de seguranca: criptografia de dados em transito/repouso, autenticacao multifator, logs de auditoria, conformidade PNSI.",
+      "examples": {
+        "bad": "A solucao deve ser segura.",
+        "good": "Requisitos de seguranca: TLS 1.3 para comunicacao; AES-256 para dados em repouso; MFA obrigatorio para administradores; logs de auditoria com retencao de 1 ano; pentest anual."
+      }
+    },
+    {
+      "id": "TCU-015",
+      "code": null,
+      "requirement": "Conformidade LGPD",
+      "description": "Verificacao de conformidade com LGPD se a solucao processar dados pessoais.",
+      "severity": "HIGH",
+      "category": "COMPLIANCE",
+      "legalReference": "Lei 13.709/2018 (LGPD)",
+      "referenceIds": ["LGPD"],
+      "applicableTypes": ["TI", "SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["LGPD", "dados pessoais", "privacidade", "tratamento", "consentimento"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Avalie se a solucao processara dados pessoais e, se positivo, inclua requisitos de conformidade LGPD, base legal para tratamento e medidas de protecao.",
+      "examples": {
+        "bad": null,
+        "good": "O sistema processara dados pessoais de usuarios (nome, CPF, email). Base legal: consentimento (art. 7o, I, LGPD). Medidas: anonimizacao de dados para analytics, acesso restrito por perfil, direito de portabilidade implementado."
+      }
+    },
+    {
+      "id": "TCU-016",
+      "code": null,
+      "requirement": "Indicadores de desempenho (KPIs)",
+      "description": "Definicao de indicadores de desempenho mensuraveis para aferir a qualidade do servico.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, IX - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["indicador", "desempenho", "KPI", "meta", "resultado", "medicao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Defina KPIs objetivos para medicao da qualidade: tempo de atendimento, indice de satisfacao, taxa de resolucao, produtividade.",
+      "examples": {
+        "bad": "O servico deve ter qualidade.",
+        "good": "KPIs: (1) Tempo medio de atendimento < 5 min; (2) Taxa de resolucao no primeiro contato > 80%; (3) Indice de satisfacao (NPS) > 70; (4) Absenteismo < 3%."
+      }
+    },
+    {
+      "id": "TCU-017",
+      "code": null,
+      "requirement": "Frequencia e horarios de execucao",
+      "description": "Definicao clara da frequencia e horarios de execucao do servico.",
+      "severity": "LOW",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SEGES 5/2017",
+      "referenceIds": ["IN_SEGES_5"],
+      "applicableTypes": ["SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["frequencia", "horario", "periodicidade", "escala", "jornada"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Especifique frequencia (diaria, semanal), horarios de execucao e escalas de trabalho quando aplicavel.",
+      "examples": {
+        "bad": null,
+        "good": "Frequencia: servico continuo, 24x7. Horario: turnos de 8h (06h-14h, 14h-22h, 22h-06h). Escala: 6x1 com folga rotativa."
+      }
+    },
+    {
+      "id": "TCU-018",
+      "code": null,
+      "requirement": "Prazo de garantia",
+      "description": "Especificacao do prazo de garantia minimo exigido para os materiais/bens.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 40, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["MATERIAIS", "TI"],
+      "etpFieldsRequired": ["garantiaExigida"],
+      "sectionRequired": "requisitos",
+      "keywords": ["garantia", "prazo", "cobertura", "assistencia"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Especifique prazo de garantia minimo (ex: 12 meses) e cobertura (defeitos de fabricacao, assistencia tecnica on-site/remota).",
+      "examples": {
+        "bad": "Com garantia.",
+        "good": "Garantia minima de 36 meses, contados a partir do recebimento definitivo. Cobertura: defeitos de fabricacao, pecas e mao de obra. Atendimento on-site em ate 24h uteis na sede do orgao."
+      }
+    },
+    {
+      "id": "TCU-019",
+      "code": null,
+      "requirement": "Previsao no Plano de Contratacoes Anual",
+      "description": "Demonstracao de que a contratacao esta prevista no PCA do orgao.",
+      "severity": "MEDIUM",
+      "category": "DOCUMENTATION",
+      "legalReference": "Art. 18, par. 1o, II - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "identificacao",
+      "keywords": ["PCA", "plano", "contratacoes", "anual", "previsao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Informe o numero do item no Plano de Contratacoes Anual (PCA) ou justifique ausencia de previsao.",
+      "examples": {
+        "bad": null,
+        "good": "Contratacao prevista no PCA 2026, item 45 - categoria: Tecnologia da Informacao. Valor estimado no PCA: R$ 500.000,00."
+      }
+    },
+    {
+      "id": "TCU-020",
+      "code": null,
+      "requirement": "Descricao da solucao como um todo",
+      "description": "Descricao completa da solucao, incluindo exigencias de manutencao e assistencia tecnica.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, VII - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["descricaoDetalhada"],
+      "sectionRequired": "requisitos",
+      "keywords": ["solucao", "descricao", "manutencao", "assistencia", "suporte"],
+      "minLength": 100,
+      "validationRegex": null,
+      "fixSuggestion": "Descreva a solucao de forma integrada, incluindo componentes, interfaces, requisitos de manutencao e assistencia tecnica.",
+      "examples": {
+        "bad": "Sistema de gestao de documentos.",
+        "good": "Sistema de gestao documental composto por: modulo de captura (digitalizacao OCR), modulo de workflow (aprovacoes e tramitacao), modulo de busca (full-text), modulo de arquivo (retencao e descarte). Integracao via API REST com SEI e SIORG. Manutencao corretiva em ate 4h, evolutiva sob demanda."
+      }
+    },
+    {
+      "id": "TCU-021",
+      "code": null,
+      "requirement": "Demonstrativo de resultados pretendidos",
+      "description": "Demonstrativo dos resultados pretendidos em termos de economicidade e melhor aproveitamento dos recursos.",
+      "severity": "MEDIUM",
+      "category": "JUSTIFICATION",
+      "legalReference": "Art. 18, par. 1o, IX - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "justificativa",
+      "keywords": ["resultado", "economia", "beneficio", "eficiencia", "retorno"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Quantifique os beneficios esperados: economia anual, ganho de produtividade, reducao de riscos, melhoria de servicos.",
+      "examples": {
+        "bad": "A contratacao trara beneficios ao orgao.",
+        "good": "Resultados esperados: (1) Reducao de 40% no tempo de tramitacao de processos (de 15 para 9 dias); (2) Economia anual de R$ 120k em papel e impressao; (3) Eliminacao de 5h/semana de trabalho manual por servidor; (4) ROI estimado em 18 meses."
+      }
+    },
+    {
+      "id": "TCU-022",
+      "code": null,
+      "requirement": "Providencias previas a contratacao",
+      "description": "Providencias a serem adotadas pela Administracao previamente a celebracao do contrato.",
+      "severity": "LOW",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, X - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["providencia", "previa", "preparacao", "adequacao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Liste as acoes preparatorias necessarias antes da contratacao: infraestrutura, treinamentos, licencas, autorizacoes.",
+      "examples": {
+        "bad": null,
+        "good": "Providencias previas: (1) Adequacao da sala de datacenter (ar condicionado, nobreak) - prazo: 60 dias; (2) Contratacao de link de internet dedicado - prazo: 30 dias; (3) Capacitacao da equipe de TI em Linux - prazo: 45 dias."
+      }
+    },
+    {
+      "id": "TCU-023",
+      "code": null,
+      "requirement": "Contratacoes correlatas e interdependentes",
+      "description": "Identificacao de contratacoes correlatas ou interdependentes que possam impactar a execucao.",
+      "severity": "LOW",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, XI - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["correlata", "interdependente", "relacionada", "vinculada"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique contratos vigentes ou em processo de contratacao que se relacionam com o objeto, indicando dependencias.",
+      "examples": {
+        "bad": null,
+        "good": "Contratacoes correlatas: (1) Contrato 2024/001 - Manutencao predial (vigente ate 12/2026) - necessario para instalacao dos equipamentos; (2) Pregao 2026/015 em andamento - Cabeamento estruturado - prerequisito para instalacao do datacenter."
+      }
+    },
+    {
+      "id": "TCU-024",
+      "code": null,
+      "requirement": "Impactos ambientais e medidas mitigadoras",
+      "description": "Descricao de possiveis impactos ambientais e respectivas medidas mitigadoras.",
+      "severity": "MEDIUM",
+      "category": "RISKS",
+      "legalReference": "Art. 18, par. 1o, XII - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "riscos",
+      "keywords": ["ambiental", "impacto", "sustentabilidade", "residuo", "reciclagem"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique impactos ambientais (geracao de residuos, emissoes, consumo de recursos) e medidas de mitigacao (logistica reversa, certificacoes).",
+      "examples": {
+        "bad": null,
+        "good": "Impactos ambientais: geracao de 200kg de entulho na obra. Mitigacao: destinacao a aterro licenciado (CTR anexo). Sustentabilidade: uso de 30% de agregados reciclados; lampadas LED com eficiencia A."
+      }
+    },
+    {
+      "id": "TCU-025",
+      "code": null,
+      "requirement": "Alinhamento com PDTIC",
+      "description": "Demonstracao de alinhamento da contratacao de TI com o Plano Diretor de TIC do orgao.",
+      "severity": "HIGH",
+      "category": "JUSTIFICATION",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "justificativa",
+      "keywords": ["PDTIC", "plano diretor", "TIC", "estrategia", "transformacao digital"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Demonstre como a contratacao se alinha ao PDTIC vigente, citando objetivos estrategicos e acoes previstas.",
+      "examples": {
+        "bad": null,
+        "good": "Alinhamento com PDTIC 2024-2026: Objetivo Estrategico 3 - Modernizacao da Infraestrutura. Acao 3.2 - Migrar sistemas para nuvem. Meta: 80% dos sistemas em cloud ate 2026. Esta contratacao contribui com 25% da meta."
+      }
+    },
+    {
+      "id": "TCU-026",
+      "code": null,
+      "requirement": "Transferencia de conhecimento",
+      "description": "Previsao de transferencia de conhecimento e documentacao tecnica.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["transferencia", "conhecimento", "documentacao", "treinamento", "capacitacao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Preveja transferencia de conhecimento: treinamentos, documentacao tecnica, manuais, suporte a transicao.",
+      "examples": {
+        "bad": null,
+        "good": "Transferencia de conhecimento: (1) Treinamento de 40h para equipe de TI (8 servidores); (2) Documentacao tecnica: arquitetura, APIs, manuais de operacao; (3) Suporte a transicao por 90 dias apos go-live."
+      }
+    },
+    {
+      "id": "TCU-027",
+      "code": null,
+      "requirement": "Plano de transicao contratual",
+      "description": "Previsao de plano de transicao para encerramento ou troca de fornecedor.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI", "SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["transicao", "encerramento", "continuidade", "migracao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Preveja clausulas de transicao contratual: exportacao de dados, suporte a migracao, periodo de convivencia.",
+      "examples": {
+        "bad": null,
+        "good": "Transicao contratual: (1) Exportacao de dados em formato aberto (JSON/CSV) em ate 30 dias; (2) Suporte a novo fornecedor por 60 dias; (3) Periodo de convivencia paralela de 90 dias; (4) Entrega de toda documentacao tecnica atualizada."
+      }
+    },
+    {
+      "id": "TCU-028",
+      "code": null,
+      "requirement": "Propriedade intelectual e codigo-fonte",
+      "description": "Definicao da propriedade intelectual e destino do codigo-fonte desenvolvido.",
+      "severity": "HIGH",
+      "category": "REQUIREMENTS",
+      "legalReference": "Lei 9.609/1998; IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["propriedade intelectual", "codigo-fonte", "licenca", "direitos autorais"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Defina titularidade do codigo-fonte desenvolvido, licenciamento e direitos de uso apos encerramento do contrato.",
+      "examples": {
+        "bad": null,
+        "good": "Propriedade intelectual: (1) Codigo-fonte desenvolvido sera de propriedade da Administracao; (2) Entrega em repositorio Git com historico completo; (3) Licenca: codigo aberto (MIT) para modulos genericos; (4) Documentacao de arquitetura e APIs."
+      }
+    },
+    {
+      "id": "TCU-029",
+      "code": null,
+      "requirement": "Produtividade de referencia",
+      "description": "Estimativas de quantidades baseadas em indicadores de produtividade de referencia.",
+      "severity": "HIGH",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SEGES 5/2017",
+      "referenceIds": ["IN_SEGES_5"],
+      "applicableTypes": ["SERVICOS"],
+      "etpFieldsRequired": ["quantidadeEstimada"],
+      "sectionRequired": "requisitos",
+      "keywords": ["produtividade", "rendimento", "indicador", "posto", "area"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Calcule quantidades baseadas em produtividade de referencia (ex: IN SEGES para limpeza) e dimensionamento tecnico.",
+      "examples": {
+        "bad": "Necessarios 10 profissionais.",
+        "good": "Dimensionamento: Area total 5.000m2. Produtividade de referencia (IN SEGES 5/2017): 800m2/servente/dia para limpeza de escritorios. Quantidade: 5.000/800 = 6,25 serventes. Arredondando: 7 serventes por turno."
+      }
+    },
+    {
+      "id": "TCU-030",
+      "code": null,
+      "requirement": "Referencia a convencao coletiva",
+      "description": "Referencia a convencao coletiva de trabalho para servicos com mao de obra.",
+      "severity": "HIGH",
+      "category": "PRICING",
+      "legalReference": "IN SEGES 5/2017; CLT",
+      "referenceIds": ["IN_SEGES_5"],
+      "applicableTypes": ["SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "custos",
+      "keywords": ["convencao", "coletiva", "sindicato", "piso", "salarial", "CCT"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Cite a convencao coletiva de referencia para definicao do piso salarial e beneficios.",
+      "examples": {
+        "bad": "Salario conforme mercado.",
+        "good": "Convencao Coletiva de referencia: SINDILIMPE-DF 2025/2026. Piso salarial servente: R$ 1.850,00. Beneficios: VT, VR (R$ 28/dia), assistencia medica. Data-base: maio/2025."
+      }
+    },
+    {
+      "id": "TCU-031",
+      "code": null,
+      "requirement": "Uniformes e EPIs",
+      "description": "Especificacao de uniformes e equipamentos de protecao individual quando aplicavel.",
+      "severity": "LOW",
+      "category": "REQUIREMENTS",
+      "legalReference": "NR 6; CLT",
+      "referenceIds": [],
+      "applicableTypes": ["SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["uniforme", "EPI", "equipamento", "protecao", "seguranca"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Especifique uniformes (quantidade, tipo) e EPIs obrigatorios conforme NR aplicavel.",
+      "examples": {
+        "bad": null,
+        "good": "Uniformes: 2 conjuntos por funcionario (calca, camisa, jaleco). EPIs (NR 6): luvas de latex, mascara descartavel, oculos de protecao, sapato antiderrapante. Reposicao conforme desgaste."
+      }
+    },
+    {
+      "id": "TCU-032",
+      "code": null,
+      "requirement": "Plano de fiscalizacao",
+      "description": "Previsao de estrutura de fiscalizacao e gestao do contrato.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, X - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["fiscalizacao", "gestor", "fiscal", "acompanhamento"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Defina estrutura de fiscalizacao: perfis necessarios (gestor, fiscal tecnico, fiscal administrativo), periodicidade de medicoes.",
+      "examples": {
+        "bad": null,
+        "good": "Fiscalizacao: Gestor do contrato (servidor da CGTI), Fiscal tecnico (analista de TI), Fiscal administrativo (servidor do DLOG). Reunioes de acompanhamento mensais. Relatorio de medicao: ate dia 5 do mes subsequente."
+      }
+    },
+    {
+      "id": "TCU-033",
+      "code": null,
+      "requirement": "Catalogo de referencia (CATMAT/CATSER)",
+      "description": "Referencia ao codigo CATMAT ou CATSER quando aplicavel.",
+      "severity": "LOW",
+      "category": "DOCUMENTATION",
+      "legalReference": "Art. 19, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["MATERIAIS", "SERVICOS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["CATMAT", "CATSER", "catalogo", "codigo", "classificacao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Informe o codigo CATMAT (materiais) ou CATSER (servicos) correspondente ao objeto.",
+      "examples": {
+        "bad": null,
+        "good": "Codigo CATMAT: 150513 - Microcomputador tipo desktop. Descricao: microcomputador com processador minimo de 4 nucleos, 8GB RAM, 256GB SSD."
+      }
+    },
+    {
+      "id": "TCU-034",
+      "code": null,
+      "requirement": "Historico de consumo",
+      "description": "Historico de consumo ou demanda para justificar quantidades estimadas.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 18, par. 1o, IV - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["MATERIAIS"],
+      "etpFieldsRequired": ["quantidadeEstimada"],
+      "sectionRequired": "requisitos",
+      "keywords": ["historico", "consumo", "demanda", "serie historica"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Apresente serie historica de consumo (ultimos 12-24 meses) para fundamentar as quantidades estimadas.",
+      "examples": {
+        "bad": "Quantidade estimada: 1.000 unidades.",
+        "good": "Historico de consumo (ultimos 12 meses): Jan 80, Fev 75, Mar 90, Abr 85, Mai 82, Jun 78, Jul 88, Ago 92, Set 87, Out 84, Nov 89, Dez 95. Media mensal: 85 unidades. Estimativa anual: 85 x 12 = 1.020 unidades."
+      }
+    },
+    {
+      "id": "TCU-035",
+      "code": null,
+      "requirement": "Exigencia de amostras",
+      "description": "Justificativa para exigencia ou nao de amostras pre-qualificacao.",
+      "severity": "LOW",
+      "category": "REQUIREMENTS",
+      "legalReference": "Art. 42, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["amostra", "prototipo", "teste", "homologacao"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Se necessario amostras, justifique a necessidade e defina criterios de avaliacao.",
+      "examples": {
+        "bad": null,
+        "good": "Exigencia de amostra: Sim, para item 1 (papel A4). Justificativa: garantir gramatura e alvura conforme especificacao. Quantidade: 1 resma. Criterios: gramatura 75g/m2 (+/-5%), alvura minima 90%."
+      }
+    },
+    {
+      "id": "TCU-036",
+      "code": null,
+      "requirement": "Logistica reversa",
+      "description": "Previsao de logistica reversa para materiais com descarte especial.",
+      "severity": "LOW",
+      "category": "RISKS",
+      "legalReference": "Lei 12.305/2010 (PNRS)",
+      "referenceIds": [],
+      "applicableTypes": ["MATERIAIS", "TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "riscos",
+      "keywords": ["logistica reversa", "descarte", "reciclagem", "PNRS", "residuo"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Para equipamentos eletronicos, pilhas, baterias, lampadas, preveja logistica reversa conforme PNRS.",
+      "examples": {
+        "bad": null,
+        "good": "Logistica reversa: Equipamentos de informatica (Lei 12.305/2010). O fornecedor devera recolher equipamentos substituidos para reciclagem. Comprovante de destinacao ambientalmente adequada devera ser apresentado em 30 dias."
+      }
+    },
+    {
+      "id": "TCU-037",
+      "code": null,
+      "requirement": "Licencas ambientais",
+      "description": "Identificacao de licencas ambientais necessarias para obras.",
+      "severity": "HIGH",
+      "category": "COMPLIANCE",
+      "legalReference": "Resolucao CONAMA 237/1997",
+      "referenceIds": [],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["licenca", "ambiental", "LP", "LI", "LO", "IBAMA"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique licencas ambientais necessarias (LP, LI, LO) e status atual de obtencao.",
+      "examples": {
+        "bad": null,
+        "good": "Licenciamento ambiental: Licenca Previa (LP) obtida em 05/2025 (processo IBAMA 2024/12345). Licenca de Instalacao (LI) em tramitacao (previsao: 08/2026). Licenca de Operacao (LO) sera solicitada apos conclusao da obra."
+      }
+    },
+    {
+      "id": "TCU-038",
+      "code": null,
+      "requirement": "BDI detalhado",
+      "description": "Detalhamento do BDI aplicado em obras conforme parametros do TCU.",
+      "severity": "HIGH",
+      "category": "PRICING",
+      "legalReference": "Acordao TCU 2622/2013",
+      "referenceIds": ["ACORDAO_2622"],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "custos",
+      "keywords": ["BDI", "beneficio", "despesas indiretas", "lucro"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Detalhe composicao do BDI: administracao central, seguro, garantia, lucro, tributos. Use faixas do Acordao TCU 2622/2013.",
+      "examples": {
+        "bad": "BDI: 25%.",
+        "good": "Composicao do BDI (24,23%): Administracao central 4,00%; Seguro 0,80%; Garantia 0,85%; Risco 1,27%; Despesas financeiras 0,59%; Lucro 6,16%; Tributos (PIS/COFINS/ISS) 8,96%. Ref: Acordao TCU 2622/2013 - construcao de edificios."
+      }
+    },
+    {
+      "id": "TCU-039",
+      "code": null,
+      "requirement": "Projeto basico ou anteprojeto",
+      "description": "Referencia a projeto basico ou anteprojeto quando exigido.",
+      "severity": "HIGH",
+      "category": "DOCUMENTATION",
+      "legalReference": "Art. 18, par. 3o - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["projeto basico", "anteprojeto", "projeto executivo"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Informe se existe projeto basico ou anteprojeto elaborado, ou se sera desenvolvido na fase seguinte.",
+      "examples": {
+        "bad": null,
+        "good": "Projeto Basico: Elaborado pela Coordenacao de Engenharia (doc. SEI 0001234/2026). Contem: plantas baixas, cortes, elevacoes, memoriais descritivos, especificacoes tecnicas, orcamento detalhado com SINAPI 01/2026."
+      }
+    },
+    {
+      "id": "TCU-040",
+      "code": null,
+      "requirement": "Data-base dos precos",
+      "description": "Informacao explicita da data-base utilizada para os precos de referencia.",
+      "severity": "HIGH",
+      "category": "PRICING",
+      "legalReference": "IN SEGES 65/2021",
+      "referenceIds": ["IN_SEGES_65"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["fontePesquisaPrecos"],
+      "sectionRequired": "custos",
+      "keywords": ["data-base", "referencia", "mes", "ano", "indice"],
+      "minLength": null,
+      "validationRegex": "(\\d{2}/\\d{4}|janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)",
+      "fixSuggestion": "Informe a data-base (mes/ano) de cada fonte de precos utilizada na pesquisa.",
+      "examples": {
+        "bad": "Precos conforme pesquisa de mercado.",
+        "good": "Data-base dos precos: SINAPI 01/2026 (SP); Painel de Precos 12/2025; Cotacao Fornecedor A: 15/01/2026. Validade das cotacoes: 60 dias."
+      }
+    },
+    {
+      "id": "TCU-041",
+      "code": null,
+      "requirement": "Exclusao de precos inexequiveis",
+      "description": "Justificativa para exclusao de precos manifestamente inexequiveis ou excessivos.",
+      "severity": "MEDIUM",
+      "category": "PRICING",
+      "legalReference": "IN SEGES 65/2021",
+      "referenceIds": ["IN_SEGES_65"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "custos",
+      "keywords": ["inexequivel", "excessivo", "outlier", "exclusao", "mediana"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Se houver precos muito acima ou abaixo da mediana, justifique a exclusao ou permanencia na amostra.",
+      "examples": {
+        "bad": null,
+        "good": "Exclusao de preco: Cotacao D (R$ 50k) excluida por ser 3x superior a mediana (R$ 15k). Justificativa: fornecedor informou preco para especificacao superior a solicitada. Cotacao E (R$ 5k) excluida por inexequibilidade (< 50% da mediana)."
+      }
+    },
+    {
+      "id": "TCU-042",
+      "code": null,
+      "requirement": "Metodologia de calculo do valor estimado",
+      "description": "Descricao da metodologia utilizada para calculo do valor estimado (media, mediana, menor).",
+      "severity": "MEDIUM",
+      "category": "PRICING",
+      "legalReference": "IN SEGES 65/2021",
+      "referenceIds": ["IN_SEGES_65"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["valorEstimado"],
+      "sectionRequired": "custos",
+      "keywords": ["mediana", "media", "menor preco", "calculo", "metodologia"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Informe a metodologia de calculo do valor estimado (mediana preferivel, media ou menor preco conforme caso).",
+      "examples": {
+        "bad": "Valor estimado: R$ 100.000,00.",
+        "good": "Metodologia: utilizou-se a MEDIANA dos precos validos (conforme IN SEGES 65/2021, art. 6o). Precos: R$ 95k, R$ 100k, R$ 105k, R$ 110k. Mediana: R$ 102.500,00. Valor estimado para a contratacao: R$ 102.500,00."
+      }
+    },
+    {
+      "id": "TCU-043",
+      "code": null,
+      "requirement": "Responsavel pela elaboracao do ETP",
+      "description": "Identificacao do servidor responsavel pela elaboracao do ETP.",
+      "severity": "HIGH",
+      "category": "IDENTIFICATION",
+      "legalReference": "Art. 18, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["responsavel"],
+      "sectionRequired": "identificacao",
+      "keywords": ["responsavel", "elaborador", "servidor", "assinatura"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique o(s) servidor(es) responsavel(is) pela elaboracao do ETP com nome, cargo e matricula.",
+      "examples": {
+        "bad": "ETP elaborado pela equipe de planejamento.",
+        "good": "Responsavel pela elaboracao: Fulano de Tal, Analista Administrativo, SIAPE 1234567, Coordenacao de Licitacoes."
+      }
+    },
+    {
+      "id": "TCU-044",
+      "code": null,
+      "requirement": "Data de elaboracao do ETP",
+      "description": "Data de elaboracao ou assinatura do ETP.",
+      "severity": "MEDIUM",
+      "category": "IDENTIFICATION",
+      "legalReference": "Art. 18, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["dataElaboracao"],
+      "sectionRequired": "identificacao",
+      "keywords": ["data", "elaboracao", "assinatura"],
+      "minLength": null,
+      "validationRegex": "\\d{2}/\\d{2}/\\d{4}",
+      "fixSuggestion": "Informe a data de elaboracao ou assinatura do ETP no formato DD/MM/AAAA.",
+      "examples": {
+        "bad": null,
+        "good": "Data de elaboracao: 10/01/2026."
+      }
+    },
+    {
+      "id": "TCU-045",
+      "code": null,
+      "requirement": "Numero do processo administrativo",
+      "description": "Referencia ao numero do processo administrativo que contem o ETP.",
+      "severity": "MEDIUM",
+      "category": "IDENTIFICATION",
+      "legalReference": "Lei 9.784/1999",
+      "referenceIds": [],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["numeroProcesso"],
+      "sectionRequired": "identificacao",
+      "keywords": ["processo", "SEI", "NUP", "numero"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Informe o numero do processo administrativo (NUP ou numero SEI) que contem o ETP.",
+      "examples": {
+        "bad": null,
+        "good": "Processo administrativo: 00000.000123/2026-01 (SEI)."
+      }
+    },
+    {
+      "id": "TCU-046",
+      "code": null,
+      "requirement": "Orgao demandante",
+      "description": "Identificacao do orgao ou unidade demandante da contratacao.",
+      "severity": "MEDIUM",
+      "category": "IDENTIFICATION",
+      "legalReference": "Art. 18, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["orgaoContratante"],
+      "sectionRequired": "identificacao",
+      "keywords": ["orgao", "unidade", "demandante", "requisitante"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique o orgao ou unidade organizacional que demanda a contratacao.",
+      "examples": {
+        "bad": null,
+        "good": "Orgao demandante: Ministerio da Economia - Secretaria de Gestao. Unidade requisitante: Coordenacao-Geral de Tecnologia da Informacao (CGTI)."
+      }
+    },
+    {
+      "id": "TCU-047",
+      "code": null,
+      "requirement": "Objeto da contratacao",
+      "description": "Descricao clara e objetiva do objeto a ser contratado.",
+      "severity": "CRITICAL",
+      "category": "IDENTIFICATION",
+      "legalReference": "Art. 18, Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": ["objeto"],
+      "sectionRequired": "identificacao",
+      "keywords": ["objeto", "contratacao", "aquisicao", "servico"],
+      "minLength": 20,
+      "validationRegex": null,
+      "fixSuggestion": "Descreva o objeto de forma clara, indicando a natureza (obra, servico, aquisicao) e principais caracteristicas.",
+      "examples": {
+        "bad": "Sistema de TI.",
+        "good": "Contratacao de servicos de computacao em nuvem (IaaS e PaaS) para hospedagem dos sistemas corporativos do Ministerio, incluindo recursos de processamento, armazenamento, rede e banco de dados gerenciado, pelo periodo de 36 meses."
+      }
+    },
+    {
+      "id": "TCU-048",
+      "code": "REJ-008",
+      "requirement": "ETP anterior ao Termo de Referencia",
+      "description": "O ETP deve ser elaborado ANTES do Termo de Referencia, como primeira etapa do planejamento.",
+      "severity": "CRITICAL",
+      "category": "DOCUMENTATION",
+      "legalReference": "Art. 6o, XX - Lei 14.133/2021",
+      "referenceIds": ["LEI_14133"],
+      "applicableTypes": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"],
+      "etpFieldsRequired": [],
+      "sectionRequired": null,
+      "keywords": ["planejamento", "sequencia", "ordem"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Garanta que o ETP seja elaborado ANTES do Termo de Referencia. O ETP embasa as decisoes, nao ratifica decisoes ja tomadas.",
+      "examples": {
+        "bad": null,
+        "good": null
+      }
+    },
+    {
+      "id": "TCU-049",
+      "code": null,
+      "requirement": "Integracao com sistemas existentes",
+      "description": "Requisitos de integracao com sistemas legados ou corporativos existentes.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["integracao", "API", "interface", "legado", "corporativo"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique sistemas que deverao ser integrados e defina requisitos de interoperabilidade (APIs, formatos, protocolos).",
+      "examples": {
+        "bad": null,
+        "good": "Integracoes necessarias: (1) SEI - consulta e arquivamento de documentos via API REST; (2) SIORG - sincronizacao de estrutura organizacional; (3) SIAPE - autenticacao via SAML 2.0; (4) Portal Gov.br - login unico via OAuth 2.0."
+      }
+    },
+    {
+      "id": "TCU-050",
+      "code": null,
+      "requirement": "Hospedagem e infraestrutura",
+      "description": "Definicao do modelo de hospedagem (on-premises, cloud, hibrido) e requisitos de infraestrutura.",
+      "severity": "MEDIUM",
+      "category": "REQUIREMENTS",
+      "legalReference": "IN SGD 94/2022",
+      "referenceIds": ["IN_SGD_94"],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["hospedagem", "cloud", "nuvem", "datacenter", "infraestrutura"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Defina modelo de hospedagem e requisitos: cloud publica/privada/hibrida, datacenter, alta disponibilidade, backup, DR.",
+      "examples": {
+        "bad": "O sistema sera hospedado em nuvem.",
+        "good": "Hospedagem: Cloud publica (AWS, Azure ou GCP). Requisitos: regiao Brasil (latencia < 50ms), alta disponibilidade (99,9%), backup diario com retencao 30 dias, DR em regiao secundaria com RPO 4h e RTO 2h."
+      }
+    },
+    {
+      "id": "TCU-051",
+      "code": null,
+      "requirement": "Acessibilidade digital",
+      "description": "Requisitos de acessibilidade para sistemas web conforme e-MAG.",
+      "severity": "HIGH",
+      "category": "REQUIREMENTS",
+      "legalReference": "Lei 13.146/2015 (LBI); Decreto 5.296/2004; e-MAG",
+      "referenceIds": [],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["acessibilidade", "e-MAG", "WCAG", "LBI"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Para sistemas web, exija conformidade com e-MAG (Modelo de Acessibilidade em Governo Eletronico) ou WCAG 2.1 nivel AA.",
+      "examples": {
+        "bad": null,
+        "good": "Acessibilidade: Sistema deve estar em conformidade com e-MAG 3.1 e WCAG 2.1 nivel AA. Requisitos: navegacao por teclado, suporte a leitores de tela, contraste minimo 4.5:1, textos alternativos em imagens."
+      }
+    },
+    {
+      "id": "TCU-052",
+      "code": null,
+      "requirement": "Tratamento de dados de acordo com a classificacao",
+      "description": "Medidas de protecao adequadas a classificacao dos dados processados.",
+      "severity": "HIGH",
+      "category": "COMPLIANCE",
+      "legalReference": "Decreto 7.845/2012; Lei 12.527/2011 (LAI)",
+      "referenceIds": [],
+      "applicableTypes": ["TI"],
+      "etpFieldsRequired": [],
+      "sectionRequired": "requisitos",
+      "keywords": ["classificacao", "sigilo", "publico", "restrito", "confidencial"],
+      "minLength": null,
+      "validationRegex": null,
+      "fixSuggestion": "Identifique a classificacao dos dados (publico, restrito, confidencial) e medidas de protecao correspondentes.",
+      "examples": {
+        "bad": null,
+        "good": "Classificacao dos dados: Restrito (Decreto 7.845/2012). Medidas: criptografia em transito e repouso, controle de acesso por perfil, logs de auditoria, localizacao em datacenter nacional."
+      }
+    }
+  ]
+}
