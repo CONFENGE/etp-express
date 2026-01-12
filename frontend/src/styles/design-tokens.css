@@ -39,10 +39,14 @@
   --glass-border-dark-mode: rgba(255, 255, 255, 0.09);
 
   /* Glass Shadow (for depth) */
-  --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --glass-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
-  --glass-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
+  --glass-shadow-sm:
+    0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --glass-shadow-md:
+    0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --glass-shadow-lg:
+    0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --glass-shadow-xl:
+    0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
 
   /* Glass Animation Timing (Apple-style fluid motion) */
   --glass-transition-timing: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -253,10 +257,14 @@ html.dark {
   --glass-border-light: var(--glass-border-dark-mode);
 
   /* Glass Shadow (darker in dark mode for depth) */
-  --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --glass-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
-  --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
-  --glass-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
+  --glass-shadow-sm:
+    0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --glass-shadow-md:
+    0 4px 16px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+  --glass-shadow-lg:
+    0 8px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
+  --glass-shadow-xl:
+    0 16px 48px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
 
   /* Surface Colors */
   --surface-primary: #1c1c1e;
@@ -382,23 +390,29 @@ html.dark {
   /* Glass Surface - Light intensity (subtle) */
   .glass-light {
     background-color: var(--glass-surface-light-subtle);
-    backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturation-light));
-    -webkit-backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturation-light));
+    backdrop-filter: blur(var(--glass-blur-light))
+      saturate(var(--glass-saturation-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light))
+      saturate(var(--glass-saturation-light));
   }
 
   /* Glass Surface - Medium intensity (default) */
   .glass,
   .glass-medium {
     background-color: var(--glass-surface-light);
-    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
-    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
   }
 
   /* Glass Surface - Heavy intensity (prominent) */
   .glass-heavy {
     background-color: var(--glass-surface-light-solid);
-    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
-    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+    backdrop-filter: blur(var(--glass-blur-heavy))
+      saturate(var(--glass-saturation-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy))
+      saturate(var(--glass-saturation-heavy));
   }
 
   /* Glass Border */
@@ -439,12 +453,14 @@ html.dark {
 
   /* Glass Transitions (fluid motion) */
   .glass-transition {
-    transition-property: background-color, border-color, box-shadow, transform, opacity;
+    transition-property:
+      background-color, border-color, box-shadow, transform, opacity;
     transition-duration: var(--glass-transition-duration);
     transition-timing-function: var(--glass-transition-timing);
   }
   .glass-transition-slow {
-    transition-property: background-color, border-color, box-shadow, transform, opacity;
+    transition-property:
+      background-color, border-color, box-shadow, transform, opacity;
     transition-duration: var(--glass-transition-duration-slow);
     transition-timing-function: var(--glass-transition-timing);
   }
@@ -452,8 +468,10 @@ html.dark {
   /* Complete Glass Card preset */
   .glass-card {
     background-color: var(--glass-surface-light);
-    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
-    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
     border: 1px solid var(--glass-border-light);
     border-radius: var(--glass-radius-lg);
     box-shadow: var(--glass-shadow-md);
@@ -470,8 +488,10 @@ html.dark {
   /* Glass Modal/Dialog preset */
   .glass-modal {
     background-color: var(--glass-surface-light-solid);
-    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
-    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+    backdrop-filter: blur(var(--glass-blur-heavy))
+      saturate(var(--glass-saturation-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy))
+      saturate(var(--glass-saturation-heavy));
     border: 1px solid var(--glass-border-light);
     border-radius: var(--glass-radius-2xl);
     box-shadow: var(--glass-shadow-xl);
@@ -480,8 +500,10 @@ html.dark {
   /* Glass Navbar/Sidebar preset */
   .glass-nav {
     background-color: var(--glass-surface-light);
-    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
-    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount))
+      saturate(var(--glass-saturation));
     border-bottom: 1px solid var(--glass-border-light);
   }
 

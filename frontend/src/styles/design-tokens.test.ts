@@ -638,9 +638,7 @@ describe('Design Tokens - Liquid Glass (Apple HIG 2025)', () => {
 
   describe('Glass Surface Colors', () => {
     it('should define glass-surface-light as rgba with 72% opacity', () => {
-      const value = rootStyles
-        .getPropertyValue('--glass-surface-light')
-        .trim();
+      const value = rootStyles.getPropertyValue('--glass-surface-light').trim();
       expect(value).toContain('rgba');
       expect(value).toContain('255');
       expect(value).toContain('0.72');
