@@ -77,6 +77,7 @@ describe('AuthController', () => {
     auditLogs: [],
     authorizedDomainId: null,
     authorizedDomain: null,
+    etpLimitCount: null,
   };
 
   const mockAuthResponse = {
