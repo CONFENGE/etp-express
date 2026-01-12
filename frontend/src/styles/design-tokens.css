@@ -5,9 +5,58 @@
  * These tokens provide a consistent visual language across the application.
  *
  * @see https://developer.apple.com/design/human-interface-guidelines/
+ * @see https://developer.apple.com/design/human-interface-guidelines/materials (Liquid Glass)
  */
 
 :root {
+  /* ========================================
+   * Liquid Glass Design System (Apple HIG 2025)
+   * The new translucent, depth-aware UI paradigm
+   * ======================================== */
+
+  /* Core Glass Properties */
+  --glass-blur-amount: 20px;
+  --glass-blur-light: 12px;
+  --glass-blur-heavy: 32px;
+  --glass-saturation: 180%;
+  --glass-saturation-light: 150%;
+  --glass-saturation-heavy: 200%;
+
+  /* Glass Opacity Levels */
+  --glass-opacity-light: 0.6;
+  --glass-opacity-medium: 0.72;
+  --glass-opacity-heavy: 0.85;
+  --glass-opacity-solid: 0.95;
+
+  /* Glass Surface Colors (Light Mode) */
+  --glass-surface-light: rgba(255, 255, 255, var(--glass-opacity-medium));
+  --glass-surface-light-subtle: rgba(255, 255, 255, var(--glass-opacity-light));
+  --glass-surface-light-solid: rgba(255, 255, 255, var(--glass-opacity-solid));
+
+  /* Glass Border Properties */
+  --glass-border-opacity: 0.18;
+  --glass-border-light: rgba(255, 255, 255, var(--glass-border-opacity));
+  --glass-border-dark-mode: rgba(255, 255, 255, 0.09);
+
+  /* Glass Shadow (for depth) */
+  --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --glass-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --glass-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
+
+  /* Glass Animation Timing (Apple-style fluid motion) */
+  --glass-transition-timing: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --glass-transition-timing-spring: cubic-bezier(0.5, 0, 0.25, 1);
+  --glass-transition-duration: 200ms;
+  --glass-transition-duration-slow: 300ms;
+
+  /* Glass Border Radius (Apple concentricity) */
+  --glass-radius-sm: 12px;
+  --glass-radius-md: 16px;
+  --glass-radius-lg: 20px;
+  --glass-radius-xl: 24px;
+  --glass-radius-2xl: 32px;
+
   /* ========================================
    * Surface Colors (Backgrounds)
    * ======================================== */
@@ -197,6 +246,18 @@ html.dark {
  * Dark Mode Tokens
  * ======================================== */
 .dark {
+  /* Liquid Glass Dark Mode Overrides */
+  --glass-surface-light: rgba(28, 28, 30, var(--glass-opacity-medium));
+  --glass-surface-light-subtle: rgba(28, 28, 30, var(--glass-opacity-light));
+  --glass-surface-light-solid: rgba(28, 28, 30, var(--glass-opacity-solid));
+  --glass-border-light: var(--glass-border-dark-mode);
+
+  /* Glass Shadow (darker in dark mode for depth) */
+  --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --glass-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+  --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2);
+  --glass-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.25);
+
   /* Surface Colors */
   --surface-primary: #1c1c1e;
   --surface-secondary: #2c2c2e;
@@ -312,6 +373,129 @@ html.dark {
   }
   .rounded-apple-lg {
     border-radius: var(--radius-apple-lg);
+  }
+
+  /* ========================================
+   * Liquid Glass Utilities (Apple HIG 2025)
+   * ======================================== */
+
+  /* Glass Surface - Light intensity (subtle) */
+  .glass-light {
+    background-color: var(--glass-surface-light-subtle);
+    backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturation-light));
+    -webkit-backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturation-light));
+  }
+
+  /* Glass Surface - Medium intensity (default) */
+  .glass,
+  .glass-medium {
+    background-color: var(--glass-surface-light);
+    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+  }
+
+  /* Glass Surface - Heavy intensity (prominent) */
+  .glass-heavy {
+    background-color: var(--glass-surface-light-solid);
+    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+  }
+
+  /* Glass Border */
+  .glass-border {
+    border: 1px solid var(--glass-border-light);
+  }
+
+  /* Glass Shadows (depth) */
+  .glass-shadow-sm {
+    box-shadow: var(--glass-shadow-sm);
+  }
+  .glass-shadow {
+    box-shadow: var(--glass-shadow-md);
+  }
+  .glass-shadow-lg {
+    box-shadow: var(--glass-shadow-lg);
+  }
+  .glass-shadow-xl {
+    box-shadow: var(--glass-shadow-xl);
+  }
+
+  /* Glass Border Radius (concentricity) */
+  .glass-rounded-sm {
+    border-radius: var(--glass-radius-sm);
+  }
+  .glass-rounded {
+    border-radius: var(--glass-radius-md);
+  }
+  .glass-rounded-lg {
+    border-radius: var(--glass-radius-lg);
+  }
+  .glass-rounded-xl {
+    border-radius: var(--glass-radius-xl);
+  }
+  .glass-rounded-2xl {
+    border-radius: var(--glass-radius-2xl);
+  }
+
+  /* Glass Transitions (fluid motion) */
+  .glass-transition {
+    transition-property: background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: var(--glass-transition-duration);
+    transition-timing-function: var(--glass-transition-timing);
+  }
+  .glass-transition-slow {
+    transition-property: background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: var(--glass-transition-duration-slow);
+    transition-timing-function: var(--glass-transition-timing);
+  }
+
+  /* Complete Glass Card preset */
+  .glass-card {
+    background-color: var(--glass-surface-light);
+    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--glass-radius-lg);
+    box-shadow: var(--glass-shadow-md);
+    transition-property: background-color, border-color, box-shadow, transform;
+    transition-duration: var(--glass-transition-duration);
+    transition-timing-function: var(--glass-transition-timing);
+  }
+
+  .glass-card:hover {
+    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  /* Glass Modal/Dialog preset */
+  .glass-modal {
+    background-color: var(--glass-surface-light-solid);
+    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation-heavy));
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--glass-radius-2xl);
+    box-shadow: var(--glass-shadow-xl);
+  }
+
+  /* Glass Navbar/Sidebar preset */
+  .glass-nav {
+    background-color: var(--glass-surface-light);
+    backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount)) saturate(var(--glass-saturation));
+    border-bottom: 1px solid var(--glass-border-light);
+  }
+
+  /* Fallback for browsers without backdrop-filter support */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass,
+    .glass-light,
+    .glass-medium,
+    .glass-heavy,
+    .glass-card,
+    .glass-modal,
+    .glass-nav {
+      background-color: var(--glass-surface-light-solid);
+    }
   }
 
   /* Typography utilities for improved legibility */
