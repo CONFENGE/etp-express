@@ -14,6 +14,10 @@ import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { CreatePesquisaPrecosDto } from './dto/create-pesquisa-precos.dto';
 import { UpdatePesquisaPrecosDto } from './dto/update-pesquisa-precos.dto';
 import { ColetarPrecosDto } from './dto/coletar-precos.dto';
+import {
+  GerarJustificativaDto,
+  TipoContratacao,
+} from './dto/gerar-justificativa.dto';
 import { SinapiService } from '../gov-api/sinapi/sinapi.service';
 import { SicroService } from '../gov-api/sicro/sicro.service';
 import { PncpService } from '../gov-api/pncp/pncp.service';
@@ -1601,6 +1605,389 @@ describe('PesquisaPrecosService', () => {
       const item = result.mapaComparativo.itens[0];
       // Quando todos os precos sao iguais, CV = 0
       expect(item.coeficienteVariacao).toBe(0);
+    });
+  });
+
+  // ============================================
+  // Testes para gerarJustificativaMetodologia (#1258)
+  // ============================================
+
+  describe('gerarJustificativaMetodologia', () => {
+    const mockPesquisaComFontes: Partial<PesquisaPrecos> = {
+      ...mockPesquisaPrecos,
+      descricao: 'Aquisicao de equipamentos de informatica',
+      valorTotalEstimado: 150000,
+      metodologia: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+      coeficienteVariacao: 8.5,
+      fontesConsultadas: [
+        {
+          tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+          nome: 'SINAPI',
+          dataConsulta: '2026-01-10',
+          referencia: 'Tabela SINAPI 01/2026',
+        },
+        {
+          tipo: MetodologiaPesquisa.CONTRATACOES_SIMILARES,
+          nome: 'PNCP',
+          dataConsulta: '2026-01-09',
+          referencia: 'Portal Nacional de Contratacoes Publicas',
+        },
+      ],
+    };
+
+    it('should generate justificativa successfully', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const dto: GerarJustificativaDto = {};
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        dto,
+        mockOrganizationId,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.pesquisaId).toBe('pesq-001');
+      expect(result.justificativa).toBeDefined();
+      expect(result.justificativa.length).toBeGreaterThan(0);
+      expect(result.fontesUtilizadas).toContain('SINAPI');
+      expect(result.fontesUtilizadas).toContain('PNCP');
+      expect(result.pesquisaAtualizada).toBe(true);
+      expect(result.duracaoMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should reference IN SEGES/ME n 65/2021 in justificativa', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('IN SEGES/ME n 65');
+      expect(result.justificativa).toContain('2021');
+    });
+
+    it('should map sources to correct articles', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      // MIDIA_ESPECIALIZADA = Art. 5, III
+      // CONTRATACOES_SIMILARES = Art. 5, II
+      expect(result.artigosReferenciados).toContain('Art. 5, II');
+      expect(result.artigosReferenciados).toContain('Art. 5, III');
+    });
+
+    it('should add Art. 6 when multiple sources are used', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      // Com multiplas fontes, deve incluir Art. 6
+      expect(result.artigosReferenciados).toContain('Art. 6');
+      expect(result.justificativa).toContain('Art. 6');
+    });
+
+    it('should include contratacao context when provided', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const dto: GerarJustificativaDto = {
+        tipoContratacao: TipoContratacao.TI,
+        valorEstimado: 250000,
+        objeto: 'Aquisicao de servidores para datacenter',
+      };
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        dto,
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('tecnologia da informacao');
+      expect(result.justificativa).toContain('Aquisicao de servidores');
+      expect(result.justificativa).toContain('250');
+    });
+
+    it('should include criterio de aceitabilidade in justificativa', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const dto: GerarJustificativaDto = {
+        criterioAceitabilidade: 'mediana',
+      };
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        dto,
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('mediana');
+      expect(result.justificativa).toContain('criterio de aceitabilidade');
+    });
+
+    it('should justify not using Painel de Precos when applicable', async () => {
+      const pesquisaSemPainel: Partial<PesquisaPrecos> = {
+        ...mockPesquisaComFontes,
+        metodologia: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaSemPainel);
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaSemPainel);
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('Art. 7');
+      expect(result.justificativa).toContain('nao utilizacao');
+    });
+
+    it('should update pesquisa with justificativa', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        { criterioAceitabilidade: 'mediana' },
+        mockOrganizationId,
+      );
+
+      expect(mockPesquisaPrecosRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          justificativaMetodologia: expect.any(String),
+          criterioAceitabilidade: 'mediana',
+        }),
+      );
+    });
+
+    it('should throw NotFoundException when research not found', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.gerarJustificativaMetodologia(
+          'non-existent',
+          {},
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when research belongs to another org', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue({
+        ...mockPesquisaPrecos,
+        organizationId: 'different-org',
+      });
+
+      await expect(
+        service.gerarJustificativaMetodologia(
+          'pesq-001',
+          {},
+          mockOrganizationId,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should handle empty fontesConsultadas gracefully', async () => {
+      const pesquisaSemFontes: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        fontesConsultadas: [],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaSemFontes);
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaSemFontes);
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.fontesUtilizadas).toHaveLength(0);
+      expect(result.justificativa).toContain('IN SEGES/ME n 65');
+    });
+
+    it('should handle null fontesConsultadas gracefully', async () => {
+      const pesquisaSemFontes: Partial<PesquisaPrecos> = {
+        ...mockPesquisaPrecos,
+        fontesConsultadas: null as unknown as any[],
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaSemFontes);
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaSemFontes);
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.fontesUtilizadas).toHaveLength(0);
+      expect(result.artigosReferenciados).toHaveLength(0);
+    });
+
+    it('should use existing criterioAceitabilidade when not provided', async () => {
+      const pesquisaComCriterio: Partial<PesquisaPrecos> = {
+        ...mockPesquisaComFontes,
+        criterioAceitabilidade: 'menor_preco',
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        pesquisaComCriterio,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaComCriterio);
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('menor preco');
+    });
+
+    it('should handle different tipoContratacao values', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const tipos = [
+        { tipo: TipoContratacao.OBRAS, expected: 'obras' },
+        { tipo: TipoContratacao.SERVICOS, expected: 'servicos' },
+        { tipo: TipoContratacao.MATERIAIS, expected: 'materiais' },
+        { tipo: TipoContratacao.CONSULTORIA, expected: 'consultoria' },
+      ];
+
+      for (const { tipo, expected } of tipos) {
+        const result = await service.gerarJustificativaMetodologia(
+          'pesq-001',
+          { tipoContratacao: tipo },
+          mockOrganizationId,
+        );
+
+        expect(result.justificativa.toLowerCase()).toContain(expected);
+      }
+    });
+
+    it('should include conclusion paragraph', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('requisitos legais');
+      expect(result.justificativa).toContain('legitimidade');
+    });
+
+    it('should format dates in pt-BR format', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        {},
+        mockOrganizationId,
+      );
+
+      // Verifica que a data esta no formato brasileiro (DD/MM/YYYY)
+      expect(result.justificativa).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+    });
+
+    it('should explain mediana recommendation', async () => {
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+      mockPesquisaPrecosRepository.save.mockResolvedValue(
+        mockPesquisaComFontes,
+      );
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        { criterioAceitabilidade: 'mediana' },
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('outliers');
+      expect(result.justificativa).toContain('representativo');
+    });
+
+    it('should explain media when CV is low', async () => {
+      const pesquisaBaixoCV: Partial<PesquisaPrecos> = {
+        ...mockPesquisaComFontes,
+        coeficienteVariacao: 5.0,
+      };
+
+      mockPesquisaPrecosRepository.findOne.mockResolvedValue(pesquisaBaixoCV);
+      mockPesquisaPrecosRepository.save.mockResolvedValue(pesquisaBaixoCV);
+
+      const result = await service.gerarJustificativaMetodologia(
+        'pesq-001',
+        { criterioAceitabilidade: 'media' },
+        mockOrganizationId,
+      );
+
+      expect(result.justificativa).toContain('dispersao');
+      expect(result.justificativa).toContain('5%');
     });
   });
 });
