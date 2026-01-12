@@ -99,6 +99,13 @@ export default {
           quaternary: 'var(--text-quaternary)',
           placeholder: 'var(--text-placeholder)',
         },
+        // Liquid Glass Surface Colors
+        glass: {
+          DEFAULT: 'var(--glass-surface-light)',
+          subtle: 'var(--glass-surface-light-subtle)',
+          solid: 'var(--glass-surface-light-solid)',
+          border: 'var(--glass-border-light)',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -107,6 +114,12 @@ export default {
         // Apple HIG Border Radius
         apple: 'var(--radius-apple)',
         'apple-lg': 'var(--radius-apple-lg)',
+        // Liquid Glass Border Radius
+        'glass-sm': 'var(--glass-radius-sm)',
+        glass: 'var(--glass-radius-md)',
+        'glass-lg': 'var(--glass-radius-lg)',
+        'glass-xl': 'var(--glass-radius-xl)',
+        'glass-2xl': 'var(--glass-radius-2xl)',
       },
       boxShadow: {
         // Apple HIG Shadows
@@ -115,17 +128,40 @@ export default {
         'apple-lg': 'var(--shadow-lg)',
         'apple-xl': 'var(--shadow-xl)',
         'apple-inset': 'var(--shadow-inset)',
+        // Liquid Glass Shadows
+        'glass-sm': 'var(--glass-shadow-sm)',
+        glass: 'var(--glass-shadow-md)',
+        'glass-lg': 'var(--glass-shadow-lg)',
+        'glass-xl': 'var(--glass-shadow-xl)',
+      },
+      backdropBlur: {
+        // Liquid Glass Blur
+        glass: 'var(--glass-blur-amount)',
+        'glass-light': 'var(--glass-blur-light)',
+        'glass-heavy': 'var(--glass-blur-heavy)',
+      },
+      backdropSaturate: {
+        // Liquid Glass Saturation
+        glass: 'var(--glass-saturation)',
+        'glass-light': 'var(--glass-saturation-light)',
+        'glass-heavy': 'var(--glass-saturation-heavy)',
       },
       transitionTimingFunction: {
         // Apple HIG Easing
         apple: 'var(--ease-apple)',
         'apple-spring': 'var(--ease-apple-spring)',
+        // Liquid Glass Easing
+        glass: 'var(--glass-transition-timing)',
+        'glass-spring': 'var(--glass-transition-timing-spring)',
       },
       transitionDuration: {
         // Apple HIG Durations
         instant: 'var(--duration-instant)',
         apple: 'var(--duration-apple)',
         'apple-slow': 'var(--duration-apple-slow)',
+        // Liquid Glass Durations
+        glass: 'var(--glass-transition-duration)',
+        'glass-slow': 'var(--glass-transition-duration-slow)',
       },
       spacing: {
         // Apple HIG Spacing Scale

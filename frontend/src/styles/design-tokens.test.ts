@@ -463,6 +463,250 @@ describe('Design Tokens - Apple HIG', () => {
   });
 });
 
+describe('Design Tokens - Liquid Glass (Apple HIG 2025)', () => {
+  let rootStyles: CSSStyleDeclaration;
+
+  beforeAll(() => {
+    // Import the Liquid Glass CSS tokens
+    const style = document.createElement('style');
+    style.textContent = `
+      :root {
+        /* Liquid Glass Core Properties */
+        --glass-blur-amount: 20px;
+        --glass-blur-light: 12px;
+        --glass-blur-heavy: 32px;
+        --glass-saturation: 180%;
+        --glass-saturation-light: 150%;
+        --glass-saturation-heavy: 200%;
+
+        /* Glass Opacity Levels */
+        --glass-opacity-light: 0.6;
+        --glass-opacity-medium: 0.72;
+        --glass-opacity-heavy: 0.85;
+        --glass-opacity-solid: 0.95;
+
+        /* Glass Surface Colors */
+        --glass-surface-light: rgba(255, 255, 255, 0.72);
+        --glass-surface-light-subtle: rgba(255, 255, 255, 0.6);
+        --glass-surface-light-solid: rgba(255, 255, 255, 0.95);
+
+        /* Glass Border Properties */
+        --glass-border-opacity: 0.18;
+        --glass-border-light: rgba(255, 255, 255, 0.18);
+        --glass-border-dark-mode: rgba(255, 255, 255, 0.09);
+
+        /* Glass Shadow */
+        --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --glass-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        --glass-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
+
+        /* Glass Animation Timing */
+        --glass-transition-timing: cubic-bezier(0.25, 0.1, 0.25, 1);
+        --glass-transition-timing-spring: cubic-bezier(0.5, 0, 0.25, 1);
+        --glass-transition-duration: 200ms;
+        --glass-transition-duration-slow: 300ms;
+
+        /* Glass Border Radius */
+        --glass-radius-sm: 12px;
+        --glass-radius-md: 16px;
+        --glass-radius-lg: 20px;
+        --glass-radius-xl: 24px;
+        --glass-radius-2xl: 32px;
+      }
+
+      .dark {
+        --glass-surface-light: rgba(28, 28, 30, 0.72);
+        --glass-surface-light-subtle: rgba(28, 28, 30, 0.6);
+        --glass-surface-light-solid: rgba(28, 28, 30, 0.95);
+        --glass-border-light: rgba(255, 255, 255, 0.09);
+      }
+    `;
+    document.head.appendChild(style);
+    rootStyles = getComputedStyle(document.documentElement);
+  });
+
+  describe('Glass Core Properties', () => {
+    it('should define glass-blur-amount (20px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-blur-amount').trim()).toBe(
+        '20px',
+      );
+    });
+
+    it('should define glass-blur-light (12px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-blur-light').trim()).toBe(
+        '12px',
+      );
+    });
+
+    it('should define glass-blur-heavy (32px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-blur-heavy').trim()).toBe(
+        '32px',
+      );
+    });
+
+    it('should define glass-saturation (180%)', () => {
+      expect(rootStyles.getPropertyValue('--glass-saturation').trim()).toBe(
+        '180%',
+      );
+    });
+  });
+
+  describe('Glass Opacity Levels', () => {
+    it('should define glass-opacity-light (0.6)', () => {
+      expect(rootStyles.getPropertyValue('--glass-opacity-light').trim()).toBe(
+        '0.6',
+      );
+    });
+
+    it('should define glass-opacity-medium (0.72)', () => {
+      expect(rootStyles.getPropertyValue('--glass-opacity-medium').trim()).toBe(
+        '0.72',
+      );
+    });
+
+    it('should define glass-opacity-heavy (0.85)', () => {
+      expect(rootStyles.getPropertyValue('--glass-opacity-heavy').trim()).toBe(
+        '0.85',
+      );
+    });
+
+    it('should define glass-opacity-solid (0.95)', () => {
+      expect(rootStyles.getPropertyValue('--glass-opacity-solid').trim()).toBe(
+        '0.95',
+      );
+    });
+  });
+
+  describe('Glass Border Radius (Concentricity)', () => {
+    it('should define glass-radius-sm (12px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-radius-sm').trim()).toBe(
+        '12px',
+      );
+    });
+
+    it('should define glass-radius-md (16px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-radius-md').trim()).toBe(
+        '16px',
+      );
+    });
+
+    it('should define glass-radius-lg (20px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-radius-lg').trim()).toBe(
+        '20px',
+      );
+    });
+
+    it('should define glass-radius-xl (24px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-radius-xl').trim()).toBe(
+        '24px',
+      );
+    });
+
+    it('should define glass-radius-2xl (32px)', () => {
+      expect(rootStyles.getPropertyValue('--glass-radius-2xl').trim()).toBe(
+        '32px',
+      );
+    });
+  });
+
+  describe('Glass Animation Timing (Fluid Motion)', () => {
+    it('should define glass-transition-timing cubic-bezier', () => {
+      expect(
+        rootStyles.getPropertyValue('--glass-transition-timing').trim(),
+      ).toBe('cubic-bezier(0.25, 0.1, 0.25, 1)');
+    });
+
+    it('should define glass-transition-timing-spring cubic-bezier', () => {
+      expect(
+        rootStyles.getPropertyValue('--glass-transition-timing-spring').trim(),
+      ).toBe('cubic-bezier(0.5, 0, 0.25, 1)');
+    });
+
+    it('should define glass-transition-duration (200ms)', () => {
+      expect(
+        rootStyles.getPropertyValue('--glass-transition-duration').trim(),
+      ).toBe('200ms');
+    });
+
+    it('should define glass-transition-duration-slow (300ms)', () => {
+      expect(
+        rootStyles.getPropertyValue('--glass-transition-duration-slow').trim(),
+      ).toBe('300ms');
+    });
+  });
+
+  describe('Glass Surface Colors', () => {
+    it('should define glass-surface-light as rgba with 72% opacity', () => {
+      const value = rootStyles.getPropertyValue('--glass-surface-light').trim();
+      expect(value).toContain('rgba');
+      expect(value).toContain('255');
+      expect(value).toContain('0.72');
+    });
+
+    it('should define glass-surface-light-subtle as rgba with 60% opacity', () => {
+      const value = rootStyles
+        .getPropertyValue('--glass-surface-light-subtle')
+        .trim();
+      expect(value).toContain('rgba');
+      expect(value).toContain('0.6');
+    });
+
+    it('should define glass-surface-light-solid as rgba with 95% opacity', () => {
+      const value = rootStyles
+        .getPropertyValue('--glass-surface-light-solid')
+        .trim();
+      expect(value).toContain('rgba');
+      expect(value).toContain('0.95');
+    });
+  });
+
+  describe('Glass Border Properties', () => {
+    it('should define glass-border-opacity (0.18)', () => {
+      expect(rootStyles.getPropertyValue('--glass-border-opacity').trim()).toBe(
+        '0.18',
+      );
+    });
+
+    it('should define glass-border-light as rgba', () => {
+      const value = rootStyles.getPropertyValue('--glass-border-light').trim();
+      expect(value).toContain('rgba');
+      expect(value).toContain('0.18');
+    });
+
+    it('should define glass-border-dark-mode with lower opacity', () => {
+      const value = rootStyles
+        .getPropertyValue('--glass-border-dark-mode')
+        .trim();
+      expect(value).toContain('rgba');
+      expect(value).toContain('0.09');
+    });
+  });
+
+  describe('Glass Shadows (Depth)', () => {
+    it('should define glass-shadow-sm with multiple layers', () => {
+      const value = rootStyles.getPropertyValue('--glass-shadow-sm').trim();
+      expect(value).toContain('rgba');
+      expect(value.split(',').length).toBeGreaterThanOrEqual(2); // Multiple shadow layers
+    });
+
+    it('should define glass-shadow-md with multiple layers', () => {
+      const value = rootStyles.getPropertyValue('--glass-shadow-md').trim();
+      expect(value).toContain('rgba');
+    });
+
+    it('should define glass-shadow-lg with multiple layers', () => {
+      const value = rootStyles.getPropertyValue('--glass-shadow-lg').trim();
+      expect(value).toContain('rgba');
+    });
+
+    it('should define glass-shadow-xl with multiple layers', () => {
+      const value = rootStyles.getPropertyValue('--glass-shadow-xl').trim();
+      expect(value).toContain('rgba');
+    });
+  });
+});
+
 describe('Design Tokens - Semantic Mapping', () => {
   it('should map success color to apple-green', () => {
     const style = document.createElement('style');
