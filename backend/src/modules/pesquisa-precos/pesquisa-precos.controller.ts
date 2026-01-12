@@ -29,6 +29,8 @@ import {
   ColetarPrecosDto,
   ColetaPrecosResultDto,
   GerarMapaComparativoResponseDto,
+  GerarJustificativaDto,
+  JustificativaGeradaDto,
 } from './dto';
 import {
   PesquisaPrecos,
@@ -320,6 +322,65 @@ export class PesquisaPrecosController {
   ): Promise<GerarMapaComparativoResponseDto> {
     return this.pesquisaPrecosService.gerarMapaComparativo(
       id,
+      user.organizationId,
+    );
+  }
+
+  // ============================================
+  // Geracao Automatica de Justificativa (#1258)
+  // ============================================
+
+  /**
+   * Gera justificativa automatica de metodologia de pesquisa de precos.
+   *
+   * Conforme IN SEGES/ME n 65/2021, Art. 7, e obrigatoria a justificativa
+   * quando a metodologia de Painel de Precos nao e utilizada.
+   *
+   * A justificativa gerada inclui:
+   * - Referencia a IN SEGES/ME n 65/2021
+   * - Listagem das fontes consultadas com artigos correspondentes
+   * - Contexto da contratacao (tipo, valor, objeto)
+   * - Criterio de aceitabilidade de precos
+   *
+   * O texto gerado e editavel pelo usuario apos a geracao.
+   *
+   * @see Issue #1258 - [Pesquisa-d] Justificativa automatica de metodologia
+   */
+  @Post(':id/gerar-justificativa')
+  @ApiOperation({
+    summary: 'Gerar justificativa automatica de metodologia',
+    description: `Gera texto de justificativa conforme IN SEGES/ME n 65/2021, Art. 7.
+    Inclui referencias legais, fontes consultadas com artigos correspondentes,
+    contexto da contratacao e criterio de aceitabilidade.
+    O texto e editavel pelo usuario apos a geracao.`,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da pesquisa de precos',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Justificativa gerada com sucesso',
+    type: JustificativaGeradaDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Pesquisa de precos nao encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Sem permissao para acessar esta pesquisa',
+  })
+  async gerarJustificativa(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: GerarJustificativaDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<JustificativaGeradaDto> {
+    return this.pesquisaPrecosService.gerarJustificativaMetodologia(
+      id,
+      dto,
       user.organizationId,
     );
   }

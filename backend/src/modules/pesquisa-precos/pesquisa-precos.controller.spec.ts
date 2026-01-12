@@ -13,6 +13,11 @@ import {
   ColetarPrecosDto,
   ColetaPrecosResultDto,
 } from './dto/coletar-precos.dto';
+import {
+  GerarJustificativaDto,
+  JustificativaGeradaDto,
+  TipoContratacao,
+} from './dto/gerar-justificativa.dto';
 
 describe('PesquisaPrecosController', () => {
   let controller: PesquisaPrecosController;
@@ -47,6 +52,8 @@ describe('PesquisaPrecosController', () => {
     update: jest.fn(),
     remove: jest.fn(),
     coletarPrecosParaPesquisa: jest.fn(),
+    gerarMapaComparativo: jest.fn(),
+    gerarJustificativaMetodologia: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -399,6 +406,197 @@ describe('PesquisaPrecosController', () => {
         }),
         mockUser.organizationId,
       );
+    });
+  });
+
+  // ============================================
+  // Testes para gerarJustificativa (#1258)
+  // ============================================
+
+  describe('gerarJustificativa', () => {
+    const mockJustificativaResult: JustificativaGeradaDto = {
+      pesquisaId: 'pesq-001',
+      justificativa:
+        'A pesquisa de precos foi realizada em conformidade com a IN SEGES/ME n 65/2021...',
+      fontesUtilizadas: ['SINAPI', 'PNCP'],
+      artigosReferenciados: ['Art. 5, II', 'Art. 5, III', 'Art. 6'],
+      pesquisaAtualizada: true,
+      duracaoMs: 150,
+    };
+
+    it('should generate justificativa successfully', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const dto: GerarJustificativaDto = {};
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        dto,
+        mockUser,
+      );
+
+      expect(result).toEqual(mockJustificativaResult);
+      expect(mockService.gerarJustificativaMetodologia).toHaveBeenCalledWith(
+        'pesq-001',
+        dto,
+        mockUser.organizationId,
+      );
+    });
+
+    it('should generate justificativa with context', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const dto: GerarJustificativaDto = {
+        tipoContratacao: TipoContratacao.TI,
+        valorEstimado: 250000,
+        objeto: 'Aquisicao de servidores para datacenter',
+        criterioAceitabilidade: 'mediana',
+      };
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        dto,
+        mockUser,
+      );
+
+      expect(result).toBeDefined();
+      expect(mockService.gerarJustificativaMetodologia).toHaveBeenCalledWith(
+        'pesq-001',
+        dto,
+        mockUser.organizationId,
+      );
+    });
+
+    it('should throw NotFoundException when research not found', async () => {
+      mockService.gerarJustificativaMetodologia.mockRejectedValue(
+        new NotFoundException('Price research not found'),
+      );
+
+      await expect(
+        controller.gerarJustificativa('non-existent', {}, mockUser),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when research belongs to another org', async () => {
+      mockService.gerarJustificativaMetodologia.mockRejectedValue(
+        new ForbiddenException('No permission'),
+      );
+
+      await expect(
+        controller.gerarJustificativa('pesq-001', {}, mockUser),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should return fontes utilizadas', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        {},
+        mockUser,
+      );
+
+      expect(result.fontesUtilizadas).toContain('SINAPI');
+      expect(result.fontesUtilizadas).toContain('PNCP');
+    });
+
+    it('should return artigos referenciados', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        {},
+        mockUser,
+      );
+
+      expect(result.artigosReferenciados).toContain('Art. 5, II');
+      expect(result.artigosReferenciados).toContain('Art. 5, III');
+      expect(result.artigosReferenciados).toContain('Art. 6');
+    });
+
+    it('should indicate pesquisa was updated', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        {},
+        mockUser,
+      );
+
+      expect(result.pesquisaAtualizada).toBe(true);
+    });
+
+    it('should return duracao in ms', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const result = await controller.gerarJustificativa(
+        'pesq-001',
+        {},
+        mockUser,
+      );
+
+      expect(result.duracaoMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should handle different tipoContratacao values', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const tipos = [
+        TipoContratacao.OBRAS,
+        TipoContratacao.SERVICOS,
+        TipoContratacao.MATERIAIS,
+        TipoContratacao.TI,
+        TipoContratacao.CONSULTORIA,
+        TipoContratacao.OUTRO,
+      ];
+
+      for (const tipo of tipos) {
+        const dto: GerarJustificativaDto = { tipoContratacao: tipo };
+        await controller.gerarJustificativa('pesq-001', dto, mockUser);
+
+        expect(mockService.gerarJustificativaMetodologia).toHaveBeenCalledWith(
+          'pesq-001',
+          expect.objectContaining({ tipoContratacao: tipo }),
+          mockUser.organizationId,
+        );
+      }
+    });
+
+    it('should handle different criterioAceitabilidade values', async () => {
+      mockService.gerarJustificativaMetodologia.mockResolvedValue(
+        mockJustificativaResult,
+      );
+
+      const criterios: Array<'media' | 'mediana' | 'menor_preco'> = [
+        'media',
+        'mediana',
+        'menor_preco',
+      ];
+
+      for (const criterio of criterios) {
+        const dto: GerarJustificativaDto = { criterioAceitabilidade: criterio };
+        await controller.gerarJustificativa('pesq-001', dto, mockUser);
+
+        expect(mockService.gerarJustificativaMetodologia).toHaveBeenCalledWith(
+          'pesq-001',
+          expect.objectContaining({ criterioAceitabilidade: criterio }),
+          mockUser.organizationId,
+        );
+      }
     });
   });
 });
