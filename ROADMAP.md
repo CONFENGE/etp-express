@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 692/747 (93%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 703/765 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | -     | Audit    | ROADMAP sync: close 5 EPICs (#1163,#1164,#1167,#1247,#1254), fix metrics |
+| 2026-01-12 | -     | Planning | Create 6 P0 issues for Apple HIG Design System compliance (#1426-#1431) |
 | 2026-01-12 | #1424 | Feature  | Add TCU audit criteria mapping for compliance validation (#1262) ✅ - **M12 started 1/7** |
 | 2026-01-12 | #1422 | Deps     | Bump OpenTelemetry 0.208->0.209 (exporter-trace-otlp-http, sdk-node) ✅ |
 | 2026-01-12 | #1421 | Feature  | Add automatic methodology justification generation (#1258) ✅ - **M11 progress 7/7** |
@@ -162,7 +164,7 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 33/35 (94%) - Epics #1158, #1161, #1163, #1164 e #1167 COMPLETAS ✅ | Restam: #1166, #1168
+**Progresso MVP Comercial:** 43/45 (96%) - Epics #1158, #1161, #1163, #1164 e #1167 COMPLETAS ✅ | Restam: #1166, #1168
 
 ---
 
@@ -217,7 +219,35 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (72)
+## Design System Apple HIG - 6 Issues P0 🎨
+
+> **Objetivo:** Adequar frontend às diretrizes Apple Human Interface Guidelines 2025
+
+### Apple HIG Compliance (P0)
+
+| #     | Issue                                                    | Área        | Status |
+| ----- | -------------------------------------------------------- | ----------- | ------ |
+| #1426 | Implementar Liquid Glass Design System                   | UI/UX       | 🔴     |
+| #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | 🔴     |
+| #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | 🔴     |
+| #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
+| #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
+| #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | 🔴     |
+
+**Progresso Design System:** 0/6 (0%)
+
+### Principais Diretrizes Apple HIG 2025
+
+1. **Liquid Glass**: Novo sistema de design com translucência, profundidade e responsividade fluida
+2. **Tipografia**: San Francisco mais bold, alinhada à esquerda, tamanho base 17pt
+3. **Cores**: Paleta refinada com melhor diferenciação de matiz, harmonia com Liquid Glass
+4. **Layout**: Whitespace generoso, grid proporcional, hierarquia clara
+5. **Motion**: Animações naturais, feedback tátil, transições fluidas
+6. **Acessibilidade**: VoiceOver, Dynamic Type, contraste WCAG AA
+
+---
+
+## Issues Abertas (62)
 
 ### P1 - High Priority (8 issues)
 
@@ -259,7 +289,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 34/35  | 97% (1 resta)  |
+| MVP Comercial          | 43/45  | 96% (2 restam) |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -277,8 +307,8 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 6/6    | ✅         | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 7/7    | ✅         | +R$ 500/mês           |
+| M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 8/11   | 73% 🟡     | +R$ 500/mês           |
 | M12: Compliance TCE            | 1/7    | Alta 🟡    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -291,7 +321,7 @@ Nenhum bug P0 aberto! 🎉
 ETP → Termo de Referência → Pesquisa de Preços → Edital → Contrato
 ```
 
-#### M10: Termo de Referência (#1247-#1253) ✅ COMPLETE
+#### M10: Termo de Referência (#1247-#1253) - IN PROGRESS 6/7
 
 Geração automática de TR a partir do ETP aprovado.
 
@@ -303,8 +333,9 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1250 Templates por categoria               | ✅     |
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
+|       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) ✅ COMPLETE
+#### M11: Pesquisa de Preços Formal (#1254-#1260) - IN PROGRESS 8/11
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 
@@ -312,15 +343,15 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 | ----- | --------------------------------------------- | ------ |
 | #1254 | [Pesquisa] Modulo de Pesquisa de Precos - EPIC| ✅     |
 |       | ↳ #1255 Entity PesquisaPrecos com metodologia | ✅     |
-|       | ↳ #1256 Coleta automática multi-fonte         | ✅     |
+|       | ↳ #1256 Coleta automática multi-fonte         | 🔴     |
 |       |   ↳ #1412 Integrar PriceAggregation           | ✅     |
 |       |   ↳ #1413 Busca em Atas de Registro de Preços | ✅     |
 |       |   ↳ #1414 Expandir busca PNCP/Compras.gov     | ✅     |
 |       |   ↳ #1415 Endpoint coleta multi-fonte         | ✅     |
 |       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
-|       | ↳ #1259 Interface de pesquisa no frontend     | ✅     |
-|       | ↳ #1260 Export relatório pesquisa PDF         | ✅     |
+|       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
+|       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
 
 Features:
 - Coleta automática multi-fonte (PNCP, SINAPI, SICRO, Atas RP)
@@ -389,10 +420,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 747   |
-| Issues Abertas    | 55    |
-| Issues Fechadas   | 692   |
-| Progresso         | 93%   |
+| Issues Totais     | 765   |
+| Issues Abertas    | 62    |
+| Issues Fechadas   | 703   |
+| Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
