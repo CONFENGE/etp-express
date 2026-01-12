@@ -9,6 +9,10 @@ import {
 } from '../../entities/pesquisa-precos.entity';
 import { CreatePesquisaPrecosDto } from './dto/create-pesquisa-precos.dto';
 import { UpdatePesquisaPrecosDto } from './dto/update-pesquisa-precos.dto';
+import {
+  ColetarPrecosDto,
+  ColetaPrecosResultDto,
+} from './dto/coletar-precos.dto';
 
 describe('PesquisaPrecosController', () => {
   let controller: PesquisaPrecosController;
@@ -42,6 +46,7 @@ describe('PesquisaPrecosController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    coletarPrecosParaPesquisa: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -208,6 +213,191 @@ describe('PesquisaPrecosController', () => {
 
       await expect(controller.remove('non-existent', mockUser)).rejects.toThrow(
         NotFoundException,
+      );
+    });
+  });
+
+  // ============================================
+  // Testes para coletarPrecos (#1415)
+  // ============================================
+
+  describe('coletarPrecos', () => {
+    const mockColetarPrecosDto: ColetarPrecosDto = {
+      itens: [
+        {
+          descricao: 'Cimento Portland CP-II 50kg',
+          quantidade: 100,
+          unidade: 'SC',
+        },
+        {
+          descricao: 'Areia lavada m3',
+          quantidade: 50,
+          unidade: 'M3',
+        },
+      ],
+      options: {
+        uf: 'DF',
+        timeoutMs: 30000,
+      },
+    };
+
+    const mockColetaResult: ColetaPrecosResultDto = {
+      pesquisaId: 'pesq-001',
+      resultados: [
+        {
+          item: {
+            descricao: 'Cimento Portland CP-II 50kg',
+            quantidade: 100,
+            unidade: 'SC',
+            precos: [
+              { fonte: 'SINAPI', valor: 35.5, data: '2026-01-11' },
+              { fonte: 'SICRO', valor: 36.0, data: '2026-01-11' },
+            ],
+            media: 35.75,
+            mediana: 35.75,
+            menorPreco: 35.5,
+            precoAdotado: 35.75,
+          },
+          fontesConsultadas: [
+            {
+              tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+              nome: 'SINAPI',
+              dataConsulta: '2026-01-11',
+            },
+            {
+              tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+              nome: 'SICRO',
+              dataConsulta: '2026-01-11',
+            },
+          ],
+          totalFontes: 2,
+          confianca: 'MEDIUM',
+          metodologiaSugerida: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+          duracaoMs: 1500,
+        },
+      ],
+      totalItens: 2,
+      itensComPrecos: 1,
+      fontesConsolidadas: [
+        {
+          tipo: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+          nome: 'SINAPI',
+          dataConsulta: '2026-01-11',
+        },
+      ],
+      confiancaGeral: 'MEDIUM',
+      duracaoTotalMs: 3000,
+      pesquisaAtualizada: true,
+    };
+
+    it('should collect prices for a price research', async () => {
+      mockService.coletarPrecosParaPesquisa.mockResolvedValue(mockColetaResult);
+
+      const result = await controller.coletarPrecos(
+        'pesq-001',
+        mockColetarPrecosDto,
+        mockUser,
+      );
+
+      expect(result).toEqual(mockColetaResult);
+      expect(mockService.coletarPrecosParaPesquisa).toHaveBeenCalledWith(
+        'pesq-001',
+        mockColetarPrecosDto,
+        mockUser.organizationId,
+      );
+    });
+
+    it('should throw NotFoundException when research not found', async () => {
+      mockService.coletarPrecosParaPesquisa.mockRejectedValue(
+        new NotFoundException('Price research not found'),
+      );
+
+      await expect(
+        controller.coletarPrecos(
+          'non-existent',
+          mockColetarPrecosDto,
+          mockUser,
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException when research belongs to another org', async () => {
+      mockService.coletarPrecosParaPesquisa.mockRejectedValue(
+        new ForbiddenException('No permission'),
+      );
+
+      await expect(
+        controller.coletarPrecos('pesq-001', mockColetarPrecosDto, mockUser),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should collect prices with default options', async () => {
+      const dtoWithoutOptions: ColetarPrecosDto = {
+        itens: [
+          {
+            descricao: 'Cimento Portland CP-II 50kg',
+            quantidade: 100,
+            unidade: 'SC',
+          },
+        ],
+      };
+
+      mockService.coletarPrecosParaPesquisa.mockResolvedValue(mockColetaResult);
+
+      await controller.coletarPrecos('pesq-001', dtoWithoutOptions, mockUser);
+
+      expect(mockService.coletarPrecosParaPesquisa).toHaveBeenCalledWith(
+        'pesq-001',
+        dtoWithoutOptions,
+        mockUser.organizationId,
+      );
+    });
+
+    it('should handle partial collection failures gracefully', async () => {
+      const partialResult: ColetaPrecosResultDto = {
+        ...mockColetaResult,
+        itensComPrecos: 1,
+        totalItens: 2,
+        confiancaGeral: 'LOW',
+      };
+
+      mockService.coletarPrecosParaPesquisa.mockResolvedValue(partialResult);
+
+      const result = await controller.coletarPrecos(
+        'pesq-001',
+        mockColetarPrecosDto,
+        mockUser,
+      );
+
+      expect(result.itensComPrecos).toBe(1);
+      expect(result.totalItens).toBe(2);
+      expect(result.confiancaGeral).toBe('LOW');
+    });
+
+    it('should collect prices with custom UF option', async () => {
+      const dtoWithCustomUf: ColetarPrecosDto = {
+        itens: [
+          {
+            descricao: 'Cimento Portland CP-II 50kg',
+            quantidade: 100,
+            unidade: 'SC',
+          },
+        ],
+        options: {
+          uf: 'SP',
+        },
+      };
+
+      mockService.coletarPrecosParaPesquisa.mockResolvedValue(mockColetaResult);
+
+      await controller.coletarPrecos('pesq-001', dtoWithCustomUf, mockUser);
+
+      expect(mockService.coletarPrecosParaPesquisa).toHaveBeenCalledWith(
+        'pesq-001',
+        expect.objectContaining({
+          options: expect.objectContaining({ uf: 'SP' }),
+        }),
+        mockUser.organizationId,
       );
     });
   });
