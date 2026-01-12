@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1425 | Deps     | Remove deprecated @types/nock package (nock v14+ ships own types) ✅ |
+| 2026-01-12 | -     | Perf     | Optimize Playwright tests: sharding, storage state, networkidle removal |
 | 2026-01-12 | -     | Audit    | ROADMAP sync: close 5 EPICs (#1163,#1164,#1167,#1247,#1254), fix metrics |
 | 2026-01-12 | -     | Planning | Create 6 P0 issues for Apple HIG Design System compliance (#1426-#1431) |
 | 2026-01-12 | #1424 | Feature  | Add TCU audit criteria mapping for compliance validation (#1262) ✅ - **M12 started 1/7** |
