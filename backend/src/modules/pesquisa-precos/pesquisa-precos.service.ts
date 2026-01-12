@@ -22,6 +22,11 @@ import {
   ItemParaPesquisaDto,
   ColetaPrecosResultDto,
   ItemColetaResultDto,
+  MapaComparativoDto,
+  ItemMapaComparativoDto,
+  PrecoFonteMapaDto,
+  ResumoMapaComparativoDto,
+  GerarMapaComparativoResponseDto,
 } from './dto';
 import { SinapiService } from '../gov-api/sinapi/sinapi.service';
 import { SicroService } from '../gov-api/sicro/sicro.service';
@@ -943,5 +948,370 @@ export class PesquisaPrecosService {
   ): MetodologiaPesquisa[] {
     const tipos = [...new Set(fontes.map((f) => f.tipo))];
     return tipos.filter((t) => t !== metodologiaPrincipal);
+  }
+
+  // ============================================
+  // Mapa Comparativo de Precos (#1257)
+  // ============================================
+
+  /**
+   * Gera mapa comparativo de precos para uma pesquisa.
+   *
+   * O mapa comparativo apresenta:
+   * - Tabela com todos os itens e precos de cada fonte
+   * - Calculos estatisticos: media, mediana, menor preco, desvio padrao
+   * - Identificacao de outliers (> 2 desvios padrao)
+   * - Preco sugerido (mediana por padrao)
+   * - Resumo com totais consolidados
+   *
+   * @param pesquisaId ID da pesquisa de precos
+   * @param organizationId ID da organizacao (para validacao)
+   * @returns Mapa comparativo gerado e pesquisa atualizada
+   *
+   * @throws NotFoundException se pesquisa nao existir
+   * @throws ForbiddenException se pesquisa pertencer a outra organizacao
+   *
+   * @example
+   * ```typescript
+   * const result = await service.gerarMapaComparativo(
+   *   'pesquisa-uuid',
+   *   'org-uuid'
+   * );
+   * console.log(result.mapaComparativo.resumo.valorTotalEstimado);
+   * ```
+   *
+   * @see Issue #1257 - [Pesquisa-c] Gerar mapa comparativo de precos
+   */
+  async gerarMapaComparativo(
+    pesquisaId: string,
+    organizationId: string,
+  ): Promise<GerarMapaComparativoResponseDto> {
+    const startTime = Date.now();
+
+    this.logger.log(`Gerando mapa comparativo para pesquisa ${pesquisaId}`);
+
+    // 1. Buscar pesquisa e validar acesso
+    const pesquisa = await this.findOne(pesquisaId, organizationId);
+
+    if (!pesquisa.itens || pesquisa.itens.length === 0) {
+      this.logger.warn(
+        `Pesquisa ${pesquisaId} nao possui itens para gerar mapa comparativo`,
+      );
+      // Retornar mapa vazio mas valido
+      const mapaVazio = this.criarMapaVazio();
+      return {
+        pesquisaId,
+        mapaComparativo: mapaVazio,
+        pesquisaAtualizada: false,
+        duracaoMs: Date.now() - startTime,
+      };
+    }
+
+    // 2. Extrair nomes unicos das fontes
+    const fontesUnicas = this.extrairFontesUnicas(pesquisa.itens);
+
+    // 3. Gerar itens do mapa com calculos estatisticos
+    const itensDoMapa = this.gerarItensMapaComparativo(pesquisa.itens);
+
+    // 4. Gerar resumo consolidado
+    const resumo = this.gerarResumoMapaComparativo(itensDoMapa, fontesUnicas);
+
+    // 5. Montar mapa comparativo completo
+    const mapaComparativo: MapaComparativoDto = {
+      itens: itensDoMapa,
+      resumo,
+      metodologia: this.gerarDescricaoMetodologia(pesquisa),
+      referenciaLegal: 'IN SEGES/ME n 65/2021 e Lei 14.133/2021',
+    };
+
+    // 6. Salvar mapa na pesquisa
+    await this.update(
+      pesquisaId,
+      {
+        mapaComparativo: mapaComparativo as unknown as Record<string, unknown>,
+      },
+      organizationId,
+    );
+
+    const duracaoMs = Date.now() - startTime;
+    this.logger.log(
+      `Mapa comparativo gerado em ${duracaoMs}ms: ${itensDoMapa.length} itens, valor total: R$ ${resumo.valorTotalEstimado.toFixed(2)}`,
+    );
+
+    return {
+      pesquisaId,
+      mapaComparativo,
+      pesquisaAtualizada: true,
+      duracaoMs,
+    };
+  }
+
+  /**
+   * Extrai nomes unicos das fontes dos itens.
+   */
+  private extrairFontesUnicas(itens: ItemPesquisado[]): string[] {
+    const fontesSet = new Set<string>();
+    for (const item of itens) {
+      if (item.precos) {
+        for (const preco of item.precos) {
+          fontesSet.add(preco.fonte);
+        }
+      }
+    }
+    return Array.from(fontesSet).sort();
+  }
+
+  /**
+   * Gera itens do mapa comparativo com calculos estatisticos.
+   */
+  private gerarItensMapaComparativo(
+    itens: ItemPesquisado[],
+  ): ItemMapaComparativoDto[] {
+    return itens.map((item) => this.calcularItemMapa(item));
+  }
+
+  /**
+   * Calcula estatisticas para um item do mapa.
+   */
+  private calcularItemMapa(item: ItemPesquisado): ItemMapaComparativoDto {
+    const precos = item.precos || [];
+    const valores = precos.map((p) => p.valor).filter((v) => v > 0);
+
+    // Estatisticas basicas
+    const { media, mediana, menorPreco, maiorPreco, desvioPadrao, cv } =
+      this.calcularEstatisticasCompletas(valores);
+
+    // Identificar outliers (> 2 desvios padrao)
+    const limiteInferior = media - 2 * desvioPadrao;
+    const limiteSuperior = media + 2 * desvioPadrao;
+
+    const fontesComOutliers: PrecoFonteMapaDto[] = precos.map((p) => ({
+      fonte: p.fonte,
+      valor: p.valor,
+      data: p.data,
+      isOutlier:
+        desvioPadrao > 0 &&
+        (p.valor < limiteInferior || p.valor > limiteSuperior),
+    }));
+
+    const outliersExcluidos = fontesComOutliers.filter(
+      (f) => f.isOutlier,
+    ).length;
+
+    // Recalcular media excluindo outliers
+    const valoresSemOutliers = fontesComOutliers
+      .filter((f) => !f.isOutlier)
+      .map((f) => f.valor);
+
+    const mediaSemOutliers =
+      valoresSemOutliers.length > 0
+        ? this.calculateMean(valoresSemOutliers)
+        : media;
+
+    // Preco adotado: usar o da pesquisa ou mediana
+    const precoAdotado = item.precoAdotado || mediana || mediaSemOutliers;
+
+    // Justificativa do preco adotado
+    const justificativa =
+      item.justificativaPreco ||
+      this.gerarJustificativaPreco(precoAdotado, media, mediana, menorPreco);
+
+    return {
+      codigo: item.codigo,
+      descricao: item.descricao,
+      unidade: item.unidade,
+      quantidade: item.quantidade,
+      fontes: fontesComOutliers,
+      media: Math.round(mediaSemOutliers * 100) / 100,
+      mediana: Math.round(mediana * 100) / 100,
+      menorPreco: Math.round(menorPreco * 100) / 100,
+      maiorPreco: Math.round(maiorPreco * 100) / 100,
+      desvioPadrao: Math.round(desvioPadrao * 100) / 100,
+      coeficienteVariacao: Math.round(cv * 100) / 100,
+      precoAdotado: Math.round(precoAdotado * 100) / 100,
+      justificativa,
+      valorTotal: Math.round(precoAdotado * item.quantidade * 100) / 100,
+      quantidadeFontes: valores.length,
+      outliersExcluidos,
+    };
+  }
+
+  /**
+   * Calcula estatisticas completas para um conjunto de valores.
+   */
+  private calcularEstatisticasCompletas(valores: number[]): {
+    media: number;
+    mediana: number;
+    menorPreco: number;
+    maiorPreco: number;
+    desvioPadrao: number;
+    cv: number;
+  } {
+    if (valores.length === 0) {
+      return {
+        media: 0,
+        mediana: 0,
+        menorPreco: 0,
+        maiorPreco: 0,
+        desvioPadrao: 0,
+        cv: 0,
+      };
+    }
+
+    const sorted = [...valores].sort((a, b) => a - b);
+    const media = this.calculateMean(valores);
+    const mediana = this.calculateMedian(valores);
+    const menorPreco = sorted[0];
+    const maiorPreco = sorted[sorted.length - 1];
+
+    // Desvio padrao
+    const squaredDiffs = valores.map((val) => Math.pow(val - media, 2));
+    const avgSquaredDiff =
+      squaredDiffs.reduce((acc, val) => acc + val, 0) / valores.length;
+    const desvioPadrao = Math.sqrt(avgSquaredDiff);
+
+    // Coeficiente de variacao (%)
+    const cv = media > 0 ? (desvioPadrao / media) * 100 : 0;
+
+    return { media, mediana, menorPreco, maiorPreco, desvioPadrao, cv };
+  }
+
+  /**
+   * Gera justificativa automatica para o preco adotado.
+   */
+  private gerarJustificativaPreco(
+    precoAdotado: number,
+    media: number,
+    mediana: number,
+    menorPreco: number,
+  ): string {
+    const tolerancia = 0.01; // 1% de tolerancia para comparacao
+
+    if (Math.abs(precoAdotado - mediana) / mediana < tolerancia) {
+      return 'Adotada a mediana dos precos pesquisados conforme recomendacao da IN SEGES/ME n 65/2021, Art. 6, como valor de referencia mais representativo do mercado.';
+    }
+
+    if (Math.abs(precoAdotado - media) / media < tolerancia) {
+      return 'Adotada a media aritmetica dos precos pesquisados, pois a dispersao de valores e baixa (CV < 25%).';
+    }
+
+    if (Math.abs(precoAdotado - menorPreco) / menorPreco < tolerancia) {
+      return 'Adotado o menor preco encontrado na pesquisa, observada sua viabilidade e consistencia com o mercado.';
+    }
+
+    return 'Preco adotado com base na analise dos valores pesquisados e criterios de aceitabilidade definidos.';
+  }
+
+  /**
+   * Gera resumo consolidado do mapa comparativo.
+   */
+  private gerarResumoMapaComparativo(
+    itens: ItemMapaComparativoDto[],
+    fontes: string[],
+  ): ResumoMapaComparativoDto {
+    const valorTotalEstimado = itens.reduce(
+      (sum, item) => sum + item.valorTotal,
+      0,
+    );
+
+    const menorValorTotal = itens.reduce(
+      (sum, item) => sum + item.menorPreco * item.quantidade,
+      0,
+    );
+
+    const economiaPotencial = valorTotalEstimado - menorValorTotal;
+
+    // Media geral ponderada pela quantidade
+    const totalQuantidade = itens.reduce(
+      (sum, item) => sum + item.quantidade,
+      0,
+    );
+    const mediaGeral =
+      totalQuantidade > 0 ? valorTotalEstimado / totalQuantidade : 0;
+
+    // CV geral: media dos CVs ponderada
+    const cvPonderado =
+      itens.length > 0
+        ? itens.reduce((sum, item) => sum + item.coeficienteVariacao, 0) /
+          itens.length
+        : 0;
+
+    return {
+      totalItens: itens.length,
+      totalFontes: fontes.length,
+      fontes,
+      valorTotalEstimado: Math.round(valorTotalEstimado * 100) / 100,
+      menorValorTotal: Math.round(menorValorTotal * 100) / 100,
+      economiaPotencial: Math.round(economiaPotencial * 100) / 100,
+      mediaGeral: Math.round(mediaGeral * 100) / 100,
+      coeficienteVariacaoGeral: Math.round(cvPonderado * 100) / 100,
+      dataGeracao: new Date().toISOString(),
+      versao: 1,
+    };
+  }
+
+  /**
+   * Gera descricao da metodologia aplicada.
+   */
+  private gerarDescricaoMetodologia(pesquisa: PesquisaPrecos): string {
+    const metodologias: string[] = [];
+
+    if (pesquisa.metodologia) {
+      metodologias.push(this.getMetodologiaDisplayName(pesquisa.metodologia));
+    }
+
+    if (pesquisa.metodologiasComplementares) {
+      for (const m of pesquisa.metodologiasComplementares) {
+        metodologias.push(this.getMetodologiaDisplayName(m));
+      }
+    }
+
+    const metodologiasStr =
+      metodologias.length > 0 ? metodologias.join(', ') : 'Midia especializada';
+
+    return (
+      `Pesquisa de precos realizada utilizando ${metodologiasStr}. ` +
+      `Calculos efetuados com base na mediana dos precos coletados, ` +
+      `excluindo valores discrepantes (outliers superiores a 2 desvios padrao). ` +
+      `Conforme IN SEGES/ME n 65/2021 e Lei 14.133/2021.`
+    );
+  }
+
+  /**
+   * Retorna nome de exibicao da metodologia.
+   */
+  private getMetodologiaDisplayName(metodologia: MetodologiaPesquisa): string {
+    const names: Record<MetodologiaPesquisa, string> = {
+      [MetodologiaPesquisa.PAINEL_PRECOS]: 'Painel de Precos',
+      [MetodologiaPesquisa.CONTRATACOES_SIMILARES]: 'Contratacoes Similares',
+      [MetodologiaPesquisa.MIDIA_ESPECIALIZADA]: 'Midia Especializada',
+      [MetodologiaPesquisa.SITES_ELETRONICOS]: 'Sites Eletronicos',
+      [MetodologiaPesquisa.PESQUISA_FORNECEDORES]: 'Pesquisa de Fornecedores',
+      [MetodologiaPesquisa.NOTAS_FISCAIS]: 'Notas Fiscais',
+    };
+    return names[metodologia] || metodologia;
+  }
+
+  /**
+   * Cria mapa comparativo vazio (para pesquisas sem itens).
+   */
+  private criarMapaVazio(): MapaComparativoDto {
+    return {
+      itens: [],
+      resumo: {
+        totalItens: 0,
+        totalFontes: 0,
+        fontes: [],
+        valorTotalEstimado: 0,
+        menorValorTotal: 0,
+        economiaPotencial: 0,
+        mediaGeral: 0,
+        coeficienteVariacaoGeral: 0,
+        dataGeracao: new Date().toISOString(),
+        versao: 1,
+      },
+      metodologia: 'Nenhum item pesquisado',
+      referenciaLegal: 'IN SEGES/ME n 65/2021 e Lei 14.133/2021',
+    };
   }
 }

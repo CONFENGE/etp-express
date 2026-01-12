@@ -28,6 +28,7 @@ import {
   UpdatePesquisaPrecosDto,
   ColetarPrecosDto,
   ColetaPrecosResultDto,
+  GerarMapaComparativoResponseDto,
 } from './dto';
 import {
   PesquisaPrecos,
@@ -267,6 +268,58 @@ export class PesquisaPrecosController {
     return this.pesquisaPrecosService.coletarPrecosParaPesquisa(
       id,
       dto,
+      user.organizationId,
+    );
+  }
+
+  // ============================================
+  // Mapa Comparativo de Precos (#1257)
+  // ============================================
+
+  /**
+   * Gera mapa comparativo de precos para uma pesquisa.
+   *
+   * O mapa comparativo apresenta:
+   * - Tabela com todos os itens e precos de cada fonte
+   * - Calculos estatisticos: media, mediana, menor preco, desvio padrao
+   * - Identificacao de outliers (precos fora de 2 desvios padrao)
+   * - Preco sugerido com justificativa
+   * - Resumo consolidado com totais
+   *
+   * @see Issue #1257 - [Pesquisa-c] Gerar mapa comparativo de precos
+   */
+  @Post(':id/mapa-comparativo')
+  @ApiOperation({
+    summary: 'Gerar mapa comparativo de precos',
+    description: `Gera tabela comparativa com media, mediana e menor preco para cada item pesquisado.
+    Identifica outliers (precos fora de 2 desvios padrao) e destaca o preco sugerido.
+    O mapa e salvo automaticamente na pesquisa.`,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da pesquisa de precos',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Mapa comparativo gerado com sucesso',
+    type: GerarMapaComparativoResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Pesquisa de precos nao encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Sem permissao para acessar esta pesquisa',
+  })
+  async gerarMapaComparativo(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<GerarMapaComparativoResponseDto> {
+    return this.pesquisaPrecosService.gerarMapaComparativo(
+      id,
       user.organizationId,
     );
   }
