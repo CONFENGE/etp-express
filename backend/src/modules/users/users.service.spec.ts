@@ -54,6 +54,7 @@ describe('UsersService', () => {
     auditLogs: [],
     authorizedDomainId: null,
     authorizedDomain: null,
+    etpLimitCount: null,
   };
 
   const mockRepository = {
