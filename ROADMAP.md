@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1422 | Deps     | Bump OpenTelemetry 0.208->0.209 (exporter-trace-otlp-http, sdk-node) ✅ |
 | 2026-01-12 | #1421 | Feature  | Add automatic methodology justification generation (#1258) ✅ - **M11 progress 7/7** |
 | 2026-01-12 | #1420 | Feature  | Add price comparison map generation (#1257) ✅ - **M11 progress 6/7** |
 | 2026-01-12 | #1419 | Feature  | Add endpoint for multi-source price collection (#1415) ✅ - **M11 progress 5/7** |
