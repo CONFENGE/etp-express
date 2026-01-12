@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 691/746 (93%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 692/747 (93%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1424 | Feature  | Add TCU audit criteria mapping for compliance validation (#1262) ✅ - **M12 started 1/7** |
 | 2026-01-12 | #1422 | Deps     | Bump OpenTelemetry 0.208->0.209 (exporter-trace-otlp-http, sdk-node) ✅ |
 | 2026-01-12 | #1421 | Feature  | Add automatic methodology justification generation (#1258) ✅ - **M11 progress 7/7** |
 | 2026-01-12 | #1420 | Feature  | Add price comparison map generation (#1257) ✅ - **M11 progress 6/7** |
@@ -278,7 +279,7 @@ Nenhum bug P0 aberto! 🎉
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/6    | ✅         | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 7/7    | ✅         | +R$ 500/mês           |
-| M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
+| M12: Compliance TCE            | 1/7    | Alta 🟡    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
@@ -327,11 +328,22 @@ Features:
 - Justificativa automática de metodologia
 - Relatório formal de pesquisa
 
-#### M12: Compliance TCE (#1261-#1267)
+#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 1/7
 
 Validação automática contra critérios TCU/TCE.
 
-- Mapeamento de critérios ALICE/SOFIA
+| #     | Issue                                         | Status |
+| ----- | --------------------------------------------- | ------ |
+| #1261 | [Compliance] Validacao TCE - EPIC             | 🟡     |
+|       | ↳ #1262 Mapear criterios TCU/TCE              | ✅     |
+|       | ↳ #1263 Engine de validacao ETP               | 🔴     |
+|       | ↳ #1264 Relatorio de conformidade             | 🔴     |
+|       | ↳ #1265 Selo de Conformidade visual           | 🔴     |
+|       | ↳ #1266 Alertas tempo real                    | 🔴     |
+|       | ↳ #1267 Testes E2E compliance                 | 🔴     |
+
+Features:
+- Mapeamento de critérios ALICE/SOFIA ✅
 - Engine de validação com score 0-100
 - Selo de Conformidade visual
 - Alertas em tempo real durante preenchimento
@@ -377,9 +389,9 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 746   |
+| Issues Totais     | 747   |
 | Issues Abertas    | 55    |
-| Issues Fechadas   | 691   |
+| Issues Fechadas   | 692   |
 | Progresso         | 93%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
