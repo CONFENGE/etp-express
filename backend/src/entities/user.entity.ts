@@ -143,4 +143,13 @@ export class User {
   })
   @JoinColumn({ name: 'authorizedDomainId' })
   authorizedDomain: AuthorizedDomain | null;
+
+  /**
+   * Maximum number of ETPs a demo user can create.
+   * Only applies to users with role DEMO.
+   * Null for non-demo users (unlimited).
+   * Default is 3 for demo users.
+   */
+  @Column({ type: 'int', default: 3, nullable: true })
+  etpLimitCount: number | null;
 }

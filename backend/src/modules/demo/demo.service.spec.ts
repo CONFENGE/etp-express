@@ -51,6 +51,7 @@ describe('DemoService', () => {
     updatedAt: new Date('2024-01-01'),
     etps: [],
     auditLogs: [],
+    etpLimitCount: 3,
   };
 
   const mockEtp: Etp = {
