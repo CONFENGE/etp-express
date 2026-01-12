@@ -15,7 +15,14 @@ import {
 } from '../../entities/pesquisa-precos.entity';
 import { Etp } from '../../entities/etp.entity';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
-import { CreatePesquisaPrecosDto, UpdatePesquisaPrecosDto } from './dto';
+import {
+  CreatePesquisaPrecosDto,
+  UpdatePesquisaPrecosDto,
+  ColetarPrecosDto,
+  ItemParaPesquisaDto,
+  ColetaPrecosResultDto,
+  ItemColetaResultDto,
+} from './dto';
 import { SinapiService } from '../gov-api/sinapi/sinapi.service';
 import { SicroService } from '../gov-api/sicro/sicro.service';
 import { PncpService } from '../gov-api/pncp/pncp.service';
@@ -691,5 +698,250 @@ export class PesquisaPrecosService {
       sicro: 'SICRO',
     };
     return names[source] || source.toUpperCase();
+  }
+
+  // ============================================
+  // Coleta de Precos para Pesquisa (#1415)
+  // ============================================
+
+  /**
+   * Coleta precos de multiplas fontes para uma pesquisa existente.
+   *
+   * Este endpoint aciona a coleta automatica de precos para todos os itens
+   * fornecidos, consultando SINAPI, SICRO e PNCP em paralelo.
+   *
+   * Comportamento:
+   * 1. Valida que a pesquisa existe e pertence a organizacao
+   * 2. Para cada item, coleta precos de ate 3 fontes (SINAPI, SICRO, PNCP)
+   * 3. Aplica timeout configuravel (default 30s por fonte)
+   * 4. Continua coleta se uma fonte falhar (fallback resiliente)
+   * 5. Atualiza a pesquisa com os novos itens coletados
+   * 6. Recalcula estatisticas consolidadas
+   *
+   * @param pesquisaId ID da pesquisa de precos
+   * @param dto Dados dos itens e opcoes de coleta
+   * @param organizationId ID da organizacao (para validacao)
+   * @returns Resultado da coleta com itens, fontes e estatisticas
+   *
+   * @throws NotFoundException se pesquisa nao existir
+   * @throws ForbiddenException se pesquisa pertencer a outra organizacao
+   *
+   * @example
+   * ```typescript
+   * const result = await service.coletarPrecosParaPesquisa(
+   *   'pesquisa-uuid',
+   *   {
+   *     itens: [
+   *       { descricao: 'Cimento CP-II 50kg', quantidade: 100, unidade: 'SC' },
+   *       { descricao: 'Areia lavada m3', quantidade: 50, unidade: 'M3' }
+   *     ],
+   *     options: { uf: 'DF', timeoutMs: 30000 }
+   *   },
+   *   'org-uuid'
+   * );
+   * ```
+   *
+   * @see Issue #1415 - [Pesquisa-b4] Endpoint e testes de integracao para coleta multi-fonte
+   */
+  async coletarPrecosParaPesquisa(
+    pesquisaId: string,
+    dto: ColetarPrecosDto,
+    organizationId: string,
+  ): Promise<ColetaPrecosResultDto> {
+    const startTime = Date.now();
+
+    this.logger.log(
+      `Iniciando coleta de precos para pesquisa ${pesquisaId} (${dto.itens.length} itens)`,
+    );
+
+    // 1. Validar que a pesquisa existe e pertence a organizacao
+    const pesquisa = await this.findOne(pesquisaId, organizationId);
+
+    // 2. Configurar opcoes de coleta com defaults
+    const options = {
+      uf: dto.options?.uf || 'DF',
+      excluirOutliers: dto.options?.excluirOutliers ?? true,
+      timeoutMs: dto.options?.timeoutMs || 30000,
+    };
+
+    // 3. Coletar precos para cada item em paralelo
+    const resultados: ItemColetaResultDto[] = [];
+    const coletaPromises = dto.itens.map((item) =>
+      this.coletarPrecosComFallback(item, options),
+    );
+
+    const coletaResults = await Promise.allSettled(coletaPromises);
+
+    for (let i = 0; i < coletaResults.length; i++) {
+      const result = coletaResults[i];
+      if (result.status === 'fulfilled') {
+        resultados.push(result.value);
+      } else {
+        // Em caso de falha total, criar item vazio com indicador de falha
+        this.logger.warn(
+          `Falha ao coletar precos para item "${dto.itens[i].descricao}": ${result.reason}`,
+        );
+        resultados.push({
+          item: {
+            descricao: dto.itens[i].descricao,
+            quantidade: dto.itens[i].quantidade,
+            unidade: dto.itens[i].unidade,
+            codigo: dto.itens[i].codigo,
+            precos: [],
+            media: 0,
+            mediana: 0,
+            menorPreco: 0,
+          },
+          fontesConsultadas: [],
+          totalFontes: 0,
+          confianca: 'LOW',
+          metodologiaSugerida: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+          duracaoMs: 0,
+        });
+      }
+    }
+
+    // 4. Consolidar fontes unicas
+    const fontesMap = new Map<string, FonteConsultada>();
+    for (const resultado of resultados) {
+      for (const fonte of resultado.fontesConsultadas) {
+        const key = `${fonte.tipo}-${fonte.nome}`;
+        if (!fontesMap.has(key)) {
+          fontesMap.set(key, fonte);
+        }
+      }
+    }
+    const fontesConsolidadas = Array.from(fontesMap.values());
+
+    // 5. Calcular confianca geral
+    const confiancaGeral = this.calcularConfiancaGeral(resultados);
+
+    // 6. Atualizar pesquisa com novos itens
+    const itensAtualizados: ItemPesquisado[] = [
+      ...(pesquisa.itens || []),
+      ...resultados.map((r) => r.item),
+    ];
+
+    // 7. Atualizar fontes consultadas
+    const fontesAtualizadas: FonteConsultada[] = [
+      ...(pesquisa.fontesConsultadas || []),
+      ...fontesConsolidadas,
+    ];
+
+    // 8. Determinar metodologia principal baseada nas fontes
+    const metodologia = this.determinarMetodologia(fontesAtualizadas);
+
+    // 9. Salvar pesquisa atualizada
+    const pesquisaAtualizada = await this.update(
+      pesquisaId,
+      {
+        itens: itensAtualizados,
+        fontesConsultadas: fontesAtualizadas,
+        metodologia,
+        metodologiasComplementares: this.extrairMetodologiasComplementares(
+          fontesAtualizadas,
+          metodologia,
+        ),
+      },
+      organizationId,
+    );
+
+    const duracaoTotalMs = Date.now() - startTime;
+    const itensComPrecos = resultados.filter(
+      (r) => r.item.precos.length > 0,
+    ).length;
+
+    this.logger.log(
+      `Coleta concluida em ${duracaoTotalMs}ms: ${itensComPrecos}/${dto.itens.length} itens com precos, confianca: ${confiancaGeral}`,
+    );
+
+    return {
+      pesquisaId,
+      resultados,
+      totalItens: dto.itens.length,
+      itensComPrecos,
+      fontesConsolidadas,
+      confiancaGeral,
+      duracaoTotalMs,
+      pesquisaAtualizada: !!pesquisaAtualizada,
+    };
+  }
+
+  /**
+   * Coleta precos para um item com fallback em caso de falha.
+   */
+  private async coletarPrecosComFallback(
+    item: ItemParaPesquisaDto,
+    options: ColetaOptions,
+  ): Promise<ItemColetaResultDto> {
+    try {
+      const result = await this.coletarPrecos(
+        item.descricao,
+        item.quantidade,
+        item.unidade,
+        options,
+      );
+
+      // Adicionar codigo se fornecido
+      if (item.codigo) {
+        result.item.codigo = item.codigo;
+      }
+
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Erro ao coletar precos para "${item.descricao}": ${error.message}`,
+      );
+
+      // Retornar item vazio em caso de falha total
+      return {
+        item: {
+          descricao: item.descricao,
+          quantidade: item.quantidade,
+          unidade: item.unidade,
+          codigo: item.codigo,
+          precos: [],
+          media: 0,
+          mediana: 0,
+          menorPreco: 0,
+        },
+        fontesConsultadas: [],
+        totalFontes: 0,
+        confianca: 'LOW',
+        metodologiaSugerida: MetodologiaPesquisa.MIDIA_ESPECIALIZADA,
+        duracaoMs: 0,
+      };
+    }
+  }
+
+  /**
+   * Calcula confianca geral baseada nos resultados individuais.
+   */
+  private calcularConfiancaGeral(
+    resultados: ItemColetaResultDto[],
+  ): 'HIGH' | 'MEDIUM' | 'LOW' {
+    if (resultados.length === 0) return 'LOW';
+
+    const confiancaValues = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+    const totalScore = resultados.reduce(
+      (sum, r) => sum + confiancaValues[r.confianca],
+      0,
+    );
+    const avgScore = totalScore / resultados.length;
+
+    if (avgScore >= 2.5) return 'HIGH';
+    if (avgScore >= 1.5) return 'MEDIUM';
+    return 'LOW';
+  }
+
+  /**
+   * Extrai metodologias complementares das fontes.
+   */
+  private extrairMetodologiasComplementares(
+    fontes: FonteConsultada[],
+    metodologiaPrincipal: MetodologiaPesquisa,
+  ): MetodologiaPesquisa[] {
+    const tipos = [...new Set(fontes.map((f) => f.tipo))];
+    return tipos.filter((t) => t !== metodologiaPrincipal);
   }
 }

@@ -18,11 +18,17 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { PesquisaPrecosService } from './pesquisa-precos.service';
-import { CreatePesquisaPrecosDto, UpdatePesquisaPrecosDto } from './dto';
+import {
+  CreatePesquisaPrecosDto,
+  UpdatePesquisaPrecosDto,
+  ColetarPrecosDto,
+  ColetaPrecosResultDto,
+} from './dto';
 import {
   PesquisaPrecos,
   PesquisaPrecosStatus,
@@ -197,5 +203,71 @@ export class PesquisaPrecosController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
     return this.pesquisaPrecosService.remove(id, user.organizationId);
+  }
+
+  // ============================================
+  // Coleta Automatica de Precos (#1415)
+  // ============================================
+
+  /**
+   * Coleta precos de multiplas fontes governamentais para uma pesquisa.
+   *
+   * Este endpoint aciona a coleta automatica de precos para os itens
+   * fornecidos, consultando as seguintes fontes em paralelo:
+   * - SINAPI (Sistema Nacional de Pesquisa de Custos)
+   * - SICRO (Sistema de Custos Referenciais de Obras)
+   * - PNCP (Portal Nacional de Contratacoes Publicas)
+   *
+   * Comportamento:
+   * - Timeout configuravel (default 30s, max 60s por fonte)
+   * - Fallback: continua se uma fonte falhar
+   * - Dados normalizados em estrutura ItemPesquisado
+   * - Atualiza a pesquisa com os novos itens automaticamente
+   *
+   * @see Issue #1415 - [Pesquisa-b4] Endpoint e testes de integracao para coleta multi-fonte
+   */
+  @Post(':id/coletar-precos')
+  @ApiOperation({
+    summary: 'Coletar precos de multiplas fontes para uma pesquisa',
+    description: `Aciona a coleta automatica de precos de fontes governamentais (SINAPI, SICRO, PNCP)
+    para os itens fornecidos. Os precos sao agregados e a pesquisa e atualizada automaticamente.`,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da pesquisa de precos',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Coleta realizada com sucesso',
+    type: ColetaPrecosResultDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Dados invalidos (lista de itens vazia ou mal formatada)',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Pesquisa de precos nao encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Sem permissao para acessar esta pesquisa',
+  })
+  @ApiResponse({
+    status: HttpStatus.REQUEST_TIMEOUT,
+    description: 'Timeout na coleta de precos (todas as fontes falharam)',
+  })
+  async coletarPrecos(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ColetarPrecosDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<ColetaPrecosResultDto> {
+    return this.pesquisaPrecosService.coletarPrecosParaPesquisa(
+      id,
+      dto,
+      user.organizationId,
+    );
   }
 }
