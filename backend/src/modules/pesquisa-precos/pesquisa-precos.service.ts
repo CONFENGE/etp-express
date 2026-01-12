@@ -27,6 +27,9 @@ import {
   PrecoFonteMapaDto,
   ResumoMapaComparativoDto,
   GerarMapaComparativoResponseDto,
+  GerarJustificativaDto,
+  JustificativaGeradaDto,
+  TipoContratacao,
 } from './dto';
 import { SinapiService } from '../gov-api/sinapi/sinapi.service';
 import { SicroService } from '../gov-api/sicro/sicro.service';
@@ -1313,5 +1316,343 @@ export class PesquisaPrecosService {
       metodologia: 'Nenhum item pesquisado',
       referenciaLegal: 'IN SEGES/ME n 65/2021 e Lei 14.133/2021',
     };
+  }
+
+  // ============================================
+  // Geracao Automatica de Justificativa (#1258)
+  // ============================================
+
+  /**
+   * Gera justificativa automatica de metodologia de pesquisa de precos.
+   *
+   * Conforme IN SEGES/ME n 65/2021, Art. 7, e obrigatoria a justificativa
+   * quando a metodologia de Painel de Precos nao e utilizada.
+   *
+   * A justificativa gerada inclui:
+   * - Referencia a IN SEGES/ME n 65/2021
+   * - Listagem das fontes consultadas com artigos correspondentes
+   * - Contexto da contratacao (tipo, valor, objeto)
+   * - Criterio de aceitabilidade de precos
+   *
+   * @param pesquisaId ID da pesquisa de precos
+   * @param dto Dados opcionais de contexto
+   * @param organizationId ID da organizacao (para validacao)
+   * @returns Justificativa gerada e metadados
+   *
+   * @throws NotFoundException se pesquisa nao existir
+   * @throws ForbiddenException se pesquisa pertencer a outra organizacao
+   *
+   * @example
+   * ```typescript
+   * const result = await service.gerarJustificativaMetodologia(
+   *   'pesquisa-uuid',
+   *   { tipoContratacao: 'MATERIAIS', valorEstimado: 150000 },
+   *   'org-uuid'
+   * );
+   * console.log(result.justificativa);
+   * ```
+   *
+   * @see Issue #1258 - [Pesquisa-d] Justificativa automatica de metodologia
+   */
+  async gerarJustificativaMetodologia(
+    pesquisaId: string,
+    dto: GerarJustificativaDto,
+    organizationId: string,
+  ): Promise<JustificativaGeradaDto> {
+    const startTime = Date.now();
+
+    this.logger.log(
+      `Gerando justificativa de metodologia para pesquisa ${pesquisaId}`,
+    );
+
+    // 1. Buscar pesquisa e validar acesso
+    const pesquisa = await this.findOne(pesquisaId, organizationId);
+
+    // 2. Extrair fontes unicas da pesquisa
+    const fontesUtilizadas = this.extrairNomesFontes(
+      pesquisa.fontesConsultadas || [],
+    );
+
+    // 3. Mapear fontes para artigos da IN 65/2021
+    const artigosReferenciados = this.mapearFontesParaArtigos(
+      pesquisa.fontesConsultadas || [],
+    );
+
+    // 4. Gerar texto da justificativa
+    const justificativa = this.construirTextoJustificativa(
+      pesquisa,
+      dto,
+      fontesUtilizadas,
+    );
+
+    // 5. Atualizar pesquisa com a justificativa
+    await this.update(
+      pesquisaId,
+      {
+        justificativaMetodologia: justificativa,
+        criterioAceitabilidade:
+          dto.criterioAceitabilidade ||
+          pesquisa.criterioAceitabilidade ||
+          'mediana',
+      },
+      organizationId,
+    );
+
+    const duracaoMs = Date.now() - startTime;
+    this.logger.log(
+      `Justificativa gerada em ${duracaoMs}ms para pesquisa ${pesquisaId}`,
+    );
+
+    return {
+      pesquisaId,
+      justificativa,
+      fontesUtilizadas,
+      artigosReferenciados,
+      pesquisaAtualizada: true,
+      duracaoMs,
+    };
+  }
+
+  /**
+   * Extrai nomes unicos das fontes consultadas.
+   */
+  private extrairNomesFontes(fontes: FonteConsultada[]): string[] {
+    const nomesSet = new Set<string>();
+    for (const fonte of fontes) {
+      nomesSet.add(fonte.nome);
+    }
+    return Array.from(nomesSet);
+  }
+
+  /**
+   * Mapeia fontes consultadas para artigos da IN 65/2021.
+   *
+   * Art. 5 da IN SEGES/ME n 65/2021:
+   * I - Painel de Precos
+   * II - Contratacoes similares
+   * III - Midia especializada
+   * IV - Sites eletronicos
+   * V - Pesquisa de fornecedores
+   * VI - Notas fiscais
+   */
+  private mapearFontesParaArtigos(fontes: FonteConsultada[]): string[] {
+    const artigosMap: Record<MetodologiaPesquisa, string> = {
+      [MetodologiaPesquisa.PAINEL_PRECOS]: 'Art. 5, I',
+      [MetodologiaPesquisa.CONTRATACOES_SIMILARES]: 'Art. 5, II',
+      [MetodologiaPesquisa.MIDIA_ESPECIALIZADA]: 'Art. 5, III',
+      [MetodologiaPesquisa.SITES_ELETRONICOS]: 'Art. 5, IV',
+      [MetodologiaPesquisa.PESQUISA_FORNECEDORES]: 'Art. 5, V',
+      [MetodologiaPesquisa.NOTAS_FISCAIS]: 'Art. 5, VI',
+    };
+
+    const artigosSet = new Set<string>();
+    for (const fonte of fontes) {
+      const artigo = artigosMap[fonte.tipo];
+      if (artigo) {
+        artigosSet.add(artigo);
+      }
+    }
+
+    // Adicionar Art. 6 se houver multiplas fontes
+    if (artigosSet.size > 1) {
+      artigosSet.add('Art. 6');
+    }
+
+    return Array.from(artigosSet).sort();
+  }
+
+  /**
+   * Constroi o texto completo da justificativa de metodologia.
+   */
+  private construirTextoJustificativa(
+    pesquisa: PesquisaPrecos,
+    dto: GerarJustificativaDto,
+    fontesUtilizadas: string[],
+  ): string {
+    const partes: string[] = [];
+
+    // Cabecalho com referencia legal
+    partes.push(
+      'A pesquisa de precos foi realizada em conformidade com a Instrucao Normativa ' +
+        'SEGES/ME n 65, de 7 de julho de 2021, que dispoe sobre o procedimento ' +
+        'administrativo para a realizacao de pesquisa de precos para aquisicao de ' +
+        'bens e contratacao de servicos em geral, no ambito da administracao ' +
+        'publica federal direta, autarquica e fundacional.',
+    );
+
+    // Contexto da contratacao (se fornecido)
+    if (dto.objeto || dto.tipoContratacao || dto.valorEstimado) {
+      const contexto = this.construirContextoContratacao(dto, pesquisa);
+      partes.push(contexto);
+    }
+
+    // Fontes utilizadas
+    if (fontesUtilizadas.length > 0) {
+      const fontesTexto = this.construirTextoFontes(
+        pesquisa.fontesConsultadas || [],
+      );
+      partes.push(fontesTexto);
+    }
+
+    // Justificativa para multiplas fontes
+    if (fontesUtilizadas.length > 1) {
+      partes.push(
+        'A utilizacao de multiplas fontes justifica-se pela necessidade de obter ' +
+          'maior representatividade dos precos praticados no mercado, conforme ' +
+          'facultado pelo Art. 6 da IN SEGES/ME n 65/2021, que estabelece a ' +
+          'possibilidade de combinacao de diferentes parametros quando necessario ' +
+          'para garantir a adequada formacao do preco de referencia.',
+      );
+    }
+
+    // Justificativa para nao uso do Painel de Precos
+    if (
+      pesquisa.metodologia !== MetodologiaPesquisa.PAINEL_PRECOS &&
+      !fontesUtilizadas.some((f) => f.toLowerCase().includes('painel'))
+    ) {
+      partes.push(
+        'Conforme Art. 7 da IN SEGES/ME n 65/2021, justifica-se a nao utilizacao ' +
+          'do Painel de Precos como fonte primaria em razao da natureza especifica ' +
+          'do objeto, que demanda consulta a fontes especializadas para adequada ' +
+          'formacao do preco de referencia.',
+      );
+    }
+
+    // Criterio de aceitabilidade
+    const criterioTexto = this.construirTextoCriterio(
+      dto.criterioAceitabilidade ||
+        pesquisa.criterioAceitabilidade ||
+        'mediana',
+      pesquisa,
+    );
+    partes.push(criterioTexto);
+
+    // Conclusao
+    partes.push(
+      'Desta forma, considera-se que a pesquisa de precos realizada atende aos ' +
+        'requisitos legais e regulamentares aplicaveis, conferindo legitimidade ' +
+        'ao preco de referencia estimado para a contratacao pretendida.',
+    );
+
+    return partes.join('\n\n');
+  }
+
+  /**
+   * Constroi texto de contexto da contratacao.
+   */
+  private construirContextoContratacao(
+    dto: GerarJustificativaDto,
+    pesquisa: PesquisaPrecos,
+  ): string {
+    const partes: string[] = ['Trata-se de'];
+
+    if (dto.tipoContratacao) {
+      const tipoTexto = this.getTipoContratacaoTexto(dto.tipoContratacao);
+      partes.push(tipoTexto);
+    }
+
+    if (dto.objeto || pesquisa.descricao) {
+      partes.push(`referente a ${dto.objeto || pesquisa.descricao}`);
+    }
+
+    if (dto.valorEstimado || pesquisa.valorTotalEstimado) {
+      const valor = dto.valorEstimado || pesquisa.valorTotalEstimado;
+      partes.push(
+        `com valor estimado de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      );
+    }
+
+    return partes.join(' ') + '.';
+  }
+
+  /**
+   * Retorna texto descritivo do tipo de contratacao.
+   */
+  private getTipoContratacaoTexto(tipo: TipoContratacao): string {
+    const textos: Record<TipoContratacao, string> = {
+      [TipoContratacao.OBRAS]: 'contratacao de obras e servicos de engenharia',
+      [TipoContratacao.SERVICOS]: 'contratacao de servicos',
+      [TipoContratacao.MATERIAIS]: 'aquisicao de materiais',
+      [TipoContratacao.TI]:
+        'contratacao de solucoes de tecnologia da informacao',
+      [TipoContratacao.CONSULTORIA]: 'contratacao de servicos de consultoria',
+      [TipoContratacao.OUTRO]: 'contratacao',
+    };
+    return textos[tipo] || 'contratacao';
+  }
+
+  /**
+   * Constroi texto detalhado das fontes consultadas.
+   */
+  private construirTextoFontes(fontes: FonteConsultada[]): string {
+    const partes: string[] = [
+      'Para a formacao do preco de referencia, foram consultadas as seguintes ' +
+        'fontes, conforme parametros estabelecidos no Art. 5 da IN SEGES/ME n 65/2021:',
+    ];
+
+    // Agrupar fontes por tipo
+    const fontesPorTipo = new Map<MetodologiaPesquisa, FonteConsultada[]>();
+    for (const fonte of fontes) {
+      const lista = fontesPorTipo.get(fonte.tipo) || [];
+      lista.push(fonte);
+      fontesPorTipo.set(fonte.tipo, lista);
+    }
+
+    // Gerar texto para cada tipo
+    const artigosPorTipo: Record<MetodologiaPesquisa, string> = {
+      [MetodologiaPesquisa.PAINEL_PRECOS]: 'I',
+      [MetodologiaPesquisa.CONTRATACOES_SIMILARES]: 'II',
+      [MetodologiaPesquisa.MIDIA_ESPECIALIZADA]: 'III',
+      [MetodologiaPesquisa.SITES_ELETRONICOS]: 'IV',
+      [MetodologiaPesquisa.PESQUISA_FORNECEDORES]: 'V',
+      [MetodologiaPesquisa.NOTAS_FISCAIS]: 'VI',
+    };
+
+    for (const [tipo, lista] of fontesPorTipo.entries()) {
+      const inciso = artigosPorTipo[tipo] || '';
+      const nomes = lista.map((f) => f.nome).join(', ');
+      const datas = lista
+        .map((f) => {
+          const data = new Date(f.dataConsulta);
+          return data.toLocaleDateString('pt-BR');
+        })
+        .join(', ');
+
+      partes.push(`${inciso} - ${nomes} (consulta em ${datas})`);
+    }
+
+    return partes.join('\n');
+  }
+
+  /**
+   * Constroi texto do criterio de aceitabilidade.
+   */
+  private construirTextoCriterio(
+    criterio: string,
+    pesquisa: PesquisaPrecos,
+  ): string {
+    const criterioNormalizado = criterio.toLowerCase().replace('_', ' ');
+    let textoBase =
+      'O criterio de aceitabilidade de precos adotado sera a ' +
+      criterioNormalizado +
+      ' dos precos pesquisados';
+
+    if (criterioNormalizado === 'mediana') {
+      textoBase +=
+        ', conforme recomendacao do Art. 6, paragrafo 1, da IN SEGES/ME n 65/2021, ' +
+        'por ser o valor mais representativo do mercado e menos suscetivel a ' +
+        'distorcoes causadas por valores extremos (outliers)';
+    } else if (criterioNormalizado === 'media') {
+      textoBase +=
+        ', em razao da baixa dispersao dos valores coletados (coeficiente de ' +
+        `variacao de ${pesquisa.coeficienteVariacao || 0}%), o que indica ` +
+        'homogeneidade de precos no mercado';
+    } else if (criterioNormalizado === 'menor preco') {
+      textoBase +=
+        ', observada a viabilidade e compatibilidade com os precos praticados ' +
+        'no mercado, conforme analise das fontes consultadas';
+    }
+
+    return textoBase + '.';
   }
 }
