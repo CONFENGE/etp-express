@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 703/765 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 704/771 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1438 | Feature  | Add Liquid Glass design tokens - Apple HIG 2025 (#1432) ✅        |
 | 2026-01-12 | #1425 | Deps     | Remove deprecated @types/nock package (nock v14+ ships own types) ✅ |
 | 2026-01-12 | -     | Perf     | Optimize Playwright tests: sharding, storage state, networkidle removal |
 | 2026-01-12 | -     | Audit    | ROADMAP sync: close 5 EPICs (#1163,#1164,#1167,#1247,#1254), fix metrics |
@@ -221,7 +222,7 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Design System Apple HIG - 6 Issues P0 🎨
+## Design System Apple HIG - 12 Issues P0 🎨
 
 > **Objetivo:** Adequar frontend às diretrizes Apple Human Interface Guidelines 2025
 
@@ -229,14 +230,20 @@ Nenhum bug P0 aberto! 🎉
 
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
-| #1426 | Implementar Liquid Glass Design System                   | UI/UX       | 🔴     |
+| #1426 | Implementar Liquid Glass Design System                   | UI/UX       | 🟡     |
+|       | ↳ #1432 Criar design tokens Liquid Glass                 | Tokens      | ✅     |
+|       | ↳ #1433 Criar componente base GlassSurface               | Component   | 🔴     |
+|       | ↳ #1434 Aplicar Liquid Glass aos Cards                   | Component   | 🔴     |
+|       | ↳ #1435 Aplicar Liquid Glass a Modals e Dialogs          | Component   | 🔴     |
+|       | ↳ #1436 Aplicar Liquid Glass a Navigation e Sidebar      | Component   | 🔴     |
+|       | ↳ #1437 Aplicar Liquid Glass a Tooltips e Popovers       | Component   | 🔴     |
 | #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | 🔴     |
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | 🔴     |
 | #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
 | #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | 🔴     |
 
-**Progresso Design System:** 0/6 (0%)
+**Progresso Design System:** 1/12 (8%)
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -249,7 +256,23 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (62)
+## Issues Abertas (67)
+
+### P0 - Apple HIG Design System (11 issues)
+
+| #     | Issue                                                           |
+| ----- | --------------------------------------------------------------- |
+| #1426 | [P0] Implementar Liquid Glass Design System (1/6 sub-issues)    |
+| #1433 | [HIG-1426b] Criar componente base GlassSurface                  |
+| #1434 | [HIG-1426c] Aplicar Liquid Glass aos Cards                      |
+| #1435 | [HIG-1426d] Aplicar Liquid Glass a Modals e Dialogs             |
+| #1436 | [HIG-1426e] Aplicar Liquid Glass a Navigation e Sidebar         |
+| #1437 | [HIG-1426f] Aplicar Liquid Glass a Tooltips e Popovers          |
+| #1427 | [P0] Implementar Tipografia Apple HIG (San Francisco)           |
+| #1428 | [P0] Implementar Sistema de Cores Apple HIG                     |
+| #1429 | [P0] Implementar Layout e Espaçamento Apple HIG                 |
+| #1430 | [P0] Implementar Micro-interações e Animações Apple HIG         |
+| #1431 | [P0] Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)         |
 
 ### P1 - High Priority (8 issues)
 
@@ -422,10 +445,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 765   |
-| Issues Abertas    | 62    |
-| Issues Fechadas   | 703   |
-| Progresso         | 92%   |
+| Issues Totais     | 771   |
+| Issues Abertas    | 67    |
+| Issues Fechadas   | 704   |
+| Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
