@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 704/771 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 704/779 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | -     | Planning | Create 8 P0 issues for Demo User Management System (#1439-#1446)  |
 | 2026-01-12 | #1438 | Feature  | Add Liquid Glass design tokens - Apple HIG 2025 (#1432) ✅        |
 | 2026-01-12 | #1425 | Deps     | Remove deprecated @types/nock package (nock v14+ ships own types) ✅ |
 | 2026-01-12 | -     | Perf     | Optimize Playwright tests: sharding, storage state, networkidle removal |
@@ -256,7 +257,50 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (67)
+## Demo User Management System - 8 Issues P0 🎯
+
+> **Objetivo:** Permitir System Admin criar contas demo para testadores convidados
+
+### Funcionalidades
+
+- System Admin cria conta demo informando email real do testador
+- Sistema gera senha aleatória automaticamente
+- Limite de 3 ETPs por usuário demo
+- Sem expiração temporal
+- Após atingir limite: conta bloqueada (read-only para ETPs existentes)
+- Tenancy: usuários demo na organização demo existente
+
+### Issues P0 - Demo User Management
+
+| #     | Issue                                                    | Área        | Status |
+| ----- | -------------------------------------------------------- | ----------- | ------ |
+| #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | 🔴     |
+| #1440 | Implement DemoUserService for demo account management    | Backend     | 🔴     |
+| #1441 | Add demo user management endpoints to system-admin       | Backend/API | 🔴     |
+| #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | 🔴     |
+| #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| 🔴     |
+| #1444 | Add demo user management to admin store                  | Frontend    | 🔴     |
+| #1445 | Create Demo Users management page for system admin       | Frontend/UI | 🔴     |
+| #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
+
+**Progresso Demo Users:** 0/8 (0%)
+
+---
+
+## Issues Abertas (75)
+
+### P0 - Demo User Management (8 issues)
+
+| #     | Issue                                                           |
+| ----- | --------------------------------------------------------------- |
+| #1439 | [P0] Add etpLimitCount field to User entity for demo users      |
+| #1440 | [P0] Implement DemoUserService for demo account management      |
+| #1441 | [P0] Add demo user management endpoints to system-admin         |
+| #1442 | [P0] Implement DemoUserEtpLimitGuard for ETP creation           |
+| #1443 | [P0] Allow blocked demo users to login in read-only mode        |
+| #1444 | [P0] Add demo user management to admin store                    |
+| #1445 | [P0] Create Demo Users management page for system admin         |
+| #1446 | [P0] Handle blocked demo user state in dashboard                |
 
 ### P0 - Apple HIG Design System (11 issues)
 
@@ -396,7 +440,7 @@ Validação automática contra critérios TCU/TCE.
 |       | ↳ #1264 Relatorio de conformidade             | 🔴     |
 |       | ↳ #1265 Selo de Conformidade visual           | 🔴     |
 |       | ↳ #1266 Alertas tempo real                    | 🔴     |
-|       | ↳ #1267 Testes E2E compliance                 | 🔴     |
+|       | ↳ #1267 Dashboard de compliance do órgão      | 🔴     |
 
 Features:
 - Mapeamento de critérios ALICE/SOFIA ✅
@@ -445,10 +489,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 771   |
-| Issues Abertas    | 67    |
+| Issues Totais     | 779   |
+| Issues Abertas    | 75    |
 | Issues Fechadas   | 704   |
-| Progresso         | 91%   |
+| Progresso         | 90%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
