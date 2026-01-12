@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 704/779 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 705/779 (90%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1447 | Feature  | Add etpLimitCount field to User entity for demo users (#1439) ✅  |
 | 2026-01-12 | -     | Planning | Create 8 P0 issues for Demo User Management System (#1439-#1446)  |
 | 2026-01-12 | #1438 | Feature  | Add Liquid Glass design tokens - Apple HIG 2025 (#1432) ✅        |
 | 2026-01-12 | #1425 | Deps     | Remove deprecated @types/nock package (nock v14+ ships own types) ✅ |
@@ -274,7 +275,7 @@ Nenhum bug P0 aberto! 🎉
 
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
-| #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | 🔴     |
+| #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | 🟢     |
 | #1440 | Implement DemoUserService for demo account management    | Backend     | 🔴     |
 | #1441 | Add demo user management endpoints to system-admin       | Backend/API | 🔴     |
 | #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | 🔴     |
@@ -283,17 +284,16 @@ Nenhum bug P0 aberto! 🎉
 | #1445 | Create Demo Users management page for system admin       | Frontend/UI | 🔴     |
 | #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
 
-**Progresso Demo Users:** 0/8 (0%)
+**Progresso Demo Users:** 1/8 (12%)
 
 ---
 
-## Issues Abertas (75)
+## Issues Abertas (74)
 
-### P0 - Demo User Management (8 issues)
+### P0 - Demo User Management (7 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1439 | [P0] Add etpLimitCount field to User entity for demo users      |
 | #1440 | [P0] Implement DemoUserService for demo account management      |
 | #1441 | [P0] Add demo user management endpoints to system-admin         |
 | #1442 | [P0] Implement DemoUserEtpLimitGuard for ETP creation           |
