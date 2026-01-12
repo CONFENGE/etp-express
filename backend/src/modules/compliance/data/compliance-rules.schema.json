@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "compliance-rules.schema.json",
+  "title": "Compliance Rules Schema",
+  "description": "Schema for TCU/TCE compliance validation rules used by ETP Express",
+  "type": "object",
+  "required": ["version", "lastUpdated", "description", "references", "severityLevels", "categories", "rules"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to the JSON schema"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the rules file"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Date of last update in YYYY-MM-DD format"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Description of the rules file"
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$",
+            "description": "Unique identifier for the reference"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the legal reference"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the reference"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the official source"
+          }
+        }
+      },
+      "description": "Legal references used in the rules"
+    },
+    "severityLevels": {
+      "type": "object",
+      "required": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["weight", "description", "color"],
+        "properties": {
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Weight factor for scoring (0-1)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the severity level"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "description": "Hex color code for UI display"
+          }
+        }
+      },
+      "description": "Severity levels for rules"
+    },
+    "categories": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "description", "order"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name for the category"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the category"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Display order of the category"
+          }
+        }
+      },
+      "description": "Categories for grouping rules"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 50,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "requirement",
+          "description",
+          "severity",
+          "category",
+          "legalReference",
+          "applicableTypes",
+          "etpFieldsRequired",
+          "keywords",
+          "fixSuggestion"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^TCU-\\d{3}$",
+            "description": "Unique rule identifier (TCU-XXX format)"
+          },
+          "code": {
+            "type": ["string", "null"],
+            "pattern": "^REJ-\\d{3}$",
+            "description": "Rejection code from COMMON_REJECTIONS.md (REJ-XXX format)"
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Short name/title of the requirement"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "description": "Detailed description of what the rule validates"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+            "description": "Severity level of the rule"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "IDENTIFICATION",
+              "JUSTIFICATION",
+              "REQUIREMENTS",
+              "PRICING",
+              "RISKS",
+              "CONCLUSION",
+              "DOCUMENTATION",
+              "COMPLIANCE"
+            ],
+            "description": "Category the rule belongs to"
+          },
+          "legalReference": {
+            "type": "string",
+            "description": "Legal basis for the requirement"
+          },
+          "referenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of related legal references"
+          },
+          "applicableTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": ["OBRAS", "TI", "SERVICOS", "MATERIAIS"]
+            },
+            "description": "ETP types this rule applies to"
+          },
+          "etpFieldsRequired": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ETP entity fields that must be filled"
+          },
+          "sectionRequired": {
+            "type": ["string", "null"],
+            "description": "ETP section where the requirement should appear"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Keywords to search for in validation"
+          },
+          "minLength": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "description": "Minimum character length for text validation"
+          },
+          "validationRegex": {
+            "type": ["string", "null"],
+            "description": "Regular expression for advanced validation"
+          },
+          "fixSuggestion": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Guidance on how to fix a failing validation"
+          },
+          "examples": {
+            "type": "object",
+            "properties": {
+              "bad": {
+                "type": ["string", "null"],
+                "description": "Example of non-compliant text"
+              },
+              "good": {
+                "type": ["string", "null"],
+                "description": "Example of compliant text"
+              }
+            },
+            "description": "Examples of good and bad compliance"
+          }
+        }
+      },
+      "description": "List of compliance rules (minimum 50)"
+    }
+  }
+}
