@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 689/746 (92%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-12 | **Progresso:** 690/746 (92%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-12 | #1420 | Feature  | Add price comparison map generation (#1257) ✅ - **M11 progress 6/7** |
 | 2026-01-12 | #1419 | Feature  | Add endpoint for multi-source price collection (#1415) ✅ - **M11 progress 5/7** |
 | 2026-01-11 | #1418 | Feature  | Expand PNCP/Compras.gov price search with contract/pregão items (#1414) ✅ |
 | 2026-01-11 | #1417 | Feature  | Implement Atas de Registro de Preços search with price extraction (#1413) ✅ |
@@ -274,7 +275,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/6    | ✅         | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 4/7    | Alta       | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 5/7    | Alta       | +R$ 500/mês           |
 | M12: Compliance TCE            | 0/7    | Alta       | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -300,7 +301,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) - 5/7 IN PROGRESS
+#### M11: Pesquisa de Preços Formal (#1254-#1260) - 6/7 IN PROGRESS
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 
@@ -313,7 +314,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 |       |   ↳ #1413 Busca em Atas de Registro de Preços | ✅     |
 |       |   ↳ #1414 Expandir busca PNCP/Compras.gov     | ✅     |
 |       |   ↳ #1415 Endpoint coleta multi-fonte         | ✅     |
-|       | ↳ #1257 Mapa comparativo de preços            | 🔴     |
+|       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | 🔴     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
 |       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
@@ -375,8 +376,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 746   |
-| Issues Abertas    | 59    |
-| Issues Fechadas   | 689   |
+| Issues Abertas    | 58    |
+| Issues Fechadas   | 690   |
 | Progresso         | 92%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
