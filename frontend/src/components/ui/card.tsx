@@ -62,10 +62,11 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      // Apple HIG typography
-      'text-apple-xl font-semibold leading-none tracking-tight text-text-apple-primary',
+      // Apple HIG Typography - Title 3 (20px, Semibold, 1.35 line-height)
+      'text-[20px] font-semibold leading-[1.35] tracking-[-0.01em] text-text-apple-primary',
       className,
     )}
+    style={{ fontFamily: 'var(--font-family-text)' }}
     {...props}
   >
     {children}
@@ -80,10 +81,11 @@ const CardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      // Apple HIG secondary text
-      'text-apple-sm text-text-apple-secondary',
+      // Apple HIG Typography - Callout (16px, Regular, 1.5 line-height)
+      'text-[16px] font-normal leading-[1.5] tracking-[0.01em] text-text-apple-secondary',
       className,
     )}
+    style={{ fontFamily: 'var(--font-family-text)' }}
     {...props}
   />
 ));

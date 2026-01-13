@@ -98,14 +98,12 @@ describe('Card', () => {
       );
     });
 
-    it('should have semibold weight', () => {
+    it('should use Apple HIG Title 3 typography (20px, semibold)', () => {
       render(<CardTitle data-testid="title">Title</CardTitle>);
-      expect(screen.getByTestId('title')).toHaveClass('font-semibold');
-    });
-
-    it('should have tight leading', () => {
-      render(<CardTitle data-testid="title">Title</CardTitle>);
-      expect(screen.getByTestId('title')).toHaveClass('leading-none');
+      const title = screen.getByTestId('title');
+      expect(title).toHaveClass('text-[20px]');
+      expect(title).toHaveClass('font-semibold');
+      expect(title).toHaveClass('leading-[1.35]');
     });
   });
 
@@ -183,7 +181,7 @@ describe('Card', () => {
       );
       const title = screen.getByTestId('title');
       expect(title).toHaveClass('custom-title');
-      expect(title).toHaveClass('font-semibold');
+      expect(title).toHaveClass('font-semibold'); // Apple HIG Title 3 preset includes semibold
     });
   });
 
