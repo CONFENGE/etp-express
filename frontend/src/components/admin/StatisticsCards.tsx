@@ -5,7 +5,8 @@ import {
   FileText,
   LucideIcon,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GlobalStatistics } from '@/store/adminStore';
 
@@ -59,9 +60,10 @@ export function StatisticsCards({ statistics, loading }: StatisticsCardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => (
-        <Card
+        <GlassSurface
           key={card.label}
-          className="shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+          intensity="medium"
+          className="shadow-lg hover:shadow-xl transition-shadow"
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -81,7 +83,7 @@ export function StatisticsCards({ statistics, loading }: StatisticsCardsProps) {
               </>
             )}
           </CardContent>
-        </Card>
+        </GlassSurface>
       ))}
     </div>
   );

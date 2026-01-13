@@ -1,5 +1,6 @@
 import { ExternalLink, Star } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Reference } from '@/types/etp';
 
@@ -9,7 +10,7 @@ interface ReferenceCardProps {
 
 export function ReferenceCard({ reference }: ReferenceCardProps) {
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <GlassSurface intensity="medium" className="shadow-lg hover:shadow-xl transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
           <h4 className="text-sm font-medium line-clamp-2 flex-1">
@@ -41,6 +42,6 @@ export function ReferenceCard({ reference }: ReferenceCardProps) {
           </a>
         )}
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }

@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { type AvgCompletionTimeData } from '@/hooks/useAvgCompletionTime';
 
@@ -35,7 +36,7 @@ function getTimeColor(minutes: number): string {
  */
 function AvgCompletionTimeCardSkeleton() {
   return (
-    <Card>
+    <GlassSurface intensity="medium" className="shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Tempo Medio</CardTitle>
         <Clock className="h-4 w-4 text-muted-foreground" />
@@ -46,7 +47,7 @@ function AvgCompletionTimeCardSkeleton() {
           <div className="h-4 w-32 bg-muted rounded" />
         </div>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }
 
@@ -75,7 +76,7 @@ export function AvgCompletionTimeCard({
   const hasData = data.completedCount > 0;
 
   return (
-    <Card className={cn(className)} data-testid="avg-completion-time-card">
+    <GlassSurface intensity="medium" className={cn('shadow-lg', className)} data-testid="avg-completion-time-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Tempo Medio</CardTitle>
         <Clock className="h-4 w-4 text-muted-foreground" />
@@ -99,6 +100,6 @@ export function AvgCompletionTimeCard({
         </p>
         <p className="text-xs text-muted-foreground">para conclusao</p>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }

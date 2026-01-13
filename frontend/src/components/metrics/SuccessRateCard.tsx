@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, Minus, Target } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { type SuccessRateData } from '@/hooks/useSuccessRate';
 
@@ -59,7 +60,7 @@ function getRateColor(rate: number): string {
  */
 function SuccessRateCardSkeleton() {
   return (
-    <Card>
+    <GlassSurface intensity="medium" className="shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Taxa de Sucesso</CardTitle>
         <Target className="h-4 w-4 text-muted-foreground" />
@@ -70,7 +71,7 @@ function SuccessRateCardSkeleton() {
           <div className="h-4 w-32 bg-muted rounded" />
         </div>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }
 
@@ -103,7 +104,7 @@ export function SuccessRateCard({
     rateDiff > 0 ? `+${rateDiff.toFixed(1)}%` : `${rateDiff.toFixed(1)}%`;
 
   return (
-    <Card className={cn(className)} data-testid="success-rate-card">
+    <GlassSurface intensity="medium" className={cn('shadow-lg', className)} data-testid="success-rate-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Taxa de Sucesso</CardTitle>
         <Target className="h-4 w-4 text-muted-foreground" />
@@ -134,6 +135,6 @@ export function SuccessRateCard({
         </p>
         <p className="text-xs text-muted-foreground">nos ultimos 30 dias</p>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }
