@@ -5,6 +5,9 @@ import {
   AuthorizedDomain,
   GlobalStatistics,
   CreateDomainDto,
+  DemoUser,
+  DemoUserWithPassword,
+  CreateDemoUserDto,
 } from './adminStore';
 import { apiHelpers } from '@/lib/api';
 
@@ -14,6 +17,7 @@ vi.mock('@/lib/api', () => ({
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
+    patch: vi.fn(),
     delete: vi.fn(),
   },
 }));
@@ -57,6 +61,50 @@ describe('adminStore', () => {
     maxUsers: 15,
   };
 
+  const mockDemoUsers: DemoUser[] = [
+    {
+      id: 'demo-user-1',
+      email: 'demo1@test.com',
+      name: 'Demo User 1',
+      etpLimitCount: 3,
+      etpCreatedCount: 1,
+      isActive: true,
+      isBlocked: false,
+      createdAt: '2024-01-01T00:00:00Z',
+      lastLoginAt: '2024-01-02T00:00:00Z',
+    },
+    {
+      id: 'demo-user-2',
+      email: 'demo2@example.com',
+      name: 'Demo User 2',
+      etpLimitCount: 3,
+      etpCreatedCount: 3,
+      isActive: true,
+      isBlocked: true,
+      createdAt: '2024-01-02T00:00:00Z',
+      lastLoginAt: '2024-01-03T00:00:00Z',
+    },
+  ];
+
+  const mockDemoUserWithPassword: DemoUserWithPassword = {
+    id: 'demo-user-3',
+    email: 'test@example.com',
+    name: 'Test Demo User',
+    etpLimitCount: 3,
+    etpCreatedCount: 0,
+    isActive: true,
+    isBlocked: false,
+    createdAt: '2024-03-01T00:00:00Z',
+    lastLoginAt: null,
+    generatedPassword: 'temp123pass',
+  };
+
+  const mockCreateDemoUserDto: CreateDemoUserDto = {
+    email: 'demo@example.com',
+    name: 'Demo User',
+    etpLimitCount: 3,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -64,7 +112,11 @@ describe('adminStore', () => {
     useAdminStore.setState({
       domains: [],
       statistics: null,
+      productivityRanking: null,
+      demoUsers: [],
       loading: false,
+      rankingLoading: false,
+      demoUsersLoading: false,
       error: null,
     });
   });
@@ -387,6 +439,261 @@ describe('adminStore', () => {
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
+      });
+    });
+  });
+
+  describe('Demo User Management (Issue #1444)', () => {
+    describe('Initial state', () => {
+      it('should start with empty demoUsers array', () => {
+        const { result } = renderHook(() => useAdminStore());
+
+        expect(result.current.demoUsers).toEqual([]);
+        expect(result.current.demoUsersLoading).toBe(false);
+        expect(result.current.error).toBeNull();
+      });
+    });
+
+    describe('fetchDemoUsers', () => {
+      it('should fetch demo users successfully', async () => {
+        vi.mocked(apiHelpers.get).mockResolvedValue(mockDemoUsers);
+
+        const { result } = renderHook(() => useAdminStore());
+
+        await act(async () => {
+          await result.current.fetchDemoUsers();
+        });
+
+        await waitFor(() => {
+          expect(result.current.demoUsersLoading).toBe(false);
+        });
+
+        expect(apiHelpers.get).toHaveBeenCalledWith(
+          '/system-admin/demo-users',
+        );
+        expect(result.current.demoUsers).toEqual(mockDemoUsers);
+        expect(result.current.error).toBeNull();
+      });
+
+      it('should set loading state during fetch', async () => {
+        let resolveFetch: (value: unknown) => void;
+        const fetchPromise = new Promise((resolve) => {
+          resolveFetch = resolve;
+        });
+        vi.mocked(apiHelpers.get).mockReturnValue(fetchPromise as never);
+
+        const { result } = renderHook(() => useAdminStore());
+
+        act(() => {
+          result.current.fetchDemoUsers();
+        });
+
+        expect(result.current.demoUsersLoading).toBe(true);
+
+        await act(async () => {
+          resolveFetch!(mockDemoUsers);
+          await fetchPromise.catch(() => {});
+        });
+
+        await waitFor(() => {
+          expect(result.current.demoUsersLoading).toBe(false);
+        });
+      });
+
+      it('should set error on fetch failure', async () => {
+        const errorMessage = 'Failed to fetch demo users';
+        vi.mocked(apiHelpers.get).mockRejectedValue(new Error(errorMessage));
+
+        await act(async () => {
+          await useAdminStore.getState().fetchDemoUsers();
+        });
+
+        const state = useAdminStore.getState();
+        expect(state.error).not.toBeNull();
+        expect(state.demoUsersLoading).toBe(false);
+        expect(state.demoUsers).toEqual([]);
+      });
+    });
+
+    describe('createDemoUser', () => {
+      it('should create demo user and return password', async () => {
+        vi.mocked(apiHelpers.post).mockResolvedValue(mockDemoUserWithPassword);
+        vi.mocked(apiHelpers.get).mockResolvedValue([
+          ...mockDemoUsers,
+          mockDemoUserWithPassword,
+        ]);
+
+        const { result } = renderHook(() => useAdminStore());
+
+        let createdUser: DemoUserWithPassword | undefined;
+        await act(async () => {
+          createdUser = await result.current.createDemoUser(
+            mockCreateDemoUserDto,
+          );
+        });
+
+        expect(apiHelpers.post).toHaveBeenCalledWith(
+          '/system-admin/demo-users',
+          mockCreateDemoUserDto,
+        );
+        expect(apiHelpers.get).toHaveBeenCalledWith(
+          '/system-admin/demo-users',
+        );
+        expect(createdUser).toEqual(mockDemoUserWithPassword);
+        expect(createdUser?.generatedPassword).toBe('temp123pass');
+        expect(result.current.demoUsers).toHaveLength(3);
+      });
+
+      it('should set error on create failure', async () => {
+        const errorMessage = 'Email already exists';
+        vi.mocked(apiHelpers.post).mockRejectedValue(new Error(errorMessage));
+
+        try {
+          await act(async () => {
+            await useAdminStore
+              .getState()
+              .createDemoUser(mockCreateDemoUserDto);
+          });
+        } catch {
+          // Expected to throw
+        }
+
+        const state = useAdminStore.getState();
+        expect(state.error).not.toBeNull();
+        expect(state.demoUsersLoading).toBe(false);
+      });
+    });
+
+    describe('deleteDemoUser', () => {
+      it('should delete demo user and refresh list', async () => {
+        const demoUserIdToDelete = 'demo-user-1';
+        vi.mocked(apiHelpers.delete).mockResolvedValue({});
+        vi.mocked(apiHelpers.get).mockResolvedValue(
+          mockDemoUsers.filter((d) => d.id !== demoUserIdToDelete),
+        );
+
+        const { result } = renderHook(() => useAdminStore());
+
+        act(() => {
+          useAdminStore.setState({ demoUsers: mockDemoUsers });
+        });
+
+        await act(async () => {
+          await result.current.deleteDemoUser(demoUserIdToDelete);
+        });
+
+        expect(apiHelpers.delete).toHaveBeenCalledWith(
+          `/system-admin/demo-users/${demoUserIdToDelete}`,
+        );
+        expect(apiHelpers.get).toHaveBeenCalledWith(
+          '/system-admin/demo-users',
+        );
+        expect(result.current.demoUsers).toHaveLength(1);
+        expect(result.current.demoUsers[0].id).toBe('demo-user-2');
+      });
+
+      it('should set error on delete failure', async () => {
+        const errorMessage = 'Demo user not found';
+        vi.mocked(apiHelpers.delete).mockRejectedValue(
+          new Error(errorMessage),
+        );
+
+        try {
+          await act(async () => {
+            await useAdminStore.getState().deleteDemoUser('demo-user-1');
+          });
+        } catch {
+          // Expected to throw
+        }
+
+        const state = useAdminStore.getState();
+        expect(state.error).not.toBeNull();
+        expect(state.demoUsersLoading).toBe(false);
+      });
+    });
+
+    describe('resetDemoUser', () => {
+      it('should reset demo user ETP count and refresh list', async () => {
+        const demoUserIdToReset = 'demo-user-2';
+        const resetDemoUser = {
+          ...mockDemoUsers[1],
+          etpCreatedCount: 0,
+          isBlocked: false,
+        };
+        vi.mocked(apiHelpers.patch).mockResolvedValue(resetDemoUser);
+        vi.mocked(apiHelpers.get).mockResolvedValue([
+          mockDemoUsers[0],
+          resetDemoUser,
+        ]);
+
+        const { result } = renderHook(() => useAdminStore());
+
+        act(() => {
+          useAdminStore.setState({ demoUsers: mockDemoUsers });
+        });
+
+        await act(async () => {
+          await result.current.resetDemoUser(demoUserIdToReset);
+        });
+
+        expect(apiHelpers.patch).toHaveBeenCalledWith(
+          `/system-admin/demo-users/${demoUserIdToReset}/reset`,
+        );
+        expect(apiHelpers.get).toHaveBeenCalledWith(
+          '/system-admin/demo-users',
+        );
+        expect(result.current.demoUsers).toHaveLength(2);
+        const resetUser = result.current.demoUsers.find(
+          (u) => u.id === demoUserIdToReset,
+        );
+        expect(resetUser?.etpCreatedCount).toBe(0);
+        expect(resetUser?.isBlocked).toBe(false);
+      });
+
+      it('should set error on reset failure', async () => {
+        const errorMessage = 'Demo user not found';
+        vi.mocked(apiHelpers.patch).mockRejectedValue(new Error(errorMessage));
+
+        try {
+          await act(async () => {
+            await useAdminStore.getState().resetDemoUser('demo-user-1');
+          });
+        } catch {
+          // Expected to throw
+        }
+
+        const state = useAdminStore.getState();
+        expect(state.error).not.toBeNull();
+        expect(state.demoUsersLoading).toBe(false);
+      });
+    });
+
+    describe('Loading states', () => {
+      it('should manage demoUsersLoading state during createDemoUser', async () => {
+        let resolveCreate: (value: unknown) => void;
+        const createPromise = new Promise((resolve) => {
+          resolveCreate = resolve;
+        });
+        vi.mocked(apiHelpers.post).mockReturnValue(createPromise as never);
+
+        const { result } = renderHook(() => useAdminStore());
+
+        act(() => {
+          result.current.createDemoUser(mockCreateDemoUserDto);
+        });
+
+        expect(result.current.demoUsersLoading).toBe(true);
+
+        vi.mocked(apiHelpers.get).mockResolvedValue(mockDemoUsers);
+
+        await act(async () => {
+          resolveCreate!(mockDemoUserWithPassword);
+          await createPromise.catch(() => {});
+        });
+
+        await waitFor(() => {
+          expect(result.current.demoUsersLoading).toBe(false);
+        });
       });
     });
   });
