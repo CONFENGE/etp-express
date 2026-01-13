@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 715/779 (91.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 716/779 (91.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1458 | Feature  | Apply Liquid Glass to Tooltips (#1437) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1457 | Feature  | Apply Liquid Glass to Modals and Dialogs (#1435) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1456 | Feature  | Apply Liquid Glass to all Card components (#1434) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1455 | Feature  | Create GlassSurface base component for Liquid Glass Design System (#1433) ✅ - **Score 100/100 - Auto-merged** |
@@ -247,14 +248,14 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1434 Aplicar Liquid Glass aos Cards                   | Component   | ✅     |
 |       | ↳ #1435 Aplicar Liquid Glass a Modals e Dialogs          | Component   | ✅     |
 |       | ↳ #1436 Aplicar Liquid Glass a Navigation e Sidebar      | Component   | 🔴     |
-|       | ↳ #1437 Aplicar Liquid Glass a Tooltips e Popovers       | Component   | 🔴     |
+|       | ↳ #1437 Aplicar Liquid Glass a Tooltips                  | Component   | ✅     |
 | #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | 🔴     |
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | 🔴     |
 | #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
 | #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | 🔴     |
 
-**Progresso Design System:** 4/12 (33%)
+**Progresso Design System:** 5/12 (42%)
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -305,13 +306,12 @@ Nenhum bug P0 aberto! 🎉
 | ----- | --------------------------------------------------------------- |
 | #1446 | [P0] Handle blocked demo user state in dashboard                |
 
-### P0 - Apple HIG Design System (8 issues)
+### P0 - Apple HIG Design System (7 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1426 | [P0] Implementar Liquid Glass Design System (4/6 sub-issues)    |
+| #1426 | [P0] Implementar Liquid Glass Design System (5/6 sub-issues)    |
 | #1436 | [HIG-1426e] Aplicar Liquid Glass a Navigation e Sidebar         |
-| #1437 | [HIG-1426f] Aplicar Liquid Glass a Tooltips e Popovers          |
 | #1427 | [P0] Implementar Tipografia Apple HIG (San Francisco)           |
 | #1428 | [P0] Implementar Sistema de Cores Apple HIG                     |
 | #1429 | [P0] Implementar Layout e Espaçamento Apple HIG                 |
