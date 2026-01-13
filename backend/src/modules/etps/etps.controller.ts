@@ -21,6 +21,7 @@ import { EtpsService } from './etps.service';
 import { CreateEtpDto } from './dto/create-etp.dto';
 import { UpdateEtpDto } from './dto/update-etp.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { DemoUserEtpLimitGuard } from '../../common/guards/demo-user-etp-limit.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import {
   RequireOwnership,
@@ -97,11 +98,17 @@ export class EtpsController {
    * @returns Created ETP entity with disclaimer message
    * @throws {BadRequestException} 400 - If validation fails
    * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   * @throws {ForbiddenException} 403 - If demo user has reached ETP limit
    */
   @Post()
+  @UseGuards(DemoUserEtpLimitGuard)
   @ApiOperation({ summary: 'Criar novo ETP' })
   @ApiResponse({ status: 201, description: 'ETP criado com sucesso' })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Limite de ETPs atingido (demo users)',
+  })
   async create(
     @Body() createEtpDto: CreateEtpDto,
     @CurrentUser('id') userId: string,
