@@ -72,17 +72,20 @@ export default {
           tertiary: 'var(--surface-tertiary)',
           elevated: 'var(--surface-elevated)',
         },
-        // Apple HIG System Colors
+        // Apple HIG System Colors (12-color palette 2025)
         apple: {
           red: 'var(--apple-red)',
           orange: 'var(--apple-orange)',
           yellow: 'var(--apple-yellow)',
           green: 'var(--apple-green)',
+          mint: 'var(--apple-mint)',
           teal: 'var(--apple-teal)',
+          cyan: 'var(--apple-cyan)',
           blue: 'var(--apple-blue)',
           indigo: 'var(--apple-indigo)',
           purple: 'var(--apple-purple)',
           pink: 'var(--apple-pink)',
+          brown: 'var(--apple-brown)',
           accent: {
             DEFAULT: 'var(--apple-accent)',
             hover: 'var(--apple-accent-hover)',

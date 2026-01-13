@@ -131,7 +131,7 @@ describe('Button', () => {
       const button = screen.getByRole('button');
       expect(button).toBeDisabled();
       expect(button).toHaveClass('disabled:cursor-not-allowed');
-      expect(button).toHaveClass('disabled:bg-apple-accent-disabled');
+      expect(button).toHaveClass('disabled:opacity-50');
     });
 
     it('should call onClick when clicked', async () => {
