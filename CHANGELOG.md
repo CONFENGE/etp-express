@@ -13,6 +13,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### Apple HIG 2025 Design System (2026-01-13)
+
+- ✅ #1437 - Apply Liquid Glass to Tooltips (PR #1458)
+  - Aplicado efeito Liquid Glass no componente `TooltipContent`
+  - Background translúcido: `bg-zinc-900/90 dark:bg-zinc-800/90`
+  - Blur sutil: `backdrop-blur-[var(--glass-blur-light)]`
+  - Border translúcido: `border-white/10 dark:border-white/5`
+  - Transições Apple-style usando design tokens
+  - Documentação JSDoc completa
+  - Parte do EPIC #1426 (Apple HIG 2025 Design System)
+  - Closes #1437
+
 #### Rich Text WYSIWYG (2025-12-22)
 
 - ✅ #905 - Rich Text: Integração no SectionForm (PR #908)
