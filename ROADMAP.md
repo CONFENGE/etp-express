@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 717/779 (92.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 718/779 (92.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1460 | Feature  | Apply Liquid Glass to Navigation and Sidebar (#1436) ✅ - **Score 100/100 - Liquid Glass Design System 6/6 COMPLETE** |
 | 2026-01-13 | #1459 | Feature  | Handle blocked demo user state in dashboard (#1446) ✅ - **Score 100/100 - Demo User Management COMPLETE** |
 | 2026-01-13 | #1458 | Feature  | Apply Liquid Glass to Tooltips (#1437) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1457 | Feature  | Apply Liquid Glass to Modals and Dialogs (#1435) ✅ - **Score 100/100 - Auto-merged** |
@@ -243,12 +244,12 @@ Nenhum bug P0 aberto! 🎉
 
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
-| #1426 | Implementar Liquid Glass Design System                   | UI/UX       | 🟡     |
+| #1426 | Implementar Liquid Glass Design System                   | UI/UX       | ✅     |
 |       | ↳ #1432 Criar design tokens Liquid Glass                 | Tokens      | ✅     |
 |       | ↳ #1433 Criar componente base GlassSurface               | Component   | ✅     |
 |       | ↳ #1434 Aplicar Liquid Glass aos Cards                   | Component   | ✅     |
 |       | ↳ #1435 Aplicar Liquid Glass a Modals e Dialogs          | Component   | ✅     |
-|       | ↳ #1436 Aplicar Liquid Glass a Navigation e Sidebar      | Component   | 🔴     |
+|       | ↳ #1436 Aplicar Liquid Glass a Navigation e Sidebar      | Component   | ✅     |
 |       | ↳ #1437 Aplicar Liquid Glass a Tooltips                  | Component   | ✅     |
 | #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | 🔴     |
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | 🔴     |
@@ -256,7 +257,7 @@ Nenhum bug P0 aberto! 🎉
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
 | #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | 🔴     |
 
-**Progresso Design System:** 5/12 (42%)
+**Progresso Design System:** 6/12 (50%)
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -299,14 +300,12 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (64)
+## Issues Abertas (62)
 
-### P0 - Apple HIG Design System (7 issues)
+### P0 - Apple HIG Design System (5 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1426 | [P0] Implementar Liquid Glass Design System (5/6 sub-issues)    |
-| #1436 | [HIG-1426e] Aplicar Liquid Glass a Navigation e Sidebar         |
 | #1427 | [P0] Implementar Tipografia Apple HIG (San Francisco)           |
 | #1428 | [P0] Implementar Sistema de Cores Apple HIG                     |
 | #1429 | [P0] Implementar Layout e Espaçamento Apple HIG                 |
@@ -485,9 +484,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 779   |
-| Issues Abertas    | 64    |
-| Issues Fechadas   | 716   |
-| Progresso         | 92.0% |
+| Issues Abertas    | 62    |
+| Issues Fechadas   | 718   |
+| Progresso         | 92.2% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
