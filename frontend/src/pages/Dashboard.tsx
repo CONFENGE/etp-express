@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { PlusCircle, TrendingUp, FileText, Sparkles } from 'lucide-react';
+import { PlusCircle, TrendingUp, FileText, Sparkles, AlertTriangle } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useETPs } from '@/hooks/useETPs';
 import { useAuth } from '@/hooks/useAuth';
 import { useSuccessRate } from '@/hooks/useSuccessRate';
@@ -191,6 +192,17 @@ export function Dashboard() {
           />
         </div>
 
+        {/* Demo User Blocked Banner (#1446) */}
+        {user?.isDemoBlocked && (
+          <Alert variant="warning" className="border-yellow-500" data-testid="demo-blocked-banner">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Limite de ETPs atingido</AlertTitle>
+            <AlertDescription>
+              Seu limite de 3 ETPs foi atingido. Você pode visualizar seus ETPs existentes, mas não criar novos.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Onboarding Checklist for new users */}
         <OnboardingChecklist
           data-tour="onboarding-checklist"
@@ -279,12 +291,19 @@ export function Dashboard() {
                   <CardTitle>ETPs Recentes</CardTitle>
                   <CardDescription>Seus estudos mais recentes</CardDescription>
                 </div>
-                <Button asChild>
-                  <Link to="/etps/new">
+                {user?.isDemoBlocked ? (
+                  <Button disabled title="Limite de ETPs atingido" data-testid="create-etp-button-disabled">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Novo ETP
-                  </Link>
-                </Button>
+                  </Button>
+                ) : (
+                  <Button asChild data-testid="create-etp-button">
+                    <Link to="/etps/new">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Novo ETP
+                    </Link>
+                  </Button>
+                )}
               </div>
             </CardHeader>
             <CardContent>

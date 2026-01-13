@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreateETPWizard } from '@/components/etp/wizard';
 import { useETPs } from '@/hooks/useETPs';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
 import { ETPWizardFormData } from '@/schemas/etpWizardSchema';
@@ -27,10 +28,19 @@ import { ETPWizardFormData } from '@/schemas/etpWizardSchema';
  */
 export function CreateETPPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { createETP } = useETPs();
   const { success, error } = useToast();
   const { markETPCreated } = useOnboardingTasks();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect blocked demo users to dashboard (#1446)
+  useEffect(() => {
+    if (user?.isDemoBlocked) {
+      error('Limite de ETPs atingido. Você não pode criar novos ETPs.');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user?.isDemoBlocked, navigate, error]);
 
   const handleSubmit = useCallback(
     async (data: ETPWizardFormData) => {
