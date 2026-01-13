@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 716/779 (91.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 717/779 (92.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1459 | Feature  | Handle blocked demo user state in dashboard (#1446) ✅ - **Score 100/100 - Demo User Management COMPLETE** |
 | 2026-01-13 | #1458 | Feature  | Apply Liquid Glass to Tooltips (#1437) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1457 | Feature  | Apply Liquid Glass to Modals and Dialogs (#1435) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1456 | Feature  | Apply Liquid Glass to all Card components (#1434) ✅ - **Score 100/100 - Auto-merged** |
@@ -292,19 +293,13 @@ Nenhum bug P0 aberto! 🎉
 | #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| ✅     |
 | #1444 | Add demo user management to admin store                  | Frontend    | ✅     |
 | #1445 | Create Demo Users management page for system admin       | Frontend/UI | ✅     |
-| #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
+| #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | ✅     |
 
-**Progresso Demo Users:** 7/8 (88%)
+**Progresso Demo Users:** 8/8 (100%) - ✅ EPIC COMPLETE
 
 ---
 
-## Issues Abertas (65)
-
-### P0 - Demo User Management (1 issue)
-
-| #     | Issue                                                           |
-| ----- | --------------------------------------------------------------- |
-| #1446 | [P0] Handle blocked demo user state in dashboard                |
+## Issues Abertas (64)
 
 ### P0 - Apple HIG Design System (7 issues)
 
@@ -490,15 +485,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 779   |
-| Issues Abertas    | 65    |
-| Issues Fechadas   | 715   |
-| Progresso         | 91.8% |
+| Issues Abertas    | 64    |
+| Issues Fechadas   | 716   |
+| Progresso         | 92.0% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 2935  |
-| Frontend Tests    | 2013  |
-| Total Tests       | 4948  |
+| Backend Tests     | 3127  |
+| Frontend Tests    | 2082  |
+| Total Tests       | 5209  |
 
 ---
 
