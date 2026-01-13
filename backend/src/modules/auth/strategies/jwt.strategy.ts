@@ -129,20 +129,29 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * Uses findOneWithOrganization() to load organization relation
    * for TenantGuard kill switch validation (MT-04).
    *
+   * Demo User Management (#1446): Blocked demo users (isDemoBlocked=true)
+   * are allowed to authenticate for read-only access. The isDemoBlocked
+   * flag from JWT payload is propagated to request.user for route guards.
+   *
    * @param _req - Express request object (unused, but required by passport)
    * @param payload - Decoded JWT payload
-   * @returns User data for request context including organization
-   * @throws {UnauthorizedException} If user is invalid or inactive
+   * @returns User data for request context including organization and isDemoBlocked
+   * @throws {UnauthorizedException} If user is invalid or inactive (except blocked demo users)
    */
   async validate(_req: Request, payload: JwtPayload) {
     const user = await this.usersService.findOneWithOrganization(payload.sub);
 
-    if (!user || !user.isActive) {
+    // Demo User Management (#1446): Allow blocked demo users to login in read-only mode
+    // They have role=DEMO and isActive=false after reaching their ETP limit
+    const isDemoBlocked = payload.isDemoBlocked ?? false;
+
+    if (!user || (!user.isActive && !isDemoBlocked)) {
       throw new UnauthorizedException('Usuário inválido ou inativo');
     }
 
     // MT-03: Return organizationId for Multi-Tenancy data isolation
     // MT-04: Include organization for TenantGuard kill switch validation
+    // Demo User Management (#1446): Include isDemoBlocked from JWT payload
     return {
       id: user.id,
       email: user.email,
@@ -150,6 +159,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       role: user.role,
       organizationId: user.organizationId,
       organization: user.organization,
+      ...(isDemoBlocked && { isDemoBlocked: true }),
     };
   }
 }
