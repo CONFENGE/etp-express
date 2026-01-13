@@ -65,7 +65,8 @@ test.describe('Admin Domain Management - Happy Path', () => {
   );
 
   /**
-   * Setup before each test - login as system admin
+   * Setup before each test
+   * Note: Authentication is handled by storage state from global setup
    */
   test.beforeEach(async ({ page }) => {
     // Capture console errors
@@ -80,24 +81,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
       console.error(`[Page Error]: ${error.message}`);
     });
 
-    // Login as system admin
-    await page.goto('/login');
-    await page.waitForLoadState('networkidle');
-
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
-    await page.click('button[type="submit"]');
-
-    // Wait for dashboard
-    await page.waitForURL(/\/(dashboard|admin)/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
+    // Storage state provides authenticated session - no login needed
   });
 
   /**
@@ -194,7 +178,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('create new domain', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Verify page loaded
     const header = page.locator('h1:has-text("Domains")');
@@ -268,7 +252,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('view domain details', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for the domain table to be visible (indicates data loaded)
     const domainTable = page.locator('table, [data-testid="domain-table"]');
@@ -307,7 +291,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     });
 
     // Wait for the page to fully load before checking elements
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Verify Domain Information card is visible (use data-testid for resilience)
     const domainInfoCard = page.locator('[data-testid="domain-info-card"]');
@@ -347,7 +331,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('assign manager to domain', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for the domain table to be visible (indicates data loaded)
     const domainTable = page.locator('table, [data-testid="domain-table"]');
@@ -383,7 +367,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     });
 
     // Wait for the page to fully load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Find "Assign Manager" or "Change Manager" button (use data-testid for resilience)
     const assignManagerButton = page.locator(
@@ -439,7 +423,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('view domain users', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for the domain table to be visible (indicates data loaded)
     const domainTable = page.locator('table, [data-testid="domain-table"]');
@@ -475,7 +459,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     });
 
     // Wait for the page to fully load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Verify Domain Users card is visible (use data-testid for resilience)
     const domainUsersTitle = page.locator('[data-testid="domain-users-title"]');
@@ -521,7 +505,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('edit domain', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for the domain table to be visible (indicates data loaded)
     const domainTable = page.locator('table, [data-testid="domain-table"]');
@@ -566,7 +550,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
       });
 
       // Wait for the page to fully load
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
       // Find edit button on detail page
       const editButton = page.locator(
@@ -647,7 +631,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
   test('view domain statistics', async ({ page }) => {
     // Navigate to domain management
     await page.goto('/admin/domains');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for the domain table to be visible (indicates data loaded)
     const domainTable = page.locator('table, [data-testid="domain-table"]');
@@ -683,7 +667,7 @@ test.describe('Admin Domain Management - Happy Path', () => {
     });
 
     // Wait for the page to fully load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for statistics indicators (use data-testid for resilience)
     // Look for user count display
