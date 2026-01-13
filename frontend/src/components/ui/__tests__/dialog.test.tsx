@@ -50,8 +50,24 @@ describe('Dialog', () => {
     });
   });
 
-  describe('DialogContent - Apple HIG Design Tokens', () => {
-    it('should use Apple-style border radius', async () => {
+  describe('DialogContent - Liquid Glass Design Tokens', () => {
+    it('should use Apple concentricity border radius (rounded-3xl)', async () => {
+      const user = userEvent.setup();
+      render(
+        <Dialog>
+          <DialogTrigger>Open</DialogTrigger>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByText('Open'));
+      expect(screen.getByTestId('dialog-content')).toHaveClass('rounded-3xl');
+    });
+
+    it('should use Liquid Glass translucent background', async () => {
       const user = userEvent.setup();
       render(
         <Dialog>
@@ -65,11 +81,43 @@ describe('Dialog', () => {
 
       await user.click(screen.getByText('Open'));
       expect(screen.getByTestId('dialog-content')).toHaveClass(
-        'rounded-apple-lg',
+        'bg-white/85',
       );
     });
 
-    it('should use surface-primary background', async () => {
+    it('should use deep shadow (shadow-2xl)', async () => {
+      const user = userEvent.setup();
+      render(
+        <Dialog>
+          <DialogTrigger>Open</DialogTrigger>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByText('Open'));
+      expect(screen.getByTestId('dialog-content')).toHaveClass('shadow-2xl');
+    });
+
+    it('should use Apple easing curve and duration-200', async () => {
+      const user = userEvent.setup();
+      render(
+        <Dialog>
+          <DialogTrigger>Open</DialogTrigger>
+          <DialogContent data-testid="dialog-content">
+            <DialogTitle>Title</DialogTitle>
+            Content
+          </DialogContent>
+        </Dialog>,
+      );
+
+      await user.click(screen.getByText('Open'));
+      expect(screen.getByTestId('dialog-content')).toHaveClass('duration-200');
+    });
+
+    it('should use backdrop-blur-xl for glass effect', async () => {
       const user = userEvent.setup();
       render(
         <Dialog>
@@ -83,11 +131,11 @@ describe('Dialog', () => {
 
       await user.click(screen.getByText('Open'));
       expect(screen.getByTestId('dialog-content')).toHaveClass(
-        'bg-surface-primary',
+        'backdrop-blur-xl',
       );
     });
 
-    it('should use Apple-style shadow', async () => {
+    it('should use backdrop-saturate-200 for color vibrancy', async () => {
       const user = userEvent.setup();
       render(
         <Dialog>
@@ -101,25 +149,7 @@ describe('Dialog', () => {
 
       await user.click(screen.getByText('Open'));
       expect(screen.getByTestId('dialog-content')).toHaveClass(
-        'shadow-apple-lg',
-      );
-    });
-
-    it('should use Apple-style duration', async () => {
-      const user = userEvent.setup();
-      render(
-        <Dialog>
-          <DialogTrigger>Open</DialogTrigger>
-          <DialogContent data-testid="dialog-content">
-            <DialogTitle>Title</DialogTitle>
-            Content
-          </DialogContent>
-        </Dialog>,
-      );
-
-      await user.click(screen.getByText('Open'));
-      expect(screen.getByTestId('dialog-content')).toHaveClass(
-        'duration-apple',
+        'backdrop-saturate-200',
       );
     });
   });
@@ -341,7 +371,7 @@ describe('Dialog', () => {
       await user.click(screen.getByText('Open'));
       const content = screen.getByTestId('content');
       expect(content).toHaveClass('custom-content');
-      expect(content).toHaveClass('rounded-apple-lg');
+      expect(content).toHaveClass('rounded-3xl');
     });
   });
 });

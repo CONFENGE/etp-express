@@ -4,13 +4,15 @@ import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Dialog component with Apple HIG design tokens.
+ * Dialog component with Liquid Glass effect (Apple HIG 2025).
  *
  * Features:
- * - Backdrop blur (backdrop-blur-sm)
- * - Apple-style shadow (shadow-apple-lg)
- * - Apple-style border radius (rounded-apple-lg)
- * - Smooth scale + opacity animation
+ * - Liquid Glass: translucent background with backdrop-blur-xl
+ * - Saturated colors (backdrop-saturate-200)
+ * - Soft borders (border-white/20)
+ * - Deep shadows (shadow-2xl)
+ * - Rounded corners (rounded-3xl - Apple concentricity)
+ * - Smooth scale + opacity animation with Apple easing
  */
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -24,7 +26,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      // Apple HIG backdrop with blur
+      // Liquid Glass: backdrop with blur sutil
       'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm',
       // Animation
       'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -46,10 +48,18 @@ const DialogContent = React.forwardRef<
       className={cn(
         // Position and layout
         'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
-        // Apple HIG styles
-        'border border-[var(--border-secondary)] bg-surface-primary p-6 shadow-apple-lg rounded-apple-lg',
+        // Liquid Glass effect
+        'bg-white/85 dark:bg-zinc-900/85',
+        'backdrop-blur-xl backdrop-saturate-200',
+        // Border and shadow for depth
+        'border border-white/20 dark:border-white/10',
+        'shadow-2xl',
+        // Rounded corners (Apple concentricity)
+        'rounded-3xl',
+        'p-6',
         // Animation with Apple-style duration and easing
-        'duration-apple data-[state=open]:animate-in data-[state=closed]:animate-out',
+        'duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
         'data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
