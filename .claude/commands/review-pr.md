@@ -397,6 +397,112 @@ if [ -n "$ISSUE_NUMBER" ]; then
 fi
 ```
 
+### Step 7: Update ROADMAP.md
+
+```bash
+echo ""
+echo "================================================================================"
+echo "📝 UPDATING ROADMAP.md"
+echo "================================================================================"
+echo ""
+
+# Checkout master (garantir que estamos na branch certa)
+git checkout master
+git pull origin master
+
+# Extrair informações do PR
+TODAY=$(date +%Y-%m-%d)
+
+# Determinar tipo do PR baseado no título
+if [[ "$PR_TITLE" =~ ^feat ]]; then
+  PR_TYPE="Feature"
+elif [[ "$PR_TITLE" =~ ^fix ]]; then
+  PR_TYPE="Fix"
+elif [[ "$PR_TITLE" =~ ^refactor ]]; then
+  PR_TYPE="Refactor"
+elif [[ "$PR_TITLE" =~ ^test ]]; then
+  PR_TYPE="Test"
+elif [[ "$PR_TITLE" =~ ^docs ]]; then
+  PR_TYPE="Docs"
+elif [[ "$PR_TITLE" =~ ^security ]]; then
+  PR_TYPE="Security"
+elif [[ "$PR_TITLE" =~ ^perf ]]; then
+  PR_TYPE="Perf"
+elif [[ "$PR_TITLE" =~ ^chore ]]; then
+  PR_TYPE="Chore"
+elif [[ "$PR_TITLE" =~ ^deps ]]; then
+  PR_TYPE="Deps"
+else
+  PR_TYPE="Feature"
+fi
+
+echo "Updating ROADMAP.md with PR #$PR_NUMBER..."
+echo " - Date: $TODAY"
+echo " - Type: $PR_TYPE"
+echo " - Issue: #$ISSUE_NUMBER"
+
+# 1. Adicionar entrada na tabela "Atualizações Recentes"
+NEW_ENTRY="| $TODAY | #$PR_NUMBER | $PR_TYPE | ${PR_TITLE} (#${ISSUE_NUMBER}) ✅ |"
+
+# Encontrar a linha após o cabeçalho da tabela (após a linha de separação com dashes)
+# Inserir logo após a linha que contém "| ----------"
+sed -i "/| ---------- | ----- | -------- |/a\\$NEW_ENTRY" ROADMAP.md
+
+echo "✅ Added entry to Recent Updates table"
+
+# 2. Atualizar status da issue no Milestone (se encontrada)
+if grep -q "#${ISSUE_NUMBER}" ROADMAP.md; then
+  # Mudar 🔴 para ✅
+  sed -i "s/\(.*#${ISSUE_NUMBER}.*\)🔴/\1✅/" ROADMAP.md
+
+  echo "✅ Updated issue #${ISSUE_NUMBER} status to ✅"
+else
+  echo "⚠ Issue #${ISSUE_NUMBER} not found in milestone sections (may be orphan issue)"
+fi
+
+# 3. Atualizar header (progresso total e data)
+CURRENT_COMPLETED=$(grep "Progresso:" ROADMAP.md | grep -oP '\d+(?=/)')
+TOTAL=$(grep "Progresso:" ROADMAP.md | grep -oP '(?<=/)\d+')
+NEW_COMPLETED=$((CURRENT_COMPLETED + 1))
+NEW_PERCENTAGE=$(awk "BEGIN {printf \"%.1f\", ($NEW_COMPLETED/$TOTAL)*100}")
+
+sed -i "s/Progresso: ${CURRENT_COMPLETED}\/${TOTAL}/Progresso: ${NEW_COMPLETED}\/${TOTAL}/" ROADMAP.md
+sed -i "s/([0-9.]*%)/($NEW_PERCENTAGE%)/" ROADMAP.md
+sed -i "s/Atualizado: [0-9-]*/Atualizado: $TODAY/" ROADMAP.md
+
+echo "✅ Updated progress: ${CURRENT_COMPLETED}/${TOTAL} → ${NEW_COMPLETED}/${TOTAL} (${NEW_PERCENTAGE}%)"
+
+# 4. Commit e Push
+git add ROADMAP.md
+
+git commit -m "$(cat <<EOF
+docs(roadmap): update after PR #${PR_NUMBER} merge - ${PR_TITLE}
+
+- Add entry to Recent Updates table
+- Update issue #${ISSUE_NUMBER} status to ✅
+- Update progress metrics: ${NEW_COMPLETED}/${TOTAL} (${NEW_PERCENTAGE}%)
+
+Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+
+git push origin master
+
+if [ $? -eq 0 ]; then
+  echo ""
+  echo "✅ ROADMAP.md updated and pushed to master successfully!"
+  echo ""
+else
+  echo ""
+  echo "❌ Failed to push ROADMAP.md to master"
+  echo "⚠ Manual intervention required"
+  echo ""
+  exit 1
+fi
+```
+
 ## Usage Examples
 
 ### Example 1: Auto-select and merge best PR
