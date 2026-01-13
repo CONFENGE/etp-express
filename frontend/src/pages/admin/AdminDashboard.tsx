@@ -96,7 +96,7 @@ export function AdminDashboard() {
             <CardContent>
               <div className="space-y-3">
                 <div className="text-sm text-muted-foreground">
-                  Total: {demoUsers.length} conta(s) demo
+                  Total: {demoUsers?.length ?? 0} conta(s) demo
                 </div>
                 <Button asChild className="w-full">
                   <Link to="/admin/demo-users">
