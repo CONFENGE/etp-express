@@ -28,11 +28,15 @@ export const ETP_STATUS_LABELS = {
   [ETP_STATUS.COMPLETED]: 'Concluído',
 } as const;
 
+/**
+ * ETP Status Colors - Apple HIG 2025 Semantic Colors
+ * Uses CSS variables from design-tokens.css for theme support
+ */
 export const ETP_STATUS_COLORS = {
-  [ETP_STATUS.DRAFT]: 'bg-gray-100 text-gray-800',
-  [ETP_STATUS.IN_PROGRESS]: 'bg-blue-100 text-blue-800',
-  [ETP_STATUS.REVIEW]: 'bg-yellow-100 text-yellow-800',
-  [ETP_STATUS.COMPLETED]: 'bg-green-100 text-green-800',
+  [ETP_STATUS.DRAFT]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+  [ETP_STATUS.IN_PROGRESS]: 'bg-blue-50 text-[#0066cc] dark:bg-blue-950 dark:text-[#0a84ff]',
+  [ETP_STATUS.REVIEW]: 'bg-orange-50 text-[#ff9500] dark:bg-orange-950 dark:text-[#ff9f0a]',
+  [ETP_STATUS.COMPLETED]: 'bg-green-50 text-[#34c759] dark:bg-green-950 dark:text-[#30d158]',
 } as const;
 
 export const REQUIRED_SECTIONS = [1, 4, 6, 8, 13];
