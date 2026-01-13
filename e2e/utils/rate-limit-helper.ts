@@ -14,19 +14,24 @@ import { Page, Response } from '@playwright/test';
 /**
  * Default configuration for rate limit handling
  * Optimized for Railway production rate limits while minimizing CI time
+ *
+ * Performance note: With storage state from global setup, most tests
+ * skip login entirely. These delays only apply to auth tests that
+ * actually test login functionality.
+ *
  * @issue #1186
  */
 export const RATE_LIMIT_CONFIG = {
   /** Maximum number of retries on 429 errors */
   maxRetries: 3,
   /** Base delay in ms before first retry (doubles with each retry) */
-  baseDelayMs: 5000,
+  baseDelayMs: 3000,
   /** Maximum delay between retries */
-  maxDelayMs: 30000,
-  /** Delay between tests that make auth API calls (reduced from 2000ms) */
-  interTestDelayMs: 1000,
-  /** Delay after login attempt to respect rate limits (reduced from 1500ms) */
-  postLoginDelayMs: 500,
+  maxDelayMs: 15000,
+  /** Delay between tests that make auth API calls (reduced - storage state minimizes logins) */
+  interTestDelayMs: 500,
+  /** Delay after login attempt to respect rate limits (reduced - fewer logins needed) */
+  postLoginDelayMs: 200,
 };
 
 /**
@@ -205,7 +210,7 @@ export async function rateLimitAwareLogin(
 
   await retryOnRateLimit(async () => {
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Fill credentials
     await page.fill('input[name="email"], input#email', credentials.email);
@@ -295,22 +300,25 @@ export function withRateLimitDelay(
  * Optimized for Railway production rate limits (5 req/min on /auth/login)
  * while minimizing CI execution time.
  *
+ * Performance note: With storage state from global setup, most tests
+ * skip login entirely, dramatically reducing rate limit concerns.
+ *
  * @issue #1186
  */
 export const rateLimitConfig = {
   /**
    * Standard delay between auth tests (in ms)
    * Prevents exceeding 5 req/min limit on /auth/login
-   * Reduced from 2000ms to 1000ms to balance rate limit protection with CI speed
+   * Reduced to 500ms since storage state minimizes actual login calls
    */
-  AUTH_TEST_DELAY: 1000,
+  AUTH_TEST_DELAY: 500,
 
   /**
    * Delay after each login attempt (in ms)
    * Allows rate limit window to progress
-   * Reduced from 1500ms to 500ms for faster execution
+   * Reduced to 200ms - fewer logins needed with storage state
    */
-  POST_LOGIN_DELAY: 500,
+  POST_LOGIN_DELAY: 200,
 
   /**
    * Maximum retries for rate-limited operations
@@ -320,5 +328,5 @@ export const rateLimitConfig = {
   /**
    * Base backoff delay (doubles with each retry)
    */
-  BASE_BACKOFF_MS: 5000,
+  BASE_BACKOFF_MS: 3000,
 };

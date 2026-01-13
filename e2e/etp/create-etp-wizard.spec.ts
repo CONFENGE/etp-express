@@ -45,10 +45,12 @@ const TEST_CONFIG = {
 
 /**
  * Helper function to login
+ * Note: With storage state from global setup, this is only needed
+ * if storage state is not available (fallback)
  */
 async function login(page: Page): Promise<void> {
   await page.goto('/login');
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   await page.fill('input[name="email"], input#email', TEST_CONFIG.admin.email);
   await page.fill(
@@ -67,7 +69,7 @@ async function login(page: Page): Promise<void> {
  */
 async function navigateToETPs(page: Page): Promise<void> {
   await page.goto('/etps');
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await expect(page).toHaveURL(/\/etps/);
 }
 
@@ -84,10 +86,7 @@ async function openCreateWizard(page: Page): Promise<void> {
   const newEtpButton = page.locator('text=Novo ETP').first();
   await newEtpButton.click();
 
-  // Wait for dialog/wizard to open
-  await page.waitForTimeout(500);
-
-  // Verify wizard is visible
+  // Wait for dialog/wizard to open (element-based wait, not fixed timeout)
   const dialog = page.locator('[role="dialog"]');
   await expect(dialog).toBeVisible({ timeout: TEST_CONFIG.timeouts.action });
 }
@@ -279,20 +278,24 @@ async function fillStep5(
 
 /**
  * Helper function to click the "Next" button
+ * Uses element-based wait instead of fixed timeout
  */
 async function clickNext(page: Page): Promise<void> {
   const nextButton = page.locator('button:has-text("Proximo")');
   await nextButton.click();
-  await page.waitForTimeout(300);
+  // Wait for button to be actionable again (indicates transition complete)
+  await nextButton.or(page.locator('button:has-text("Criar ETP")')).waitFor({ state: 'visible' });
 }
 
 /**
  * Helper function to click the "Back" button
+ * Uses element-based wait instead of fixed timeout
  */
 async function clickBack(page: Page): Promise<void> {
   const backButton = page.locator('button:has-text("Voltar")');
   await backButton.click();
-  await page.waitForTimeout(300);
+  // Wait for navigation buttons to stabilize
+  await page.locator('button:has-text("Proximo")').waitFor({ state: 'visible' });
 }
 
 /**
@@ -633,17 +636,12 @@ test.describe('CreateETPWizard - Multi-Step Form', () => {
     const cancelButton = page.locator('button:has-text("Cancelar")');
     await cancelButton.click();
 
-    // Wait for dialog to close
-    await page.waitForTimeout(500);
-
-    // Verify dialog is closed
+    // Wait for dialog to close (element-based wait)
     const dialog = page.locator('[role="dialog"]');
-    const isDialogVisible = await dialog.isVisible().catch(() => false);
+    await expect(dialog).not.toBeVisible({ timeout: TEST_CONFIG.timeouts.action });
 
-    // Either dialog closed or we're back on ETPs list
-    expect(
-      isDialogVisible === false || page.url().includes('/etps'),
-    ).toBeTruthy();
+    // Verify we're still on ETPs list
+    expect(page.url()).toContain('/etps');
 
     console.log('Cancel button test: PASSED');
   });
@@ -684,12 +682,9 @@ test.describe('CreateETPWizard - Mobile Responsiveness', () => {
     const newEtpButton = page.locator('text=Novo ETP').first();
     await newEtpButton.click();
 
-    // Wait for dialog
-    await page.waitForTimeout(500);
-
-    // Verify wizard is visible
+    // Wait for dialog (element-based wait)
     const dialog = page.locator('[role="dialog"]');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: TEST_CONFIG.timeouts.action });
 
     // Fill title
     await page.fill('input#title', 'Mobile Test ETP');

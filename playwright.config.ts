@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
 // import dotenv from 'dotenv';
-// import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
@@ -16,13 +16,24 @@ import { defineConfig, devices } from '@playwright/test';
  * - E2E_API_URL should be the base URL without /api/v1 (tests add this prefix)
  * - NestJS uses URI versioning with defaultVersion: '1' (routes are /api/v1/...)
  * - PLAYWRIGHT_WORKERS controls parallel execution (default: 4 for Railway)
+ *
+ * Performance Optimizations:
+ * - Global setup performs single login, saving auth state
+ * - Tests reuse storage state, eliminating per-test login (~1500ms saved/test)
  */
 
 // Determine if we're testing against Railway (remote) or local
 const isRemoteTesting = !!process.env.E2E_BASE_URL;
 
+// Auth storage state path
+const AUTH_FILE = path.join(__dirname, 'e2e/.auth/user.json');
+
 export default defineConfig({
   testDir: './e2e',
+
+  /* Global setup: login once, save storage state for all tests */
+  globalSetup: require.resolve('./e2e/setup/global-setup'),
+
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -58,23 +69,51 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    /**
+     * Auth tests project - no storage state (tests login flow)
+     * Runs auth tests without pre-authenticated state
+     */
+    {
+      name: 'auth',
+      testDir: './e2e/auth',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Auth tests must NOT use storage state - they test login
+        storageState: { cookies: [], origins: [] },
+      },
+    },
+
+    /**
+     * Main tests project - uses storage state for authenticated tests
+     * Skips login by reusing auth state from global setup
+     */
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-      // Exclude visual regression tests (run separately with --project=visual)
-      testIgnore: /.*\.visual\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        // Reuse auth state from global setup (~1500ms saved per test)
+        storageState: AUTH_FILE,
+      },
+      // Exclude visual regression tests and auth tests
+      testIgnore: [/.*\.visual\.spec\.ts/, /auth\/.*/],
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      testIgnore: /.*\.visual\.spec\.ts/,
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: AUTH_FILE,
+      },
+      testIgnore: [/.*\.visual\.spec\.ts/, /auth\/.*/],
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      testIgnore: /.*\.visual\.spec\.ts/,
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: AUTH_FILE,
+      },
+      testIgnore: [/.*\.visual\.spec\.ts/, /auth\/.*/],
     },
 
     /* Visual regression testing project */
@@ -86,6 +125,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         // Consistent viewport for visual tests
         viewport: { width: 1280, height: 720 },
+        storageState: AUTH_FILE,
       },
       // Visual tests only run in CI with --project=visual
     },
