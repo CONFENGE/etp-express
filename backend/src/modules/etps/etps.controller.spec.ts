@@ -8,6 +8,7 @@ import { EtpsController } from './etps.controller';
 import { EtpsService } from './etps.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ResourceOwnershipGuard } from '../../common/guards/resource-ownership.guard';
+import { DemoUserEtpLimitGuard } from '../../common/guards/demo-user-etp-limit.guard';
 import { EtpStatus } from '../../entities/etp.entity';
 import { CreateEtpDto } from './dto/create-etp.dto';
 import { UpdateEtpDto } from './dto/update-etp.dto';
@@ -85,6 +86,11 @@ describe('EtpsController', () => {
     canActivate: jest.fn(() => true),
   };
 
+  // Mock DemoUserEtpLimitGuard - validation is tested in demo-user-etp-limit.guard.spec.ts
+  const mockDemoUserEtpLimitGuard = {
+    canActivate: jest.fn(() => true),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EtpsController],
@@ -99,6 +105,8 @@ describe('EtpsController', () => {
       .useValue(mockJwtAuthGuard)
       .overrideGuard(ResourceOwnershipGuard)
       .useValue(mockResourceOwnershipGuard)
+      .overrideGuard(DemoUserEtpLimitGuard)
+      .useValue(mockDemoUserEtpLimitGuard)
       .compile();
 
     controller = module.get<EtpsController>(EtpsController);
