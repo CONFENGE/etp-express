@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import {
@@ -180,7 +181,7 @@ export function ScoreCard({
   );
 
   return (
-    <Card className={cn('overflow-hidden', className)}>
+    <GlassSurface intensity="medium" className={cn('overflow-hidden shadow-lg', className)}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -316,6 +317,6 @@ export function ScoreCard({
           <span>{documentInfo.sectionCount} seções</span>
         </div>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }
