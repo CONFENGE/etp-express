@@ -60,7 +60,13 @@ export function Sidebar() {
       aria-label="Main navigation"
       data-tour="sidebar-nav"
       className={cn(
-        'fixed left-0 top-16 z-[var(--z-fixed,300)] h-[calc(100vh-4rem)] w-64 border-r bg-background overflow-y-auto',
+        // Liquid Glass effect - mais intenso para sidebar
+        'bg-white/80 dark:bg-zinc-900/80',
+        'backdrop-blur-xl backdrop-saturate-200',
+        // Border sutil do lado direito
+        'border-r border-white/20 dark:border-white/10',
+        // Fixed positioning
+        'fixed left-0 top-16 z-[var(--z-fixed,300)] h-[calc(100vh-4rem)] w-64 overflow-y-auto',
         // Responsive: overlay on mobile
         'lg:translate-x-0',
         'max-lg:shadow-lg',
