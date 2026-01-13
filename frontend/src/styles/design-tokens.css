@@ -153,36 +153,113 @@
   --space-16: 64px;
 
   /* ========================================
-   * Typography Scale
+   * Typography Scale - Apple HIG 2025
+   * San Francisco Font System with Dynamic Type
    * ======================================== */
-  --font-size-xs: 12px;
-  --font-size-sm: 13px;
-  --font-size-base: 15px;
-  --font-size-md: 17px;
-  --font-size-lg: 20px;
+
+  /* Font Families - San Francisco equivalent for web */
+  --font-family-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+    'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-display: var(--font-family-system); /* SF Pro Display for large text */
+  --font-family-text: var(--font-family-system); /* SF Pro Text for smaller text */
+
+  /* Apple HIG Typography Scale (11 levels) */
+  /* Large Title - Bold display text for page titles */
+  --font-size-large-title: 34px;
+  --font-weight-large-title: 700; /* Bold */
+  --line-height-large-title: 1.2;
+  --letter-spacing-large-title: -0.03em;
+
+  /* Title 1 - Main section headings */
+  --font-size-title-1: 28px;
+  --font-weight-title-1: 700; /* Bold */
+  --line-height-title-1: 1.25;
+  --letter-spacing-title-1: -0.02em;
+
+  /* Title 2 - Subsection headings */
+  --font-size-title-2: 22px;
+  --font-weight-title-2: 700; /* Bold */
+  --line-height-title-2: 1.3;
+  --letter-spacing-title-2: -0.015em;
+
+  /* Title 3 - Card titles and smaller headings */
+  --font-size-title-3: 20px;
+  --font-weight-title-3: 600; /* Semibold */
+  --line-height-title-3: 1.35;
+  --letter-spacing-title-3: -0.01em;
+
+  /* Headline - Emphasized body text */
+  --font-size-headline: 17px;
+  --font-weight-headline: 600; /* Semibold */
+  --line-height-headline: 1.4;
+  --letter-spacing-headline: 0;
+
+  /* Body - Default text size (Apple HIG standard 17pt) */
+  --font-size-body: 17px;
+  --font-weight-body: 400; /* Regular */
+  --line-height-body: 1.5;
+  --letter-spacing-body: 0.01em;
+
+  /* Callout - Slightly smaller than body for callouts */
+  --font-size-callout: 16px;
+  --font-weight-callout: 400; /* Regular */
+  --line-height-callout: 1.5;
+  --letter-spacing-callout: 0.01em;
+
+  /* Subhead - Subtitles and secondary text */
+  --font-size-subhead: 15px;
+  --font-weight-subhead: 400; /* Regular */
+  --line-height-subhead: 1.45;
+  --letter-spacing-subhead: 0.015em;
+
+  /* Footnote - Supplementary text */
+  --font-size-footnote: 13px;
+  --font-weight-footnote: 400; /* Regular */
+  --line-height-footnote: 1.4;
+  --letter-spacing-footnote: 0.02em;
+
+  /* Caption 1 - Small labels and captions */
+  --font-size-caption-1: 12px;
+  --font-weight-caption-1: 400; /* Regular */
+  --line-height-caption-1: 1.35;
+  --letter-spacing-caption-1: 0.025em;
+
+  /* Caption 2 - Smallest text for metadata */
+  --font-size-caption-2: 11px;
+  --font-weight-caption-2: 400; /* Regular */
+  --line-height-caption-2: 1.3;
+  --letter-spacing-caption-2: 0.03em;
+
+  /* Legacy size tokens (kept for backward compatibility) */
+  --font-size-xs: var(--font-size-caption-2); /* 11px */
+  --font-size-sm: var(--font-size-caption-1); /* 12px */
+  --font-size-base: var(--font-size-subhead); /* 15px */
+  --font-size-md: var(--font-size-body); /* 17px */
+  --font-size-lg: var(--font-size-title-3); /* 20px */
   --font-size-xl: 24px;
-  --font-size-2xl: 28px;
-  --font-size-3xl: 34px;
+  --font-size-2xl: var(--font-size-title-1); /* 28px */
+  --font-size-3xl: var(--font-size-large-title); /* 34px */
   --font-size-4xl: 40px;
 
-  /* Line heights optimized for readability (WCAG 2.1 SC 1.4.12) */
-  --line-height-tight: 1.25; /* Improved from 1.2 - better for headings */
-  --line-height-snug: 1.4; /* New - for subheadings and short text */
-  --line-height-normal: 1.5; /* Standard - good for UI text */
-  --line-height-relaxed: 1.6; /* Improved from 1.75 - optimal for body text */
-  --line-height-loose: 1.8; /* New - for long-form content */
+  /* Generic line heights (WCAG 2.1 SC 1.4.12 compliant) */
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.4;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
 
+  /* Generic font weights */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Letter spacing for improved legibility */
-  --letter-spacing-tighter: -0.03em; /* New - for large display text */
-  --letter-spacing-tight: -0.015em; /* Adjusted from -0.02em - less aggressive for headlines */
-  --letter-spacing-normal: 0.01em; /* Adjusted from 0 - slight positive tracking aids legibility */
-  --letter-spacing-wide: 0.025em; /* Adjusted from 0.02em - better for small text */
-  --letter-spacing-wider: 0.05em; /* New - for labels and captions */
+  /* Generic letter spacing */
+  --letter-spacing-tighter: -0.03em;
+  --letter-spacing-tight: -0.015em;
+  --letter-spacing-normal: 0.01em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
 
   /* ========================================
    * Transition Tokens (Apple-style motion)
@@ -558,5 +635,119 @@ html.dark {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ========================================
+   * Apple HIG Typography Utilities (2025)
+   * ======================================== */
+
+  /* Typography presets - Large Title */
+  .text-large-title {
+    font-size: var(--font-size-large-title);
+    font-weight: var(--font-weight-large-title);
+    line-height: var(--line-height-large-title);
+    letter-spacing: var(--letter-spacing-large-title);
+    font-family: var(--font-family-display);
+  }
+
+  /* Typography presets - Title 1 */
+  .text-title-1 {
+    font-size: var(--font-size-title-1);
+    font-weight: var(--font-weight-title-1);
+    line-height: var(--line-height-title-1);
+    letter-spacing: var(--letter-spacing-title-1);
+    font-family: var(--font-family-display);
+  }
+
+  /* Typography presets - Title 2 */
+  .text-title-2 {
+    font-size: var(--font-size-title-2);
+    font-weight: var(--font-weight-title-2);
+    line-height: var(--line-height-title-2);
+    letter-spacing: var(--letter-spacing-title-2);
+    font-family: var(--font-family-display);
+  }
+
+  /* Typography presets - Title 3 */
+  .text-title-3 {
+    font-size: var(--font-size-title-3);
+    font-weight: var(--font-weight-title-3);
+    line-height: var(--line-height-title-3);
+    letter-spacing: var(--letter-spacing-title-3);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Headline */
+  .text-headline {
+    font-size: var(--font-size-headline);
+    font-weight: var(--font-weight-headline);
+    line-height: var(--line-height-headline);
+    letter-spacing: var(--letter-spacing-headline);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Body (default) */
+  .text-body {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Callout */
+  .text-callout {
+    font-size: var(--font-size-callout);
+    font-weight: var(--font-weight-callout);
+    line-height: var(--line-height-callout);
+    letter-spacing: var(--letter-spacing-callout);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Subhead */
+  .text-subhead {
+    font-size: var(--font-size-subhead);
+    font-weight: var(--font-weight-subhead);
+    line-height: var(--line-height-subhead);
+    letter-spacing: var(--letter-spacing-subhead);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Footnote */
+  .text-footnote {
+    font-size: var(--font-size-footnote);
+    font-weight: var(--font-weight-footnote);
+    line-height: var(--line-height-footnote);
+    letter-spacing: var(--letter-spacing-footnote);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Caption 1 */
+  .text-caption-1 {
+    font-size: var(--font-size-caption-1);
+    font-weight: var(--font-weight-caption-1);
+    line-height: var(--line-height-caption-1);
+    letter-spacing: var(--letter-spacing-caption-1);
+    font-family: var(--font-family-text);
+  }
+
+  /* Typography presets - Caption 2 */
+  .text-caption-2 {
+    font-size: var(--font-size-caption-2);
+    font-weight: var(--font-weight-caption-2);
+    line-height: var(--line-height-caption-2);
+    letter-spacing: var(--letter-spacing-caption-2);
+    font-family: var(--font-family-text);
+  }
+
+  /* Font family utilities */
+  .font-system {
+    font-family: var(--font-family-system);
+  }
+  .font-display {
+    font-family: var(--font-family-display);
+  }
+  .font-text {
+    font-family: var(--font-family-text);
   }
 }

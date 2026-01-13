@@ -56,11 +56,83 @@
   * {
     @apply border-border;
   }
+
+  /* Apply San Francisco font system-wide */
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-family-system);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Apple HIG Typography for headings (h1-h6) */
+  h1 {
+    font-size: var(--font-size-large-title);
+    font-weight: var(--font-weight-large-title);
+    line-height: var(--line-height-large-title);
+    letter-spacing: var(--letter-spacing-large-title);
+    font-family: var(--font-family-display);
+  }
+
+  h2 {
+    font-size: var(--font-size-title-1);
+    font-weight: var(--font-weight-title-1);
+    line-height: var(--line-height-title-1);
+    letter-spacing: var(--letter-spacing-title-1);
+    font-family: var(--font-family-display);
+  }
+
+  h3 {
+    font-size: var(--font-size-title-2);
+    font-weight: var(--font-weight-title-2);
+    line-height: var(--line-height-title-2);
+    letter-spacing: var(--letter-spacing-title-2);
+    font-family: var(--font-family-display);
+  }
+
+  h4 {
+    font-size: var(--font-size-title-3);
+    font-weight: var(--font-weight-title-3);
+    line-height: var(--line-height-title-3);
+    letter-spacing: var(--letter-spacing-title-3);
+    font-family: var(--font-family-text);
+  }
+
+  h5 {
+    font-size: var(--font-size-headline);
+    font-weight: var(--font-weight-headline);
+    line-height: var(--line-height-headline);
+    letter-spacing: var(--letter-spacing-headline);
+    font-family: var(--font-family-text);
+  }
+
+  h6 {
+    font-size: var(--font-size-subhead);
+    font-weight: var(--font-weight-subhead);
+    line-height: var(--line-height-subhead);
+    letter-spacing: var(--letter-spacing-subhead);
+    font-family: var(--font-family-text);
+  }
+
+  /* Paragraph and text elements */
+  p {
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+  }
+
+  /* Small text */
+  small {
+    font-size: var(--font-size-caption-1);
+    line-height: var(--line-height-caption-1);
+    letter-spacing: var(--letter-spacing-caption-1);
   }
 }
 
