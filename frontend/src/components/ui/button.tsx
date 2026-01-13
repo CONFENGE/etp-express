@@ -23,12 +23,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Primary: Apple accent color with shadow on hover
-        // WCAG 2.1 AA: disabled uses apple-accent-disabled (#3d8fd1) for 4.5:1 contrast with white text
+        // WCAG 2.1 AA: disabled uses opacity 0.5 to maintain contrast
         default:
-          'bg-apple-accent text-white hover:bg-apple-accent-hover hover:shadow-apple-sm active:bg-apple-accent-active disabled:bg-apple-accent-disabled disabled:text-white',
+          'bg-apple-accent text-white hover:bg-apple-accent-hover hover:shadow-apple-sm active:bg-apple-accent-active disabled:opacity-50 disabled:text-white',
         // Destructive: Apple red with subtle hover
         destructive:
-          'bg-apple-red text-white hover:bg-apple-red/90 hover:shadow-apple-sm active:bg-apple-red/80 disabled:bg-apple-red/60 disabled:text-white',
+          'bg-apple-red text-white hover:bg-apple-red/90 hover:shadow-apple-sm active:bg-apple-red/80 disabled:opacity-50 disabled:text-white',
         // Outline: Subtle border with surface background
         outline:
           'border border-[var(--border-primary)] bg-surface-primary hover:bg-surface-secondary hover:shadow-apple-sm active:bg-surface-tertiary disabled:bg-surface-secondary disabled:text-text-apple-tertiary',

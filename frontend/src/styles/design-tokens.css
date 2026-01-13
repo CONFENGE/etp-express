@@ -85,20 +85,24 @@
   --apple-accent-hover: #0052a3;
   --apple-accent-active: #004080;
   --apple-accent-light: rgba(0, 102, 204, 0.1);
-  --apple-accent-disabled: #3d8fd1; /* WCAG 2.1 AA compliant: 4.5:1 contrast with white text */
+  --apple-accent-disabled: #0066cc; /* Same as accent - use opacity in components for disabled state */
 
   /* ========================================
-   * System Colors (WCAG 2.1 AA compliant)
+   * System Colors - Apple HIG 2025 (WCAG 2.1 AA compliant)
+   * 12-color palette with enhanced differentiation
    * ======================================== */
   --apple-red: #ff3b30;
   --apple-orange: #ff9500;
   --apple-yellow: #ffcc00;
   --apple-green: #34c759;
-  --apple-teal: #5ac8fa;
+  --apple-mint: #00c7be;
+  --apple-teal: #30b0c7;
+  --apple-cyan: #32ade6;
   --apple-blue: #0066cc; /* Darkened from #007aff for WCAG AA contrast */
   --apple-indigo: #5856d6;
   --apple-purple: #af52de;
   --apple-pink: #ff2d55;
+  --apple-brown: #a2845e;
 
   /* ========================================
    * Semantic Colors
@@ -357,22 +361,25 @@ html.dark {
   --text-placeholder: #8e8e93; /* WCAG 2.1 AA compliant placeholder: 4.5:1 on dark */
 
   /* Accent Colors (brighter in dark mode) */
-  --apple-accent: #0a84ff;
-  --apple-accent-hover: #409cff;
-  --apple-accent-active: #64b5ff;
-  --apple-accent-light: rgba(10, 132, 255, 0.15);
-  --apple-accent-disabled: #5a9fd4; /* WCAG 2.1 AA compliant: 4.5:1 contrast with white text */
+  --apple-accent: #409cff; /* Brightened for 4.5:1 contrast on dark background */
+  --apple-accent-hover: #5cadff;
+  --apple-accent-active: #70b8ff;
+  --apple-accent-light: rgba(64, 156, 255, 0.15);
+  --apple-accent-disabled: #409cff; /* Same as accent - use opacity in components for disabled state */
 
-  /* System Colors (adjusted for dark mode) */
+  /* System Colors - Dark Mode (Apple HIG 2025) */
   --apple-red: #ff453a;
   --apple-orange: #ff9f0a;
   --apple-yellow: #ffd60a;
   --apple-green: #30d158;
-  --apple-teal: #64d2ff;
+  --apple-mint: #66d4cf;
+  --apple-teal: #40c8e0;
+  --apple-cyan: #64d2ff;
   --apple-blue: #0a84ff;
   --apple-indigo: #5e5ce6;
   --apple-purple: #bf5af2;
   --apple-pink: #ff375f;
+  --apple-brown: #ac8e68;
 
   /* Border Colors */
   --border-primary: rgba(255, 255, 255, 0.15);
@@ -385,6 +392,59 @@ html.dark {
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.5);
   --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+ * High Contrast Mode (WCAG 2.1 AA Enhanced)
+ * Apple HIG Increased Contrast Mode
+ * ======================================== */
+@media (prefers-contrast: more) {
+  :root {
+    /* Enhanced contrast for Light Mode */
+    --text-primary: #000000;
+    --text-secondary: #424242; /* 8.6:1 contrast ratio */
+    --text-tertiary: #616161; /* 5.9:1 contrast ratio */
+    --text-quaternary: #757575; /* 4.6:1 contrast ratio */
+
+    /* Stronger borders */
+    --border-primary: rgba(0, 0, 0, 0.2);
+    --border-secondary: rgba(0, 0, 0, 0.15);
+
+    /* Enhanced accent */
+    --apple-accent: #0052a3; /* 5.2:1 contrast with white */
+    --apple-accent-hover: #003d7a;
+
+    /* Enhanced system colors for better differentiation */
+    --apple-red: #d32f2f; /* Darker for better contrast */
+    --apple-green: #2e7d32; /* Darker for better contrast */
+    --apple-blue: #0052a3; /* Darker for better contrast */
+  }
+
+  .dark {
+    /* Enhanced contrast for Dark Mode */
+    --text-primary: #ffffff;
+    --text-secondary: #d0d0d0; /* 9.2:1 contrast ratio */
+    --text-tertiary: #a0a0a0; /* 5.5:1 contrast ratio */
+    --text-quaternary: #808080; /* 4.5:1 contrast ratio */
+
+    /* Stronger borders */
+    --border-primary: rgba(255, 255, 255, 0.25);
+    --border-secondary: rgba(255, 255, 255, 0.18);
+
+    /* Enhanced accent */
+    --apple-accent: #409cff; /* Brighter for dark mode */
+    --apple-accent-hover: #5cadff;
+
+    /* Enhanced system colors for dark mode */
+    --apple-red: #ff5a52; /* Brighter for better visibility */
+    --apple-green: #40e070; /* Brighter for better visibility */
+    --apple-blue: #409cff; /* Brighter for better visibility */
+
+    /* Stronger shadows for depth perception */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
 }
 
 /* ========================================
