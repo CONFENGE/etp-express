@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemAdminService } from './system-admin.service';
 import { SystemAdminController } from './system-admin.controller';
+import { DemoUserService } from './demo-user.service';
 import { AuthorizedDomain } from '../../entities/authorized-domain.entity';
 import { User } from '../../entities/user.entity';
 import { Organization } from '../../entities/organization.entity';
@@ -15,6 +16,7 @@ import { Etp } from '../../entities/etp.entity';
  * - Domain manager assignment
  * - Global statistics for system administrators
  * - Productivity ranking metrics (#1367)
+ * - Demo user management (Issue #1440)
  *
  * @remarks
  * All endpoints in this module require SYSTEM_ADMIN role.
@@ -22,13 +24,14 @@ import { Etp } from '../../entities/etp.entity';
  *
  * @see SystemAdminController
  * @see SystemAdminService
+ * @see DemoUserService
  */
 @Module({
   imports: [
     TypeOrmModule.forFeature([AuthorizedDomain, User, Organization, Etp]),
   ],
   controllers: [SystemAdminController],
-  providers: [SystemAdminService],
-  exports: [SystemAdminService],
+  providers: [SystemAdminService, DemoUserService],
+  exports: [SystemAdminService, DemoUserService],
 })
 export class SystemAdminModule {}
