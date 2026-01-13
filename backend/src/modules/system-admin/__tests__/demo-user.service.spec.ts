@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -133,7 +130,9 @@ describe('DemoUserService', () => {
     };
 
     it('should create a demo user with generated password', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue({
         ...mockDemoUser,
@@ -187,7 +186,9 @@ describe('DemoUserService', () => {
     });
 
     it('should throw ConflictException if email already exists', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.findOne.mockResolvedValue(mockDemoUser);
 
       await expect(service.createDemoUser(createDemoUserDto)).rejects.toThrow(
@@ -199,7 +200,9 @@ describe('DemoUserService', () => {
     });
 
     it('should normalize email to lowercase', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue(mockDemoUser);
       mockUserRepository.save.mockResolvedValue(mockDemoUser);
@@ -218,7 +221,9 @@ describe('DemoUserService', () => {
     });
 
     it('should set cargo to null if not provided', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue(mockDemoUser);
       mockUserRepository.save.mockResolvedValue(mockDemoUser);
@@ -236,7 +241,9 @@ describe('DemoUserService', () => {
 
   describe('findAllDemoUsers', () => {
     it('should return all demo users with ETP counts', async () => {
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.find.mockResolvedValue([mockDemoUser]);
 
       const mockQueryBuilder = {
@@ -244,9 +251,9 @@ describe('DemoUserService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         groupBy: jest.fn().mockReturnThis(),
-        getRawMany: jest.fn().mockResolvedValue([
-          { userId: mockDemoUser.id, count: '2' },
-        ]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ userId: mockDemoUser.id, count: '2' }]),
       };
       mockEtpRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
@@ -275,7 +282,9 @@ describe('DemoUserService', () => {
 
     it('should mark user as blocked when ETP count equals limit', async () => {
       const blockedUser = { ...mockDemoUser, etpLimitCount: 3 };
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.find.mockResolvedValue([blockedUser]);
 
       const mockQueryBuilder = {
@@ -283,9 +292,9 @@ describe('DemoUserService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         groupBy: jest.fn().mockReturnThis(),
-        getRawMany: jest.fn().mockResolvedValue([
-          { userId: blockedUser.id, count: '3' },
-        ]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ userId: blockedUser.id, count: '3' }]),
       };
       mockEtpRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
@@ -296,7 +305,9 @@ describe('DemoUserService', () => {
 
     it('should mark user as blocked when ETP count exceeds limit', async () => {
       const blockedUser = { ...mockDemoUser, etpLimitCount: 3 };
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.find.mockResolvedValue([blockedUser]);
 
       const mockQueryBuilder = {
@@ -304,9 +315,9 @@ describe('DemoUserService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         groupBy: jest.fn().mockReturnThis(),
-        getRawMany: jest.fn().mockResolvedValue([
-          { userId: blockedUser.id, count: '5' },
-        ]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ userId: blockedUser.id, count: '5' }]),
       };
       mockEtpRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
@@ -317,7 +328,9 @@ describe('DemoUserService', () => {
 
     it('should not mark user as blocked when etpLimitCount is null', async () => {
       const unlimitedUser = { ...mockDemoUser, etpLimitCount: null };
-      mockOrganizationRepository.findOne.mockResolvedValue(mockDemoOrganization);
+      mockOrganizationRepository.findOne.mockResolvedValue(
+        mockDemoOrganization,
+      );
       mockUserRepository.find.mockResolvedValue([unlimitedUser]);
 
       const mockQueryBuilder = {
@@ -325,9 +338,9 @@ describe('DemoUserService', () => {
         addSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         groupBy: jest.fn().mockReturnThis(),
-        getRawMany: jest.fn().mockResolvedValue([
-          { userId: unlimitedUser.id, count: '100' },
-        ]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ userId: unlimitedUser.id, count: '100' }]),
       };
       mockEtpRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
 
@@ -355,17 +368,17 @@ describe('DemoUserService', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.findOneDemoUser('non-existent-id'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.findOneDemoUser('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw NotFoundException if user is not a demo user', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.findOneDemoUser('regular-user-id'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.findOneDemoUser('regular-user-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -386,9 +399,9 @@ describe('DemoUserService', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.removeDemoUser('non-existent-id'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.removeDemoUser('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -450,9 +463,9 @@ describe('DemoUserService', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.resetDemoUser('non-existent-id'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.resetDemoUser('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should reactivate inactive user during reset', async () => {
