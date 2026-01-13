@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 718/779 (92.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 719/779 (92.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1461 | Feature  | [#1427] Implementar Tipografia Apple HIG (San Francisco + Escala Dinâmica) (#1427) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1460 | Feature  | Apply Liquid Glass to Navigation and Sidebar (#1436) ✅ - **Score 100/100 - Liquid Glass Design System 6/6 COMPLETE** |
 | 2026-01-13 | #1459 | Feature  | Handle blocked demo user state in dashboard (#1446) ✅ - **Score 100/100 - Demo User Management COMPLETE** |
 | 2026-01-13 | #1458 | Feature  | Apply Liquid Glass to Tooltips (#1437) ✅ - **Score 100/100 - Auto-merged** |
@@ -251,7 +252,7 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1435 Aplicar Liquid Glass a Modals e Dialogs          | Component   | ✅     |
 |       | ↳ #1436 Aplicar Liquid Glass a Navigation e Sidebar      | Component   | ✅     |
 |       | ↳ #1437 Aplicar Liquid Glass a Tooltips                  | Component   | ✅     |
-| #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | 🔴     |
+| #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | ✅     |
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | 🔴     |
 | #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
