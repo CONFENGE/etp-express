@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-12 | **Progresso:** 705/779 (90%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 706/779 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1448 | Feature  | Implement DemoUserService for demo account management (#1440) ✅  |
 | 2026-01-12 | #1447 | Feature  | Add etpLimitCount field to User entity for demo users (#1439) ✅  |
 | 2026-01-12 | -     | Planning | Create 8 P0 issues for Demo User Management System (#1439-#1446)  |
 | 2026-01-12 | #1438 | Feature  | Add Liquid Glass design tokens - Apple HIG 2025 (#1432) ✅        |
@@ -276,7 +277,7 @@ Nenhum bug P0 aberto! 🎉
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
 | #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | 🟢     |
-| #1440 | Implement DemoUserService for demo account management    | Backend     | 🔴     |
+| #1440 | Implement DemoUserService for demo account management    | Backend     | 🟢     |
 | #1441 | Add demo user management endpoints to system-admin       | Backend/API | 🔴     |
 | #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | 🔴     |
 | #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| 🔴     |
@@ -284,17 +285,16 @@ Nenhum bug P0 aberto! 🎉
 | #1445 | Create Demo Users management page for system admin       | Frontend/UI | 🔴     |
 | #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
 
-**Progresso Demo Users:** 1/8 (12%)
+**Progresso Demo Users:** 2/8 (25%)
 
 ---
 
-## Issues Abertas (74)
+## Issues Abertas (73)
 
-### P0 - Demo User Management (7 issues)
+### P0 - Demo User Management (6 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1440 | [P0] Implement DemoUserService for demo account management      |
 | #1441 | [P0] Add demo user management endpoints to system-admin         |
 | #1442 | [P0] Implement DemoUserEtpLimitGuard for ETP creation           |
 | #1443 | [P0] Allow blocked demo users to login in read-only mode        |
@@ -490,9 +490,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 779   |
-| Issues Abertas    | 75    |
-| Issues Fechadas   | 704   |
-| Progresso         | 90%   |
+| Issues Abertas    | 73    |
+| Issues Fechadas   | 706   |
+| Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
