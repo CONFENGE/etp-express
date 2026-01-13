@@ -54,6 +54,7 @@ describe('AdminDashboard', () => {
   const mockFetchStatistics = vi.fn();
   const mockFetchDomains = vi.fn();
   const mockFetchProductivityRanking = vi.fn();
+  const mockFetchDemoUsers = vi.fn();
 
   const renderWithRouter = (ui: React.ReactElement) => {
     return render(<BrowserRouter>{ui}</BrowserRouter>);
@@ -78,13 +79,17 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
 
-      expect(screen.getByText('Administracao do Sistema')).toBeInTheDocument();
+      expect(screen.getByText('Administração do Sistema')).toBeInTheDocument();
       expect(
-        screen.getByText('Gerencie dominios e usuarios da plataforma'),
+        screen.getByText('Gerencie domínios e usuários da plataforma'),
       ).toBeInTheDocument();
     });
 
@@ -98,12 +103,16 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /gerenciar dominios/i,
+        name: /acessar gestão de domínios/i,
       });
       expect(manageButton).toBeInTheDocument();
       expect(manageButton).toHaveAttribute('href', '/admin/domains');
@@ -121,6 +130,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -141,6 +154,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -163,6 +180,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -183,6 +204,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -201,6 +226,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -219,6 +248,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -237,6 +270,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -259,6 +296,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -279,6 +320,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -300,6 +345,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -320,6 +369,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -338,6 +391,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       const { container } = renderWithRouter(<AdminDashboard />);
@@ -357,15 +414,19 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
 
       const manageButton = screen.getByRole('link', {
-        name: /gerenciar dominios/i,
+        name: /acessar gestão de domínios/i,
       });
-      // Button should have responsive width classes
-      expect(manageButton).toHaveClass('w-full', 'sm:w-auto');
+      // Button should have full width class
+      expect(manageButton).toHaveClass('w-full');
     });
   });
 
@@ -380,12 +441,16 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
 
       const h1 = screen.getByRole('heading', { level: 1 });
-      expect(h1).toHaveTextContent('Administracao do Sistema');
+      expect(h1).toHaveTextContent('Administração do Sistema');
     });
 
     it('should have accessible links with proper text', () => {
@@ -398,6 +463,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);
@@ -417,6 +486,10 @@ describe('AdminDashboard', () => {
         productivityRanking: null,
         rankingLoading: false,
         fetchProductivityRanking: mockFetchProductivityRanking,
+        demoUsers: [],
+        demoUsersLoading: false,
+        fetchDemoUsers: mockFetchDemoUsers,
+        error: null,
       });
 
       renderWithRouter(<AdminDashboard />);

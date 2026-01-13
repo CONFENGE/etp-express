@@ -82,6 +82,11 @@ const AuditLogsExport = lazy(() =>
     default: m.AuditLogsExport,
   })),
 );
+const DemoUsers = lazy(() =>
+  import('@/pages/admin/DemoUsers').then((m) => ({
+    default: m.DemoUsers,
+  })),
+);
 
 // Manager pages - lazy-loaded (only accessed by domain managers)
 const ManagerDashboard = lazy(() =>
@@ -315,6 +320,7 @@ const router = createBrowserRouter([
           { path: 'domains', element: <DomainManagement /> },
           { path: 'domains/:id', element: <DomainDetail /> },
           { path: 'audit-export', element: <AuditLogsExport /> },
+          { path: 'demo-users', element: <DemoUsers /> },
         ],
       },
 

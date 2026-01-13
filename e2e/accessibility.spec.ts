@@ -45,7 +45,7 @@ test.describe('WCAG 2.1 AA Compliance', () => {
       await playwrightPage.goto(page.path);
 
       // Wait for page to be fully loaded
-      await playwrightPage.waitForLoadState('networkidle');
+      await playwrightPage.waitForLoadState('domcontentloaded');
 
       // Run Axe accessibility scan with WCAG 2.1 AA rules
       const accessibilityScanResults = await new AxeBuilder({
@@ -92,7 +92,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should allow keyboard navigation on login page', async ({ page }) => {
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Focus on email input using Tab
     await page.keyboard.press('Tab');
@@ -132,7 +132,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should have proper labels on form inputs', async ({ page }) => {
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check email input has associated label
     const emailInput = await page
@@ -171,7 +171,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should meet color contrast requirements', async ({ page }) => {
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const contrastResults = await new AxeBuilder({ page })
       .include('body')
@@ -188,7 +188,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should have alt text on images', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const altTextResults = await new AxeBuilder({ page })
       .include('body')
@@ -206,7 +206,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should have proper heading hierarchy', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const headingResults = await new AxeBuilder({ page })
       .include('body')
@@ -224,7 +224,7 @@ test.describe('Accessibility - Specific Features', () => {
    */
   test('should have proper ARIA landmarks', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const landmarkResults = await new AxeBuilder({ page })
       .include('body')

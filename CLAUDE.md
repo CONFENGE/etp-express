@@ -2,7 +2,7 @@
 
 - sempre que uma tarefa impactar na evolução do projeto, ROADMAP.md deve ser atualizado.
 - Sempre que houver recomendação de execução fundamentada, executar a recomendação sem solicitar aprovação manual
-
+- NUNCA usar MCP github, usar o cli diretamente.
 # Execução Proativa de Commands
 
 ## Regra Geral
