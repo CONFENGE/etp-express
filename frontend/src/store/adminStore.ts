@@ -67,7 +67,43 @@ export interface ProductivityRankingResponse {
 }
 
 /**
- * Admin state store for System Admin domain management.
+ * Demo user entity for System Admin management.
+ * Represents a demo account with ETP creation limits.
+ * Part of Demo User Management System (Issue #1444).
+ */
+export interface DemoUser {
+  id: string;
+  email: string;
+  name: string;
+  etpLimitCount: number;
+  etpCreatedCount: number;
+  isActive: boolean;
+  isBlocked: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
+/**
+ * Extended demo user with generated password.
+ * Only returned on creation - password cannot be retrieved later.
+ * Part of Demo User Management System (Issue #1444).
+ */
+export interface DemoUserWithPassword extends DemoUser {
+  generatedPassword: string;
+}
+
+/**
+ * DTO for creating a new demo user account.
+ * Part of Demo User Management System (Issue #1444).
+ */
+export interface CreateDemoUserDto {
+  email: string;
+  name: string;
+  etpLimitCount?: number;
+}
+
+/**
+ * Admin state store for System Admin domain and demo user management.
  *
  * @security
  * Only accessible to users with role: system_admin.
@@ -77,8 +113,10 @@ interface AdminState {
   domains: AuthorizedDomain[];
   statistics: GlobalStatistics | null;
   productivityRanking: ProductivityRankingResponse | null;
+  demoUsers: DemoUser[];
   loading: boolean;
   rankingLoading: boolean;
+  demoUsersLoading: boolean;
   error: string | null;
 
   fetchDomains: () => Promise<void>;
@@ -91,6 +129,12 @@ interface AdminState {
   createDomain: (data: CreateDomainDto) => Promise<void>;
   deleteDomain: (id: string) => Promise<void>;
   assignManager: (domainId: string, userId: string) => Promise<void>;
+
+  fetchDemoUsers: () => Promise<void>;
+  createDemoUser: (data: CreateDemoUserDto) => Promise<DemoUserWithPassword>;
+  deleteDemoUser: (id: string) => Promise<void>;
+  resetDemoUser: (id: string) => Promise<void>;
+
   clearError: () => void;
 }
 
@@ -98,8 +142,10 @@ export const useAdminStore = create<AdminState>((set, get) => ({
   domains: [],
   statistics: null,
   productivityRanking: null,
+  demoUsers: [],
   loading: false,
   rankingLoading: false,
+  demoUsersLoading: false,
   error: null,
 
   /**
@@ -219,6 +265,89 @@ export const useAdminStore = create<AdminState>((set, get) => ({
       set({
         error: getContextualErrorMessage('atribuir', 'gestor', error),
         loading: false,
+      });
+      throw error;
+    }
+  },
+
+  /**
+   * Fetches all demo users.
+   * Part of Demo User Management System (Issue #1444).
+   */
+  fetchDemoUsers: async () => {
+    set({ demoUsersLoading: true, error: null });
+    try {
+      const response = await apiHelpers.get<DemoUser[]>(
+        '/system-admin/demo-users',
+      );
+      set({ demoUsers: response, demoUsersLoading: false });
+    } catch (error) {
+      set({
+        error: getContextualErrorMessage('carregar', 'usuários demo', error),
+        demoUsersLoading: false,
+      });
+    }
+  },
+
+  /**
+   * Creates a new demo user account.
+   * Returns DemoUserWithPassword containing the generated password.
+   * Password is shown ONCE only - cannot be retrieved later.
+   * Part of Demo User Management System (Issue #1444).
+   */
+  createDemoUser: async (
+    data: CreateDemoUserDto,
+  ): Promise<DemoUserWithPassword> => {
+    set({ demoUsersLoading: true, error: null });
+    try {
+      const response = await apiHelpers.post<DemoUserWithPassword>(
+        '/system-admin/demo-users',
+        data,
+      );
+      await get().fetchDemoUsers();
+      return response;
+    } catch (error) {
+      set({
+        error: getContextualErrorMessage('criar', 'usuário demo', error),
+        demoUsersLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  /**
+   * Deletes a demo user account by ID.
+   * Automatically refreshes demo user list on success.
+   * Part of Demo User Management System (Issue #1444).
+   */
+  deleteDemoUser: async (id: string) => {
+    set({ demoUsersLoading: true, error: null });
+    try {
+      await apiHelpers.delete(`/system-admin/demo-users/${id}`);
+      await get().fetchDemoUsers();
+    } catch (error) {
+      set({
+        error: getContextualErrorMessage('excluir', 'usuário demo', error),
+        demoUsersLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  /**
+   * Resets a demo user's ETP count to 0, unblocking them.
+   * Automatically refreshes demo user list on success.
+   * Part of Demo User Management System (Issue #1444).
+   */
+  resetDemoUser: async (id: string) => {
+    set({ demoUsersLoading: true, error: null });
+    try {
+      await apiHelpers.patch(`/system-admin/demo-users/${id}/reset`);
+      await get().fetchDemoUsers();
+    } catch (error) {
+      set({
+        error: getContextualErrorMessage('resetar', 'usuário demo', error),
+        demoUsersLoading: false,
       });
       throw error;
     }
