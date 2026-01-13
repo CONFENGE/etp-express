@@ -25,6 +25,13 @@ export interface User {
    * must change their initial password.
    */
   mustChangePassword?: boolean;
+  /**
+   * Flag indicating demo user has reached their ETP limit and is blocked.
+   * True for demo users (role=DEMO) who have reached their ETP creation limit.
+   * Frontend uses this to enable read-only mode (view ETPs but not create new ones).
+   * @see #1446 Demo User Management System
+   */
+  isDemoBlocked?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
