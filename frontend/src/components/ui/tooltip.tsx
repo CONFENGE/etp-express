@@ -2,12 +2,35 @@ import * as React from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { cn } from '@/lib/utils';
 
+/**
+ * Provides tooltip context for nested Tooltip components
+ */
 const TooltipProvider = TooltipPrimitive.Provider;
 
+/**
+ * Root tooltip component that manages open/close state
+ */
 const Tooltip = TooltipPrimitive.Root;
 
+/**
+ * Element that triggers the tooltip on hover/focus
+ */
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
+/**
+ * TooltipContent component with Liquid Glass effect
+ *
+ * Displays tooltip content with Apple HIG 2025-compliant translucent background,
+ * subtle blur, and smooth animations. Uses design tokens for consistent styling.
+ *
+ * @example
+ * ```tsx
+ * <Tooltip>
+ *   <TooltipTrigger>Hover me</TooltipTrigger>
+ *   <TooltipContent>Tooltip text</TooltipContent>
+ * </Tooltip>
+ * ```
+ */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
