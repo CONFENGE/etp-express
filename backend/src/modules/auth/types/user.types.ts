@@ -32,6 +32,21 @@ import { User } from '../../../entities/user.entity';
 export type UserWithoutPassword = Omit<User, 'password'>;
 
 /**
+ * User data returned from validateUser() with additional auth flags.
+ *
+ * @remarks
+ * Extends UserWithoutPassword with flags determined during authentication.
+ * Used to pass authentication state to the login() function.
+ */
+export interface ValidatedUser extends UserWithoutPassword {
+  /**
+   * True if this is a demo user who has reached their ETP limit.
+   * Allows read-only access to view existing ETPs.
+   */
+  isDemoBlocked?: boolean;
+}
+
+/**
  * JWT payload structure for authentication tokens.
  *
  * @remarks
@@ -64,4 +79,10 @@ export interface JwtPayload {
    * True for new users created by Domain Managers (M8: Gestão de Domínios).
    */
   mustChangePassword: boolean;
+  /**
+   * Indicates if demo user has reached their ETP limit and is blocked.
+   * True for demo users (role=DEMO) with isActive=false.
+   * Frontend uses this to enable read-only mode (view ETPs but not create).
+   */
+  isDemoBlocked?: boolean;
 }

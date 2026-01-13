@@ -306,6 +306,90 @@ describe('AuthService', () => {
         });
       }
     });
+
+    // Demo User Management: Blocked demo users can login in read-only mode
+    describe('blocked demo users', () => {
+      it('should allow blocked demo users to login (role=demo, isActive=false)', async () => {
+        // Arrange
+        const blockedDemoUser = {
+          ...mockUser,
+          role: 'demo',
+          isActive: false,
+          etpLimitCount: 3,
+        };
+        mockUsersService.findByEmail.mockResolvedValue(blockedDemoUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
+        mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+
+        // Act
+        const result = await service.validateUser(
+          'demo@example.com',
+          'password123',
+        );
+
+        // Assert
+        expect(result).not.toBeNull();
+        expect(result?.isDemoBlocked).toBe(true);
+        expect(result?.role).toBe('demo');
+        expect(mockUsersService.updateLastLogin).toHaveBeenCalledWith(
+          blockedDemoUser.id,
+        );
+      });
+
+      it('should still reject regular inactive users (non-demo role)', async () => {
+        // Arrange
+        const inactiveNonDemoUser = {
+          ...mockUser,
+          role: 'user',
+          isActive: false,
+        };
+        mockUsersService.findByEmail.mockResolvedValue(inactiveNonDemoUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+        // Act & Assert
+        await expect(
+          service.validateUser('test@example.com', 'password123'),
+        ).rejects.toThrow(UnauthorizedException);
+
+        try {
+          await service.validateUser('test@example.com', 'password123');
+        } catch (error) {
+          expect(error).toBeInstanceOf(UnauthorizedException);
+          const response = (error as UnauthorizedException).getResponse();
+          expect(response).toEqual({
+            code: AuthErrorCode.USER_INACTIVE,
+            message:
+              'Sua conta está desativada. Entre em contato com o administrador.',
+          });
+        }
+      });
+
+      it('should return isDemoBlocked=false for active demo users', async () => {
+        // Arrange
+        const activeDemoUser = {
+          ...mockUser,
+          role: 'demo',
+          isActive: true,
+          etpLimitCount: 3,
+        };
+        mockUsersService.findByEmail.mockResolvedValue(activeDemoUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
+        mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+
+        // Act
+        const result = await service.validateUser(
+          'demo@example.com',
+          'password123',
+        );
+
+        // Assert
+        expect(result).not.toBeNull();
+        expect(result?.isDemoBlocked).toBe(false);
+        expect(result?.role).toBe('demo');
+      });
+    });
   });
 
   describe('login', () => {
@@ -370,6 +454,94 @@ describe('AuthService', () => {
             'Email ou senha incorretos. Verifique suas credenciais e tente novamente.',
         });
       }
+    });
+
+    // Demo User Management: Login response includes isDemoBlocked
+    describe('blocked demo users login', () => {
+      it('should include isDemoBlocked=true in JWT and response for blocked demo users', async () => {
+        // Arrange
+        const blockedDemoUser = {
+          ...mockUser,
+          role: 'demo',
+          isActive: false,
+          etpLimitCount: 3,
+        };
+        mockUsersService.findByEmail.mockResolvedValue(blockedDemoUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
+        mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        const result = await service.login({
+          email: 'demo@example.com',
+          password: 'password123',
+        });
+
+        // Assert - JWT payload includes isDemoBlocked
+        expect(mockJwtService.sign).toHaveBeenCalledWith(
+          expect.objectContaining({
+            isDemoBlocked: true,
+          }),
+        );
+
+        // Assert - Response includes isDemoBlocked
+        expect(result.user).toHaveProperty('isDemoBlocked', true);
+        expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
+      });
+
+      it('should NOT include isDemoBlocked in JWT for active demo users', async () => {
+        // Arrange
+        const activeDemoUser = {
+          ...mockUser,
+          role: 'demo',
+          isActive: true,
+          etpLimitCount: 3,
+        };
+        mockUsersService.findByEmail.mockResolvedValue(activeDemoUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
+        mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        const result = await service.login({
+          email: 'demo@example.com',
+          password: 'password123',
+        });
+
+        // Assert - JWT payload should NOT include isDemoBlocked
+        expect(mockJwtService.sign).toHaveBeenCalledWith(
+          expect.not.objectContaining({
+            isDemoBlocked: expect.anything(),
+          }),
+        );
+
+        // Assert - Response should NOT include isDemoBlocked
+        expect(result.user).not.toHaveProperty('isDemoBlocked');
+      });
+
+      it('should NOT include isDemoBlocked for regular users', async () => {
+        // Arrange
+        mockUsersService.findByEmail.mockResolvedValue(mockUser);
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+        mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
+        mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+        mockJwtService.sign.mockReturnValue('mock-jwt-token');
+
+        // Act
+        const result = await service.login(loginDto);
+
+        // Assert - JWT payload should NOT include isDemoBlocked
+        expect(mockJwtService.sign).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            isDemoBlocked: expect.anything(),
+          }),
+        );
+
+        // Assert - Response should NOT include isDemoBlocked
+        expect(result.user).not.toHaveProperty('isDemoBlocked');
+      });
     });
   });
 

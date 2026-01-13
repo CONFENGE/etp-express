@@ -21,8 +21,9 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { PasswordReset } from '../../entities/password-reset.entity';
+import { UserRole } from '../../entities/user.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
-import { UserWithoutPassword, JwtPayload } from './types/user.types';
+import { ValidatedUser, JwtPayload } from './types/user.types';
 
 /**
  * Error codes for authentication failures.
@@ -115,8 +116,8 @@ export class AuthService {
    *
    * @param email - User email address
    * @param password - Plain text password to validate
-   * @returns User object without password field, or null if validation fails
-   * @throws {UnauthorizedException} If user account is inactive (USER_INACTIVE)
+   * @returns ValidatedUser with isDemoBlocked flag, or null if validation fails
+   * @throws {UnauthorizedException} If user account is inactive (USER_INACTIVE) - except for blocked demo users
    * @throws {UnauthorizedException} If user has no organization assigned (NO_ORGANIZATION)
    * @throws {UnauthorizedException} If user's organization is suspended (ORG_INACTIVE)
    * @throws {UnauthorizedException} If user's organization does not exist (ORG_NOT_FOUND)
@@ -124,7 +125,7 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<UserWithoutPassword | null> {
+  ): Promise<ValidatedUser | null> {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
@@ -137,11 +138,21 @@ export class AuthService {
       return null;
     }
 
-    if (!user.isActive) {
+    // Allow blocked demo users to login in read-only mode (view ETPs but not create)
+    // They have role=DEMO and isActive=false after reaching their ETP limit
+    const isDemoBlocked = user.role === UserRole.DEMO && !user.isActive;
+
+    if (!user.isActive && !isDemoBlocked) {
       this.logger.warn(`Inactive user attempted login: ${user.email}`);
       throw this.createAuthError(
         AuthErrorCode.USER_INACTIVE,
         'Sua conta está desativada. Entre em contato com o administrador.',
+      );
+    }
+
+    if (isDemoBlocked) {
+      this.logger.log(
+        `Blocked demo user logging in with read-only access: ${user.email}`,
       );
     }
 
@@ -189,7 +200,7 @@ export class AuthService {
     await this.usersService.updateLastLogin(user.id);
 
     const { password: _password, ...result } = user;
-    return result;
+    return { ...result, isDemoBlocked };
   }
 
   /**
@@ -240,6 +251,7 @@ export class AuthService {
       role: user.role,
       organizationId: user.organizationId,
       mustChangePassword: user.mustChangePassword,
+      ...(user.isDemoBlocked && { isDemoBlocked: true }),
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -251,7 +263,9 @@ export class AuthService {
       email: user.email,
     });
 
-    this.logger.log(`User logged in: ${user.email}`);
+    this.logger.log(
+      `User logged in: ${user.email}${user.isDemoBlocked ? ' (blocked demo user - read-only)' : ''}`,
+    );
 
     return {
       accessToken,
@@ -263,6 +277,7 @@ export class AuthService {
         cargo: user.cargo,
         organizationId: user.organizationId,
         mustChangePassword: user.mustChangePassword,
+        ...(user.isDemoBlocked && { isDemoBlocked: true }),
       },
       disclaimer: DISCLAIMER,
     };
