@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 712/779 (91.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 713/779 (91.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1454 | Feature  | Handle blocked demo user state in dashboard (#1446) ✅ - **Demo User Management COMPLETE** |
 | 2026-01-13 | #1452 | Feature  | Add demo user management to admin store (#1444) ✅                |
 | 2026-01-13 | #1451 | Feature  | Allow blocked demo users to login in read-only mode (#1443) ✅    |
 | 2026-01-13 | #1450 | Feature  | Implement DemoUserEtpLimitGuard for ETP creation (#1442) ✅       |
