@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 720/779 (92.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 721/785 (91.9%) | **Deploy:** LIVE
 
 ---
 
@@ -373,7 +373,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 8/11   | 73% 🟡     | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 8/17   | 47% 🟡     | +R$ 500/mês           |
 | M12: Compliance TCE            | 2/7    | 29% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -400,9 +400,9 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) - IN PROGRESS 8/11
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - IN PROGRESS 8/17
 
-Módulo estruturado conforme IN SEGES/ME nº 65/2021.
+Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
 | #     | Issue                                         | Status |
 | ----- | --------------------------------------------- | ------ |
@@ -417,6 +417,13 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021.
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
 |       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
+| #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | 🔴 |
+|       | ↳ #1463 Criar design tokens de espaçamento Apple HIG | 🔴 |
+|       | ↳ #1464 Implementar grid system responsivo 12 colunas | 🔴 |
+|       | ↳ #1465 Implementar safe areas e insets para notch/home indicator | 🔴 |
+|       | ↳ #1466 Aplicar spacing tokens aos Page layouts principais | 🔴 |
+|       | ↳ #1467 Aplicar spacing tokens a Card grids e Form layouts | 🔴 |
+|       | ↳ #1468 Aplicar spacing tokens a Navigation, Modals e Lists | 🔴 |
 
 Features:
 - Coleta automática multi-fonte (PNCP, SINAPI, SICRO, Atas RP)
@@ -485,10 +492,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 779   |
-| Issues Abertas    | 62    |
-| Issues Fechadas   | 718   |
-| Progresso         | 92.2% |
+| Issues Totais     | 785   |
+| Issues Abertas    | 64    |
+| Issues Fechadas   | 721   |
+| Progresso         | 91.9% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
