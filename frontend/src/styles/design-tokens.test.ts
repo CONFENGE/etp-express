@@ -58,6 +58,7 @@ describe('Design Tokens - Apple HIG', () => {
         --radius-2xl: 20px;
         --radius-full: 9999px;
         --space-0: 0;
+        --space-0-5: 2px;
         --space-1: 4px;
         --space-2: 8px;
         --space-3: 12px;
@@ -68,6 +69,8 @@ describe('Design Tokens - Apple HIG', () => {
         --space-10: 40px;
         --space-12: 48px;
         --space-16: 64px;
+        --space-20: 80px;
+        --space-24: 96px;
         --font-size-xs: 12px;
         --font-size-sm: 13px;
         --font-size-base: 15px;
@@ -402,12 +405,24 @@ describe('Design Tokens - Apple HIG', () => {
   });
 
   describe('Spacing Scale', () => {
+    it('should define space-0-5 (2px) for micro spacing', () => {
+      expect(rootStyles.getPropertyValue('--space-0-5').trim()).toBe('2px');
+    });
+
     it('should define space-4 (16px)', () => {
       expect(rootStyles.getPropertyValue('--space-4').trim()).toBe('16px');
     });
 
     it('should define space-8 (32px)', () => {
       expect(rootStyles.getPropertyValue('--space-8').trim()).toBe('32px');
+    });
+
+    it('should define space-20 (80px) for page sections', () => {
+      expect(rootStyles.getPropertyValue('--space-20').trim()).toBe('80px');
+    });
+
+    it('should define space-24 (96px) for hero sections', () => {
+      expect(rootStyles.getPropertyValue('--space-24').trim()).toBe('96px');
     });
   });
 
