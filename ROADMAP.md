@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 710/779 (91.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 712/779 (91.4%) | **Deploy:** LIVE
 
 ---
 
@@ -285,22 +285,20 @@ Nenhum bug P0 aberto! 🎉
 | #1441 | Add demo user management endpoints to system-admin       | Backend/API | ✅     |
 | #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | ✅     |
 | #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| ✅     |
-| #1444 | Add demo user management to admin store                  | Frontend    | 🔴     |
-| #1445 | Create Demo Users management page for system admin       | Frontend/UI | 🔴     |
+| #1444 | Add demo user management to admin store                  | Frontend    | ✅     |
+| #1445 | Create Demo Users management page for system admin       | Frontend/UI | ✅     |
 | #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
 
-**Progresso Demo Users:** 5/8 (62%)
+**Progresso Demo Users:** 7/8 (88%)
 
 ---
 
-## Issues Abertas (70)
+## Issues Abertas (67)
 
-### P0 - Demo User Management (3 issues)
+### P0 - Demo User Management (1 issue)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1444 | [P0] Add demo user management to admin store                    |
-| #1445 | [P0] Create Demo Users management page for system admin         |
 | #1446 | [P0] Handle blocked demo user state in dashboard                |
 
 ### P0 - Apple HIG Design System (11 issues)
@@ -379,7 +377,7 @@ Nenhum bug P0 aberto! 🎉
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 8/11   | 73% 🟡     | +R$ 500/mês           |
-| M12: Compliance TCE            | 1/7    | Alta 🟡    | +R$ 1.000/mês premium |
+| M12: Compliance TCE            | 2/7    | 29% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
@@ -441,7 +439,7 @@ Validação automática contra critérios TCU/TCE.
 |       | ↳ #1264 Relatorio de conformidade             | 🔴     |
 |       | ↳ #1265 Selo de Conformidade visual           | 🔴     |
 |       | ↳ #1266 Alertas tempo real                    | 🔴     |
-|       | ↳ #1267 Dashboard de compliance do órgão      | 🔴     |
+|       | ↳ #1267 Dashboard de compliance do órgão      | ✅     |
 
 Features:
 - Mapeamento de critérios ALICE/SOFIA ✅
@@ -491,9 +489,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 779   |
-| Issues Abertas    | 70    |
-| Issues Fechadas   | 709   |
-| Progresso         | 91%   |
+| Issues Abertas    | 67    |
+| Issues Fechadas   | 712   |
+| Progresso         | 91.4% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
