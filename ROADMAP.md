@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 708/779 (91%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-13 | **Progresso:** 709/779 (91%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-13 | #1451 | Feature  | Allow blocked demo users to login in read-only mode (#1443) ✅    |
 | 2026-01-13 | #1450 | Feature  | Implement DemoUserEtpLimitGuard for ETP creation (#1442) ✅       |
 | 2026-01-13 | #1449 | Feature  | Add demo user management endpoints to system-admin (#1441) ✅     |
 | 2026-01-13 | #1448 | Feature  | Implement DemoUserService for demo account management (#1440) ✅  |
@@ -278,26 +279,25 @@ Nenhum bug P0 aberto! 🎉
 
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
-| #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | 🟢     |
-| #1440 | Implement DemoUserService for demo account management    | Backend     | 🟢     |
-| #1441 | Add demo user management endpoints to system-admin       | Backend/API | 🟢     |
-| #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | 🟢     |
-| #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| 🔴     |
+| #1439 | Add etpLimitCount field to User entity                   | Backend/DB  | ✅     |
+| #1440 | Implement DemoUserService for demo account management    | Backend     | ✅     |
+| #1441 | Add demo user management endpoints to system-admin       | Backend/API | ✅     |
+| #1442 | Implement DemoUserEtpLimitGuard for ETP creation         | Backend/Sec | ✅     |
+| #1443 | Allow blocked demo users to login in read-only mode      | Backend/Auth| ✅     |
 | #1444 | Add demo user management to admin store                  | Frontend    | 🔴     |
 | #1445 | Create Demo Users management page for system admin       | Frontend/UI | 🔴     |
 | #1446 | Handle blocked demo user state in dashboard              | Frontend/UX | 🔴     |
 
-**Progresso Demo Users:** 4/8 (50%)
+**Progresso Demo Users:** 5/8 (62%)
 
 ---
 
-## Issues Abertas (71)
+## Issues Abertas (70)
 
-### P0 - Demo User Management (4 issues)
+### P0 - Demo User Management (3 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1443 | [P0] Allow blocked demo users to login in read-only mode        |
 | #1444 | [P0] Add demo user management to admin store                    |
 | #1445 | [P0] Create Demo Users management page for system admin         |
 | #1446 | [P0] Handle blocked demo user state in dashboard                |
@@ -490,8 +490,8 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 779   |
-| Issues Abertas    | 71    |
-| Issues Fechadas   | 708   |
+| Issues Abertas    | 70    |
+| Issues Fechadas   | 709   |
 | Progresso         | 91%   |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
