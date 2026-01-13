@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { MoreVertical, Edit, Trash2, Download } from 'lucide-react';
+import { GlassSurface } from '@/components/ui/GlassSurface';
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -28,7 +28,7 @@ interface ETPCardProps {
 
 export function ETPCard({ etp, onDelete }: ETPCardProps) {
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <GlassSurface intensity="medium" className="shadow-lg">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -92,6 +92,6 @@ export function ETPCard({ etp, onDelete }: ETPCardProps) {
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }

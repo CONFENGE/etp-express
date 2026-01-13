@@ -1,5 +1,6 @@
 import { CheckCircle, Circle, AlertCircle, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
@@ -19,10 +20,11 @@ export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
       : Circle;
 
   return (
-    <Card
+    <GlassSurface
+      intensity="medium"
       className={cn(
-        'cursor-pointer transition-colors hover:bg-accent',
-        isActive && 'border-primary bg-accent',
+        'cursor-pointer transition-colors hover:shadow-lg',
+        isActive && 'border-primary ring-2 ring-primary',
       )}
       onClick={onClick}
     >
@@ -62,6 +64,6 @@ export function SectionCard({ section, isActive, onClick }: SectionCardProps) {
           </Alert>
         )}
       </CardContent>
-    </Card>
+    </GlassSurface>
   );
 }
