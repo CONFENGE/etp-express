@@ -51,7 +51,6 @@ test-results/
 playwright-report/
 e2e/.auth/
 .pa11y-screenshots/
-.lighthouseci/
 
 # Mutation Testing (Stryker)
 .stryker-cache/
