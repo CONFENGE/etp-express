@@ -49,17 +49,25 @@ export function PageContainer({
 
   return (
     <div
-      className={cn(
-        'w-full',
-        paddingClasses[padding],
-        className,
-      )}
+      className={cn('w-full', paddingClasses[padding], className)}
       style={{
         // Apply safe areas automatically
-        paddingTop: padding !== 'none' ? 'var(--padding-safe-top)' : 'var(--safe-area-top)',
-        paddingBottom: padding !== 'none' ? 'var(--padding-safe-bottom)' : 'var(--safe-area-bottom)',
-        paddingLeft: padding !== 'none' ? 'var(--padding-safe-left)' : 'var(--safe-area-left)',
-        paddingRight: padding !== 'none' ? 'var(--padding-safe-right)' : 'var(--safe-area-right)',
+        paddingTop:
+          padding !== 'none'
+            ? 'var(--padding-safe-top)'
+            : 'var(--safe-area-top)',
+        paddingBottom:
+          padding !== 'none'
+            ? 'var(--padding-safe-bottom)'
+            : 'var(--safe-area-bottom)',
+        paddingLeft:
+          padding !== 'none'
+            ? 'var(--padding-safe-left)'
+            : 'var(--safe-area-left)',
+        paddingRight:
+          padding !== 'none'
+            ? 'var(--padding-safe-right)'
+            : 'var(--safe-area-right)',
       }}
     >
       {children}
