@@ -502,7 +502,7 @@ export function ETPEditor() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
         {/* Breadcrumb Navigation */}
         <Breadcrumb
           items={[
@@ -532,7 +532,7 @@ export function ETPEditor() {
 
         <ETPEditorProgress progress={currentETP.progress} />
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div style={{ display: 'grid', gap: 'var(--space-6)' }} className="lg:grid-cols-4">
           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle>Seções do ETP</CardTitle>
@@ -558,7 +558,7 @@ export function ETPEditor() {
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <ETPEditorSidebar
               sections={sectionsForSidebar}
               onGenerateAll={handleGenerateAll}
