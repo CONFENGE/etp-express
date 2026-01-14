@@ -4,8 +4,13 @@ import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 /**
  * GlassSurface Component
  *
- * Implements Apple HIG 2025 Liquid Glass Design System.
+ * Implements Apple HIG 2025 Liquid Glass Design System with WCAG 2.1 AA compliance.
  * Provides a translucent, depth-aware surface with backdrop blur and saturation.
+ *
+ * Accessibility features:
+ * - Text-shadow for improved legibility on translucent backgrounds
+ * - Automatic opacity adjustment in high contrast mode (prefers-contrast: more)
+ * - WCAG 2.1 AA contrast ratios maintained
  *
  * @see https://developer.apple.com/design/human-interface-guidelines/materials
  * @example
@@ -113,6 +118,9 @@ export function GlassSurface<T extends ElementType = 'div'>({
 
         // Hover state (subtle lift effect)
         'hover:shadow-[var(--glass-shadow-md)]',
+
+        // WCAG 2.1 AA: Text-shadow for improved legibility on translucent glass
+        'glass-text',
 
         // User-provided classes (highest priority)
         className
