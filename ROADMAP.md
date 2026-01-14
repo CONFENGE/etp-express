@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 727/785 (92.6%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 728/785 (92.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1481 | Feature  | [#1475] Implement WCAG AA Contrast for Liquid Glass (#1475) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1474 | Feature  | [#1468] Aplicar spacing tokens a Navigation, Modals e Lists (#1468) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1473 | Feature  | [#1467] Apply spacing tokens to Card grids and Form layouts (#1467) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1472 | Feature  | [#1466] Apply Apple HIG spacing tokens to page layouts (#1466) ✅ - **Score 100/100 - Auto-merged** |
