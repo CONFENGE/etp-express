@@ -38,8 +38,17 @@ export function Header() {
         paddingRight: 'var(--safe-area-right)',
       }}
     >
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-2 sm:gap-4">
+      <div
+        className="container flex h-16 items-center justify-between"
+        style={{
+          paddingLeft: 'var(--space-4)',
+          paddingRight: 'var(--space-4)',
+        }}
+      >
+        <div
+          className="flex items-center"
+          style={{ gap: 'var(--space-2)' }}
+        >
           {/* Menu button with touch target size */}
           <Button
             variant="ghost"
@@ -55,7 +64,12 @@ export function Header() {
           {/* Logo/Home button with touch target */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity min-h-touch px-2 rounded-apple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2"
+            className="flex items-center font-semibold text-lg hover:opacity-80 transition-opacity min-h-touch rounded-apple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2"
+            style={{
+              gap: 'var(--space-2)',
+              paddingLeft: 'var(--space-2)',
+              paddingRight: 'var(--space-2)',
+            }}
             aria-label={`${APP_NAME} - Go to home`}
           >
             <FileText className="h-6 w-6 text-primary" aria-hidden="true" />
@@ -63,7 +77,10 @@ export function Header() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div
+          className="flex items-center"
+          style={{ gap: 'var(--space-2)' }}
+        >
           <ConnectionStatus variant="inline" />
           <ThemeToggle />
           {user && (
@@ -83,7 +100,10 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
+                  <div
+                    className="flex flex-col"
+                    style={{ gap: 'var(--space-1)' }}
+                  >
                     <p className="text-sm font-medium leading-none">
                       {user.name}
                     </p>
@@ -91,7 +111,10 @@ export function Header() {
                       {user.email}
                     </p>
                     {user.organization && (
-                      <p className="text-xs leading-none text-muted-foreground font-semibold mt-1">
+                      <p
+                        className="text-xs leading-none text-muted-foreground font-semibold"
+                        style={{ marginTop: 'var(--space-1)' }}
+                      >
                         {user.organization.name}
                       </p>
                     )}
@@ -102,7 +125,11 @@ export function Header() {
                   onClick={() => navigate('/dashboard')}
                   className="min-h-touch cursor-pointer"
                 >
-                  <User className="mr-2 h-4 w-4" aria-hidden="true" />
+                  <User
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                    style={{ marginRight: 'var(--space-2)' }}
+                  />
                   <span>Dashboard</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -112,7 +139,11 @@ export function Header() {
                   }}
                   className="min-h-touch cursor-pointer"
                 >
-                  <HelpCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                  <HelpCircle
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                    style={{ marginRight: 'var(--space-2)' }}
+                  />
                   <span>Reiniciar Tour</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -121,7 +152,11 @@ export function Header() {
                   className="min-h-touch cursor-pointer"
                   data-testid="logout-button"
                 >
-                  <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+                  <LogOut
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                    style={{ marginRight: 'var(--space-2)' }}
+                  />
                   <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -76,7 +76,13 @@ export function Sidebar() {
         paddingBottom: 'var(--safe-area-bottom)',
       }}
     >
-      <div className="flex flex-col gap-4 p-4">
+      <div
+        className="flex flex-col"
+        style={{
+          gap: 'var(--space-4)',
+          padding: 'var(--space-4)',
+        }}
+      >
         {/* New ETP button with touch target */}
         <Button
           asChild
@@ -84,12 +90,23 @@ export function Sidebar() {
           data-tour="new-etp-button"
         >
           <NavLink to="/etps/new" aria-label="Create new ETP">
-            <PlusCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+            <PlusCircle
+              className="h-4 w-4"
+              aria-hidden="true"
+              style={{ marginRight: 'var(--space-2)' }}
+            />
             Novo ETP
           </NavLink>
         </Button>
 
-        <nav aria-label="Primary navigation" className="space-y-1">
+        <nav
+          aria-label="Primary navigation"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+          }}
+        >
           {filteredNavigation.map((item) => (
             <NavLink
               key={item.name}
@@ -97,7 +114,7 @@ export function Sidebar() {
               className={({ isActive }) =>
                 cn(
                   // Base styles with touch target
-                  'flex items-center gap-3 rounded-lg px-3 min-h-touch text-sm font-medium transition-colors',
+                  'flex items-center rounded-lg min-h-touch text-sm font-medium transition-colors',
                   // Focus visible for keyboard navigation
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
                   isActive
@@ -105,6 +122,11 @@ export function Sidebar() {
                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                 )
               }
+              style={{
+                gap: 'var(--space-2)',
+                paddingLeft: 'var(--space-3)',
+                paddingRight: 'var(--space-3)',
+              }}
             >
               {({ isActive }) => (
                 <>
@@ -119,9 +141,21 @@ export function Sidebar() {
         </nav>
 
         {/* Tip section with better contrast */}
-        <aside aria-label="Helpful tip" className="mt-auto pt-4 border-t">
-          <div className="rounded-lg bg-muted p-4">
-            <h3 className="text-sm font-semibold mb-2 text-a11y-primary">
+        <aside
+          aria-label="Helpful tip"
+          className="mt-auto border-t"
+          style={{
+            paddingTop: 'var(--space-4)',
+          }}
+        >
+          <div
+            className="rounded-lg bg-muted"
+            style={{ padding: 'var(--space-4)' }}
+          >
+            <h3
+              className="text-sm font-semibold text-a11y-primary"
+              style={{ marginBottom: 'var(--space-2)' }}
+            >
               Dica
             </h3>
             <p className="text-xs text-a11y-secondary">
