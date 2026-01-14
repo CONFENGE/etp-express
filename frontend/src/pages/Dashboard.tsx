@@ -84,7 +84,7 @@ export function Dashboard() {
   if (hasNoETPs) {
     return (
       <MainLayout>
-        <div className="space-y-8">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Bem-vindo, {user?.name}!
@@ -95,7 +95,7 @@ export function Dashboard() {
           </div>
 
           <Card className="border-dashed" data-tour="dashboard-empty">
-            <CardContent className="pt-8 pb-8">
+            <CardContent style={{ paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
               <div className="flex flex-col items-center justify-center text-center max-w-lg mx-auto">
                 <EmptyState
                   type="welcome"
@@ -104,7 +104,7 @@ export function Dashboard() {
                   size="lg"
                 />
 
-                <div className="mt-6 space-y-4 w-full max-w-sm">
+                <div style={{ marginTop: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', width: '100%', maxWidth: '32rem' }}>
                   <Button
                     size="lg"
                     className="w-full text-base"
@@ -114,7 +114,7 @@ export function Dashboard() {
                     Criar meu primeiro ETP
                   </Button>
 
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground justify-center">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.875rem' }} className="text-muted-foreground justify-center">
                     <Sparkles className="h-4 w-4 text-primary" />
                     <span>Processo guiado passo a passo</span>
                   </div>
@@ -123,9 +123,9 @@ export function Dashboard() {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(1, 1fr)' }} className="md:grid-cols-3">
             <Card className="bg-muted/30">
-              <CardHeader className="pb-2">
+              <CardHeader style={{ paddingBottom: 'var(--space-2)' }}>
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Estrutura completa
                 </CardTitle>
@@ -173,8 +173,8 @@ export function Dashboard() {
   return (
     <MainLayout>
       <WelcomeModal />
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }} className="sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Bem-vindo, {user?.name}!
@@ -213,11 +213,12 @@ export function Dashboard() {
           <SkeletonStats />
         ) : (
           <div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+            style={{ display: 'grid', gap: 'var(--space-4)' }}
+            className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
             data-tour="dashboard-stats"
           >
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
                 <CardTitle className="text-sm font-medium">
                   Total de ETPs
                 </CardTitle>
@@ -232,7 +233,7 @@ export function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
                 <CardTitle className="text-sm font-medium">
                   Em Progresso
                 </CardTitle>
@@ -247,7 +248,7 @@ export function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
                 <CardTitle className="text-sm font-medium">
                   Concluidos
                 </CardTitle>
@@ -276,7 +277,7 @@ export function Dashboard() {
         )}
 
         {/* Status Distribution Chart and Recent ETPs row */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div style={{ display: 'grid', gap: 'var(--space-4)' }} className="md:grid-cols-3">
           {/* Status Distribution Chart (#1365) */}
           <StatusDistributionChart
             data={statusDistributionData}
@@ -310,7 +311,7 @@ export function Dashboard() {
               {isLoading ? (
                 <SkeletonRecentItems count={5} />
               ) : (
-                <div className="space-y-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                   {recentETPs.map((etp) => {
                     // Check if ETP was created by another user (#1351)
                     const isOtherUser =
@@ -332,11 +333,11 @@ export function Dashboard() {
                               </p>
                             )}
                             {etp.description && (
-                              <p className="text-sm text-muted-foreground mt-1">
+                              <p style={{ marginTop: 'var(--space-1)' }} className="text-sm text-muted-foreground">
                                 {etp.description}
                               </p>
                             )}
-                            <div className="flex items-center gap-2 mt-2">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
                               <span className="text-xs bg-secondary px-2 py-1 rounded">
                                 {ETP_STATUS_LABELS[etp.status]}
                               </span>

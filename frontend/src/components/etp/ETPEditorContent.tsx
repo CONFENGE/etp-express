@@ -93,10 +93,10 @@ export const ETPEditorContent = memo(function ETPEditorContent({
         <TabsContent
           key={section.number}
           value={String(section.number)}
-          className="space-y-4 mt-6"
+          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginTop: 'var(--space-8)' }}
         >
           <div>
-            <div className="flex items-start justify-between mb-4">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
               <div>
                 <h3 className="text-lg font-semibold">{section.title}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -132,7 +132,7 @@ export const ETPEditorContent = memo(function ETPEditorContent({
 
             {/* Progress indicator during generation */}
             {isGenerating && (
-              <div className="mb-4 p-4 bg-muted rounded-lg space-y-3">
+              <div style={{ marginBottom: 'var(--space-4)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }} className="bg-muted rounded-lg">
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   <span className="text-sm font-medium">
@@ -148,15 +148,16 @@ export const ETPEditorContent = memo(function ETPEditorContent({
 
             {/* Data source status alert after generation (#756) */}
             {shouldShowDataSourceStatus && convertedDataSourceStatus && (
-              <DataSourceStatus
-                status={convertedDataSourceStatus.status}
-                sources={convertedDataSourceStatus.sources}
-                onRetry={onRetryDataSource}
-                className="mb-4"
-              />
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                <DataSourceStatus
+                  status={convertedDataSourceStatus.status}
+                  sources={convertedDataSourceStatus.sources}
+                  onRetry={onRetryDataSource}
+                />
+              </div>
             )}
 
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
                 <Label>Conteúdo</Label>
                 <Textarea
