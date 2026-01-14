@@ -123,7 +123,7 @@ export function GlassSurface<T extends ElementType = 'div'>({
         'glass-text',
 
         // User-provided classes (highest priority)
-        className
+        className,
       )}
       {...rest}
     >
