@@ -18,6 +18,7 @@ export function ValidationStatus({ validation }: ValidationStatusProps) {
           <span className="text-sm text-muted-foreground">Completude</span>
           <Badge
             variant={validation.completeness === 100 ? 'success' : 'warning'}
+            icon={validation.completeness === 100 ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
           >
             {validation.completeness}%
           </Badge>
