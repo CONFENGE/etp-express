@@ -71,6 +71,7 @@ When using `size="icon"` variant, `aria-label` is **REQUIRED**:
 ```
 
 FormField automatically:
+
 - Links label via `htmlFor`
 - Adds `aria-describedby` pointing to hint/error
 - Adds `role="alert"` to error messages
@@ -117,9 +118,9 @@ FormField automatically:
 
 ```tsx
 toast({
-  title: "Success",
-  description: "Your changes have been saved.",
-})
+  title: 'Success',
+  description: 'Your changes have been saved.',
+});
 ```
 
 Screen reader announces: **"Success. Your changes have been saved."**
@@ -130,10 +131,10 @@ For errors that need immediate attention:
 
 ```tsx
 toast({
-  variant: "destructive",
-  title: "Error",
-  description: "Failed to save. Please try again.",
-})
+  variant: 'destructive',
+  title: 'Error',
+  description: 'Failed to save. Please try again.',
+});
 ```
 
 Screen reader interrupts: **"Error. Failed to save. Please try again."**
@@ -144,9 +145,7 @@ Screen reader interrupts: **"Error. Failed to save. Please try again."**
 <Toast>
   <ToastTitle>ETP Deleted</ToastTitle>
   <ToastDescription>Your ETP has been removed</ToastDescription>
-  <ToastAction altText="Undo deletion">
-    Undo
-  </ToastAction>
+  <ToastAction altText="Undo deletion">Undo</ToastAction>
   <ToastClose />
 </Toast>
 ```
@@ -158,6 +157,7 @@ Screen reader interrupts: **"Error. Failed to save. Please try again."**
 ### 4. Dropdown Menu Component (`dropdown-menu.tsx`)
 
 Radix UI automatically provides:
+
 - `aria-expanded` on trigger (true/false based on state)
 - `role="menu"` on content
 - `role="menuitem"` on items
@@ -298,13 +298,15 @@ Marks fields with validation errors:
 <Input
   id="email"
   aria-invalid={!!errors.email}
-  aria-describedby={errors.email ? "email-error" : undefined}
-/>
-{errors.email && (
-  <span id="email-error" role="alert">
-    {errors.email.message}
-  </span>
-)}
+  aria-describedby={errors.email ? 'email-error' : undefined}
+/>;
+{
+  errors.email && (
+    <span id="email-error" role="alert">
+      {errors.email.message}
+    </span>
+  );
+}
 ```
 
 ---
@@ -320,6 +322,7 @@ Marks fields with validation errors:
 ### Manual Testing
 
 #### VoiceOver (macOS)
+
 ```bash
 # Enable VoiceOver
 Cmd + F5
@@ -331,6 +334,7 @@ Tab (interactive elements)
 ```
 
 #### NVDA (Windows)
+
 ```bash
 # Install NVDA (free, open-source)
 https://www.nvaccess.org/download/
