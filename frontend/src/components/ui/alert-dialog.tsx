@@ -13,6 +13,7 @@ import { buttonVariants } from '@/components/ui/button';
  * - Deep shadows (shadow-2xl)
  * - Rounded corners (rounded-3xl - Apple concentricity)
  * - Smooth scale + opacity animation with Apple easing
+ * - Apple HIG spacing tokens: --space-6 padding, --space-4 gap between elements
  */
 const AlertDialog = AlertDialogPrimitive.Root;
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
@@ -46,7 +47,7 @@ const AlertDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Position and layout
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]',
         // Liquid Glass effect
         'bg-white/85 dark:bg-zinc-900/85',
         'backdrop-blur-xl backdrop-saturate-200',
@@ -55,7 +56,6 @@ const AlertDialogContent = React.forwardRef<
         'shadow-2xl',
         // Rounded corners (Apple concentricity)
         'rounded-3xl',
-        'p-6',
         // Animation with Apple-style duration and easing
         'duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
@@ -65,6 +65,10 @@ const AlertDialogContent = React.forwardRef<
         'data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
         className,
       )}
+      style={{
+        gap: 'var(--space-4)',
+        padding: 'var(--space-6)',
+      }}
       {...props}
     />
   </AlertDialogPortal>
@@ -76,10 +80,8 @@ const AlertDialogHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col space-y-2 text-center sm:text-left',
-      className,
-    )}
+    className={cn('flex flex-col text-center sm:text-left', className)}
+    style={{ gap: 'var(--space-2)' }}
     {...props}
   />
 );
@@ -90,10 +92,8 @@ const AlertDialogFooter = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
-    )}
+    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end', className)}
+    style={{ gap: 'var(--space-2)' }}
     {...props}
   />
 );
@@ -146,9 +146,12 @@ const AlertDialogCancel = React.forwardRef<
     className={cn(
       buttonVariants({ variant: 'outline' }),
       // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
-      'min-h-touch mt-2 sm:mt-0',
+      'min-h-touch',
       className,
     )}
+    style={{
+      marginTop: 'var(--space-2)',
+    }}
     {...props}
   />
 ));
