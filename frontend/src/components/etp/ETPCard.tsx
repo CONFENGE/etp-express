@@ -74,7 +74,13 @@ export function ETPCard({ etp, onDelete }: ETPCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-4)',
+          }}
+        >
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-muted-foreground">Progresso</span>

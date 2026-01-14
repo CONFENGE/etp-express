@@ -35,7 +35,13 @@ export function Step2ObjectJustification({
   const beneficiosValue = watch('beneficiosEsperados') || '';
 
   return (
-    <div className="space-y-4">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+      }}
+    >
       <FormField
         label="Objeto da Contratação"
         name="objeto"
