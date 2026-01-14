@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { PieChart, BarChart3 } from 'lucide-react';
+import { PieChart, BarChart3, CheckCircle, XCircle, Clock, AlertTriangle, FileText, Eye } from 'lucide-react';
 import {
   PieChart as RechartsPieChart,
   Pie,
@@ -11,6 +11,19 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { type StatusDistributionData } from '@/hooks/useStatusDistribution';
+
+/**
+ * Map status to icons for WCAG 2.1 AA compliance (1.4.1 Use of Color)
+ * Icons provide visual differentiation beyond color
+ */
+const statusIcons: Record<string, React.ElementType> = {
+  draft: FileText,
+  in_progress: Clock,
+  review: Eye,
+  approved: CheckCircle,
+  rejected: XCircle,
+  pending: AlertTriangle,
+};
 
 /**
  * Props for StatusDistributionChart component
@@ -111,30 +124,42 @@ function EmptyState() {
 
 /**
  * Mobile-friendly list view of status distribution.
+ * WCAG 2.1 AA: Uses icons + color + text for status identification
  */
 function StatusList({ data }: { data: StatusDistributionData }) {
   return (
     <div className="space-y-2">
-      {data.map((item) => (
-        <div
-          key={item.status}
-          className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: item.color }}
-            />
-            <span className="text-sm font-medium">{item.label}</span>
+      {data.map((item) => {
+        const IconComponent = statusIcons[item.status] || FileText;
+        return (
+          <div
+            key={item.status}
+            className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              {/* Icon for non-color identification */}
+              <IconComponent
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: item.color }}
+                aria-hidden="true"
+              />
+              {/* Color indicator (supplementary) */}
+              <div
+                className="w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+              <span className="text-sm font-medium">{item.label}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-muted-foreground">{item.count}</span>
+              <span className="font-medium w-12 text-right">
+                {item.percentage}%
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-muted-foreground">{item.count}</span>
-            <span className="font-medium w-12 text-right">
-              {item.percentage}%
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

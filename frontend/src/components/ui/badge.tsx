@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
   // Apple HIG Typography - Caption 1 preset for badges
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption-1 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  // WCAG 2.1 AA: gap-1 ensures icons don't rely solely on color
+  'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-caption-1 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       variant: {
@@ -28,11 +29,20 @@ const badgeVariants = cva(
 export interface BadgeProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  /**
+   * Optional icon to display before the badge text.
+   * Icons provide visual cues beyond color for WCAG 2.1 AA compliance (1.4.1 Use of Color).
+   */
+  icon?: React.ReactNode;
+}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, icon, children, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...props}>
+      {icon && <span className="inline-flex items-center shrink-0" aria-hidden="true">{icon}</span>}
+      {children}
+    </div>
   );
 }
 

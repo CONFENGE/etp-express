@@ -118,7 +118,9 @@ describe('FormField', () => {
 
       const error = screen.getByText('This field is required');
       expect(error).toBeInTheDocument();
-      expect(error).toHaveAttribute('role', 'alert');
+      // Check for role="alert" on parent element (the <p> tag)
+      const errorContainer = error.closest('[role="alert"]');
+      expect(errorContainer).toBeInTheDocument();
     });
 
     it('should have correct error id', () => {
@@ -129,7 +131,9 @@ describe('FormField', () => {
       );
 
       const error = screen.getByText('Invalid email');
-      expect(error).toHaveAttribute('id', 'email-error');
+      // Check for id="email-error" on parent element (the <p> tag)
+      const errorContainer = error.closest('[id="email-error"]');
+      expect(errorContainer).toBeInTheDocument();
     });
 
     it('should style error as destructive', () => {
@@ -140,8 +144,11 @@ describe('FormField', () => {
       );
 
       const error = screen.getByText('Error message');
-      expect(error).toHaveClass('text-sm');
-      expect(error).toHaveClass('text-destructive');
+      // Check for classes on parent element (the <p> tag)
+      const errorContainer = error.closest('.text-destructive');
+      expect(errorContainer).toBeInTheDocument();
+      expect(errorContainer).toHaveClass('text-sm');
+      expect(errorContainer).toHaveClass('text-destructive');
     });
 
     it('should hide hint when error is present', () => {
