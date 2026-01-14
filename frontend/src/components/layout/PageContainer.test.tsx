@@ -7,7 +7,7 @@ describe('PageContainer', () => {
     render(
       <PageContainer>
         <div>Test Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     expect(screen.getByText('Test Content')).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer>
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -34,7 +34,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer>
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -47,7 +47,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer padding="sm">
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -59,7 +59,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer padding="none">
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -72,7 +72,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer padding="lg">
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -85,7 +85,7 @@ describe('PageContainer', () => {
     const { container } = render(
       <PageContainer className="custom-class">
         <div>Content</div>
-      </PageContainer>
+      </PageContainer>,
     );
 
     const pageContainer = container.firstChild as HTMLElement;
@@ -97,10 +97,12 @@ describe('PageContainer', () => {
       <PageContainer>
         <h1>Page Title</h1>
         <p>Page content</p>
-      </PageContainer>
+      </PageContainer>,
     );
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Page Title');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Page Title',
+    );
     expect(screen.getByText('Page content')).toBeInTheDocument();
   });
 });
