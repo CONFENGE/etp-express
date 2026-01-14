@@ -31,7 +31,13 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
   const matriculaValue = watch('responsavelTecnicoMatricula') || '';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+      }}
+    >
       <FormField
         label="Título do ETP"
         name="title"
@@ -52,7 +58,14 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
         />
       </FormField>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-4)' }} className="md:grid-cols-2">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: 'var(--space-4)',
+        }}
+        className="md:grid-cols-2"
+      >
         <FormField
           label="Órgão/Entidade"
           name="orgaoEntidade"
@@ -114,7 +127,14 @@ export function Step1Identification({ form }: Step1IdentificationProps) {
         />
       </FormField>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-4)' }} className="md:grid-cols-2">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: 'var(--space-4)',
+        }}
+        className="md:grid-cols-2"
+      >
         <FormField
           label="Nome do Responsável Técnico"
           name="responsavelTecnicoNome"
