@@ -36,6 +36,13 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Create .env file for CI
+        working-directory: ./frontend
+        run: |
+          echo "VITE_API_URL=http://localhost:3001/api/v1" > .env
+          echo "VITE_APP_NAME=ETP Express" >> .env
+          echo "VITE_SENTRY_DSN=" >> .env
+
       - name: Build frontend for production
         working-directory: ./frontend
         run: npm run build
