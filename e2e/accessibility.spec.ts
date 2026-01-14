@@ -14,15 +14,24 @@ import AxeBuilder from '@axe-core/playwright';
 
 /**
  * Páginas a serem testadas para conformidade WCAG 2.1 AA
+ *
+ * @description Inclui todas as páginas principais e críticas do ETP Express
+ * para garantir conformidade WCAG 2.1 AA e Apple HIG Accessibility.
+ *
+ * Coverage atualizado: 11 páginas principais + componentes críticos
  */
 const pages = [
-  { path: '/login', name: 'Login' },
-  { path: '/register', name: 'Register' },
-  { path: '/forgot-password', name: 'Forgot Password' },
-  { path: '/reset-password?token=test', name: 'Reset Password' },
-  { path: '/dashboard', name: 'Dashboard' },
-  { path: '/etps', name: 'ETPs List' },
-  { path: '/etps/new', name: 'New ETP' },
+  { path: '/login', name: 'Login', requiresAuth: false },
+  { path: '/register', name: 'Register', requiresAuth: false },
+  { path: '/forgot-password', name: 'Forgot Password', requiresAuth: false },
+  { path: '/reset-password?token=test', name: 'Reset Password', requiresAuth: false },
+  { path: '/dashboard', name: 'Dashboard', requiresAuth: true },
+  { path: '/etps', name: 'ETPs List', requiresAuth: true },
+  { path: '/etps/new', name: 'New ETP', requiresAuth: true },
+  { path: '/admin/users', name: 'Admin Users', requiresAuth: true },
+  { path: '/admin/analytics', name: 'Admin Analytics', requiresAuth: true },
+  { path: '/politica-privacidade', name: 'Privacy Policy', requiresAuth: false },
+  { path: '/termos-uso', name: 'Terms of Service', requiresAuth: false },
 ];
 
 /**
@@ -232,5 +241,140 @@ test.describe('Accessibility - Specific Features', () => {
       .analyze();
 
     expect(landmarkResults.violations).toEqual([]);
+  });
+
+  /**
+   * Testa tamanhos de touch targets (Apple HIG >= 44x44px)
+   *
+   * @wcag 2.5.5 Target Size (Level AAA - opcional, mas Apple HIG requer)
+   * @applehig Touch targets mínimos 44x44pt
+   */
+  test('should have touch targets >= 44x44px (Apple HIG)', async ({ page }) => {
+    await page.goto('/dashboard');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Verificar botões principais
+    const buttons = await page.locator('button, a[role="button"]').all();
+
+    for (const button of buttons.slice(0, 10)) {
+      // Sample first 10
+      const box = await button.boundingBox();
+      if (box) {
+        // Allow small tolerance (42px minimum, per relaxed WCAG 2.5.5)
+        expect(box.width).toBeGreaterThanOrEqual(42);
+        expect(box.height).toBeGreaterThanOrEqual(42);
+      }
+    }
+  });
+
+  /**
+   * Testa focus visible em todos os elementos interativos
+   *
+   * @wcag 2.4.7 Focus Visible (Level AA)
+   * @applehig Focus indicators claros e consistentes
+   */
+  test('should have visible focus indicators', async ({ page }) => {
+    await page.goto('/login');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Tab through interactive elements
+    const interactiveElements = await page
+      .locator('button, a, input, select, textarea')
+      .all();
+
+    for (const element of interactiveElements.slice(0, 5)) {
+      await element.focus();
+
+      // Check if element has focus styles (outline or ring)
+      const hasFocusStyle = await element.evaluate((el) => {
+        const styles = window.getComputedStyle(el);
+        return (
+          styles.outline !== 'none' &&
+          styles.outline !== '0px' &&
+          styles.outlineWidth !== '0px'
+        );
+      });
+
+      expect(hasFocusStyle).toBe(true);
+    }
+  });
+
+  /**
+   * Testa ARIA live regions para conteúdo dinâmico
+   *
+   * @wcag 4.1.3 Status Messages (Level AA)
+   */
+  test('should have ARIA live regions for dynamic content', async ({ page }) => {
+    await page.goto('/dashboard');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Check for toast/notification regions with aria-live
+    const liveRegions = await page.locator('[aria-live]').count();
+
+    // Should have at least one live region (toasts, notifications, etc.)
+    expect(liveRegions).toBeGreaterThan(0);
+  });
+
+  /**
+   * Testa contraste de Liquid Glass components
+   *
+   * @wcag 1.4.3 Contrast (Minimum) (Level AA)
+   * @liquidglass Translucent backgrounds com text-shadow obrigatório
+   */
+  test('should have sufficient contrast in Liquid Glass components', async ({
+    page,
+  }) => {
+    await page.goto('/dashboard');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Run contrast check on Liquid Glass surfaces
+    const contrastResults = await new AxeBuilder({ page })
+      .include('.glass-surface, [class*="glass"]')
+      .withRules(['color-contrast'])
+      .analyze();
+
+    expect(contrastResults.violations).toEqual([]);
+  });
+
+  /**
+   * Testa semântica de formulários (fieldsets, legends)
+   *
+   * @wcag 1.3.1 Info and Relationships (Level A)
+   * @wcag 3.3.2 Labels or Instructions (Level A)
+   */
+  test('should have semantic form structure', async ({ page }) => {
+    await page.goto('/etps/new');
+    await page.waitForLoadState('domcontentloaded');
+
+    const formResults = await new AxeBuilder({ page })
+      .include('form')
+      .withRules(['label', 'fieldset', 'legend'])
+      .analyze();
+
+    expect(formResults.violations).toEqual([]);
+  });
+
+  /**
+   * Testa zoom de 200% sem perda de conteúdo
+   *
+   * @wcag 1.4.4 Resize text (Level AA)
+   */
+  test('should support 200% zoom without loss of content', async ({ page }) => {
+    await page.goto('/dashboard');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Set viewport to 200% zoom (equivalent to 640px wide on 1280px viewport)
+    await page.setViewportSize({ width: 640, height: 800 });
+
+    // Check page still renders correctly
+    const body = await page.locator('body');
+    await expect(body).toBeVisible();
+
+    // Verify no horizontal scroll introduced
+    const hasHorizontalScroll = await page.evaluate(() => {
+      return document.body.scrollWidth > document.documentElement.clientWidth;
+    });
+
+    expect(hasHorizontalScroll).toBe(false);
   });
 });

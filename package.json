@@ -7,7 +7,9 @@
     "security:scan": "gitleaks detect --source . --verbose --no-git --config .gitleaks.toml",
     "security:scan:history": "gitleaks detect --source . --verbose --config .gitleaks.toml",
     "security:scan:staged": "gitleaks protect --verbose --staged --config .gitleaks.toml",
-    "test:e2e": "cd e2e && npx tsx run-tests.ts"
+    "test:e2e": "cd e2e && npx tsx run-tests.ts",
+    "test:a11y": "playwright test e2e/accessibility.spec.ts",
+    "audit:a11y": "pa11y-ci"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -29,6 +31,8 @@
     "jest-junit": "^16.0.0",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.7",
+    "pa11y": "^9.0.1",
+    "pa11y-ci": "^4.0.1",
     "playwright": "^1.56.1",
     "prettier": "^3.7.0",
     "puppeteer": "^24.31.0",
