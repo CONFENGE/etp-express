@@ -43,7 +43,10 @@ export function ETPList({ etps }: ETPListProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      className="grid md:grid-cols-2 lg:grid-cols-3"
+      style={{ gap: 'var(--space-4)' }}
+    >
       {etps.map((etp) => (
         <Card key={etp.id} className="hover:shadow-md transition-shadow">
           <CardHeader>
@@ -60,9 +63,12 @@ export function ETPList({ etps }: ETPListProps) {
             )}
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div
+                  className="flex items-center justify-between"
+                  style={{ marginBottom: 'var(--space-2)' }}
+                >
                   <span className="text-sm text-muted-foreground">
                     Progresso
                   </span>

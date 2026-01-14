@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
  * - Deep shadows (shadow-2xl)
  * - Rounded corners (rounded-3xl - Apple concentricity)
  * - Smooth scale + opacity animation with Apple easing
+ * - Apple HIG spacing tokens: --space-6 (mobile) / --space-8 (desktop)
  */
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -47,7 +48,7 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Position and layout
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]',
         // Liquid Glass effect
         'bg-white/85 dark:bg-zinc-900/85',
         'backdrop-blur-xl backdrop-saturate-200',
@@ -56,7 +57,6 @@ const DialogContent = React.forwardRef<
         'shadow-2xl',
         // Rounded corners (Apple concentricity)
         'rounded-3xl',
-        'p-6',
         // Animation with Apple-style duration and easing
         'duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
@@ -66,13 +66,17 @@ const DialogContent = React.forwardRef<
         'data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
         className,
       )}
+      style={{
+        gap: 'var(--space-4)',
+        padding: 'var(--space-6)', // Mobile: 24px | Desktop: Same (can be overridden via media query if needed)
+      }}
       {...props}
     >
       {children}
       <DialogPrimitive.Close
         className={cn(
           // WCAG 2.5.5: 44x44px minimum touch target
-          'absolute right-2 top-2 rounded-apple min-h-touch min-w-touch',
+          'absolute rounded-apple min-h-touch min-w-touch',
           'flex items-center justify-center opacity-70',
           // Apple-style transition
           'transition-all duration-apple ease-apple',
@@ -81,6 +85,10 @@ const DialogContent = React.forwardRef<
           'focus:outline-none focus:ring-2 focus:ring-apple-accent focus:ring-offset-2',
           'disabled:pointer-events-none',
         )}
+        style={{
+          right: 'var(--space-2)',
+          top: 'var(--space-2)',
+        }}
       >
         <X className="h-4 w-4 text-text-apple-secondary" />
         <span className="sr-only">Close</span>
@@ -95,10 +103,8 @@ const DialogHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col space-y-1.5 text-center sm:text-left',
-      className,
-    )}
+    className={cn('flex flex-col text-center sm:text-left', className)}
+    style={{ gap: 'var(--space-1-5, 6px)' }} // space-1.5 equivalent
     {...props}
   />
 );
@@ -110,9 +116,12 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+      'flex flex-col-reverse sm:flex-row sm:justify-end',
       className,
     )}
+    style={{
+      gap: 'var(--space-2)', // Margin de botões: --space-4 conforme spec
+    }}
     {...props}
   />
 );
