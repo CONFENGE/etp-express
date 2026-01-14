@@ -1,7 +1,6 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "cd frontend && npm run preview",
       "url": [
         "http://localhost:3000/",
         "http://localhost:3000/login",
