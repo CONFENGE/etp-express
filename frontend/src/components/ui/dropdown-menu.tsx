@@ -3,6 +3,28 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { Check, ChevronRight, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Dropdown Menu components with Apple HIG Liquid Glass design and full ARIA support.
+ *
+ * Accessibility (WCAG 2.1 AA + Apple HIG):
+ * - Radix UI automatically provides aria-expanded on DropdownMenuTrigger
+ * - aria-expanded="true" when menu is open, "false" when closed
+ * - Keyboard navigation: Arrow keys, Enter, Space, Escape
+ * - Focus management: Focus returns to trigger on close
+ * - All menu items meet minimum 44px touch target (WCAG 2.5.5)
+ * - Focus-visible outline for keyboard navigation
+ * - role="menu" and role="menuitem" automatically applied by Radix UI
+ *
+ * Example:
+ * <DropdownMenu>
+ *   <DropdownMenuTrigger>Options</DropdownMenuTrigger>
+ *   <DropdownMenuContent>
+ *     <DropdownMenuItem>Edit</DropdownMenuItem>
+ *     <DropdownMenuItem>Delete</DropdownMenuItem>
+ *   </DropdownMenuContent>
+ * </DropdownMenu>
+ */
+
 const DropdownMenu = DropdownMenuPrimitive.Root;
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
