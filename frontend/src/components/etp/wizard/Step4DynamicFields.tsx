@@ -17,7 +17,7 @@ export function Step4DynamicFields({ form }: Step4DynamicFieldsProps) {
   const templateType = form.watch('templateType') as EtpTemplateType | null;
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <DynamicFieldsRenderer form={form} templateType={templateType} />
     </div>
   );

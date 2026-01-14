@@ -171,7 +171,7 @@ export function ETPs() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div style={{ display: 'grid', gap: 'var(--space-6)' }} className="md:grid-cols-2 lg:grid-cols-3">
             {filteredETPs.map((etp) => (
               <Card
                 key={etp.id}
@@ -226,7 +226,7 @@ export function ETPs() {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-muted-foreground">
