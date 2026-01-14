@@ -227,6 +227,10 @@ a:focus-visible {
 
   /* Link text: #0056b3 on #ffffff = 7.3:1 */
   --a11y-text-link: #0056b3;
+
+  /* Liquid Glass text enhancement - text-shadow for legibility on translucent surfaces */
+  --a11y-glass-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --a11y-glass-text-shadow-strong: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* Dark mode - minimum 4.5:1 contrast ratio for normal text */
@@ -251,6 +255,10 @@ a:focus-visible {
 
   /* Link text: #64b5ff on #1c1c1e = 8.3:1 */
   --a11y-text-link: #64b5ff;
+
+  /* Liquid Glass text enhancement for dark mode - stronger shadow */
+  --a11y-glass-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --a11y-glass-text-shadow-strong: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Utility classes for accessible text colors */
@@ -443,4 +451,43 @@ tbody tr:hover {
 /* Current row indicator */
 tbody tr[aria-current='true'] {
   background-color: var(--apple-accent-light, rgba(0, 122, 255, 0.1));
+}
+
+/* ========================================
+ * Liquid Glass WCAG Contrast Enhancement
+ * Text-shadow for improved legibility on translucent surfaces
+ * ======================================== */
+
+/* Apply text-shadow to improve readability on glass surfaces */
+.glass-text {
+  text-shadow: var(--a11y-glass-text-shadow);
+}
+
+.glass-text-strong {
+  text-shadow: var(--a11y-glass-text-shadow-strong);
+}
+
+/* High contrast mode - Enhanced Liquid Glass */
+@media (prefers-contrast: more) {
+  :root {
+    /* More opaque backgrounds for better contrast */
+    --glass-opacity-light: 0.85;
+    --glass-opacity-medium: 0.9;
+    --glass-opacity-heavy: 0.95;
+
+    /* Stronger text-shadow */
+    --a11y-glass-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --a11y-glass-text-shadow-strong: 0 3px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .dark {
+    /* Darker glass backgrounds in dark mode for better contrast */
+    --glass-opacity-light: 0.9;
+    --glass-opacity-medium: 0.95;
+    --glass-opacity-heavy: 0.98;
+
+    /* Even stronger text-shadow for dark mode */
+    --a11y-glass-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --a11y-glass-text-shadow-strong: 0 3px 6px rgba(0, 0, 0, 0.5);
+  }
 }

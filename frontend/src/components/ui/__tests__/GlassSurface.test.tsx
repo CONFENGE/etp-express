@@ -15,7 +15,7 @@ describe('GlassSurface', () => {
       render(
         <GlassSurface>
           <h1>Test Content</h1>
-        </GlassSurface>
+        </GlassSurface>,
       );
       expect(screen.getByText('Test Content')).toBeInTheDocument();
     });
@@ -24,7 +24,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       expect(container.firstChild?.nodeName).toBe('DIV');
     });
@@ -33,7 +33,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface as="section">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       expect(container.firstChild?.nodeName).toBe('SECTION');
     });
@@ -42,7 +42,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface as="article">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       expect(container.firstChild?.nodeName).toBe('ARTICLE');
     });
@@ -51,7 +51,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface as="aside">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       expect(container.firstChild?.nodeName).toBe('ASIDE');
     });
@@ -68,7 +68,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/[0.72]');
@@ -85,7 +85,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="light">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/60');
@@ -102,7 +102,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="heavy">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/85');
@@ -115,7 +115,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('rounded-[var(--glass-radius-lg)]');
@@ -125,7 +125,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('border-white/[0.18]');
@@ -136,7 +136,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('shadow-[var(--glass-shadow-sm)]');
@@ -146,14 +146,14 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain(
-        'duration-[var(--glass-transition-duration)]'
+        'duration-[var(--glass-transition-duration)]',
       );
       expect(element.className).toContain(
-        'ease-[var(--glass-transition-timing)]'
+        'ease-[var(--glass-transition-timing)]',
       );
     });
 
@@ -161,10 +161,12 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
-      expect(element.className).toContain('hover:shadow-[var(--glass-shadow-md)]');
+      expect(element.className).toContain(
+        'hover:shadow-[var(--glass-shadow-md)]',
+      );
     });
   });
 
@@ -179,11 +181,15 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="medium">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
-      expect(element.className).toContain('backdrop-blur-[var(--glass-blur-amount)]');
-      expect(element.className).toContain('backdrop-saturate-[var(--glass-saturation)]');
+      expect(element.className).toContain(
+        'backdrop-blur-[var(--glass-blur-amount)]',
+      );
+      expect(element.className).toContain(
+        'backdrop-saturate-[var(--glass-saturation)]',
+      );
     });
 
     it('should apply fallback styles when backdrop-filter is not supported', () => {
@@ -196,7 +202,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="medium">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/95');
@@ -212,7 +218,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="light">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/95');
@@ -227,7 +233,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface intensity="heavy">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('bg-white/95');
@@ -245,7 +251,7 @@ describe('GlassSurface', () => {
       const { container: lightContainer } = render(
         <GlassSurface intensity="light">
           <p>Light</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const lightElement = lightContainer.firstChild as HTMLElement;
       expect(lightElement.className).toContain('dark:bg-zinc-900/60');
@@ -253,7 +259,7 @@ describe('GlassSurface', () => {
       const { container: mediumContainer } = render(
         <GlassSurface intensity="medium">
           <p>Medium</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const mediumElement = mediumContainer.firstChild as HTMLElement;
       expect(mediumElement.className).toContain('dark:bg-zinc-900/[0.72]');
@@ -261,7 +267,7 @@ describe('GlassSurface', () => {
       const { container: heavyContainer } = render(
         <GlassSurface intensity="heavy">
           <p>Heavy</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const heavyElement = heavyContainer.firstChild as HTMLElement;
       expect(heavyElement.className).toContain('dark:bg-zinc-900/85');
@@ -271,7 +277,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('dark:border-white/[0.09]');
@@ -283,7 +289,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface className="custom-class">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('custom-class');
@@ -294,7 +300,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface className="bg-red-500">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       // cn() utility from tailwind-merge should make bg-red-500 take precedence
@@ -307,7 +313,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface data-testid="glass-surface" role="complementary">
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.getAttribute('data-testid')).toBe('glass-surface');
@@ -318,7 +324,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface aria-label="Glass card" aria-describedby="description">
           <p id="description">Card description</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.getAttribute('aria-label')).toBe('Glass card');
@@ -331,7 +337,7 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('border');
@@ -341,10 +347,48 @@ describe('GlassSurface', () => {
       const { container } = render(
         <GlassSurface>
           <p>Content</p>
-        </GlassSurface>
+        </GlassSurface>,
       );
       const element = container.firstChild as HTMLElement;
       expect(element.className).toContain('transition-all');
+    });
+  });
+
+  describe('Accessibility - WCAG 2.1 AA Compliance', () => {
+    it('should apply glass-text class for improved legibility', () => {
+      const { container } = render(
+        <GlassSurface>
+          <p>Content</p>
+        </GlassSurface>,
+      );
+      const element = container.firstChild as HTMLElement;
+      expect(element.className).toContain('glass-text');
+    });
+
+    it('should maintain glass-text class across all intensity levels', () => {
+      const intensities = ['light', 'medium', 'heavy'] as const;
+
+      intensities.forEach((intensity) => {
+        const { container } = render(
+          <GlassSurface intensity={intensity}>
+            <p>Content</p>
+          </GlassSurface>,
+        );
+        const element = container.firstChild as HTMLElement;
+        expect(element.className).toContain('glass-text');
+      });
+    });
+
+    it('should allow custom className to override glass-text if needed', () => {
+      const { container } = render(
+        <GlassSurface className="glass-text-strong">
+          <p>Content with stronger shadow</p>
+        </GlassSurface>,
+      );
+      const element = container.firstChild as HTMLElement;
+      // Both classes should be present, tailwind-merge will handle precedence
+      expect(element.className).toContain('glass-text');
+      expect(element.className).toContain('glass-text-strong');
     });
   });
 });
