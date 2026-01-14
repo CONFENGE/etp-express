@@ -310,10 +310,17 @@ a:focus-visible {
   box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.2);
 }
 
-/* Required field indicator */
+/* Required field indicator - WCAG 2.1 AA (1.4.1 Use of Color) */
 .required-indicator {
   color: var(--a11y-text-error);
   font-weight: var(--font-weight-bold, 700);
+}
+
+/* Required field hint - provides text explanation beyond just asterisk */
+.required-hint {
+  color: var(--a11y-text-secondary);
+  font-size: var(--font-size-xs, 12px);
+  margin-top: var(--space-1, 4px);
 }
 
 /* Form field description */
@@ -323,7 +330,7 @@ a:focus-visible {
   margin-top: var(--space-1, 4px);
 }
 
-/* Error message styling */
+/* Error message styling - WCAG 2.1 AA: icon + text + color */
 .error-message {
   color: var(--a11y-text-error);
   font-size: var(--font-size-sm, 13px);
@@ -371,6 +378,34 @@ a:focus-visible {
 /* Active/pressed state - standardized with button component (0.97) */
 .active-scale:active {
   transform: scale(0.97);
+}
+
+/* ========================================
+ * Link Accessibility - WCAG 2.1 AA (1.4.1 Use of Color)
+ * Links must not rely solely on color for identification
+ * ======================================== */
+a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness 150ms ease;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Skip underline for specific cases (buttons, cards, etc.) */
+a.no-underline,
+a[role='button'],
+.card a {
+  text-decoration: none;
+}
+
+/* Ensure focus state still visible */
+a:focus-visible {
+  outline: 2px solid var(--apple-accent, #007aff);
+  outline-offset: 2px;
 }
 
 /* ========================================

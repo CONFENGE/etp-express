@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { AlertCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -26,9 +27,12 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
         <Label htmlFor={id} className="flex items-center gap-1">
           {label}
           {required && (
-            <span className="text-destructive" aria-hidden="true">
-              *
-            </span>
+            <>
+              <span className="text-destructive" aria-hidden="true">
+                *
+              </span>
+              <span className="sr-only">(obrigatório)</span>
+            </>
           )}
         </Label>
         {React.Children.map(children, (child) => {
@@ -46,8 +50,9 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
           </p>
         )}
         {error && (
-          <p id={errorId} className="text-sm text-destructive" role="alert">
-            {error}
+          <p id={errorId} className="error-message text-sm text-destructive flex items-center gap-1" role="alert">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+            <span>{error}</span>
           </p>
         )}
       </div>
