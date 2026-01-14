@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 725/785 (92.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 726/785 (92.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1473 | Feature  | [#1467] Apply spacing tokens to Card grids and Form layouts (#1467) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1472 | Feature  | [#1466] Apply Apple HIG spacing tokens to page layouts (#1466) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1471 | Feature  | [#1465] Implement safe areas for notch/home indicator - Apple HIG Layout (#1465) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1470 | Feature  | [#1464] Implement responsive 12-column grid system - Apple HIG Layout (#1464) ✅ - **Score 100/100 - Auto-merged** |
@@ -426,7 +427,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1464 Implementar grid system responsivo 12 colunas | ✅ |
 |       | ↳ #1465 Implementar safe areas e insets para notch/home indicator | ✅ |
 |       | ↳ #1466 Aplicar spacing tokens aos Page layouts principais | ✅ |
-|       | ↳ #1467 Aplicar spacing tokens a Card grids e Form layouts | 🔴 |
+|       | ↳ #1467 Aplicar spacing tokens a Card grids e Form layouts | ✅ |
 |       | ↳ #1468 Aplicar spacing tokens a Navigation, Modals e Lists | 🔴 |
 
 Features:
