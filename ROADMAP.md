@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 726/785 (92.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 727/785 (92.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1474 | Feature  | [#1468] Aplicar spacing tokens a Navigation, Modals e Lists (#1468) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1473 | Feature  | [#1467] Apply spacing tokens to Card grids and Form layouts (#1467) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1472 | Feature  | [#1466] Apply Apple HIG spacing tokens to page layouts (#1466) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1471 | Feature  | [#1465] Implement safe areas for notch/home indicator - Apple HIG Layout (#1465) ✅ - **Score 100/100 - Auto-merged** |
@@ -405,7 +406,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - IN PROGRESS 8/17
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 13/13
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
@@ -428,7 +429,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1465 Implementar safe areas e insets para notch/home indicator | ✅ |
 |       | ↳ #1466 Aplicar spacing tokens aos Page layouts principais | ✅ |
 |       | ↳ #1467 Aplicar spacing tokens a Card grids e Form layouts | ✅ |
-|       | ↳ #1468 Aplicar spacing tokens a Navigation, Modals e Lists | 🔴 |
+|       | ↳ #1468 Aplicar spacing tokens a Navigation, Modals e Lists | ✅ |
 
 Features:
 - Coleta automática multi-fonte (PNCP, SINAPI, SICRO, Atas RP)
