@@ -23,8 +23,21 @@ export function Step4Costs({ form }: Step4CostsProps) {
   const dotacaoValue = watch('dotacaoOrcamentaria') || '';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-4)' }} className="md:grid-cols-2">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: 'var(--space-4)',
+        }}
+        className="md:grid-cols-2"
+      >
         <FormField
           label="Valor Unitário (R$)"
           name="valorUnitario"

@@ -49,7 +49,13 @@ export function Step5Risks({ form }: Step5RisksProps) {
   const nivelRiscoValue = watch('nivelRisco');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+      }}
+    >
       <FormField
         label="Nível de Risco"
         name="nivelRisco"
