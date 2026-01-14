@@ -36,6 +36,12 @@ export function MainLayout({ children }: MainLayoutProps) {
             // Mobile: no margin, sidebar overlays
             'max-lg:ml-0',
           )}
+          style={{
+            // Apply safe areas to main content area
+            paddingLeft: 'var(--safe-area-left)',
+            paddingRight: 'var(--safe-area-right)',
+            paddingBottom: 'var(--safe-area-bottom)',
+          }}
         >
           <div className="container mx-auto px-4 py-8 flex-1 sm:px-6 lg:px-8">
             {children}

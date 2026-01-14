@@ -71,6 +71,10 @@ export function Sidebar() {
         'lg:translate-x-0',
         'max-lg:shadow-lg',
       )}
+      style={{
+        paddingLeft: 'var(--safe-area-left)',
+        paddingBottom: 'var(--safe-area-bottom)',
+      }}
     >
       <div className="flex flex-col gap-4 p-4">
         {/* New ETP button with touch target */}
