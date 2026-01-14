@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-13 | **Progresso:** 722/785 (92.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 723/785 (92.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1470 | Feature  | [#1464] Implement responsive 12-column grid system - Apple HIG Layout (#1464) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1469 | Feature  | [#1463] Add Apple HIG spacing tokens - Layout sub-issue [1/6] (#1463) ✅ |
 | 2026-01-13 | #1462 | Feature  | [#1428] Implementar Sistema de Cores Apple HIG (Paleta Semântica + Contraste) (#1428) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-13 | #1461 | Feature  | [#1427] Implementar Tipografia Apple HIG (San Francisco + Escala Dinâmica) (#1427) ✅ - **Score 100/100 - Auto-merged** |
@@ -420,7 +421,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
 | #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | 🔴 |
 |       | ↳ #1463 Criar design tokens de espaçamento Apple HIG | ✅ |
-|       | ↳ #1464 Implementar grid system responsivo 12 colunas | 🔴 |
+|       | ↳ #1464 Implementar grid system responsivo 12 colunas | ✅ |
 |       | ↳ #1465 Implementar safe areas e insets para notch/home indicator | 🔴 |
 |       | ↳ #1466 Aplicar spacing tokens aos Page layouts principais | 🔴 |
 |       | ↳ #1467 Aplicar spacing tokens a Card grids e Form layouts | 🔴 |
