@@ -14,6 +14,14 @@ import { cn } from '@/lib/utils';
  * - Variants: primary (accent), secondary, ghost, destructive, outline, link
  * - Micro-interactions: subtle scale on active, smooth hover transitions
  * - Respects prefers-reduced-motion
+ *
+ * Accessibility (WCAG 2.1 AA + Apple HIG):
+ * - REQUIRED: When using size="icon", you MUST provide aria-label
+ *   Example: <Button size="icon" aria-label="Delete item"><Trash /></Button>
+ * - All sizes ensure minimum 44px touch target (WCAG 2.5.5)
+ * - Focus-visible ring with 2px outline and 2px offset
+ * - Screen reader support via semantic HTML button element
+ * - Use aria-describedby to link to hint/error messages when applicable
  */
 const buttonVariants = cva(
   // Base styles with Apple HIG tokens and micro-interactions
