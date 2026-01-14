@@ -15,6 +15,15 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
  * - Apple-style border radius
  * - Respects prefers-reduced-motion
  * - Disabled state uses specific colors (not opacity) for WCAG compliance
+ *
+ * Accessibility (WCAG 2.1 AA + Apple HIG):
+ * - Use with FormField component for automatic aria-describedby linking
+ * - Or manually provide aria-describedby to link to hint/error messages:
+ *   Example: <Input id="email" aria-describedby="email-hint email-error" />
+ *            <span id="email-hint">We'll never share your email</span>
+ *            <span id="email-error" role="alert">Invalid email format</span>
+ * - Always pair with a <Label> for screen reader support
+ * - Error messages should use role="alert" for immediate announcement
  */
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {

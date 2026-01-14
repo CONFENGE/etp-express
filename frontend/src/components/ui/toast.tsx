@@ -4,6 +4,26 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/**
+ * Toast components with Apple HIG design and full ARIA live region support.
+ *
+ * Accessibility (WCAG 2.1 AA + Apple HIG):
+ * - Radix UI automatically provides role="region" and aria-label="Notifications"
+ * - Toast messages use aria-live="polite" by default (non-interruptive)
+ * - Error/destructive toasts should use aria-live="assertive" for immediate announcement
+ * - ToastClose button includes aria-label="Close" from Radix UI
+ * - All interactive elements meet minimum 44px touch target
+ * - Use ToastTitle for the main message (announced first)
+ * - Use ToastDescription for additional details (announced after title)
+ *
+ * Example for screen readers:
+ * <Toast>
+ *   <ToastTitle>Success</ToastTitle>
+ *   <ToastDescription>Your changes have been saved</ToastDescription>
+ * </Toast>
+ * Screen reader announces: "Success. Your changes have been saved"
+ */
+
 const ToastProvider = ToastPrimitives.Provider;
 
 const ToastViewport = React.forwardRef<
@@ -79,9 +99,10 @@ const ToastClose = React.forwardRef<
       className,
     )}
     toast-close=""
+    aria-label="Fechar notificação"
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className="h-4 w-4" aria-hidden="true" />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
