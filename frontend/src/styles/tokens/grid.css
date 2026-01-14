@@ -1,0 +1,192 @@
+/**
+ * Apple HIG Grid System - Responsive 12-column grid
+ * Implements fluid layout with responsive gutters and margins
+ * Reference: Apple Human Interface Guidelines 2025 - Layout
+ */
+
+:root {
+  /* Container max-widths at each breakpoint */
+  --container-xs: 320px;
+  --container-sm: 375px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1440px;
+
+  /* Grid system settings */
+  --grid-columns: 12;
+  --grid-gutter: 16px; /* Space between columns */
+  --grid-margin: 16px; /* Space from screen edges */
+
+  /* Column width calculation: 100% / 12 columns */
+  --grid-col-1: 8.333333%;
+  --grid-col-2: 16.666667%;
+  --grid-col-3: 25%;
+  --grid-col-4: 33.333333%;
+  --grid-col-5: 41.666667%;
+  --grid-col-6: 50%;
+  --grid-col-7: 58.333333%;
+  --grid-col-8: 66.666667%;
+  --grid-col-9: 75%;
+  --grid-col-10: 83.333333%;
+  --grid-col-11: 91.666667%;
+  --grid-col-12: 100%;
+}
+
+/* Tablet breakpoint: Increase gutters and margins */
+@media (min-width: 768px) {
+  :root {
+    --grid-gutter: 24px;
+    --grid-margin: 24px;
+  }
+}
+
+/* Desktop breakpoint: Further increase margins for comfortable reading */
+@media (min-width: 1024px) {
+  :root {
+    --grid-margin: 48px;
+  }
+}
+
+/* Large desktop: Maintain comfortable margins */
+@media (min-width: 1440px) {
+  :root {
+    --grid-margin: 64px;
+  }
+}
+
+/**
+ * Grid Container Utility Class
+ * Centers content and applies responsive margins
+ */
+.grid-container {
+  width: 100%;
+  max-width: var(--container-2xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--grid-margin);
+  padding-right: var(--grid-margin);
+}
+
+/**
+ * Grid Row
+ * Flex container for grid columns with negative margin to compensate for column gutters
+ */
+.grid-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(var(--grid-gutter) * -0.5);
+  margin-right: calc(var(--grid-gutter) * -0.5);
+}
+
+/**
+ * Grid Column Base
+ * All columns have padding equal to half the gutter
+ */
+[class*="grid-col-"] {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-left: calc(var(--grid-gutter) * 0.5);
+  padding-right: calc(var(--grid-gutter) * 0.5);
+}
+
+/**
+ * Column Width Utilities
+ * Mobile-first: Full width by default on mobile
+ */
+.grid-col-1  { flex: 0 0 var(--grid-col-1);  max-width: var(--grid-col-1); }
+.grid-col-2  { flex: 0 0 var(--grid-col-2);  max-width: var(--grid-col-2); }
+.grid-col-3  { flex: 0 0 var(--grid-col-3);  max-width: var(--grid-col-3); }
+.grid-col-4  { flex: 0 0 var(--grid-col-4);  max-width: var(--grid-col-4); }
+.grid-col-5  { flex: 0 0 var(--grid-col-5);  max-width: var(--grid-col-5); }
+.grid-col-6  { flex: 0 0 var(--grid-col-6);  max-width: var(--grid-col-6); }
+.grid-col-7  { flex: 0 0 var(--grid-col-7);  max-width: var(--grid-col-7); }
+.grid-col-8  { flex: 0 0 var(--grid-col-8);  max-width: var(--grid-col-8); }
+.grid-col-9  { flex: 0 0 var(--grid-col-9);  max-width: var(--grid-col-9); }
+.grid-col-10 { flex: 0 0 var(--grid-col-10); max-width: var(--grid-col-10); }
+.grid-col-11 { flex: 0 0 var(--grid-col-11); max-width: var(--grid-col-11); }
+.grid-col-12 { flex: 0 0 var(--grid-col-12); max-width: var(--grid-col-12); }
+
+/**
+ * Responsive Column Utilities - Tablet (md)
+ */
+@media (min-width: 768px) {
+  .grid-col-md-1  { flex: 0 0 var(--grid-col-1);  max-width: var(--grid-col-1); }
+  .grid-col-md-2  { flex: 0 0 var(--grid-col-2);  max-width: var(--grid-col-2); }
+  .grid-col-md-3  { flex: 0 0 var(--grid-col-3);  max-width: var(--grid-col-3); }
+  .grid-col-md-4  { flex: 0 0 var(--grid-col-4);  max-width: var(--grid-col-4); }
+  .grid-col-md-5  { flex: 0 0 var(--grid-col-5);  max-width: var(--grid-col-5); }
+  .grid-col-md-6  { flex: 0 0 var(--grid-col-6);  max-width: var(--grid-col-6); }
+  .grid-col-md-7  { flex: 0 0 var(--grid-col-7);  max-width: var(--grid-col-7); }
+  .grid-col-md-8  { flex: 0 0 var(--grid-col-8);  max-width: var(--grid-col-8); }
+  .grid-col-md-9  { flex: 0 0 var(--grid-col-9);  max-width: var(--grid-col-9); }
+  .grid-col-md-10 { flex: 0 0 var(--grid-col-10); max-width: var(--grid-col-10); }
+  .grid-col-md-11 { flex: 0 0 var(--grid-col-11); max-width: var(--grid-col-11); }
+  .grid-col-md-12 { flex: 0 0 var(--grid-col-12); max-width: var(--grid-col-12); }
+}
+
+/**
+ * Responsive Column Utilities - Desktop (lg)
+ */
+@media (min-width: 1024px) {
+  .grid-col-lg-1  { flex: 0 0 var(--grid-col-1);  max-width: var(--grid-col-1); }
+  .grid-col-lg-2  { flex: 0 0 var(--grid-col-2);  max-width: var(--grid-col-2); }
+  .grid-col-lg-3  { flex: 0 0 var(--grid-col-3);  max-width: var(--grid-col-3); }
+  .grid-col-lg-4  { flex: 0 0 var(--grid-col-4);  max-width: var(--grid-col-4); }
+  .grid-col-lg-5  { flex: 0 0 var(--grid-col-5);  max-width: var(--grid-col-5); }
+  .grid-col-lg-6  { flex: 0 0 var(--grid-col-6);  max-width: var(--grid-col-6); }
+  .grid-col-lg-7  { flex: 0 0 var(--grid-col-7);  max-width: var(--grid-col-7); }
+  .grid-col-lg-8  { flex: 0 0 var(--grid-col-8);  max-width: var(--grid-col-8); }
+  .grid-col-lg-9  { flex: 0 0 var(--grid-col-9);  max-width: var(--grid-col-9); }
+  .grid-col-lg-10 { flex: 0 0 var(--grid-col-10); max-width: var(--grid-col-10); }
+  .grid-col-lg-11 { flex: 0 0 var(--grid-col-11); max-width: var(--grid-col-11); }
+  .grid-col-lg-12 { flex: 0 0 var(--grid-col-12); max-width: var(--grid-col-12); }
+}
+
+/**
+ * Responsive Column Utilities - Large Desktop (xl)
+ */
+@media (min-width: 1280px) {
+  .grid-col-xl-1  { flex: 0 0 var(--grid-col-1);  max-width: var(--grid-col-1); }
+  .grid-col-xl-2  { flex: 0 0 var(--grid-col-2);  max-width: var(--grid-col-2); }
+  .grid-col-xl-3  { flex: 0 0 var(--grid-col-3);  max-width: var(--grid-col-3); }
+  .grid-col-xl-4  { flex: 0 0 var(--grid-col-4);  max-width: var(--grid-col-4); }
+  .grid-col-xl-5  { flex: 0 0 var(--grid-col-5);  max-width: var(--grid-col-5); }
+  .grid-col-xl-6  { flex: 0 0 var(--grid-col-6);  max-width: var(--grid-col-6); }
+  .grid-col-xl-7  { flex: 0 0 var(--grid-col-7);  max-width: var(--grid-col-7); }
+  .grid-col-xl-8  { flex: 0 0 var(--grid-col-8);  max-width: var(--grid-col-8); }
+  .grid-col-xl-9  { flex: 0 0 var(--grid-col-9);  max-width: var(--grid-col-9); }
+  .grid-col-xl-10 { flex: 0 0 var(--grid-col-10); max-width: var(--grid-col-10); }
+  .grid-col-xl-11 { flex: 0 0 var(--grid-col-11); max-width: var(--grid-col-11); }
+  .grid-col-xl-12 { flex: 0 0 var(--grid-col-12); max-width: var(--grid-col-12); }
+}
+
+/**
+ * Alignment Utilities
+ */
+.grid-row-start   { justify-content: flex-start; }
+.grid-row-center  { justify-content: center; }
+.grid-row-end     { justify-content: flex-end; }
+.grid-row-between { justify-content: space-between; }
+.grid-row-around  { justify-content: space-around; }
+
+.grid-col-top    { align-self: flex-start; }
+.grid-col-middle { align-self: center; }
+.grid-col-bottom { align-self: flex-end; }
+.grid-col-stretch { align-self: stretch; }
+
+/**
+ * Gap Utilities (for modern browsers supporting gap property)
+ */
+.grid-gap {
+  gap: var(--grid-gutter);
+}
+
+.grid-gap-sm {
+  gap: calc(var(--grid-gutter) * 0.5);
+}
+
+.grid-gap-lg {
+  gap: calc(var(--grid-gutter) * 1.5);
+}
