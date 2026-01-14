@@ -1,0 +1,64 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "runners": ["axe", "htmlcs"],
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    },
+    "timeout": 60000,
+    "wait": 2000,
+    "viewport": {
+      "width": 1280,
+      "height": 1024
+    },
+    "threshold": 0,
+    "hideElements": "iframe[src*='sentry']",
+    "rules": [
+      "color-contrast",
+      "button-name",
+      "link-name",
+      "image-alt",
+      "label",
+      "aria-allowed-attr",
+      "aria-required-attr",
+      "heading-order",
+      "landmark-one-main",
+      "region"
+    ]
+  },
+  "urls": [
+    {
+      "url": "http://localhost:5173/",
+      "screenCapture": ".pa11y-screenshots/homepage.png"
+    },
+    {
+      "url": "http://localhost:5173/login",
+      "screenCapture": ".pa11y-screenshots/login.png"
+    },
+    {
+      "url": "http://localhost:5173/register",
+      "screenCapture": ".pa11y-screenshots/register.png"
+    },
+    {
+      "url": "http://localhost:5173/dashboard",
+      "screenCapture": ".pa11y-screenshots/dashboard.png",
+      "actions": [
+        "wait for element #root to be visible"
+      ]
+    },
+    {
+      "url": "http://localhost:5173/etps",
+      "screenCapture": ".pa11y-screenshots/etps-list.png",
+      "actions": [
+        "wait for element #root to be visible"
+      ]
+    },
+    {
+      "url": "http://localhost:5173/etps/new",
+      "screenCapture": ".pa11y-screenshots/etps-new.png",
+      "actions": [
+        "wait for element #root to be visible"
+      ]
+    }
+  ]
+}
