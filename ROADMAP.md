@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 732/785 (93.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 733/785 (93.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1486 | Test     | [#1480] WCAG 2.1 AA Audit & Documentation - Apple HIG Accessibility 6/6 COMPLETE (#1480) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1485 | Feature  | [#1479] Implement color accessibility - WCAG 2.1 AA compliance (#1479) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1484 | Feature  | [#1478] Implement focus management and keyboard navigation (#1478) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1483 | Feature  | [#1477] Implement screen reader support (ARIA) (#1477) ✅ - **Score 100/100 - Auto-merged** |
@@ -268,15 +269,15 @@ Nenhum bug P0 aberto! 🎉
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | ✅     |
 | #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
-| #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | 🟡     |
+| #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | ✅     |
 |       | ↳ #1475 Contraste WCAG AA com Liquid Glass               | Contrast    | ✅     |
 |       | ↳ #1476 Touch targets >= 44x44px                         | Touch       | ✅     |
 |       | ↳ #1477 Screen reader support (ARIA)                     | ARIA        | ✅     |
 |       | ↳ #1478 Focus management e keyboard navigation           | Focus       | ✅     |
 |       | ↳ #1479 Color accessibility (não usar cor único indicador)| Color      | ✅     |
-|       | ↳ #1480 Testes WCAG e documentação                       | Tests       | 🔴     |
+|       | ↳ #1480 Testes WCAG e documentação                       | Tests       | ✅     |
 
-**Progresso Design System:** 10/18 (55.6%)
+**Progresso Design System:** 16/18 (88.9%)
 
 ### Principais Diretrizes Apple HIG 2025
 
