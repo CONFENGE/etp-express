@@ -1,0 +1,198 @@
+/**
+ * Apple HIG Motion Design Tokens
+ *
+ * This file defines animation and transition tokens following Apple Human Interface Guidelines.
+ * These tokens ensure consistent, natural motion across the application.
+ *
+ * @see https://developer.apple.com/design/human-interface-guidelines/motion
+ * @see https://developer.apple.com/design/human-interface-guidelines/animation
+ */
+
+:root {
+  /* ========================================
+   * EASING CURVES (Apple HIG)
+   * Natural, physics-based motion
+   * ======================================== */
+
+  /**
+   * Standard Easing
+   * Use for: Most UI transitions, general animations
+   * Provides smooth acceleration and deceleration
+   */
+  --ease-apple-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /**
+   * Emphasized Easing
+   * Use for: Important actions, emphasized movements
+   * More pronounced acceleration, creates sense of importance
+   */
+  --ease-apple-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /**
+   * Spring Easing
+   * Use for: Interactive elements, toggles, switches
+   * Mimics spring physics for natural feel
+   */
+  --ease-apple-spring: cubic-bezier(0.5, 0, 0.25, 1);
+
+  /**
+   * Bounce Easing
+   * Use for: Playful interactions, checkbox checks, confirmations
+   * Adds subtle bounce effect, use sparingly
+   */
+  --ease-apple-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+  /* ========================================
+   * ANIMATION DURATIONS (Apple HIG)
+   * Standardized timing for consistent feel
+   * ======================================== */
+
+  /**
+   * Instant (100ms)
+   * Use for: Hover states, immediate feedback
+   * Feels instantaneous but provides visual continuity
+   */
+  --duration-instant: 100ms;
+
+  /**
+   * Fast (150ms)
+   * Use for: Micro-interactions, button presses, focus states
+   * Quick response that doesn't feel sluggish
+   */
+  --duration-fast: 150ms;
+
+  /**
+   * Normal (200ms)
+   * Use for: Standard transitions, default choice
+   * Balanced timing that feels natural
+   */
+  --duration-normal: 200ms;
+
+  /**
+   * Slow (300ms)
+   * Use for: Page transitions, larger movements
+   * Gives time to perceive the change
+   */
+  --duration-slow: 300ms;
+
+  /**
+   * Slower (400ms)
+   * Use for: Complex animations, multi-step transitions
+   * Allows users to follow complex changes
+   */
+  --duration-slower: 400ms;
+
+  /* ========================================
+   * COMMON TRANSITION PATTERNS
+   * Pre-composed patterns for common use cases
+   * ======================================== */
+
+  /**
+   * Standard Fade
+   * Smooth opacity transition
+   */
+  --transition-fade: opacity var(--duration-normal) var(--ease-apple-standard);
+
+  /**
+   * Transform (scale, translate, rotate)
+   * For movement and size changes
+   */
+  --transition-transform: transform var(--duration-normal)
+    var(--ease-apple-standard);
+
+  /**
+   * Background Color
+   * For theme changes, hover states
+   */
+  --transition-bg: background-color var(--duration-fast)
+    var(--ease-apple-standard);
+
+  /**
+   * Border Color
+   * For focus states, validation feedback
+   */
+  --transition-border: border-color var(--duration-fast)
+    var(--ease-apple-standard);
+
+  /**
+   * Box Shadow
+   * For depth changes, elevation
+   */
+  --transition-shadow: box-shadow var(--duration-normal)
+    var(--ease-apple-standard);
+
+  /**
+   * All Properties (use sparingly)
+   * Convenient but less performant
+   */
+  --transition-all: all var(--duration-normal) var(--ease-apple-standard);
+
+  /* ========================================
+   * COMBINED TRANSITIONS
+   * Common multi-property transitions
+   * ======================================== */
+
+  /**
+   * Interactive Element
+   * For buttons, links, interactive cards
+   */
+  --transition-interactive: transform var(--duration-fast)
+      var(--ease-apple-standard),
+    background-color var(--duration-fast) var(--ease-apple-standard),
+    box-shadow var(--duration-normal) var(--ease-apple-standard);
+
+  /**
+   * Card Hover
+   * For hoverable cards with depth
+   */
+  --transition-card: transform var(--duration-normal)
+      var(--ease-apple-standard),
+    box-shadow var(--duration-normal) var(--ease-apple-standard);
+
+  /**
+   * Modal/Dialog
+   * For overlay components
+   */
+  --transition-modal: opacity var(--duration-normal)
+      var(--ease-apple-standard),
+    transform var(--duration-normal) var(--ease-apple-standard);
+}
+
+/**
+ * ========================================
+ * ACCESSIBILITY: REDUCED MOTION
+ * Respects user preference for minimal animation
+ * ========================================
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Drastically reduce all durations */
+    --duration-instant: 0.01ms;
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-slower: 0.01ms;
+
+    /* Keep opacity transitions for essential feedback */
+    --transition-fade: opacity 100ms var(--ease-apple-standard);
+  }
+
+  /*
+   * Disable all animations and transitions
+   * Except opacity for visual feedback
+   */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Preserve opacity transitions for accessibility */
+  .transition-opacity,
+  [class*='fade'],
+  [class*='opacity'] {
+    transition-duration: 100ms !important;
+  }
+}
