@@ -347,4 +347,42 @@ describe('GlassSurface', () => {
       expect(element.className).toContain('transition-all');
     });
   });
+
+  describe('Accessibility - WCAG 2.1 AA Compliance', () => {
+    it('should apply glass-text class for improved legibility', () => {
+      const { container } = render(
+        <GlassSurface>
+          <p>Content</p>
+        </GlassSurface>
+      );
+      const element = container.firstChild as HTMLElement;
+      expect(element.className).toContain('glass-text');
+    });
+
+    it('should maintain glass-text class across all intensity levels', () => {
+      const intensities = ['light', 'medium', 'heavy'] as const;
+
+      intensities.forEach((intensity) => {
+        const { container } = render(
+          <GlassSurface intensity={intensity}>
+            <p>Content</p>
+          </GlassSurface>
+        );
+        const element = container.firstChild as HTMLElement;
+        expect(element.className).toContain('glass-text');
+      });
+    });
+
+    it('should allow custom className to override glass-text if needed', () => {
+      const { container } = render(
+        <GlassSurface className="glass-text-strong">
+          <p>Content with stronger shadow</p>
+        </GlassSurface>
+      );
+      const element = container.firstChild as HTMLElement;
+      // Both classes should be present, tailwind-merge will handle precedence
+      expect(element.className).toContain('glass-text');
+      expect(element.className).toContain('glass-text-strong');
+    });
+  });
 });
