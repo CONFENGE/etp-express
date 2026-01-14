@@ -6,6 +6,9 @@ import './index.css';
 import { initSentry } from './config/sentry.config';
 import { ErrorFallback } from './components/ErrorFallback';
 
+// Import touch target audit script (auto-runs in dev mode)
+import './scripts/audit-touch-targets';
+
 // Initialize Sentry before rendering
 initSentry();
 
