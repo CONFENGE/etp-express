@@ -208,7 +208,15 @@ export function CreateETPWizard({
   return (
     <div className="flex flex-col h-full">
       {/* Progress Section */}
-      <div className="space-y-4 pb-4 border-b">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-4)',
+          paddingBottom: 'var(--space-4)',
+        }}
+        className="border-b"
+      >
         {/* Step Indicators - #1330: Only show visible steps (excluding skipped ones) */}
         <div className="flex justify-between items-center">
           {visibleSteps.map((step, displayIndex) => {
@@ -274,13 +282,26 @@ export function CreateETPWizard({
         onKeyDown={handleKeyDown}
         className="flex-1 flex flex-col"
       >
-        <div className="flex-1 py-4 overflow-y-auto max-h-[400px]">
+        <div
+          style={{
+            paddingTop: 'var(--space-4)',
+            paddingBottom: 'var(--space-4)',
+          }}
+          className="flex-1 overflow-y-auto max-h-[400px]"
+        >
           {renderStep()}
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between pt-4 border-t">
-          <div className="flex gap-2">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: 'var(--space-4)',
+          }}
+          className="border-t"
+        >
+          <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
             <Button
               type="button"
               variant="outline"

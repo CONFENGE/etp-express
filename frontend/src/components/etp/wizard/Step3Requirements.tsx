@@ -28,7 +28,13 @@ export function Step3Requirements({ form }: Step3RequirementsProps) {
   const garantiaExigidaValue = watch('garantiaExigida') || '';
 
   return (
-    <div className="space-y-4">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-4)',
+      }}
+    >
       <FormField
         label="Requisitos Técnicos"
         name="requisitosTecnicos"
