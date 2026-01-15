@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 741/791 (93.7%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 742/791 (93.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | #1504 | Feature  | [#1265] Add ComplianceBadge component for visual compliance status (#1265) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1503 | Feature  | [#1191] Create dedicated staging environment for E2E tests (#1191) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1502 | Test     | [#1494] Implementar suporte a prefers-reduced-motion global (#1494) ✅ - **Score 100/100 - Auto-merged - EPIC #1430 COMPLETE (6/6)** |
 | 2026-01-15 | #1501 | Feature  | [#1493] Implementar animações em Form Inputs - Apple HIG Motion Design (#1493) ✅ - **Score 100/100 - Auto-merged** |
@@ -406,7 +407,7 @@ Nenhum bug P0 aberto! 🎉
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 8/17   | 47% 🟡     | +R$ 500/mês           |
-| M12: Compliance TCE            | 2/7    | 29% 🟡     | +R$ 1.000/mês premium |
+| M12: Compliance TCE            | 3/7    | 43% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
@@ -463,7 +464,7 @@ Features:
 - Justificativa automática de metodologia
 - Relatório formal de pesquisa
 
-#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 1/7
+#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 3/7
 
 Validação automática contra critérios TCU/TCE.
 
@@ -473,7 +474,7 @@ Validação automática contra critérios TCU/TCE.
 |       | ↳ #1262 Mapear criterios TCU/TCE              | ✅     |
 |       | ↳ #1263 Engine de validacao ETP               | 🔴     |
 |       | ↳ #1264 Relatorio de conformidade             | 🔴     |
-|       | ↳ #1265 Selo de Conformidade visual           | 🔴     |
+|       | ↳ #1265 Selo de Conformidade visual           | ✅     |
 |       | ↳ #1266 Alertas tempo real                    | 🔴     |
 |       | ↳ #1267 Dashboard de compliance do órgão      | ✅     |
 
