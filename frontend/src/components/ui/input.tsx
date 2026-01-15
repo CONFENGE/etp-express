@@ -39,10 +39,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           // Placeholder with WCAG 2.1 AA compliant color (4.5:1 contrast ratio)
           'placeholder:text-text-apple-placeholder',
           // Apple-style transition with GPU acceleration
-          'transition-all duration-200 ease-out',
-          // Focus state with Apple accent and glow effect
+          // Separate transitions for better control
+          'transition-[border-color,box-shadow] duration-normal ease-apple-spring',
+          // Focus state with Apple accent and animated glow effect
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 focus-visible:border-apple-accent',
           'focus-visible:shadow-[0_0_0_4px_rgba(0,122,255,0.1)]',
+          'focus-visible:animate-fade-in',
           // Disabled state - WCAG 2.1 AA: using specific colors instead of opacity for contrast
           'disabled:cursor-not-allowed disabled:bg-surface-secondary disabled:text-text-apple-tertiary',
           // Hover state
