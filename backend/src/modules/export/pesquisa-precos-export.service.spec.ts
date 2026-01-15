@@ -209,7 +209,8 @@ describe('PesquisaPrecosExportService', () => {
 
   describe('exportToJSON', () => {
     it('should export pesquisa de precos to JSON successfully', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -220,9 +221,7 @@ describe('PesquisaPrecosExportService', () => {
       expect(result).toBeDefined();
       expect(pesquisa).toBeDefined();
       expect(pesquisa.titulo).toBe(mockPesquisaPrecos.titulo);
-      expect(pesquisa.metodologia).toBe(
-        mockPesquisaPrecos.metodologia,
-      );
+      expect(pesquisa.metodologia).toBe(mockPesquisaPrecos.metodologia);
       expect(pesquisa.valorTotalEstimado).toBe(
         mockPesquisaPrecos.valorTotalEstimado,
       );
@@ -253,7 +252,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should include all methodology fields in JSON export', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -272,7 +272,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should include fontes consultadas in JSON export', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -287,7 +288,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should include statistical fields in JSON export', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -321,7 +323,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should generate PDF successfully', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -354,7 +357,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should include header with IN 65/2021 reference', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -370,7 +374,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should close browser even if PDF generation fails', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -385,7 +390,8 @@ describe('PesquisaPrecosExportService', () => {
     });
 
     it('should set correct PDF margins', async () => {
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
@@ -541,7 +547,8 @@ describe('PesquisaPrecosExportService', () => {
       };
       (puppeteer.launch as jest.Mock).mockResolvedValue(mockBrowser);
 
-      const queryBuilderMock = createPesquisaQueryBuilderMock(mockPesquisaPrecos);
+      const queryBuilderMock =
+        createPesquisaQueryBuilderMock(mockPesquisaPrecos);
       mockPesquisaPrecosRepository.createQueryBuilder.mockReturnValue(
         queryBuilderMock,
       );
