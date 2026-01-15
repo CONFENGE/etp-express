@@ -61,12 +61,12 @@ const METODOLOGIA_TO_ARTIGO: Record<MetodologiaPesquisa, string> = {
  */
 const METODOLOGIA_LABELS: Record<MetodologiaPesquisa, string> = {
   [MetodologiaPesquisa.PAINEL_PRECOS]: 'Painel de Precos (Gov.br)',
-  [MetodologiaPesquisa.CONTRATACOES_SIMILARES]:
-    'Contratacoes Similares (PNCP)',
+  [MetodologiaPesquisa.CONTRATACOES_SIMILARES]: 'Contratacoes Similares (PNCP)',
   [MetodologiaPesquisa.MIDIA_ESPECIALIZADA]:
     'Midia Especializada (SINAPI/SICRO)',
   [MetodologiaPesquisa.SITES_ELETRONICOS]: 'Sites Eletronicos Especializados',
-  [MetodologiaPesquisa.PESQUISA_FORNECEDORES]: 'Pesquisa Direta com Fornecedores',
+  [MetodologiaPesquisa.PESQUISA_FORNECEDORES]:
+    'Pesquisa Direta com Fornecedores',
   [MetodologiaPesquisa.NOTAS_FISCAIS]: 'Notas Fiscais Eletronicas',
 };
 
@@ -342,8 +342,7 @@ export class PesquisaPrecosExportService {
           let outlier = false;
           if (item.media && item.precos && item.precos.length > 2) {
             const valores = item.precos.map((p) => p.valor);
-            const mean =
-              valores.reduce((a, b) => a + b, 0) / valores.length;
+            const mean = valores.reduce((a, b) => a + b, 0) / valores.length;
             const stdDev = Math.sqrt(
               valores.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) /
                 valores.length,
@@ -392,9 +391,7 @@ export class PesquisaPrecosExportService {
       pesquisaId,
       organizationId,
     );
-    const etp = pesquisa.etpId
-      ? await this.getEtpById(pesquisa.etpId)
-      : null;
+    const etp = pesquisa.etpId ? await this.getEtpById(pesquisa.etpId) : null;
     const termoReferencia = pesquisa.termoReferenciaId
       ? await this.getTermoReferenciaById(pesquisa.termoReferenciaId)
       : null;
