@@ -107,9 +107,8 @@ describe('Button', () => {
     it('should use smooth micro-interaction transitions', () => {
       render(<Button>Transition</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('transition-all');
-      expect(button).toHaveClass('duration-150');
-      expect(button).toHaveClass('ease-out');
+      // Uses Apple HIG motion tokens via CSS variable
+      expect(button.className).toContain('[transition:var(--transition-interactive)]');
     });
 
     it('should have active scale effect for tactile feedback', () => {
