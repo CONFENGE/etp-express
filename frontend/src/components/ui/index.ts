@@ -30,6 +30,8 @@ export * from './form-field';
 export * from './input';
 export * from './label';
 export * from './progress';
+export * from './radio-group';
+export * from './switch';
 export * from './select';
 export * from './skeleton';
 export * from './tabs';
