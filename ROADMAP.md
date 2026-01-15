@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 733/785 (93.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-14 | **Progresso:** 734/791 (92.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-14 | #1495 | Feature  | [#1489] Add Apple HIG motion design tokens (#1489) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1486 | Test     | [#1480] WCAG 2.1 AA Audit & Documentation - Apple HIG Accessibility 6/6 COMPLETE (#1480) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1485 | Feature  | [#1479] Implement color accessibility - WCAG 2.1 AA compliance (#1479) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1484 | Feature  | [#1478] Implement focus management and keyboard navigation (#1478) ✅ - **Score 100/100 - Auto-merged** |
@@ -269,6 +270,12 @@ Nenhum bug P0 aberto! 🎉
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | ✅     |
 | #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
 | #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
+|       | ↳ #1489 Criar design tokens Motion (easing + durations)  | Tokens      | ✅     |
+|       | ↳ #1490 Implementar micro-interações em Buttons          | Component   | 🔴     |
+|       | ↳ #1491 Implementar micro-interações em Cards            | Component   | 🔴     |
+|       | ↳ #1492 Implementar animações em Modals/Dropdowns        | Component   | 🔴     |
+|       | ↳ #1493 Implementar animações em Form Inputs             | Component   | 🔴     |
+|       | ↳ #1494 Implementar reduced motion global                | A11y        | 🔴     |
 | #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | ✅     |
 |       | ↳ #1475 Contraste WCAG AA com Liquid Glass               | Contrast    | ✅     |
 |       | ↳ #1476 Touch targets >= 44x44px                         | Touch       | ✅     |
@@ -277,7 +284,7 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1479 Color accessibility (não usar cor único indicador)| Color      | ✅     |
 |       | ↳ #1480 Testes WCAG e documentação                       | Tests       | ✅     |
 
-**Progresso Design System:** 16/18 (88.9%)
+**Progresso Design System:** 17/24 (70.8%)
 
 ### Principais Diretrizes Apple HIG 2025
 
