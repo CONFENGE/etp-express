@@ -1,0 +1,168 @@
+name: Lighthouse Accessibility Audit
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - '.github/workflows/lighthouse-ci.yml'
+      - 'lighthouserc.json'
+
+permissions:
+  contents: read
+  pull-requests: write
+  deployments: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for Railway Preview Deployment
+        id: railway-deployment
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+          check_interval: 10
+        continue-on-error: true
+
+      - name: Extract Railway Preview URL (fallback)
+        id: preview-url
+        if: steps.railway-deployment.outcome == 'failure'
+        run: |
+          # Railway creates deployment via GitHub Deployments API
+          # Get the latest deployment URL
+          DEPLOYMENT_URL=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/deployments \
+            --jq '[.[] | select(.environment == "Preview" or .environment == "pr")] | .[0].payload.web_url // empty')
+
+          if [ -z "$DEPLOYMENT_URL" ]; then
+            echo "No Railway preview deployment found. Skipping Lighthouse audit."
+            echo "preview_url=" >> $GITHUB_OUTPUT
+            echo "skip_lighthouse=true" >> $GITHUB_OUTPUT
+          else
+            echo "preview_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+            echo "skip_lighthouse=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine Preview URL
+        id: url
+        run: |
+          if [ "${{ steps.railway-deployment.outputs.url }}" != "" ]; then
+            echo "url=${{ steps.railway-deployment.outputs.url }}" >> $GITHUB_OUTPUT
+            echo "Found preview URL from wait-for-vercel: ${{ steps.railway-deployment.outputs.url }}"
+          elif [ "${{ steps.preview-url.outputs.preview_url }}" != "" ]; then
+            echo "url=${{ steps.preview-url.outputs.preview_url }}" >> $GITHUB_OUTPUT
+            echo "Found preview URL from fallback: ${{ steps.preview-url.outputs.preview_url }}"
+          else
+            echo "url=" >> $GITHUB_OUTPUT
+            echo "No preview URL found - will skip Lighthouse audit"
+          fi
+
+      - name: Wait for Preview to be Ready
+        if: steps.url.outputs.url != ''
+        run: |
+          PREVIEW_URL="${{ steps.url.outputs.url }}"
+          echo "Waiting for preview deployment at: $PREVIEW_URL"
+
+          # Wait up to 3 minutes for the preview to respond
+          timeout 180 bash -c "
+            until curl -f -s -o /dev/null -w '%{http_code}' \"$PREVIEW_URL\" | grep -qE '^(200|30[0-9])$'; do
+              echo 'Waiting for preview to be ready...'
+              sleep 5
+            done
+          " || {
+            echo "Preview deployment did not become ready in time"
+            exit 1
+          }
+
+          echo "Preview deployment is ready!"
+
+      - name: Run Lighthouse CI
+        if: steps.url.outputs.url != ''
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.url.outputs.url }}/
+            ${{ steps.url.outputs.url }}/login
+            ${{ steps.url.outputs.url }}/dashboard
+            ${{ steps.url.outputs.url }}/etps
+            ${{ steps.url.outputs.url }}/etps/new
+          configPath: './lighthouserc.json'
+          temporaryPublicStorage: true
+          uploadArtifacts: true
+          runs: 3
+
+      - name: Comment PR with Lighthouse Results
+        if: github.event_name == 'pull_request' && steps.url.outputs.url != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const previewUrl = '${{ steps.url.outputs.url }}';
+
+            const comment = `## ♿ Lighthouse Accessibility Audit
+
+            **Preview URL:** ${previewUrl}
+
+            Lighthouse accessibility score must be >= 90 (WCAG 2.1 AA compliance).
+
+            📊 **Results:** 5 URLs tested
+            - Home (/)
+            - Login (/login)
+            - Dashboard (/dashboard)
+            - ETPs List (/etps)
+            - Create ETP (/etps/new)
+
+            🔗 **Detailed Reports:** Check workflow artifacts for full Lighthouse reports.
+
+            ---
+            *Automated by Lighthouse CI - Issue #1487*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Comment PR - No Preview Deployment
+        if: github.event_name == 'pull_request' && steps.url.outputs.url == ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `## ♿ Lighthouse Accessibility Audit - Skipped
+
+            ⚠️ No Railway preview deployment found for this PR.
+
+            **Possible reasons:**
+            - Railway preview deployments not configured
+            - Deployment still in progress (retry workflow)
+            - Railway integration not enabled
+
+            **Manual verification required:**
+            - Use [axe DevTools](https://www.deque.com/axe/devtools/) browser extension
+            - Run \`npm run test\` (includes Playwright + axe tests)
+            - Run \`npm run test:a11y\` (Pa11y CI tests)
+
+            ---
+            *Automated by Lighthouse CI - Issue #1487*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

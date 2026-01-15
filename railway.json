@@ -7,5 +7,17 @@
     "numReplicas": 2,
     "restartPolicyMaxRetries": 10,
     "restartPolicyType": "ON_FAILURE"
+  },
+  "environments": {
+    "production": {
+      "deploy": {
+        "numReplicas": 2
+      }
+    },
+    "pr": {
+      "deploy": {
+        "numReplicas": 1
+      }
+    }
   }
 }

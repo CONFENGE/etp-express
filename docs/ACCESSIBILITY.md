@@ -428,12 +428,37 @@ npm run audit:a11y
 
 #### 3. Lighthouse CI
 
-Rodado automaticamente em PRs via GitHub Actions.
+Rodado automaticamente em PRs via GitHub Actions contra Railway preview deployments.
 
 **Arquivo:** `.github/workflows/lighthouse-ci.yml`
 
-- Score mínimo: 90/100
-- Foco em acessibilidade
+**Configuração:**
+- Score mínimo: 90/100 (WCAG 2.1 AA compliance)
+- Foco exclusivo em acessibilidade
+- 3 runs por URL para resultados estáveis
+- Testa contra Railway preview deployments (não localhost)
+- Aguarda preview estar pronto antes de auditar
+
+**URLs testadas:**
+- Home (/)
+- Login (/login)
+- Dashboard (/dashboard)
+- ETPs List (/etps)
+- Create ETP (/etps/new)
+
+**Como funciona:**
+1. PR é criado
+2. Railway cria preview deployment automaticamente
+3. Workflow aguarda preview estar pronto
+4. Lighthouse CI executa auditorias em todas as 5 URLs
+5. Resultados são comentados no PR automaticamente
+
+**Troubleshooting:**
+- Se preview deployment não for encontrado, o workflow comenta no PR com instruções para testes manuais
+- Logs detalhados disponíveis nos artifacts do workflow
+- Preview deployments são criados automaticamente via Railway GitHub integration
+
+**Issue:** #1487
 
 ### Testes Manuais
 
