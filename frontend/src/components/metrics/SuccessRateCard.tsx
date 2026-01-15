@@ -104,7 +104,31 @@ export function SuccessRateCard({
     rateDiff > 0 ? `+${rateDiff.toFixed(1)}%` : `${rateDiff.toFixed(1)}%`;
 
   return (
-    <GlassSurface intensity="medium" className={cn('shadow-lg', className)} data-testid="success-rate-card">
+    <GlassSurface
+      intensity="medium"
+      className={cn('shadow-lg group cursor-pointer', className)}
+      data-testid="success-rate-card"
+      style={{
+        transition: `
+          transform var(--duration-normal) var(--ease-apple-standard),
+          box-shadow var(--duration-normal) var(--ease-apple-standard)
+        `,
+      }}
+      onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))';
+      }}
+      onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+        e.currentTarget.style.boxShadow = '';
+      }}
+      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'scale(0.97)';
+      }}
+      onMouseUp={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+      }}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Taxa de Sucesso</CardTitle>
         <Target className="h-4 w-4 text-muted-foreground" />
