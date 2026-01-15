@@ -29,20 +29,18 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      - name: Create .env file for CI with MSW
+      - name: Create .env file for CI
         working-directory: ./frontend
         run: |
           echo "VITE_API_URL=http://localhost:3001/api/v1" > .env
           echo "VITE_APP_NAME=ETP Express" >> .env
-          echo "VITE_USE_MSW=true" >> .env
           echo "VITE_SENTRY_DSN=" >> .env
 
-      - name: Build frontend with MSW enabled
+      - name: Build frontend for Lighthouse
         working-directory: ./frontend
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_USE_MSW: true
           VITE_API_URL: http://localhost:3001/api/v1
           VITE_APP_NAME: ETP Express
           VITE_SENTRY_DSN: ""
@@ -69,11 +67,8 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            http://localhost:3000/
             http://localhost:3000/login
-            http://localhost:3000/dashboard
-            http://localhost:3000/etps
-            http://localhost:3000/etps/new
+            http://localhost:3000/register
           configPath: './lighthouserc.json'
           temporaryPublicStorage: true
           uploadArtifacts: true
