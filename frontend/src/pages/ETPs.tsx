@@ -34,6 +34,7 @@ import { ETP_STATUS_LABELS, ETP_STATUS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { useUndoToast } from '@/hooks/useUndoToast';
 import { UndoToastContainer } from '@/components/ui/undo-toast';
+import { ComplianceBadge } from '@/components/etp/ComplianceBadge';
 import { ETP } from '@/types/etp';
 
 export function ETPs() {
@@ -187,6 +188,12 @@ export function ETPs() {
                       {etp.title}
                     </CardTitle>
                     <div className="flex items-center gap-2">
+                      <ComplianceBadge
+                        etpId={etp.id}
+                        size="sm"
+                        showScore
+                        showTooltip
+                      />
                       <Badge className={ETP_STATUS_COLORS[etp.status]}>
                         {ETP_STATUS_LABELS[etp.status]}
                       </Badge>
