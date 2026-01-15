@@ -39,7 +39,8 @@ export function ETPCard({ etp, onDelete }: ETPCardProps) {
       }}
       onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
         e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))';
+        e.currentTarget.style.boxShadow =
+          'var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))';
       }}
       onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
         e.currentTarget.style.transform = 'translateY(0) scale(1)';
