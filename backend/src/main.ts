@@ -38,10 +38,21 @@ async function bootstrap() {
     logger: winstonLogger,
   });
 
-  const isProduction = process.env.NODE_ENV === 'production';
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const isProduction = nodeEnv === 'production';
+  const isStaging = nodeEnv === 'staging';
+
   logger.log(
-    `Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`,
+    `Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${nodeEnv})`,
   );
+
+  // Log rate limiting status (#1191 - Staging Environment)
+  const rateLimitEnabled = process.env.RATE_LIMIT_ENABLED !== 'false';
+  if (isStaging) {
+    logger.log(
+      `Rate limiting: ${rateLimitEnabled ? 'ENABLED' : 'DISABLED'} (staging environment)`,
+    );
+  }
 
   // Enable graceful shutdown hooks (#607)
   // This ensures NestJS lifecycle hooks (OnApplicationShutdown) are called
@@ -58,7 +69,6 @@ async function bootstrap() {
 
   // CORS - Defense in depth validation (#599)
   // Joi schema already enforces CORS_ORIGINS in production, but we add explicit check here
-  const nodeEnv = configService.get('NODE_ENV');
   const corsOriginsRaw = configService.get('CORS_ORIGINS');
 
   if (nodeEnv === 'production' && !corsOriginsRaw) {
