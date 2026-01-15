@@ -94,6 +94,100 @@ npm run test:lighthouse
 # Install: https://www.deque.com/axe/devtools/
 ```
 
+## Reduced Motion Support
+
+### Overview
+
+The application respects the `prefers-reduced-motion` user preference, which allows users with vestibular disorders or motion sensitivity to disable animations system-wide.
+
+### Implementation
+
+When `prefers-reduced-motion: reduce` is detected, the following changes are automatically applied:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Specific animation classes are disabled */
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce,
+  .animate-fadeIn {
+    animation: none !important;
+  }
+
+  /* Opacity transitions are preserved for usability */
+  .transition-opacity {
+    transition-duration: 150ms !important;
+  }
+}
+```
+
+### Preserved Transitions
+
+While most animations are disabled, **opacity transitions are intentionally preserved** at 150ms for usability:
+
+- Provides essential feedback for state changes (hover, focus, loading)
+- Does not trigger vestibular issues (no position/scale changes)
+- Meets Apple HIG guidance on "essential motion"
+
+### Testing
+
+#### Manual Testing
+
+**macOS:**
+```bash
+System Settings → Accessibility → Display → Reduce Motion
+```
+
+**Windows:**
+```bash
+Settings → Accessibility → Visual effects → Animation effects (OFF)
+```
+
+**Linux (GNOME):**
+```bash
+Settings → Accessibility → Seeing → Reduce Animation
+```
+
+#### Automated Testing
+
+The E2E test suite validates reduced motion support:
+
+```typescript
+// e2e/accessibility.spec.ts
+test('should respect prefers-reduced-motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  // Validates that animations are < 100ms
+});
+```
+
+Run tests:
+```bash
+npm run test:e2e -- accessibility.spec.ts
+```
+
+### Browser Developer Tools
+
+Test in browser without changing OS settings:
+
+**Chrome DevTools:**
+1. Open DevTools (F12)
+2. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
+3. Type "Rendering" → Enable "Emulate CSS media feature prefers-reduced-motion"
+
+**Firefox DevTools:**
+1. Open DevTools (F12)
+2. Press `Cmd+Shift+M` (Mac) or `Ctrl+Shift+M` (Windows/Linux)
+3. Click Settings → "prefers-reduced-motion: reduce"
+
 ### Browser Support
 
 - ✅ Chrome/Edge 91+
@@ -105,10 +199,14 @@ npm run test:lighthouse
 
 - [WCAG 2.1 - Contrast (Minimum) 1.4.3](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 - [WCAG 2.1 - Contrast (Enhanced) 1.4.6](https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced.html)
+- [WCAG 2.3.3 - Animation from Interactions (AAA)](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions.html)
 - [Apple HIG - Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)
+- [Apple HIG - Motion](https://developer.apple.com/design/human-interface-guidelines/motion)
 - [Apple HIG - Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
 
 ### Related Issues
 
+- Parent: #1430 - Implementar Micro-interações e Animações Apple HIG (Motion Design)
 - Parent: #1431 - Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)
-- Current: #1475 - Implementar contraste WCAG AA com Liquid Glass
+- Current: #1494 - Implementar suporte a prefers-reduced-motion global
+- Previous: #1475 - Implementar contraste WCAG AA com Liquid Glass

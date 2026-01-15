@@ -377,4 +377,71 @@ test.describe('Accessibility - Specific Features', () => {
 
     expect(hasHorizontalScroll).toBe(false);
   });
+
+  /**
+   * Testa suporte a prefers-reduced-motion
+   *
+   * @wcag 2.3.3 Animation from Interactions (Level AAA)
+   * @applehig Motion - Accessibility - Reduced Motion
+   *
+   * @description Usuários com sensibilidade a movimento podem configurar
+   * prefers-reduced-motion no sistema operacional. Este teste valida que
+   * todas as animações são desabilitadas quando esta preferência está ativa.
+   */
+  test('should respect prefers-reduced-motion', async ({ page }) => {
+    // Emulate reduced motion preference
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    // Navigate to page with animations
+    await page.goto('/dashboard');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Get first button element
+    const button = page.locator('button').first();
+    await button.hover();
+
+    // Verify that transition duration is minimal (< 100ms)
+    const transitionDuration = await button.evaluate((el) => {
+      const styles = getComputedStyle(el);
+      return styles.transitionDuration;
+    });
+
+    // Parse transition duration (e.g., "0.01ms" or "0.01s")
+    const durationInMs = transitionDuration.includes('ms')
+      ? parseFloat(transitionDuration)
+      : parseFloat(transitionDuration) * 1000;
+
+    // Expect transition to be almost instant (< 100ms)
+    expect(durationInMs).toBeLessThan(100);
+
+    // Verify animation duration is also minimal
+    const animationDuration = await button.evaluate((el) => {
+      const styles = getComputedStyle(el);
+      return styles.animationDuration;
+    });
+
+    const animDurationInMs = animationDuration.includes('ms')
+      ? parseFloat(animationDuration)
+      : parseFloat(animationDuration) * 1000;
+
+    // Expect animation to be almost instant (< 100ms)
+    expect(animDurationInMs).toBeLessThan(100);
+
+    // Test opacity transition is preserved (should be between 100-200ms)
+    const opacityElement = page.locator('.transition-opacity').first();
+    if (await opacityElement.count() > 0) {
+      const opacityTransition = await opacityElement.evaluate((el) => {
+        const styles = getComputedStyle(el);
+        return styles.transitionDuration;
+      });
+
+      const opacityDurationInMs = opacityTransition.includes('ms')
+        ? parseFloat(opacityTransition)
+        : parseFloat(opacityTransition) * 1000;
+
+      // Opacity should be preserved (around 150ms as per accessibility.css)
+      expect(opacityDurationInMs).toBeGreaterThanOrEqual(100);
+      expect(opacityDurationInMs).toBeLessThanOrEqual(200);
+    }
+  });
 });
