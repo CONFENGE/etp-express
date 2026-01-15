@@ -31,6 +31,7 @@ import {
 } from '@/components/metrics';
 import { ETP_STATUS_LABELS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
+import { ComplianceBadge } from '@/components/etp/ComplianceBadge';
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -338,6 +339,12 @@ export function Dashboard() {
                               </p>
                             )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+                              <ComplianceBadge
+                                etpId={etp.id}
+                                size="sm"
+                                showScore
+                                showTooltip
+                              />
                               <span className="text-xs bg-secondary px-2 py-1 rounded">
                                 {ETP_STATUS_LABELS[etp.status]}
                               </span>
