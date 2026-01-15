@@ -23,19 +23,20 @@ on:
       - 'package-lock.json'
       - '.github/workflows/playwright.yml'
 
-# Railway E2E Testing Configuration (#1170)
-# Tests run against Railway production environment
+# Railway E2E Testing Configuration (#1170, #1191)
+# Tests run against Railway STAGING environment (isolated from production)
 # See playwright.config.ts for how these env vars are used
+#
+# Staging Environment Benefits (#1191):
+# - Isolated database (no data pollution)
+# - Rate limiting DISABLED (no 429 errors)
+# - Dedicated test users (no auth conflicts)
+# - Safe for destructive tests
 #
 # Performance Optimizations:
 # - Sharding: Tests split across 3 parallel runners for ~60% faster execution
 # - AI tests excluded: sections-generation-*.spec.ts run in nightly workflow
-# - Rate limiting delays minimized with storage state session reuse
-#
-# Rate Limiting Strategy (#1186):
-# - Single worker per shard to serialize test execution within each shard
-# - Inter-test delays in Auth tests (1s) via rate-limit-helper.ts
-# - Post-login delays (500ms) to respect 5 req/min limit on /auth/login
+# - Rate limiting disabled on staging (no delays needed)
 
 jobs:
   test:
@@ -46,22 +47,26 @@ jobs:
       matrix:
         shard: [1/3, 2/3, 3/3]
     env:
-      # Railway URLs
-      E2E_BASE_URL: https://etp-express-frontend-production.up.railway.app
-      E2E_API_URL: https://etp-express-backend-production.up.railway.app
-      # Single worker to avoid rate limiting (429 errors) - see #1186
+      # Railway Staging URLs (#1191 - Isolated E2E environment)
+      # Fallback to production URLs if staging secrets not set (backward compatibility)
+      E2E_BASE_URL: ${{ secrets.E2E_BASE_URL_STAGING || 'https://etp-express-frontend-production.up.railway.app' }}
+      E2E_API_URL: ${{ secrets.E2E_API_URL_STAGING || 'https://etp-express-backend-production.up.railway.app' }}
+
+      # Playwright workers: 1 worker per shard (safer for staging)
       PLAYWRIGHT_WORKERS: 1
-      # Test credentials from GitHub secrets
-      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
-      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
-      E2E_DEMO_EMAIL: ${{ secrets.E2E_DEMO_EMAIL }}
-      E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD }}
-      E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL }}
-      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD }}
-      E2E_SYSTEM_ADMIN_EMAIL: ${{ secrets.E2E_SYSTEM_ADMIN_EMAIL }}
-      E2E_SYSTEM_ADMIN_PASSWORD: ${{ secrets.E2E_SYSTEM_ADMIN_PASSWORD }}
-      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
-      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+
+      # Test credentials from GitHub secrets (staging-specific users)
+      # Fallback to production credentials if staging secrets not set
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL_STAGING || secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD_STAGING || secrets.E2E_ADMIN_PASSWORD }}
+      E2E_DEMO_EMAIL: ${{ secrets.E2E_DEMO_EMAIL_STAGING || secrets.E2E_DEMO_EMAIL }}
+      E2E_DEMO_PASSWORD: ${{ secrets.E2E_DEMO_PASSWORD_STAGING || secrets.E2E_DEMO_PASSWORD }}
+      E2E_MANAGER_EMAIL: ${{ secrets.E2E_MANAGER_EMAIL_STAGING || secrets.E2E_MANAGER_EMAIL }}
+      E2E_MANAGER_PASSWORD: ${{ secrets.E2E_MANAGER_PASSWORD_STAGING || secrets.E2E_MANAGER_PASSWORD }}
+      E2E_SYSTEM_ADMIN_EMAIL: ${{ secrets.E2E_SYSTEM_ADMIN_EMAIL_STAGING || secrets.E2E_SYSTEM_ADMIN_EMAIL }}
+      E2E_SYSTEM_ADMIN_PASSWORD: ${{ secrets.E2E_SYSTEM_ADMIN_PASSWORD_STAGING || secrets.E2E_SYSTEM_ADMIN_PASSWORD }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL_STAGING || secrets.E2E_USER_EMAIL }}
+      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD_STAGING || secrets.E2E_USER_PASSWORD }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
