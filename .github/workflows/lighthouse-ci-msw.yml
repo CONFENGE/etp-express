@@ -42,6 +42,10 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          VITE_USE_MSW: true
+          VITE_API_URL: http://localhost:3001/api/v1
+          VITE_APP_NAME: ETP Express
+          VITE_SENTRY_DSN: ""
 
       - name: Start preview server
         working-directory: ./frontend
