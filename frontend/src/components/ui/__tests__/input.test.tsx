@@ -57,12 +57,12 @@ describe('Input', () => {
       expect(input).toHaveClass('placeholder:text-text-apple-placeholder');
     });
 
-    it('should use smooth transitions with GPU acceleration', () => {
+    it('should use smooth transitions with Apple HIG motion tokens', () => {
       render(<Input data-testid="styled-input" />);
       const input = screen.getByTestId('styled-input');
-      expect(input).toHaveClass('transition-all');
-      expect(input).toHaveClass('duration-200');
-      expect(input).toHaveClass('ease-out');
+      expect(input).toHaveClass('transition-[border-color,box-shadow]');
+      expect(input).toHaveClass('duration-normal');
+      expect(input).toHaveClass('ease-apple-spring');
     });
 
     it('should have focus ring with Apple accent', () => {
