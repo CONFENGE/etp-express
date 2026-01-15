@@ -181,7 +181,34 @@ export function ScoreCard({
   );
 
   return (
-    <GlassSurface intensity="medium" className={cn('overflow-hidden shadow-lg', className)}>
+    <GlassSurface
+      intensity="medium"
+      className={cn(
+        'overflow-hidden shadow-lg group cursor-pointer',
+        className,
+      )}
+      style={{
+        transition: `
+          transform var(--duration-normal) var(--ease-apple-standard),
+          box-shadow var(--duration-normal) var(--ease-apple-standard)
+        `,
+      }}
+      onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+        e.currentTarget.style.boxShadow =
+          'var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1))';
+      }}
+      onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+        e.currentTarget.style.boxShadow = '';
+      }}
+      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'scale(0.97)';
+      }}
+      onMouseUp={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+      }}
+    >
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
