@@ -5,6 +5,7 @@ import { Etp } from '../../entities/etp.entity';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { PesquisaPrecosController } from './pesquisa-precos.controller';
 import { PesquisaPrecosService } from './pesquisa-precos.service';
+import { PesquisaPrecosExportService } from '../export/pesquisa-precos-export.service';
 import { SinapiModule } from '../gov-api/sinapi/sinapi.module';
 import { SicroModule } from '../gov-api/sicro/sicro.module';
 import { PncpModule } from '../gov-api/pncp/pncp.module';
@@ -47,7 +48,7 @@ import { PriceAggregationModule } from '../gov-api/price-aggregation/price-aggre
     PriceAggregationModule,
   ],
   controllers: [PesquisaPrecosController],
-  providers: [PesquisaPrecosService],
-  exports: [PesquisaPrecosService],
+  providers: [PesquisaPrecosService, PesquisaPrecosExportService],
+  exports: [PesquisaPrecosService, PesquisaPrecosExportService],
 })
 export class PesquisaPrecosModule {}
