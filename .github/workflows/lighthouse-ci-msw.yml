@@ -1,0 +1,123 @@
+name: Lighthouse Accessibility Audit (MSW)
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/lighthouse-ci-msw.yml'
+      - 'lighthouserc.json'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lighthouse-msw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Create .env file for CI with MSW
+        working-directory: ./frontend
+        run: |
+          echo "VITE_API_URL=http://localhost:3001/api/v1" > .env
+          echo "VITE_APP_NAME=ETP Express" >> .env
+          echo "VITE_USE_MSW=true" >> .env
+          echo "VITE_SENTRY_DSN=" >> .env
+
+      - name: Build frontend with MSW enabled
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Start preview server
+        working-directory: ./frontend
+        run: |
+          npm run preview &
+          echo $! > .preview-pid
+          echo "Preview server started with PID: $(cat .preview-pid)"
+
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for preview server at http://localhost:4173"
+          timeout 60 bash -c '
+            until curl -f -s http://localhost:4173 > /dev/null 2>&1; do
+              echo "Waiting for server..."
+              sleep 2
+            done
+          '
+          echo "Preview server is ready!"
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:4173/
+            http://localhost:4173/login
+            http://localhost:4173/dashboard
+            http://localhost:4173/etps
+            http://localhost:4173/etps/new
+          configPath: './lighthouserc.json'
+          temporaryPublicStorage: true
+          uploadArtifacts: true
+          runs: 3
+
+      - name: Stop preview server
+        if: always()
+        working-directory: ./frontend
+        run: |
+          if [ -f .preview-pid ]; then
+            PID=$(cat .preview-pid)
+            echo "Stopping preview server (PID: $PID)"
+            kill $PID || true
+            rm .preview-pid
+          fi
+
+      - name: Comment PR with Lighthouse Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `## ♿ Lighthouse Accessibility Audit (MSW)
+
+            ✅ **Lighthouse tests completed using MSW mocking**
+
+            📊 **Results:** 5 URLs tested with mocked backend
+            - Home (/)
+            - Login (/login)
+            - Dashboard (/dashboard)
+            - ETPs List (/etps)
+            - Create ETP (/etps/new)
+
+            🎯 **Target:** Accessibility score >= 90 (WCAG 2.1 AA compliance)
+
+            🔗 **Detailed Reports:** Check workflow artifacts for full Lighthouse reports.
+
+            ℹ️ **Note:** Tests use MSW (Mock Service Worker) to simulate backend responses without requiring a live backend deployment.
+
+            ---
+            *Automated by Lighthouse CI with MSW - Issue #1488*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
