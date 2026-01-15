@@ -29,10 +29,16 @@ const DialogOverlay = React.forwardRef<
     className={cn(
       // Liquid Glass: backdrop with blur sutil
       'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm',
-      // Animation
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      // Animation with Apple HIG tokens
+      'data-[state=open]:animate-in data-[state=closed]:animate-out',
+      'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className,
     )}
+    style={{
+      transitionProperty: 'opacity',
+      transitionDuration: 'var(--duration-normal)',
+      transitionTimingFunction: 'var(--ease-apple-standard)',
+    }}
     {...props}
   />
 ));
@@ -57,8 +63,7 @@ const DialogContent = React.forwardRef<
         'shadow-2xl',
         // Rounded corners (Apple concentricity)
         'rounded-3xl',
-        // Animation with Apple-style duration and easing
-        'duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
+        // Animation with Apple HIG motion tokens
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -69,6 +74,10 @@ const DialogContent = React.forwardRef<
       style={{
         gap: 'var(--space-4)',
         padding: 'var(--space-6)', // Mobile: 24px | Desktop: Same (can be overridden via media query if needed)
+        // Apple HIG Motion Design tokens (fade + scale)
+        transitionProperty: 'opacity, transform',
+        transitionDuration: 'var(--duration-normal)', // 200ms
+        transitionTimingFunction: 'var(--ease-apple-standard)', // cubic-bezier(0.25, 0.1, 0.25, 1)
       }}
       {...props}
     >
@@ -78,8 +87,6 @@ const DialogContent = React.forwardRef<
           // WCAG 2.5.5: 44x44px minimum touch target
           'absolute rounded-apple min-h-touch min-w-touch',
           'flex items-center justify-center opacity-70',
-          // Apple-style transition
-          'transition-all duration-apple ease-apple',
           // Hover and focus states
           'hover:opacity-100 hover:bg-surface-secondary',
           'focus:outline-none focus:ring-2 focus:ring-apple-accent focus:ring-offset-2',
@@ -88,6 +95,10 @@ const DialogContent = React.forwardRef<
         style={{
           right: 'var(--space-2)',
           top: 'var(--space-2)',
+          // Apple HIG Motion tokens for button interactions
+          transitionProperty: 'opacity, background-color',
+          transitionDuration: 'var(--duration-fast)', // 150ms
+          transitionTimingFunction: 'var(--ease-apple-standard)',
         }}
       >
         <X className="h-4 w-4 text-text-apple-secondary" />

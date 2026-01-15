@@ -114,7 +114,12 @@ describe('Dialog', () => {
       );
 
       await user.click(screen.getByText('Open'));
-      expect(screen.getByTestId('dialog-content')).toHaveClass('duration-200');
+      const dialogContent = screen.getByTestId('dialog-content');
+      // Verify Apple HIG motion tokens are applied via inline styles
+      expect(dialogContent).toHaveStyle({
+        transitionDuration: 'var(--duration-normal)',
+        transitionTimingFunction: 'var(--ease-apple-standard)',
+      });
     });
 
     it('should use backdrop-blur-xl for glass effect', async () => {
@@ -285,9 +290,11 @@ describe('Dialog', () => {
 
       await user.click(screen.getByText('Open'));
       const closeButton = screen.getByRole('button', { name: /close/i });
-      expect(closeButton).toHaveClass('transition-all');
-      expect(closeButton).toHaveClass('duration-apple');
-      expect(closeButton).toHaveClass('ease-apple');
+      // Verify Apple HIG motion tokens are applied via inline styles
+      expect(closeButton).toHaveStyle({
+        transitionDuration: 'var(--duration-fast)',
+        transitionTimingFunction: 'var(--ease-apple-standard)',
+      });
     });
 
     it('should have focus ring with Apple accent', async () => {
