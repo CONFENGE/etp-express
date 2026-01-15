@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 738/791 (93.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 739/791 (93.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | #1501 | Feature  | [#1493] Implementar animações em Form Inputs - Apple HIG Motion Design (#1493) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1500 | Feature  | [#1492] Implement Modal and Dropdown animations - Apple HIG Motion Design (#1492) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1499 | Feature  | [#1491] Implement card micro-interactions Apple HIG (#1491) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1496 | Test     | [#1487] Implement Lighthouse CI with Railway Preview Deployments (#1487) ✅ - **Score 100/100 - Auto-merged** |
@@ -278,7 +279,7 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1490 Implementar micro-interações em Buttons          | Component   | ✅     |
 |       | ↳ #1491 Implementar micro-interações em Cards            | Component   | ✅     |
 |       | ↳ #1492 Implementar animações em Modals/Dropdowns        | Component   | ✅     |
-|       | ↳ #1493 Implementar animações em Form Inputs             | Component   | 🔴     |
+|       | ↳ #1493 Implementar animações em Form Inputs             | Component   | ✅     |
 |       | ↳ #1494 Implementar reduced motion global                | A11y        | 🔴     |
 | #1431 | Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)       | A11y        | ✅     |
 |       | ↳ #1475 Contraste WCAG AA com Liquid Glass               | Contrast    | ✅     |
