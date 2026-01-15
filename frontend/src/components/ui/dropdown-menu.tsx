@@ -69,10 +69,22 @@ const DropdownMenuSubContent = React.forwardRef<
       'rounded-xl shadow-xl',
       // Base styles
       'z-[var(--z-popover,600)] min-w-[8rem] overflow-hidden p-1 text-popover-foreground',
-      // Animations
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+      // Animations with Apple HIG motion tokens
+      'data-[state=open]:animate-in data-[state=closed]:animate-out',
+      'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+      'data-[side=bottom]:slide-in-from-top-2',
+      'data-[side=left]:slide-in-from-right-2',
+      'data-[side=right]:slide-in-from-left-2',
+      'data-[side=top]:slide-in-from-bottom-2',
       className,
     )}
+    style={{
+      // Apple HIG Motion Design tokens (slide + fade)
+      transitionProperty: 'opacity, transform',
+      transitionDuration: 'var(--duration-fast)', // 150ms
+      transitionTimingFunction: 'var(--ease-apple-standard)', // cubic-bezier(0.25, 0.1, 0.25, 1)
+    }}
     {...props}
   />
 ));
@@ -95,10 +107,22 @@ const DropdownMenuContent = React.forwardRef<
         'rounded-xl shadow-xl',
         // Base styles
         'z-[var(--z-popover,600)] min-w-[8rem] overflow-hidden p-1 text-popover-foreground',
-        // Animations
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        // Animations with Apple HIG motion tokens
+        'data-[state=open]:animate-in data-[state=closed]:animate-out',
+        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+        'data-[side=bottom]:slide-in-from-top-2',
+        'data-[side=left]:slide-in-from-right-2',
+        'data-[side=right]:slide-in-from-left-2',
+        'data-[side=top]:slide-in-from-bottom-2',
         className,
       )}
+      style={{
+        // Apple HIG Motion Design tokens (slide + fade)
+        transitionProperty: 'opacity, transform',
+        transitionDuration: 'var(--duration-fast)', // 150ms (faster than modal for snappier menu feel)
+        transitionTimingFunction: 'var(--ease-apple-standard)', // cubic-bezier(0.25, 0.1, 0.25, 1)
+      }}
       {...props}
     />
   </DropdownMenuPrimitive.Portal>
