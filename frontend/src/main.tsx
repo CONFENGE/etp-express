@@ -18,18 +18,25 @@ async function enableMocking() {
   if (import.meta.env.VITE_USE_MSW === 'true') {
     const { worker } = await import('./mocks/browser');
 
-    // Pre-populate localStorage with mock authentication token
-    // This prevents redirect to /login before FCP (First Contentful Paint)
-    localStorage.setItem('authToken', 'mock-ci-token-12345');
-    localStorage.setItem(
-      'user',
-      JSON.stringify({
-        id: 'ci-user-123',
-        email: 'ci-test@example.com',
-        name: 'CI Test User',
-        role: 'user',
-      }),
-    );
+    // Pre-populate both localStorage AND cookies with mock authentication
+    // Lighthouse headless Chrome sometimes clears localStorage, so we use both
+    const mockToken = 'mock-ci-token-12345';
+    const mockUser = {
+      id: 'ci-user-123',
+      email: 'ci-test@example.com',
+      name: 'CI Test User',
+      role: 'user',
+    };
+
+    // Set localStorage
+    localStorage.setItem('authToken', mockToken);
+    localStorage.setItem('user', JSON.stringify(mockUser));
+
+    // Set cookie (persists across navigations in headless Chrome)
+    document.cookie = `authToken=${mockToken}; path=/; SameSite=Strict`;
+    document.cookie = `user=${encodeURIComponent(
+      JSON.stringify(mockUser),
+    )}; path=/; SameSite=Strict`;
 
     await worker.start({
       onUnhandledRequest: 'bypass', // Don't warn for unhandled requests

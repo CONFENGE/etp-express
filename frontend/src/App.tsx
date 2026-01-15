@@ -124,13 +124,22 @@ function RouteLoadingFallback() {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isAuthInitialized } = useAuth();
 
-  // Show loading while auth check is in progress
-  if (!isAuthInitialized) {
+  // MSW Bypass for Lighthouse CI (#1488)
+  // When MSW is enabled, treat user as authenticated to allow rendering
+  const isMSWEnabled = import.meta.env.VITE_USE_MSW === 'true';
+
+  // Show loading while auth check is in progress (skip if MSW bypass)
+  if (!isMSWEnabled && !isAuthInitialized) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <LoadingState message="Verificando autenticação..." size="lg" />
       </div>
     );
+  }
+
+  // MSW bypass: allow all routes without redirect
+  if (isMSWEnabled) {
+    return <>{children}</>;
   }
 
   if (!isAuthenticated) {
