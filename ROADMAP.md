@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-14 | **Progresso:** 734/791 (92.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 735/791 (92.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | #1496 | Test     | [#1487] Implement Lighthouse CI with Railway Preview Deployments (#1487) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1495 | Feature  | [#1489] Add Apple HIG motion design tokens (#1489) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1486 | Test     | [#1480] WCAG 2.1 AA Audit & Documentation - Apple HIG Accessibility 6/6 COMPLETE (#1480) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-14 | #1485 | Feature  | [#1479] Implement color accessibility - WCAG 2.1 AA compliance (#1479) ✅ - **Score 100/100 - Auto-merged** |
