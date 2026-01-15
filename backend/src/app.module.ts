@@ -185,12 +185,19 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
         const isStaging = nodeEnv === 'staging';
 
         // Disable rate limiting for staging by default (can be overridden via RATE_LIMIT_ENABLED)
-        const rateLimitEnabled = configService.get('RATE_LIMIT_ENABLED', !isStaging);
+        const rateLimitEnabled = configService.get(
+          'RATE_LIMIT_ENABLED',
+          !isStaging,
+        );
 
         return [
           {
-            ttl: rateLimitEnabled ? configService.get('RATE_LIMIT_TTL', 60) : 999999,
-            limit: rateLimitEnabled ? configService.get('RATE_LIMIT_MAX', 100) : 999999,
+            ttl: rateLimitEnabled
+              ? configService.get('RATE_LIMIT_TTL', 60)
+              : 999999,
+            limit: rateLimitEnabled
+              ? configService.get('RATE_LIMIT_MAX', 100)
+              : 999999,
           },
         ];
       },
