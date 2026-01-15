@@ -1,6 +1,12 @@
 import { useMemo, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { PlusCircle, TrendingUp, FileText, Sparkles, AlertTriangle } from 'lucide-react';
+import {
+  PlusCircle,
+  TrendingUp,
+  FileText,
+  Sparkles,
+  AlertTriangle,
+} from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Card,
@@ -49,22 +55,16 @@ export function Dashboard() {
   const { etps, isLoading } = useETPs();
 
   // Success rate metric (#1363) - now uses periodDays filter (#1366)
-  const {
-    data: successRateData,
-    isLoading: isLoadingSuccessRate,
-  } = useSuccessRate({ periodDays, autoFetch: true });
+  const { data: successRateData, isLoading: isLoadingSuccessRate } =
+    useSuccessRate({ periodDays, autoFetch: true });
 
   // Average completion time metric (#1364) - now uses periodDays filter (#1366)
-  const {
-    data: avgCompletionTimeData,
-    isLoading: isLoadingAvgTime,
-  } = useAvgCompletionTime({ periodDays, autoFetch: true });
+  const { data: avgCompletionTimeData, isLoading: isLoadingAvgTime } =
+    useAvgCompletionTime({ periodDays, autoFetch: true });
 
   // Status distribution metric (#1365) - now uses periodDays filter (#1366)
-  const {
-    data: statusDistributionData,
-    isLoading: isLoadingDistribution,
-  } = useStatusDistribution({ periodDays, autoFetch: true });
+  const { data: statusDistributionData, isLoading: isLoadingDistribution } =
+    useStatusDistribution({ periodDays, autoFetch: true });
 
   const stats = useMemo(() => {
     return etps.reduce(
@@ -85,7 +85,13 @@ export function Dashboard() {
   if (hasNoETPs) {
     return (
       <MainLayout>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-16)',
+          }}
+        >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Bem-vindo, {user?.name}!
@@ -96,7 +102,12 @@ export function Dashboard() {
           </div>
 
           <Card className="border-dashed" data-tour="dashboard-empty">
-            <CardContent style={{ paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
+            <CardContent
+              style={{
+                paddingTop: 'var(--space-8)',
+                paddingBottom: 'var(--space-8)',
+              }}
+            >
               <div className="flex flex-col items-center justify-center text-center max-w-lg mx-auto">
                 <EmptyState
                   type="welcome"
@@ -105,7 +116,16 @@ export function Dashboard() {
                   size="lg"
                 />
 
-                <div style={{ marginTop: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', width: '100%', maxWidth: '32rem' }}>
+                <div
+                  style={{
+                    marginTop: 'var(--space-6)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-4)',
+                    width: '100%',
+                    maxWidth: '32rem',
+                  }}
+                >
                   <Button
                     size="lg"
                     className="w-full text-base"
@@ -115,7 +135,15 @@ export function Dashboard() {
                     Criar meu primeiro ETP
                   </Button>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.875rem' }} className="text-muted-foreground justify-center">
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      fontSize: '0.875rem',
+                    }}
+                    className="text-muted-foreground justify-center"
+                  >
                     <Sparkles className="h-4 w-4 text-primary" />
                     <span>Processo guiado passo a passo</span>
                   </div>
@@ -124,7 +152,14 @@ export function Dashboard() {
             </CardContent>
           </Card>
 
-          <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(1, 1fr)' }} className="md:grid-cols-3">
+          <div
+            style={{
+              display: 'grid',
+              gap: 'var(--space-4)',
+              gridTemplateColumns: 'repeat(1, 1fr)',
+            }}
+            className="md:grid-cols-3"
+          >
             <Card className="bg-muted/30">
               <CardHeader style={{ paddingBottom: 'var(--space-2)' }}>
                 <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -174,8 +209,21 @@ export function Dashboard() {
   return (
     <MainLayout>
       <WelcomeModal />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }} className="sm:flex-row sm:items-center sm:justify-between">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-16)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-4)',
+          }}
+          className="sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Bem-vindo, {user?.name}!
@@ -195,11 +243,16 @@ export function Dashboard() {
 
         {/* Demo User Blocked Banner (#1446) */}
         {user?.isDemoBlocked && (
-          <Alert variant="warning" className="border-yellow-500" data-testid="demo-blocked-banner">
+          <Alert
+            variant="warning"
+            className="border-yellow-500"
+            data-testid="demo-blocked-banner"
+          >
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Limite de ETPs atingido</AlertTitle>
             <AlertDescription>
-              Seu limite de 3 ETPs foi atingido. Você pode visualizar seus ETPs existentes, mas não criar novos.
+              Seu limite de 3 ETPs foi atingido. Você pode visualizar seus ETPs
+              existentes, mas não criar novos.
             </AlertDescription>
           </Alert>
         )}
@@ -219,7 +272,16 @@ export function Dashboard() {
             data-tour="dashboard-stats"
           >
             <Card>
-              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
+              <CardHeader
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingBottom: 'var(--space-2)',
+                }}
+                className="space-y-0"
+              >
                 <CardTitle className="text-sm font-medium">
                   Total de ETPs
                 </CardTitle>
@@ -234,7 +296,16 @@ export function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
+              <CardHeader
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingBottom: 'var(--space-2)',
+                }}
+                className="space-y-0"
+              >
                 <CardTitle className="text-sm font-medium">
                   Em Progresso
                 </CardTitle>
@@ -249,7 +320,16 @@ export function Dashboard() {
             </Card>
 
             <Card>
-              <CardHeader style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 'var(--space-2)' }} className="space-y-0">
+              <CardHeader
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingBottom: 'var(--space-2)',
+                }}
+                className="space-y-0"
+              >
                 <CardTitle className="text-sm font-medium">
                   Concluidos
                 </CardTitle>
@@ -278,7 +358,10 @@ export function Dashboard() {
         )}
 
         {/* Status Distribution Chart and Recent ETPs row */}
-        <div style={{ display: 'grid', gap: 'var(--space-4)' }} className="md:grid-cols-3">
+        <div
+          style={{ display: 'grid', gap: 'var(--space-4)' }}
+          className="md:grid-cols-3"
+        >
           {/* Status Distribution Chart (#1365) */}
           <StatusDistributionChart
             data={statusDistributionData}
@@ -294,7 +377,11 @@ export function Dashboard() {
                   <CardDescription>Seus estudos mais recentes</CardDescription>
                 </div>
                 {user?.isDemoBlocked ? (
-                  <Button disabled title="Limite de ETPs atingido" data-testid="create-etp-button-disabled">
+                  <Button
+                    disabled
+                    title="Limite de ETPs atingido"
+                    data-testid="create-etp-button-disabled"
+                  >
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Novo ETP
                   </Button>
@@ -312,7 +399,13 @@ export function Dashboard() {
               {isLoading ? (
                 <SkeletonRecentItems count={5} />
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-4)',
+                  }}
+                >
                   {recentETPs.map((etp) => {
                     // Check if ETP was created by another user (#1351)
                     const isOtherUser =
@@ -334,11 +427,21 @@ export function Dashboard() {
                               </p>
                             )}
                             {etp.description && (
-                              <p style={{ marginTop: 'var(--space-1)' }} className="text-sm text-muted-foreground">
+                              <p
+                                style={{ marginTop: 'var(--space-1)' }}
+                                className="text-sm text-muted-foreground"
+                              >
                                 {etp.description}
                               </p>
                             )}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-2)',
+                                marginTop: 'var(--space-2)',
+                              }}
+                            >
                               <ComplianceBadge
                                 etpId={etp.id}
                                 size="sm"

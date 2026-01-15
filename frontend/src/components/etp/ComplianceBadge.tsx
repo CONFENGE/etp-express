@@ -1,4 +1,9 @@
-import { ShieldCheck, ShieldAlert, ShieldQuestion, ShieldX } from 'lucide-react';
+import {
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  ShieldX,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
@@ -131,10 +136,7 @@ export function ComplianceBadge({
   if (isLoading && !data) {
     return (
       <Skeleton
-        className={cn(
-          'rounded-full',
-          size === 'sm' ? 'h-5 w-16' : 'h-6 w-20',
-        )}
+        className={cn('rounded-full', size === 'sm' ? 'h-5 w-16' : 'h-6 w-20')}
       />
     );
   }
@@ -163,11 +165,7 @@ export function ComplianceBadge({
       aria-label={`Conformidade TCU: ${data.score}% - ${config.label}`}
     >
       {config.icon}
-      {showScore ? (
-        <span>{data.score}%</span>
-      ) : (
-        <span>{config.label}</span>
-      )}
+      {showScore ? <span>{data.score}%</span> : <span>{config.label}</span>}
     </Badge>
   );
 
@@ -195,7 +193,9 @@ export function ComplianceBadge({
             </div>
 
             {/* Description */}
-            <p className="text-xs text-muted-foreground">{config.description}</p>
+            <p className="text-xs text-muted-foreground">
+              {config.description}
+            </p>
 
             {/* Stats */}
             <div className="text-xs">
