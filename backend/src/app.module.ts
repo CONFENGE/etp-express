@@ -69,7 +69,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
       load: [redisConfig],
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid('development', 'production', 'test')
+          .valid('development', 'production', 'test', 'staging')
           .default('development'),
         PORT: Joi.number().default(3001),
         DATABASE_URL: Joi.string().required(),
@@ -109,6 +109,12 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
         DB_SYNCHRONIZE: Joi.boolean().default(false),
         DB_LOGGING: Joi.boolean().default(false),
         DB_MIGRATIONS_RUN: Joi.boolean().default(true),
+
+        // Rate Limiting Configuration (#1191 - Staging Environment)
+        // Staging disables rate limiting by default to allow E2E tests
+        RATE_LIMIT_ENABLED: Joi.boolean().default(true),
+        RATE_LIMIT_TTL: Joi.number().default(60),
+        RATE_LIMIT_MAX: Joi.number().default(100),
       }),
     }),
 
@@ -169,16 +175,25 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
       }),
     }),
 
-    // Rate limiting
+    // Rate limiting (#1191 - Staging Environment Support)
+    // Staging environment can disable rate limiting for E2E tests
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => [
-        {
-          ttl: configService.get('RATE_LIMIT_TTL', 60),
-          limit: configService.get('RATE_LIMIT_MAX', 100),
-        },
-      ],
+      useFactory: (configService: ConfigService) => {
+        const nodeEnv = configService.get('NODE_ENV', 'development');
+        const isStaging = nodeEnv === 'staging';
+
+        // Disable rate limiting for staging by default (can be overridden via RATE_LIMIT_ENABLED)
+        const rateLimitEnabled = configService.get('RATE_LIMIT_ENABLED', !isStaging);
+
+        return [
+          {
+            ttl: rateLimitEnabled ? configService.get('RATE_LIMIT_TTL', 60) : 999999,
+            limit: rateLimitEnabled ? configService.get('RATE_LIMIT_MAX', 100) : 999999,
+          },
+        ];
+      },
     }),
 
     // Scheduled tasks (cron jobs)
