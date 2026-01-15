@@ -17,9 +17,33 @@ async function enableMocking() {
   // Enable MSW in CI mode only
   if (import.meta.env.VITE_USE_MSW === 'true') {
     const { worker } = await import('./mocks/browser');
+
+    // Pre-populate localStorage with mock authentication token
+    // This prevents redirect to /login before FCP (First Contentful Paint)
+    localStorage.setItem('authToken', 'mock-ci-token-12345');
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        id: 'ci-user-123',
+        email: 'ci-test@example.com',
+        name: 'CI Test User',
+        role: 'user',
+      }),
+    );
+
     await worker.start({
       onUnhandledRequest: 'bypass', // Don't warn for unhandled requests
+      // Wait for service worker to be ready before continuing
+      serviceWorker: {
+        url: '/mockServiceWorker.js',
+      },
+      // Ensure service worker is active before rendering
+      waitUntilReady: true,
     });
+
+    // Additional delay for headless Chrome (Lighthouse CI)
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     console.log('[MSW] Mocking enabled for CI environment');
   }
 }
