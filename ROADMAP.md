@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 740/791 (93.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 741/791 (93.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | #1503 | Feature  | [#1191] Create dedicated staging environment for E2E tests (#1191) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1502 | Test     | [#1494] Implementar suporte a prefers-reduced-motion global (#1494) ✅ - **Score 100/100 - Auto-merged - EPIC #1430 COMPLETE (6/6)** |
 | 2026-01-15 | #1501 | Feature  | [#1493] Implementar animações em Form Inputs - Apple HIG Motion Design (#1493) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1500 | Feature  | [#1492] Implement Modal and Dropdown animations - Apple HIG Motion Design (#1492) ✅ - **Score 100/100 - Auto-merged** |
@@ -349,7 +350,7 @@ Nenhum bug P0 aberto! 🎉
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1191 | [E2E] Create dedicated staging environment for E2E tests        |
+| #1191 | [E2E] Create dedicated staging environment for E2E tests ✅     |
 | #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
