@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Query,
+  Res,
   UseGuards,
   Logger,
   NotFoundException,
@@ -16,10 +17,13 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
+  ApiProduces,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ComplianceValidationService } from './compliance-validation.service';
+import { ComplianceReportService } from './compliance-report.service';
 import { DISCLAIMER } from '../../common/constants/messages';
 import {
   ComplianceValidationResultDto,
@@ -31,6 +35,10 @@ import {
   ComplianceChecklistQueryDto,
   ValidateEtpQueryDto,
 } from './dto/compliance-checklist.dto';
+import {
+  ComplianceReportDto,
+  ValidationHistoryEntryDto,
+} from './dto/compliance-report.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Etp } from '../../entities/etp.entity';
@@ -64,6 +72,7 @@ export class ComplianceController {
 
   constructor(
     private readonly complianceService: ComplianceValidationService,
+    private readonly reportService: ComplianceReportService,
     @InjectRepository(Etp)
     private readonly etpRepository: Repository<Etp>,
   ) {}
@@ -359,6 +368,181 @@ export class ComplianceController {
 
     return {
       data: checklist,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Gera relatorio completo de conformidade de um ETP.
+   *
+   * Retorna dados estruturados incluindo:
+   * - Score geral e por categoria
+   * - Violacoes com severidade
+   * - Recomendacoes de correcao
+   * - Historico de validacoes
+   *
+   * Issue #1264 - [Compliance-c] Criar relatorio de conformidade
+   *
+   * @param etpId - ID do ETP
+   * @param userId - ID do usuario autenticado
+   * @returns Dados estruturados do relatorio
+   */
+  @Get('etps/:etpId/report')
+  @ApiOperation({
+    summary: 'Gerar relatorio de conformidade',
+    description:
+      'Gera relatorio completo de conformidade com scores, violacoes, recomendacoes e historico.',
+  })
+  @ApiParam({
+    name: 'etpId',
+    description: 'ID do ETP',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Relatorio de conformidade',
+    type: ComplianceReportDto,
+  })
+  @ApiResponse({ status: 401, description: 'Nao autenticado' })
+  @ApiResponse({ status: 403, description: 'Sem permissao para este ETP' })
+  @ApiResponse({ status: 404, description: 'ETP nao encontrado' })
+  async getReport(
+    @Param('etpId', ParseUUIDPipe) etpId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') userRole: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    const report = await this.reportService.generateReport(
+      etpId,
+      userId,
+      userRole,
+      organizationId,
+    );
+
+    this.logger.log(
+      `Compliance report generated for ETP ${etpId} by user ${userId}: score=${report.score}%`,
+    );
+
+    return {
+      data: report,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Exporta relatorio de conformidade em PDF.
+   *
+   * Issue #1264 - [Compliance-c] Criar relatorio de conformidade
+   *
+   * @param etpId - ID do ETP
+   * @param userId - ID do usuario autenticado
+   * @param res - Response object para envio do PDF
+   */
+  @Get('etps/:etpId/report/pdf')
+  @ApiOperation({
+    summary: 'Exportar relatorio de conformidade em PDF',
+    description:
+      'Gera e baixa relatorio de conformidade em formato PDF profissional.',
+  })
+  @ApiParam({
+    name: 'etpId',
+    description: 'ID do ETP',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiProduces('application/pdf')
+  @ApiResponse({
+    status: 200,
+    description: 'Arquivo PDF do relatorio',
+    content: { 'application/pdf': {} },
+  })
+  @ApiResponse({ status: 401, description: 'Nao autenticado' })
+  @ApiResponse({ status: 403, description: 'Sem permissao para este ETP' })
+  @ApiResponse({ status: 404, description: 'ETP nao encontrado' })
+  @ApiResponse({ status: 500, description: 'Erro ao gerar PDF' })
+  async getReportPdf(
+    @Param('etpId', ParseUUIDPipe) etpId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') userRole: string,
+    @CurrentUser('organizationId') organizationId: string,
+    @Res() res: Response,
+  ) {
+    const pdfBuffer = await this.reportService.exportReportToPdf(
+      etpId,
+      userId,
+      userRole,
+      organizationId,
+    );
+
+    const filename = `relatorio-conformidade-${etpId.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+
+    this.logger.log(
+      `Compliance report PDF exported for ETP ${etpId} by user ${userId}`,
+    );
+  }
+
+  /**
+   * Obtem historico de validacoes de um ETP.
+   *
+   * Issue #1264 - [Compliance-c] Criar relatorio de conformidade
+   *
+   * @param etpId - ID do ETP
+   * @param userId - ID do usuario autenticado
+   * @param limit - Numero maximo de registros (default 10)
+   * @returns Lista de entradas de historico
+   */
+  @Get('etps/:etpId/history')
+  @ApiOperation({
+    summary: 'Obter historico de validacoes',
+    description:
+      'Retorna historico de validacoes de conformidade de um ETP, ordenado por data.',
+  })
+  @ApiParam({
+    name: 'etpId',
+    description: 'ID do ETP',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Numero maximo de registros (default 10)',
+    required: false,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Historico de validacoes',
+    type: [ValidationHistoryEntryDto],
+  })
+  @ApiResponse({ status: 401, description: 'Nao autenticado' })
+  @ApiResponse({ status: 403, description: 'Sem permissao para este ETP' })
+  @ApiResponse({ status: 404, description: 'ETP nao encontrado' })
+  async getHistory(
+    @Param('etpId', ParseUUIDPipe) etpId: string,
+    @Query('limit') limit: number = 10,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') userRole: string,
+    @CurrentUser('organizationId') organizationId: string,
+  ) {
+    // Validar acesso ao ETP
+    await this.validateEtpAccess(etpId, userId, userRole, organizationId);
+
+    const history = await this.reportService.getValidationHistory(
+      etpId,
+      Math.min(limit || 10, 50),
+    );
+
+    return {
+      data: history,
       disclaimer: DISCLAIMER,
     };
   }

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Conformidade TCU - {{etpTitle}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    .page {
+      padding: 2cm;
+      max-width: 21cm;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 3px solid #1e3a5f;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+
+    .header-left h1 {
+      font-size: 18pt;
+      color: #1e3a5f;
+      margin-bottom: 5px;
+    }
+
+    .header-left .subtitle {
+      font-size: 10pt;
+      color: #666;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-right .date {
+      font-size: 10pt;
+      color: #666;
+    }
+
+    /* ETP Info */
+    .etp-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .etp-info h2 {
+      font-size: 14pt;
+      color: #1e3a5f;
+      margin-bottom: 10px;
+    }
+
+    .etp-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .etp-info-item {
+      display: flex;
+    }
+
+    .etp-info-label {
+      font-weight: 600;
+      color: #555;
+      min-width: 150px;
+    }
+
+    .etp-info-value {
+      color: #1a1a1a;
+    }
+
+    /* Score Section */
+    .score-section {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .score-main {
+      flex: 1;
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+    }
+
+    .score-gauge {
+      position: relative;
+      width: 150px;
+      height: 75px;
+      margin: 0 auto 15px;
+      overflow: hidden;
+    }
+
+    .score-gauge-bg {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #dc3545 0deg 72deg,
+        #fd7e14 72deg 144deg,
+        #ffc107 144deg 216deg,
+        #28a745 216deg 288deg,
+        #20c997 288deg 360deg
+      );
+      clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    }
+
+    .score-gauge-needle {
+      position: absolute;
+      width: 4px;
+      height: 60px;
+      background: #1a1a1a;
+      left: 50%;
+      bottom: 0;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate({{scoreRotation}}deg);
+      border-radius: 2px;
+    }
+
+    .score-gauge-center {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #1a1a1a;
+      border-radius: 50%;
+      left: 50%;
+      bottom: -10px;
+      transform: translateX(-50%);
+    }
+
+    .score-value {
+      font-size: 36pt;
+      font-weight: 700;
+      color: {{statusColor}};
+    }
+
+    .score-label {
+      font-size: 12pt;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 11pt;
+      color: #fff;
+      background: {{statusColor}};
+    }
+
+    .score-details {
+      flex: 1;
+    }
+
+    .score-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .stat-value {
+      font-size: 24pt;
+      font-weight: 700;
+      color: #1e3a5f;
+    }
+
+    .stat-label {
+      font-size: 9pt;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    /* Category Scores */
+    .category-scores {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 14pt;
+      color: #1e3a5f;
+      border-bottom: 2px solid #1e3a5f;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    .category-bar {
+      margin-bottom: 12px;
+    }
+
+    .category-bar-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .category-name {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .category-score-text {
+      font-weight: 600;
+      color: #1e3a5f;
+    }
+
+    .category-bar-track {
+      height: 12px;
+      background: #e9ecef;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.3s ease;
+    }
+
+    /* Violations */
+    .violations-section {
+      margin-bottom: 30px;
+    }
+
+    .violation-group {
+      margin-bottom: 20px;
+    }
+
+    .violation-group-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .severity-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 9pt;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .severity-critical { background: #dc3545; }
+    .severity-high { background: #fd7e14; }
+    .severity-medium { background: #ffc107; color: #1a1a1a; }
+    .severity-low { background: #28a745; }
+
+    .violation-count {
+      font-size: 10pt;
+      color: #666;
+    }
+
+    .violation-item {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+    }
+
+    .violation-item.critical { border-left-color: #dc3545; }
+    .violation-item.high { border-left-color: #fd7e14; }
+    .violation-item.medium { border-left-color: #ffc107; }
+    .violation-item.low { border-left-color: #28a745; }
+
+    .violation-requirement {
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 5px;
+    }
+
+    .violation-details {
+      font-size: 10pt;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .violation-fix {
+      background: #e8f5e9;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 10pt;
+    }
+
+    .violation-fix-label {
+      font-weight: 600;
+      color: #2e7d32;
+    }
+
+    .violation-legal {
+      font-size: 9pt;
+      color: #1e3a5f;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    /* History */
+    .history-section {
+      margin-bottom: 30px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .history-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 10pt;
+    }
+
+    .history-table td {
+      font-size: 10pt;
+    }
+
+    .history-score {
+      font-weight: 600;
+    }
+
+    .trend-up { color: #28a745; }
+    .trend-down { color: #dc3545; }
+    .trend-same { color: #6c757d; }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 15px;
+      border-top: 1px solid #dee2e6;
+    }
+
+    .disclaimer {
+      font-size: 9pt;
+      color: #666;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .footer-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9pt;
+      color: #999;
+    }
+
+    /* Print styles */
+    @media print {
+      .page {
+        padding: 0;
+      }
+
+      .violation-item {
+        break-inside: avoid;
+      }
+
+      .category-scores,
+      .violations-section,
+      .history-section {
+        break-inside: avoid;
+      }
+    }
+
+    /* No violations message */
+    .no-violations {
+      background: #d4edda;
+      color: #155724;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* Page break */
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>Relatório de Conformidade TCU</h1>
+        <div class="subtitle">{{checklistName}}</div>
+      </div>
+      <div class="header-right">
+        <div class="date">Gerado em: {{formatDate generatedAt}}</div>
+      </div>
+    </div>
+
+    <!-- ETP Info -->
+    <div class="etp-info">
+      <h2>{{etpTitle}}</h2>
+      <div class="etp-info-grid">
+        {{#if etpObjeto}}
+        <div class="etp-info-item">
+          <span class="etp-info-label">Objeto:</span>
+          <span class="etp-info-value">{{etpObjeto}}</span>
+        </div>
+        {{/if}}
+        {{#if numeroProcesso}}
+        <div class="etp-info-item">
+          <span class="etp-info-label">Processo:</span>
+          <span class="etp-info-value">{{numeroProcesso}}</span>
+        </div>
+        {{/if}}
+        {{#if orgaoEntidade}}
+        <div class="etp-info-item">
+          <span class="etp-info-label">Órgão/Entidade:</span>
+          <span class="etp-info-value">{{orgaoEntidade}}</span>
+        </div>
+        {{/if}}
+        <div class="etp-info-item">
+          <span class="etp-info-label">Score Mínimo:</span>
+          <span class="etp-info-value">{{minimumScore}}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score Section -->
+    <div class="score-section">
+      <div class="score-main">
+        <div class="score-gauge">
+          <div class="score-gauge-bg"></div>
+          <div class="score-gauge-needle"></div>
+          <div class="score-gauge-center"></div>
+        </div>
+        <div class="score-value">{{score}}%</div>
+        <div class="score-label">Score de Conformidade</div>
+        <span class="status-badge">{{statusText}}</span>
+      </div>
+      <div class="score-details">
+        <div class="score-stats">
+          <div class="stat-box">
+            <div class="stat-value">{{totalItems}}</div>
+            <div class="stat-label">Total de Itens</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" style="color: #28a745;">{{passedItems}}</div>
+            <div class="stat-label">Aprovados</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" style="color: #dc3545;">{{failedItems}}</div>
+            <div class="stat-label">Reprovados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Scores -->
+    <div class="category-scores">
+      <h3 class="section-title">Score por Categoria</h3>
+      {{#each categoryScores}}
+      <div class="category-bar">
+        <div class="category-bar-header">
+          <span class="category-name">{{categoryName}}</span>
+          <span class="category-score-text">{{score}}% ({{passedItems}}/{{totalItems}})</span>
+        </div>
+        <div class="category-bar-track">
+          <div class="category-bar-fill" style="width: {{score}}%; background: {{../categoryColor this.score}};"></div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- Violations -->
+    <div class="violations-section">
+      <h3 class="section-title">Violações Encontradas</h3>
+
+      {{#if violations.length}}
+        {{#each violationsByGroup}}
+        <div class="violation-group">
+          <div class="violation-group-title">
+            <span class="severity-badge severity-{{lowerCase severity}}">{{severity}}</span>
+            <span class="violation-count">{{items.length}} {{pluralize items.length "violação" "violações"}}</span>
+          </div>
+          {{#each items}}
+          <div class="violation-item {{lowerCase ../severity}}">
+            <div class="violation-requirement">{{requirement}}</div>
+            <div class="violation-details">
+              {{#if fieldAffected}}<strong>Campo:</strong> {{fieldAffected}} · {{/if}}
+              {{#if failureReason}}{{failureReason}}{{/if}}
+            </div>
+            {{#if fixSuggestion}}
+            <div class="violation-fix">
+              <span class="violation-fix-label">Recomendação:</span> {{fixSuggestion}}
+            </div>
+            {{/if}}
+            {{#if legalReference}}
+            <div class="violation-legal">Referência: {{legalReference}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+        {{/each}}
+      {{else}}
+        <div class="no-violations">
+          ✓ Nenhuma violação encontrada. O ETP está em conformidade com os requisitos TCU.
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- History -->
+    {{#if history.length}}
+    <div class="history-section">
+      <h3 class="section-title">Histórico de Validações</h3>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Itens</th>
+            <th>Validado por</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each history}}
+          <tr>
+            <td>{{formatDate validatedAt}}</td>
+            <td class="history-score {{trendClass @index ../history}}">
+              {{score}}%
+              {{#unless @first}}
+                {{trendIcon @index ../history}}
+              {{/unless}}
+            </td>
+            <td>{{statusText status}}</td>
+            <td>{{passedItems}}/{{totalItems}}</td>
+            <td>{{validatedByName}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{/if}}
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="disclaimer">
+        <strong>Aviso:</strong> Este relatório é gerado automaticamente com base nos critérios de conformidade do TCU.
+        A validação final deve ser realizada por profissional qualificado. O sistema não substitui a análise técnica especializada.
+      </div>
+      <div class="footer-info">
+        <span>ETP Express - Sistema de Gestão de Estudos Técnicos Preliminares</span>
+        <span>ID: {{etpId}}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
