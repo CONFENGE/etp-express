@@ -262,9 +262,9 @@ describe('CreatePesquisaPrecosWizard', () => {
     fireEvent.click(screen.getByText('Proximo')); // Go to step 3
 
     await waitFor(() => {
-      // Placeholder message should be visible for step 3+
+      // Step 3 (StepSelectSources) should be visible
       expect(
-        screen.getByText(/Este passo sera implementado nas proximas issues/i),
+        screen.getByText('Selecione as Fontes de Precos'),
       ).toBeInTheDocument();
     });
   });
