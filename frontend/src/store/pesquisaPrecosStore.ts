@@ -110,9 +110,8 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
     fetchPesquisas: async () => {
       set({ isLoading: true, error: null });
       try {
-        const pesquisas = await apiHelpers.get<PesquisaPrecos[]>(
-          '/pesquisa-precos',
-        );
+        const pesquisas =
+          await apiHelpers.get<PesquisaPrecos[]>('/pesquisa-precos');
         set({
           pesquisas,
           isLoading: false,
@@ -120,7 +119,11 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
       } catch (error) {
         logger.error('Failed to fetch pesquisas', { error });
         set({
-          error: getContextualErrorMessage('listar', 'pesquisas de precos', error),
+          error: getContextualErrorMessage(
+            'listar',
+            'pesquisas de precos',
+            error,
+          ),
           isLoading: false,
         });
       }
@@ -139,7 +142,11 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
       } catch (error) {
         logger.error('Failed to fetch pesquisa', { error, id });
         set({
-          error: getContextualErrorMessage('carregar', 'pesquisa de precos', error),
+          error: getContextualErrorMessage(
+            'carregar',
+            'pesquisa de precos',
+            error,
+          ),
           isLoading: false,
         });
       }
@@ -164,7 +171,11 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
       } catch (error) {
         logger.error('Failed to create pesquisa', { error });
         set({
-          error: getContextualErrorMessage('criar', 'pesquisa de precos', error),
+          error: getContextualErrorMessage(
+            'criar',
+            'pesquisa de precos',
+            error,
+          ),
           isLoading: false,
         });
         throw error;
@@ -194,7 +205,11 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
       } catch (error) {
         logger.error('Failed to update pesquisa', { error, id });
         set({
-          error: getContextualErrorMessage('atualizar', 'pesquisa de precos', error),
+          error: getContextualErrorMessage(
+            'atualizar',
+            'pesquisa de precos',
+            error,
+          ),
           isLoading: false,
         });
         throw error;
@@ -217,7 +232,11 @@ export const usePesquisaPrecosStore = create<PesquisaPrecosState>(
       } catch (error) {
         logger.error('Failed to delete pesquisa', { error, id });
         set({
-          error: getContextualErrorMessage('excluir', 'pesquisa de precos', error),
+          error: getContextualErrorMessage(
+            'excluir',
+            'pesquisa de precos',
+            error,
+          ),
           isLoading: false,
         });
         throw error;
