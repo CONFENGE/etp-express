@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 753/803 (93.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 754/803 (93.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1513 | Feature  | [#1509] Implement Step 5 - Review Results for PesquisaPrecos wizard (#1509) ✅ - **Score 100/100 - Auto-merged - M11 Interface COMPLETE** |
 | 2026-01-16 | #1512 | Feature  | [#1508] Implement Steps 3-4: Seleção de Fontes e Execução da Pesquisa (#1508) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1511 | Feature  | [#1507] Implement Steps 1-2 for PesquisaPrecos wizard (#1507) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1510 | Feature  | [#1506] Add Pesquisa de Precos wizard structure (#1506) ✅ - **Score 100/100 - Auto-merged** |
@@ -403,7 +404,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 13/17  | 76% 🟡     | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 17/17  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 4/7    | 57% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -430,7 +431,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - 🟡 IN PROGRESS 13/17
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 17/17
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
@@ -445,11 +446,11 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       |   ↳ #1415 Endpoint coleta multi-fonte         | ✅     |
 |       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
-|       | ↳ #1259 Interface de pesquisa no frontend     | 🟡     |
+|       | ↳ #1259 Interface de pesquisa no frontend     | ✅     |
 |       |   ↳ #1506 Criar página base wizard            | ✅     |
 |       |   ↳ #1507 Steps 1-2: Seleção ETP/TR           | ✅     |
 |       |   ↳ #1508 Steps 3-4: Fontes e Execução        | ✅     |
-|       |   ↳ #1509 Step 5: Revisão e Tabela            | 🔴     |
+|       |   ↳ #1509 Step 5: Revisão e Tabela            | ✅     |
 |       | ↳ #1260 Export relatório pesquisa PDF         | ✅     |
 | #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | ✅ |
 |       | ↳ #1463 Criar design tokens de espaçamento Apple HIG | ✅ |
