@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 750/803 (93.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 751/803 (93.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1510 | Feature  | [#1506] Add Pesquisa de Precos wizard structure (#1506) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | -     | Audit    | ROADMAP sync: close #1429/#1430 (HIG), #1263 (Compliance), add #1506-#1509 (Pesquisa wizard) |
 | 2026-01-15 | #1505 | Feature  | [#1260] Add PDF/JSON export for Pesquisa de Precos (#1260) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1504 | Feature  | [#1265] Add ComplianceBadge component for visual compliance status (#1265) ✅ - **Score 100/100 - Auto-merged** |
@@ -400,7 +401,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 12/17  | 71% 🟡     | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 13/17  | 76% 🟡     | +R$ 500/mês           |
 | M12: Compliance TCE            | 4/7    | 57% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -427,7 +428,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - 🟡 IN PROGRESS 12/17
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - 🟡 IN PROGRESS 13/17
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
@@ -443,7 +444,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🟡     |
-|       |   ↳ #1506 Criar página base wizard            | 🔴     |
+|       |   ↳ #1506 Criar página base wizard            | ✅     |
 |       |   ↳ #1507 Steps 1-2: Seleção ETP/TR           | 🔴     |
 |       |   ↳ #1508 Steps 3-4: Fontes e Execução        | 🔴     |
 |       |   ↳ #1509 Step 5: Revisão e Tabela            | 🔴     |
@@ -524,15 +525,15 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 803   |
-| Issues Abertas    | 53    |
-| Issues Fechadas   | 750   |
-| Progresso         | 93.4% |
+| Issues Abertas    | 52    |
+| Issues Fechadas   | 751   |
+| Progresso         | 93.5% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 3127  |
-| Frontend Tests    | 2082  |
-| Total Tests       | 5209  |
+| Backend Tests     | 3148  |
+| Frontend Tests    | 2198  |
+| Total Tests       | 5346  |
 
 ---
 
