@@ -169,10 +169,9 @@ export function StepExecuteSearch({ form }: PesquisaWizardStepProps) {
 
       // Simulate progress updates (real progress comes from backend)
       const progressInterval = setInterval(() => {
-        setValue('executionProgress', (prev: number) => {
-          const newProgress = Math.min(prev + 5, 90);
-          return newProgress;
-        });
+        const currentProgress = getValues('executionProgress') || 0;
+        const newProgress = Math.min(currentProgress + 5, 90);
+        setValue('executionProgress', newProgress);
       }, 500);
 
       // Execute price collection
