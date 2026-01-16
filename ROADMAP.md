@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 754/803 (93.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 755/803 (94.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | -     | Audit    | ROADMAP sync: close #1259 (M11 EPIC complete), update metrics 48 open / 755 closed / 94.0% |
 | 2026-01-16 | #1513 | Feature  | [#1509] Implement Step 5 - Review Results for PesquisaPrecos wizard (#1509) ✅ - **Score 100/100 - Auto-merged - M11 Interface COMPLETE** |
 | 2026-01-16 | #1512 | Feature  | [#1508] Implement Steps 3-4: Seleção de Fontes e Execução da Pesquisa (#1508) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1511 | Feature  | [#1507] Implement Steps 1-2 for PesquisaPrecos wizard (#1507) ✅ - **Score 100/100 - Auto-merged** |
@@ -341,7 +342,7 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (53)
+## Issues Abertas (48)
 
 ### P0 - Apple HIG Design System ✅ COMPLETE
 
@@ -404,7 +405,7 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 17/17  | 100% ✅    | +R$ 500/mês           |
+| M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 4/7    | 57% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
@@ -431,7 +432,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 17/17
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 21/21
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
@@ -528,9 +529,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 803   |
-| Issues Abertas    | 52    |
-| Issues Fechadas   | 751   |
-| Progresso         | 93.5% |
+| Issues Abertas    | 48    |
+| Issues Fechadas   | 755   |
+| Progresso         | 94.0% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
