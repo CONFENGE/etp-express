@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 755/803 (94.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 756/803 (94.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1514 | Feature  | [#1264] Add compliance report generation with PDF export ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | -     | Audit    | ROADMAP sync: close #1259 (M11 EPIC complete), update metrics 48 open / 755 closed / 94.0% |
 | 2026-01-16 | #1513 | Feature  | [#1509] Implement Step 5 - Review Results for PesquisaPrecos wizard (#1509) ✅ - **Score 100/100 - Auto-merged - M11 Interface COMPLETE** |
 | 2026-01-16 | #1512 | Feature  | [#1508] Implement Steps 3-4: Seleção de Fontes e Execução da Pesquisa (#1508) ✅ - **Score 100/100 - Auto-merged** |
@@ -342,7 +343,7 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (48)
+## Issues Abertas (47)
 
 ### P0 - Apple HIG Design System ✅ COMPLETE
 
@@ -406,7 +407,7 @@ Nenhum bug P0 aberto! 🎉
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
-| M12: Compliance TCE            | 4/7    | 57% 🟡     | +R$ 1.000/mês premium |
+| M12: Compliance TCE            | 5/7    | 71% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
@@ -467,7 +468,7 @@ Features:
 - Justificativa automática de metodologia
 - Relatório formal de pesquisa
 
-#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 4/7 (57%)
+#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 5/7 (71%)
 
 Validação automática contra critérios TCU/TCE.
 
@@ -476,7 +477,7 @@ Validação automática contra critérios TCU/TCE.
 | #1261 | [Compliance] Validacao TCE - EPIC             | 🟡     |
 |       | ↳ #1262 Mapear criterios TCU/TCE              | ✅     |
 |       | ↳ #1263 Engine de validacao ETP               | ✅     |
-|       | ↳ #1264 Relatorio de conformidade             | 🔴     |
+|       | ↳ #1264 Relatorio de conformidade             | ✅     |
 |       | ↳ #1265 Selo de Conformidade visual           | ✅     |
 |       | ↳ #1266 Alertas tempo real                    | 🔴     |
 |       | ↳ #1267 Dashboard de compliance do órgão      | ✅     |
@@ -529,9 +530,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 803   |
-| Issues Abertas    | 48    |
-| Issues Fechadas   | 755   |
-| Progresso         | 94.0% |
+| Issues Abertas    | 47    |
+| Issues Fechadas   | 756   |
+| Progresso         | 94.1% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
