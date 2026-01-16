@@ -11,6 +11,8 @@ import {
   HttpStatus,
   HttpCode,
   ParseUUIDPipe,
+  Res,
+  Header,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,10 +21,13 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiParam,
+  ApiProduces,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { PesquisaPrecosService } from './pesquisa-precos.service';
+import { PesquisaPrecosExportService } from '../export/pesquisa-precos-export.service';
 import {
   CreatePesquisaPrecosDto,
   UpdatePesquisaPrecosDto,
@@ -65,7 +70,10 @@ interface AuthenticatedUser {
 @UseGuards(JwtAuthGuard)
 @Controller('pesquisas-precos')
 export class PesquisaPrecosController {
-  constructor(private readonly pesquisaPrecosService: PesquisaPrecosService) {}
+  constructor(
+    private readonly pesquisaPrecosService: PesquisaPrecosService,
+    private readonly pesquisaPrecosExportService: PesquisaPrecosExportService,
+  ) {}
 
   /**
    * Cria uma nova pesquisa de precos.
@@ -381,6 +389,126 @@ export class PesquisaPrecosController {
     return this.pesquisaPrecosService.gerarJustificativaMetodologia(
       id,
       dto,
+      user.organizationId,
+    );
+  }
+
+  // ============================================
+  // Export PDF (#1260)
+  // ============================================
+
+  /**
+   * Exporta relatorio de pesquisa de precos em formato PDF.
+   *
+   * Gera documento formal de pesquisa de precos conforme IN SEGES/ME n 65/2021.
+   * O PDF inclui:
+   * - Identificacao da pesquisa
+   * - Metodologia utilizada (com referencias legais)
+   * - Fontes consultadas
+   * - Mapa comparativo de precos
+   * - Calculos estatisticos (media, mediana, CV)
+   * - Criterio de aceitabilidade
+   * - Justificativa de metodologia
+   *
+   * @see Issue #1260 - [Pesquisa-f] Export relatorio de pesquisa PDF
+   */
+  @Get(':id/export/pdf')
+  @ApiOperation({
+    summary: 'Exportar relatorio de pesquisa de precos em PDF',
+    description: `Gera documento formal de pesquisa de precos conforme IN SEGES/ME n 65/2021.
+    Inclui mapa comparativo de precos, calculos estatisticos, metodologia e justificativas.`,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da pesquisa de precos',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiProduces('application/pdf')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'PDF gerado com sucesso',
+    content: {
+      'application/pdf': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Pesquisa de precos nao encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Sem permissao para acessar esta pesquisa',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Erro ao gerar PDF (Chromium nao disponivel)',
+  })
+  @Header('Content-Type', 'application/pdf')
+  async exportToPdf(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Res() res: Response,
+  ): Promise<void> {
+    const pdfBuffer = await this.pesquisaPrecosExportService.exportToPDF(
+      id,
+      user.organizationId,
+    );
+
+    const filename = `pesquisa-precos-${id.substring(0, 8)}.pdf`;
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.end(pdfBuffer);
+  }
+
+  /**
+   * Exporta pesquisa de precos em formato JSON.
+   *
+   * Retorna todos os dados estruturados da pesquisa para integracao
+   * com outros sistemas ou backup.
+   *
+   * @see Issue #1260 - [Pesquisa-f] Export relatorio de pesquisa PDF
+   */
+  @Get(':id/export/json')
+  @ApiOperation({
+    summary: 'Exportar pesquisa de precos em JSON',
+    description: `Retorna todos os dados estruturados da pesquisa de precos
+    para integracao com outros sistemas ou backup.`,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da pesquisa de precos',
+    type: 'string',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'JSON exportado com sucesso',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Pesquisa de precos nao encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Sem permissao para acessar esta pesquisa',
+  })
+  async exportToJson(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<Record<string, unknown>> {
+    return this.pesquisaPrecosExportService.exportToJSON(
+      id,
       user.organizationId,
     );
   }
