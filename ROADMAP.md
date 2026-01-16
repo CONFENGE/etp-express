@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 756/803 (94.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 757/803 (94.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1515 | Feature  | [#1266] Real-time compliance alerts during ETP editing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1514 | Feature  | [#1264] Add compliance report generation with PDF export ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | -     | Audit    | ROADMAP sync: close #1259 (M11 EPIC complete), update metrics 48 open / 755 closed / 94.0% |
 | 2026-01-16 | #1513 | Feature  | [#1509] Implement Step 5 - Review Results for PesquisaPrecos wizard (#1509) ✅ - **Score 100/100 - Auto-merged - M11 Interface COMPLETE** |
@@ -468,25 +469,25 @@ Features:
 - Justificativa automática de metodologia
 - Relatório formal de pesquisa
 
-#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 5/7 (71%)
+#### M12: Compliance TCE (#1261-#1267) - COMPLETE 7/7 (100%) ✅
 
 Validação automática contra critérios TCU/TCE.
 
 | #     | Issue                                         | Status |
 | ----- | --------------------------------------------- | ------ |
-| #1261 | [Compliance] Validacao TCE - EPIC             | 🟡     |
+| #1261 | [Compliance] Validacao TCE - EPIC             | ✅     |
 |       | ↳ #1262 Mapear criterios TCU/TCE              | ✅     |
 |       | ↳ #1263 Engine de validacao ETP               | ✅     |
 |       | ↳ #1264 Relatorio de conformidade             | ✅     |
 |       | ↳ #1265 Selo de Conformidade visual           | ✅     |
-|       | ↳ #1266 Alertas tempo real                    | 🔴     |
+|       | ↳ #1266 Alertas tempo real                    | ✅     |
 |       | ↳ #1267 Dashboard de compliance do órgão      | ✅     |
 
 Features:
 - Mapeamento de critérios ALICE/SOFIA ✅
-- Engine de validação com score 0-100
-- Selo de Conformidade visual
-- Alertas em tempo real durante preenchimento
+- Engine de validação com score 0-100 ✅
+- Selo de Conformidade visual ✅
+- Alertas em tempo real durante preenchimento ✅
 
 #### M13: Inteligência de Mercado (#1268-#1275)
 
