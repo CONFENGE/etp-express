@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ChecklistItemCategory } from '../../../entities/compliance-checklist-item.entity';
-import { ComplianceValidationResult } from './compliance-validation-result.dto';
 
 /**
  * DTO para histórico de validação (resumido).
