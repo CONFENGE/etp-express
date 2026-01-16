@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 757/803 (94.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 758/803 (94.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1516 | Feature  | [#1166] Add weekly PNCP check and cache validation jobs ✅ - **Score 100/100 - Merged (ZAP infra issue #1517)** |
 | 2026-01-16 | #1515 | Feature  | [#1266] Real-time compliance alerts during ETP editing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1514 | Feature  | [#1264] Add compliance report generation with PDF export ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | -     | Audit    | ROADMAP sync: close #1259 (M11 EPIC complete), update metrics 48 open / 755 closed / 94.0% |
@@ -210,10 +211,10 @@
 
 | #     | Issue                                              | Status |
 | ----- | -------------------------------------------------- | ------ |
-| #1166 | [Preços] Ajustar schedule para atualização semanal | 🔴     |
+| #1166 | [Preços] Ajustar schedule para atualização semanal | ✅     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
 
-**Progresso MVP Comercial:** 43/45 (96%) - Epics #1158, #1161, #1163, #1164 e #1167 COMPLETAS ✅ | Restam: #1166, #1168
+**Progresso MVP Comercial:** 44/45 (98%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168
 
 ---
 
@@ -344,7 +345,7 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (47)
+## Issues Abertas (46)
 
 ### P0 - Apple HIG Design System ✅ COMPLETE
 
@@ -361,14 +362,13 @@ Nenhum bug P0 aberto! 🎉
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
 | #1073 | [QA] Criar testes de integração com APIs governamentais reais   |
 
-### P2 - Medium Priority (10 issues)
+### P2 - Medium Priority (9 issues)
 
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
-| #1166 | [Preços] Ajustar schedule para atualização semanal               |
 | #1072 | [Observabilidade] Adicionar retry automático para emails         |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs            |
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
@@ -388,7 +388,7 @@ Nenhum bug P0 aberto! 🎉
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 43/45  | 96% (2 restam) |
+| MVP Comercial          | 44/45  | 98% (1 resta)  |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 61/61  | ✅             |
@@ -531,9 +531,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 803   |
-| Issues Abertas    | 47    |
-| Issues Fechadas   | 756   |
-| Progresso         | 94.1% |
+| Issues Abertas    | 46    |
+| Issues Fechadas   | 757   |
+| Progresso         | 94.3% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
