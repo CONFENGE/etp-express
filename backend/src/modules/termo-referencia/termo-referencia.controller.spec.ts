@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TermoReferenciaController } from './termo-referencia.controller';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TrVersionsService } from './tr-versions.service';
 import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import {
   TermoReferencia,
@@ -54,6 +55,14 @@ describe('TermoReferenciaController', () => {
     exportToJSON: jest.fn(),
   };
 
+  const mockTrVersionsService = {
+    createVersion: jest.fn(),
+    listVersions: jest.fn(),
+    getVersion: jest.fn(),
+    compareVersions: jest.fn(),
+    restoreVersion: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TermoReferenciaController],
@@ -61,6 +70,10 @@ describe('TermoReferenciaController', () => {
         {
           provide: TermoReferenciaService,
           useValue: mockService,
+        },
+        {
+          provide: TrVersionsService,
+          useValue: mockTrVersionsService,
         },
         {
           provide: TermoReferenciaExportService,

@@ -107,7 +107,9 @@ export class TermoReferenciaVersion {
    * Relacionamento com o Termo de Referencia pai.
    * CASCADE: Ao deletar o TR, todas as versoes sao removidas.
    */
-  @ManyToOne(() => TermoReferencia, (tr) => tr.versions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => TermoReferencia, (tr) => tr.versions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'termo_referencia_id' })
   termoReferencia: TermoReferencia;
 

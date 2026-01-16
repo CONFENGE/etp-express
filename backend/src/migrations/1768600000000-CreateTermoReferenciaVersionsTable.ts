@@ -23,9 +23,7 @@ import {
  * @see Issue #1253 - [TR-f] Versionamento e historico de TR
  * @see Issue #1247 - [TR] Modulo de Termo de Referencia - EPIC
  */
-export class CreateTermoReferenciaVersionsTable1768600000000
-  implements MigrationInterface
-{
+export class CreateTermoReferenciaVersionsTable1768600000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add currentVersion column to termos_referencia table
     await queryRunner.addColumn(
