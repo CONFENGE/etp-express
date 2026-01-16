@@ -71,6 +71,8 @@ export class GovDataSyncService implements OnModuleInit {
    * data is available when users make searches. This prevents the
    * scenario where searches return empty arrays because no one
    * manually loaded the data.
+   *
+   * Note: Startup sync runs async to prevent blocking app initialization (#1517)
    */
   async onModuleInit(): Promise<void> {
     this.logger.log('GovDataSyncService initialized');
@@ -85,9 +87,26 @@ export class GovDataSyncService implements OnModuleInit {
       ' - Cache validation: Weekly on Wednesday at 03:00 BRT (#1166)',
     );
 
-    // Trigger startup sync (#1062)
-    // This ensures data is loaded when the application starts
-    await this.triggerStartupSync();
+    // Trigger startup sync asynchronously to prevent blocking app initialization (#1517)
+    // Don't await - let the sync run in background while app continues starting
+    this.triggerStartupSyncAsync();
+  }
+
+  /**
+   * Async wrapper for startup sync to prevent blocking initialization (#1517)
+   *
+   * Delays the startup sync slightly and runs it in background to ensure
+   * the application can start serving requests even if Redis is slow or unavailable.
+   */
+  private triggerStartupSyncAsync(): void {
+    // Delay startup sync by 5 seconds to let the app fully initialize
+    setTimeout(() => {
+      this.triggerStartupSync().catch((error) => {
+        this.logger.warn(
+          `Startup sync failed (non-blocking): ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      });
+    }, 5000);
   }
 
   /**
@@ -96,25 +115,55 @@ export class GovDataSyncService implements OnModuleInit {
    * Adds sync jobs to the queue on application startup.
    * Jobs are queued with a small delay to avoid overloading the system
    * during startup.
+   *
+   * Note: Uses timeout to prevent blocking if Redis is unavailable (#1517)
    */
   private async triggerStartupSync(): Promise<void> {
     this.logger.log('Triggering startup sync for SINAPI and SICRO...');
 
+    // Timeout for queue operations to prevent infinite blocking (#1517)
+    const QUEUE_TIMEOUT_MS = 10000; // 10 seconds
+
+    const withTimeout = <T>(
+      promise: Promise<T>,
+      timeoutMs: number,
+      operation: string,
+    ): Promise<T> => {
+      return Promise.race([
+        promise,
+        new Promise<T>((_, reject) =>
+          setTimeout(
+            () =>
+              reject(new Error(`${operation} timed out after ${timeoutMs}ms`)),
+            timeoutMs,
+          ),
+        ),
+      ]);
+    };
+
     try {
-      // Queue SINAPI sync with a small delay
-      const sinapiJobId = await this.addSinapiSyncJob({
-        mesReferencia: getCurrentReferenceMonth(),
-        tipo: 'ALL',
-        force: false, // Don't re-sync if already loaded
-      });
+      // Queue SINAPI sync with timeout
+      const sinapiJobId = await withTimeout(
+        this.addSinapiSyncJob({
+          mesReferencia: getCurrentReferenceMonth(),
+          tipo: 'ALL',
+          force: false, // Don't re-sync if already loaded
+        }),
+        QUEUE_TIMEOUT_MS,
+        'SINAPI sync job queue',
+      );
       this.logger.log(`Startup SINAPI sync job queued: ${sinapiJobId}`);
 
-      // Queue SICRO sync
-      const sicroJobId = await this.addSicroSyncJob({
-        mesReferencia: getCurrentQuarterReferenceMonth(),
-        tipo: 'ALL',
-        force: false,
-      });
+      // Queue SICRO sync with timeout
+      const sicroJobId = await withTimeout(
+        this.addSicroSyncJob({
+          mesReferencia: getCurrentQuarterReferenceMonth(),
+          tipo: 'ALL',
+          force: false,
+        }),
+        QUEUE_TIMEOUT_MS,
+        'SICRO sync job queue',
+      );
       this.logger.log(`Startup SICRO sync job queued: ${sicroJobId}`);
 
       this.logger.log('Startup sync jobs queued successfully');
