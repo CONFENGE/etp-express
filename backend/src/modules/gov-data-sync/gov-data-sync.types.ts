@@ -47,6 +47,73 @@ export interface GovCacheRefreshJobData {
 }
 
 /**
+ * Job data for PNCP weekly check (#1166)
+ * Checks for new contratações published in the last week
+ */
+export interface PncpWeeklyCheckJobData {
+  /** Target UF to check (optional, checks all if not specified) */
+  uf?: string;
+  /** Number of days to look back (default: 7) */
+  lookbackDays?: number;
+  /** Force refresh even if recent data exists in cache */
+  forceRefresh?: boolean;
+}
+
+/**
+ * Job data for cache validation (#1166)
+ * Validates cache integrity and reports statistics
+ */
+export interface CacheValidationJobData {
+  /** Target cache to validate (sinapi, sicro, pncp, comprasgov, all) */
+  cacheType?: 'sinapi' | 'sicro' | 'pncp' | 'comprasgov' | 'all';
+  /** Whether to auto-repair inconsistencies */
+  autoRepair?: boolean;
+}
+
+/**
+ * Result of PNCP weekly check
+ */
+export interface PncpWeeklyCheckResult {
+  /** Number of new contratações found */
+  newContratacoes: number;
+  /** Number of new atas found */
+  newAtas: number;
+  /** Number of new contratos found */
+  newContratos: number;
+  /** Date range checked */
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  /** UFs checked */
+  ufsChecked: string[];
+  /** Whether new data was found */
+  hasNewData: boolean;
+}
+
+/**
+ * Result of cache validation
+ */
+export interface CacheValidationResult {
+  /** Cache type validated */
+  cacheType: string;
+  /** Total keys in cache */
+  totalKeys: number;
+  /** Number of expired keys found */
+  expiredKeys: number;
+  /** Number of corrupted entries */
+  corruptedEntries: number;
+  /** Number of entries repaired (if autoRepair enabled) */
+  repairedEntries: number;
+  /** Cache hit ratio since last validation */
+  hitRatio: number;
+  /** Cache health score (0-100) */
+  healthScore: number;
+  /** Issues found during validation */
+  issues: string[];
+}
+
+/**
  * Sync result for tracking
  */
 export interface GovDataSyncResult {
@@ -130,3 +197,7 @@ export const GOV_DATA_SYNC_QUEUE = 'gov-data-sync';
 export const SINAPI_SYNC_JOB = 'sinapi-sync';
 export const SICRO_SYNC_JOB = 'sicro-sync';
 export const GOV_CACHE_REFRESH_JOB = 'gov-cache-refresh';
+/** PNCP weekly check job - checks for new contratações (#1166) */
+export const PNCP_WEEKLY_CHECK_JOB = 'pncp-weekly-check';
+/** Cache validation job - validates cache integrity (#1166) */
+export const CACHE_VALIDATION_JOB = 'cache-validation';

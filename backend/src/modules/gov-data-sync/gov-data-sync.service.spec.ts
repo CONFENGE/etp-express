@@ -20,6 +20,8 @@ import {
   SINAPI_SYNC_JOB,
   SICRO_SYNC_JOB,
   GOV_CACHE_REFRESH_JOB,
+  PNCP_WEEKLY_CHECK_JOB,
+  CACHE_VALIDATION_JOB,
 } from './gov-data-sync.types';
 
 describe('GovDataSyncService', () => {
@@ -456,6 +458,153 @@ describe('GovDataSyncService', () => {
 
       expect(status).toEqual(mockSicroStatus);
       expect(mockSicroService.getDataStatus).toHaveBeenCalled();
+    });
+  });
+
+  describe('addPncpWeeklyCheckJob (#1166)', () => {
+    it('should add PNCP weekly check job to queue', async () => {
+      const jobId = await service.addPncpWeeklyCheckJob({
+        lookbackDays: 7,
+        forceRefresh: false,
+      });
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        PNCP_WEEKLY_CHECK_JOB,
+        expect.objectContaining({
+          lookbackDays: 7,
+          forceRefresh: false,
+        }),
+        expect.objectContaining({
+          attempts: 3,
+        }),
+      );
+    });
+
+    it('should add PNCP weekly check job with UF filter', async () => {
+      const jobId = await service.addPncpWeeklyCheckJob({
+        uf: 'DF',
+        lookbackDays: 14,
+      });
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        PNCP_WEEKLY_CHECK_JOB,
+        expect.objectContaining({
+          uf: 'DF',
+          lookbackDays: 14,
+        }),
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('addCacheValidationJob (#1166)', () => {
+    it('should add cache validation job to queue', async () => {
+      const jobId = await service.addCacheValidationJob({
+        cacheType: 'all',
+        autoRepair: true,
+      });
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        CACHE_VALIDATION_JOB,
+        expect.objectContaining({
+          cacheType: 'all',
+          autoRepair: true,
+        }),
+        expect.objectContaining({
+          attempts: 2,
+        }),
+      );
+    });
+
+    it('should add cache validation job for specific cache type', async () => {
+      const jobId = await service.addCacheValidationJob({
+        cacheType: 'pncp',
+        autoRepair: false,
+      });
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        CACHE_VALIDATION_JOB,
+        expect.objectContaining({
+          cacheType: 'pncp',
+          autoRepair: false,
+        }),
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('triggerPncpWeeklyCheck (#1166)', () => {
+    it('should trigger manual PNCP weekly check', async () => {
+      const jobId = await service.triggerPncpWeeklyCheck('DF', 14, true);
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        PNCP_WEEKLY_CHECK_JOB,
+        expect.objectContaining({
+          uf: 'DF',
+          lookbackDays: 14,
+          forceRefresh: true,
+        }),
+        expect.any(Object),
+      );
+    });
+
+    it('should use default values when not specified', async () => {
+      const jobId = await service.triggerPncpWeeklyCheck();
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        PNCP_WEEKLY_CHECK_JOB,
+        expect.objectContaining({
+          lookbackDays: 7,
+          forceRefresh: false,
+        }),
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('triggerCacheValidation (#1166)', () => {
+    it('should trigger manual cache validation', async () => {
+      const jobId = await service.triggerCacheValidation('sinapi', false);
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        CACHE_VALIDATION_JOB,
+        expect.objectContaining({
+          cacheType: 'sinapi',
+          autoRepair: false,
+        }),
+        expect.any(Object),
+      );
+    });
+
+    it('should validate all caches with auto-repair when not specified', async () => {
+      const jobId = await service.triggerCacheValidation();
+
+      expect(jobId).toBe('test-job-id');
+      expect(mockQueue.add).toHaveBeenCalledWith(
+        CACHE_VALIDATION_JOB,
+        expect.objectContaining({
+          cacheType: 'all',
+          autoRepair: true,
+        }),
+        expect.any(Object),
+      );
+    });
+  });
+
+  describe('scheduled jobs (#1166)', () => {
+    it('should have schedulePncpWeeklyCheck method', () => {
+      expect(service.schedulePncpWeeklyCheck).toBeDefined();
+    });
+
+    it('should have scheduleCacheValidation method', () => {
+      expect(service.scheduleCacheValidation).toBeDefined();
     });
   });
 });
