@@ -206,7 +206,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     // Scheduled tasks (cron jobs)
     ScheduleModule.forRoot(),
 
-    // Job Queue (BullMQ) - Issue #220
+    // Job Queue (BullMQ) - Issue #220, #1517 (connection timeout fix)
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -222,7 +222,15 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
             // BullMQ-specific options
             maxRetriesPerRequest: redisConf.maxRetriesPerRequest,
             enableReadyCheck: redisConf.enableReadyCheck,
+            // Connection timeout to prevent infinite blocking (#1517)
+            connectTimeout: 10000, // 10 seconds
+            // Don't block app startup on Redis connection (#1517)
+            lazyConnect: true,
             retryStrategy: (times: number) => {
+              // Stop retrying after 3 attempts during startup
+              if (times > 3) {
+                return null; // Stop retrying
+              }
               const delay = Math.min(times * 1000, 5000);
               return delay;
             },
