@@ -5,11 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Etp } from './etp.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
+import { TermoReferenciaVersion } from './termo-referencia-version.entity';
 
 /**
  * Status do Termo de Referencia.
@@ -232,6 +234,26 @@ export class TermoReferencia {
    */
   @Column({ default: 1 })
   versao: number;
+
+  /**
+   * Versao atual do documento (para controle de versionamento).
+   * Atualizado automaticamente quando uma nova versao e criada.
+   */
+  @Column({ default: 1 })
+  currentVersion: number;
+
+  // ============================================
+  // Relacionamento com versoes
+  // ============================================
+
+  /**
+   * Historico de versoes do TR.
+   * Cada alteracao significativa cria um snapshot.
+   *
+   * Issue #1253 - [TR-f] Versionamento e historico de TR
+   */
+  @OneToMany(() => TermoReferenciaVersion, (version) => version.termoReferencia)
+  versions: TermoReferenciaVersion[];
 
   /**
    * Usuario que criou o TR.
