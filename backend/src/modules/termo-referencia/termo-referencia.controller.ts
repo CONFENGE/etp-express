@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TrVersionsService } from './tr-versions.service';
 import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import {
   CreateTermoReferenciaDto,
@@ -31,6 +32,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
+import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
  * Controller para Termos de Referencia.
@@ -57,6 +59,7 @@ import { TermoReferencia } from '../../entities/termo-referencia.entity';
 export class TermoReferenciaController {
   constructor(
     private readonly termoReferenciaService: TermoReferenciaService,
+    private readonly trVersionsService: TrVersionsService,
     private readonly termoReferenciaExportService: TermoReferenciaExportService,
   ) {}
 
@@ -461,5 +464,245 @@ export class TermoReferenciaController {
     });
 
     res.send(pdfBuffer);
+  }
+
+  // ============================================
+  // VERSION ENDPOINTS
+  // Issue #1253 - [TR-f] Versionamento e historico de TR
+  // ============================================
+
+  /**
+   * Cria uma nova versao (snapshot) do TR.
+   *
+   * Cada versao representa um snapshot completo do TR em um momento especifico,
+   * permitindo rastreabilidade e restauracao de estados anteriores.
+   */
+  @Post(':id/versions')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Criar versao do TR',
+    description:
+      'Cria um snapshot do estado atual do Termo de Referencia para versionamento.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Versao criada com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'TR nao encontrado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para criar versao deste TR',
+  })
+  async createVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('changeLog') changeLog: string,
+    @CurrentUser() user: User,
+  ) {
+    // Validate TR belongs to user's organization
+    await this.termoReferenciaService.findOne(id, user.organizationId);
+
+    const version = await this.trVersionsService.createVersion(
+      id,
+      changeLog,
+      user.id,
+    );
+    return {
+      data: version,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Lista todas as versoes de um TR.
+   *
+   * Retorna o historico completo de versoes em ordem decrescente.
+   */
+  @Get(':id/versions')
+  @ApiOperation({
+    summary: 'Listar versoes do TR',
+    description:
+      'Lista todas as versoes de um Termo de Referencia em ordem decrescente.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de versoes',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para acessar este TR',
+  })
+  async getVersions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+  ) {
+    // Validate TR belongs to user's organization
+    await this.termoReferenciaService.findOne(id, user.organizationId);
+
+    const versions = await this.trVersionsService.getVersions(id);
+    return {
+      data: versions,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Busca uma versao especifica por ID.
+   */
+  @Get(':id/versions/:versionId')
+  @ApiOperation({
+    summary: 'Obter versao especifica',
+    description: 'Retorna os detalhes de uma versao especifica do TR.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'versionId',
+    description: 'ID da versao',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados da versao',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Versao nao encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para acessar esta versao',
+  })
+  async getVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionId', ParseUUIDPipe) versionId: string,
+    @CurrentUser() user: User,
+  ) {
+    // Validate TR belongs to user's organization
+    await this.termoReferenciaService.findOne(id, user.organizationId);
+
+    const version = await this.trVersionsService.getVersion(versionId);
+    return {
+      data: version,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Compara duas versoes de um TR.
+   *
+   * Retorna as diferencas entre as duas versoes.
+   */
+  @Get(':id/versions/compare/:versionId1/:versionId2')
+  @ApiOperation({
+    summary: 'Comparar versoes do TR',
+    description: 'Compara duas versoes do TR e retorna as diferencas.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'versionId1',
+    description: 'ID da primeira versao',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'versionId2',
+    description: 'ID da segunda versao',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comparacao concluida',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Versao nao encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para acessar estas versoes',
+  })
+  async compareVersions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionId1', ParseUUIDPipe) versionId1: string,
+    @Param('versionId2', ParseUUIDPipe) versionId2: string,
+    @CurrentUser() user: User,
+  ) {
+    // Validate TR belongs to user's organization
+    await this.termoReferenciaService.findOne(id, user.organizationId);
+
+    return this.trVersionsService.compareVersions(
+      versionId1,
+      versionId2,
+      user.organizationId,
+    );
+  }
+
+  /**
+   * Restaura um TR para o estado de uma versao anterior.
+   *
+   * Antes de restaurar, cria automaticamente um backup da versao atual.
+   */
+  @Post(':id/versions/:versionId/restore')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Restaurar versao do TR',
+    description:
+      'Restaura o TR para o estado de uma versao anterior. Cria backup da versao atual automaticamente.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do Termo de Referencia',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'versionId',
+    description: 'ID da versao a restaurar',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Versao restaurada com sucesso',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Versao nao encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissao para restaurar esta versao',
+  })
+  async restoreVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionId', ParseUUIDPipe) versionId: string,
+    @CurrentUser() user: User,
+  ): Promise<{ data: TermoReferencia; message: string; disclaimer: string }> {
+    // Validate TR belongs to user's organization
+    await this.termoReferenciaService.findOne(id, user.organizationId);
+
+    const tr = await this.trVersionsService.restoreVersion(versionId, user.id);
+    return {
+      data: tr,
+      message: 'Versao restaurada com sucesso',
+      disclaimer: DISCLAIMER,
+    };
   }
 }

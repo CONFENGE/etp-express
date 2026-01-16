@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 759/804 (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 760/804 (94.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1519 | Feature  | [#1253] Implement TR versioning and history ✅ - **M10 COMPLETE 7/7** |
 | 2026-01-16 | #1518 | Fix      | [#1517] Fix backend timeout - prevent startup sync from blocking initialization ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1516 | Feature  | [#1166] Add weekly PNCP check and cache validation jobs ✅ - **Score 100/100 - Merged (ZAP infra issue #1517)** |
 | 2026-01-16 | #1515 | Feature  | [#1266] Real-time compliance alerts during ETP editing ✅ - **Score 100/100 - Auto-merged** |
@@ -421,7 +422,7 @@ Nenhum bug P0 aberto! 🎉
 ETP → Termo de Referência → Pesquisa de Preços → Edital → Contrato
 ```
 
-#### M10: Termo de Referência (#1247-#1253) - IN PROGRESS 6/7
+#### M10: Termo de Referência (#1247-#1253) - ✅ COMPLETE 7/7
 
 Geração automática de TR a partir do ETP aprovado.
 
@@ -433,7 +434,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1250 Templates por categoria               | ✅     |
 |       | ↳ #1251 Editor TR no frontend                 | ✅     |
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
-|       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
+|       | ↳ #1253 Versionamento e histórico de TR       | ✅     |
 
 #### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 21/21
 

@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { TermoReferenciaTemplate } from '../../entities/termo-referencia-template.entity';
+import { TermoReferenciaVersion } from '../../entities/termo-referencia-version.entity';
 import { Etp } from '../../entities/etp.entity';
 import { TermoReferenciaController } from './termo-referencia.controller';
 import { TermoReferenciaService } from './termo-referencia.service';
+import { TrVersionsService } from './tr-versions.service';
 import { TermoReferenciaExportService } from '../export/termo-referencia-export.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
@@ -25,16 +27,30 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - #1250: Templates de TR por categoria (DONE)
  * - #1251: Editor de TR no frontend (DONE)
  * - #1252: Export TR em PDF/DOCX (DONE)
+ * - #1253: Versionamento e historico de TR (DONE)
  *
  * Parent: #1247 - [TR] Modulo de Termo de Referencia - EPIC
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TermoReferencia, TermoReferenciaTemplate, Etp]),
+    TypeOrmModule.forFeature([
+      TermoReferencia,
+      TermoReferenciaTemplate,
+      TermoReferenciaVersion,
+      Etp,
+    ]),
     OrchestratorModule, // Provides OpenAIService for AI-powered TR generation
   ],
   controllers: [TermoReferenciaController],
-  providers: [TermoReferenciaService, TermoReferenciaExportService],
-  exports: [TermoReferenciaService, TermoReferenciaExportService],
+  providers: [
+    TermoReferenciaService,
+    TrVersionsService,
+    TermoReferenciaExportService,
+  ],
+  exports: [
+    TermoReferenciaService,
+    TrVersionsService,
+    TermoReferenciaExportService,
+  ],
 })
 export class TermoReferenciaModule {}
