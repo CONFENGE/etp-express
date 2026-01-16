@@ -12,6 +12,8 @@ import {
   defaultPesquisaPrecosValues,
   pesquisaStepSchemas,
 } from '@/schemas/pesquisaPrecosSchema';
+import { StepSelectBase } from './StepSelectBase';
+import { StepDefineItems } from './StepDefineItems';
 
 /**
  * Props for wizard step components
@@ -180,10 +182,19 @@ export function CreatePesquisaPrecosWizard({
   const renderStep = useCallback(() => {
     const step = PESQUISA_WIZARD_STEPS[currentStep];
 
-    // For now, render placeholder components
-    // These will be replaced by actual implementations in subsequent issues
+    // Step 0 (index 0) - Select ETP/TR base (#1507)
+    if (currentStep === 0) {
+      return <StepSelectBase form={form} />;
+    }
+
+    // Step 1 (index 1) - Define items (#1507)
+    if (currentStep === 1) {
+      return <StepDefineItems form={form} />;
+    }
+
+    // Steps 2-4 - Placeholder for future issues (#1508, #1509)
     return <StepPlaceholder stepIndex={currentStep} stepTitle={step.title} />;
-  }, [currentStep]);
+  }, [currentStep, form]);
 
   return (
     <div className="flex flex-col h-full">
