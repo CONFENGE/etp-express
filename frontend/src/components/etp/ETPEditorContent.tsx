@@ -10,6 +10,8 @@ import { GenerationStatus, DataSourceStatusInfo } from '@/types/etp';
 import { getStatusMessage } from '@/lib/polling';
 import { DataSourceStatus } from '@/components/common/DataSourceStatus';
 import { SearchStatus, SourceStatus } from '@/types/search';
+import { ComplianceAlertPanel } from './ComplianceAlertPanel';
+import { ComplianceSuggestion } from '@/types/compliance';
 
 interface Section {
   number: number;
@@ -31,6 +33,14 @@ interface ETPEditorContentProps {
   dataSourceStatus?: DataSourceStatusInfo | null;
   /** Callback when retry button is clicked */
   onRetryDataSource?: () => void;
+  /** Compliance alerts for current section (#1266) */
+  complianceAlerts?: ComplianceSuggestion[];
+  /** Whether compliance validation is in progress (#1266) */
+  isValidatingCompliance?: boolean;
+  /** Set of dismissed alert IDs (#1266) */
+  dismissedAlerts?: Set<string>;
+  /** Callback when an alert is dismissed (#1266) */
+  onDismissAlert?: (alertId: string) => void;
 }
 
 // Memoized component to prevent unnecessary re-renders (#457)
@@ -44,6 +54,10 @@ export const ETPEditorContent = memo(function ETPEditorContent({
   generationStatus = 'idle',
   dataSourceStatus,
   onRetryDataSource,
+  complianceAlerts = [],
+  isValidatingCompliance = false,
+  dismissedAlerts = new Set(),
+  onDismissAlert,
 }: ETPEditorContentProps) {
   // Memoized handler to extract value from event (#457)
   const handleContentChange = useCallback(
@@ -153,6 +167,19 @@ export const ETPEditorContent = memo(function ETPEditorContent({
                   status={convertedDataSourceStatus.status}
                   sources={convertedDataSourceStatus.sources}
                   onRetry={onRetryDataSource}
+                />
+              </div>
+            )}
+
+            {/* Compliance alerts panel (#1266) */}
+            {(complianceAlerts.length > 0 || isValidatingCompliance) && (
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                <ComplianceAlertPanel
+                  alerts={complianceAlerts}
+                  isValidating={isValidatingCompliance}
+                  dismissedAlerts={dismissedAlerts}
+                  onDismiss={onDismissAlert || (() => {})}
+                  maxAlerts={3}
                 />
               </div>
             )}
