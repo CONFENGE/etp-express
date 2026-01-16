@@ -45,19 +45,19 @@ export class CreateComplianceValidationHistory1737072000000 implements Migration
     await queryRunner.query(`
       ALTER TABLE "compliance_validation_history"
       ADD CONSTRAINT "FK_validation_history_etp"
-      FOREIGN KEY ("etp_id") REFERENCES "etp"("id") ON DELETE CASCADE
+      FOREIGN KEY ("etp_id") REFERENCES "etps"("id") ON DELETE CASCADE
     `);
 
     await queryRunner.query(`
       ALTER TABLE "compliance_validation_history"
       ADD CONSTRAINT "FK_validation_history_checklist"
-      FOREIGN KEY ("checklist_id") REFERENCES "compliance_checklist"("id") ON DELETE NO ACTION
+      FOREIGN KEY ("checklist_id") REFERENCES "compliance_checklists"("id") ON DELETE NO ACTION
     `);
 
     await queryRunner.query(`
       ALTER TABLE "compliance_validation_history"
       ADD CONSTRAINT "FK_validation_history_user"
-      FOREIGN KEY ("validated_by_id") REFERENCES "user"("id") ON DELETE NO ACTION
+      FOREIGN KEY ("validated_by_id") REFERENCES "users"("id") ON DELETE NO ACTION
     `);
   }
 
