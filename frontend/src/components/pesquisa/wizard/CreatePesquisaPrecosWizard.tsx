@@ -223,11 +223,7 @@ export function CreatePesquisaPrecosWizard({
                         : 'bg-muted text-muted-foreground',
                   )}
                 >
-                  {isCompleted ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    index + 1
-                  )}
+                  {isCompleted ? <Check className="w-4 h-4" /> : index + 1}
                 </div>
                 <span className="hidden md:inline text-sm font-medium">
                   {step.title}

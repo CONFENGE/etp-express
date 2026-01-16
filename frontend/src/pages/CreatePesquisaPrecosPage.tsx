@@ -34,8 +34,9 @@ export function CreatePesquisaPrecosPage() {
       try {
         // Transform wizard data to API format
         const pesquisaData = {
-          etpId: data.baseType === 'etp' ? data.baseId ?? undefined : undefined,
-          trId: data.baseType === 'tr' ? data.baseId ?? undefined : undefined,
+          etpId:
+            data.baseType === 'etp' ? (data.baseId ?? undefined) : undefined,
+          trId: data.baseType === 'tr' ? (data.baseId ?? undefined) : undefined,
           items: data.items,
           sources: data.selectedSources,
         };
