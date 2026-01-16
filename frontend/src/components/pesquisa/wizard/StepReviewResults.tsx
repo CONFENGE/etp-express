@@ -41,8 +41,14 @@ export function StepReviewResults({ form }: PesquisaWizardStepProps) {
   // Memoize to prevent unnecessary re-renders
   const items = useMemo(() => itemsRaw || [], [itemsRaw]);
   const results = useMemo(() => resultsRaw || [], [resultsRaw]);
-  const selectedPrices = useMemo(() => selectedPricesRaw || {}, [selectedPricesRaw]);
-  const justifications = useMemo(() => justificationsRaw || {}, [justificationsRaw]);
+  const selectedPrices = useMemo(
+    () => selectedPricesRaw || {},
+    [selectedPricesRaw],
+  );
+  const justifications = useMemo(
+    () => justificationsRaw || {},
+    [justificationsRaw],
+  );
 
   // Store access
   const { currentPesquisa, updatePesquisa } = usePesquisaPrecosStore();
@@ -50,7 +56,9 @@ export function StepReviewResults({ form }: PesquisaWizardStepProps) {
   // Modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<PesquisaItem | null>(null);
-  const [editResult, setEditResult] = useState<PriceResult | undefined>(undefined);
+  const [editResult, setEditResult] = useState<PriceResult | undefined>(
+    undefined,
+  );
   const [editMode, setEditMode] = useState<'edit' | 'add'>('add');
 
   // Global justification
@@ -239,7 +247,13 @@ export function StepReviewResults({ form }: PesquisaWizardStepProps) {
     } catch {
       // Error handled by store
     }
-  }, [currentPesquisa, updatePesquisa, results, selectedPrices, justifications]);
+  }, [
+    currentPesquisa,
+    updatePesquisa,
+    results,
+    selectedPrices,
+    justifications,
+  ]);
 
   // Check if results are empty
   const hasResults = results.length > 0;
@@ -361,8 +375,8 @@ export function StepReviewResults({ form }: PesquisaWizardStepProps) {
             className="text-sm"
           />
           <p className="text-xs text-muted-foreground">
-            Esta justificativa sera usada para itens que nao possuem justificativa
-            individual.
+            Esta justificativa sera usada para itens que nao possuem
+            justificativa individual.
           </p>
         </div>
       )}
