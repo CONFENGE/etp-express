@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 742/791 (93.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 743/791 (93.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | #1505 | Feature  | [#1260] Add PDF/JSON export for Pesquisa de Precos (#1260) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1504 | Feature  | [#1265] Add ComplianceBadge component for visual compliance status (#1265) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1503 | Feature  | [#1191] Create dedicated staging environment for E2E tests (#1191) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1502 | Test     | [#1494] Implementar suporte a prefers-reduced-motion global (#1494) ✅ - **Score 100/100 - Auto-merged - EPIC #1430 COMPLETE (6/6)** |
@@ -449,7 +450,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
-|       | ↳ #1260 Export relatório pesquisa PDF         | 🔴     |
+|       | ↳ #1260 Export relatório pesquisa PDF         | ✅     |
 | #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | 🔴 |
 |       | ↳ #1463 Criar design tokens de espaçamento Apple HIG | ✅ |
 |       | ↳ #1464 Implementar grid system responsivo 12 colunas | ✅ |
