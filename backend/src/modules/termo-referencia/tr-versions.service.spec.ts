@@ -702,9 +702,7 @@ describe('TrVersionsService', () => {
       ).rejects.toThrow(NotFoundException);
       await expect(
         service.restoreVersion(mockVersionId, mockUserId),
-      ).rejects.toThrow(
-        `Termo de Referencia ${mockTrId} nao encontrado`,
-      );
+      ).rejects.toThrow(`Termo de Referencia ${mockTrId} nao encontrado`);
     });
   });
 });

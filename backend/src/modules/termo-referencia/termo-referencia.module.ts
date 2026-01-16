@@ -42,7 +42,15 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     OrchestratorModule, // Provides OpenAIService for AI-powered TR generation
   ],
   controllers: [TermoReferenciaController],
-  providers: [TermoReferenciaService, TrVersionsService, TermoReferenciaExportService],
-  exports: [TermoReferenciaService, TrVersionsService, TermoReferenciaExportService],
+  providers: [
+    TermoReferenciaService,
+    TrVersionsService,
+    TermoReferenciaExportService,
+  ],
+  exports: [
+    TermoReferenciaService,
+    TrVersionsService,
+    TermoReferenciaExportService,
+  ],
 })
 export class TermoReferenciaModule {}

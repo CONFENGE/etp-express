@@ -32,7 +32,6 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
-import { TermoReferenciaVersion } from '../../entities/termo-referencia-version.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
 
 /**
