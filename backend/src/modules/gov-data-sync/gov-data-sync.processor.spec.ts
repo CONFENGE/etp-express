@@ -404,7 +404,10 @@ describe('GovDataSyncProcessor', () => {
 
     it('should auto-repair critically unhealthy caches', async () => {
       // Simulate critically low health score (low hit ratio, empty cache with misses)
-      (mockCache.getStats as jest.Mock).mockReturnValue({ hits: 0, misses: 100 });
+      (mockCache.getStats as jest.Mock).mockReturnValue({
+        hits: 0,
+        misses: 100,
+      });
       (mockCache.getKeyCount as jest.Mock).mockResolvedValue(0);
 
       const mockJob = {
@@ -445,7 +448,10 @@ describe('GovDataSyncProcessor', () => {
     });
 
     it('should validate without auto-repair when disabled', async () => {
-      (mockCache.getStats as jest.Mock).mockReturnValue({ hits: 0, misses: 100 });
+      (mockCache.getStats as jest.Mock).mockReturnValue({
+        hits: 0,
+        misses: 100,
+      });
       (mockCache.getKeyCount as jest.Mock).mockResolvedValue(0);
 
       const mockJob = {
