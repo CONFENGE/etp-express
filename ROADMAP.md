@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-15 | **Progresso:** 743/791 (93.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-15 | **Progresso:** 750/803 (93.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-15 | -     | Audit    | ROADMAP sync: close #1429/#1430 (HIG), #1263 (Compliance), add #1506-#1509 (Pesquisa wizard) |
 | 2026-01-15 | #1505 | Feature  | [#1260] Add PDF/JSON export for Pesquisa de Precos (#1260) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1504 | Feature  | [#1265] Add ComplianceBadge component for visual compliance status (#1265) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | #1503 | Feature  | [#1191] Create dedicated staging environment for E2E tests (#1191) ✅ - **Score 100/100 - Auto-merged** |
@@ -277,8 +278,8 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1437 Aplicar Liquid Glass a Tooltips                  | Component   | ✅     |
 | #1427 | Implementar Tipografia Apple HIG (San Francisco)         | Typography  | ✅     |
 | #1428 | Implementar Sistema de Cores Apple HIG                   | Colors      | ✅     |
-| #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | 🔴     |
-| #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | 🔴     |
+| #1429 | Implementar Layout e Espaçamento Apple HIG               | Layout      | ✅     |
+| #1430 | Implementar Micro-interações e Animações Apple HIG       | Motion      | ✅     |
 |       | ↳ #1489 Criar design tokens Motion (easing + durations)  | Tokens      | ✅     |
 |       | ↳ #1490 Implementar micro-interações em Buttons          | Component   | ✅     |
 |       | ↳ #1491 Implementar micro-interações em Cards            | Component   | ✅     |
@@ -293,7 +294,7 @@ Nenhum bug P0 aberto! 🎉
 |       | ↳ #1479 Color accessibility (não usar cor único indicador)| Color      | ✅     |
 |       | ↳ #1480 Testes WCAG e documentação                       | Tests       | ✅     |
 
-**Progresso Design System:** 18/24 (75.0%)
+**Progresso Design System:** 24/24 (100%) ✅ COMPLETE
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -336,24 +337,16 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (62)
+## Issues Abertas (53)
 
-### P0 - Apple HIG Design System (5 issues)
+### P0 - Apple HIG Design System ✅ COMPLETE
 
-| #     | Issue                                                           |
-| ----- | --------------------------------------------------------------- |
-| #1427 | [P0] Implementar Tipografia Apple HIG (San Francisco)           |
-| #1428 | [P0] Implementar Sistema de Cores Apple HIG ✅                  |
-| #1429 | [P0] Implementar Layout e Espaçamento Apple HIG                 |
-| #1430 | [P0] Implementar Micro-interações e Animações Apple HIG         |
-| #1431 | [P0] Implementar Acessibilidade Apple HIG (WCAG 2.1 AA)         |
+> Todos os 6 EPICs do Design System Apple HIG foram concluídos em 2026-01-15.
 
-### P1 - High Priority (8 issues)
+### P1 - High Priority (6 issues)
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1191 | [E2E] Create dedicated staging environment for E2E tests ✅     |
-| #1187 | [E2E] Persistent 401 Unauthorized errors during test execution  |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment            |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
@@ -407,8 +400,8 @@ Nenhum bug P0 aberto! 🎉
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
 | M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
-| M11: Pesquisa de Preços Formal | 8/17   | 47% 🟡     | +R$ 500/mês           |
-| M12: Compliance TCE            | 3/7    | 43% 🟡     | +R$ 1.000/mês premium |
+| M11: Pesquisa de Preços Formal | 12/17  | 71% 🟡     | +R$ 500/mês           |
+| M12: Compliance TCE            | 4/7    | 57% 🟡     | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
@@ -434,7 +427,7 @@ Geração automática de TR a partir do ETP aprovado.
 |       | ↳ #1252 Export TR em PDF/DOCX                 | ✅     |
 |       | ↳ #1253 Versionamento e histórico de TR       | 🔴     |
 
-#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - ✅ COMPLETE 13/13
+#### M11: Pesquisa de Preços Formal (#1254-#1260) + Apple HIG Layout (#1463-#1468) - 🟡 IN PROGRESS 12/17
 
 Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento Apple HIG.
 
@@ -442,16 +435,20 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 | ----- | --------------------------------------------- | ------ |
 | #1254 | [Pesquisa] Modulo de Pesquisa de Precos - EPIC| ✅     |
 |       | ↳ #1255 Entity PesquisaPrecos com metodologia | ✅     |
-|       | ↳ #1256 Coleta automática multi-fonte         | 🔴     |
+|       | ↳ #1256 Coleta automática multi-fonte         | ✅     |
 |       |   ↳ #1412 Integrar PriceAggregation           | ✅     |
 |       |   ↳ #1413 Busca em Atas de Registro de Preços | ✅     |
 |       |   ↳ #1414 Expandir busca PNCP/Compras.gov     | ✅     |
 |       |   ↳ #1415 Endpoint coleta multi-fonte         | ✅     |
 |       | ↳ #1257 Mapa comparativo de preços            | ✅     |
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
-|       | ↳ #1259 Interface de pesquisa no frontend     | 🔴     |
+|       | ↳ #1259 Interface de pesquisa no frontend     | 🟡     |
+|       |   ↳ #1506 Criar página base wizard            | 🔴     |
+|       |   ↳ #1507 Steps 1-2: Seleção ETP/TR           | 🔴     |
+|       |   ↳ #1508 Steps 3-4: Fontes e Execução        | 🔴     |
+|       |   ↳ #1509 Step 5: Revisão e Tabela            | 🔴     |
 |       | ↳ #1260 Export relatório pesquisa PDF         | ✅     |
-| #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | 🔴 |
+| #1429 | [Layout] Implementar Layout e Espaçamento Apple HIG | ✅ |
 |       | ↳ #1463 Criar design tokens de espaçamento Apple HIG | ✅ |
 |       | ↳ #1464 Implementar grid system responsivo 12 colunas | ✅ |
 |       | ↳ #1465 Implementar safe areas e insets para notch/home indicator | ✅ |
@@ -465,7 +462,7 @@ Features:
 - Justificativa automática de metodologia
 - Relatório formal de pesquisa
 
-#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 3/7
+#### M12: Compliance TCE (#1261-#1267) - IN PROGRESS 4/7 (57%)
 
 Validação automática contra critérios TCU/TCE.
 
@@ -473,7 +470,7 @@ Validação automática contra critérios TCU/TCE.
 | ----- | --------------------------------------------- | ------ |
 | #1261 | [Compliance] Validacao TCE - EPIC             | 🟡     |
 |       | ↳ #1262 Mapear criterios TCU/TCE              | ✅     |
-|       | ↳ #1263 Engine de validacao ETP               | 🔴     |
+|       | ↳ #1263 Engine de validacao ETP               | ✅     |
 |       | ↳ #1264 Relatorio de conformidade             | 🔴     |
 |       | ↳ #1265 Selo de Conformidade visual           | ✅     |
 |       | ↳ #1266 Alertas tempo real                    | 🔴     |
@@ -526,10 +523,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 785   |
-| Issues Abertas    | 64    |
-| Issues Fechadas   | 721   |
-| Progresso         | 91.9% |
+| Issues Totais     | 803   |
+| Issues Abertas    | 53    |
+| Issues Fechadas   | 750   |
+| Progresso         | 93.4% |
 | Bugs P0 Abertos   | 0     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
