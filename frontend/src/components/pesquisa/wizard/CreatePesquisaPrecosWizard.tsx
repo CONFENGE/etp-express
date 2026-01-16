@@ -16,6 +16,7 @@ import { StepSelectBase } from './StepSelectBase';
 import { StepDefineItems } from './StepDefineItems';
 import { StepSelectSources } from './StepSelectSources';
 import { StepExecuteSearch } from './StepExecuteSearch';
+import { StepReviewResults } from './StepReviewResults';
 
 /**
  * Props for wizard step components
@@ -204,7 +205,12 @@ export function CreatePesquisaPrecosWizard({
       return <StepExecuteSearch form={form} />;
     }
 
-    // Step 4 - Placeholder for review (#1509)
+    // Step 4 (index 4) - Review results (#1509)
+    if (currentStep === 4) {
+      return <StepReviewResults form={form} />;
+    }
+
+    // Fallback placeholder for any future steps
     return <StepPlaceholder stepIndex={currentStep} stepTitle={step.title} />;
   }, [currentStep, form]);
 
