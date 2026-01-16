@@ -84,10 +84,10 @@ export function StepSelectBase({ form }: PesquisaWizardStepProps) {
 
   // Get selected item details
   const selectedEtp = baseType === 'etp' && baseId
-    ? etps.find((e) => e.id === baseId)
+    ? etps.find((e) => e.id === baseId) ?? null
     : null;
   const selectedTr = baseType === 'tr' && baseId
-    ? trs.find((t) => t.id === baseId)
+    ? trs.find((t) => t.id === baseId) ?? null
     : null;
 
   const isLoading = etpsLoading || trsLoading;
