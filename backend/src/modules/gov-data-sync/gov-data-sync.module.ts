@@ -17,6 +17,7 @@ import { GovDataSyncProcessor } from './gov-data-sync.processor';
 import { GovDataSyncController } from './gov-data-sync.controller';
 import { SinapiModule } from '../gov-api/sinapi/sinapi.module';
 import { SicroModule } from '../gov-api/sicro/sicro.module';
+import { PncpModule } from '../gov-api/pncp/pncp.module';
 import { GovApiModule } from '../gov-api/gov-api.module';
 import { GOV_DATA_SYNC_QUEUE } from './gov-data-sync.types';
 
@@ -27,6 +28,8 @@ import { GOV_DATA_SYNC_QUEUE } from './gov-data-sync.types';
  * - SINAPI monthly sync (day 5 at 03:00 BRT)
  * - SICRO quarterly sync (day 1 of Jan, Apr, Jul, Oct at 03:00 BRT)
  * - Cache refresh weekly (Sunday at 02:00 BRT)
+ * - PNCP weekly check (Monday at 03:00 BRT) - #1166
+ * - Cache validation weekly (Wednesday at 03:00 BRT) - #1166
  *
  * @example
  * ```typescript
@@ -74,6 +77,7 @@ import { GOV_DATA_SYNC_QUEUE } from './gov-data-sync.types';
     GovApiModule,
     SinapiModule,
     SicroModule,
+    PncpModule,
   ],
   controllers: [GovDataSyncController],
   providers: [GovDataSyncService, GovDataSyncProcessor],
