@@ -61,6 +61,13 @@ const TermoReferenciaEditor = lazy(() =>
   })),
 );
 
+// Pesquisa de Precos Wizard (#1506)
+const CreatePesquisaPrecosPage = lazy(() =>
+  import('@/pages/CreatePesquisaPrecosPage').then((m) => ({
+    default: m.CreatePesquisaPrecosPage,
+  })),
+);
+
 // Admin pages - lazy-loaded (only accessed by system admins)
 const AdminDashboard = lazy(() =>
   import('@/pages/admin/AdminDashboard').then((m) => ({
@@ -307,6 +314,18 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <TermoReferenciaEditor />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Pesquisa de Precos Routes (#1506)
+      {
+        // IMPORTANT: /pesquisa-precos/new MUST be defined before /pesquisa-precos/:id
+        // to prevent "new" from being interpreted as a pesquisa ID
+        path: '/pesquisa-precos/new',
+        element: (
+          <ProtectedRoute>
+            <CreatePesquisaPrecosPage />
           </ProtectedRoute>
         ),
       },
