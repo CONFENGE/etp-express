@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 758/803 (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 759/804 (94.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1518 | Fix      | [#1517] Fix backend timeout - prevent startup sync from blocking initialization ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1516 | Feature  | [#1166] Add weekly PNCP check and cache validation jobs ✅ - **Score 100/100 - Merged (ZAP infra issue #1517)** |
 | 2026-01-16 | #1515 | Feature  | [#1266] Real-time compliance alerts during ETP editing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1514 | Feature  | [#1264] Add compliance report generation with PDF export ✅ - **Score 100/100 - Auto-merged** |
