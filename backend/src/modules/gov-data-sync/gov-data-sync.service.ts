@@ -16,10 +16,14 @@ import {
   SinapiSyncJobData,
   SicroSyncJobData,
   GovCacheRefreshJobData,
+  PncpWeeklyCheckJobData,
+  CacheValidationJobData,
   GOV_DATA_SYNC_QUEUE,
   SINAPI_SYNC_JOB,
   SICRO_SYNC_JOB,
   GOV_CACHE_REFRESH_JOB,
+  PNCP_WEEKLY_CHECK_JOB,
+  CACHE_VALIDATION_JOB,
   getCurrentReferenceMonth,
   getCurrentQuarterReferenceMonth,
 } from './gov-data-sync.types';
@@ -46,6 +50,8 @@ export interface GovDataStatus {
  * - SINAPI monthly sync (day 5 at 03:00)
  * - SICRO quarterly sync (day 1 of quarter months at 03:00)
  * - Cache refresh weekly (Sunday at 02:00)
+ * - PNCP weekly check (Monday at 03:00) - #1166
+ * - Cache validation (Wednesday at 03:00) - #1166
  */
 @Injectable()
 export class GovDataSyncService implements OnModuleInit {
@@ -69,11 +75,15 @@ export class GovDataSyncService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     this.logger.log('GovDataSyncService initialized');
     this.logger.log('Scheduled jobs:');
-    this.logger.log(' - SINAPI: Monthly on day 5 at 03:00');
+    this.logger.log(' - SINAPI: Monthly on day 5 at 03:00 BRT');
     this.logger.log(
-      ' - SICRO: Quarterly on day 1 at 03:00 (Jan, Apr, Jul, Oct)',
+      ' - SICRO: Quarterly on day 1 at 03:00 BRT (Jan, Apr, Jul, Oct)',
     );
-    this.logger.log(' - Cache refresh: Weekly on Sunday at 02:00');
+    this.logger.log(' - Cache refresh: Weekly on Sunday at 02:00 BRT');
+    this.logger.log(' - PNCP check: Weekly on Monday at 03:00 BRT (#1166)');
+    this.logger.log(
+      ' - Cache validation: Weekly on Wednesday at 03:00 BRT (#1166)',
+    );
 
     // Trigger startup sync (#1062)
     // This ensures data is loaded when the application starts
@@ -174,6 +184,42 @@ export class GovDataSyncService implements OnModuleInit {
   }
 
   /**
+   * Weekly PNCP check - runs on Monday at 03:00 (#1166)
+   *
+   * Checks for new contratações, atas, and contratos published
+   * in the previous week. Alerts if new data is available.
+   */
+  @Cron('0 3 * * 1', {
+    name: 'pncp-weekly-check',
+    timeZone: 'America/Sao_Paulo',
+  })
+  async schedulePncpWeeklyCheck(): Promise<void> {
+    this.logger.log('Scheduled PNCP weekly check triggered');
+    await this.addPncpWeeklyCheckJob({
+      lookbackDays: 7,
+      forceRefresh: false,
+    });
+  }
+
+  /**
+   * Weekly cache validation - runs on Wednesday at 03:00 (#1166)
+   *
+   * Validates cache integrity, reports statistics, and repairs
+   * any inconsistencies found.
+   */
+  @Cron('0 3 * * 3', {
+    name: 'cache-validation-weekly',
+    timeZone: 'America/Sao_Paulo',
+  })
+  async scheduleCacheValidation(): Promise<void> {
+    this.logger.log('Scheduled cache validation triggered');
+    await this.addCacheValidationJob({
+      cacheType: 'all',
+      autoRepair: true,
+    });
+  }
+
+  /**
    * Add a SINAPI sync job to the queue
    *
    * @param data Job data
@@ -253,6 +299,66 @@ export class GovDataSyncService implements OnModuleInit {
 
     this.logger.log(
       `Added cache refresh job ${job.id} with data: ${JSON.stringify(data)}`,
+    );
+    return job.id ?? 'unknown';
+  }
+
+  /**
+   * Add a PNCP weekly check job to the queue (#1166)
+   *
+   * @param data Job data
+   * @returns Job ID
+   */
+  async addPncpWeeklyCheckJob(
+    data: PncpWeeklyCheckJobData = {},
+  ): Promise<string> {
+    const job = await this.syncQueue.add(PNCP_WEEKLY_CHECK_JOB, data, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 60000, // 1 minute initial delay
+      },
+      removeOnComplete: {
+        age: 86400 * 7, // Keep for 7 days for analysis
+        count: 50,
+      },
+      removeOnFail: {
+        age: 604800,
+      },
+    });
+
+    this.logger.log(
+      `Added PNCP weekly check job ${job.id} with data: ${JSON.stringify(data)}`,
+    );
+    return job.id ?? 'unknown';
+  }
+
+  /**
+   * Add a cache validation job to the queue (#1166)
+   *
+   * @param data Job data
+   * @returns Job ID
+   */
+  async addCacheValidationJob(
+    data: CacheValidationJobData = {},
+  ): Promise<string> {
+    const job = await this.syncQueue.add(CACHE_VALIDATION_JOB, data, {
+      attempts: 2,
+      backoff: {
+        type: 'exponential',
+        delay: 30000,
+      },
+      removeOnComplete: {
+        age: 86400 * 7, // Keep for 7 days for analysis
+        count: 30,
+      },
+      removeOnFail: {
+        age: 604800,
+      },
+    });
+
+    this.logger.log(
+      `Added cache validation job ${job.id} with data: ${JSON.stringify(data)}`,
     );
     return job.id ?? 'unknown';
   }
@@ -377,6 +483,43 @@ export class GovDataSyncService implements OnModuleInit {
   ): Promise<string> {
     return this.addCacheRefreshJob({
       cacheType: cacheType || 'all',
+    });
+  }
+
+  /**
+   * Trigger manual PNCP weekly check (#1166)
+   *
+   * @param uf Target UF (optional, checks all if not specified)
+   * @param lookbackDays Number of days to look back (default: 7)
+   * @param forceRefresh Force refresh even if recent data exists
+   * @returns Job ID
+   */
+  async triggerPncpWeeklyCheck(
+    uf?: string,
+    lookbackDays = 7,
+    forceRefresh = false,
+  ): Promise<string> {
+    return this.addPncpWeeklyCheckJob({
+      uf,
+      lookbackDays,
+      forceRefresh,
+    });
+  }
+
+  /**
+   * Trigger manual cache validation (#1166)
+   *
+   * @param cacheType Target cache type (optional, validates all if not specified)
+   * @param autoRepair Whether to automatically repair inconsistencies
+   * @returns Job ID
+   */
+  async triggerCacheValidation(
+    cacheType?: 'sinapi' | 'sicro' | 'pncp' | 'comprasgov' | 'all',
+    autoRepair = true,
+  ): Promise<string> {
+    return this.addCacheValidationJob({
+      cacheType: cacheType || 'all',
+      autoRepair,
     });
   }
 
