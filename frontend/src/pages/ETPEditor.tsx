@@ -32,6 +32,7 @@ import { useConfetti } from '@/hooks/useConfetti';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { useETPPreview } from '@/hooks/useETPPreview';
 import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
+import { useComplianceAlerts } from '@/hooks/useComplianceAlerts';
 
 export function ETPEditor() {
   const { id } = useParams<{ id: string }>();
@@ -103,6 +104,14 @@ export function ETPEditor() {
 
   // Onboarding task tracking (#1213)
   const { markSuggestionGenerated, markETPExported } = useOnboardingTasks();
+
+  // Real-time compliance alerts (#1266)
+  const complianceAlertsHook = useComplianceAlerts(
+    id || '',
+    content,
+    activeSection,
+    { debounceMs: 500, enabled: Boolean(id) },
+  );
 
   // Track previous progress to detect ETP completion
   const previousProgressRef = useRef<number | null>(null);
@@ -528,6 +537,11 @@ export function ETPEditor() {
             isOnline: autoSave.isOnline,
             onRetry: autoSave.retry,
           }}
+          complianceAlerts={{
+            count: complianceAlertsHook.activeCount,
+            countByPriority: complianceAlertsHook.countByPriority,
+            isValidating: complianceAlertsHook.isValidating,
+          }}
         />
 
         <ETPEditorProgress progress={currentETP.progress} />
@@ -553,6 +567,10 @@ export function ETPEditor() {
                   generationStatus={generationStatus}
                   dataSourceStatus={dataSourceStatus}
                   onRetryDataSource={() => handleGenerateSection(activeSection)}
+                  complianceAlerts={complianceAlertsHook.alerts}
+                  isValidatingCompliance={complianceAlertsHook.isValidating}
+                  dismissedAlerts={complianceAlertsHook.dismissedAlerts}
+                  onDismissAlert={complianceAlertsHook.dismissAlert}
                 />
               </Tabs>
             </CardContent>

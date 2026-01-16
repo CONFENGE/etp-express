@@ -21,6 +21,7 @@ import {
   AutoSaveIndicator,
   type AutoSaveIndicatorProps,
 } from './AutoSaveIndicator';
+import { ComplianceAlertBadge } from './ComplianceAlertBadge';
 
 // Re-export type for backwards compatibility (type-only exports are allowed)
 export type { ExportState } from './export-types';
@@ -53,6 +54,18 @@ interface ETPEditorHeaderProps {
    * Auto-save state for visual indicator (#1169)
    */
   autoSave?: Omit<AutoSaveIndicatorProps, 'className'>;
+  /**
+   * Compliance alert counts for header badge (#1266)
+   */
+  complianceAlerts?: {
+    count: number;
+    countByPriority: {
+      high: number;
+      medium: number;
+      low: number;
+    };
+    isValidating: boolean;
+  };
 }
 
 export function ETPEditorHeader({
@@ -68,6 +81,7 @@ export function ETPEditorHeader({
   exportState,
   isDirty = false,
   autoSave,
+  complianceAlerts,
 }: ETPEditorHeaderProps) {
   // Use exportState if provided, otherwise fall back to legacy isExporting
   const effectiveExporting = exportState?.isExporting ?? isExporting;
@@ -112,6 +126,15 @@ export function ETPEditorHeader({
           <p className="text-muted-foreground" data-testid="etp-description">
             {etpDescription}
           </p>
+        )}
+        {/* Compliance Alert Badge (#1266) */}
+        {complianceAlerts && (
+          <ComplianceAlertBadge
+            count={complianceAlerts.count}
+            countByPriority={complianceAlerts.countByPriority}
+            isValidating={complianceAlerts.isValidating}
+            className="mt-2"
+          />
         )}
       </div>
       <div className="flex gap-2">
