@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PesquisaPrecosController } from './pesquisa-precos.controller';
 import { PesquisaPrecosService } from './pesquisa-precos.service';
+import { PesquisaPrecosExportService } from '../export/pesquisa-precos-export.service';
 import {
   PesquisaPrecos,
   PesquisaPrecosStatus,
@@ -56,6 +57,11 @@ describe('PesquisaPrecosController', () => {
     gerarJustificativaMetodologia: jest.fn(),
   };
 
+  const mockExportService = {
+    exportToPDF: jest.fn(),
+    exportToJSON: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PesquisaPrecosController],
@@ -63,6 +69,10 @@ describe('PesquisaPrecosController', () => {
         {
           provide: PesquisaPrecosService,
           useValue: mockService,
+        },
+        {
+          provide: PesquisaPrecosExportService,
+          useValue: mockExportService,
         },
       ],
     }).compile();

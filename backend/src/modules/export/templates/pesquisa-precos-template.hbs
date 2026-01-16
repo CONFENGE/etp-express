@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatorio de Pesquisa de Precos - {{pesquisa.titulo}}</title>
+    <style>
+        @page {
+            margin: 2.5cm 2cm;
+            size: A4;
+            @top-center {
+                content: "RELATORIO DE PESQUISA DE PRECOS";
+                font-family: 'Arial', sans-serif;
+                font-size: 10pt;
+                color: #666;
+            }
+            @bottom-center {
+                content: "Pagina " counter(page) " de " counter(pages);
+                font-family: 'Arial', sans-serif;
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px double #000;
+        }
+
+        .header .org-name {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 5px 0;
+        }
+
+        .header h1 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header .subtitle {
+            font-size: 12pt;
+            color: #333;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        .header .doc-number {
+            font-size: 11pt;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .header .version {
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .legal-ref {
+            background-color: #e8f4fc;
+            border-left: 4px solid #2196f3;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-size: 11pt;
+            font-style: italic;
+        }
+
+        .section {
+            margin: 25px 0;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 20px 0 12px 0;
+            padding: 8px 0;
+            border-bottom: 2px solid #333;
+            text-transform: uppercase;
+            color: #1a365d;
+        }
+
+        .section-number {
+            margin-right: 10px;
+        }
+
+        .section-content {
+            text-align: justify;
+            margin: 12px 0;
+            padding-left: 5px;
+        }
+
+        .section-content p {
+            margin: 10px 0;
+            text-indent: 2em;
+        }
+
+        .metadata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+
+        .metadata-table th,
+        .metadata-table td {
+            border: 1px solid #333;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .metadata-table th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            width: 35%;
+        }
+
+        .metadata-table td {
+            background-color: #fff;
+        }
+
+        .valor-destaque {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a365d;
+            padding: 15px;
+            background-color: #f0f4f8;
+            border: 2px solid #1a365d;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .mapa-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .mapa-table th,
+        .mapa-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .mapa-table th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .mapa-table .valor {
+            text-align: right;
+        }
+
+        .mapa-table .item-desc {
+            max-width: 200px;
+        }
+
+        .mapa-table .fonte-header {
+            background-color: #d1e7dd;
+            font-size: 9pt;
+        }
+
+        .mapa-table .estatistica-header {
+            background-color: #fff3cd;
+            font-size: 9pt;
+        }
+
+        .mapa-table .outlier {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .mapa-table .preco-adotado {
+            background-color: #d4edda;
+            font-weight: bold;
+        }
+
+        .resumo-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .resumo-box h3 {
+            margin-top: 0;
+            color: #1a365d;
+            border-bottom: 1px solid #1a365d;
+            padding-bottom: 5px;
+        }
+
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .resumo-item {
+            background: white;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .resumo-item .label {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .resumo-item .value {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a365d;
+        }
+
+        .fontes-list {
+            margin: 15px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .fontes-list li {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-left: 4px solid #2196f3;
+        }
+
+        .fontes-list .fonte-tipo {
+            font-weight: bold;
+            color: #1a365d;
+        }
+
+        .fontes-list .fonte-nome {
+            margin-top: 3px;
+        }
+
+        .fontes-list .fonte-ref {
+            font-size: 10pt;
+            color: #666;
+            font-style: italic;
+        }
+
+        .justificativa-box {
+            background-color: #fff8e1;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .justificativa-box h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .disclaimer {
+            margin: 30px 0 20px 0;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 4px;
+            font-size: 10pt;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .assinaturas {
+            margin-top: 60px;
+            page-break-inside: avoid;
+        }
+
+        .assinatura-box {
+            display: inline-block;
+            width: 45%;
+            margin: 30px 2%;
+            text-align: center;
+        }
+
+        .assinatura-linha {
+            border-top: 1px solid #000;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .assinatura-cargo {
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #666;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .highlight-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 11pt;
+        }
+
+        .toc {
+            margin: 20px 0 30px 0;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            page-break-after: always;
+        }
+
+        .toc h2 {
+            font-size: 14pt;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            font-size: 11pt;
+        }
+
+        .toc .toc-number {
+            display: inline-block;
+            width: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- CABECALHO -->
+    <div class="header">
+        {{#if pesquisa.organization.name}}
+        <div class="org-name">{{pesquisa.organization.name}}</div>
+        {{/if}}
+        <h1>Relatorio de Pesquisa de Precos</h1>
+        <div class="subtitle">{{pesquisa.titulo}}</div>
+        {{#if pesquisa.numeroProcesso}}
+        <div class="doc-number">Processo n {{pesquisa.numeroProcesso}}</div>
+        {{/if}}
+        <div class="version">Versao {{pesquisa.versao}} | {{formatDate pesquisa.createdAt}}</div>
+    </div>
+
+    <!-- REFERENCIA LEGAL -->
+    <div class="legal-ref">
+        <strong>Fundamentacao Legal:</strong> Instrucao Normativa SEGES/ME n 65, de 7 de julho de 2021 -
+        Dispoe sobre o procedimento administrativo para a realizacao de pesquisa de precos para aquisicao
+        de bens e contratacao de servicos em geral, no ambito da Administracao Publica federal.
+    </div>
+
+    <!-- SUMARIO -->
+    <div class="toc">
+        <h2>Sumario</h2>
+        <ul>
+            <li><span class="toc-number">1.</span> IDENTIFICACAO DA PESQUISA</li>
+            <li><span class="toc-number">2.</span> METODOLOGIA</li>
+            <li><span class="toc-number">3.</span> FONTES CONSULTADAS</li>
+            <li><span class="toc-number">4.</span> MAPA COMPARATIVO DE PRECOS</li>
+            <li><span class="toc-number">5.</span> CALCULOS ESTATISTICOS</li>
+            <li><span class="toc-number">6.</span> CRITERIO DE ACEITABILIDADE</li>
+            <li><span class="toc-number">7.</span> JUSTIFICATIVA DA METODOLOGIA</li>
+            <li><span class="toc-number">8.</span> CONCLUSAO</li>
+        </ul>
+    </div>
+
+    <!-- AVISO IMPORTANTE -->
+    <div class="disclaimer">
+        <strong>IMPORTANTE:</strong> Este documento foi gerado com auxilio de sistema assistivo baseado em Inteligencia Artificial.
+        Todo o conteudo deve ser revisado e validado por profissional qualificado antes de qualquer encaminhamento oficial.
+        O sistema pode conter imprecisoes e nao substitui a responsabilidade tecnica e administrativa do servidor publico.
+    </div>
+
+    <!-- 1. IDENTIFICACAO DA PESQUISA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">1.</span> IDENTIFICACAO DA PESQUISA</h2>
+        <div class="section-content">
+            <table class="metadata-table">
+                <tr>
+                    <th>Titulo</th>
+                    <td>{{pesquisa.titulo}}</td>
+                </tr>
+                {{#if pesquisa.descricao}}
+                <tr>
+                    <th>Descricao</th>
+                    <td>{{pesquisa.descricao}}</td>
+                </tr>
+                {{/if}}
+                {{#if pesquisa.numeroProcesso}}
+                <tr>
+                    <th>Processo</th>
+                    <td>{{pesquisa.numeroProcesso}}</td>
+                </tr>
+                {{/if}}
+                {{#if etp}}
+                <tr>
+                    <th>ETP Vinculado</th>
+                    <td>{{etp.title}} {{#if etp.numeroProcesso}}(Processo {{etp.numeroProcesso}}){{/if}}</td>
+                </tr>
+                {{/if}}
+                {{#if termoReferencia}}
+                <tr>
+                    <th>TR Vinculado</th>
+                    <td>{{termoReferencia.objeto}}</td>
+                </tr>
+                {{/if}}
+                <tr>
+                    <th>Status</th>
+                    <td>{{formatStatus pesquisa.status}}</td>
+                </tr>
+                <tr>
+                    <th>Data da Pesquisa</th>
+                    <td>{{formatDate pesquisa.createdAt}}</td>
+                </tr>
+                {{#if pesquisa.dataValidade}}
+                <tr>
+                    <th>Validade</th>
+                    <td>{{formatDate pesquisa.dataValidade}}</td>
+                </tr>
+                {{/if}}
+                <tr>
+                    <th>Responsavel</th>
+                    <td>{{#if pesquisa.createdBy.name}}{{pesquisa.createdBy.name}}{{else}}Nao informado{{/if}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. METODOLOGIA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">2.</span> METODOLOGIA</h2>
+        <div class="section-content">
+            <p>Conforme Art. 5 da IN SEGES/ME n 65/2021, a pesquisa de precos foi realizada utilizando os seguintes parametros:</p>
+
+            <div class="highlight-box">
+                <strong>Metodologia Principal:</strong> {{formatMetodologia pesquisa.metodologia}}
+            </div>
+
+            {{#if pesquisa.metodologiasComplementares}}
+            <p><strong>Metodologias Complementares (Art. 6):</strong></p>
+            <ul>
+                {{#each pesquisa.metodologiasComplementares}}
+                <li>{{formatMetodologia this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 3. FONTES CONSULTADAS -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">3.</span> FONTES CONSULTADAS</h2>
+        <div class="section-content">
+            {{#if pesquisa.fontesConsultadas}}
+            <p>Foram consultadas as seguintes fontes, conforme disposto no Art. 5 da IN 65/2021:</p>
+            <ul class="fontes-list">
+                {{#each pesquisa.fontesConsultadas}}
+                <li>
+                    <div class="fonte-tipo">{{formatMetodologia this.tipo}} (Art. 5, {{mapArtigoIN65 this.tipo}})</div>
+                    <div class="fonte-nome">{{this.nome}}</div>
+                    {{#if this.referencia}}
+                    <div class="fonte-ref">Referencia: {{this.referencia}}</div>
+                    {{/if}}
+                    <div class="fonte-ref">Data da consulta: {{this.dataConsulta}}</div>
+                    {{#if this.observacoes}}
+                    <div class="fonte-ref">Obs: {{this.observacoes}}</div>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <p class="legal-ref">[Fontes consultadas nao informadas]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4. MAPA COMPARATIVO DE PRECOS -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">4.</span> MAPA COMPARATIVO DE PRECOS</h2>
+        <div class="section-content">
+            {{#if pesquisa.itens}}
+            <p>Apresenta-se abaixo o mapa comparativo de precos obtidos na pesquisa:</p>
+
+            <table class="mapa-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 5%">#</th>
+                        <th rowspan="2" class="item-desc" style="width: 25%">Descricao do Item</th>
+                        <th rowspan="2" style="width: 8%">Unid.</th>
+                        <th rowspan="2" style="width: 7%">Qtd.</th>
+                        <th colspan="{{countFontes pesquisa.itens}}" class="fonte-header">Precos por Fonte (R$)</th>
+                        <th colspan="3" class="estatistica-header">Estatisticas (R$)</th>
+                        <th rowspan="2" style="width: 10%">Preco Adotado (R$)</th>
+                    </tr>
+                    <tr>
+                        {{#each (getFontesUnicas pesquisa.itens)}}
+                        <th class="fonte-header" style="width: 10%">{{this}}</th>
+                        {{/each}}
+                        <th class="estatistica-header" style="width: 8%">Media</th>
+                        <th class="estatistica-header" style="width: 8%">Mediana</th>
+                        <th class="estatistica-header" style="width: 8%">Menor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each pesquisa.itens}}
+                    <tr>
+                        <td style="text-align: center">{{addOne @index}}</td>
+                        <td class="item-desc">
+                            {{#if this.codigo}}<small>({{this.codigo}})</small><br>{{/if}}
+                            {{this.descricao}}
+                        </td>
+                        <td style="text-align: center">{{this.unidade}}</td>
+                        <td class="valor">{{formatNumber this.quantidade}}</td>
+                        {{#each (getPrecosPorFonte this ../pesquisa.itens)}}
+                        <td class="valor {{#if this.outlier}}outlier{{/if}}">
+                            {{#if this.valor}}{{formatCurrency this.valor}}{{else}}-{{/if}}
+                        </td>
+                        {{/each}}
+                        <td class="valor">{{#if this.media}}{{formatCurrency this.media}}{{else}}-{{/if}}</td>
+                        <td class="valor">{{#if this.mediana}}{{formatCurrency this.mediana}}{{else}}-{{/if}}</td>
+                        <td class="valor">{{#if this.menorPreco}}{{formatCurrency this.menorPreco}}{{else}}-{{/if}}</td>
+                        <td class="valor preco-adotado">{{#if this.precoAdotado}}{{formatCurrency this.precoAdotado}}{{else}}{{formatCurrency this.mediana}}{{/if}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <p style="font-size: 10pt; color: #666;">
+                <em>* Valores em vermelho indicam precos identificados como outliers (fora de 2 desvios padrao da media)</em>
+            </p>
+            {{else}}
+            <p class="legal-ref">[Nenhum item pesquisado]</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 5. CALCULOS ESTATISTICOS -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">5.</span> CALCULOS ESTATISTICOS</h2>
+        <div class="section-content">
+            <div class="resumo-box">
+                <h3>Resumo Consolidado</h3>
+                <div class="resumo-grid">
+                    <div class="resumo-item">
+                        <div class="label">Valor Total Estimado</div>
+                        <div class="value">R$ {{formatCurrency pesquisa.valorTotalEstimado}}</div>
+                    </div>
+                    <div class="resumo-item">
+                        <div class="label">Media Geral</div>
+                        <div class="value">R$ {{formatCurrency pesquisa.mediaGeral}}</div>
+                    </div>
+                    <div class="resumo-item">
+                        <div class="label">Mediana Geral</div>
+                        <div class="value">R$ {{formatCurrency pesquisa.medianaGeral}}</div>
+                    </div>
+                    <div class="resumo-item">
+                        <div class="label">Menor Preco Total</div>
+                        <div class="value">R$ {{formatCurrency pesquisa.menorPrecoTotal}}</div>
+                    </div>
+                </div>
+
+                {{#if pesquisa.coeficienteVariacao}}
+                <div style="margin-top: 20px; padding: 10px; background: #fff;">
+                    <strong>Coeficiente de Variacao (CV):</strong> {{formatPercent pesquisa.coeficienteVariacao}}%
+                    <br>
+                    <small style="color: #666;">
+                        {{#if (isHighCV pesquisa.coeficienteVariacao)}}
+                        ⚠️ CV > 25% indica alta dispersao nos precos coletados. Recomenda-se justificativa adicional.
+                        {{else}}
+                        ✓ CV dentro de parametros aceitaveis (≤ 25%)
+                        {{/if}}
+                    </small>
+                </div>
+                {{/if}}
+            </div>
+
+            {{#if pesquisa.mapaComparativo.resumo}}
+            <div class="highlight-box">
+                <strong>Economia Potencial:</strong>
+                {{#if pesquisa.mapaComparativo.resumo.economiaPotencial}}
+                R$ {{formatCurrency pesquisa.mapaComparativo.resumo.economiaPotencial}}
+                ({{formatPercent pesquisa.mapaComparativo.resumo.percentualEconomia}}% em relacao a media)
+                {{else}}
+                Nao calculada
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 6. CRITERIO DE ACEITABILIDADE -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">6.</span> CRITERIO DE ACEITABILIDADE DE PRECOS</h2>
+        <div class="section-content">
+            <p>Conforme Art. 14 da IN 65/2021, o criterio de aceitabilidade de precos adotado para esta contratacao e:</p>
+
+            <div class="valor-destaque">
+                {{#if pesquisa.criterioAceitabilidade}}
+                {{pesquisa.criterioAceitabilidade}}
+                {{else}}
+                MEDIANA DOS PRECOS PESQUISADOS
+                {{/if}}
+            </div>
+
+            {{#if pesquisa.justificativaCriterio}}
+            <div class="justificativa-box">
+                <h4>Justificativa do Criterio</h4>
+                <p>{{pesquisa.justificativaCriterio}}</p>
+            </div>
+            {{else}}
+            <p>A adocao da mediana como criterio de aceitabilidade justifica-se por ser uma medida de tendencia central
+            menos suscetivel a valores extremos (outliers), garantindo maior representatividade dos precos de mercado.</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 7. JUSTIFICATIVA DA METODOLOGIA -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">7.</span> JUSTIFICATIVA DA METODOLOGIA</h2>
+        <div class="section-content">
+            {{#if pesquisa.justificativaMetodologia}}
+            <div class="justificativa-box">
+                <h4>Justificativa (Art. 7 da IN 65/2021)</h4>
+                {{{formatText pesquisa.justificativaMetodologia}}}
+            </div>
+            {{else}}
+            <p>Conforme Art. 7 da IN SEGES/ME n 65/2021, quando nao for possivel a utilizacao exclusiva do Painel de Precos,
+            deve ser apresentada justificativa fundamentada.</p>
+
+            <div class="highlight-box">
+                <p>A presente pesquisa de precos foi realizada utilizando-se das metodologias previstas no Art. 5 da IN 65/2021,
+                observando-se a ordem de preferencia estabelecida pela norma. A combinacao de fontes (Art. 6) visa garantir
+                maior confiabilidade e representatividade dos precos de mercado.</p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- 8. CONCLUSAO -->
+    <div class="section">
+        <h2 class="section-title"><span class="section-number">8.</span> CONCLUSAO</h2>
+        <div class="section-content">
+            <p>Com base na pesquisa de precos realizada em conformidade com a IN SEGES/ME n 65/2021, conclui-se que:</p>
+
+            <div class="valor-destaque">
+                VALOR TOTAL ESTIMADO: R$ {{formatCurrency pesquisa.valorTotalEstimado}}
+            </div>
+
+            <p>O valor acima representa o preco de referencia para a contratacao objeto desta pesquisa,
+            devendo ser utilizado como parametro de aceitabilidade das propostas no processo licitatorio.</p>
+
+            <p>A pesquisa atendeu aos requisitos legais e normativos aplicaveis, tendo sido consultadas
+            {{countFontesConsultadas pesquisa.fontesConsultadas}} fontes conforme metodologia estabelecida.</p>
+        </div>
+    </div>
+
+    <!-- ASSINATURAS -->
+    <div class="assinaturas">
+        <h2 class="section-title">RESPONSAVEIS</h2>
+
+        <table class="metadata-table">
+            <tr>
+                <th>Data de Elaboracao</th>
+                <td>{{formatDate pesquisa.createdAt}}</td>
+            </tr>
+            <tr>
+                <th>Ultima Atualizacao</th>
+                <td>{{formatDate pesquisa.updatedAt}}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{formatStatus pesquisa.status}}</td>
+            </tr>
+            {{#if pesquisa.createdBy.name}}
+            <tr>
+                <th>Elaborado por</th>
+                <td>{{pesquisa.createdBy.name}}</td>
+            </tr>
+            {{/if}}
+        </table>
+
+        <div style="margin-top: 50px;">
+            <div class="assinatura-box">
+                <div class="assinatura-linha"></div>
+                <p>Responsavel pela Pesquisa</p>
+                <p class="assinatura-cargo">Equipe de Planejamento</p>
+            </div>
+            <div class="assinatura-box">
+                <div class="assinatura-linha"></div>
+                <p>Autoridade Competente</p>
+                <p class="assinatura-cargo">Aprovacao</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPE -->
+    <div class="footer">
+        <p>Documento gerado pelo sistema ETP Express em {{formatDate generatedAt}}</p>
+        <p>Sistema assistivo - Validacao humana obrigatoria</p>
+    </div>
+</body>
+</html>
