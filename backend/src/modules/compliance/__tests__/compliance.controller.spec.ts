@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ComplianceController } from '../compliance.controller';
 import { ComplianceValidationService } from '../compliance-validation.service';
+import { ComplianceReportService } from '../compliance-report.service';
 import { Etp } from '../../../entities/etp.entity';
 import { EtpTemplateType } from '../../../entities/etp-template.entity';
 import { ChecklistItemCategory } from '../../../entities/compliance-checklist-item.entity';
@@ -96,6 +97,14 @@ describe('ComplianceController', () => {
             findAllChecklists: jest.fn(),
             findChecklistById: jest.fn(),
             findChecklistsByTemplateType: jest.fn(),
+          },
+        },
+        {
+          provide: ComplianceReportService,
+          useValue: {
+            generateReport: jest.fn(),
+            exportReportToPdf: jest.fn(),
+            getValidationHistory: jest.fn(),
           },
         },
         {
