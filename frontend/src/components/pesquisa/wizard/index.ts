@@ -14,7 +14,9 @@ export type { PesquisaWizardStepProps } from './CreatePesquisaPrecosWizard';
 export { StepSelectBase } from './StepSelectBase';
 export { StepDefineItems } from './StepDefineItems';
 
+// Step components - #1508
+export { StepSelectSources } from './StepSelectSources';
+export { StepExecuteSearch } from './StepExecuteSearch';
+
 // Step components will be exported here as they are implemented:
-// export { StepSelectSources } from './StepSelectSources'; // #1508
-// export { StepExecuteSearch } from './StepExecuteSearch'; // #1508
 // export { StepReviewResults } from './StepReviewResults'; // #1509
