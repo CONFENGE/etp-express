@@ -14,6 +14,8 @@ import {
 } from '@/schemas/pesquisaPrecosSchema';
 import { StepSelectBase } from './StepSelectBase';
 import { StepDefineItems } from './StepDefineItems';
+import { StepSelectSources } from './StepSelectSources';
+import { StepExecuteSearch } from './StepExecuteSearch';
 
 /**
  * Props for wizard step components
@@ -192,7 +194,17 @@ export function CreatePesquisaPrecosWizard({
       return <StepDefineItems form={form} />;
     }
 
-    // Steps 2-4 - Placeholder for future issues (#1508, #1509)
+    // Step 2 (index 2) - Select price sources (#1508)
+    if (currentStep === 2) {
+      return <StepSelectSources form={form} />;
+    }
+
+    // Step 3 (index 3) - Execute price search (#1508)
+    if (currentStep === 3) {
+      return <StepExecuteSearch form={form} />;
+    }
+
+    // Step 4 - Placeholder for review (#1509)
     return <StepPlaceholder stepIndex={currentStep} stepTitle={step.title} />;
   }, [currentStep, form]);
 
