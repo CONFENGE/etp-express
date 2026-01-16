@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 751/803 (93.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 752/803 (93.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | #1511 | Feature  | [#1507] Implement Steps 1-2 for PesquisaPrecos wizard (#1507) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1510 | Feature  | [#1506] Add Pesquisa de Precos wizard structure (#1506) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-15 | -     | Audit    | ROADMAP sync: close #1429/#1430 (HIG), #1263 (Compliance), add #1506-#1509 (Pesquisa wizard) |
 | 2026-01-15 | #1505 | Feature  | [#1260] Add PDF/JSON export for Pesquisa de Precos (#1260) ✅ - **Score 100/100 - Auto-merged** |
@@ -445,7 +446,7 @@ Módulo estruturado conforme IN SEGES/ME nº 65/2021 + Layout e Espaçamento App
 |       | ↳ #1258 Justificativa automática metodologia  | ✅     |
 |       | ↳ #1259 Interface de pesquisa no frontend     | 🟡     |
 |       |   ↳ #1506 Criar página base wizard            | ✅     |
-|       |   ↳ #1507 Steps 1-2: Seleção ETP/TR           | 🔴     |
+|       |   ↳ #1507 Steps 1-2: Seleção ETP/TR           | ✅     |
 |       |   ↳ #1508 Steps 3-4: Fontes e Execução        | 🔴     |
 |       |   ↳ #1509 Step 5: Revisão e Tabela            | 🔴     |
 |       | ↳ #1260 Export relatório pesquisa PDF         | ✅     |
