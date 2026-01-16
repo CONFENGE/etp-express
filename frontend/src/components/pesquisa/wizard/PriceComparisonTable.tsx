@@ -102,7 +102,11 @@ interface PriceComparisonTableProps {
   items: PesquisaItem[];
   results: PriceResult[];
   selectedPrices: Record<string, number>;
-  onSelectPrice: (itemId: string, price: number, source: PriceSourceType) => void;
+  onSelectPrice: (
+    itemId: string,
+    price: number,
+    source: PriceSourceType,
+  ) => void;
   onEditPrice: (itemId: string, result?: PriceResult) => void;
   onAddManual: (itemId: string) => void;
 }
@@ -195,7 +199,10 @@ export function PriceComparisonTable({
                 Item
               </TableHead>
               {activeSources.map((source) => (
-                <TableHead key={source.id} className="text-center min-w-[120px]">
+                <TableHead
+                  key={source.id}
+                  className="text-center min-w-[120px]"
+                >
                   <div
                     style={{
                       display: 'flex',
@@ -209,7 +216,9 @@ export function PriceComparisonTable({
                   </div>
                 </TableHead>
               ))}
-              <TableHead className="text-center min-w-[100px]">Mediana</TableHead>
+              <TableHead className="text-center min-w-[100px]">
+                Mediana
+              </TableHead>
               <TableHead className="text-center min-w-[130px]">
                 Escolhido
               </TableHead>
@@ -221,7 +230,8 @@ export function PriceComparisonTable({
               const itemResults = resultsByItem.get(item.id);
               const itemStats = statsPerItem.get(item.id);
               const selectedPrice = selectedPrices[item.id];
-              const hasSelection = selectedPrice !== undefined && selectedPrice > 0;
+              const hasSelection =
+                selectedPrice !== undefined && selectedPrice > 0;
 
               return (
                 <TableRow key={item.id}>
@@ -267,9 +277,14 @@ export function PriceComparisonTable({
                                 className={cn(
                                   'px-2 py-1 rounded-md text-sm font-medium transition-all',
                                   'hover:bg-primary/10 cursor-pointer',
-                                  isSelected && 'bg-primary/20 ring-2 ring-primary',
-                                  isMin && !isSelected && 'text-green-600 bg-green-50',
-                                  isMax && !isSelected && 'text-red-600 bg-red-50',
+                                  isSelected &&
+                                    'bg-primary/20 ring-2 ring-primary',
+                                  isMin &&
+                                    !isSelected &&
+                                    'text-green-600 bg-green-50',
+                                  isMax &&
+                                    !isSelected &&
+                                    'text-red-600 bg-red-50',
                                 )}
                               >
                                 <div
@@ -419,9 +434,14 @@ export function PriceComparisonTable({
             </span>
           </div>
           <div className="text-sm">
-            <span className="text-muted-foreground">Itens com preco escolhido: </span>
+            <span className="text-muted-foreground">
+              Itens com preco escolhido:{' '}
+            </span>
             <span className="font-medium">
-              {Object.keys(selectedPrices).filter((k) => selectedPrices[k] > 0).length}
+              {
+                Object.keys(selectedPrices).filter((k) => selectedPrices[k] > 0)
+                  .length
+              }
             </span>
             <span className="text-muted-foreground"> / {items.length}</span>
           </div>

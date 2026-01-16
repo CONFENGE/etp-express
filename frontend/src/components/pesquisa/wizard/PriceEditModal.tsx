@@ -112,9 +112,7 @@ export function PriceEditModal({
           date: existingResult.date ?? new Date().toISOString().split('T')[0],
           justification: '',
         });
-        setPriceInput(
-          existingResult.price?.toFixed(2).replace('.', ',') ?? '',
-        );
+        setPriceInput(existingResult.price?.toFixed(2).replace('.', ',') ?? '');
       } else {
         reset({
           price: undefined,
@@ -272,7 +270,9 @@ export function PriceEditModal({
                 <Calculator className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               </div>
               {errors.price && (
-                <p className="text-xs text-destructive">{errors.price.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.price.message}
+                </p>
               )}
             </div>
 
@@ -320,7 +320,8 @@ export function PriceEditModal({
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">
-                A justificativa sera incluida no relatorio de pesquisa de precos.
+                A justificativa sera incluida no relatorio de pesquisa de
+                precos.
               </p>
             </div>
           </div>
