@@ -4,6 +4,25 @@ import { BrowserRouter } from 'react-router';
 import { CreatePesquisaPrecosWizard } from './CreatePesquisaPrecosWizard';
 import { PESQUISA_WIZARD_STEPS } from '@/schemas/pesquisaPrecosSchema';
 
+// Mock stores for step components
+vi.mock('@/store/etpStore', () => ({
+  useETPStore: () => ({
+    etps: [],
+    isLoading: false,
+    fetchETPs: vi.fn(),
+    fetchETP: vi.fn(),
+  }),
+}));
+
+vi.mock('@/store/trStore', () => ({
+  useTRStore: () => ({
+    trs: [],
+    isLoading: false,
+    fetchTRs: vi.fn(),
+    fetchTR: vi.fn(),
+  }),
+}));
+
 // Wrapper component to provide router context
 function TestWrapper({ children }: { children: React.ReactNode }) {
   return <BrowserRouter>{children}</BrowserRouter>;
@@ -180,7 +199,7 @@ describe('CreatePesquisaPrecosWizard', () => {
     expect(progressBar).toBeInTheDocument();
   });
 
-  it('renders placeholder content for steps', () => {
+  it('renders StepSelectBase on first step', () => {
     render(
       <TestWrapper>
         <CreatePesquisaPrecosWizard
@@ -190,10 +209,64 @@ describe('CreatePesquisaPrecosWizard', () => {
       </TestWrapper>,
     );
 
-    // Placeholder message should be visible
-    expect(
-      screen.getByText(/Este passo sera implementado nas proximas issues/i),
-    ).toBeInTheDocument();
+    // StepSelectBase should render base type selection
+    expect(screen.getByText('Selecione o tipo de documento base')).toBeInTheDocument();
+  });
+
+  it('renders StepDefineItems on second step', async () => {
+    render(
+      <TestWrapper>
+        <CreatePesquisaPrecosWizard
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      </TestWrapper>,
+    );
+
+    // Navigate to step 2
+    fireEvent.click(screen.getByText('Proximo'));
+
+    await waitFor(() => {
+      // StepDefineItems should render
+      expect(screen.getByText('Itens para Pesquisa')).toBeInTheDocument();
+    });
+  });
+
+  it('renders placeholder content for steps 3-5', async () => {
+    render(
+      <TestWrapper>
+        <CreatePesquisaPrecosWizard
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      </TestWrapper>,
+    );
+
+    // Navigate to step 3
+    fireEvent.click(screen.getByText('Proximo')); // Go to step 2
+    await waitFor(() => {
+      expect(screen.getByText('Itens para Pesquisa')).toBeInTheDocument();
+    });
+
+    // Add at least one item to pass validation (since step 2 requires items)
+    fireEvent.click(screen.getByText('Adicionar Item'));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Descricao do Item/i)).toBeInTheDocument();
+    });
+
+    // Fill item to pass validation
+    const descInput = screen.getByLabelText(/Descricao do Item/i);
+    fireEvent.change(descInput, { target: { value: 'Test Item' } });
+
+    fireEvent.click(screen.getByText('Proximo')); // Go to step 3
+
+    await waitFor(() => {
+      // Placeholder message should be visible for step 3+
+      expect(
+        screen.getByText(/Este passo sera implementado nas proximas issues/i),
+      ).toBeInTheDocument();
+    });
   });
 });
 
