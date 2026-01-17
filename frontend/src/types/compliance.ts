@@ -3,9 +3,26 @@
  * Frontend types matching backend DTOs from compliance module.
  *
  * Issue #1386 - [TCU-1163e] Componente indicador de conformidade no ETP Editor
+ * Issue #1534 - [Parity] Implementar serialização Date em Compliance types
+ *
  * @see backend/src/modules/compliance/dto/compliance-api.dto.ts
  * @see backend/src/modules/compliance/dto/compliance-validation-result.dto.ts
  */
+
+/**
+ * Serialized date type that accepts both Date objects and ISO strings.
+ * Backend returns Date objects which JSON.stringify converts to ISO strings.
+ * This type ensures type safety while allowing for both formats.
+ *
+ * @example
+ * // Both formats are valid:
+ * const date1: SerializedDate = "2026-01-17T12:00:00.000Z";
+ * const date2: SerializedDate = new Date();
+ *
+ * // Use normalizeDate to convert to Date for manipulation:
+ * const d = normalizeDate(date1); // Returns Date object
+ */
+export type SerializedDate = Date | string;
 
 /**
  * Type of checklist item (mandatory, recommended, optional).
@@ -134,8 +151,12 @@ export interface ComplianceValidationResult {
   suggestions: ComplianceSuggestion[];
   /** Scores by category */
   categoryScores: Record<string, CategoryScore>;
-  /** Validation timestamp */
-  validatedAt: string;
+  /**
+   * Validation timestamp.
+   * Backend returns Date object, serialized to ISO string via JSON.
+   * Use normalizeDate() or formatDateTime() to handle this field.
+   */
+  validatedAt: SerializedDate;
   /** Processing time in milliseconds */
   processingTimeMs: number;
 }
