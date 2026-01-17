@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 764/817 (93.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 763/825 (92.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1537 | Fix      | [#1531] Fix indicadoresDesempenho type parity (string → string[]) ✅ - **Score 100/100 - Auto-merged** |
+| 2026-01-17 | -     | Planning | Create M17-PageIndex milestone + 8 issues (#1538-#1545) - RAG reasoning-based integration |
 | 2026-01-17 | #1536 | Fix      | [#1530] Fix responsavelTecnico flat→nested structure parity ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1535 | Fix      | [#1529] Sync Section type with EtpSection entity ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1520 | Feature  | [#1269] Add contract price collector for M13: Market Intelligence ✅ - **Score 100/100 - Auto-merged** |
@@ -224,15 +226,14 @@
 
 ---
 
-## Bugs Criticos P0 - 4 RESTANTES ⚠️
+## Bugs Criticos P0 - 3 RESTANTES ⚠️
 
-> **STATUS:** 4 bugs de paridade backend/frontend restantes (#1531-#1534) - #1529, #1530 RESOLVIDOS
+> **STATUS:** 3 bugs de paridade backend/frontend restantes (#1532-#1534) - #1529, #1530, #1531 RESOLVIDOS
 
-### Bugs P0 Abertos (2026-01-16) - Paridade Backend/Frontend
+### Bugs P0 Abertos (2026-01-17) - Paridade Backend/Frontend
 
 | #     | Issue                                                    | Severidade | Area             |
 | ----- | -------------------------------------------------------- | ---------- | ---------------- |
-| #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | schemas          |
 | #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | types/user.ts    |
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | types/tr.ts      |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | types, lib/api   |
@@ -341,12 +342,12 @@
 | ----- | -------------------------------------------------------- | ---------- | ------ |
 | #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | ✅     |
 | #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | ✅     |
-| #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | 🔴     |
+| #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | ✅     |
 | #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | 🔴     |
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | 🔴     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | 🔴     |
 
-**Progresso Frontend Audit:** 2/14 (14%) 🔴
+**Progresso Frontend Audit:** 3/14 (21%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -389,9 +390,24 @@
 
 ---
 
-## Issues Abertas (55)
+## Issues Abertas (63)
 
-### P0 - Frontend Design Audit (14 issues) 🔴 NEW
+### P0 - M17 PageIndex Integration (8 issues) 🔵 NEW
+
+> Integração do framework PageIndex para RAG reasoning-based. Ver seção "M17: PageIndex RAG" abaixo para detalhes.
+
+| #     | Issue                                                    | Prioridade |
+| ----- | -------------------------------------------------------- | ---------- |
+| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         |
+| #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         |
+| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         |
+| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         |
+| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         |
+| #1543 | Document Extraction com tree structure                   | P2         |
+| #1544 | Chat contextualizado com PageIndex tree search           | P2         |
+| #1545 | Market Intelligence com extração estruturada de editais  | P3         |
+
+### P0 - Frontend Design Audit (14 issues) 🔴
 
 > Auditoria de design frontend baseada nos repositórios de referência Claude Design Engineer e Claude Code Frontend Design Plugin. Inclui 8 issues de compliance com design system e 6 bugs críticos de paridade backend/frontend.
 
@@ -463,6 +479,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
+| M17: PageIndex RAG             | 0/8    | Alta 🔵    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -560,6 +577,33 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
+#### M17: PageIndex RAG Reasoning-Based (#1538-#1545) - 0/8 (0%) 🔵 NEW
+
+Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
+
+| #     | Issue                                                    | Prioridade | Status |
+| ----- | -------------------------------------------------------- | ---------- | ------ |
+| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
+| #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         | 🔴     |
+| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
+| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
+| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
+| #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
+| #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
+| #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
+
+**Diferenciais Competitivos:**
+- **Precisão Legal**: 98.7% accuracy vs ~80% do RAG tradicional com embeddings
+- **Auditabilidade**: Retrieval baseado em raciocínio (não "vibe search")
+- **Zero Vector DB**: Usa estrutura hierárquica + LLM reasoning
+- **Compliance**: Jurisprudência TCE/TCU indexada com precedentes automáticos
+- **Market Intel**: Extração estruturada de editais para dados proprietários
+
+**Tecnologia:**
+- [PageIndex](https://github.com/VectifyAI/PageIndex) - Framework open source (MIT)
+- Abordagem Hybrid: Self-hosted para docs estáticos + API Cloud fallback
+- Tree search com LLM para navegação humana em documentos complexos
+
 #### M14: Geração de Edital (#1276-#1282)
 
 Templates de edital integrados ao processo.
@@ -592,16 +636,17 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 817   |
-| Issues Abertas    | 55    |
-| Issues Fechadas   | 762   |
-| Progresso         | 93.3% |
-| Bugs P0 Abertos   | 6     |
+| Issues Totais     | 825   |
+| Issues Abertas    | 62    |
+| Issues Fechadas   | 763   |
+| Progresso         | 92.5% |
+| Bugs P0 Abertos   | 5     |
+| M17 PageIndex     | 0/8   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3218  |
-| Frontend Tests    | 2352  |
-| Total Tests       | 5570  |
+| Frontend Tests    | 2364  |
+| Total Tests       | 5582  |
 
 ---
 
