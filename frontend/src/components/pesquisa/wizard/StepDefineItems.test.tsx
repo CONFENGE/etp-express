@@ -54,6 +54,7 @@ vi.mock('@/store/trStore', () => ({
         objeto: 'Aquisicao de equipamentos de informatica',
         status: 'approved',
         versao: 1,
+        currentVersion: 1,
         etpId: 'etp-1',
         organizationId: 'org-1',
         createdById: 'user-1',
