@@ -40,7 +40,11 @@ export interface BadgeProps
 function Badge({ className, variant, icon, children, ...props }: BadgeProps) {
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props}>
-      {icon && <span className="inline-flex items-center shrink-0" aria-hidden="true">{icon}</span>}
+      {icon && (
+        <span className="inline-flex items-center shrink-0" aria-hidden="true">
+          {icon}
+        </span>
+      )}
       {children}
     </div>
   );
