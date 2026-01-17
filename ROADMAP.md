@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1493/1555 (96.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1494/1555 (96.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1556 | Feature  | [#1551] Create DocumentTree entity and migrations for PageIndex ✅ - **Score 97.5/100 - Merged** |
 | 2026-01-17 | #1555 | Feature  | [#1550] Create PageIndex module structure - stub implementations ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1549 | Docs     | [#1521] Create .design-engineer/system.md with tokens and design direction ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1548 | Fix      | [#1534] Fix Date serialization in Compliance types ✅ - **Score 100/100 - Auto-merged** |
@@ -393,7 +394,7 @@
 
 ---
 
-## Issues Abertas (63)
+## Issues Abertas (61)
 
 ### P0 - M17 PageIndex Integration (13 issues) 🔵 NEW
 
@@ -585,7 +586,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 1/13 (8%) 🔵 NEW
+#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 2/13 (15%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
 
@@ -593,7 +594,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | ----- | -------------------------------------------------------- | ---------- | ------ |
 | #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
 |       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         | ✅     |
-|       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | 🔴     |
+|       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | ✅     |
 |       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | 🔴     |
 |       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | 🔴     |
 |       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | 🔴     |
@@ -650,11 +651,11 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
-| Issues Abertas    | 62    |
-| Issues Fechadas   | 1493  |
-| Progresso         | 96.0% |
+| Issues Abertas    | 61    |
+| Issues Fechadas   | 1494  |
+| Progresso         | 96.1% |
 | Bugs P0 Abertos   | 7     |
-| M17 PageIndex     | 1/13  |
+| M17 PageIndex     | 2/13  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3218  |
