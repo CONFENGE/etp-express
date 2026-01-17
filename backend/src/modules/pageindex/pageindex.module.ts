@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PageIndexService } from './pageindex.service';
 import { PageIndexController } from './pageindex.controller';
+import { TreeBuilderService } from './services/tree-builder.service';
 import { DocumentTree } from '../../entities/document-tree.entity';
 
 /**
@@ -23,9 +24,9 @@ import { DocumentTree } from '../../entities/document-tree.entity';
  * Current implementation:
  * - #1550: Module structure with stub services ✅
  * - #1551: DocumentTree entity and migrations ✅
+ * - #1552: TreeBuilderService with Python integration ✅
  *
  * Remaining sub-issues:
- * - #1552: TreeBuilderService with Python integration
  * - #1553: TreeSearchService with LLM reasoning
  * - #1554: PoC with Lei 14.133/2021
  *
@@ -38,9 +39,9 @@ import { DocumentTree } from '../../entities/document-tree.entity';
   controllers: [PageIndexController],
   providers: [
     PageIndexService,
-    // TODO #1552: TreeBuilderService
+    TreeBuilderService,
     // TODO #1553: TreeSearchService
   ],
-  exports: [PageIndexService],
+  exports: [PageIndexService, TreeBuilderService],
 })
 export class PageIndexModule {}
