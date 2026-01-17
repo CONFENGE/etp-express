@@ -99,7 +99,17 @@ export interface TermoReferencia {
 
   // Metadados
   status: TermoReferenciaStatus;
+  /**
+   * Numero da versao do documento.
+   * Incrementado a cada revisao significativa.
+   */
   versao: number;
+  /**
+   * Versao atual do documento (para controle de versionamento).
+   * Atualizado automaticamente quando uma nova versao e criada.
+   * Diferenca: versao = numero da revisao, currentVersion = snapshot ativo
+   */
+  currentVersion: number;
   createdBy?: TRUser;
   createdById: string;
   createdAt: string;
