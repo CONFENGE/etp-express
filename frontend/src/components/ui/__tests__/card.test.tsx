@@ -46,6 +46,38 @@ describe('Card', () => {
     });
   });
 
+  describe('Card Variants', () => {
+    it('should apply default variant styles by default', () => {
+      render(<Card data-testid="card">Content</Card>);
+      const card = screen.getByTestId('card');
+      expect(card).toHaveClass('shadow-apple');
+      expect(card).toHaveClass('bg-surface-primary');
+    });
+
+    it('should apply elevated variant with stronger shadow', () => {
+      render(
+        <Card variant="elevated" data-testid="elevated-card">
+          Elevated
+        </Card>,
+      );
+      const card = screen.getByTestId('elevated-card');
+      expect(card).toHaveClass('shadow-apple-lg');
+      expect(card).toHaveClass('bg-surface-primary');
+    });
+
+    it('should apply flat variant without shadow', () => {
+      render(
+        <Card variant="flat" data-testid="flat-card">
+          Flat
+        </Card>,
+      );
+      const card = screen.getByTestId('flat-card');
+      expect(card).not.toHaveClass('shadow-apple');
+      expect(card).not.toHaveClass('shadow-apple-lg');
+      expect(card).toHaveClass('bg-surface-primary');
+    });
+  });
+
   describe('Interactive Card', () => {
     it('should apply interactive styles when interactive prop is true', () => {
       render(
