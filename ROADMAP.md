@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 763/825 (92.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 765/826 (92.6%) | **Deploy:** LIVE
 
 ---
 
@@ -228,7 +228,7 @@
 
 ## Bugs Criticos P0 - 3 RESTANTES ⚠️
 
-> **STATUS:** 3 bugs de paridade backend/frontend restantes (#1532-#1534) - #1529, #1530, #1531 RESOLVIDOS
+> **STATUS:** 3 bugs de paridade backend/frontend restantes (#1532-#1534)
 
 ### Bugs P0 Abertos (2026-01-17) - Paridade Backend/Frontend
 
@@ -390,7 +390,7 @@
 
 ---
 
-## Issues Abertas (63)
+## Issues Abertas (61)
 
 ### P0 - M17 PageIndex Integration (8 issues) 🔵 NEW
 
@@ -636,11 +636,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 825   |
-| Issues Abertas    | 62    |
-| Issues Fechadas   | 763   |
-| Progresso         | 92.5% |
-| Bugs P0 Abertos   | 5     |
+| Issues Totais     | 826   |
+| Issues Abertas    | 61    |
+| Issues Fechadas   | 765   |
+| Progresso         | 92.6% |
+| Bugs P0 Abertos   | 3     |
 | M17 PageIndex     | 0/8   |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
