@@ -1,28 +1,60 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { NotImplementedException } from '@nestjs/common';
-import { PageIndexService, IndexingStatus } from '../pageindex.service';
+import { NotImplementedException, NotFoundException } from '@nestjs/common';
+import { PageIndexService } from '../pageindex.service';
 import { IndexDocumentDto, DocumentType } from '../dto/index-document.dto';
+import {
+  DocumentTree,
+  DocumentTreeStatus,
+} from '../../../entities/document-tree.entity';
+import { TreeNode } from '../interfaces/tree-node.interface';
 
 /**
  * Unit tests for PageIndexService
  *
- * Tests stub implementation for PageIndex module structure.
- * Full implementation tests will be added in:
- * - #1551: Entity tests
- * - #1552: TreeBuilderService tests
- * - #1553: TreeSearchService tests
+ * Tests CRUD operations for DocumentTree entity and
+ * PageIndex module structure.
  *
- * @see Issue #1550 - [PI-1538a] Setup infraestrutura módulo PageIndex
+ * @see Issue #1551 - [PI-1538b] Criar DocumentTree entity e migrations
  * @see Issue #1538 - Create PageIndex module for hierarchical document indexing
  */
 describe('PageIndexService', () => {
   let service: PageIndexService;
+  let repository: Repository<DocumentTree>;
+
+  const mockQueryBuilder = {
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
+    groupBy: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue([]),
+    getRawMany: jest.fn().mockResolvedValue([]),
+  };
+
+  const mockRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+    createQueryBuilder: jest.fn(() => mockQueryBuilder),
+  };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PageIndexService,
+        {
+          provide: getRepositoryToken(DocumentTree),
+          useValue: mockRepository,
+        },
         {
           provide: ConfigService,
           useValue: {
@@ -36,6 +68,9 @@ describe('PageIndexService', () => {
     }).compile();
 
     service = module.get<PageIndexService>(PageIndexService);
+    repository = module.get<Repository<DocumentTree>>(
+      getRepositoryToken(DocumentTree),
+    );
   });
 
   afterEach(() => {
@@ -48,130 +83,440 @@ describe('PageIndexService', () => {
     });
   });
 
-  describe('indexDocument (stub)', () => {
-    it('should throw NotImplementedException', async () => {
-      const dto: IndexDocumentDto = {
-        documentName: 'Lei 14.133/2021',
-        documentType: DocumentType.LEGISLATION,
-        sourceUrl: 'https://planalto.gov.br/lei14133',
-      };
+  describe('createDocumentTree', () => {
+    const mockDto: IndexDocumentDto = {
+      documentName: 'Lei 14.133/2021',
+      documentType: DocumentType.LEGISLATION,
+      sourceUrl: 'https://planalto.gov.br/lei14133',
+    };
 
-      await expect(service.indexDocument(dto)).rejects.toThrow(
-        NotImplementedException,
-      );
+    const mockTree: DocumentTree = {
+      id: 'tree-123',
+      documentName: 'Lei 14.133/2021',
+      documentPath: null,
+      sourceUrl: 'https://planalto.gov.br/lei14133',
+      documentType: DocumentType.LEGISLATION,
+      status: DocumentTreeStatus.PENDING,
+      treeStructure: null,
+      metadata: null,
+      error: null,
+      nodeCount: 0,
+      maxDepth: 0,
+      processingTimeMs: null,
+      indexedAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should create a document tree with pending status', async () => {
+      mockRepository.create.mockReturnValue(mockTree);
+      mockRepository.save.mockResolvedValue(mockTree);
+
+      const result = await service.createDocumentTree(mockDto);
+
+      expect(mockRepository.create).toHaveBeenCalledWith({
+        documentName: mockDto.documentName,
+        documentPath: null,
+        sourceUrl: mockDto.sourceUrl,
+        documentType: mockDto.documentType,
+        status: DocumentTreeStatus.PENDING,
+        treeStructure: null,
+        metadata: null,
+        nodeCount: 0,
+        maxDepth: 0,
+      });
+
+      expect(result.treeId).toBe('tree-123');
+      expect(result.status).toBe(DocumentTreeStatus.PENDING);
+      expect(result.documentName).toBe('Lei 14.133/2021');
     });
 
-    it('should log document details before throwing', async () => {
-      const logSpy = jest.spyOn(service['logger'], 'log');
+    it('should default to OTHER document type', async () => {
+      const dtoWithoutType: IndexDocumentDto = {
+        documentName: 'Test Document',
+      };
 
+      const treeWithOtherType = {
+        ...mockTree,
+        documentType: DocumentType.OTHER,
+        documentName: 'Test Document',
+        sourceUrl: null,
+      };
+
+      mockRepository.create.mockReturnValue(treeWithOtherType);
+      mockRepository.save.mockResolvedValue(treeWithOtherType);
+
+      const result = await service.createDocumentTree(dtoWithoutType);
+
+      expect(mockRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          documentType: DocumentType.OTHER,
+        }),
+      );
+      expect(result.documentType).toBe(DocumentType.OTHER);
+    });
+  });
+
+  describe('indexDocument', () => {
+    it('should create a pending document tree entry', async () => {
       const dto: IndexDocumentDto = {
         documentName: 'Test Document',
-        content: 'Some content',
-        documentType: DocumentType.OTHER,
+        documentType: DocumentType.CONTRACT,
       };
 
-      try {
-        await service.indexDocument(dto);
-      } catch {
-        // Expected to throw
-      }
+      const mockTree: DocumentTree = {
+        id: 'tree-456',
+        documentName: 'Test Document',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.CONTRACT,
+        status: DocumentTreeStatus.PENDING,
+        treeStructure: null,
+        metadata: null,
+        error: null,
+        nodeCount: 0,
+        maxDepth: 0,
+        processingTimeMs: null,
+        indexedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      expect(logSpy).toHaveBeenCalledWith(
-        'indexDocument called (stub)',
-        expect.objectContaining({
-          documentName: 'Test Document',
-          documentType: DocumentType.OTHER,
-          hasContent: true,
-        }),
+      mockRepository.create.mockReturnValue(mockTree);
+      mockRepository.save.mockResolvedValue(mockTree);
+
+      const result = await service.indexDocument(dto);
+
+      expect(result.treeId).toBe('tree-456');
+      expect(result.status).toBe(DocumentTreeStatus.PENDING);
+    });
+  });
+
+  describe('getTree', () => {
+    it('should return tree if found', async () => {
+      const mockTree: DocumentTree = {
+        id: 'tree-123',
+        documentName: 'Test Document',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.INDEXED,
+        treeStructure: { id: 'root', title: 'Root', level: 0, children: [] },
+        metadata: null,
+        error: null,
+        nodeCount: 1,
+        maxDepth: 0,
+        processingTimeMs: 100,
+        indexedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockRepository.findOne.mockResolvedValue(mockTree);
+
+      const result = await service.getTree('tree-123');
+
+      expect(result).not.toBeNull();
+      expect(result!.treeId).toBe('tree-123');
+      expect(result!.status).toBe(DocumentTreeStatus.INDEXED);
+    });
+
+    it('should return null if not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.getTree('non-existent');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('listTrees', () => {
+    it('should return list of trees', async () => {
+      const mockTrees: DocumentTree[] = [
+        {
+          id: 'tree-1',
+          documentName: 'Doc 1',
+          documentPath: null,
+          sourceUrl: null,
+          documentType: DocumentType.LEGISLATION,
+          status: DocumentTreeStatus.INDEXED,
+          treeStructure: null,
+          metadata: null,
+          error: null,
+          nodeCount: 0,
+          maxDepth: 0,
+          processingTimeMs: null,
+          indexedAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 'tree-2',
+          documentName: 'Doc 2',
+          documentPath: null,
+          sourceUrl: null,
+          documentType: DocumentType.CONTRACT,
+          status: DocumentTreeStatus.PENDING,
+          treeStructure: null,
+          metadata: null,
+          error: null,
+          nodeCount: 0,
+          maxDepth: 0,
+          processingTimeMs: null,
+          indexedAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+
+      mockQueryBuilder.getMany.mockResolvedValue(mockTrees);
+
+      const result = await service.listTrees();
+
+      expect(result).toHaveLength(2);
+      expect(result[0].treeId).toBe('tree-1');
+      expect(result[1].treeId).toBe('tree-2');
+    });
+
+    it('should filter by status', async () => {
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      await service.listTrees({ status: DocumentTreeStatus.INDEXED });
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'tree.status = :status',
+        { status: DocumentTreeStatus.INDEXED },
+      );
+    });
+
+    it('should filter by document type', async () => {
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      await service.listTrees({ documentType: DocumentType.LEGISLATION });
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'tree.documentType = :documentType',
+        { documentType: DocumentType.LEGISLATION },
+      );
+    });
+
+    it('should apply pagination', async () => {
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      await service.listTrees({ limit: 10, offset: 20 });
+
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(10);
+      expect(mockQueryBuilder.skip).toHaveBeenCalledWith(20);
+    });
+  });
+
+  describe('deleteTree', () => {
+    it('should delete tree if found', async () => {
+      mockRepository.delete.mockResolvedValue({ affected: 1 });
+
+      await expect(service.deleteTree('tree-123')).resolves.not.toThrow();
+
+      expect(mockRepository.delete).toHaveBeenCalledWith('tree-123');
+    });
+
+    it('should throw NotFoundException if not found', async () => {
+      mockRepository.delete.mockResolvedValue({ affected: 0 });
+
+      await expect(service.deleteTree('non-existent')).rejects.toThrow(
+        NotFoundException,
       );
     });
   });
 
-  describe('searchTree (stub)', () => {
-    it('should throw NotImplementedException', async () => {
+  describe('updateTreeStatus', () => {
+    it('should update status', async () => {
+      const mockTree: DocumentTree = {
+        id: 'tree-123',
+        documentName: 'Test',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.PENDING,
+        treeStructure: null,
+        metadata: null,
+        error: null,
+        nodeCount: 0,
+        maxDepth: 0,
+        processingTimeMs: null,
+        indexedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockRepository.findOne.mockResolvedValue({ ...mockTree });
+      mockRepository.save.mockResolvedValue({
+        ...mockTree,
+        status: DocumentTreeStatus.PROCESSING,
+      });
+
+      const result = await service.updateTreeStatus(
+        'tree-123',
+        DocumentTreeStatus.PROCESSING,
+      );
+
+      expect(result.status).toBe(DocumentTreeStatus.PROCESSING);
+    });
+
+    it('should update with additional data', async () => {
+      const mockTree: DocumentTree = {
+        id: 'tree-123',
+        documentName: 'Test',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.PROCESSING,
+        treeStructure: null,
+        metadata: null,
+        error: null,
+        nodeCount: 0,
+        maxDepth: 0,
+        processingTimeMs: null,
+        indexedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const treeStructure: TreeNode = {
+        id: 'root',
+        title: 'Root',
+        level: 0,
+        children: [],
+      };
+
+      mockRepository.findOne.mockResolvedValue({ ...mockTree });
+      mockRepository.save.mockImplementation((tree) =>
+        Promise.resolve({ ...tree }),
+      );
+
+      const result = await service.updateTreeStatus(
+        'tree-123',
+        DocumentTreeStatus.INDEXED,
+        {
+          treeStructure,
+          nodeCount: 5,
+          maxDepth: 3,
+          processingTimeMs: 1500,
+          indexedAt: new Date(),
+        },
+      );
+
+      expect(result.status).toBe(DocumentTreeStatus.INDEXED);
+      expect(result.nodeCount).toBe(5);
+      expect(result.maxDepth).toBe(3);
+    });
+
+    it('should throw NotFoundException if tree not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
       await expect(
-        service.searchTree('tree-123', 'test query'),
-      ).rejects.toThrow(NotImplementedException);
+        service.updateTreeStatus('non-existent', DocumentTreeStatus.INDEXED),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('searchTree', () => {
+    it('should throw NotFoundException if tree not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.searchTree('non-existent', 'query')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
-    it('should accept search options', async () => {
-      const logSpy = jest.spyOn(service['logger'], 'log');
-
-      const options = {
-        maxDepth: 5,
-        maxResults: 10,
-        minConfidence: 0.7,
+    it('should throw NotImplementedException if tree not indexed', async () => {
+      const mockTree: DocumentTree = {
+        id: 'tree-123',
+        documentName: 'Test',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.PENDING,
+        treeStructure: null,
+        metadata: null,
+        error: null,
+        nodeCount: 0,
+        maxDepth: 0,
+        processingTimeMs: null,
+        indexedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      try {
-        await service.searchTree('tree-123', 'test query', options);
-      } catch {
-        // Expected to throw
-      }
+      mockRepository.findOne.mockResolvedValue(mockTree);
 
-      expect(logSpy).toHaveBeenCalledWith(
-        'searchTree called (stub)',
-        expect.objectContaining({
-          treeId: 'tree-123',
-          options,
-        }),
-      );
-    });
-  });
-
-  describe('getTree (stub)', () => {
-    it('should throw NotImplementedException', async () => {
-      await expect(service.getTree('tree-123')).rejects.toThrow(
+      await expect(service.searchTree('tree-123', 'query')).rejects.toThrow(
         NotImplementedException,
       );
     });
-  });
 
-  describe('listTrees (stub)', () => {
-    it('should throw NotImplementedException', async () => {
-      await expect(service.listTrees()).rejects.toThrow(
-        NotImplementedException,
-      );
-    });
-  });
+    it('should throw NotImplementedException for indexed trees (not yet implemented)', async () => {
+      const mockTree: DocumentTree = {
+        id: 'tree-123',
+        documentName: 'Test',
+        documentPath: null,
+        sourceUrl: null,
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.INDEXED,
+        treeStructure: { id: 'root', title: 'Root', level: 0, children: [] },
+        metadata: null,
+        error: null,
+        nodeCount: 1,
+        maxDepth: 0,
+        processingTimeMs: 100,
+        indexedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-  describe('deleteTree (stub)', () => {
-    it('should throw NotImplementedException', async () => {
-      await expect(service.deleteTree('tree-123')).rejects.toThrow(
+      mockRepository.findOne.mockResolvedValue(mockTree);
+
+      await expect(service.searchTree('tree-123', 'query')).rejects.toThrow(
         NotImplementedException,
       );
     });
   });
 
   describe('getStats', () => {
-    it('should return stub statistics', async () => {
+    it('should return statistics', async () => {
+      mockRepository.count.mockResolvedValue(10);
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce([
+          { status: 'pending', count: '3' },
+          { status: 'indexed', count: '5' },
+          { status: 'error', count: '2' },
+        ])
+        .mockResolvedValueOnce([
+          { type: 'legislation', count: '4' },
+          { type: 'contract', count: '3' },
+          { type: 'other', count: '3' },
+        ]);
+
       const stats = await service.getStats();
 
-      expect(stats).toEqual({
-        totalDocuments: 0,
-        byStatus: {
-          [IndexingStatus.PENDING]: 0,
-          [IndexingStatus.PROCESSING]: 0,
-          [IndexingStatus.INDEXED]: 0,
-          [IndexingStatus.ERROR]: 0,
-        },
-        byType: {
-          [DocumentType.LEGISLATION]: 0,
-          [DocumentType.CONTRACT]: 0,
-          [DocumentType.EDITAL]: 0,
-          [DocumentType.TERMO_REFERENCIA]: 0,
-          [DocumentType.ETP]: 0,
-          [DocumentType.OTHER]: 0,
-        },
-      });
+      expect(stats.totalDocuments).toBe(10);
+      expect(stats.byStatus[DocumentTreeStatus.PENDING]).toBe(3);
+      expect(stats.byStatus[DocumentTreeStatus.INDEXED]).toBe(5);
+      expect(stats.byStatus[DocumentTreeStatus.ERROR]).toBe(2);
+      expect(stats.byType[DocumentType.LEGISLATION]).toBe(4);
+      expect(stats.byType[DocumentType.CONTRACT]).toBe(3);
     });
 
-    it('should log call', async () => {
-      const logSpy = jest.spyOn(service['logger'], 'log');
+    it('should return zeros for empty database', async () => {
+      mockRepository.count.mockResolvedValue(0);
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
 
-      await service.getStats();
+      const stats = await service.getStats();
 
-      expect(logSpy).toHaveBeenCalledWith('getStats called (stub)');
+      expect(stats.totalDocuments).toBe(0);
+      expect(stats.byStatus[DocumentTreeStatus.PENDING]).toBe(0);
+      expect(stats.byStatus[DocumentTreeStatus.INDEXED]).toBe(0);
     });
   });
 });
