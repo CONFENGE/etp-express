@@ -96,9 +96,7 @@ describe('ProductivityRanking', () => {
 
     render(<ProductivityRanking />);
 
-    expect(
-      screen.getByText(/nenhum usuario com etps no periodo selecionado/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Nenhum usuário encontrado')).toBeInTheDocument();
   });
 
   it('renders ranking table with data', () => {

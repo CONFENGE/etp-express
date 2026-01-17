@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { DemoUser } from '@/store/adminStore';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -65,14 +66,12 @@ export function DemoUserTable({
 
   if (demoUsers.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 p-12 text-center">
-        <p className="text-muted-foreground">
-          Nenhum usuário demo cadastrado ainda.
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Crie a primeira conta demo para começar.
-        </p>
-      </div>
+      <EmptyState
+        type="documents"
+        title="Nenhum usuário demo cadastrado"
+        description="Crie a primeira conta demo para permitir que testadores experimentem o sistema."
+        size="sm"
+      />
     );
   }
 
