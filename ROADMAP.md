@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 765/826 (92.6%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 766/826 (92.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1546 | Fix      | [#1532] Add LGPD/audit fields to User type ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1537 | Fix      | [#1531] Fix indicadoresDesempenho type parity (string → string[]) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | -     | Planning | Create M17-PageIndex milestone + 8 issues (#1538-#1545) - RAG reasoning-based integration |
 | 2026-01-17 | #1536 | Fix      | [#1530] Fix responsavelTecnico flat→nested structure parity ✅ - **Score 100/100 - Auto-merged** |
@@ -226,15 +227,14 @@
 
 ---
 
-## Bugs Criticos P0 - 3 RESTANTES ⚠️
+## Bugs Criticos P0 - 2 RESTANTES ⚠️
 
-> **STATUS:** 3 bugs de paridade backend/frontend restantes (#1532-#1534)
+> **STATUS:** 2 bugs de paridade backend/frontend restantes (#1533-#1534)
 
 ### Bugs P0 Abertos (2026-01-17) - Paridade Backend/Frontend
 
 | #     | Issue                                                    | Severidade | Area             |
 | ----- | -------------------------------------------------------- | ---------- | ---------------- |
-| #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | types/user.ts    |
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | types/tr.ts      |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | types, lib/api   |
 
@@ -343,11 +343,11 @@
 | #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | ✅     |
 | #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | ✅     |
 | #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | ✅     |
-| #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | 🔴     |
+| #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | ✅     |
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | 🔴     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | 🔴     |
 
-**Progresso Frontend Audit:** 3/14 (21%) 🟡
+**Progresso Frontend Audit:** 4/14 (29%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
