@@ -153,8 +153,9 @@ describe('SinapiApiClientService', () => {
         ],
       }).compile();
 
-      const unconfiguredService =
-        module.get<SinapiApiClientService>(SinapiApiClientService);
+      const unconfiguredService = module.get<SinapiApiClientService>(
+        SinapiApiClientService,
+      );
       unconfiguredService.onModuleInit();
 
       expect(unconfiguredService.isConfigured()).toBe(false);
@@ -184,9 +185,7 @@ describe('SinapiApiClientService', () => {
 
     it('should search insumos with filters', async () => {
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockInsumos)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockInsumos)));
 
       const result = await service.searchInsumos({
         nome: 'cimento',
@@ -209,9 +208,7 @@ describe('SinapiApiClientService', () => {
 
     it('should cache results after fetching', async () => {
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockInsumos)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockInsumos)));
 
       await service.searchInsumos({ nome: 'cimento' });
 
@@ -236,9 +233,7 @@ describe('SinapiApiClientService', () => {
 
     it('should get insumo by code', async () => {
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockInsumo)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockInsumo)));
 
       const result = await service.getInsumo(12345, 'DF');
 
@@ -309,15 +304,18 @@ describe('SinapiApiClientService', () => {
 
   describe('getEstados()', () => {
     const mockEstados: SinapiApiEstado[] = [
-      { sigla: 'DF', nome: 'Distrito Federal', regiao: 'Centro-Oeste', disponivel: true },
+      {
+        sigla: 'DF',
+        nome: 'Distrito Federal',
+        regiao: 'Centro-Oeste',
+        disponivel: true,
+      },
       { sigla: 'SP', nome: 'São Paulo', regiao: 'Sudeste', disponivel: true },
     ];
 
     it('should get list of estados', async () => {
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockEstados)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockEstados)));
 
       const result = await service.getEstados();
 
@@ -327,9 +325,7 @@ describe('SinapiApiClientService', () => {
 
     it('should cache estados with long TTL', async () => {
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockEstados)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockEstados)));
 
       await service.getEstados();
 
@@ -350,9 +346,7 @@ describe('SinapiApiClientService', () => {
     };
 
     it('should check API status', async () => {
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockStatus)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockStatus)));
 
       const result = await service.checkStatus();
 
@@ -360,9 +354,7 @@ describe('SinapiApiClientService', () => {
     });
 
     it('should not cache status checks', async () => {
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockStatus)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockStatus)));
 
       await service.checkStatus();
 
@@ -426,18 +418,22 @@ describe('SinapiApiClientService', () => {
         ],
       }).compile();
 
-      const noRetryService = module.get<SinapiApiClientService>(SinapiApiClientService);
+      const noRetryService = module.get<SinapiApiClientService>(
+        SinapiApiClientService,
+      );
       noRetryService.onModuleInit();
 
       httpService.request.mockReturnValue(
         throwError(() =>
-          createMockAxiosError(429, 'Too many requests', { 'retry-after': '60' }),
+          createMockAxiosError(429, 'Too many requests', {
+            'retry-after': '60',
+          }),
         ),
       );
 
-      await expect(noRetryService.searchInsumos({ nome: 'test' })).rejects.toThrow(
-        SinapiApiRateLimitError,
-      );
+      await expect(
+        noRetryService.searchInsumos({ nome: 'test' }),
+      ).rejects.toThrow(SinapiApiRateLimitError);
     });
 
     it('should throw SinapiApiServerError on 5xx', async () => {
@@ -460,29 +456,33 @@ describe('SinapiApiClientService', () => {
         ],
       }).compile();
 
-      const noRetryService = module.get<SinapiApiClientService>(SinapiApiClientService);
+      const noRetryService = module.get<SinapiApiClientService>(
+        SinapiApiClientService,
+      );
       noRetryService.onModuleInit();
 
       httpService.request.mockReturnValue(
         throwError(() => createMockAxiosError(500, 'Internal server error')),
       );
 
-      await expect(noRetryService.searchInsumos({ nome: 'test' })).rejects.toThrow(
-        SinapiApiServerError,
-      );
+      await expect(
+        noRetryService.searchInsumos({ nome: 'test' }),
+      ).rejects.toThrow(SinapiApiServerError);
     });
 
     it('should throw Error when API key not configured', async () => {
       const unconfiguredService = new SinapiApiClientService(
-        { get: jest.fn().mockReturnValue(undefined) } as unknown as ConfigService,
+        {
+          get: jest.fn().mockReturnValue(undefined),
+        } as unknown as ConfigService,
         mockHttpService as unknown as HttpService,
         mockCache as unknown as GovApiCache,
       );
       unconfiguredService.onModuleInit();
 
-      await expect(unconfiguredService.searchInsumos({ nome: 'test' })).rejects.toThrow(
-        SinapiApiAuthError,
-      );
+      await expect(
+        unconfiguredService.searchInsumos({ nome: 'test' }),
+      ).rejects.toThrow(SinapiApiAuthError);
     });
   });
 
@@ -627,14 +627,18 @@ describe('SinapiApiClientService', () => {
         ],
       }).compile();
 
-      const noRetryService = module.get<SinapiApiClientService>(SinapiApiClientService);
+      const noRetryService = module.get<SinapiApiClientService>(
+        SinapiApiClientService,
+      );
       noRetryService.onModuleInit();
 
       httpService.request.mockReturnValue(
         throwError(() => createMockAxiosError(400, 'Bad request')),
       );
 
-      await expect(noRetryService.searchInsumos({ nome: 'test' })).rejects.toThrow();
+      await expect(
+        noRetryService.searchInsumos({ nome: 'test' }),
+      ).rejects.toThrow();
       expect(httpService.request).toHaveBeenCalledTimes(1);
     });
 
@@ -653,14 +657,22 @@ describe('SinapiApiClientService', () => {
   describe('getHistorico()', () => {
     it('should get price history', async () => {
       const mockHistory = [
-        { referencia: '2024-01-01', preco_desonerado: 0.7, preco_naodesonerado: 0.75, variacao: 0 },
-        { referencia: '2023-12-01', preco_desonerado: 0.68, preco_naodesonerado: 0.73, variacao: -2.9 },
+        {
+          referencia: '2024-01-01',
+          preco_desonerado: 0.7,
+          preco_naodesonerado: 0.75,
+          variacao: 0,
+        },
+        {
+          referencia: '2023-12-01',
+          preco_desonerado: 0.68,
+          preco_naodesonerado: 0.73,
+          variacao: -2.9,
+        },
       ];
 
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockHistory)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockHistory)));
 
       const result = await service.getHistorico(12345, 'DF', '12');
 
@@ -682,9 +694,7 @@ describe('SinapiApiClientService', () => {
       };
 
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockEncargos)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockEncargos)));
 
       const result = await service.getEncargos('DF', 'NAO_DESONERADO');
 
@@ -697,7 +707,7 @@ describe('SinapiApiClientService', () => {
     it('should get economic indicators', async () => {
       const mockIndicadores = {
         referencia: '2024-01-01',
-        cub: { DF: 1850.45, SP: 1920.30 },
+        cub: { DF: 1850.45, SP: 1920.3 },
         incc: 0.45,
         igpm: 0.38,
       };
@@ -723,9 +733,7 @@ describe('SinapiApiClientService', () => {
       };
 
       cache.get.mockResolvedValue(null);
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockUpdate)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockUpdate)));
 
       const result = await service.getLastUpdate();
 
@@ -744,9 +752,7 @@ describe('SinapiApiClientService', () => {
         plan: 'professional',
       };
 
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockUsage)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockUsage)));
 
       const result = await service.getUsage();
 
@@ -763,9 +769,7 @@ describe('SinapiApiClientService', () => {
         plan: 'professional',
       };
 
-      httpService.request.mockReturnValue(
-        of(createMockResponse(mockUsage)),
-      );
+      httpService.request.mockReturnValue(of(createMockResponse(mockUsage)));
 
       await service.getUsage();
 
@@ -805,7 +809,11 @@ describe('Error classes', () => {
         monthlyUsed: 10000,
         monthlyRemaining: 0,
       };
-      const error = new SinapiApiRateLimitError('Rate limited', 60, rateLimitInfo);
+      const error = new SinapiApiRateLimitError(
+        'Rate limited',
+        60,
+        rateLimitInfo,
+      );
       expect(error.rateLimitInfo).toEqual(rateLimitInfo);
     });
   });
