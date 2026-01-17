@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1498/1555 (96.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1499/1555 (96.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1561 | Feature  | [#1528] Standardize focus ring styles across UI components ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1560 | Feature  | [#1522] Implement Stylelint for design tokens enforcement ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1559 | Feature  | [#1554] PoC Lei 14.133/2021 com tree search validation ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1558 | Feature  | [#1553] Implement TreeSearchService with LLM reasoning ✅ - **Score 100/100 - Auto-merged** |
@@ -342,7 +343,7 @@
 | #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | 🔴     |
 | #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | 🔴     |
 | #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | 🔴     |
-| #1528 | Padronizar focus ring styles em todos componentes        | A11y        | 🔴     |
+| #1528 | Padronizar focus ring styles em todos componentes        | A11y        | ✅     |
 
 ### Backend/Frontend Parity Bugs (Labels: `P0`, `bug`, `parity`)
 
@@ -355,7 +356,7 @@
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | ✅     |
 
-**Progresso Frontend Audit:** 8/14 (57%) 🟡
+**Progresso Frontend Audit:** 9/14 (64%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
