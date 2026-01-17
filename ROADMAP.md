@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1505/1555 (96.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1506/1555 (96.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1574 | Feature  | [#1567] Integrate SinapiService with API as primary data source ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1573 | Feature  | [#1565] Add SinapiApiClientService for Orcamentador API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1572 | Docs     | [#1564] Document SINAPI API integration via Orcamentador ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | -     | Arch     | [#1539] Rewrite SINAPI integration: PageIndex → API Orcamentador (REST + JSON) |
@@ -419,7 +420,7 @@
 | #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | 🔴     |
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
 |       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
-|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
+|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | ✅     |
 |       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
@@ -617,7 +618,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
 |       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
 |       | ↳ #1566 ~~TreeBuilder~~ (CANCELADA - não necessária)     | -          | ❌     |
-|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
+|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | ✅     |
 |       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
