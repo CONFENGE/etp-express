@@ -8,7 +8,7 @@ import { useTR } from '@/hooks/useTR';
 import { useToast } from '@/hooks/useToast';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
-import { LoadingState } from '@/components/common/LoadingState';
+import { SkeletonEditor } from '@/components/common/LoadingState';
 import { UnsavedChangesDialog } from '@/components/common/UnsavedChangesDialog';
 import {
   TREditorHeader,
@@ -180,7 +180,7 @@ export function TermoReferenciaEditor() {
   if (isLoading || !localTR) {
     return (
       <MainLayout>
-        <LoadingState message="Carregando Termo de Referencia..." />
+        <SkeletonEditor />
       </MainLayout>
     );
   }
