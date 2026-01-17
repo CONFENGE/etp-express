@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 760/804 (94.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 760/818 (92.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-16 | -     | Audit    | Frontend Design Audit: 14 P0 issues created (#1521-#1534) - 8 design system + 6 parity bugs |
 | 2026-01-16 | #1519 | Feature  | [#1253] Implement TR versioning and history ✅ - **M10 COMPLETE 7/7** |
 | 2026-01-16 | #1518 | Fix      | [#1517] Fix backend timeout - prevent startup sync from blocking initialization ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | #1516 | Feature  | [#1166] Add weekly PNCP check and cache validation jobs ✅ - **Score 100/100 - Merged (ZAP infra issue #1517)** |
@@ -220,13 +221,20 @@
 
 ---
 
-## Bugs Criticos P0 - 0 RESTANTES ✅
+## Bugs Criticos P0 - 6 RESTANTES ⚠️
 
-> **STATUS:** Todos os bugs P0 foram resolvidos! #1373 resolvido via PR #1378.
+> **STATUS:** 6 novos bugs de paridade backend/frontend identificados via auditoria de design (#1529-#1534)
 
-### Bugs P0 Abertos (2026-01-09)
+### Bugs P0 Abertos (2026-01-16) - Paridade Backend/Frontend
 
-Nenhum bug P0 aberto! 🎉
+| #     | Issue                                                    | Severidade | Area             |
+| ----- | -------------------------------------------------------- | ---------- | ---------------- |
+| #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | types/etp.ts     |
+| #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | schemas, stores  |
+| #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | schemas          |
+| #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | types/user.ts    |
+| #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | types/tr.ts      |
+| #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | types, lib/api   |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
 
@@ -306,6 +314,39 @@ Nenhum bug P0 aberto! 🎉
 
 **Progresso Design System:** 24/24 (100%) ✅ COMPLETE
 
+---
+
+## Frontend Design Audit - 14 Issues P0 🎨
+
+> **Objetivo:** Adequar frontend às diretrizes dos repositórios de referência (Claude Design Engineer + Claude Code Frontend Design Plugin) e corrigir bugs de paridade backend/frontend
+> **Referências:** [claude-design-engineer](https://github.com/Dammyjay93/claude-design-engineer), [claude-code frontend-design](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design)
+
+### Design System Compliance (Labels: `P0`, `frontend`, `enhancement`)
+
+| #     | Issue                                                    | Área        | Status |
+| ----- | -------------------------------------------------------- | ----------- | ------ |
+| #1521 | Criar .design-engineer/system.md com tokens e direção    | Foundation  | 🔴     |
+| #1522 | Implementar ESLint plugin para enforcement de tokens     | Tooling     | 🔴     |
+| #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
+| #1524 | Unificar hierarquia de Card/Surface components           | Components  | 🔴     |
+| #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | 🔴     |
+| #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | 🔴     |
+| #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | 🔴     |
+| #1528 | Padronizar focus ring styles em todos componentes        | A11y        | 🔴     |
+
+### Backend/Frontend Parity Bugs (Labels: `P0`, `bug`, `parity`)
+
+| #     | Issue                                                    | Severidade | Status |
+| ----- | -------------------------------------------------------- | ---------- | ------ |
+| #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | 🔴     |
+| #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | 🔴     |
+| #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | 🔴     |
+| #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | 🔴     |
+| #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | 🔴     |
+| #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | 🔴     |
+
+**Progresso Frontend Audit:** 0/14 (0%) 🔴
+
 ### Principais Diretrizes Apple HIG 2025
 
 1. **Liquid Glass**: Novo sistema de design com translucência, profundidade e responsividade fluida
@@ -347,7 +388,13 @@ Nenhum bug P0 aberto! 🎉
 
 ---
 
-## Issues Abertas (46)
+## Issues Abertas (60)
+
+### P0 - Frontend Design Audit (14 issues) 🔴 NEW
+
+> Auditoria de design frontend baseada nos repositórios de referência Claude Design Engineer e Claude Code Frontend Design Plugin. Inclui 8 issues de compliance com design system e 6 bugs críticos de paridade backend/frontend.
+
+Ver seção "Frontend Design Audit" acima para detalhes.
 
 ### P0 - Apple HIG Design System ✅ COMPLETE
 
@@ -532,11 +579,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 803   |
-| Issues Abertas    | 46    |
+| Issues Totais     | 817   |
+| Issues Abertas    | 60    |
 | Issues Fechadas   | 757   |
-| Progresso         | 94.3% |
-| Bugs P0 Abertos   | 0     |
+| Progresso         | 92.7% |
+| Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3148  |
