@@ -8,17 +8,15 @@
  * published monthly by CAIXA and mandatory for federal public works
  * (Decreto 7.983/2013).
  *
- * Unlike other gov APIs, SINAPI data is provided via Excel spreadsheets
- * that need to be downloaded and parsed.
- *
- * Data persistence (#1165):
- * - Data is now persisted to PostgreSQL via TypeORM
- * - In-memory Map serves as fallback/cache
- * - Redis cache for fast searches
+ * Data sources (in order of priority):
+ * 1. API (Orcamentador) - Primary source via REST API (#1565, #1567)
+ * 2. Database (PostgreSQL) - Fallback with persisted data (#1165)
+ * 3. Memory (Map) - Legacy fallback for Excel imports
  *
  * @module modules/gov-api/sinapi
  * @see https://github.com/CONFENGE/etp-express/issues/693
  * @see https://github.com/CONFENGE/etp-express/issues/1165
+ * @see https://github.com/CONFENGE/etp-express/issues/1567
  */
 
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
@@ -43,6 +41,13 @@ import {
 } from './sinapi.types';
 import { SinapiParser, createSinapiParser } from './sinapi-parser';
 import { SinapiItem } from '../../../entities/sinapi-item.entity';
+import {
+  SinapiApiClientService,
+  SinapiApiAuthError,
+  SinapiApiRateLimitError,
+  SinapiApiServerError,
+} from './sinapi-api-client.service';
+import { SinapiApiInsumo, SinapiApiComposicao } from './sinapi-api.types';
 
 /**
  * In-memory storage for parsed SINAPI data
@@ -77,6 +82,18 @@ const CACHE_TTL_SECONDS = 86400;
 const DEFAULT_PAGE_SIZE = 50;
 
 /**
+ * Data source for SINAPI queries (#1567)
+ */
+enum SinapiDataSource {
+  /** API Orcamentador (primary) */
+  API = 'api',
+  /** PostgreSQL database (fallback) */
+  DATABASE = 'database',
+  /** In-memory Map (legacy) */
+  MEMORY = 'memory',
+}
+
+/**
  * SinapiService - SINAPI data ingestion and search service
  *
  * @example
@@ -105,6 +122,22 @@ export class SinapiService implements IGovApiService, OnModuleInit {
   private cacheStats = { hits: 0, misses: 0, keys: 0 };
 
   /**
+   * Current data source for queries (#1567)
+   * Defaults to API, falls back to DATABASE then MEMORY
+   */
+  private currentDataSource: SinapiDataSource = SinapiDataSource.API;
+
+  /**
+   * Timestamp of last API failure for circuit-breaker-like behavior
+   */
+  private lastApiFailure: Date | null = null;
+
+  /**
+   * Duration to wait before retrying API after failure (5 minutes)
+   */
+  private readonly apiRetryDelayMs = 5 * 60 * 1000;
+
+  /**
    * API source identifier
    */
   readonly source = 'sinapi' as const;
@@ -114,6 +147,7 @@ export class SinapiService implements IGovApiService, OnModuleInit {
     private readonly cache: GovApiCache,
     @InjectRepository(SinapiItem)
     private readonly sinapiRepository: Repository<SinapiItem>,
+    private readonly apiClient: SinapiApiClientService,
   ) {}
 
   /**
@@ -121,11 +155,57 @@ export class SinapiService implements IGovApiService, OnModuleInit {
    */
   onModuleInit(): void {
     this.parser = createSinapiParser();
-    this.logger.log('SinapiService initialized');
+
+    // Check if API is configured and set initial data source
+    if (this.apiClient.isConfigured()) {
+      this.currentDataSource = SinapiDataSource.API;
+      this.logger.log(
+        'SinapiService initialized with API as primary data source',
+      );
+    } else {
+      this.currentDataSource = SinapiDataSource.DATABASE;
+      this.logger.warn(
+        'SINAPI API not configured - using database as primary data source',
+      );
+    }
+  }
+
+  /**
+   * Get current data source being used
+   */
+  getCurrentDataSource(): SinapiDataSource {
+    return this.currentDataSource;
+  }
+
+  /**
+   * Check if API should be retried after failure
+   */
+  private shouldRetryApi(): boolean {
+    if (!this.lastApiFailure) {
+      return true;
+    }
+    const elapsed = Date.now() - this.lastApiFailure.getTime();
+    return elapsed > this.apiRetryDelayMs;
+  }
+
+  /**
+   * Reset API failure state to retry API calls
+   */
+  resetApiFailure(): void {
+    this.lastApiFailure = null;
+    if (this.apiClient.isConfigured()) {
+      this.currentDataSource = SinapiDataSource.API;
+      this.logger.log('API failure state reset - will retry API on next query');
+    }
   }
 
   /**
    * Search for SINAPI items matching the query
+   *
+   * Uses multi-source strategy (#1567):
+   * 1. Try API first (if configured and not in failure state)
+   * 2. Fall back to database if API fails
+   * 3. Fall back to in-memory store if database fails
    *
    * @param query Search query for description field
    * @param filters Optional filters for UF, month, type, etc.
@@ -158,8 +238,66 @@ export class SinapiService implements IGovApiService, OnModuleInit {
 
     this.cacheStats.misses++;
 
+    // Determine which data source to use
+    const useApi =
+      this.currentDataSource === SinapiDataSource.API &&
+      this.apiClient.isConfigured() &&
+      this.shouldRetryApi();
+
+    // Track if we're using a fallback due to API failure
+    let isUsingFallback = false;
+
+    // Try API first (#1567)
+    if (useApi) {
+      try {
+        const apiResponse = await this.searchFromApi(query, sinapiFilters);
+        const duration = Date.now() - startTime;
+        this.logger.log(
+          `API search for "${query.substring(0, 30)}..." returned ${apiResponse.data.length}/${apiResponse.total} results in ${duration}ms`,
+        );
+
+        // Cache the result
+        await this.cache.set(
+          'sinapi',
+          cacheKey,
+          apiResponse,
+          CACHE_TTL_SECONDS,
+        );
+
+        return apiResponse;
+      } catch (error) {
+        this.handleApiError(error);
+        isUsingFallback = true;
+        // Continue to fallback
+      }
+    }
+
+    // Fallback to database (#1165)
     try {
-      // Search in data store
+      const dbResponse = await this.searchFromDatabase(sinapiFilters);
+      if (dbResponse.total > 0 || !this.hasData()) {
+        const duration = Date.now() - startTime;
+        this.logger.log(
+          `Database search for "${query.substring(0, 30)}..." returned ${dbResponse.data.length}/${dbResponse.total} results in ${duration}ms${isUsingFallback ? ' (fallback from API)' : ''}`,
+        );
+
+        // Cache the result
+        await this.cache.set('sinapi', cacheKey, dbResponse, CACHE_TTL_SECONDS);
+
+        return {
+          ...dbResponse,
+          isFallback: isUsingFallback,
+        };
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      // Continue to memory fallback
+    }
+
+    // Final fallback to in-memory store
+    try {
       const results = this.searchDataStore(sinapiFilters);
 
       // Apply pagination
@@ -175,7 +313,7 @@ export class SinapiService implements IGovApiService, OnModuleInit {
         perPage,
         source: 'sinapi',
         cached: false,
-        isFallback: false,
+        isFallback: true,
         timestamp: new Date(),
       };
 
@@ -184,19 +322,180 @@ export class SinapiService implements IGovApiService, OnModuleInit {
 
       const duration = Date.now() - startTime;
       this.logger.log(
-        `Search for "${query.substring(0, 30)}..." returned ${paginatedResults.length}/${results.length} results in ${duration}ms`,
+        `Memory search for "${query.substring(0, 30)}..." returned ${paginatedResults.length}/${results.length} results in ${duration}ms (fallback)`,
       );
 
       return response;
     } catch (error) {
       const duration = Date.now() - startTime;
       this.logger.error(
-        `Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
+        `All search sources failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
 
       return this.createFallbackResponse();
+    }
+  }
+
+  /**
+   * Search via API (Orcamentador) (#1567)
+   *
+   * @param query Search query
+   * @param filters SINAPI-specific filters
+   * @returns API response transformed to standard format
+   */
+  private async searchFromApi(
+    query: string,
+    filters: SinapiSearchFilters,
+  ): Promise<GovApiResponse<SinapiPriceReference[]>> {
+    const page = filters.page || 1;
+    const perPage = filters.perPage || DEFAULT_PAGE_SIZE;
+    const desonerado = filters.desonerado ?? false;
+
+    // Search both insumos and composicoes for comprehensive results
+    const [insumosResponse, composicoesResponse] = await Promise.all([
+      this.apiClient.searchInsumos({
+        nome: query || undefined,
+        codigo: filters.codigo ? parseInt(filters.codigo, 10) : undefined,
+        estado: filters.uf,
+        referencia: filters.mesReferencia,
+        regime: desonerado ? 'DESONERADO' : 'NAO_DESONERADO',
+        page,
+        limit: perPage,
+      }),
+      this.apiClient.searchComposicoes({
+        nome: query || undefined,
+        estado: filters.uf,
+        referencia: filters.mesReferencia,
+        regime: desonerado ? 'DESONERADO' : 'NAO_DESONERADO',
+        page,
+        limit: Math.floor(perPage / 2), // Split results between types
+      }),
+    ]);
+
+    // Transform API responses to SinapiPriceReference format
+    const insumoResults = insumosResponse.data.map((insumo) =>
+      this.transformApiInsumo(insumo, desonerado),
+    );
+    const composicaoResults = composicoesResponse.data.map((composicao) =>
+      this.transformApiComposicao(composicao, desonerado),
+    );
+
+    // Combine results (prioritize insumos)
+    const allResults = [...insumoResults, ...composicaoResults];
+
+    // Calculate total from both responses
+    const total = insumosResponse.total + composicoesResponse.total;
+
+    return {
+      data: allResults,
+      total,
+      page,
+      perPage,
+      source: 'sinapi',
+      cached: false,
+      isFallback: false,
+      timestamp: new Date(),
+    };
+  }
+
+  /**
+   * Transform API insumo to SinapiPriceReference
+   */
+  private transformApiInsumo(
+    insumo: SinapiApiInsumo,
+    desonerado: boolean,
+  ): SinapiPriceReference {
+    const preco = desonerado
+      ? insumo.preco_desonerado
+      : insumo.preco_naodesonerado;
+    const mesRef = insumo.referencia || 'unknown';
+    const uf = insumo.estado || 'BR';
+
+    return {
+      id: `sinapi:${insumo.codigo}:${uf}:${mesRef}:${desonerado ? 'D' : 'O'}`,
+      title: insumo.nome,
+      description: insumo.nome,
+      source: 'sinapi',
+      url: undefined,
+      relevance: 1.0,
+      fetchedAt: new Date(),
+      codigo: String(insumo.codigo),
+      descricao: insumo.nome,
+      unidade: insumo.unidade,
+      precoUnitario: preco,
+      mesReferencia: mesRef,
+      uf: uf as SinapiUF,
+      desonerado,
+      categoria: insumo.classe || 'SINAPI',
+      tipo: SinapiItemType.INSUMO,
+      classeId: undefined,
+      classeDescricao: insumo.classe,
+      precoOnerado: insumo.preco_naodesonerado,
+      precoDesonerado: insumo.preco_desonerado,
+    };
+  }
+
+  /**
+   * Transform API composicao to SinapiPriceReference
+   */
+  private transformApiComposicao(
+    composicao: SinapiApiComposicao,
+    desonerado: boolean,
+  ): SinapiPriceReference {
+    const preco = desonerado
+      ? composicao.preco_desonerado
+      : composicao.preco_naodesonerado;
+    const mesRef = composicao.referencia || 'unknown';
+    const uf = composicao.estado || 'BR';
+
+    return {
+      id: `sinapi:${composicao.codigo}:${uf}:${mesRef}:${desonerado ? 'D' : 'O'}`,
+      title: composicao.nome,
+      description: composicao.nome,
+      source: 'sinapi',
+      url: undefined,
+      relevance: 1.0,
+      fetchedAt: new Date(),
+      codigo: String(composicao.codigo),
+      descricao: composicao.nome,
+      unidade: composicao.unidade,
+      precoUnitario: preco,
+      mesReferencia: mesRef,
+      uf: uf as SinapiUF,
+      desonerado,
+      categoria: composicao.classe || 'SINAPI',
+      tipo: SinapiItemType.COMPOSICAO,
+      classeId: undefined,
+      classeDescricao: composicao.classe,
+      precoOnerado: composicao.preco_naodesonerado,
+      precoDesonerado: composicao.preco_desonerado,
+    };
+  }
+
+  /**
+   * Handle API errors and update data source state (#1567)
+   */
+  private handleApiError(error: unknown): void {
+    this.lastApiFailure = new Date();
+
+    if (error instanceof SinapiApiAuthError) {
+      this.logger.error('SINAPI API authentication failed - check API key');
+      this.currentDataSource = SinapiDataSource.DATABASE;
+    } else if (error instanceof SinapiApiRateLimitError) {
+      this.logger.warn(
+        `SINAPI API rate limit exceeded - retry after ${error.retryAfter}s`,
+      );
+      // Don't permanently switch to database for rate limits
+    } else if (error instanceof SinapiApiServerError) {
+      this.logger.warn(`SINAPI API server error (${error.statusCode})`);
+      this.currentDataSource = SinapiDataSource.DATABASE;
+    } else {
+      this.logger.warn(
+        `SINAPI API unavailable: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      this.currentDataSource = SinapiDataSource.DATABASE;
     }
   }
 
@@ -356,11 +655,57 @@ export class SinapiService implements IGovApiService, OnModuleInit {
   }
 
   /**
-   * Check API health (for SINAPI, checks data store status)
+   * Check API health (#1567)
+   *
+   * Checks health in order of priority:
+   * 1. API (Orcamentador)
+   * 2. Database
+   * 3. In-memory store
    */
   async healthCheck(): Promise<GovApiHealthStatus> {
     const startTime = Date.now();
 
+    // Check API first if configured
+    if (this.apiClient.isConfigured()) {
+      try {
+        const apiStatus = await this.apiClient.checkStatus();
+        const latency = Date.now() - startTime;
+
+        if (apiStatus.status === 'online') {
+          // Reset any previous failure state
+          this.lastApiFailure = null;
+          this.currentDataSource = SinapiDataSource.API;
+
+          return {
+            source: 'sinapi',
+            healthy: true,
+            latencyMs: latency,
+            lastCheck: new Date(),
+            circuitState: 'closed',
+          };
+        }
+      } catch (error) {
+        this.logger.warn(
+          `API health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      }
+    }
+
+    // Fallback to database check
+    const dbCount = await this.getPersistedCount();
+    if (dbCount > 0) {
+      const latency = Date.now() - startTime;
+      return {
+        source: 'sinapi',
+        healthy: true,
+        latencyMs: latency,
+        lastCheck: new Date(),
+        error: 'API unavailable, using database fallback',
+        circuitState: 'open',
+      };
+    }
+
+    // Final fallback to in-memory check
     const hasData = this.dataStore.items.size > 0;
     const latency = Date.now() - startTime;
 
@@ -369,13 +714,17 @@ export class SinapiService implements IGovApiService, OnModuleInit {
       healthy: hasData,
       latencyMs: latency,
       lastCheck: new Date(),
-      error: hasData ? undefined : 'No SINAPI data loaded',
-      circuitState: 'closed', // SINAPI doesn't use circuit breaker
+      error: hasData
+        ? 'API and database unavailable, using memory fallback'
+        : 'No SINAPI data available from any source',
+      circuitState: hasData ? 'half-open' : 'open',
     };
   }
 
   /**
-   * Get current circuit breaker state (SINAPI doesn't use circuit breaker)
+   * Get current circuit breaker state (#1567)
+   *
+   * Now includes API client state information.
    */
   getCircuitState(): {
     opened: boolean;
@@ -383,11 +732,20 @@ export class SinapiService implements IGovApiService, OnModuleInit {
     closed: boolean;
     stats: Record<string, unknown>;
   } {
+    // Determine circuit state based on current data source
+    const isApiAvailable =
+      this.currentDataSource === SinapiDataSource.API && !this.lastApiFailure;
+    const isRecovering = this.lastApiFailure !== null && this.shouldRetryApi();
+
     return {
-      opened: false,
-      halfOpen: false,
-      closed: true,
+      opened: !isApiAvailable && !isRecovering,
+      halfOpen: isRecovering,
+      closed: isApiAvailable,
       stats: {
+        currentDataSource: this.currentDataSource,
+        apiConfigured: this.apiClient.isConfigured(),
+        lastApiFailure: this.lastApiFailure,
+        rateLimitInfo: this.apiClient.getRateLimitInfo(),
         itemsLoaded: this.dataStore.items.size,
         loadedMonths: this.dataStore.loadedMonths.size,
         lastUpdate: this.dataStore.lastUpdate,

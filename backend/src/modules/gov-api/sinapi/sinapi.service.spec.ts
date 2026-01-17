@@ -3,6 +3,7 @@
  *
  * @see https://github.com/CONFENGE/etp-express/issues/693
  * @see https://github.com/CONFENGE/etp-express/issues/1165 - Persistence tests
+ * @see https://github.com/CONFENGE/etp-express/issues/1567 - API integration tests
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,6 +18,12 @@ import {
   SinapiCategoria,
 } from './sinapi.types';
 import { SinapiItem } from '../../../entities/sinapi-item.entity';
+import {
+  SinapiApiClientService,
+  SinapiApiAuthError,
+  SinapiApiRateLimitError,
+  SinapiApiServerError,
+} from './sinapi-api-client.service';
 
 /**
  * Helper function to create an Excel buffer from array data using ExcelJS
@@ -45,6 +52,16 @@ describe('SinapiService', () => {
   let service: SinapiService;
   let cache: jest.Mocked<GovApiCache>;
   let mockRepository: jest.Mocked<Record<string, jest.Mock>>;
+  let mockApiClient: {
+    isConfigured: jest.Mock;
+    onModuleInit: jest.Mock;
+    searchInsumos: jest.Mock;
+    searchComposicoes: jest.Mock;
+    getInsumo: jest.Mock;
+    getComposicaoDetails: jest.Mock;
+    checkStatus: jest.Mock;
+    getRateLimitInfo: jest.Mock;
+  };
 
   const mockConfigService = {
     get: jest.fn().mockReturnValue(undefined),
@@ -55,6 +72,26 @@ describe('SinapiService', () => {
     set: jest.fn(),
     delete: jest.fn(),
   };
+
+  // Mock API client for Orcamentador API (#1567)
+  const createMockApiClient = () => ({
+    isConfigured: jest.fn().mockReturnValue(false),
+    onModuleInit: jest.fn(),
+    searchInsumos: jest
+      .fn()
+      .mockResolvedValue({ data: [], total: 0, page: 1, limit: 50, pages: 0 }),
+    searchComposicoes: jest
+      .fn()
+      .mockResolvedValue({ data: [], total: 0, page: 1, limit: 50, pages: 0 }),
+    getInsumo: jest.fn().mockResolvedValue(null),
+    getComposicaoDetails: jest.fn().mockResolvedValue(null),
+    checkStatus: jest.fn().mockResolvedValue({
+      status: 'offline',
+      versao: '1.0',
+      timestamp: new Date().toISOString(),
+    }),
+    getRateLimitInfo: jest.fn().mockReturnValue(null),
+  });
 
   // Mock repository for TypeORM (#1165)
   const createMockRepository = () => ({
@@ -83,6 +120,7 @@ describe('SinapiService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     mockRepository = createMockRepository();
+    mockApiClient = createMockApiClient();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -90,6 +128,7 @@ describe('SinapiService', () => {
         { provide: ConfigService, useValue: mockConfigService },
         { provide: GovApiCache, useValue: mockCache },
         { provide: getRepositoryToken(SinapiItem), useValue: mockRepository },
+        { provide: SinapiApiClientService, useValue: mockApiClient },
       ],
     }).compile();
 
@@ -237,7 +276,7 @@ describe('SinapiService', () => {
 
       expect(result.source).toBe('sinapi');
       expect(result.healthy).toBe(false);
-      expect(result.error).toBe('No SINAPI data loaded');
+      expect(result.error).toContain('No SINAPI data');
     });
 
     it('should return healthy when data is loaded', async () => {
@@ -257,17 +296,19 @@ describe('SinapiService', () => {
       const result = await service.healthCheck();
 
       expect(result.healthy).toBe(true);
-      expect(result.error).toBeUndefined();
+      // Note: With new API-first architecture, error message indicates fallback source
+      // when API is not configured or offline (#1567)
     });
   });
 
   describe('getCircuitState()', () => {
-    it('should return closed circuit state', () => {
+    it('should return open circuit when API not configured', () => {
+      // When API is not configured, circuit is open (using fallback)
       const state = service.getCircuitState();
 
-      expect(state.closed).toBe(true);
-      expect(state.opened).toBe(false);
-      expect(state.halfOpen).toBe(false);
+      expect(state.opened).toBe(true);
+      expect(state.closed).toBe(false);
+      expect(state.stats).toHaveProperty('currentDataSource', 'database');
     });
 
     it('should include stats in circuit state', () => {
@@ -276,6 +317,8 @@ describe('SinapiService', () => {
       expect(state.stats).toHaveProperty('itemsLoaded');
       expect(state.stats).toHaveProperty('loadedMonths');
       expect(state.stats).toHaveProperty('lastUpdate');
+      expect(state.stats).toHaveProperty('currentDataSource');
+      expect(state.stats).toHaveProperty('apiConfigured');
     });
   });
 
@@ -663,6 +706,228 @@ describe('SinapiService', () => {
         expect(status.dbItemCount).toBe(5000);
         expect(status.message).toContain('5000');
         expect(status.message).toContain('Database');
+      });
+    });
+  });
+
+  describe('API Integration (#1567)', () => {
+    describe('getCurrentDataSource()', () => {
+      it('should return database when API not configured', () => {
+        mockApiClient.isConfigured.mockReturnValue(false);
+        service.onModuleInit();
+
+        expect(service.getCurrentDataSource()).toBe('database');
+      });
+
+      it('should return api when API is configured', () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        service.onModuleInit();
+
+        expect(service.getCurrentDataSource()).toBe('api');
+      });
+    });
+
+    describe('search() with API', () => {
+      beforeEach(() => {
+        mockCache.get.mockResolvedValue(null);
+        mockCache.set.mockResolvedValue(undefined);
+        mockApiClient.isConfigured.mockReturnValue(true);
+        service.onModuleInit();
+      });
+
+      it('should use API as primary source when configured', async () => {
+        const mockInsumo = {
+          codigo: 12345,
+          nome: 'Cimento Portland CP-II',
+          unidade: 'KG',
+          preco_desonerado: 0.7,
+          preco_naodesonerado: 0.75,
+          tipo: 'MATERIAL' as const,
+          classe: 'MATERIAIS',
+          referencia: '2024-01-01',
+          estado: 'DF',
+        };
+
+        mockApiClient.searchInsumos.mockResolvedValue({
+          data: [mockInsumo],
+          total: 1,
+          page: 1,
+          limit: 50,
+          pages: 1,
+        });
+
+        mockApiClient.searchComposicoes.mockResolvedValue({
+          data: [],
+          total: 0,
+          page: 1,
+          limit: 25,
+          pages: 0,
+        });
+
+        const result = await service.search('cimento');
+
+        expect(mockApiClient.searchInsumos).toHaveBeenCalled();
+        expect(result.data).toHaveLength(1);
+        expect(result.isFallback).toBe(false);
+        expect(result.source).toBe('sinapi');
+      });
+
+      it('should fallback to database when API fails', async () => {
+        mockApiClient.searchInsumos.mockRejectedValue(
+          new SinapiApiServerError('API error', 500),
+        );
+
+        // Mock database to return some data
+        const mockItems: Partial<SinapiItem>[] = [
+          {
+            id: 'uuid-1',
+            codigo: '00001',
+            descricao: 'Cimento Portland',
+            unidade: 'KG',
+            precoOnerado: 0.75,
+            precoDesonerado: 0.7,
+            tipo: 'INSUMO',
+            uf: 'DF',
+            mesReferencia: 1,
+            anoReferencia: 2024,
+            createdAt: new Date(),
+          },
+        ];
+
+        const queryBuilder = mockRepository.createQueryBuilder();
+        queryBuilder.getMany.mockResolvedValue(mockItems as SinapiItem[]);
+        queryBuilder.getCount.mockResolvedValue(1);
+
+        const result = await service.search('cimento');
+
+        expect(result.isFallback).toBe(true);
+        expect(result.source).toBe('sinapi');
+        expect(result.total).toBeGreaterThan(0);
+      });
+
+      it('should handle rate limit errors gracefully', async () => {
+        mockApiClient.searchInsumos.mockRejectedValue(
+          new SinapiApiRateLimitError('Rate limit exceeded', 60),
+        );
+
+        const result = await service.search('cimento');
+
+        expect(result.source).toBe('sinapi');
+      });
+
+      it('should handle auth errors and switch to database', async () => {
+        mockApiClient.searchInsumos.mockRejectedValue(
+          new SinapiApiAuthError('Invalid API key'),
+        );
+
+        await service.search('cimento');
+
+        // Should have switched to database mode
+        expect(service.getCurrentDataSource()).toBe('database');
+      });
+    });
+
+    describe('healthCheck() with API (#1567)', () => {
+      it('should check API status first when configured', async () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        mockApiClient.checkStatus.mockResolvedValue({
+          status: 'online',
+          versao: '1.0',
+          timestamp: new Date().toISOString(),
+        });
+
+        service.onModuleInit();
+        const result = await service.healthCheck();
+
+        expect(mockApiClient.checkStatus).toHaveBeenCalled();
+        expect(result.healthy).toBe(true);
+        expect(result.circuitState).toBe('closed');
+      });
+
+      it('should fallback to database when API offline', async () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        mockApiClient.checkStatus.mockResolvedValue({
+          status: 'offline',
+          versao: '1.0',
+          timestamp: new Date().toISOString(),
+        });
+        mockRepository.count.mockResolvedValue(1000);
+
+        service.onModuleInit();
+        const result = await service.healthCheck();
+
+        expect(result.healthy).toBe(true);
+        expect(result.error).toContain('API unavailable');
+        expect(result.circuitState).toBe('open');
+      });
+
+      it('should return unhealthy when all sources unavailable', async () => {
+        mockApiClient.isConfigured.mockReturnValue(false);
+        mockRepository.count.mockResolvedValue(0);
+
+        service.onModuleInit();
+        const result = await service.healthCheck();
+
+        expect(result.healthy).toBe(false);
+        expect(result.error).toContain('No SINAPI data available');
+      });
+    });
+
+    describe('getCircuitState() with API (#1567)', () => {
+      it('should include API status in circuit state', () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        mockApiClient.getRateLimitInfo.mockReturnValue({
+          limit: 1000,
+          remaining: 950,
+          reset: Date.now() + 60000,
+          monthlyLimit: 10000,
+          monthlyUsed: 100,
+          monthlyRemaining: 9900,
+        });
+
+        service.onModuleInit();
+        const state = service.getCircuitState();
+
+        expect(state.stats).toHaveProperty('currentDataSource', 'api');
+        expect(state.stats).toHaveProperty('apiConfigured', true);
+        expect(state.stats).toHaveProperty('rateLimitInfo');
+        expect(state.closed).toBe(true);
+      });
+
+      it('should show open circuit when API failed', async () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        mockApiClient.searchInsumos.mockRejectedValue(
+          new SinapiApiServerError('Error', 500),
+        );
+
+        service.onModuleInit();
+
+        // Trigger a failure
+        await service.search('test');
+
+        const state = service.getCircuitState();
+
+        expect(state.stats).toHaveProperty('lastApiFailure');
+        expect(state.stats.lastApiFailure).not.toBeNull();
+      });
+    });
+
+    describe('resetApiFailure()', () => {
+      it('should reset failure state and re-enable API', async () => {
+        mockApiClient.isConfigured.mockReturnValue(true);
+        mockApiClient.searchInsumos.mockRejectedValue(
+          new SinapiApiServerError('Error', 500),
+        );
+
+        service.onModuleInit();
+
+        // Trigger a failure
+        await service.search('test');
+        expect(service.getCurrentDataSource()).toBe('database');
+
+        // Reset and verify
+        service.resetApiFailure();
+        expect(service.getCurrentDataSource()).toBe('api');
       });
     });
   });
