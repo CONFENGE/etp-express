@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 761/819 (92.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-16 | **Progresso:** 762/817 (93.3%) | **Deploy:** LIVE
 
 ---
 
@@ -389,7 +389,7 @@
 
 ---
 
-## Issues Abertas (60)
+## Issues Abertas (55)
 
 ### P0 - Frontend Design Audit (14 issues) 🔴 NEW
 
@@ -592,10 +592,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 819   |
-| Issues Abertas    | 58    |
-| Issues Fechadas   | 761   |
-| Progresso         | 92.9% |
+| Issues Totais     | 817   |
+| Issues Abertas    | 55    |
+| Issues Fechadas   | 762   |
+| Progresso         | 93.3% |
 | Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
