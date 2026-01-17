@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { NotImplementedException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { PageIndexService } from '../pageindex.service';
+import { TreeSearchService } from '../services/tree-search.service';
 import { IndexDocumentDto, DocumentType } from '../dto/index-document.dto';
 import {
   DocumentTree,
@@ -45,6 +46,11 @@ describe('PageIndexService', () => {
     createQueryBuilder: jest.fn(() => mockQueryBuilder),
   };
 
+  const mockTreeSearchService = {
+    search: jest.fn(),
+    searchMultipleTrees: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -63,6 +69,10 @@ describe('PageIndexService', () => {
               return undefined;
             }),
           },
+        },
+        {
+          provide: TreeSearchService,
+          useValue: mockTreeSearchService,
         },
       ],
     }).compile();
@@ -420,63 +430,65 @@ describe('PageIndexService', () => {
   });
 
   describe('searchTree', () => {
-    it('should throw NotFoundException if tree not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+    it('should delegate to TreeSearchService', async () => {
+      const mockSearchResult = {
+        relevantNodes: [{ id: 'node-1', title: 'Test', level: 0, children: [] }],
+        path: ['Root', 'Test'],
+        confidence: 0.9,
+        reasoning: 'Found relevant section',
+        searchTimeMs: 500,
+      };
+
+      mockTreeSearchService.search.mockResolvedValue(mockSearchResult);
+
+      const result = await service.searchTree('tree-123', 'test query');
+
+      expect(mockTreeSearchService.search).toHaveBeenCalledWith(
+        'tree-123',
+        'test query',
+        undefined,
+      );
+      expect(result).toEqual(mockSearchResult);
+    });
+
+    it('should pass search options to TreeSearchService', async () => {
+      const mockSearchResult = {
+        relevantNodes: [],
+        path: [],
+        confidence: 0,
+        reasoning: 'Not found',
+        searchTimeMs: 100,
+      };
+
+      mockTreeSearchService.search.mockResolvedValue(mockSearchResult);
+
+      const options = { maxDepth: 3, maxResults: 2, minConfidence: 0.7 };
+      await service.searchTree('tree-123', 'test query', options);
+
+      expect(mockTreeSearchService.search).toHaveBeenCalledWith(
+        'tree-123',
+        'test query',
+        options,
+      );
+    });
+
+    it('should propagate NotFoundException from TreeSearchService', async () => {
+      mockTreeSearchService.search.mockRejectedValue(
+        new NotFoundException('Document tree not found'),
+      );
 
       await expect(service.searchTree('non-existent', 'query')).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('should throw NotImplementedException if tree not indexed', async () => {
-      const mockTree: DocumentTree = {
-        id: 'tree-123',
-        documentName: 'Test',
-        documentPath: null,
-        sourceUrl: null,
-        documentType: DocumentType.LEGISLATION,
-        status: DocumentTreeStatus.PENDING,
-        treeStructure: null,
-        metadata: null,
-        error: null,
-        nodeCount: 0,
-        maxDepth: 0,
-        processingTimeMs: null,
-        indexedAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockRepository.findOne.mockResolvedValue(mockTree);
-
-      await expect(service.searchTree('tree-123', 'query')).rejects.toThrow(
-        NotImplementedException,
+    it('should propagate Error from TreeSearchService for unindexed tree', async () => {
+      mockTreeSearchService.search.mockRejectedValue(
+        new Error('Document tree is not indexed yet'),
       );
-    });
-
-    it('should throw NotImplementedException for indexed trees (not yet implemented)', async () => {
-      const mockTree: DocumentTree = {
-        id: 'tree-123',
-        documentName: 'Test',
-        documentPath: null,
-        sourceUrl: null,
-        documentType: DocumentType.LEGISLATION,
-        status: DocumentTreeStatus.INDEXED,
-        treeStructure: { id: 'root', title: 'Root', level: 0, children: [] },
-        metadata: null,
-        error: null,
-        nodeCount: 1,
-        maxDepth: 0,
-        processingTimeMs: 100,
-        indexedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockRepository.findOne.mockResolvedValue(mockTree);
 
       await expect(service.searchTree('tree-123', 'query')).rejects.toThrow(
-        NotImplementedException,
+        'not indexed yet',
       );
     });
   });
