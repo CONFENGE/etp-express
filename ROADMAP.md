@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1492/1555 (96.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1493/1555 (96.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1555 | Feature  | [#1550] Create PageIndex module structure - stub implementations ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1549 | Docs     | [#1521] Create .design-engineer/system.md with tokens and design direction ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1548 | Fix      | [#1534] Fix Date serialization in Compliance types ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1547 | Fix      | [#1533] Add currentVersion to TermoReferencia type ✅ - **Score 100/100 - Auto-merged** |
@@ -584,14 +585,14 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 0/13 (0%) 🔵 NEW
+#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 1/13 (8%) 🔵 NEW
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
 
 | #     | Issue                                                    | Prioridade | Status |
 | ----- | -------------------------------------------------------- | ---------- | ------ |
 | #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
-|       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         | 🔴     |
+|       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         | ✅     |
 |       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | 🔴     |
 |       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | 🔴     |
 |       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | 🔴     |
@@ -649,11 +650,11 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
-| Issues Abertas    | 63    |
-| Issues Fechadas   | 1492  |
+| Issues Abertas    | 62    |
+| Issues Fechadas   | 1493  |
 | Progresso         | 96.0% |
 | Bugs P0 Abertos   | 7     |
-| M17 PageIndex     | 0/13  |
+| M17 PageIndex     | 1/13  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3218  |
