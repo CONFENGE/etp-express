@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -206,10 +207,12 @@ export function TRVersionHistory({
               ))}
             </div>
           ) : versions.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              Nenhuma versao encontrada. As versoes sao criadas automaticamente
-              ao salvar o TR.
-            </div>
+            <EmptyState
+              type="documents"
+              title="Nenhuma versão encontrada"
+              description="As versões são criadas automaticamente ao salvar o Termo de Referência."
+              size="sm"
+            />
           ) : (
             <>
               <div className="max-h-[300px] overflow-y-auto rounded-md border">

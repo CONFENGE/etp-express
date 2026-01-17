@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { PeriodFilter } from '@/components/metrics';
 import {
   useAdminStore,
@@ -126,12 +127,12 @@ function RankingSkeleton() {
  */
 function EmptyRankingState() {
   return (
-    <div className="py-8 text-center">
-      <Trophy className="mx-auto h-12 w-12 text-muted-foreground/50" />
-      <p className="mt-4 text-muted-foreground">
-        Nenhum usuario com ETPs no periodo selecionado
-      </p>
-    </div>
+    <EmptyState
+      type="search"
+      title="Nenhum usuário encontrado"
+      description="Não há usuários com ETPs no período selecionado. Tente ajustar o filtro de período."
+      size="sm"
+    />
   );
 }
 
