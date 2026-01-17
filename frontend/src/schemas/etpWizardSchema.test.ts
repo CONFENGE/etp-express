@@ -8,6 +8,8 @@ import {
   etpWizardSchema,
   WIZARD_STEPS,
   defaultWizardValues,
+  transformWizardDataToPayload,
+  ETPWizardFormData,
 } from './etpWizardSchema';
 
 describe('etpWizardSchema', () => {
@@ -330,6 +332,107 @@ describe('etpWizardSchema', () => {
       expect(defaultWizardValues.valorUnitario).toBeUndefined();
       expect(defaultWizardValues.valorEstimado).toBeUndefined();
       expect(defaultWizardValues.nivelRisco).toBeUndefined();
+    });
+  });
+
+  describe('transformWizardDataToPayload - Issue #1530', () => {
+    it('transforms flat responsavelTecnico fields to nested structure', () => {
+      const formData: ETPWizardFormData = {
+        ...defaultWizardValues,
+        title: 'Test ETP',
+        objeto: 'Test objeto here',
+        responsavelTecnicoNome: 'Joao Silva',
+        responsavelTecnicoMatricula: '12345',
+      };
+
+      const payload = transformWizardDataToPayload(formData);
+
+      expect(payload.responsavelTecnico).toEqual({
+        nome: 'Joao Silva',
+        matricula: '12345',
+      });
+      // Flat fields should NOT be in the payload
+      expect(payload).not.toHaveProperty('responsavelTecnicoNome');
+      expect(payload).not.toHaveProperty('responsavelTecnicoMatricula');
+    });
+
+    it('omits responsavelTecnico when nome is empty', () => {
+      const formData: ETPWizardFormData = {
+        ...defaultWizardValues,
+        title: 'Test ETP',
+        objeto: 'Test objeto here',
+        responsavelTecnicoNome: '',
+        responsavelTecnicoMatricula: '12345',
+      };
+
+      const payload = transformWizardDataToPayload(formData);
+
+      expect(payload.responsavelTecnico).toBeUndefined();
+    });
+
+    it('includes responsavelTecnico without matricula when matricula is empty', () => {
+      const formData: ETPWizardFormData = {
+        ...defaultWizardValues,
+        title: 'Test ETP',
+        objeto: 'Test objeto here',
+        responsavelTecnicoNome: 'Joao Silva',
+        responsavelTecnicoMatricula: '',
+      };
+
+      const payload = transformWizardDataToPayload(formData);
+
+      expect(payload.responsavelTecnico).toEqual({
+        nome: 'Joao Silva',
+        matricula: undefined,
+      });
+    });
+
+    it('transforms all fields correctly', () => {
+      const formData: ETPWizardFormData = {
+        ...defaultWizardValues,
+        title: 'ETP Completo',
+        objeto: 'Contratacao de servicos',
+        orgaoEntidade: 'Secretaria Municipal',
+        uasg: '123456',
+        unidadeDemandante: 'Departamento de TI',
+        responsavelTecnicoNome: 'Maria Santos',
+        responsavelTecnicoMatricula: '54321',
+        dataElaboracao: '2024-01-15',
+        valorEstimado: 100000,
+        nivelRisco: 'MEDIO',
+      };
+
+      const payload = transformWizardDataToPayload(formData);
+
+      expect(payload.title).toBe('ETP Completo');
+      expect(payload.objeto).toBe('Contratacao de servicos');
+      expect(payload.orgaoEntidade).toBe('Secretaria Municipal');
+      expect(payload.uasg).toBe('123456');
+      expect(payload.unidadeDemandante).toBe('Departamento de TI');
+      expect(payload.responsavelTecnico).toEqual({
+        nome: 'Maria Santos',
+        matricula: '54321',
+      });
+      expect(payload.dataElaboracao).toBe('2024-01-15');
+      expect(payload.valorEstimado).toBe(100000);
+      expect(payload.nivelRisco).toBe('MEDIO');
+    });
+
+    it('converts empty strings to undefined', () => {
+      const formData: ETPWizardFormData = {
+        ...defaultWizardValues,
+        title: 'Test ETP',
+        objeto: 'Test objeto here',
+        orgaoEntidade: '',
+        uasg: '',
+        description: '',
+      };
+
+      const payload = transformWizardDataToPayload(formData);
+
+      expect(payload.orgaoEntidade).toBeUndefined();
+      expect(payload.uasg).toBeUndefined();
+      expect(payload.description).toBeUndefined();
     });
   });
 });
