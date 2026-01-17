@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@json2csv/plainjs": "^7.0.6",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/cli": "^11.0.10",
     "@nestjs/common": "^11.1.9",
@@ -61,7 +62,7 @@
     "@sentry/node": "^10.25.0",
     "@sentry/profiling-node": "^10.25.0",
     "@types/multer": "^2.0.0",
-    "axios": "^1.6.5",
+    "axios": "^1.13.2",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.65.1",
     "class-transformer": "^0.5.1",
