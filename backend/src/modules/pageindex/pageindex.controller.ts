@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { PageIndexService, IndexingResult } from './pageindex.service';
+import { TreeBuilderService } from './services/tree-builder.service';
 import { IndexDocumentDto } from './dto/index-document.dto';
 import { SearchTreeDto } from './dto/search-tree.dto';
 import { TreeSearchResult } from './interfaces/tree-node.interface';
@@ -44,7 +45,10 @@ import { TreeSearchResult } from './interfaces/tree-node.interface';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PageIndexController {
-  constructor(private readonly pageIndexService: PageIndexService) {}
+  constructor(
+    private readonly pageIndexService: PageIndexService,
+    private readonly treeBuilderService: TreeBuilderService,
+  ) {}
 
   /**
    * Index a new document.
@@ -177,6 +181,31 @@ export class PageIndexController {
   }
 
   /**
+   * Health check for TreeBuilder service.
+   *
+   * @example GET /pageindex/health
+   */
+  @Get('health')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Check TreeBuilder health',
+    description: 'Verifies Python and PageIndex availability.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Health status',
+  })
+  async healthCheck(): Promise<{
+    healthy: boolean;
+    pythonAvailable: boolean;
+    pageindexAvailable: boolean;
+    pythonVersion?: string;
+    error?: string;
+  }> {
+    return this.treeBuilderService.checkHealth();
+  }
+
+  /**
    * Get a specific document tree.
    *
    * @example GET /pageindex/550e8400-e29b-41d4-a716-446655440000
@@ -238,5 +267,43 @@ export class PageIndexController {
   })
   async deleteTree(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.pageIndexService.deleteTree(id);
+  }
+
+  /**
+   * Process a pending document to build its tree structure.
+   *
+   * @example POST /pageindex/550e8400.../process
+   * {
+   *   "text": "Document content..."
+   * }
+   */
+  @Post(':id/process')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Process a document to build its tree',
+    description:
+      'Triggers TreeBuilderService to generate hierarchical structure for a pending document.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Document tree UUID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Document processed successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document tree not found',
+  })
+  async processDocument(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { documentPath?: string; text?: string },
+  ): Promise<IndexingResult> {
+    return this.treeBuilderService.processDocument(
+      id,
+      body.documentPath,
+      body.text,
+    );
   }
 }
