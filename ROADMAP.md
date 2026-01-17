@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1502/1555 (96.6%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1503/1555 (96.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1571 | a11y     | [#1527] Add aria-labels to icon buttons for WCAG 2.1 AA compliance ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1570 | Feature  | [#1526] Standardize EmptyState component across tables and lists ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1563 | Feature  | [#1524] Unify Card/Surface hierarchy with variants ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1562 | Feature  | [#1525] Add skeleton states to ETP and TR editor pages ✅ - **Score 100/100 - Auto-merged** |
@@ -345,7 +346,7 @@
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | ✅     |
 | #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | ✅     |
 | #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | ✅     |
-| #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | 🔴     |
+| #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | ✅     |
 | #1528 | Padronizar focus ring styles em todos componentes        | A11y        | ✅     |
 
 ### Backend/Frontend Parity Bugs (Labels: `P0`, `bug`, `parity`)
@@ -359,7 +360,7 @@
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | ✅     |
 
-**Progresso Frontend Audit:** 9/14 (64%) 🟡
+**Progresso Frontend Audit:** 10/14 (71%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -660,9 +661,9 @@ Oportunidades de mercado identificadas.
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
 | Issues Abertas    | 60    |
-| Issues Fechadas   | 1496  |
-| Progresso         | 96.3% |
-| Bugs P0 Abertos   | 6     |
+| Issues Fechadas   | 1497  |
+| Progresso         | 96.7% |
+| Bugs P0 Abertos   | 5     |
 | M17 PageIndex     | 4/13  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
