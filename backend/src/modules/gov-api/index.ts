@@ -127,3 +127,14 @@ export {
   SICRO_CATEGORIA_NAMES,
   SICRO_MODO_TRANSPORTE_NAMES,
 } from './sicro';
+
+// Contract Price Collector (M13: Market Intelligence)
+export {
+  ContractPriceCollectorModule,
+  ContractPriceCollectorService,
+  CollectorFilters,
+  CollectionResult,
+  CollectionStats,
+  NormalizedPriceData,
+  SchedulerStatus,
+} from './contract-price-collector';
