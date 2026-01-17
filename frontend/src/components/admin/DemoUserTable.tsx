@@ -104,10 +104,7 @@ export function DemoUserTable({
           </thead>
           <tbody className="divide-y">
             {demoUsers.map((user) => (
-              <tr
-                key={user.id}
-                className="transition-colors hover:bg-muted/50"
-              >
+              <tr key={user.id} className="transition-colors hover:bg-muted/50">
                 <td className="px-6 py-4">
                   <span className="font-medium">{user.email}</span>
                 </td>
