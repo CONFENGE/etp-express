@@ -27,7 +27,15 @@ interface FieldOption {
 interface DynamicFieldConfig {
   name: string;
   label: string;
-  type: 'input' | 'textarea' | 'number' | 'select';
+  /**
+   * Field type:
+   * - 'input': Single-line text input
+   * - 'textarea': Multi-line text input
+   * - 'textarea-array': Multi-line text that converts to/from string[] (Issue #1531)
+   * - 'number': Numeric input
+   * - 'select': Dropdown select
+   */
+  type: 'input' | 'textarea' | 'textarea-array' | 'number' | 'select';
   placeholder: string;
   helpText: string;
   required: boolean;
@@ -225,7 +233,7 @@ const DYNAMIC_FIELDS_CONFIG: Record<EtpTemplateType, TemplateFieldsConfig> = {
       {
         name: 'dynamicFields.indicadoresDesempenho',
         label: 'Indicadores de Desempenho',
-        type: 'textarea',
+        type: 'textarea-array', // Issue #1531 - Backend expects string[]
         placeholder: 'Ex: Taxa de satisfação > 90%, Tempo de resposta < 4h...',
         helpText: 'KPIs para medição de desempenho (um por linha)',
         required: false,
@@ -374,7 +382,23 @@ export function DynamicFieldsRenderer({
     for (let i = 1; i < parts.length; i++) {
       value = (value as Record<string, unknown>)?.[parts[i]];
     }
-    return value as string | number | undefined;
+    return value as string | number | string[] | undefined;
+  };
+
+  /**
+   * Helper to convert array value to display string for textarea-array fields.
+   * Issue #1531 - Backend returns string[], UI displays as newline-separated string.
+   */
+  const getDisplayValue = (
+    value: string | number | string[] | undefined,
+    fieldType: string,
+  ): string => {
+    if (value === undefined || value === null) return '';
+    // For textarea-array, convert array to newline-separated string
+    if (fieldType === 'textarea-array' && Array.isArray(value)) {
+      return value.join('\n');
+    }
+    return String(value);
   };
 
   return (
@@ -403,7 +427,8 @@ export function DynamicFieldsRenderer({
       {/* Dynamic Fields */}
       <div className="space-y-4">
         {config.fields.map((field) => {
-          const fieldValue = getNestedValue(field.name) || '';
+          const fieldValue = getNestedValue(field.name);
+          const displayValue = getDisplayValue(fieldValue, field.type);
           const error = getNestedError(field.name);
 
           return (
@@ -417,7 +442,7 @@ export function DynamicFieldsRenderer({
               charCount={
                 field.maxLength
                   ? {
-                      current: String(fieldValue).length,
+                      current: displayValue.length,
                       max: field.maxLength,
                     }
                   : undefined
@@ -428,6 +453,16 @@ export function DynamicFieldsRenderer({
                   id={field.name}
                   placeholder={field.placeholder}
                   rows={field.rows || 3}
+                  {...register(field.name as keyof ETPWizardFormData)}
+                />
+              ) : field.type === 'textarea-array' ? (
+                // Issue #1531 - textarea-array: displays string[], stores as newline-separated string
+                // Zod schema transforms string → string[] on parse
+                <Textarea
+                  id={field.name}
+                  placeholder={field.placeholder}
+                  rows={field.rows || 3}
+                  defaultValue={displayValue}
                   {...register(field.name as keyof ETPWizardFormData)}
                 />
               ) : field.type === 'select' ? (

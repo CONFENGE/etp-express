@@ -10,6 +10,7 @@ import {
   defaultWizardValues,
   transformWizardDataToPayload,
   ETPWizardFormData,
+  servicosDynamicFieldsSchema,
 } from './etpWizardSchema';
 
 describe('etpWizardSchema', () => {
@@ -433,6 +434,95 @@ describe('etpWizardSchema', () => {
       expect(payload.orgaoEntidade).toBeUndefined();
       expect(payload.uasg).toBeUndefined();
       expect(payload.description).toBeUndefined();
+    });
+  });
+
+  describe('servicosDynamicFieldsSchema - Issue #1531 indicadoresDesempenho', () => {
+    it('transforms newline-separated string to string array', () => {
+      const input = {
+        produtividade: '100 m2/dia',
+        indicadoresDesempenho: 'Taxa > 90%\nTempo < 4h\nAbsenteismo < 5%',
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toEqual([
+        'Taxa > 90%',
+        'Tempo < 4h',
+        'Absenteismo < 5%',
+      ]);
+    });
+
+    it('handles string array input (from API response)', () => {
+      const input = {
+        produtividade: '100 m2/dia',
+        indicadoresDesempenho: ['Taxa > 90%', 'Tempo < 4h'],
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toEqual([
+        'Taxa > 90%',
+        'Tempo < 4h',
+      ]);
+    });
+
+    it('filters empty lines when transforming string', () => {
+      const input = {
+        indicadoresDesempenho: 'Taxa > 90%\n\n\nTempo < 4h\n   \n',
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toEqual([
+        'Taxa > 90%',
+        'Tempo < 4h',
+      ]);
+    });
+
+    it('trims whitespace from each line', () => {
+      const input = {
+        indicadoresDesempenho: '  Taxa > 90%  \n  Tempo < 4h  ',
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toEqual([
+        'Taxa > 90%',
+        'Tempo < 4h',
+      ]);
+    });
+
+    it('returns undefined for empty string', () => {
+      const input = {
+        indicadoresDesempenho: '',
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toBeUndefined();
+    });
+
+    it('returns undefined for undefined input', () => {
+      const input = {
+        produtividade: '100 m2/dia',
+        // indicadoresDesempenho not provided
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      expect(result.indicadoresDesempenho).toBeUndefined();
+    });
+
+    it('returns undefined for string with only whitespace/newlines', () => {
+      const input = {
+        indicadoresDesempenho: '   \n\n   \n',
+      };
+
+      const result = servicosDynamicFieldsSchema.parse(input);
+
+      // After filtering empty lines, array is empty, which should become undefined
+      expect(result.indicadoresDesempenho).toEqual([]);
     });
   });
 });
