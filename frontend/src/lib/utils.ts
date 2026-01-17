@@ -5,8 +5,28 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Normalizes a serialized date to a Date object.
+ * Handles both Date objects and ISO string representations.
+ *
+ * @param date - Date object or ISO date string from API response
+ * @returns Date object
+ *
+ * @example
+ * // From API response (ISO string):
+ * const date1 = normalizeDate("2026-01-17T12:00:00.000Z"); // Date object
+ *
+ * // Already a Date:
+ * const date2 = normalizeDate(new Date()); // Same Date object
+ *
+ * @see SerializedDate type in types/compliance.ts
+ */
+export function normalizeDate(date: string | Date): Date {
+  return typeof date === 'string' ? new Date(date) : date;
+}
+
 export function formatDate(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = normalizeDate(date);
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -15,7 +35,7 @@ export function formatDate(date: string | Date): string {
 }
 
 export function formatDateTime(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = normalizeDate(date);
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
