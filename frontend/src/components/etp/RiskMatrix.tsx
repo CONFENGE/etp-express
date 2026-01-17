@@ -555,6 +555,7 @@ function RiskItemCard({
                         e.stopPropagation();
                         onEdit();
                       }}
+                      aria-label="Editar risco"
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -573,6 +574,7 @@ function RiskItemCard({
                         e.stopPropagation();
                         onDelete();
                       }}
+                      aria-label="Excluir risco"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -583,7 +585,12 @@ function RiskItemCard({
             </>
           )}
 
-          <Button variant="ghost" size="icon" onClick={onToggleExpand}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleExpand}
+            aria-label={isExpanded ? 'Recolher detalhes' : 'Expandir detalhes'}
+          >
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
             ) : (
