@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | -     | Arch     | [#1539] Rewrite SINAPI integration: PageIndex → API Orcamentador (REST + JSON) |
 | 2026-01-17 | #1571 | a11y     | [#1527] Add aria-labels to icon buttons for WCAG 2.1 AA compliance ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1570 | Feature  | [#1526] Standardize EmptyState component across tables and lists ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1563 | Feature  | [#1524] Unify Card/Surface hierarchy with variants ✅ - **Score 100/100 - Auto-merged** |
@@ -403,27 +404,30 @@
 
 ---
 
-## Issues Abertas (61)
+## Issues Abertas (60)
 
-### P0 - M17 PageIndex Integration (13 issues) 🔵 NEW
+### P0 - M17 PageIndex + SINAPI API (12 issues) 🔵 IN PROGRESS
 
-> Integração do framework PageIndex para RAG reasoning-based. Ver seção "M17: PageIndex RAG" abaixo para detalhes.
+> PageIndex para RAG reasoning-based + API Orcamentador para SINAPI. Ver seção "M17: PageIndex RAG + SINAPI API" abaixo.
 
-| #     | Issue                                                    | Prioridade |
-| ----- | -------------------------------------------------------- | ---------- |
-| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         |
-|       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         |
-|       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         |
-|       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         |
-|       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         |
-|       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         |
-| #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         |
-| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         |
-| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         |
-| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         |
-| #1543 | Document Extraction com tree structure                   | P2         |
-| #1544 | Chat contextualizado com PageIndex tree search           | P2         |
-| #1545 | Market Intelligence com extração estruturada de editais  | P3         |
+| #     | Issue                                                    | Prioridade | Status |
+| ----- | -------------------------------------------------------- | ---------- | ------ |
+| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
+|       | ↳ #1550-#1554 Sub-issues PageIndex                       | P0         | ✅     |
+| #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | 🔴     |
+|       | ↳ #1564 Documentar API + obter credenciais               | P0         | 🔴     |
+|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | 🔴     |
+|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
+|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
+|       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
+| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
+| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
+| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
+| #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
+| #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
+| #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
+
+**Nota:** Issue #1566 (TreeBuilder para SINAPI) foi **CANCELADA** - API oferece JSON estruturado.
 
 ### P0 - Frontend Design Audit (14 issues) 🔴
 
@@ -595,9 +599,9 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 5/13 (38%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1554) - 6/12 (50%) 🔵 IN PROGRESS
 
-Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
+Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
 | #     | Issue                                                    | Prioridade | Status |
 | ----- | -------------------------------------------------------- | ---------- | ------ |
@@ -607,7 +611,13 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | ✅     |
 |       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | ✅     |
 |       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | ✅     |
-| #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         | 🔴     |
+| #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | 🔴     |
+|       | ↳ #1564 Documentar API + obter credenciais               | P0         | 🔴     |
+|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | 🔴     |
+|       | ↳ #1566 ~~TreeBuilder~~ (CANCELADA - não necessária)     | -          | ❌     |
+|       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
+|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
+|       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
@@ -615,17 +625,23 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
 
+**Decisão Arquitetural SINAPI (2026-01-17):**
+- **Antes:** PageIndex para parsear PDFs/Excel do SINAPI (complexo, frágil)
+- **Agora:** API [Orcamentador](https://orcamentador.com.br/api/docs) oferece JSON estruturado
+- **PageIndex:** Continua relevante para jurisprudências (#1540) e documentos complexos
+
 **Diferenciais Competitivos:**
 - **Precisão Legal**: 98.7% accuracy vs ~80% do RAG tradicional com embeddings
 - **Auditabilidade**: Retrieval baseado em raciocínio (não "vibe search")
 - **Zero Vector DB**: Usa estrutura hierárquica + LLM reasoning
 - **Compliance**: Jurisprudência TCE/TCU indexada com precedentes automáticos
 - **Market Intel**: Extração estruturada de editais para dados proprietários
+- **SINAPI Real-time**: API com dados atualizados mensalmente, webhook para sync
 
 **Tecnologia:**
 - [PageIndex](https://github.com/VectifyAI/PageIndex) - Framework open source (MIT)
-- Abordagem Hybrid: Self-hosted para docs estáticos + API Cloud fallback
-- Tree search com LLM para navegação humana em documentos complexos
+- [API Orcamentador](https://orcamentador.com.br/api/docs) - SINAPI estruturado em JSON
+- Abordagem Hybrid: PageIndex para docs + API para tabelas de referência
 
 #### M14: Geração de Edital (#1276-#1282)
 
@@ -660,11 +676,11 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
-| Issues Abertas    | 60    |
-| Issues Fechadas   | 1497  |
-| Progresso         | 96.7% |
-| Bugs P0 Abertos   | 5     |
-| M17 PageIndex     | 4/13  |
+| Issues Abertas    | 59    |
+| Issues Fechadas   | 1498  |
+| Progresso         | 96.8% |
+| Bugs P0 Abertos   | 4     |
+| M17 PageIndex+API | 6/12  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
