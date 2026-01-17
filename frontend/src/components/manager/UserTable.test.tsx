@@ -187,10 +187,12 @@ describe('UserTable', () => {
       );
 
       expect(
-        screen.getByText('No users in your domain yet.'),
+        screen.getByText('Nenhum usuário no domínio'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Add your first user to get started.'),
+        screen.getByText(
+          'Adicione o primeiro usuário para começar a gerenciar sua equipe.',
+        ),
       ).toBeInTheDocument();
     });
   });

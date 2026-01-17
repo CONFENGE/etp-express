@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { DomainUser } from '@/store/managerStore';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 
@@ -102,12 +103,12 @@ export function UserTable({
 
   if (users.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 p-12 text-center">
-        <p className="text-muted-foreground">No users in your domain yet.</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add your first user to get started.
-        </p>
-      </div>
+      <EmptyState
+        type="documents"
+        title="Nenhum usuário no domínio"
+        description="Adicione o primeiro usuário para começar a gerenciar sua equipe."
+        size="sm"
+      />
     );
   }
 
