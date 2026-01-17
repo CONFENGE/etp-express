@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 766/826 (92.7%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 767/826 (92.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1547 | Fix      | [#1533] Add currentVersion to TermoReferencia type ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1546 | Fix      | [#1532] Add LGPD/audit fields to User type ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1537 | Fix      | [#1531] Fix indicadoresDesempenho type parity (string → string[]) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | -     | Planning | Create M17-PageIndex milestone + 8 issues (#1538-#1545) - RAG reasoning-based integration |
@@ -227,15 +228,14 @@
 
 ---
 
-## Bugs Criticos P0 - 2 RESTANTES ⚠️
+## Bugs Criticos P0 - 1 RESTANTE ⚠️
 
-> **STATUS:** 2 bugs de paridade backend/frontend restantes (#1533-#1534)
+> **STATUS:** 1 bug de paridade backend/frontend restante (#1534)
 
 ### Bugs P0 Abertos (2026-01-17) - Paridade Backend/Frontend
 
 | #     | Issue                                                    | Severidade | Area             |
 | ----- | -------------------------------------------------------- | ---------- | ---------------- |
-| #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | types/tr.ts      |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | types, lib/api   |
 
 ### Bugs P0 Resolvidos (2026-01-07 a 2026-01-09)
@@ -344,10 +344,10 @@
 | #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | ✅     |
 | #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | ✅     |
 | #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | ✅     |
-| #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | 🔴     |
+| #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | 🔴     |
 
-**Progresso Frontend Audit:** 4/14 (29%) 🟡
+**Progresso Frontend Audit:** 5/14 (36%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
