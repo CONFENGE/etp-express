@@ -42,7 +42,26 @@ export const servicosDynamicFieldsSchema = z.object({
   produtividade: z.string().max(2000).optional(),
   postosTrabalho: z.number().min(0).optional(),
   frequenciaServico: z.string().max(500).optional(),
-  indicadoresDesempenho: z.string().max(2000).optional(),
+  /**
+   * Indicadores de desempenho (KPIs).
+   * Issue #1531 - Backend expects string[], frontend uses textarea with newline-separated values.
+   * Accepts both string (textarea input) and string[] (API response).
+   * - Input: "Taxa > 90%\nTempo < 4h" (newline-separated string)
+   * - Output: ["Taxa > 90%", "Tempo < 4h"] (array for API)
+   */
+  indicadoresDesempenho: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      // If already an array, return as-is
+      if (Array.isArray(val)) return val;
+      // Convert newline-separated string to array, filtering empty lines
+      return val
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+    }),
   materiaisEquipamentos: z.string().max(5000).optional(),
   uniformesEpi: z.string().max(2000).optional(),
   convencaoColetiva: z.string().max(500).optional(),
