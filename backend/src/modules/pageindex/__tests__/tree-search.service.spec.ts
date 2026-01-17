@@ -91,7 +91,8 @@ describe('TreeSearchService', () => {
             id: 'cap-3',
             title: 'CAPÍTULO I - Das Modalidades de Licitação',
             level: 2,
-            content: 'Modalidades: pregão, concorrência, concurso, leilão, diálogo competitivo.',
+            content:
+              'Modalidades: pregão, concorrência, concurso, leilão, diálogo competitivo.',
             children: [
               {
                 id: 'art-28',
@@ -306,11 +307,9 @@ describe('TreeSearchService', () => {
         finishReason: 'stop',
       });
 
-      const result = await service.search(
-        'tree-123',
-        'Test query',
-        { maxDepth: 1 },
-      );
+      const result = await service.search('tree-123', 'Test query', {
+        maxDepth: 1,
+      });
 
       // With maxDepth 1, should not go beyond first level children
       expect(result).toBeDefined();
@@ -332,11 +331,9 @@ describe('TreeSearchService', () => {
         finishReason: 'stop',
       });
 
-      const result = await service.search(
-        'tree-123',
-        'Test query',
-        { maxResults: 1 },
-      );
+      const result = await service.search('tree-123', 'Test query', {
+        maxResults: 1,
+      });
 
       expect(result.relevantNodes.length).toBeLessThanOrEqual(1);
     });
@@ -410,11 +407,9 @@ describe('TreeSearchService', () => {
         finishReason: 'stop',
       });
 
-      const result = await service.search(
-        'tree-123',
-        'Test query',
-        { minConfidence: 0.5 },
-      );
+      const result = await service.search('tree-123', 'Test query', {
+        minConfidence: 0.5,
+      });
 
       // Nodes below minConfidence should be filtered
       expect(result.relevantNodes).toHaveLength(0);
@@ -436,7 +431,9 @@ describe('TreeSearchService', () => {
         getMany: jest.fn().mockResolvedValue(trees),
       };
 
-      documentTreeRepository.createQueryBuilder.mockReturnValue(queryBuilder as any);
+      documentTreeRepository.createQueryBuilder.mockReturnValue(
+        queryBuilder as any,
+      );
       documentTreeRepository.findOne
         .mockResolvedValueOnce(trees[0])
         .mockResolvedValueOnce(trees[1]);
@@ -469,7 +466,9 @@ describe('TreeSearchService', () => {
         getMany: jest.fn().mockResolvedValue([mockDocumentTree]),
       };
 
-      documentTreeRepository.createQueryBuilder.mockReturnValue(queryBuilder as any);
+      documentTreeRepository.createQueryBuilder.mockReturnValue(
+        queryBuilder as any,
+      );
       documentTreeRepository.findOne.mockResolvedValue(mockDocumentTree);
 
       openAIService.generateCompletion.mockResolvedValue({
@@ -508,7 +507,9 @@ describe('TreeSearchService', () => {
         getMany: jest.fn().mockResolvedValue(trees),
       };
 
-      documentTreeRepository.createQueryBuilder.mockReturnValue(queryBuilder as any);
+      documentTreeRepository.createQueryBuilder.mockReturnValue(
+        queryBuilder as any,
+      );
       documentTreeRepository.findOne
         .mockResolvedValueOnce(trees[0])
         .mockResolvedValueOnce(trees[1]);
@@ -539,7 +540,9 @@ describe('TreeSearchService', () => {
 
       const results = await service.searchMultipleTrees('Test query');
 
-      expect(results[0].confidence).toBeGreaterThanOrEqual(results[1].confidence);
+      expect(results[0].confidence).toBeGreaterThanOrEqual(
+        results[1].confidence,
+      );
     });
 
     it('should handle search failures gracefully', async () => {
@@ -556,7 +559,9 @@ describe('TreeSearchService', () => {
         getMany: jest.fn().mockResolvedValue(trees),
       };
 
-      documentTreeRepository.createQueryBuilder.mockReturnValue(queryBuilder as any);
+      documentTreeRepository.createQueryBuilder.mockReturnValue(
+        queryBuilder as any,
+      );
       documentTreeRepository.findOne
         .mockResolvedValueOnce(trees[0])
         .mockRejectedValueOnce(new Error('DB error'));
@@ -586,7 +591,8 @@ describe('TreeSearchService', () => {
       documentTreeRepository.findOne.mockResolvedValue(mockDocumentTree);
 
       openAIService.generateCompletion.mockResolvedValue({
-        content: '```json\n{"decision": "FOUND", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 0.9}\n```',
+        content:
+          '```json\n{"decision": "FOUND", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 0.9}\n```',
         tokens: 100,
         model: 'gpt-4.1-nano',
         finishReason: 'stop',
@@ -601,7 +607,8 @@ describe('TreeSearchService', () => {
       documentTreeRepository.findOne.mockResolvedValue(mockDocumentTree);
 
       openAIService.generateCompletion.mockResolvedValue({
-        content: '{"decision": "found", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 0.9}',
+        content:
+          '{"decision": "found", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 0.9}',
         tokens: 100,
         model: 'gpt-4.1-nano',
         finishReason: 'stop',
@@ -616,7 +623,8 @@ describe('TreeSearchService', () => {
       documentTreeRepository.findOne.mockResolvedValue(mockDocumentTree);
 
       openAIService.generateCompletion.mockResolvedValue({
-        content: '{"decision": "FOUND", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 1.5}',
+        content:
+          '{"decision": "FOUND", "selectedNodes": ["titulo-1"], "reasoning": "Test", "confidence": 1.5}',
         tokens: 100,
         model: 'gpt-4.1-nano',
         finishReason: 'stop',

@@ -41,7 +41,11 @@ describe('Tree Search Prompts', () => {
   describe('buildTreeNavigationPrompt', () => {
     const sampleNodes = [
       { id: 'node-1', title: 'Capítulo 1 - Introdução' },
-      { id: 'node-2', title: 'Capítulo 2 - Definições', summary: 'Termos e conceitos' },
+      {
+        id: 'node-2',
+        title: 'Capítulo 2 - Definições',
+        summary: 'Termos e conceitos',
+      },
       { id: 'node-3', title: 'Capítulo 3 - Procedimentos' },
     ];
 
@@ -57,12 +61,10 @@ describe('Tree Search Prompts', () => {
     });
 
     it('should include current level', () => {
-      const prompt = buildTreeNavigationPrompt(
-        'Test query',
-        2,
-        sampleNodes,
-        ['Root', 'Title'],
-      );
+      const prompt = buildTreeNavigationPrompt('Test query', 2, sampleNodes, [
+        'Root',
+        'Title',
+      ]);
 
       expect(prompt).toContain('Nível Atual: 2');
     });
@@ -94,14 +96,15 @@ describe('Tree Search Prompts', () => {
     });
 
     it('should display path when provided', () => {
-      const prompt = buildTreeNavigationPrompt(
-        'Test query',
-        2,
-        sampleNodes,
-        ['Lei 14.133', 'Título I', 'Capítulo I'],
-      );
+      const prompt = buildTreeNavigationPrompt('Test query', 2, sampleNodes, [
+        'Lei 14.133',
+        'Título I',
+        'Capítulo I',
+      ]);
 
-      expect(prompt).toContain('Caminho atual: Lei 14.133 > Título I > Capítulo I');
+      expect(prompt).toContain(
+        'Caminho atual: Lei 14.133 > Título I > Capítulo I',
+      );
     });
 
     it('should not display path when empty', () => {
@@ -152,11 +155,7 @@ describe('Tree Search Prompts', () => {
     });
 
     it('should include node titles and content', () => {
-      const prompt = buildExtractionPrompt(
-        'Test query',
-        sampleNodes,
-        ['Root'],
-      );
+      const prompt = buildExtractionPrompt('Test query', sampleNodes, ['Root']);
 
       expect(prompt).toContain('Art. 75 - Dispensa de Licitação');
       expect(prompt).toContain('É dispensável a licitação');
@@ -164,11 +163,10 @@ describe('Tree Search Prompts', () => {
     });
 
     it('should include the navigation path', () => {
-      const prompt = buildExtractionPrompt(
-        'Test query',
-        sampleNodes,
-        ['Lei 14.133', 'Título II'],
-      );
+      const prompt = buildExtractionPrompt('Test query', sampleNodes, [
+        'Lei 14.133',
+        'Título II',
+      ]);
 
       expect(prompt).toContain('via: Lei 14.133 > Título II');
     });
@@ -178,21 +176,15 @@ describe('Tree Search Prompts', () => {
         { id: 'node-1', title: 'Node without content' },
       ];
 
-      const prompt = buildExtractionPrompt(
-        'Test query',
-        nodesWithoutContent,
-        ['Root'],
-      );
+      const prompt = buildExtractionPrompt('Test query', nodesWithoutContent, [
+        'Root',
+      ]);
 
       expect(prompt).toContain('(sem conteúdo detalhado)');
     });
 
     it('should request JSON response format', () => {
-      const prompt = buildExtractionPrompt(
-        'Test query',
-        sampleNodes,
-        ['Root'],
-      );
+      const prompt = buildExtractionPrompt('Test query', sampleNodes, ['Root']);
 
       expect(prompt).toContain('Responda em JSON');
       expect(prompt).toContain('answer');
