@@ -11,7 +11,10 @@ import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
 import { useOnboardingTasks } from '@/hooks/useOnboardingTasks';
 import { CreateETPWizard } from './wizard';
-import { ETPWizardFormData } from '@/schemas/etpWizardSchema';
+import {
+  ETPWizardFormData,
+  transformWizardDataToPayload,
+} from '@/schemas/etpWizardSchema';
 
 interface CreateETPDialogProps {
   open: boolean;
@@ -29,46 +32,8 @@ export function CreateETPDialog({ open, onOpenChange }: CreateETPDialogProps) {
     async (data: ETPWizardFormData) => {
       setIsLoading(true);
       try {
-        // Transform wizard data to API format
-        const etpData = {
-          title: data.title,
-          description: data.description || undefined,
-          objeto: data.objeto,
-          // Note: status and progress are automatically set by the backend
-          // Identification fields
-          orgaoEntidade: data.orgaoEntidade || undefined,
-          uasg: data.uasg || undefined,
-          unidadeDemandante: data.unidadeDemandante || undefined,
-          responsavelTecnico: data.responsavelTecnicoNome
-            ? {
-                nome: data.responsavelTecnicoNome,
-                matricula: data.responsavelTecnicoMatricula || undefined,
-              }
-            : undefined,
-          dataElaboracao: data.dataElaboracao || undefined,
-          // Object and Justification fields
-          descricaoDetalhada: data.descricaoDetalhada || undefined,
-          quantidadeEstimada: data.quantidadeEstimada || undefined,
-          unidadeMedida: data.unidadeMedida || undefined,
-          justificativaContratacao: data.justificativaContratacao || undefined,
-          necessidadeAtendida: data.necessidadeAtendida || undefined,
-          beneficiosEsperados: data.beneficiosEsperados || undefined,
-          // Requirements fields
-          requisitosTecnicos: data.requisitosTecnicos || undefined,
-          requisitosQualificacao: data.requisitosQualificacao || undefined,
-          criteriosSustentabilidade:
-            data.criteriosSustentabilidade || undefined,
-          garantiaExigida: data.garantiaExigida || undefined,
-          prazoExecucao: data.prazoExecucao || undefined,
-          // Cost fields
-          valorUnitario: data.valorUnitario || undefined,
-          valorEstimado: data.valorEstimado || undefined,
-          fontePesquisaPrecos: data.fontePesquisaPrecos || undefined,
-          dotacaoOrcamentaria: data.dotacaoOrcamentaria || undefined,
-          // Risk fields
-          nivelRisco: data.nivelRisco || undefined,
-          descricaoRiscos: data.descricaoRiscos || undefined,
-        };
+        // Transform wizard data to API format (Issue #1530 - flat → nested)
+        const etpData = transformWizardDataToPayload(data);
 
         const etp = await createETP(etpData);
         markETPCreated();
