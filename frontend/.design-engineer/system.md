@@ -27,15 +27,62 @@ We follow Apple Human Interface Guidelines with the **Liquid Glass** design para
 - **Natural Motion** - Physics-based animations that feel organic
 - **Concentricity** - Consistent border-radius ratios across nested elements
 
-### Depth Strategy
+### Depth Strategy (Surface Hierarchy)
 
-| Layer | Surface | Shadow | Use Case |
-|-------|---------|--------|----------|
-| Base | `surface-primary` | None | Page background |
-| Elevated | `surface-secondary` | `shadow-sm` | Cards, containers |
-| Floating | `glass-surface-light` | `shadow-md` | Dropdowns, popovers |
-| Modal | `glass-surface-light-solid` | `shadow-xl` | Dialogs, sheets |
-| Toast | `surface-elevated` | `shadow-lg` | Notifications |
+The design system uses a layered depth hierarchy for visual organization:
+
+| Level | Layer | Component | Shadow | Use Case |
+|-------|-------|-----------|--------|----------|
+| 0 | Base | - | None | Page background (`surface-primary`) |
+| 1 | Elevated | `<Card>` | `shadow-apple` | Content containers, data cards |
+| 2 | Floating | `<GlassSurface>` | `shadow-md` | Dropdowns, popovers, sidebars |
+| 3 | Modal | `<Dialog>` | `shadow-xl` | Dialogs, sheets, overlays |
+| 4 | Toast | `<Toast>` | `shadow-lg` | Notifications, alerts |
+
+### Card vs GlassSurface: When to Use
+
+**Use `<Card>` for:**
+- Content containers that hold user data (ETP cards, metric cards)
+- List items that need elevation
+- Form sections and fieldsets
+- Static elevated content
+- Any container with `CardHeader`, `CardContent`, `CardFooter` structure
+
+**Use `<GlassSurface>` for:**
+- Floating overlays (dropdowns, popovers)
+- Navigation elements (sidebar, header)
+- Elements that need backdrop-blur/translucency effect
+- Contextual panels that appear over content
+- Elements requiring Liquid Glass aesthetic
+
+**Never use inline styles for cards.** Always use:
+```tsx
+// Correct: Use Card component
+<Card>
+  <CardContent>...</CardContent>
+</Card>
+
+// Correct: Use GlassSurface for floating elements
+<GlassSurface intensity="medium">
+  ...
+</GlassSurface>
+
+// Incorrect: Inline card styles
+<div className="rounded-lg border bg-card shadow-md">
+  ...
+</div>
+```
+
+### Surface Token Classes
+
+For simple backgrounds without card structure, use these utility classes:
+
+| Class | CSS Variable | Use Case |
+|-------|--------------|----------|
+| `bg-surface-primary` | `--surface-primary` | Page backgrounds |
+| `bg-surface-secondary` | `--surface-secondary` | Subtle backgrounds |
+| `bg-surface-tertiary` | `--surface-tertiary` | Nested sections |
+| `bg-card` | `--card` | Card backgrounds (prefer `<Card>`) |
 
 ---
 

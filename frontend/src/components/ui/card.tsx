@@ -2,6 +2,42 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
+ * Card variants for different use cases following Apple HIG Surface Hierarchy.
+ *
+ * @see frontend/.design-engineer/system.md for full documentation
+ *
+ * Hierarchy:
+ * - Level 0 (Base): Page background - no component needed
+ * - Level 1 (Elevated): Card - content containers, data cards
+ * - Level 2 (Floating): GlassSurface - dropdowns, popovers, sidebars
+ * - Level 3 (Modal): Dialog - dialogs, sheets, overlays
+ */
+export type CardVariant = 'default' | 'elevated' | 'flat';
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * Enable interactive micro-interactions (hover lift, active press)
+   * Use for clickable cards only
+   */
+  interactive?: boolean;
+  /**
+   * Card variant:
+   * - default: Standard elevated card with border and shadow
+   * - elevated: Higher elevation with stronger shadow (for emphasis)
+   * - flat: No shadow, subtle border (for nested cards or tables)
+   */
+  variant?: CardVariant;
+}
+
+const cardVariants: Record<CardVariant, string> = {
+  default:
+    'border border-[var(--border-secondary)] bg-surface-primary shadow-apple',
+  elevated:
+    'border border-[var(--border-secondary)] bg-surface-primary shadow-apple-lg',
+  flat: 'border border-[var(--border-secondary)] bg-surface-primary',
+};
+
+/**
  * Card component with Apple HIG design tokens and micro-interactions.
  *
  * Features:
@@ -12,35 +48,54 @@ import { cn } from '@/lib/utils';
  * - Active: pressed state feedback
  * - Smooth transitions with GPU acceleration
  * - Respects prefers-reduced-motion
+ *
+ * @example
+ * ```tsx
+ * // Default card
+ * <Card>
+ *   <CardContent>Content</CardContent>
+ * </Card>
+ *
+ * // Interactive card (clickable)
+ * <Card interactive onClick={handleClick}>
+ *   <CardContent>Clickable content</CardContent>
+ * </Card>
+ *
+ * // Flat variant for tables/nested content
+ * <Card variant="flat">
+ *   <table>...</table>
+ * </Card>
+ * ```
  */
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean }
->(({ className, interactive, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      // Base styles with Apple HIG tokens
-      'rounded-apple-lg border border-[var(--border-secondary)] bg-surface-primary text-text-apple-primary shadow-apple',
-      // Apple-style transition with GPU acceleration
-      'transition-all duration-200 ease-out',
-      // Interactive card micro-interactions
-      interactive && [
-        'cursor-pointer',
-        // Hover: lift up with enhanced shadow
-        'hover:shadow-apple-lg hover:-translate-y-1',
-        // Active: pressed state
-        'active:shadow-apple-sm active:translate-y-0 active:scale-[0.97]',
-        // Focus visible for keyboard navigation
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
-      ],
-      // Respect reduced motion preference
-      'motion-reduce:transition-none motion-reduce:hover:transform-none',
-      className,
-    )}
-    {...props}
-  />
-));
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, interactive, variant = 'default', ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        // Base styles with Apple HIG tokens
+        'rounded-apple-lg text-text-apple-primary',
+        // Variant-specific styles
+        cardVariants[variant],
+        // Apple-style transition with GPU acceleration
+        'transition-all duration-200 ease-out',
+        // Interactive card micro-interactions
+        interactive && [
+          'cursor-pointer',
+          // Hover: lift up with enhanced shadow
+          'hover:shadow-apple-lg hover:-translate-y-1',
+          // Active: pressed state
+          'active:shadow-apple-sm active:translate-y-0 active:scale-[0.97]',
+          // Focus visible for keyboard navigation
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
+        ],
+        // Respect reduced motion preference
+        'motion-reduce:transition-none motion-reduce:hover:transform-none',
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
 Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<

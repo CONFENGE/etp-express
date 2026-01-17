@@ -1,6 +1,7 @@
 import { Trash2, RefreshCw, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +77,7 @@ export function DemoUserTable({
   }
 
   return (
-    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <Card variant="default">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -103,10 +104,7 @@ export function DemoUserTable({
           </thead>
           <tbody className="divide-y">
             {demoUsers.map((user) => (
-              <tr
-                key={user.id}
-                className="transition-colors hover:bg-muted/50"
-              >
+              <tr key={user.id} className="transition-colors hover:bg-muted/50">
                 <td className="px-6 py-4">
                   <span className="font-medium">{user.email}</span>
                 </td>
@@ -180,7 +178,7 @@ export function DemoUserTable({
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -189,7 +187,7 @@ export function DemoUserTable({
  */
 function DemoUserTableSkeleton() {
   return (
-    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <Card variant="default">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -240,6 +238,6 @@ function DemoUserTableSkeleton() {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
