@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 768/826 (93.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 769/826 (93.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1549 | Docs     | [#1521] Create .design-engineer/system.md with tokens and design direction ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1548 | Fix      | [#1534] Fix Date serialization in Compliance types ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1547 | Fix      | [#1533] Add currentVersion to TermoReferencia type ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1546 | Fix      | [#1532] Add LGPD/audit fields to User type ✅ - **Score 100/100 - Auto-merged** |
@@ -328,7 +329,7 @@
 
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
-| #1521 | Criar .design-engineer/system.md com tokens e direção    | Foundation  | 🔴     |
+| #1521 | Criar .design-engineer/system.md com tokens e direção    | Foundation  | ✅     |
 | #1522 | Implementar ESLint plugin para enforcement de tokens     | Tooling     | 🔴     |
 | #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | 🔴     |
