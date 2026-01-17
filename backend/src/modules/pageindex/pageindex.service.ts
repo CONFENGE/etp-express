@@ -1,8 +1,9 @@
 import {
   Injectable,
   Logger,
-  NotImplementedException,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,6 +18,7 @@ import {
   DocumentTree,
   DocumentTreeStatus,
 } from '../../entities/document-tree.entity';
+import { TreeSearchService } from './services/tree-search.service';
 
 /**
  * Result of a document indexing operation.
@@ -65,10 +67,10 @@ export interface IndexingResult {
  * Current implementation:
  * - #1550: Module structure ✅
  * - #1551: DocumentTree entity and CRUD operations ✅
+ * - #1552: TreeBuilderService (actual tree generation) ✅
+ * - #1553: TreeSearchService (LLM reasoning search) ✅
  *
  * Remaining:
- * - #1552: TreeBuilderService (actual tree generation)
- * - #1553: TreeSearchService (LLM reasoning search)
  * - #1554: PoC with Lei 14.133/2021
  *
  * @see Issue #1551 - [PI-1538b] Criar DocumentTree entity e migrations
@@ -83,6 +85,8 @@ export class PageIndexService {
     @InjectRepository(DocumentTree)
     private readonly documentTreeRepository: Repository<DocumentTree>,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => TreeSearchService))
+    private readonly treeSearchService: TreeSearchService,
   ) {
     this.logger.log(
       'PageIndexService initialized with DocumentTree repository',
@@ -150,12 +154,19 @@ export class PageIndexService {
   /**
    * Search a document tree using LLM reasoning.
    *
+   * This method delegates to TreeSearchService which implements the PageIndex
+   * algorithm: LLM-based reasoning to navigate document structure instead of
+   * traditional vector similarity search.
+   *
    * @param treeId - ID of the document tree to search
    * @param query - Natural language query
    * @param options - Search options (depth, results, confidence)
    * @returns TreeSearchResult with relevant nodes and reasoning
    *
-   * @throws NotImplementedException - Full implementation in #1553
+   * @throws NotFoundException if tree not found
+   * @throws Error if tree not indexed yet
+   *
+   * @see Issue #1553 - [PI-1538d] Implementar TreeSearchService com LLM reasoning
    */
   async searchTree(
     treeId: string,
@@ -168,26 +179,7 @@ export class PageIndexService {
       options,
     });
 
-    // Verify tree exists
-    const tree = await this.documentTreeRepository.findOne({
-      where: { id: treeId },
-    });
-
-    if (!tree) {
-      throw new NotFoundException(`Document tree ${treeId} not found`);
-    }
-
-    if (tree.status !== DocumentTreeStatus.INDEXED) {
-      throw new NotImplementedException(
-        `Document tree ${treeId} is not indexed yet (status: ${tree.status}). ` +
-          'Wait for indexing to complete.',
-      );
-    }
-
-    // TODO: Full implementation in #1553 (TreeSearchService)
-    throw new NotImplementedException(
-      'PageIndex tree search not yet implemented. See issue #1553.',
-    );
+    return this.treeSearchService.search(treeId, query, options);
   }
 
   /**
