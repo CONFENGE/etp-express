@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1496/1555 (96.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1497/1555 (96.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1559 | Feature  | [#1554] PoC Lei 14.133/2021 com tree search validation ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1558 | Feature  | [#1553] Implement TreeSearchService with LLM reasoning ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1557 | Feature  | [#1552] Implement TreeBuilderService with Python integration ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1556 | Feature  | [#1551] Create DocumentTree entity and migrations for PageIndex ✅ - **Score 97.5/100 - Merged** |
@@ -588,7 +589,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 4/13 (31%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 5/13 (38%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
 
@@ -599,7 +600,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | ✅     |
 |       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | ✅     |
 |       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | ✅     |
-|       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | 🔴     |
+|       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | ✅     |
 | #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
