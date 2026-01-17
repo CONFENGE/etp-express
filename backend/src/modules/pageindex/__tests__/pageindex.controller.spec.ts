@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { PageIndexController } from '../pageindex.controller';
 import { PageIndexService } from '../pageindex.service';
+import { TreeBuilderService } from '../services/tree-builder.service';
 import { IndexDocumentDto, DocumentType } from '../dto/index-document.dto';
 import { SearchTreeDto } from '../dto/search-tree.dto';
 import { DocumentTreeStatus } from '../../../entities/document-tree.entity';
@@ -10,14 +11,15 @@ import { DocumentTreeStatus } from '../../../entities/document-tree.entity';
  * Unit tests for PageIndexController
  *
  * Tests REST API endpoints for PageIndex module.
- * All endpoints currently return 501 Not Implemented (stubs).
  *
  * @see Issue #1550 - [PI-1538a] Setup infraestrutura módulo PageIndex
+ * @see Issue #1552 - [PI-1538c] Implementar TreeBuilderService
  * @see Issue #1538 - Create PageIndex module for hierarchical document indexing
  */
 describe('PageIndexController', () => {
   let controller: PageIndexController;
   let service: PageIndexService;
+  let treeBuilderService: TreeBuilderService;
 
   const mockPageIndexService = {
     indexDocument: jest.fn(),
@@ -28,6 +30,13 @@ describe('PageIndexController', () => {
     getStats: jest.fn(),
   };
 
+  const mockTreeBuilderService = {
+    buildTree: jest.fn(),
+    buildTreeFromText: jest.fn(),
+    processDocument: jest.fn(),
+    checkHealth: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PageIndexController],
@@ -36,11 +45,16 @@ describe('PageIndexController', () => {
           provide: PageIndexService,
           useValue: mockPageIndexService,
         },
+        {
+          provide: TreeBuilderService,
+          useValue: mockTreeBuilderService,
+        },
       ],
     }).compile();
 
     controller = module.get<PageIndexController>(PageIndexController);
     service = module.get<PageIndexService>(PageIndexService);
+    treeBuilderService = module.get<TreeBuilderService>(TreeBuilderService);
   });
 
   afterEach(() => {
@@ -171,6 +185,85 @@ describe('PageIndexController', () => {
       );
 
       expect(service.deleteTree).toHaveBeenCalledWith(treeId);
+    });
+  });
+
+  describe('POST /pageindex/:id/process', () => {
+    it('should call processDocument with id and body', async () => {
+      const treeId = '550e8400-e29b-41d4-a716-446655440000';
+      const body = { text: 'Document content' };
+
+      const mockResult = {
+        treeId,
+        documentName: 'Test',
+        documentType: DocumentType.LEGISLATION,
+        status: DocumentTreeStatus.INDEXED,
+        nodeCount: 5,
+        maxDepth: 2,
+      };
+
+      mockTreeBuilderService.processDocument.mockResolvedValue(mockResult);
+
+      const result = await controller.processDocument(treeId, body);
+
+      expect(result).toEqual(mockResult);
+      expect(treeBuilderService.processDocument).toHaveBeenCalledWith(
+        treeId,
+        undefined,
+        body.text,
+      );
+    });
+
+    it('should call processDocument with documentPath', async () => {
+      const treeId = '550e8400-e29b-41d4-a716-446655440000';
+      const body = { documentPath: '/path/to/doc.pdf' };
+
+      mockTreeBuilderService.processDocument.mockResolvedValue({
+        treeId,
+        status: DocumentTreeStatus.INDEXED,
+      });
+
+      await controller.processDocument(treeId, body);
+
+      expect(treeBuilderService.processDocument).toHaveBeenCalledWith(
+        treeId,
+        body.documentPath,
+        undefined,
+      );
+    });
+  });
+
+  describe('GET /pageindex/health', () => {
+    it('should return health status', async () => {
+      const mockHealth = {
+        healthy: true,
+        pythonAvailable: true,
+        pageindexAvailable: true,
+        pythonVersion: '3.11.0',
+      };
+
+      mockTreeBuilderService.checkHealth.mockResolvedValue(mockHealth);
+
+      const result = await controller.healthCheck();
+
+      expect(result).toEqual(mockHealth);
+      expect(treeBuilderService.checkHealth).toHaveBeenCalled();
+    });
+
+    it('should return unhealthy status when Python unavailable', async () => {
+      const mockHealth = {
+        healthy: false,
+        pythonAvailable: false,
+        pageindexAvailable: false,
+        error: 'Python not found',
+      };
+
+      mockTreeBuilderService.checkHealth.mockResolvedValue(mockHealth);
+
+      const result = await controller.healthCheck();
+
+      expect(result.healthy).toBe(false);
+      expect(result.error).toBe('Python not found');
     });
   });
 });
