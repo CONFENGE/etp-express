@@ -378,9 +378,11 @@ All components MUST meet these requirements:
    - Use `min-h-touch min-w-touch` utility classes
 
 3. **Focus Indicators**
-   - Visible focus ring: 2px solid accent
-   - Focus offset: 2px
+   - Visible focus ring: 2px solid accent (`--focus-ring-width`, `--focus-ring-color`)
+   - Focus offset: 2px (`--focus-ring-offset`)
+   - Focus glow: 4px accent light (`--focus-ring-glow`)
    - Never remove focus indicators
+   - Use `focus-visible:ring-apple-accent` consistently across all components
 
 4. **Motion**
    - Respect `prefers-reduced-motion`
@@ -399,7 +401,27 @@ All components MUST meet these requirements:
 .touch-target      /* Minimum 44x44px */
 .skip-link         /* Skip to main content */
 .focus-within-ring /* Focus ring for containers */
+.focus-ring        /* Standardized focus indicator utility */
 ```
+
+### Focus Ring Tokens
+
+All interactive components use standardized focus ring tokens:
+
+```css
+--focus-ring-color: var(--apple-accent);     /* #0066cc light, #409cff dark */
+--focus-ring-width: 2px;                     /* Ring thickness */
+--focus-ring-offset: 2px;                    /* Gap between element and ring */
+--focus-ring-glow: 0 0 0 4px var(--apple-accent-light); /* Soft glow effect */
+```
+
+**Tailwind Usage:**
+```tsx
+// Standard focus ring for all interactive elements
+className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2"
+```
+
+**Important:** Always use `focus-visible` instead of `focus` to avoid showing ring on mouse click.
 
 ---
 

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 const badgeVariants = cva(
   // Apple HIG Typography - Caption 1 preset for badges
   // WCAG 2.1 AA: gap-1 ensures icons don't rely solely on color
-  'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-caption-1 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-caption-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
   {
     variants: {
       variant: {

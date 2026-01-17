@@ -28,7 +28,8 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       // WCAG 2.5.5: min-h-touch ensures 44px minimum touch target
-      'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 min-h-[calc(44px-8px)] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
+      // Focus styles - WCAG 2.1 AA compliant with standardized apple-accent color
+      'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 min-h-[calc(44px-8px)] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
       className,
     )}
     {...props}
@@ -43,7 +44,8 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      // Focus styles - WCAG 2.1 AA compliant with standardized apple-accent color
+      'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
       className,
     )}
     {...props}

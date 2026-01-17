@@ -323,6 +323,15 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ========================================
+   * Focus Ring Tokens
+   * Standardized focus indicators for WCAG 2.1 AA compliance
+   * ======================================== */
+  --focus-ring-color: var(--apple-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-glow: 0 0 0 4px var(--apple-accent-light);
+
+  /* ========================================
    * Z-Index Scale
    * ======================================== */
   --z-base: 0;
@@ -850,5 +859,22 @@ html.dark {
   }
   .font-text {
     font-family: var(--font-family-text);
+  }
+
+  /* ========================================
+   * Focus Ring Utility
+   * Standardized focus indicator for all interactive elements
+   * WCAG 2.1 AA compliant (>= 3:1 contrast)
+   * ======================================== */
+  .focus-ring:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    box-shadow: var(--focus-ring-glow);
+  }
+
+  /* Remove outline when using mouse (modern browsers) */
+  .focus-ring:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
   }
 }
