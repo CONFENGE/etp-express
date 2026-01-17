@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1497/1555 (96.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1498/1555 (96.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1560 | Feature  | [#1522] Implement Stylelint for design tokens enforcement ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1559 | Feature  | [#1554] PoC Lei 14.133/2021 com tree search validation ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1558 | Feature  | [#1553] Implement TreeSearchService with LLM reasoning ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1557 | Feature  | [#1552] Implement TreeBuilderService with Python integration ✅ - **Score 100/100 - Auto-merged** |
@@ -335,7 +336,7 @@
 | #     | Issue                                                    | Área        | Status |
 | ----- | -------------------------------------------------------- | ----------- | ------ |
 | #1521 | Criar .design-engineer/system.md com tokens e direção    | Foundation  | ✅     |
-| #1522 | Implementar ESLint plugin para enforcement de tokens     | Tooling     | 🔴     |
+| #1522 | Implementar ESLint/Stylelint para enforcement de tokens  | Tooling     | ✅     |
 | #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | 🔴     |
 | #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | 🔴     |
@@ -354,7 +355,7 @@
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | ✅     |
 
-**Progresso Frontend Audit:** 7/14 (50%) 🟡
+**Progresso Frontend Audit:** 8/14 (57%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -654,16 +655,16 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
-| Issues Abertas    | 61    |
-| Issues Fechadas   | 1495  |
-| Progresso         | 96.2% |
-| Bugs P0 Abertos   | 7     |
+| Issues Abertas    | 60    |
+| Issues Fechadas   | 1496  |
+| Progresso         | 96.3% |
+| Bugs P0 Abertos   | 6     |
 | M17 PageIndex     | 4/13  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 3218  |
-| Frontend Tests    | 2364  |
-| Total Tests       | 5582  |
+| Backend Tests     | 3323  |
+| Frontend Tests    | 2388  |
+| Total Tests       | 5711  |
 
 ---
 
