@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { Eye, Trash2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,7 +53,7 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
   }
 
   return (
-    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <Card variant="default">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -139,13 +140,13 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
 
 function DomainTableSkeleton() {
   return (
-    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <Card variant="default">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -190,6 +191,6 @@ function DomainTableSkeleton() {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
