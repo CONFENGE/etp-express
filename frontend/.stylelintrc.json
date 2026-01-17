@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json.schemastore.org/stylelintrc.json",
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-declaration-strict-value"],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      [
+        "/color$/",
+        "background-color",
+        "border-color",
+        "fill",
+        "stroke",
+        "font-size",
+        "font-weight",
+        "line-height",
+        "letter-spacing",
+        "border-radius",
+        "/^padding/",
+        "/^margin/",
+        "gap",
+        "z-index"
+      ],
+      {
+        "ignoreValues": {
+          "": [
+            "inherit",
+            "initial",
+            "unset",
+            "none",
+            "transparent",
+            "currentColor",
+            "auto",
+            "0",
+            "0px",
+            "100%",
+            "50%",
+            "1"
+          ]
+        },
+        "ignoreFunctions": true,
+        "expandShorthand": true,
+        "recurseLonghand": true,
+        "severity": "warning",
+        "message": "Use design tokens (CSS custom properties) instead of hardcoded values. See frontend/.design-engineer/system.md and src/styles/design-tokens.css"
+      }
+    ],
+    "function-no-unknown": [
+      true,
+      {
+        "ignoreFunctions": ["var", "calc", "env", "min", "max", "clamp", "rgba", "hsla", "rgb", "hsl", "color-mix", "light-dark"]
+      }
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen", "layer"]
+      }
+    ],
+    "import-notation": null,
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "no-descending-specificity": null,
+    "declaration-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "keyframes-name-pattern": null,
+    "custom-property-empty-line-before": null,
+    "declaration-block-single-line-max-declarations": null,
+    "number-max-precision": null,
+    "media-feature-range-notation": null,
+    "value-keyword-case": [
+      "lower",
+      {
+        "camelCaseSvgKeywords": true,
+        "ignoreProperties": ["text-rendering", "font-family", "/^--font-family/"],
+        "ignoreKeywords": [
+          "optimizeLegibility",
+          "optimizeSpeed",
+          "geometricPrecision",
+          "BlinkMacSystemFont",
+          "Roboto",
+          "Arial",
+          "Helvetica",
+          "Segoe",
+          "/[A-Z]/"
+        ]
+      }
+    ],
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "color-hex-length": null,
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": ["backdrop-filter", "font-smoothing", "osx-font-smoothing"]
+      }
+    ],
+    "value-no-vendor-prefix": [
+      true,
+      {
+        "ignoreValues": ["backdrop-filter"]
+      }
+    ],
+    "selector-no-vendor-prefix": null,
+    "property-no-deprecated": null
+  },
+  "ignoreFiles": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "coverage/**/*",
+    "**/*.min.css",
+    "**/vendor/**"
+  ],
+  "overrides": [
+    {
+      "files": ["src/styles/design-tokens.css", "src/styles/tokens/*.css", "src/styles/accessibility.css"],
+      "rules": {
+        "scale-unlimited/declaration-strict-value": null,
+        "value-keyword-case": null
+      }
+    }
+  ]
+}
