@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -112,7 +113,7 @@ export function UserTable({
 
   return (
     <>
-      <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+      <Card variant="default">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -235,7 +236,7 @@ export function UserTable({
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       <ResetPasswordDialog
         open={resetPasswordDialogOpen}
@@ -259,7 +260,7 @@ function getInitials(name: string): string {
 
 function UserTableSkeleton() {
   return (
-    <div className="rounded-lg border bg-card shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
+    <Card variant="default">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -313,6 +314,6 @@ function UserTableSkeleton() {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }

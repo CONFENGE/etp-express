@@ -7,6 +7,16 @@ import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
  * Implements Apple HIG 2025 Liquid Glass Design System with WCAG 2.1 AA compliance.
  * Provides a translucent, depth-aware surface with backdrop blur and saturation.
  *
+ * Surface Hierarchy (Level 2 - Floating):
+ * Use GlassSurface for floating overlays, navigation elements, and elements
+ * requiring backdrop-blur/translucency effect.
+ *
+ * @see frontend/.design-engineer/system.md for full hierarchy documentation
+ *
+ * When to use GlassSurface vs Card:
+ * - GlassSurface: Dropdowns, popovers, sidebars, contextual panels
+ * - Card: Content containers, data cards, form sections
+ *
  * Accessibility features:
  * - Text-shadow for improved legibility on translucent backgrounds
  * - Automatic opacity adjustment in high contrast mode (prefers-contrast: more)
