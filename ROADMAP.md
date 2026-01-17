@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1504/1555 (96.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1505/1555 (96.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1573 | Feature  | [#1565] Add SinapiApiClientService for Orcamentador API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1572 | Docs     | [#1564] Document SINAPI API integration via Orcamentador ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | -     | Arch     | [#1539] Rewrite SINAPI integration: PageIndex → API Orcamentador (REST + JSON) |
 | 2026-01-17 | #1571 | a11y     | [#1527] Add aria-labels to icon buttons for WCAG 2.1 AA compliance ✅ - **Score 100/100 - Auto-merged** |
@@ -417,7 +418,7 @@
 |       | ↳ #1550-#1554 Sub-issues PageIndex                       | P0         | ✅     |
 | #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | 🔴     |
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
-|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | 🔴     |
+|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
 |       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
 |       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
@@ -614,7 +615,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | ✅     |
 | #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | 🔴     |
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
-|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | 🔴     |
+|       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
 |       | ↳ #1566 ~~TreeBuilder~~ (CANCELADA - não necessária)     | -          | ❌     |
 |       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | 🔴     |
 |       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
