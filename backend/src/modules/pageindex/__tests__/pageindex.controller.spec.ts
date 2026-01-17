@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { PageIndexController } from '../pageindex.controller';
-import { PageIndexService, IndexingStatus } from '../pageindex.service';
+import { PageIndexService } from '../pageindex.service';
 import { IndexDocumentDto, DocumentType } from '../dto/index-document.dto';
 import { SearchTreeDto } from '../dto/search-tree.dto';
+import { DocumentTreeStatus } from '../../../entities/document-tree.entity';
 
 /**
  * Unit tests for PageIndexController
@@ -117,10 +118,10 @@ describe('PageIndexController', () => {
       const mockStats = {
         totalDocuments: 0,
         byStatus: {
-          [IndexingStatus.PENDING]: 0,
-          [IndexingStatus.PROCESSING]: 0,
-          [IndexingStatus.INDEXED]: 0,
-          [IndexingStatus.ERROR]: 0,
+          [DocumentTreeStatus.PENDING]: 0,
+          [DocumentTreeStatus.PROCESSING]: 0,
+          [DocumentTreeStatus.INDEXED]: 0,
+          [DocumentTreeStatus.ERROR]: 0,
         },
         byType: {
           [DocumentType.LEGISLATION]: 0,

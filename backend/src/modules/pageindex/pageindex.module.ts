@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PageIndexService } from './pageindex.service';
 import { PageIndexController } from './pageindex.controller';
+import { DocumentTree } from '../../entities/document-tree.entity';
 
 /**
  * PageIndex Module - Hierarchical document indexing with reasoning-based retrieval.
@@ -18,22 +20,21 @@ import { PageIndexController } from './pageindex.controller';
  * - Human-like document navigation
  * - Auditable retrieval path
  *
- * Current implementation: Module structure with stub services.
- * Full implementation in sub-issues:
- * - #1551: DocumentTree entity and migrations
+ * Current implementation:
+ * - #1550: Module structure with stub services ✅
+ * - #1551: DocumentTree entity and migrations ✅
+ *
+ * Remaining sub-issues:
  * - #1552: TreeBuilderService with Python integration
  * - #1553: TreeSearchService with LLM reasoning
  * - #1554: PoC with Lei 14.133/2021
  *
- * @see Issue #1550 - [PI-1538a] Setup infraestrutura módulo PageIndex
+ * @see Issue #1551 - [PI-1538b] Criar DocumentTree entity e migrations
  * @see Issue #1538 - Create PageIndex module for hierarchical document indexing
  * @see https://github.com/VectifyAI/PageIndex
  */
 @Module({
-  imports: [
-    ConfigModule,
-    // TODO #1551: TypeOrmModule.forFeature([DocumentTree])
-  ],
+  imports: [ConfigModule, TypeOrmModule.forFeature([DocumentTree])],
   controllers: [PageIndexController],
   providers: [
     PageIndexService,
