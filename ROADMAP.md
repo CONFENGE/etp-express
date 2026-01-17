@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1494/1555 (96.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1495/1555 (96.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1557 | Feature  | [#1552] Implement TreeBuilderService with Python integration ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1556 | Feature  | [#1551] Create DocumentTree entity and migrations for PageIndex ✅ - **Score 97.5/100 - Merged** |
 | 2026-01-17 | #1555 | Feature  | [#1550] Create PageIndex module structure - stub implementations ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1549 | Docs     | [#1521] Create .design-engineer/system.md with tokens and design direction ✅ - **Score 100/100 - Auto-merged** |
@@ -595,7 +596,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
 |       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         | ✅     |
 |       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | ✅     |
-|       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | 🔴     |
+|       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | ✅     |
 |       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | 🔴     |
 |       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | 🔴     |
 | #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         | 🔴     |
