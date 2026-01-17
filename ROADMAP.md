@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 769/826 (93.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1492/1555 (96.0%) | **Deploy:** LIVE
 
 ---
 
@@ -349,7 +349,7 @@
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | ✅     |
 
-**Progresso Frontend Audit:** 6/14 (43%) 🟡
+**Progresso Frontend Audit:** 7/14 (50%) 🟡
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -392,15 +392,20 @@
 
 ---
 
-## Issues Abertas (61)
+## Issues Abertas (63)
 
-### P0 - M17 PageIndex Integration (8 issues) 🔵 NEW
+### P0 - M17 PageIndex Integration (13 issues) 🔵 NEW
 
 > Integração do framework PageIndex para RAG reasoning-based. Ver seção "M17: PageIndex RAG" abaixo para detalhes.
 
 | #     | Issue                                                    | Prioridade |
 | ----- | -------------------------------------------------------- | ---------- |
 | #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         |
+|       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         |
+|       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         |
+|       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         |
+|       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         |
+|       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         |
 | #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         |
@@ -481,7 +486,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 0/8    | Alta 🔵    | Diferencial técnico   |
+| M17: PageIndex RAG             | 0/13   | Alta 🔵    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -579,13 +584,18 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG Reasoning-Based (#1538-#1545) - 0/8 (0%) 🔵 NEW
+#### M17: PageIndex RAG Reasoning-Based (#1538-#1554) - 0/13 (0%) 🔵 NEW
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based com 98.7% accuracy (FinanceBench).
 
 | #     | Issue                                                    | Prioridade | Status |
 | ----- | -------------------------------------------------------- | ---------- | ------ |
 | #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
+|       | ↳ #1550 Setup infraestrutura módulo - estrutura NestJS   | P0         | 🔴     |
+|       | ↳ #1551 Criar DocumentTree entity e migrations           | P0         | 🔴     |
+|       | ↳ #1552 Implementar TreeBuilderService com Python        | P0         | 🔴     |
+|       | ↳ #1553 Implementar TreeSearchService com LLM reasoning  | P0         | 🔴     |
+|       | ↳ #1554 PoC PageIndex com Lei 14.133/2021                | P0         | 🔴     |
 | #1539 | Indexar catálogo SINAPI completo com PageIndex           | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
@@ -638,12 +648,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 826   |
-| Issues Abertas    | 61    |
-| Issues Fechadas   | 765   |
-| Progresso         | 92.6% |
-| Bugs P0 Abertos   | 3     |
-| M17 PageIndex     | 0/8   |
+| Issues Totais     | 1555  |
+| Issues Abertas    | 63    |
+| Issues Fechadas   | 1492  |
+| Progresso         | 96.0% |
+| Bugs P0 Abertos   | 7     |
+| M17 PageIndex     | 0/13  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3218  |
