@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
 import { AuthorizedDomain } from '@/store/adminStore';
 
 interface DomainTableProps {
@@ -43,12 +44,12 @@ export function DomainTable({ domains, loading, onDelete }: DomainTableProps) {
 
   if (domains.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 p-12 text-center">
-        <p className="text-muted-foreground">No domains registered yet.</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add your first domain to get started.
-        </p>
-      </div>
+      <EmptyState
+        type="documents"
+        title="Nenhum domínio cadastrado"
+        description="Adicione seu primeiro domínio autorizado para começar a gerenciar organizações."
+        size="sm"
+      />
     );
   }
 
