@@ -250,6 +250,7 @@ function ItemRow({ index, form, onRemove, canRemove }: ItemRowProps) {
             disabled={!canRemove}
             className="text-muted-foreground hover:text-destructive"
             title={canRemove ? 'Remover item' : 'Minimo 1 item necessario'}
+            aria-label={canRemove ? 'Remover item' : 'Minimo 1 item necessario'}
           >
             <Trash2 className="w-4 h-4" />
           </Button>
