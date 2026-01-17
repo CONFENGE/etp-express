@@ -244,3 +244,106 @@ export function SkeletonETPGrid({ count = 6 }: { count?: number }) {
     </div>
   );
 }
+
+/**
+ * Skeleton for ETP/TR Editor page.
+ * Mimics the full editor layout: breadcrumb, header, progress, tabs, and sidebar.
+ */
+export function SkeletonEditor() {
+  return (
+    <div
+      className="space-y-6"
+      role="status"
+      aria-label="Loading editor"
+    >
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-4 w-4" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-8" />
+        </div>
+        <Skeleton className="h-2 w-full rounded-full" />
+      </div>
+
+      {/* Main content grid */}
+      <div className="grid lg:grid-cols-4 gap-6">
+        {/* Main card (3 columns) */}
+        <div className="lg:col-span-3 rounded-lg border bg-card">
+          <div className="p-6 border-b">
+            <Skeleton className="h-6 w-40" />
+          </div>
+          <div className="p-6">
+            {/* Tab list */}
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-9 w-20 shrink-0 rounded" />
+              ))}
+            </div>
+            {/* Tab content */}
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              {/* Editor area */}
+              <div className="space-y-2 mt-6">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-40 w-full rounded" />
+              </div>
+              {/* Generate button */}
+              <Skeleton className="h-10 w-40 mt-4" />
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar (1 column) */}
+        <div className="space-y-4">
+          {/* Sidebar card 1 */}
+          <div className="rounded-lg border bg-card p-4">
+            <Skeleton className="h-5 w-32 mb-4" />
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="h-4 flex-1" />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Sidebar card 2 */}
+          <div className="rounded-lg border bg-card p-4">
+            <Skeleton className="h-5 w-28 mb-4" />
+            <div className="flex items-center justify-center py-4">
+              <Skeleton className="h-20 w-20 rounded-full" />
+            </div>
+            <Skeleton className="h-4 w-full mt-2" />
+          </div>
+          {/* Sidebar card 3 */}
+          <div className="rounded-lg border bg-card p-4">
+            <Skeleton className="h-5 w-36 mb-4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4 mt-2" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

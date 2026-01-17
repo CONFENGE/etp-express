@@ -102,8 +102,8 @@ vi.mock('@/components/ui/breadcrumb', () => ({
 }));
 
 vi.mock('@/components/common/LoadingState', () => ({
-  LoadingState: ({ message }: { message: string }) => (
-    <div data-testid="loading-state">{message}</div>
+  SkeletonEditor: () => (
+    <div data-testid="skeleton-editor" role="status" aria-label="Loading editor" />
   ),
 }));
 
@@ -673,13 +673,9 @@ describe('ETPEditor', () => {
       </BrowserRouter>,
     );
 
-    // Verifica que o loading state é exibido
-    expect(screen.getByTestId('loading-state')).toBeInTheDocument();
-    // A mensagem pode ser "Carregando templates..." ou "Carregando ETP..."
-    // dependendo do que carrega primeiro
-    expect(
-      screen.getByText(/Carregando (templates\.\.\.|ETP\.\.\.)/),
-    ).toBeInTheDocument();
+    // Verifica que o skeleton editor é exibido durante loading
+    expect(screen.getByTestId('skeleton-editor')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: /loading editor/i })).toBeInTheDocument();
   });
 
   /**
