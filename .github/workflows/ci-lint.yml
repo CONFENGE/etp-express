@@ -5,8 +5,9 @@ on:
     branches: [master]
     paths:
       - 'backend/**/*.ts'
-      - 'frontend/**/*.{ts,tsx}'
+      - 'frontend/**/*.{ts,tsx,css}'
       - '.eslintrc*'
+      - '.stylelintrc*'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ci-lint.yml'
@@ -14,8 +15,9 @@ on:
     branches: [master]
     paths:
       - 'backend/**/*.ts'
-      - 'frontend/**/*.{ts,tsx}'
+      - 'frontend/**/*.{ts,tsx,css}'
       - '.eslintrc*'
+      - '.stylelintrc*'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ci-lint.yml'
@@ -93,3 +95,7 @@ jobs:
       - name: Run ESLint
         working-directory: frontend
         run: npm run lint
+
+      - name: Run Stylelint (CSS Design Tokens)
+        working-directory: frontend
+        run: npm run lint:css
