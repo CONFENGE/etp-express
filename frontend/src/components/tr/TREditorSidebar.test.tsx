@@ -33,6 +33,7 @@ const mockTR: TermoReferencia = {
   sancoesPenalidades: '',
   status: TermoReferenciaStatus.DRAFT,
   versao: 1,
+  currentVersion: 1,
   createdById: 'user-id',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
