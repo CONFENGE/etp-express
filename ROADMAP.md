@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 760/818 (92.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 761/819 (92.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1520 | Feature  | [#1269] Add contract price collector for M13: Market Intelligence ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | -     | Audit    | Frontend Design Audit: 14 P0 issues created (#1521-#1534) - 8 design system + 6 parity bugs |
 | 2026-01-16 | #1519 | Feature  | [#1253] Implement TR versioning and history ✅ - **M10 COMPLETE 7/7** |
 | 2026-01-16 | #1518 | Fix      | [#1517] Fix backend timeout - prevent startup sync from blocking initialization ✅ - **Score 100/100 - Auto-merged** |
@@ -455,10 +456,10 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 
 | Milestone                      | Issues | Prioridade | Ticket Potencial      |
 | ------------------------------ | ------ | ---------- | --------------------- |
-| M10: Termo de Referência       | 6/7    | 86% 🟡     | +R$ 500/mês           |
+| M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
-| M12: Compliance TCE            | 5/7    | 71% 🟡     | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 0/8    | Alta       | +R$ 1.500/mês premium |
+| M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
+| M13: Inteligência de Mercado   | 1/8    | 13% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
@@ -538,10 +539,22 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275)
+#### M13: Inteligência de Mercado (#1268-#1275) - 1/8 (13%) 🟡 STARTED
 
 Dados proprietários e analytics avançados.
 
+| #     | Issue                                         | Status |
+| ----- | --------------------------------------------- | ------ |
+| #1268 | [Market Intel] Modulo Market Intelligence - EPIC | 🔴   |
+|       | ↳ #1269 Contract Price Collector              | ✅     |
+|       | ↳ #1270 Price normalization and categorization | 🔴    |
+|       | ↳ #1271 Regional benchmark engine              | 🔴    |
+|       | ↳ #1272 Overprice alerts system                | 🔴    |
+|       | ↳ #1273 Market analytics dashboard             | 🔴    |
+|       | ↳ #1274 Price trend analysis                   | 🔴    |
+|       | ↳ #1275 API for third-party access             | 🔴    |
+
+Features:
 - Preços reais de pregões (não tabelas)
 - Benchmark regional por porte de órgão
 - Alertas de sobrepreço vs mediana
@@ -579,16 +592,16 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 817   |
-| Issues Abertas    | 60    |
-| Issues Fechadas   | 757   |
-| Progresso         | 92.7% |
+| Issues Totais     | 819   |
+| Issues Abertas    | 58    |
+| Issues Fechadas   | 761   |
+| Progresso         | 92.9% |
 | Bugs P0 Abertos   | 6     |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
-| Backend Tests     | 3148  |
-| Frontend Tests    | 2198  |
-| Total Tests       | 5346  |
+| Backend Tests     | 3218  |
+| Frontend Tests    | 2352  |
+| Total Tests       | 5570  |
 
 ---
 
