@@ -384,6 +384,118 @@ export type DynamicFieldsType = z.infer<typeof dynamicFieldsSchema>;
 export type ETPWizardFormData = z.infer<typeof etpWizardSchema>;
 
 // ============================================
+// Backend-Compatible Types (Issue #1530)
+// These types match the backend DTOs for API payloads
+// ============================================
+
+/**
+ * Responsável técnico structure matching backend DTO.
+ * Issue #1530 - Backend expects nested object, not flat fields.
+ * @see backend/src/modules/etps/dto/create-etp.dto.ts ResponsavelTecnicoDto
+ */
+export interface ResponsavelTecnico {
+  nome: string;
+  matricula?: string;
+}
+
+/**
+ * API payload type for creating/updating ETPs.
+ * Transforms wizard form data (flat) to backend DTO format (nested).
+ * Issue #1530 - Ensures parity between frontend and backend.
+ */
+export interface CreateETPPayload {
+  title: string;
+  description?: string;
+  objeto: string;
+  orgaoEntidade?: string;
+  uasg?: string;
+  unidadeDemandante?: string;
+  responsavelTecnico?: ResponsavelTecnico;
+  dataElaboracao?: string;
+  descricaoDetalhada?: string;
+  quantidadeEstimada?: number;
+  unidadeMedida?: string;
+  justificativaContratacao?: string;
+  necessidadeAtendida?: string;
+  beneficiosEsperados?: string;
+  requisitosTecnicos?: string;
+  requisitosQualificacao?: string;
+  criteriosSustentabilidade?: string;
+  garantiaExigida?: string;
+  prazoExecucao?: number;
+  valorUnitario?: number;
+  valorEstimado?: number;
+  fontePesquisaPrecos?: string;
+  dotacaoOrcamentaria?: string;
+  nivelRisco?: 'BAIXO' | 'MEDIO' | 'ALTO';
+  descricaoRiscos?: string;
+  templateId?: string;
+  templateType?: string;
+  dynamicFields?: DynamicFieldsType;
+}
+
+/**
+ * Transforms wizard form data (flat fields) to API payload (nested structure).
+ * Issue #1530 - Centralizes the flat → nested transformation.
+ *
+ * @param data - Wizard form data with flat responsavelTecnico fields
+ * @returns API payload with nested responsavelTecnico object
+ *
+ * @example
+ * ```typescript
+ * const formData = { responsavelTecnicoNome: 'João', responsavelTecnicoMatricula: '123' };
+ * const payload = transformWizardDataToPayload(formData);
+ * // payload.responsavelTecnico = { nome: 'João', matricula: '123' }
+ * ```
+ */
+export function transformWizardDataToPayload(
+  data: ETPWizardFormData,
+): CreateETPPayload {
+  return {
+    title: data.title,
+    description: data.description || undefined,
+    objeto: data.objeto,
+    // Identification fields
+    orgaoEntidade: data.orgaoEntidade || undefined,
+    uasg: data.uasg || undefined,
+    unidadeDemandante: data.unidadeDemandante || undefined,
+    // Transform flat → nested (Issue #1530)
+    responsavelTecnico: data.responsavelTecnicoNome
+      ? {
+          nome: data.responsavelTecnicoNome,
+          matricula: data.responsavelTecnicoMatricula || undefined,
+        }
+      : undefined,
+    dataElaboracao: data.dataElaboracao || undefined,
+    // Object and Justification fields
+    descricaoDetalhada: data.descricaoDetalhada || undefined,
+    quantidadeEstimada: data.quantidadeEstimada || undefined,
+    unidadeMedida: data.unidadeMedida || undefined,
+    justificativaContratacao: data.justificativaContratacao || undefined,
+    necessidadeAtendida: data.necessidadeAtendida || undefined,
+    beneficiosEsperados: data.beneficiosEsperados || undefined,
+    // Requirements fields
+    requisitosTecnicos: data.requisitosTecnicos || undefined,
+    requisitosQualificacao: data.requisitosQualificacao || undefined,
+    criteriosSustentabilidade: data.criteriosSustentabilidade || undefined,
+    garantiaExigida: data.garantiaExigida || undefined,
+    prazoExecucao: data.prazoExecucao || undefined,
+    // Cost fields
+    valorUnitario: data.valorUnitario || undefined,
+    valorEstimado: data.valorEstimado || undefined,
+    fontePesquisaPrecos: data.fontePesquisaPrecos || undefined,
+    dotacaoOrcamentaria: data.dotacaoOrcamentaria || undefined,
+    // Risk fields
+    nivelRisco: data.nivelRisco || undefined,
+    descricaoRiscos: data.descricaoRiscos || undefined,
+    // Template fields
+    templateId: data.templateId || undefined,
+    templateType: data.templateType || undefined,
+    dynamicFields: data.dynamicFields || undefined,
+  };
+}
+
+// ============================================
 // Step Configuration
 // ============================================
 

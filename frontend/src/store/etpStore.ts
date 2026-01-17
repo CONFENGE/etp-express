@@ -13,6 +13,7 @@ import {
   COMPLETED_SECTION_STATUSES,
   SectionType,
 } from '@/types/etp';
+import { CreateETPPayload } from '@/schemas/etpWizardSchema';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
 import {
@@ -244,7 +245,7 @@ interface ETFState {
   // ETP Operations
   fetchETPs: () => Promise<void>;
   fetchETP: (id: string) => Promise<void>;
-  createETP: (data: Partial<ETP>) => Promise<ETP>;
+  createETP: (data: CreateETPPayload) => Promise<ETP>;
   updateETP: (id: string, data: Partial<ETP>) => Promise<void>;
   deleteETP: (id: string) => Promise<void>;
   setCurrentETP: (etp: ETP | null) => void;
@@ -369,7 +370,7 @@ export const useETPStore = create<ETFState>((set, _get) => ({
     }
   },
 
-  createETP: async (data: Partial<ETP>) => {
+  createETP: async (data: CreateETPPayload) => {
     set({ isLoading: true, error: null });
     try {
       // Backend returns `completionPercentage`, map to frontend `progress` (#1316)
