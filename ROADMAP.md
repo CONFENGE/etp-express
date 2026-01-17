@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-16 | **Progresso:** 762/817 (93.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 763/817 (93.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1535 | Fix      | [#1529] Sync Section type with EtpSection entity ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1520 | Feature  | [#1269] Add contract price collector for M13: Market Intelligence ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-16 | -     | Audit    | Frontend Design Audit: 14 P0 issues created (#1521-#1534) - 8 design system + 6 parity bugs |
 | 2026-01-16 | #1519 | Feature  | [#1253] Implement TR versioning and history ✅ - **M10 COMPLETE 7/7** |
@@ -222,15 +223,14 @@
 
 ---
 
-## Bugs Criticos P0 - 6 RESTANTES ⚠️
+## Bugs Criticos P0 - 5 RESTANTES ⚠️
 
-> **STATUS:** 6 novos bugs de paridade backend/frontend identificados via auditoria de design (#1529-#1534)
+> **STATUS:** 5 bugs de paridade backend/frontend restantes (#1530-#1534) - #1529 RESOLVIDO
 
 ### Bugs P0 Abertos (2026-01-16) - Paridade Backend/Frontend
 
 | #     | Issue                                                    | Severidade | Area             |
 | ----- | -------------------------------------------------------- | ---------- | ---------------- |
-| #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | types/etp.ts     |
 | #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | schemas, stores  |
 | #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | schemas          |
 | #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | types/user.ts    |
@@ -339,14 +339,14 @@
 
 | #     | Issue                                                    | Severidade | Status |
 | ----- | -------------------------------------------------------- | ---------- | ------ |
-| #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | 🔴     |
+| #1529 | Sincronizar Section type com EtpSection entity           | CRÍTICO    | ✅     |
 | #1530 | Corrigir estrutura responsavelTecnico (flat → nested)    | CRÍTICO    | 🔴     |
 | #1531 | Corrigir tipo indicadoresDesempenho (string → string[])  | CRÍTICO    | 🔴     |
 | #1532 | Adicionar campos LGPD/audit no User type                 | ALTA       | 🔴     |
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | 🔴     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | 🔴     |
 
-**Progresso Frontend Audit:** 0/14 (0%) 🔴
+**Progresso Frontend Audit:** 1/14 (7%) 🔴
 
 ### Principais Diretrizes Apple HIG 2025
 
