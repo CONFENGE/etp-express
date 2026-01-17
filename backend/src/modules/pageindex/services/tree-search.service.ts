@@ -11,7 +11,10 @@ import {
   DocumentTree,
   DocumentTreeStatus,
 } from '../../../entities/document-tree.entity';
-import { OpenAIService, LLMRequest } from '../../orchestrator/llm/openai.service';
+import {
+  OpenAIService,
+  LLMRequest,
+} from '../../orchestrator/llm/openai.service';
 import {
   TREE_SEARCH_SYSTEM_PROMPT,
   buildTreeNavigationPrompt,
@@ -82,7 +85,10 @@ export class TreeSearchService {
     options?: TreeSearchOptions,
   ): Promise<TreeSearchResult> {
     const startTime = Date.now();
-    this.logger.log('Starting tree search', { treeId, query: query.substring(0, 100) });
+    this.logger.log('Starting tree search', {
+      treeId,
+      query: query.substring(0, 100),
+    });
 
     // Load tree from database
     const documentTree = await this.documentTreeRepository.findOne({
@@ -229,7 +235,10 @@ export class TreeSearchService {
           // Add selected nodes to results
           for (const nodeId of decision.selectedNodes) {
             const foundNode = children.find((c) => c.id === nodeId);
-            if (foundNode && !relevantNodes.some((n) => n.id === foundNode.id)) {
+            if (
+              foundNode &&
+              !relevantNodes.some((n) => n.id === foundNode.id)
+            ) {
               relevantNodes.push(
                 options.includeContent
                   ? foundNode
@@ -423,7 +432,9 @@ export class TreeSearchService {
   async searchMultipleTrees(
     query: string,
     options?: TreeSearchOptions & { documentType?: string; limit?: number },
-  ): Promise<Array<TreeSearchResult & { treeId: string; documentName: string }>> {
+  ): Promise<
+    Array<TreeSearchResult & { treeId: string; documentName: string }>
+  > {
     const limit = options?.limit || 5;
 
     // Find indexed trees

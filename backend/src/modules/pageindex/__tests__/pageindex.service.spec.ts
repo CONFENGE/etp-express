@@ -432,7 +432,9 @@ describe('PageIndexService', () => {
   describe('searchTree', () => {
     it('should delegate to TreeSearchService', async () => {
       const mockSearchResult = {
-        relevantNodes: [{ id: 'node-1', title: 'Test', level: 0, children: [] }],
+        relevantNodes: [
+          { id: 'node-1', title: 'Test', level: 0, children: [] },
+        ],
         path: ['Root', 'Test'],
         confidence: 0.9,
         reasoning: 'Found relevant section',
