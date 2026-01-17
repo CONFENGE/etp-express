@@ -72,7 +72,7 @@ vi.mock('@/lib/polling', () => ({
 }));
 
 describe('etpStore', () => {
-  // Mock data fixtures
+  // Mock data fixtures - Updated for Issue #1529 (Section type sync)
   const mockETP: ETP = {
     id: 'etp-1',
     title: 'ETP Teste',
@@ -82,16 +82,20 @@ describe('etpStore', () => {
     userId: 'user-1',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
+    createdBy: undefined,
     sections: [
       {
         id: 'section-1',
         etpId: 'etp-1',
         sectionNumber: 1,
+        order: 1,
         title: 'Seção 1',
         content: 'Conteúdo seção 1',
+        status: 'pending',
         isRequired: true,
         isCompleted: false,
         aiGenerated: false,
+        hasEnrichmentWarning: false,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
       },
@@ -102,11 +106,14 @@ describe('etpStore', () => {
     id: 'section-1',
     etpId: 'etp-1',
     sectionNumber: 1,
+    order: 1,
     title: 'Seção 1 Atualizada',
     content: 'Conteúdo atualizado',
+    status: 'generated',
     isRequired: true,
     isCompleted: true,
     aiGenerated: false,
+    hasEnrichmentWarning: false,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-02T00:00:00Z',
   };

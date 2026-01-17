@@ -11,6 +11,7 @@ import {
   AsyncSection,
   DataSourceStatusInfo,
   COMPLETED_SECTION_STATUSES,
+  SectionType,
 } from '@/types/etp';
 import axios from 'axios';
 import api, { apiHelpers } from '@/lib/api';
@@ -42,6 +43,58 @@ interface BackendUser {
 }
 
 /**
+ * Backend Section response type.
+ * The backend may return 'order' instead of 'sectionNumber'.
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+interface BackendSection extends Omit<Section, 'order' | 'sectionNumber' | 'isCompleted' | 'aiGenerated' | 'hasEnrichmentWarning'> {
+  order?: number;
+  sectionNumber?: number;
+}
+
+/**
+ * Maps backend section response to frontend Section type.
+ * Computes derived fields (isCompleted, aiGenerated, hasEnrichmentWarning).
+ *
+ * @param backendSection - Section data from backend API
+ * @returns Section object with derived fields computed
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+function mapBackendSectionToFrontend(backendSection: BackendSection): Section {
+  const { order, sectionNumber: legacyNumber, ...rest } = backendSection;
+
+  // Determine the order value (backend uses 'order', legacy uses 'sectionNumber')
+  const sectionOrder = order ?? legacyNumber ?? 1;
+
+  // Compute derived fields
+  const isCompleted = COMPLETED_SECTION_STATUSES.includes(
+    backendSection.status ?? 'pending'
+  );
+  const aiGenerated = Boolean(backendSection.metadata?.model);
+  const hasEnrichmentWarning = aiGenerated &&
+    backendSection.metadata?.agentsUsed?.length === 0;
+
+  return {
+    ...rest,
+    order: sectionOrder,
+    sectionNumber: sectionOrder, // Legacy alias for backward compatibility
+    isCompleted,
+    aiGenerated,
+    hasEnrichmentWarning,
+  } as Section;
+}
+
+/**
+ * Maps array of backend sections to frontend Sections.
+ * @param backendSections - Array of section data from backend API
+ * @returns Array of Section objects with derived fields computed
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+function mapBackendSections(backendSections: BackendSection[]): Section[] {
+  return backendSections.map(mapBackendSectionToFrontend);
+}
+
+/**
  * Backend ETP response type with completionPercentage field.
  * The backend returns `completionPercentage` but frontend type expects `progress`.
  * @see Issue #1316 - Progress display fix
@@ -64,9 +117,16 @@ interface BackendETP extends Omit<ETP, 'progress' | 'createdBy'> {
  * @see Issue #1351 - Admin dashboard ETP authorship identification
  */
 function mapBackendETPToFrontend(backendEtp: BackendETP): ETP {
-  const { completionPercentage, createdBy, ...rest } = backendEtp;
+  const { completionPercentage, createdBy, sections, ...rest } = backendEtp;
+
+  // Map sections with derived fields (#1529)
+  const mappedSections = sections
+    ? mapBackendSections(sections as unknown as BackendSection[])
+    : [];
+
   return {
     ...rest,
+    sections: mappedSections,
     // Use completionPercentage from backend, fallback to progress if already mapped, default to 0
     progress: completionPercentage ?? rest.progress ?? 0,
     // Map createdBy user for authorship display (#1351)
@@ -108,21 +168,11 @@ function calculateProgress(sections: Section[]): number {
 }
 
 /**
- * Backend SectionType enum values.
- * Must match backend/src/entities/etp-section.entity.ts SectionType enum.
+ * @deprecated Use SectionType from @/types/etp instead.
+ * Kept as alias for backward compatibility.
+ * @see Issue #1529 - Sync Section type with EtpSection entity
  */
-type BackendSectionType =
-  | 'introducao'
-  | 'justificativa'
-  | 'descricao_solucao'
-  | 'requisitos'
-  | 'estimativa_valor'
-  | 'analise_riscos'
-  | 'criterios_selecao'
-  | 'criterios_medicao'
-  | 'adequacao_orcamentaria'
-  | 'declaracao_viabilidade'
-  | 'custom';
+type BackendSectionType = SectionType;
 
 /**
  * Maps section number to backend SectionType enum value.

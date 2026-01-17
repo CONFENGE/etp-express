@@ -39,6 +39,54 @@ export type SectionStatus =
   | 'approved';
 
 /**
+ * Section type values (must match backend SectionType enum)
+ * @see backend/src/entities/etp-section.entity.ts
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+export type SectionType =
+  | 'introducao'
+  | 'justificativa'
+  | 'descricao_solucao'
+  | 'requisitos'
+  | 'estimativa_valor'
+  | 'analise_riscos'
+  | 'criterios_selecao'
+  | 'criterios_medicao'
+  | 'adequacao_orcamentaria'
+  | 'declaracao_viabilidade'
+  | 'custom';
+
+/**
+ * Section metadata interface (must match backend EtpSection.metadata)
+ * @see backend/src/entities/etp-section.entity.ts
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+export interface SectionMetadata {
+  tokens?: number;
+  model?: string;
+  temperature?: number;
+  generationTime?: number;
+  agentsUsed?: string[];
+  similarContracts?: unknown[];
+  jobId?: string;
+  queuedAt?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Section validation results interface (must match backend EtpSection.validationResults)
+ * @see backend/src/entities/etp-section.entity.ts
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
+export interface SectionValidationResults {
+  legalCompliance?: boolean;
+  clarityScore?: number;
+  hallucinationCheck?: boolean;
+  warnings?: string[];
+  suggestions?: string[];
+}
+
+/**
  * Statuses that count toward ETP completion (100% progress)
  * Used to calculate progress consistently with backend
  * @see Issue #1344 - Fix progress inconsistency
@@ -49,24 +97,95 @@ export const COMPLETED_SECTION_STATUSES: SectionStatus[] = [
   'approved',
 ];
 
+/**
+ * Section interface synchronized with backend EtpSection entity.
+ * @see backend/src/entities/etp-section.entity.ts
+ * @see Issue #1529 - Sync Section type with EtpSection entity
+ */
 export interface Section {
   id: string;
   etpId: string;
-  sectionNumber: number;
   title: string;
-  content: string;
-  isRequired: boolean;
-  isCompleted: boolean;
-  aiGenerated: boolean;
-  hasEnrichmentWarning?: boolean;
+  content: string | null;
+
   /**
-   * Section status from backend (Issue #1344)
+   * Section type from backend enum (Issue #1529)
+   * @see SectionType
+   */
+  type?: SectionType;
+
+  /**
+   * User input for AI generation context
+   * @see Issue #1529 - Added from backend
+   */
+  userInput?: string | null;
+
+  /**
+   * System prompt used for AI generation
+   * @see Issue #1529 - Added from backend
+   */
+  systemPrompt?: string | null;
+
+  /**
+   * Section status from backend (Issue #1344, #1529)
    * Used for progress calculation to ensure consistency
    */
-  status?: SectionStatus;
-  metadata?: Record<string, unknown>;
+  status: SectionStatus;
+
+  /**
+   * Display order of the section (backend: order, frontend alias: sectionNumber)
+   * @see Issue #1529 - Renamed from sectionNumber to match backend
+   */
+  order: number;
+
+  isRequired: boolean;
+
+  /**
+   * Section metadata with generation info
+   * @see SectionMetadata
+   * @see Issue #1529 - Typed interface replacing Record<string, unknown>
+   */
+  metadata?: SectionMetadata | null;
+
+  /**
+   * Validation results from compliance engine
+   * @see SectionValidationResults
+   * @see Issue #1529 - Added from backend
+   */
+  validationResults?: SectionValidationResults | null;
+
   createdAt: string;
   updatedAt: string;
+
+  // ========================================
+  // DERIVED FIELDS (computed from backend data)
+  // Kept for backward compatibility with existing components
+  // ========================================
+
+  /**
+   * @deprecated Use `order` instead. Kept for backward compatibility.
+   * @see Issue #1529 - Legacy alias for order field
+   */
+  sectionNumber?: number;
+
+  /**
+   * Derived: true when status is 'generated', 'reviewed', or 'approved'
+   * @see COMPLETED_SECTION_STATUSES
+   * @see Issue #1529 - This is a derived field, not persisted in backend
+   */
+  isCompleted?: boolean;
+
+  /**
+   * Derived: true when metadata.model exists (indicates AI generation)
+   * @see Issue #1529 - This is a derived field, not persisted in backend
+   */
+  aiGenerated?: boolean;
+
+  /**
+   * Derived: true when AI generation completed without enrichment data
+   * @see Issue #1529 - This is a derived field, not persisted in backend
+   */
+  hasEnrichmentWarning?: boolean;
 }
 
 export interface SectionTemplate {
@@ -228,13 +347,14 @@ export interface JobStatusResponse {
 }
 
 /**
- * Section with async generation metadata
+ * Section with async generation metadata.
+ * Requires jobId and queuedAt in metadata.
+ * @see Issue #1529 - Updated to use SectionMetadata interface
  */
 export interface AsyncSection extends Section {
-  metadata: {
+  metadata: SectionMetadata & {
     jobId: string;
     queuedAt: string;
-    [key: string]: unknown;
   };
 }
 
