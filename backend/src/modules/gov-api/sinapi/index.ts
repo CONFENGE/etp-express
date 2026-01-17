@@ -8,3 +8,5 @@ export * from './sinapi.module';
 export * from './sinapi.service';
 export * from './sinapi.types';
 export * from './sinapi-parser';
+export * from './sinapi-api-client.service';
+export * from './sinapi-api.types';
