@@ -6,7 +6,7 @@ import { Tabs } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useETPs } from '@/hooks/useETPs';
 import { useToast } from '@/hooks/useToast';
-import { LoadingState } from '@/components/common/LoadingState';
+import { SkeletonEditor } from '@/components/common/LoadingState';
 import { type SectionTemplate } from '@/types/etp';
 import { loadSectionTemplates } from '@/lib/section-templates';
 import { ETPEditorHeader } from '@/components/etp/ETPEditorHeader';
@@ -500,11 +500,7 @@ export function ETPEditor() {
   if (isLoading || !currentETP || templatesLoading) {
     return (
       <MainLayout>
-        <LoadingState
-          message={
-            templatesLoading ? 'Carregando templates...' : 'Carregando ETP...'
-          }
-        />
+        <SkeletonEditor />
       </MainLayout>
     );
   }
