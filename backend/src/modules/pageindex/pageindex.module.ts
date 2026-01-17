@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PageIndexService } from './pageindex.service';
 import { PageIndexController } from './pageindex.controller';
 import { TreeBuilderService } from './services/tree-builder.service';
+import { TreeSearchService } from './services/tree-search.service';
 import { DocumentTree } from '../../entities/document-tree.entity';
+import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
  * PageIndex Module - Hierarchical document indexing with reasoning-based retrieval.
@@ -25,9 +27,9 @@ import { DocumentTree } from '../../entities/document-tree.entity';
  * - #1550: Module structure with stub services ✅
  * - #1551: DocumentTree entity and migrations ✅
  * - #1552: TreeBuilderService with Python integration ✅
+ * - #1553: TreeSearchService with LLM reasoning ✅
  *
  * Remaining sub-issues:
- * - #1553: TreeSearchService with LLM reasoning
  * - #1554: PoC with Lei 14.133/2021
  *
  * @see Issue #1551 - [PI-1538b] Criar DocumentTree entity e migrations
@@ -35,13 +37,13 @@ import { DocumentTree } from '../../entities/document-tree.entity';
  * @see https://github.com/VectifyAI/PageIndex
  */
 @Module({
-  imports: [ConfigModule, TypeOrmModule.forFeature([DocumentTree])],
-  controllers: [PageIndexController],
-  providers: [
-    PageIndexService,
-    TreeBuilderService,
-    // TODO #1553: TreeSearchService
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([DocumentTree]),
+    forwardRef(() => OrchestratorModule),
   ],
-  exports: [PageIndexService, TreeBuilderService],
+  controllers: [PageIndexController],
+  providers: [PageIndexService, TreeBuilderService, TreeSearchService],
+  exports: [PageIndexService, TreeBuilderService, TreeSearchService],
 })
 export class PageIndexModule {}
