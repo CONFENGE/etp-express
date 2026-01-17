@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1499/1555 (96.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1500/1555 (96.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1562 | Feature  | [#1525] Add skeleton states to ETP and TR editor pages ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1561 | Feature  | [#1528] Standardize focus ring styles across UI components ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1560 | Feature  | [#1522] Implement Stylelint for design tokens enforcement ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1559 | Feature  | [#1554] PoC Lei 14.133/2021 com tree search validation ✅ - **Score 100/100 - Auto-merged** |
@@ -340,7 +341,7 @@
 | #1522 | Implementar ESLint/Stylelint para enforcement de tokens  | Tooling     | ✅     |
 | #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | 🔴     |
-| #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | 🔴     |
+| #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | ✅     |
 | #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | 🔴     |
 | #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | 🔴     |
 | #1528 | Padronizar focus ring styles em todos componentes        | A11y        | ✅     |
