@@ -20,6 +20,14 @@ export interface User {
   };
   organizationId?: string;
   /**
+   * User's position/title in the organization.
+   */
+  cargo?: string | null;
+  /**
+   * Whether the user account is active.
+   */
+  isActive?: boolean;
+  /**
    * Flag indicating user must change password on next login.
    * Required for M8: Domain management - new users created by Domain Managers
    * must change their initial password.
@@ -32,6 +40,46 @@ export interface User {
    * @see #1446 Demo User Management System
    */
   isDemoBlocked?: boolean;
+  /**
+   * Timestamp of user's last login.
+   * Used for audit trail and session management.
+   * @see LGPD Art. 37 - audit requirements
+   */
+  lastLoginAt?: string | null;
+  /**
+   * Timestamp when user consented to LGPD terms.
+   * Required for LGPD Art. 7º, I compliance.
+   */
+  lgpdConsentAt?: string | null;
+  /**
+   * Version of LGPD terms accepted by user.
+   * Enables audit trail per LGPD Art. 8º, §4º.
+   */
+  lgpdConsentVersion?: string | null;
+  /**
+   * Timestamp when user consented to international data transfer.
+   * Required for LGPD Art. 33 compliance (USA servers: Railway, OpenAI, Exa).
+   */
+  internationalTransferConsentAt?: string | null;
+  /**
+   * Timestamp when user requested account deletion (soft delete).
+   * Required for LGPD Art. 18, VI compliance (direito de exclusão).
+   * Account will be permanently deleted after 30 days (hard delete).
+   */
+  deletedAt?: string | null;
+  /**
+   * Maximum number of ETPs a demo user can create.
+   * Only applies to users with role DEMO.
+   * Null for non-demo users (unlimited).
+   * Default is 3 for demo users.
+   * @see #1439 Demo User Management System
+   */
+  etpLimitCount?: number | null;
+  /**
+   * ID of the Authorized Domain this user belongs to.
+   * @see M8: Gestão de Domínios Institucionais
+   */
+  authorizedDomainId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
