@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1501/1555 (96.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-17 | **Progresso:** 1502/1555 (96.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-17 | #1570 | Feature  | [#1526] Standardize EmptyState component across tables and lists ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1563 | Feature  | [#1524] Unify Card/Surface hierarchy with variants ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1562 | Feature  | [#1525] Add skeleton states to ETP and TR editor pages ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1561 | Feature  | [#1528] Standardize focus ring styles across UI components ✅ - **Score 100/100 - Auto-merged** |
@@ -343,7 +344,7 @@
 | #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | ✅     |
 | #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | ✅     |
-| #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | 🔴     |
+| #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | ✅     |
 | #1527 | Auditar e adicionar aria-labels em todos icon buttons    | A11y        | 🔴     |
 | #1528 | Padronizar focus ring styles em todos componentes        | A11y        | ✅     |
 
