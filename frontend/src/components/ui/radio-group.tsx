@@ -62,8 +62,8 @@ const RadioGroupItem = React.forwardRef<
         'relative before:absolute before:-inset-[14px] before:content-[""]',
         // Text color for indicator
         'text-primary',
-        // Focus styles
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        // Focus styles - WCAG 2.1 AA compliant with standardized apple-accent color
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-accent focus-visible:ring-offset-2',
         // Disabled styles
         'disabled:cursor-not-allowed disabled:opacity-50',
         // Checked state animation
