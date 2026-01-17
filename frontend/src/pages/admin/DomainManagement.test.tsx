@@ -177,7 +177,7 @@ describe('DomainManagement', () => {
       renderWithRouter(<DomainManagement />);
 
       expect(
-        screen.getByText('No domains registered yet.'),
+        screen.getByText('Nenhum domínio cadastrado'),
       ).toBeInTheDocument();
     });
   });
