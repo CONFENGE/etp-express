@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 797/846 issues (94.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 798/847 issues (94.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1597 | Feature  | [#1592] Add QueryComplexityClassifierService for Hybrid RAG routing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1591 | Feature  | [#1541] Integrate PageIndex in Anti-Hallucination Agent ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1590 | Feature  | [#1582] Integrate jurisprudencia with ComplianceService ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1589 | Feature  | [#1581] Add jurisprudencia API for search and retrieval ✅ - **Score 100/100 - Auto-merged** |
@@ -619,7 +620,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1582) - 16/25 (64%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1582) - 17/26 (65%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -647,6 +648,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
+|       | ↳ #1592 QueryComplexityClassifier (1/5 do Hybrid RAG)    | P1         | ✅     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
@@ -701,12 +703,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 845   |
-| Issues Abertas    | 51    |
-| Issues Fechadas   | 794   |
-| Progresso         | 94.0% |
+| Issues Totais     | 847   |
+| Issues Abertas    | 49    |
+| Issues Fechadas   | 798   |
+| Progresso         | 94.2% |
 | Bugs P0 Abertos   | 3     |
-| M17 PageIndex+API | 15/25 |
+| M17 PageIndex+API | 17/26 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
