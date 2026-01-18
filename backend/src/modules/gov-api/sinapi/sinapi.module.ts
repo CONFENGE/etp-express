@@ -4,8 +4,11 @@
  * NestJS module for SINAPI (Sistema Nacional de Pesquisa de Custos e Índices
  * da Construção Civil) integration.
  *
- * Now with database persistence via TypeORM (#1165).
- * API client via Orcamentador (#1565).
+ * Features:
+ * - Database persistence via TypeORM (#1165)
+ * - API client via Orcamentador (#1565)
+ * - Scheduled sync job with cache warmup (#1569)
+ * - Webhook endpoint for real-time updates (#1569)
  *
  * @module modules/gov-api/sinapi
  */
@@ -16,6 +19,8 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SinapiService } from './sinapi.service';
 import { SinapiApiClientService } from './sinapi-api-client.service';
+import { SinapiSyncJob } from './sinapi-sync.job';
+import { SinapiWebhookController } from './sinapi-webhook.controller';
 import { GovApiCache } from '../utils/gov-api-cache';
 import { SinapiItem } from '../../../entities/sinapi-item.entity';
 
@@ -28,7 +33,13 @@ import { SinapiItem } from '../../../entities/sinapi-item.entity';
     }),
     TypeOrmModule.forFeature([SinapiItem]),
   ],
-  providers: [SinapiService, SinapiApiClientService, GovApiCache],
-  exports: [SinapiService, SinapiApiClientService],
+  controllers: [SinapiWebhookController],
+  providers: [
+    SinapiService,
+    SinapiApiClientService,
+    SinapiSyncJob,
+    GovApiCache,
+  ],
+  exports: [SinapiService, SinapiApiClientService, SinapiSyncJob],
 })
 export class SinapiModule {}
