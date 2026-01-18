@@ -184,8 +184,14 @@ export class SinapiApiClientService implements OnModuleInit {
 
   /**
    * Check if API is configured
+   * Handles case where onModuleInit hasn't been called yet
    */
   isConfigured(): boolean {
+    // If config hasn't been initialized yet, check directly from ConfigService
+    if (!this.config) {
+      const apiKey = this.configService.get<string>('SINAPI_API_KEY');
+      return !!apiKey;
+    }
     return !!this.config.apiKey;
   }
 
