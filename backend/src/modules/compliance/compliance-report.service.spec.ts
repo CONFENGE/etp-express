@@ -118,6 +118,7 @@ describe('ComplianceReportService', () => {
     },
     validatedAt: new Date(),
     processingTimeMs: 150,
+    jurisprudenciaAlerts: [],
   };
 
   const mockHistoryEntry: Partial<ComplianceValidationHistory> = {
