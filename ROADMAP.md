@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 792/844 issues (93.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 793/844 issues (94.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1587 | Feature  | [#1579] Add TCE-SP sumulas indexation (52 sumulas) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1586 | Fix      | [#1585] Fix production 502 - SinapiApiClient init race condition ✅ - **Score 100/100 - Auto-merged - CRITICAL P0** |
 | 2026-01-18 | #1584 | Feature  | [#1578] Add JurisprudenciaSeeder for TCE-SP and TCU indexing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | -     | Audit    | ROADMAP sync: fix issue count (843 not 1556 - was counting PRs), add #1578-#1582 orphan issues |
@@ -432,7 +433,7 @@
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
-|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | 🔴     |
+|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
@@ -636,7 +637,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
-|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | 🔴     |
+|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
