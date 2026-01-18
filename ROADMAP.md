@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 793/844 issues (94.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 794/845 issues (94.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1588 | Feature  | [#1580] Add TCU acordaos indexation (55 items) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1587 | Feature  | [#1579] Add TCE-SP sumulas indexation (52 sumulas) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1586 | Fix      | [#1585] Fix production 502 - SinapiApiClient init race condition ✅ - **Score 100/100 - Auto-merged - CRITICAL P0** |
 | 2026-01-18 | #1584 | Feature  | [#1578] Add JurisprudenciaSeeder for TCE-SP and TCU indexing ✅ - **Score 100/100 - Auto-merged** |
@@ -414,9 +415,9 @@
 
 ---
 
-## Issues Abertas (53)
+## Issues Abertas (51)
 
-### P0 - M17 PageIndex + SINAPI API (25 issues - 11 open) 🔵 IN PROGRESS
+### P0 - M17 PageIndex + SINAPI API (25 issues - 10 open) 🔵 IN PROGRESS
 
 > PageIndex para RAG reasoning-based + API Orcamentador para SINAPI. Ver seção "M17: PageIndex RAG + SINAPI API" abaixo.
 
@@ -434,7 +435,7 @@
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
 |       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
-|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
+|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
@@ -517,7 +518,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 14/25  | Alta 🔵    | Diferencial técnico   |
+| M17: PageIndex RAG             | 15/25  | Alta 🔵    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -615,7 +616,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1582) - 14/25 (56%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1582) - 15/25 (60%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -638,7 +639,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
 |       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
-|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
+|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
@@ -697,12 +698,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 844   |
-| Issues Abertas    | 52    |
-| Issues Fechadas   | 792   |
-| Progresso         | 93.8% |
+| Issues Totais     | 845   |
+| Issues Abertas    | 51    |
+| Issues Fechadas   | 794   |
+| Progresso         | 94.0% |
 | Bugs P0 Abertos   | 3     |
-| M17 PageIndex+API | 14/25 |
+| M17 PageIndex+API | 15/25 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
