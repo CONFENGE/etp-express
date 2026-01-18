@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ItemCategorySeeder } from '../seeders/item-category.seeder';
-import { ItemCategory, ItemCategoryType } from '../../../entities/item-category.entity';
+import {
+  ItemCategory,
+  ItemCategoryType,
+} from '../../../entities/item-category.entity';
 
 describe('ItemCategorySeeder', () => {
   let seeder: ItemCategorySeeder;
@@ -229,9 +232,9 @@ describe('ItemCategorySeeder', () => {
       const categoriesWithKeywords = savedCategories.filter(
         (c) => c.keywords && c.keywords.length > 0,
       );
-      expect(categoriesWithKeywords.length / savedCategories.length).toBeGreaterThan(
-        0.9,
-      );
+      expect(
+        categoriesWithKeywords.length / savedCategories.length,
+      ).toBeGreaterThan(0.9);
     });
 
     it('should include common units for categories', async () => {
