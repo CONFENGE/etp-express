@@ -3,6 +3,7 @@
  *
  * @module modules/gov-api/price-aggregation
  * @see https://github.com/CONFENGE/etp-express/issues/1159
+ * @see https://github.com/CONFENGE/etp-express/issues/1568
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,6 +12,7 @@ import {
   GovApiPriceReference,
   GovApiContract,
 } from '../interfaces/gov-api.interface';
+import { SinapiPriceReference, SinapiItemType } from '../sinapi/sinapi.types';
 
 describe('PriceAggregationService', () => {
   let service: PriceAggregationService;
@@ -345,6 +347,395 @@ describe('PriceAggregationService', () => {
       const aggregation = result.aggregations.find((a) => a.sourceCount >= 2);
       if (aggregation) {
         expect(aggregation.coefficientOfVariation).toBe(0);
+      }
+    });
+  });
+
+  /**
+   * Tests for SINAPI API data integration (#1568)
+   *
+   * These tests validate that SinapiPriceReference data from the API Orcamentador
+   * is correctly accepted and processed by PriceAggregationService.
+   *
+   * @see https://github.com/CONFENGE/etp-express/issues/1568
+   */
+  describe('SINAPI API Integration (#1568)', () => {
+    /**
+     * Create a SinapiPriceReference as returned by API Orcamentador
+     * This mimics the exact structure returned by SinapiService.transformApiInsumo()
+     */
+    const createApiSinapiPrice = (
+      codigo: string,
+      nome: string,
+      precoNaoDesonerado: number,
+      precoDesonerado: number,
+      unidade: string = 'M2',
+      uf: string = 'SP',
+      mesReferencia: string = '2026-01',
+      tipo: SinapiItemType = SinapiItemType.INSUMO,
+      classe?: string,
+    ): SinapiPriceReference => ({
+      // GovApiSearchResult fields
+      id: `sinapi:${codigo}:${uf}:${mesReferencia}:O`,
+      title: nome,
+      description: nome,
+      source: 'sinapi',
+      url: undefined,
+      relevance: 1.0,
+      fetchedAt: new Date(),
+      // GovApiPriceReference fields
+      codigo,
+      descricao: nome,
+      unidade,
+      precoUnitario: precoNaoDesonerado,
+      mesReferencia,
+      uf,
+      desonerado: false,
+      categoria: classe || 'SINAPI',
+      // SinapiPriceReference specific fields
+      tipo,
+      classeId: undefined,
+      classeDescricao: classe,
+      precoOnerado: precoNaoDesonerado,
+      precoDesonerado,
+    });
+
+    it('should accept SINAPI API data without errors', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00001234',
+          'CIMENTO PORTLAND COMPOSTO CP II-32',
+          45.5,
+          42.0,
+          'KG',
+          'SP',
+          '2026-01',
+          SinapiItemType.INSUMO,
+          'AGLOMERANTES',
+        ),
+      ];
+
+      expect(() =>
+        service.aggregatePrices('cimento portland', apiSinapiPrices, [], []),
+      ).not.toThrow();
+    });
+
+    it('should correctly aggregate SINAPI API prices', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00001234',
+          'CIMENTO PORTLAND COMPOSTO CP II-32',
+          45.5,
+          42.0,
+          'KG',
+          'SP',
+        ),
+        createApiSinapiPrice(
+          '00001235',
+          'CIMENTO PORTLAND COMPOSTO CP II-32 SACO 50KG',
+          44.0,
+          40.5,
+          'KG',
+          'RJ',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'cimento portland',
+        apiSinapiPrices,
+        [],
+        [],
+      );
+
+      expect(result.aggregations.length).toBeGreaterThan(0);
+      expect(result.totalPricesAnalyzed).toBe(2);
+      expect(result.sourcesConsulted).toContain('sinapi');
+    });
+
+    it('should include SINAPI in sourcesConsulted when API data is provided', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00005678',
+          'AREIA MEDIA LAVADA',
+          85.0,
+          78.0,
+          'M3',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'areia lavada',
+        apiSinapiPrices,
+        [],
+        [],
+      );
+
+      expect(result.sourcesConsulted).toEqual(['sinapi']);
+    });
+
+    it('should correctly normalize SINAPI API price reference', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00009999',
+          'TIJOLO CERAMICO FURADO',
+          0.85,
+          0.78,
+          'UN',
+          'MG',
+          '2026-01',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'tijolo ceramico',
+        apiSinapiPrices,
+        [],
+        [],
+      );
+
+      expect(result.aggregations).toHaveLength(1);
+      expect(result.aggregations[0].unit).toBe('un');
+      expect(result.aggregations[0].averagePrice).toBe(0.85);
+    });
+
+    it('should include methodology mentioning SINAPI correctly', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice('00001111', 'BRITA 1', 75.0, 69.0, 'M3'),
+        createApiSinapiPrice('00001112', 'BRITA 2', 78.0, 72.0, 'M3'),
+      ];
+
+      const result = service.aggregatePrices('brita', apiSinapiPrices, [], []);
+
+      expect(result.methodologySummary).toContain('SINAPI');
+      expect(result.methodologySummary).toContain('Lei 14.133/2021');
+    });
+
+    it('should aggregate API SINAPI prices with SICRO correctly', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00002222',
+          'CONCRETO USINADO FCK 25 MPA',
+          420.0,
+          385.0,
+          'M3',
+        ),
+      ];
+
+      const sicroPrices: GovApiPriceReference[] = [
+        {
+          id: 'sicro-001',
+          title: 'CONCRETO ESTRUTURAL',
+          description: 'Concreto estrutural usinado',
+          source: 'sicro',
+          relevance: 0.9,
+          fetchedAt: new Date(),
+          codigo: 'SICRO-001',
+          descricao: 'CONCRETO ESTRUTURAL USINADO FCK 25',
+          unidade: 'M3',
+          precoUnitario: 450.0,
+          mesReferencia: '2026-01',
+          uf: 'SP',
+          desonerado: false,
+          categoria: 'INFRAESTRUTURA',
+        },
+      ];
+
+      const result = service.aggregatePrices(
+        'concreto usinado',
+        apiSinapiPrices,
+        sicroPrices,
+        [],
+      );
+
+      expect(result.totalPricesAnalyzed).toBe(2);
+      expect(result.sourcesConsulted).toContain('sinapi');
+      expect(result.sourcesConsulted).toContain('sicro');
+    });
+
+    it('should handle SINAPI COMPOSICAO type from API', () => {
+      const apiComposicaoPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00003333',
+          'ALVENARIA DE VEDACAO COM BLOCO CERAMICO',
+          125.0,
+          115.0,
+          'M2',
+          'SP',
+          '2026-01',
+          SinapiItemType.COMPOSICAO,
+          'ALVENARIA',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'alvenaria vedacao',
+        apiComposicaoPrices,
+        [],
+        [],
+      );
+
+      expect(result.aggregations).toHaveLength(1);
+      expect(result.aggregations[0].averagePrice).toBe(125.0);
+    });
+
+    it('should correctly calculate statistics with multiple API SINAPI prices', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice('00004001', 'AREIA FINA', 60.0, 55.0, 'M3', 'SP'),
+        createApiSinapiPrice('00004002', 'AREIA MEDIA', 65.0, 60.0, 'M3', 'RJ'),
+        createApiSinapiPrice(
+          '00004003',
+          'AREIA GROSSA',
+          70.0,
+          64.0,
+          'M3',
+          'MG',
+        ),
+      ];
+
+      const result = service.aggregatePrices('areia', apiSinapiPrices, [], []);
+
+      // Find the aggregation that grouped all 3
+      const aggregation = result.aggregations.find((a) => a.sourceCount === 3);
+      if (aggregation) {
+        expect(aggregation.minPrice).toBe(60.0);
+        expect(aggregation.maxPrice).toBe(70.0);
+        expect(aggregation.medianPrice).toBe(65.0);
+      }
+    });
+
+    it('should handle precoDesonerado vs precoOnerado correctly', () => {
+      // Test with desonerado flag
+      const desoneradoPrice: SinapiPriceReference = {
+        ...createApiSinapiPrice('00005001', 'FERRO CA-50', 8.5, 7.8, 'KG'),
+        desonerado: true,
+        precoUnitario: 7.8, // Should use precoDesonerado
+      };
+
+      const result = service.aggregatePrices(
+        'ferro ca-50',
+        [desoneradoPrice],
+        [],
+        [],
+      );
+
+      expect(result.aggregations).toHaveLength(1);
+      expect(result.aggregations[0].averagePrice).toBe(7.8);
+    });
+
+    it('should not cause breaking changes in interface', () => {
+      // This test ensures backward compatibility
+      // Old-style GovApiPriceReference should still work
+      const legacyPrice: GovApiPriceReference = {
+        id: 'sinapi-legacy-001',
+        title: 'Legacy SINAPI Item',
+        description: 'Legacy item description',
+        source: 'sinapi',
+        relevance: 0.9,
+        fetchedAt: new Date(),
+        codigo: 'LEGACY001',
+        descricao: 'Legacy item',
+        unidade: 'UN',
+        precoUnitario: 100.0,
+        mesReferencia: '2026-01',
+        uf: 'DF',
+        desonerado: false,
+        categoria: 'LEGACY',
+      };
+
+      // New-style SinapiPriceReference
+      const apiPrice: SinapiPriceReference = createApiSinapiPrice(
+        '00006001',
+        'New API Item',
+        100.0,
+        90.0,
+        'UN',
+      );
+
+      // Both should work together
+      const result = service.aggregatePrices(
+        'mixed test',
+        [legacyPrice, apiPrice],
+        [],
+        [],
+      );
+
+      expect(result.totalPricesAnalyzed).toBe(2);
+      expect(result.sourcesConsulted).toContain('sinapi');
+    });
+
+    it('should handle empty SINAPI API response gracefully', () => {
+      const result = service.aggregatePrices('nonexistent item', [], [], []);
+
+      expect(result.aggregations).toHaveLength(0);
+      expect(result.sourcesConsulted).toHaveLength(0);
+      expect(result.overallConfidence).toBe('LOW');
+    });
+
+    it('should process API prices with special characters in description', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00007001',
+          'TUBO PVC SOLDAVEL DN 50MM - CONEXAO 90°',
+          12.5,
+          11.5,
+          'M',
+        ),
+        createApiSinapiPrice(
+          '00007002',
+          "COLA PVC 'TIGRE' 175G",
+          28.0,
+          25.5,
+          'UN',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'tubo pvc',
+        apiSinapiPrices,
+        [],
+        [],
+      );
+
+      expect(result.totalPricesAnalyzed).toBe(2);
+    });
+
+    it('should maintain HIGH confidence with 3+ API SINAPI sources of similar values', () => {
+      const apiSinapiPrices: SinapiPriceReference[] = [
+        createApiSinapiPrice(
+          '00008001',
+          'CAL HIDRATADA CH-III',
+          22.0,
+          20.0,
+          'KG',
+        ),
+        createApiSinapiPrice(
+          '00008002',
+          'CAL HIDRATADA CH-III',
+          22.5,
+          20.5,
+          'KG',
+        ),
+        createApiSinapiPrice(
+          '00008003',
+          'CAL HIDRATADA CH-III',
+          21.5,
+          19.5,
+          'KG',
+        ),
+      ];
+
+      const result = service.aggregatePrices(
+        'cal hidratada',
+        apiSinapiPrices,
+        [],
+        [],
+      );
+
+      // With 3 very similar prices, we should get an aggregation
+      const aggregation = result.aggregations.find((a) => a.sourceCount === 3);
+      if (aggregation) {
+        // CV should be low (< 0.3) so confidence should be HIGH
+        expect(aggregation.confidence).toBe('HIGH');
       }
     });
   });
