@@ -42,6 +42,7 @@ describe('ComplianceController', () => {
     skippedItems: 0,
     itemResults: [],
     suggestions: [],
+    jurisprudenciaAlerts: [],
     categoryScores: {} as Record<
       ChecklistItemCategory,
       { total: number; passed: number; score: number; maxScore: number }

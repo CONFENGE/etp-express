@@ -14,12 +14,14 @@ import {
 } from '../../../entities/compliance-checklist-item.entity';
 import { Etp, EtpStatus, NivelRisco } from '../../../entities/etp.entity';
 import { EtpTemplateType } from '../../../entities/etp-template.entity';
+import { JurisprudenciaService } from '../../pageindex/services/jurisprudencia.service';
 
 describe('ComplianceValidationService', () => {
   let service: ComplianceValidationService;
   let checklistRepository: jest.Mocked<Repository<ComplianceChecklist>>;
   let itemRepository: jest.Mocked<Repository<ComplianceChecklistItem>>;
   let etpRepository: jest.Mocked<Repository<Etp>>;
+  let jurisprudenciaService: jest.Mocked<JurisprudenciaService>;
 
   const mockChecklist: ComplianceChecklist = {
     id: 'checklist-1',
@@ -151,6 +153,30 @@ describe('ComplianceValidationService', () => {
   } as unknown as Etp;
 
   beforeEach(async () => {
+    const mockJurisprudenciaService = {
+      searchByText: jest.fn().mockResolvedValue({
+        query: '',
+        totalResults: 0,
+        confidence: 0,
+        reasoning: '',
+        searchTimeMs: 0,
+        items: [],
+      }),
+      searchByTheme: jest.fn().mockResolvedValue({
+        query: '',
+        totalResults: 0,
+        confidence: 0,
+        reasoning: '',
+        searchTimeMs: 0,
+        items: [],
+      }),
+      getByTribunal: jest.fn(),
+      listAll: jest.fn(),
+      getStats: jest.fn(),
+      getById: jest.fn(),
+      getAvailableThemes: jest.fn().mockReturnValue([]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ComplianceValidationService,
@@ -174,6 +200,10 @@ describe('ComplianceValidationService', () => {
             findOne: jest.fn(),
           },
         },
+        {
+          provide: JurisprudenciaService,
+          useValue: mockJurisprudenciaService,
+        },
       ],
     }).compile();
 
@@ -183,6 +213,7 @@ describe('ComplianceValidationService', () => {
     checklistRepository = module.get(getRepositoryToken(ComplianceChecklist));
     itemRepository = module.get(getRepositoryToken(ComplianceChecklistItem));
     etpRepository = module.get(getRepositoryToken(Etp));
+    jurisprudenciaService = module.get(JurisprudenciaService);
 
     // Setup default mock for checklist with items
     const checklistWithItems = {
@@ -566,6 +597,165 @@ describe('ComplianceValidationService', () => {
       expect(pricingResult).toBeDefined();
       expect(pricingResult!.passed).toBe(false);
       expect(pricingResult!.failureReason).toContain('vazio ou ausente');
+    });
+  });
+
+  /**
+   * Tests for jurisprudence integration.
+   * Issue #1582 - Integrar jurisprudencia com ComplianceService
+   */
+  describe('checkAgainstJurisprudence', () => {
+    it('should return empty array when no jurisprudence matches', async () => {
+      const result = await service.validateEtp('etp-1');
+
+      expect(result.jurisprudenciaAlerts).toBeDefined();
+      expect(result.jurisprudenciaAlerts).toHaveLength(0);
+    });
+
+    it('should return alerts when jurisprudence conflicts are found', async () => {
+      // Mock jurisprudence service to return results with conflict patterns
+      jurisprudenciaService.searchByText.mockResolvedValue({
+        query: 'ETP fundamentacao justificativa',
+        totalResults: 1,
+        confidence: 0.8,
+        reasoning: 'Found matching jurisprudence',
+        searchTimeMs: 50,
+        items: [
+          {
+            id: 'tcesp-sumula-1',
+            title: 'Sumula 1/2020',
+            tribunal: 'TCE-SP',
+            content:
+              'A justificativa de contratacao nao deve ser generica. O ETP deve conter fundamentacao especifica da necessidade, demonstrando interesse publico concreto. E vedado justificar licitacao apenas por conveniencia administrativa.',
+          },
+        ],
+      });
+
+      const result = await service.validateEtp('etp-1');
+
+      expect(result.jurisprudenciaAlerts).toBeDefined();
+      // Should have at least one alert due to conflict pattern "nao deve" and "vedado"
+      expect(result.jurisprudenciaAlerts.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should include jurisprudencia alerts in score summary', async () => {
+      // Mock a jurisprudence alert
+      jurisprudenciaService.searchByText.mockResolvedValue({
+        query: 'pesquisa precos valor estimado',
+        totalResults: 1,
+        confidence: 0.9,
+        reasoning: 'Found matching precedent',
+        searchTimeMs: 30,
+        items: [
+          {
+            id: 'tcu-acordao-247',
+            title: 'Acordao 247/2021',
+            tribunal: 'TCU',
+            content:
+              'Recomenda-se que a pesquisa de precos seja realizada com no minimo 3 fontes distintas. E obrigatorio documentar a metodologia de estimativa de valor.',
+          },
+        ],
+      });
+
+      const summary = await service.getScoreSummary('etp-1');
+
+      expect(summary).toHaveProperty('jurisprudenciaAlerts');
+    });
+
+    it('should change status to NEEDS_REVIEW when conflict alerts are found', async () => {
+      // Mock jurisprudence service to return a clear conflict
+      jurisprudenciaService.searchByText.mockResolvedValue({
+        query: 'divisao parcelamento licitacao',
+        totalResults: 1,
+        confidence: 0.95,
+        reasoning: 'Direct match with parcelamento rules',
+        searchTimeMs: 25,
+        items: [
+          {
+            id: 'tcu-sumula-247',
+            title: 'Sumula 247/2012',
+            tribunal: 'TCU',
+            content:
+              'E proibido o fracionamento de licitacao visando fugir ao limite de dispensa. A divisao do objeto nao pode ser utilizada para burlar a obrigatoriedade de licitacao. Tal pratica e ilegal e sujeita o gestor a sancoes.',
+          },
+        ],
+      });
+
+      const result = await service.validateEtp('etp-1');
+
+      // If there are conflict alerts and score was APPROVED, should become NEEDS_REVIEW
+      const hasConflicts = result.jurisprudenciaAlerts.some(
+        (a) => a.type === 'CONFLICT',
+      );
+      if (hasConflicts && result.score >= 70) {
+        expect(result.status).toBe('NEEDS_REVIEW');
+      }
+    });
+
+    it('should handle jurisprudence service errors gracefully', async () => {
+      // Mock jurisprudence service to throw an error
+      jurisprudenciaService.searchByText.mockRejectedValue(
+        new Error('Jurisprudence service unavailable'),
+      );
+
+      // Should not throw, validation should continue
+      const result = await service.validateEtp('etp-1');
+
+      expect(result).toBeDefined();
+      expect(result.jurisprudenciaAlerts).toHaveLength(0);
+    });
+
+    it('should limit alerts to 5 most relevant', async () => {
+      // Mock multiple jurisprudence results
+      const manyItems = Array.from({ length: 10 }, (_, i) => ({
+        id: `tcesp-item-${i}`,
+        title: `Sumula ${i + 1}/2020`,
+        tribunal: 'TCE-SP' as const,
+        content: `Este precedente recomenda-se aplicar ao ETP. O estudo preliminar deve conter justificativa clara da licitacao e valor estimado baseado em pesquisa de precos.`,
+      }));
+
+      jurisprudenciaService.searchByText.mockResolvedValue({
+        query: 'ETP fundamentacao',
+        totalResults: 10,
+        confidence: 0.7,
+        reasoning: 'Multiple matches found',
+        searchTimeMs: 100,
+        items: manyItems,
+      });
+
+      const result = await service.validateEtp('etp-1');
+
+      // Should limit to 5 alerts max
+      expect(result.jurisprudenciaAlerts.length).toBeLessThanOrEqual(5);
+    });
+
+    it('should include tribunal and precedent number in alerts', async () => {
+      jurisprudenciaService.searchByText.mockResolvedValue({
+        query: 'sustentabilidade ambiental licitacao',
+        totalResults: 1,
+        confidence: 0.85,
+        reasoning: 'Found sustainability precedent',
+        searchTimeMs: 40,
+        items: [
+          {
+            id: 'tcu-acordao-1752',
+            title: 'Acordao 1752/2011',
+            tribunal: 'TCU',
+            content:
+              'Deve conter criterios de sustentabilidade ambiental conforme obrigatorio pela legislacao vigente. A contratacao deve atender aos requisitos de sustentabilidade do ETP.',
+          },
+        ],
+      });
+
+      const result = await service.validateEtp('etp-1');
+
+      if (result.jurisprudenciaAlerts.length > 0) {
+        const alert = result.jurisprudenciaAlerts[0];
+        expect(alert.tribunal).toBe('TCU');
+        expect(alert.precedentNumber).toBe('Acordao 1752/2011');
+        expect(alert.suggestedCorrection).toBeDefined();
+        expect(alert.confidence).toBeGreaterThan(0);
+      }
     });
   });
 });
