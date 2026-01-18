@@ -110,7 +110,9 @@ describe('JurisprudenciaController', () => {
         limit: 10,
       };
 
-      mockJurisprudenciaService.searchByText.mockResolvedValue(mockSearchResult);
+      mockJurisprudenciaService.searchByText.mockResolvedValue(
+        mockSearchResult,
+      );
 
       const result = await controller.searchByText(dto);
 
@@ -132,7 +134,9 @@ describe('JurisprudenciaController', () => {
         includeContent: true,
       };
 
-      mockJurisprudenciaService.searchByText.mockResolvedValue(mockSearchResult);
+      mockJurisprudenciaService.searchByText.mockResolvedValue(
+        mockSearchResult,
+      );
 
       await controller.searchByText(dto);
 
@@ -166,7 +170,9 @@ describe('JurisprudenciaController', () => {
         limit: 20,
       };
 
-      mockJurisprudenciaService.searchByTheme.mockResolvedValue(mockSearchResult);
+      mockJurisprudenciaService.searchByTheme.mockResolvedValue(
+        mockSearchResult,
+      );
 
       const result = await controller.searchByTheme(dto);
 
@@ -184,7 +190,9 @@ describe('JurisprudenciaController', () => {
         limit: 30,
       };
 
-      mockJurisprudenciaService.searchByTheme.mockResolvedValue(mockSearchResult);
+      mockJurisprudenciaService.searchByTheme.mockResolvedValue(
+        mockSearchResult,
+      );
 
       await controller.searchByTheme(dto);
 
@@ -268,9 +276,9 @@ describe('JurisprudenciaController', () => {
     });
 
     it('should throw NotFoundException for invalid tribunal', async () => {
-      await expect(
-        controller.getByTribunal('INVALID' as any),
-      ).rejects.toThrow(NotFoundException);
+      await expect(controller.getByTribunal('INVALID' as any)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

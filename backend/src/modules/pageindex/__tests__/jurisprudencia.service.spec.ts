@@ -147,7 +147,9 @@ describe('JurisprudenciaService', () => {
     it('should search using TreeSearchService', async () => {
       mockDocumentTreeRepository.findOne.mockResolvedValue(mockDocumentTree);
       mockTreeSearchService.search.mockResolvedValue({
-        relevantNodes: [mockTreeStructure.children![1].children![0].children![0]],
+        relevantNodes: [
+          mockTreeStructure.children![1].children![0].children![0],
+        ],
         path: ['Root', 'TCU', 'Lei 14.133/2021', 'Acordao 247/2021'],
         confidence: 0.85,
         reasoning: 'Found relevant acordao',
@@ -186,7 +188,9 @@ describe('JurisprudenciaService', () => {
         tribunal: 'TCE-SP',
       });
 
-      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(true);
+      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(
+        true,
+      );
     });
 
     it('should throw NotFoundException when tree not found', async () => {
@@ -215,7 +219,9 @@ describe('JurisprudenciaService', () => {
         tribunal: 'TCE-SP',
       });
 
-      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(true);
+      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(
+        true,
+      );
     });
   });
 
@@ -233,7 +239,9 @@ describe('JurisprudenciaService', () => {
 
       const result = await service.getByTribunal('TCE-SP');
 
-      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(true);
+      expect(result.items.every((item) => item.tribunal === 'TCE-SP')).toBe(
+        true,
+      );
     });
 
     it('should apply pagination', async () => {
