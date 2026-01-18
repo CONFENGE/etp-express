@@ -24,9 +24,19 @@ describe('HybridRagService', () => {
   beforeEach(async () => {
     mockRouter = {
       route: jest.fn(),
+      routeWithFallback: jest.fn(),
       getStats: jest.fn(),
       getRecentDecisions: jest.fn(),
       clearDecisionLog: jest.fn(),
+      getFallbackMetrics: jest.fn().mockReturnValue([]),
+      getFallbackStats: jest.fn().mockReturnValue({
+        totalFallbacks: 0,
+        byReason: { timeout: 0, error: 0, empty_result: 0 },
+        byFailedPath: { embeddings: 0, pageindex: 0 },
+        successRate: 0,
+        averageElapsedMs: 0,
+      }),
+      isFallbackEnabled: jest.fn().mockReturnValue(true),
     } as unknown as jest.Mocked<RagRouterService>;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -70,17 +80,22 @@ describe('HybridRagService', () => {
         latencyMs: 150,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('preco de computador');
 
-      expect(mockRouter.route).toHaveBeenCalledWith('preco de computador', {
-        forcePath: undefined,
-        embeddingsLimit: undefined,
-        embeddingsThreshold: undefined,
-        pageIndexLimit: undefined,
-        documentType: undefined,
-      });
+      expect(mockRouter.routeWithFallback).toHaveBeenCalledWith(
+        'preco de computador',
+        {
+          forcePath: undefined,
+          embeddingsLimit: undefined,
+          embeddingsThreshold: undefined,
+          pageIndexLimit: undefined,
+          documentType: undefined,
+          timeoutMs: undefined,
+          disableFallback: undefined,
+        },
+      );
 
       expect(result).toMatchObject({
         path: 'embeddings',
@@ -132,7 +147,7 @@ describe('HybridRagService', () => {
         latencyMs: 250,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('artigo 75 da lei 14133');
 
@@ -161,7 +176,7 @@ describe('HybridRagService', () => {
         latencyMs: 50,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('query sem resultados');
 
@@ -182,7 +197,7 @@ describe('HybridRagService', () => {
         latencyMs: 100,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const options: RagSearchOptions = {
         limit: 10,
@@ -194,12 +209,14 @@ describe('HybridRagService', () => {
 
       await service.search('test query', options);
 
-      expect(mockRouter.route).toHaveBeenCalledWith('test query', {
+      expect(mockRouter.routeWithFallback).toHaveBeenCalledWith('test query', {
         forcePath: 'pageindex',
         embeddingsLimit: 10,
         embeddingsThreshold: 0.8,
         pageIndexLimit: 10,
         documentType: 'jurisprudencia',
+        timeoutMs: undefined,
+        disableFallback: undefined,
       });
     });
 
@@ -231,7 +248,7 @@ describe('HybridRagService', () => {
         latencyMs: 100,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('complex query');
 
@@ -287,7 +304,7 @@ describe('HybridRagService', () => {
         latencyMs: 200,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('sumula tcu dispensa');
 
@@ -348,7 +365,7 @@ describe('HybridRagService', () => {
         latencyMs: 50,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       // Verify interface compliance
       const result: RagSearchResult = await service.search('test');
@@ -398,7 +415,7 @@ describe('HybridRagService', () => {
         latencyMs: 100,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('licitacao eletronica');
 
@@ -436,7 +453,7 @@ describe('HybridRagService', () => {
         latencyMs: 200,
       };
 
-      mockRouter.route.mockResolvedValue(mockRagResult);
+      mockRouter.routeWithFallback.mockResolvedValue(mockRagResult);
 
       const result = await service.search('estudo tecnico preliminar');
 

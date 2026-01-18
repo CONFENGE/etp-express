@@ -4,6 +4,8 @@ import {
   RagRouterService,
   RagResult,
   RouterDecisionLog,
+  FallbackMetrics,
+  FallbackReason,
 } from '../services/rag-router.service';
 import {
   QueryComplexityClassifierService,
@@ -88,6 +90,9 @@ describe('RagRouterService', () => {
           RAG_HIGH_COMPLEXITY_THRESHOLD: 100,
           RAG_LEGAL_KEYWORD_THRESHOLD: 1,
           RAG_LEGAL_KEYWORDS: '',
+          RAG_FALLBACK_ENABLED: true,
+          RAG_TIMEOUT_MS: 5000,
+          RAG_MAX_RETRIES: 1,
         };
         return config[key] ?? defaultValue;
       }),
@@ -557,6 +562,328 @@ describe('RagRouterService', () => {
       });
 
       expect(service.getRecentDecisions()).toHaveLength(10);
+    });
+  });
+
+  describe('routeWithFallback - Issue #1595', () => {
+    beforeEach(() => {
+      embeddingsRag.findSimilar.mockResolvedValue(mockEmbeddingsResults);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue(mockPageIndexResults);
+    });
+
+    describe('successful primary path', () => {
+      it('should return results without fallback when primary succeeds', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+
+        const result = await service.routeWithFallback('preco de computador');
+
+        expect(result.path).toBe('embeddings');
+        expect(result.usedFallback).toBeUndefined();
+        expect(result.embeddingsResults).toEqual(mockEmbeddingsResults);
+      });
+
+      it('should include correct metadata without fallback fields', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('legal'),
+        );
+
+        const result = await service.routeWithFallback('artigo 75 lei 14133');
+
+        expect(result.path).toBe('pageindex');
+        expect(result.usedFallback).toBeUndefined();
+        expect(result.originalPath).toBeUndefined();
+        expect(result.fallbackReason).toBeUndefined();
+      });
+    });
+
+    describe('fallback on empty results', () => {
+      it('should fallback when primary returns empty results', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        embeddingsRag.findSimilar.mockResolvedValue([]);
+
+        const result = await service.routeWithFallback(
+          'query com resultado vazio',
+        );
+
+        expect(result.usedFallback).toBe(true);
+        expect(result.originalPath).toBe('embeddings');
+        expect(result.fallbackReason).toBe('empty_result');
+        expect(result.path).toBe('pageindex');
+      });
+
+      it('should fallback from pageindex to embeddings on empty', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('legal'),
+        );
+        pageIndexRag.searchMultipleTrees.mockResolvedValue([]);
+
+        const result = await service.routeWithFallback('lei xyz inexistente');
+
+        expect(result.usedFallback).toBe(true);
+        expect(result.originalPath).toBe('pageindex');
+        expect(result.fallbackReason).toBe('empty_result');
+        expect(result.path).toBe('embeddings');
+      });
+    });
+
+    describe('fallback on error', () => {
+      it('should fallback when primary throws an error (captured as empty result)', async () => {
+        // Note: executeEmbeddingsSearch captures errors internally and returns empty array,
+        // so the fallback reason is 'empty_result' rather than 'error'
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        embeddingsRag.findSimilar.mockRejectedValue(
+          new Error('OpenAI timeout'),
+        );
+
+        const result = await service.routeWithFallback('query com erro');
+
+        expect(result.usedFallback).toBe(true);
+        expect(result.originalPath).toBe('embeddings');
+        // Error is captured internally, resulting in empty result which triggers fallback
+        expect(result.fallbackReason).toBe('empty_result');
+        expect(result.path).toBe('pageindex');
+      });
+
+      it('should return empty result if both paths fail', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        embeddingsRag.findSimilar.mockRejectedValue(new Error('Primary error'));
+        pageIndexRag.searchMultipleTrees.mockRejectedValue(
+          new Error('Fallback error'),
+        );
+
+        const result = await service.routeWithFallback(
+          'query com ambos falhando',
+        );
+
+        expect(result.usedFallback).toBe(true);
+        expect(result.confidence).toBe(0);
+        expect(result.path).toBe('pageindex');
+        expect(result.pageIndexResults).toEqual([]);
+      });
+    });
+
+    describe('fallback on timeout', () => {
+      it('should fallback when primary times out', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        // Simulate slow response
+        embeddingsRag.findSimilar.mockImplementation(
+          () => new Promise((resolve) => setTimeout(() => resolve([]), 10000)),
+        );
+
+        const result = await service.routeWithFallback('query lenta', {
+          timeoutMs: 50, // Very short timeout
+        });
+
+        expect(result.usedFallback).toBe(true);
+        expect(result.originalPath).toBe('embeddings');
+        expect(result.fallbackReason).toBe('timeout');
+        expect(result.path).toBe('pageindex');
+      });
+    });
+
+    describe('disableFallback option', () => {
+      it('should not fallback when disableFallback is true', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        embeddingsRag.findSimilar.mockResolvedValue([]);
+
+        const result = await service.routeWithFallback('query sem fallback', {
+          disableFallback: true,
+        });
+
+        expect(result.usedFallback).toBeUndefined();
+        expect(result.path).toBe('embeddings');
+        expect(result.embeddingsResults).toEqual([]);
+      });
+
+      it('should return empty result on error with disableFallback', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        embeddingsRag.findSimilar.mockRejectedValue(new Error('Test error'));
+
+        const result = await service.routeWithFallback('query com erro', {
+          disableFallback: true,
+        });
+
+        expect(result.usedFallback).toBeUndefined();
+        expect(result.path).toBe('embeddings');
+        expect(result.confidence).toBe(0);
+      });
+    });
+
+    describe('custom timeout option', () => {
+      it('should respect custom timeout', async () => {
+        classifier.classifyWithDetails.mockReturnValue(
+          mockClassificationResult('simple'),
+        );
+        // Simulate medium-speed response
+        embeddingsRag.findSimilar.mockImplementation(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(() => resolve(mockEmbeddingsResults), 100),
+            ),
+        );
+
+        // With longer timeout, should succeed
+        const result = await service.routeWithFallback('query', {
+          timeoutMs: 500,
+        });
+
+        expect(result.usedFallback).toBeUndefined();
+        expect(result.embeddingsResults).toEqual(mockEmbeddingsResults);
+      });
+    });
+  });
+
+  describe('fallback metrics - Issue #1595', () => {
+    beforeEach(() => {
+      embeddingsRag.findSimilar.mockResolvedValue(mockEmbeddingsResults);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue(mockPageIndexResults);
+      service.clearFallbackMetrics();
+    });
+
+    it('should log fallback metrics on fallback', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+
+      await service.routeWithFallback('trigger fallback');
+
+      const metrics = service.getFallbackMetrics();
+      expect(metrics).toHaveLength(1);
+      expect(metrics[0].failedPath).toBe('embeddings');
+      expect(metrics[0].reason).toBe('empty_result');
+      expect(metrics[0].fallbackSucceeded).toBe(true);
+    });
+
+    it('should record fallback failure', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue([]);
+
+      await service.routeWithFallback('double empty');
+
+      const metrics = service.getFallbackMetrics();
+      expect(metrics[0].fallbackSucceeded).toBe(false);
+    });
+
+    it('should respect getFallbackMetrics limit', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+
+      for (let i = 0; i < 10; i++) {
+        await service.routeWithFallback(`query ${i}`);
+      }
+
+      const metrics = service.getFallbackMetrics(5);
+      expect(metrics).toHaveLength(5);
+    });
+  });
+
+  describe('getFallbackStats - Issue #1595', () => {
+    beforeEach(() => {
+      embeddingsRag.findSimilar.mockResolvedValue(mockEmbeddingsResults);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue(mockPageIndexResults);
+      service.clearFallbackMetrics();
+    });
+
+    it('should return empty stats initially', () => {
+      const stats = service.getFallbackStats();
+
+      expect(stats.totalFallbacks).toBe(0);
+      expect(stats.byReason.timeout).toBe(0);
+      expect(stats.byReason.error).toBe(0);
+      expect(stats.byReason.empty_result).toBe(0);
+    });
+
+    it('should aggregate fallback stats correctly', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+
+      // 2 empty result fallbacks
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+      await service.routeWithFallback('empty 1');
+      await service.routeWithFallback('empty 2');
+
+      // 1 more fallback (errors are captured internally, so this also appears as empty_result)
+      embeddingsRag.findSimilar.mockRejectedValue(new Error('test'));
+      await service.routeWithFallback('error 1');
+
+      const stats = service.getFallbackStats();
+
+      expect(stats.totalFallbacks).toBe(3);
+      // All fallbacks are empty_result because errors are captured internally
+      expect(stats.byReason.empty_result).toBe(3);
+      expect(stats.byReason.error).toBe(0);
+      expect(stats.byFailedPath.embeddings).toBe(3);
+    });
+
+    it('should calculate success rate correctly', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+
+      // 2 successful fallbacks
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue(mockPageIndexResults);
+      await service.routeWithFallback('success 1');
+      await service.routeWithFallback('success 2');
+
+      // 1 failed fallback
+      pageIndexRag.searchMultipleTrees.mockResolvedValue([]);
+      await service.routeWithFallback('fail 1');
+
+      const stats = service.getFallbackStats();
+
+      expect(stats.totalFallbacks).toBe(3);
+      expect(stats.successRate).toBeCloseTo(0.667, 2);
+    });
+  });
+
+  describe('isFallbackEnabled and getTimeoutMs - Issue #1595', () => {
+    it('should return true for fallback enabled', () => {
+      expect(service.isFallbackEnabled()).toBe(true);
+    });
+
+    it('should return configured timeout', () => {
+      expect(service.getTimeoutMs()).toBe(5000);
+    });
+  });
+
+  describe('clearFallbackMetrics - Issue #1595', () => {
+    it('should clear all fallback metrics', async () => {
+      classifier.classifyWithDetails.mockReturnValue(
+        mockClassificationResult('simple'),
+      );
+      embeddingsRag.findSimilar.mockResolvedValue([]);
+      pageIndexRag.searchMultipleTrees.mockResolvedValue(mockPageIndexResults);
+
+      await service.routeWithFallback('query 1');
+      await service.routeWithFallback('query 2');
+
+      expect(service.getFallbackMetrics()).toHaveLength(2);
+
+      service.clearFallbackMetrics();
+
+      expect(service.getFallbackMetrics()).toHaveLength(0);
     });
   });
 });

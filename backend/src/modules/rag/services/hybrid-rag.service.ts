@@ -5,7 +5,11 @@ import {
   RagSearchResult,
   RagSource,
 } from '../interfaces/rag.interface';
-import { RagRouterService, RagResult } from './rag-router.service';
+import {
+  RagRouterService,
+  RagResult,
+  FallbackMetrics,
+} from './rag-router.service';
 
 /**
  * HybridRagService - Unified facade for the Hybrid RAG system.
@@ -87,13 +91,15 @@ export class HybridRagService implements IRagService {
       },
     });
 
-    // Delegate to router for path selection and search
-    const routerResult = await this.router.route(query, {
+    // Delegate to router for path selection and search with fallback support
+    const routerResult = await this.router.routeWithFallback(query, {
       forcePath: options?.forcePath,
       embeddingsLimit: options?.limit,
       embeddingsThreshold: options?.threshold,
       pageIndexLimit: options?.limit,
       documentType: options?.documentType,
+      timeoutMs: options?.timeoutMs,
+      disableFallback: options?.disableFallback,
     });
 
     // Normalize the result
@@ -186,6 +192,10 @@ export class HybridRagService implements IRagService {
         classificationConfidence: routerResult.classification.confidence,
         pathReason: routerResult.classification.reason,
         totalResults: sources.length,
+        // Fallback metadata (#1595)
+        usedFallback: routerResult.usedFallback,
+        originalPath: routerResult.originalPath,
+        fallbackReason: routerResult.fallbackReason,
       },
     };
   }
@@ -313,5 +323,36 @@ export class HybridRagService implements IRagService {
     limit?: number,
   ): ReturnType<RagRouterService['getRecentDecisions']> {
     return this.router.getRecentDecisions(limit);
+  }
+
+  /**
+   * Get fallback metrics for analytics.
+   *
+   * @param limit - Maximum number of entries to return
+   * @returns Array of recent fallback metrics
+   * @see Issue #1595 - RAG Fallback support
+   */
+  getFallbackMetrics(limit?: number): FallbackMetrics[] {
+    return this.router.getFallbackMetrics(limit);
+  }
+
+  /**
+   * Get aggregated fallback statistics.
+   *
+   * @returns Aggregated statistics about fallback events
+   * @see Issue #1595 - RAG Fallback support
+   */
+  getFallbackStats(): ReturnType<RagRouterService['getFallbackStats']> {
+    return this.router.getFallbackStats();
+  }
+
+  /**
+   * Check if fallback is currently enabled.
+   *
+   * @returns Whether fallback is enabled
+   * @see Issue #1595 - RAG Fallback support
+   */
+  isFallbackEnabled(): boolean {
+    return this.router.isFallbackEnabled();
   }
 }
