@@ -6,6 +6,7 @@ import { PageIndexController } from './pageindex.controller';
 import { TreeBuilderService } from './services/tree-builder.service';
 import { TreeSearchService } from './services/tree-search.service';
 import { Lei14133Seeder } from './seeders/lei-14133.seeder';
+import { JurisprudenciaSeeder } from './seeders/jurisprudencia.seeder';
 import { DocumentTree } from '../../entities/document-tree.entity';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
@@ -33,6 +34,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  *
  * Seeders available:
  * - Lei14133Seeder: Seeds Lei 14.133/2021 (Nova Lei de Licitacoes)
+ * - JurisprudenciaSeeder: Seeds TCE-SP and TCU jurisprudence
  *
  * @see Issue #1551 - [PI-1538b] Criar DocumentTree entity e migrations
  * @see Issue #1538 - Create PageIndex module for hierarchical document indexing
@@ -50,12 +52,14 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TreeBuilderService,
     TreeSearchService,
     Lei14133Seeder,
+    JurisprudenciaSeeder,
   ],
   exports: [
     PageIndexService,
     TreeBuilderService,
     TreeSearchService,
     Lei14133Seeder,
+    JurisprudenciaSeeder,
   ],
 })
 export class PageIndexModule {}
