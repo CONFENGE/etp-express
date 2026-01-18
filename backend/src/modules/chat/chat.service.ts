@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ForbiddenException,
   ServiceUnavailableException,
+  Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -26,6 +27,8 @@ import {
   buildSystemPrompt,
   extractLegislationReferences,
 } from './prompts/system-prompt.template';
+import { HybridRagService } from '../rag/services/hybrid-rag.service';
+import { RagSearchResult } from '../rag/interfaces/rag.interface';
 
 /**
  * Conversation message for building chat history context.
@@ -76,7 +79,57 @@ export class ChatService {
     @InjectRepository(EtpSection)
     private readonly sectionRepository: Repository<EtpSection>,
     private readonly openAIService: OpenAIService,
+    @Optional() private readonly hybridRagService?: HybridRagService,
   ) {}
+
+  /**
+   * Retrieve legal context using Hybrid RAG for a given query.
+   *
+   * This method uses the HybridRagService to search for relevant
+   * legal context (legislation, jurisprudence) that can enrich
+   * the AI's response.
+   *
+   * @param query - User's question or message
+   * @returns RAG search result with context, or null if unavailable
+   *
+   * Issue #1594 - [RAG-1542c] HybridRagService integration
+   */
+  async retrieveLegalContext(query: string): Promise<RagSearchResult | null> {
+    if (!this.hybridRagService) {
+      this.logger.debug(
+        'HybridRagService not available, skipping legal context retrieval',
+      );
+      return null;
+    }
+
+    try {
+      const result = await this.hybridRagService.search(query, {
+        limit: 3,
+        threshold: 0.6,
+      });
+
+      if (result.sources.length === 0) {
+        this.logger.debug('No relevant legal context found for query', {
+          queryPreview: query.substring(0, 50),
+        });
+        return null;
+      }
+
+      this.logger.debug('Legal context retrieved', {
+        queryPreview: query.substring(0, 50),
+        sourcesCount: result.sources.length,
+        path: result.path,
+        confidence: result.confidence,
+      });
+
+      return result;
+    } catch (error) {
+      this.logger.warn('Failed to retrieve legal context', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
+  }
 
   /**
    * Send a message to the chatbot and get an AI-powered response.
@@ -121,12 +174,17 @@ export class ChatService {
     });
     await this.chatMessageRepository.save(userMessage);
 
-    // 5. Build system prompt with ETP context
+    // 4.5. Retrieve legal context using Hybrid RAG (if available)
+    // Issue #1594 - HybridRagService integration
+    const legalContext = await this.retrieveLegalContext(dto.message);
+
+    // 5. Build system prompt with ETP context and optional RAG context
     const systemPrompt = buildSystemPrompt({
       etp,
       sections,
       contextField: dto.contextField,
       includeAntiHallucination: true,
+      ragContext: legalContext?.context,
     });
 
     // 6. Build user prompt with conversation history
