@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 794/845 issues (94.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 795/845 issues (94.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1589 | Feature  | [#1581] Add jurisprudencia API for search and retrieval ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1588 | Feature  | [#1580] Add TCU acordaos indexation (55 items) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1587 | Feature  | [#1579] Add TCE-SP sumulas indexation (52 sumulas) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1586 | Fix      | [#1585] Fix production 502 - SinapiApiClient init race condition ✅ - **Score 100/100 - Auto-merged - CRITICAL P0** |
@@ -436,7 +437,7 @@
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
 |       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
-|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
+|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | ✅     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
@@ -640,7 +641,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
 |       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
-|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
+|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | ✅     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
