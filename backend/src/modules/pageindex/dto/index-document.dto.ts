@@ -12,6 +12,7 @@ import {
  */
 export enum DocumentType {
   LEGISLATION = 'legislation',
+  JURISPRUDENCIA = 'jurisprudencia',
   CONTRACT = 'contract',
   EDITAL = 'edital',
   TERMO_REFERENCIA = 'tr',
