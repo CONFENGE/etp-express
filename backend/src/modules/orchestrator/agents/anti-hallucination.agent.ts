@@ -1,8 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RAGService, VerificationResult } from '../../rag/rag.service';
 import { LegislationType } from '../../../entities/legislation.entity';
 import { ExaService } from '../../search/exa/exa.service';
+import { PageIndexService } from '../../pageindex/pageindex.service';
+import { JurisprudenciaService } from '../../pageindex/services/jurisprudencia.service';
+import { DocumentType } from '../../pageindex/dto/index-document.dto';
 
 export interface LegalReference {
   type: LegislationType;
@@ -16,6 +19,25 @@ export interface ReferenceVerification {
   verified: boolean;
   confidence: number;
   suggestion?: string;
+}
+
+/**
+ * Result from PageIndex tree search verification.
+ */
+export interface PageIndexVerificationResult {
+  reference: string;
+  verified: boolean;
+  confidence: number;
+  pageIndexMatch?: {
+    documentName: string;
+    relevantNodes: Array<{
+      title: string;
+      content?: string;
+    }>;
+    path: string[];
+    reasoning: string;
+  };
+  source: 'pageindex' | 'jurisprudencia';
 }
 
 export interface EnhancedHallucinationCheckResult {
@@ -37,6 +59,12 @@ export interface EnhancedHallucinationCheckResult {
       score: number;
       found: string[];
     };
+    pageIndexVerification?: {
+      score: number;
+      verified: number;
+      total: number;
+      details: PageIndexVerificationResult[];
+    };
   };
 
   recommendations: string[];
@@ -55,37 +83,43 @@ export interface HallucinationCheckResult {
   verified: boolean;
   references?: VerificationResult[]; // RAG verification results
   suggestions?: string[]; // Improvement suggestions
+  pageIndexResults?: PageIndexVerificationResult[]; // NEW: PageIndex verification results
 }
 
 /**
  * Agent responsible for detecting and mitigating potential hallucinations in LLM-generated content.
  *
  * @remarks
- * **DESIGN DECISION: DETERMINISTIC VALIDATION**
+ * **DESIGN DECISION: HYBRID VALIDATION (Deterministic + PageIndex Tree Search)**
  *
- * This agent uses **deterministic validation** (Regex patterns + RAG database lookup),
- * NOT LLM-based analysis. This is intentional for:
+ * This agent now uses a hybrid approach combining:
  *
- * - **Auditability**: Same input always produces same output (critical for public procurement)
- * - **Performance**: Validation runs in milliseconds, not seconds
- * - **Cost**: No OpenAI token consumption for validation
- * - **Testability**: Simple unit tests with predictable outcomes
+ * 1. **Deterministic Validation** (Regex patterns + RAG database lookup):
+ *    - Same input always produces same output (critical for public procurement)
+ *    - Validation runs in milliseconds
+ *    - No OpenAI token consumption for basic validation
  *
- * **WARNING**: If you replace Regex validation with LLM-based validation in the future,
- * the system behavior will change from deterministic to probabilistic. This impacts:
- * - Test reliability (same input may produce different outputs)
- * - Audit compliance (harder to reproduce results)
- * - Cost structure (validation will consume tokens)
+ * 2. **PageIndex Tree Search** (NEW - Issue #1541):
+ *    - LLM reasoning-based validation for complex legal references
+ *    - 98.7% accuracy vs ~80% traditional RAG
+ *    - Searches Lei 14.133/2021 and indexed jurisprudence (TCE-SP, TCU)
+ *    - Provides exact page/section/article citations
+ *    - Fallback to Exa API for external fact-checking
  *
- * **Validation Methods:**
- * 1. `suspiciousPatterns`: Regex patterns to detect unverified claims (legal refs, monetary values, dates)
- * 2. `prohibitedClaims`: Static list of absolutist phrases ("melhor do mercado", "único capaz")
- * 3. `verifyReferences()`: RAG lookup against local legislation database + Exa fallback
+ * **Validation Flow:**
+ * 1. Extract legal references (regex) and tribunal citations
+ * 2. Verify with local RAG database (fast, deterministic)
+ * 3. If not found locally, search with PageIndex tree search (more accurate)
+ * 4. If PageIndex finds nothing, fallback to Exa API (external)
+ * 5. Calculate weighted score based on all verification results
  *
- * The `getSystemPrompt()` method provides instructions FOR the LLM (used during generation),
- * but the `check()` method itself does NOT call any LLM.
+ * **WARNING**: PageIndex adds LLM calls during verification. This impacts:
+ * - Cost (each tree search uses ~500 tokens)
+ * - Latency (~1-2s per PageIndex search)
+ * Use `enablePageIndex: false` in options to disable for performance-critical paths.
  *
  * @see ARCHITECTURE.md section 3.3 "Arquitetura de Agentes: Determinísticos vs Probabilísticos"
+ * @see Issue #1541 - Integrar PageIndex no Anti-Hallucination Agent
  * @see OrchestratorService - Uses this agent as final validation step
  */
 @Injectable()
@@ -96,6 +130,10 @@ export class AntiHallucinationAgent {
     private readonly ragService: RAGService,
     private readonly exaService: ExaService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => PageIndexService))
+    private readonly pageIndexService: PageIndexService,
+    @Inject(forwardRef(() => JurisprudenciaService))
+    private readonly jurisprudenciaService: JurisprudenciaService,
   ) {}
 
   private readonly suspiciousPatterns = [
@@ -127,6 +165,16 @@ export class AntiHallucinationAgent {
     {
       pattern: /(?:conforme|segundo)\s+(?:TCU|CNJ|AGU|STF|STJ)/gi,
       description: 'Citação de órgão de controle',
+      severity: 'high' as const,
+    },
+    {
+      pattern: /(?:súmula|sumula|acordão|acordao)\s+(?:n?[º°]?\s*)?\d+/gi,
+      description: 'Citação de jurisprudência',
+      severity: 'high' as const,
+    },
+    {
+      pattern: /(?:TCE-?SP|TCU)\s+(?:súmula|sumula|acordão|acordao)/gi,
+      description: 'Citação de tribunal de contas',
       severity: 'high' as const,
     },
   ];
@@ -175,6 +223,40 @@ export class AntiHallucinationAgent {
         year,
         raw: match[0],
       });
+    }
+
+    return references;
+  }
+
+  /**
+   * Extract jurisprudence references (TCE-SP, TCU sumulas/acordaos).
+   */
+  private extractJurisprudenceReferences(
+    content: string,
+  ): Array<{ raw: string; tribunal: 'TCE-SP' | 'TCU'; type: string }> {
+    const references: Array<{
+      raw: string;
+      tribunal: 'TCE-SP' | 'TCU';
+      type: string;
+    }> = [];
+
+    // Pattern for TCE-SP and TCU citations
+    const pattern =
+      /(?:(?:TCE-?SP|TCU)\s+)?(?:súmula|sumula|acordão|acordao|decisão normativa)\s+(?:n?[º°]?\s*)?(\d+)(?:\/(\d{4}))?/gi;
+
+    let match;
+    while ((match = pattern.exec(content)) !== null) {
+      const raw = match[0];
+      const tribunal = raw.toUpperCase().includes('TCE')
+        ? ('TCE-SP' as const)
+        : ('TCU' as const);
+      const type = raw.toLowerCase().includes('súmula')
+        ? 'sumula'
+        : raw.toLowerCase().includes('acordão')
+          ? 'acordao'
+          : 'decisao';
+
+      references.push({ raw, tribunal, type });
     }
 
     return references;
@@ -256,6 +338,162 @@ export class AntiHallucinationAgent {
   }
 
   /**
+   * Verify references using PageIndex tree search.
+   * Searches through indexed legislation (Lei 14.133/2021) and jurisprudence.
+   *
+   * @param content - Content to verify (used to build queries)
+   * @param legalReferences - Extracted legal references
+   * @returns PageIndex verification results
+   */
+  async verifyWithPageIndex(
+    content: string,
+    legalReferences: LegalReference[],
+  ): Promise<PageIndexVerificationResult[]> {
+    const results: PageIndexVerificationResult[] = [];
+
+    // 1. Verify legal references against indexed legislation
+    for (const ref of legalReferences) {
+      try {
+        // Build query for PageIndex tree search
+        const query = `${ref.raw}`;
+
+        // Search in legislation trees (Lei 14.133/2021, etc.)
+        const searchResult = await this.pageIndexService.searchTree(
+          await this.getLegislationTreeId(),
+          query,
+          {
+            maxResults: 3,
+            minConfidence: 0.5,
+            includeContent: true,
+            maxDepth: 5,
+          },
+        );
+
+        if (
+          searchResult.relevantNodes.length > 0 &&
+          searchResult.confidence >= 0.5
+        ) {
+          results.push({
+            reference: ref.raw,
+            verified: true,
+            confidence: searchResult.confidence,
+            pageIndexMatch: {
+              documentName: 'Lei 14.133/2021',
+              relevantNodes: searchResult.relevantNodes.map((node) => ({
+                title: node.title,
+                content: node.content?.substring(0, 500),
+              })),
+              path: searchResult.path,
+              reasoning: searchResult.reasoning,
+            },
+            source: 'pageindex',
+          });
+
+          this.logger.debug('Reference verified via PageIndex', {
+            reference: ref.raw,
+            confidence: searchResult.confidence,
+            path: searchResult.path,
+          });
+        } else {
+          results.push({
+            reference: ref.raw,
+            verified: false,
+            confidence: searchResult.confidence,
+            source: 'pageindex',
+          });
+        }
+      } catch (error) {
+        this.logger.warn('PageIndex verification failed for reference', {
+          reference: ref.raw,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        // Don't add failed verifications - let other methods handle them
+      }
+    }
+
+    // 2. Verify jurisprudence references against TCE-SP/TCU
+    const jurisprudenceRefs = this.extractJurisprudenceReferences(content);
+
+    for (const jurisRef of jurisprudenceRefs) {
+      try {
+        const searchResult = await this.jurisprudenciaService.searchByText(
+          jurisRef.raw,
+          {
+            tribunal: jurisRef.tribunal,
+            limit: 3,
+            minConfidence: 0.5,
+            includeContent: true,
+          },
+        );
+
+        if (searchResult.items.length > 0 && searchResult.confidence >= 0.5) {
+          results.push({
+            reference: jurisRef.raw,
+            verified: true,
+            confidence: searchResult.confidence,
+            pageIndexMatch: {
+              documentName: `Jurisprudência ${jurisRef.tribunal}`,
+              relevantNodes: searchResult.items.map((item) => ({
+                title: item.title,
+                content: item.content?.substring(0, 500),
+              })),
+              path: [jurisRef.tribunal, jurisRef.type],
+              reasoning: searchResult.reasoning,
+            },
+            source: 'jurisprudencia',
+          });
+
+          this.logger.debug('Jurisprudence verified via PageIndex', {
+            reference: jurisRef.raw,
+            tribunal: jurisRef.tribunal,
+            confidence: searchResult.confidence,
+          });
+        } else {
+          results.push({
+            reference: jurisRef.raw,
+            verified: false,
+            confidence: searchResult.confidence,
+            source: 'jurisprudencia',
+          });
+        }
+      } catch (error) {
+        this.logger.warn('Jurisprudence verification failed', {
+          reference: jurisRef.raw,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get the tree ID for legislation (Lei 14.133/2021).
+   * Caches the ID to avoid repeated lookups.
+   */
+  private legislationTreeId: string | null = null;
+
+  private async getLegislationTreeId(): Promise<string> {
+    if (this.legislationTreeId) {
+      return this.legislationTreeId;
+    }
+
+    const trees = await this.pageIndexService.listTrees({
+      documentType: DocumentType.LEGISLATION,
+      limit: 1,
+    });
+
+    if (trees.length > 0) {
+      this.legislationTreeId = trees[0].treeId;
+      return this.legislationTreeId;
+    }
+
+    throw new Error(
+      'No legislation tree found. Please run Lei 14.133 seeder first.',
+    );
+  }
+
+  /**
    * Generate improvement suggestions based on verification results.
    */
   private generateSuggestions(verifications: VerificationResult[]): string[] {
@@ -328,11 +566,32 @@ export class AntiHallucinationAgent {
     return totalWeight > 0 ? (weightedScore / totalWeight) * 100 : 0;
   }
 
+  /**
+   * Calculate score from PageIndex verification results.
+   */
+  private calculatePageIndexScore(
+    results: PageIndexVerificationResult[],
+  ): number {
+    if (results.length === 0) return 100;
+
+    const verifiedCount = results.filter((r) => r.verified).length;
+    const totalConfidence = results.reduce((sum, r) => sum + r.confidence, 0);
+
+    // Weighted: 70% verified ratio, 30% average confidence
+    const verifiedRatio = (verifiedCount / results.length) * 100;
+    const avgConfidence = (totalConfidence / results.length) * 100;
+
+    return verifiedRatio * 0.7 + avgConfidence * 0.3;
+  }
+
   async check(
     content: string,
     _context?: unknown,
+    options?: { enablePageIndex?: boolean },
   ): Promise<HallucinationCheckResult> {
     this.logger.log('Checking for potential hallucinations');
+
+    const enablePageIndex = options?.enablePageIndex ?? true;
 
     const warnings: string[] = [];
     const suspiciousElements: Array<{
@@ -341,13 +600,53 @@ export class AntiHallucinationAgent {
       severity: 'low' | 'medium' | 'high';
     }> = [];
 
-    // **NEW: Extract and verify legal references via RAG**
+    // **Extract and verify legal references via RAG**
     const legalReferences = this.extractLegalReferences(content);
     const verifications = await this.verifyReferences(legalReferences);
 
+    // **NEW: Verify with PageIndex tree search (if enabled)**
+    let pageIndexResults: PageIndexVerificationResult[] = [];
+    if (enablePageIndex) {
+      try {
+        pageIndexResults = await this.verifyWithPageIndex(
+          content,
+          legalReferences,
+        );
+
+        // Add PageIndex-verified references that weren't found in RAG
+        pageIndexResults.forEach((piResult) => {
+          if (piResult.verified) {
+            // Check if this reference wasn't already verified by RAG
+            const ragVerified = verifications.some(
+              (v) => v.reference === piResult.reference && v.exists,
+            );
+            if (!ragVerified) {
+              this.logger.debug(
+                'Reference verified by PageIndex but not in RAG',
+                {
+                  reference: piResult.reference,
+                  source: piResult.source,
+                  confidence: piResult.confidence,
+                },
+              );
+            }
+          }
+        });
+      } catch (error) {
+        this.logger.warn('PageIndex verification unavailable', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     // Add warnings for unverified references
     verifications.forEach((v) => {
-      if (!v.exists) {
+      // Check if PageIndex verified it
+      const pageIndexVerified = pageIndexResults.some(
+        (pi) => pi.reference === v.reference && pi.verified,
+      );
+
+      if (!v.exists && !pageIndexVerified) {
         suspiciousElements.push({
           element: v.reference,
           reason: `Referência legal não verificada${v.suggestion ? ` - ${v.suggestion}` : ''}`,
@@ -357,15 +656,31 @@ export class AntiHallucinationAgent {
       }
     });
 
+    // Add warnings for unverified jurisprudence (PageIndex-only)
+    pageIndexResults
+      .filter((pi) => pi.source === 'jurisprudencia' && !pi.verified)
+      .forEach((pi) => {
+        suspiciousElements.push({
+          element: pi.reference,
+          reason: 'Jurisprudência não encontrada na base TCE-SP/TCU indexada',
+          severity: 'high',
+        });
+        warnings.push(`Jurisprudência não verificada: "${pi.reference}"`);
+      });
+
     // Check for suspicious patterns (legacy heuristic - kept for backward compatibility)
     this.suspiciousPatterns.forEach(({ pattern, description, severity }) => {
       const matches = content.match(pattern);
       if (matches && matches.length > 0) {
         matches.forEach((match) => {
-          // Skip if already verified via RAG
-          const alreadyVerified = verifications.some(
-            (v) => v.reference.includes(match) && v.exists,
-          );
+          // Skip if already verified via RAG or PageIndex
+          const alreadyVerified =
+            verifications.some(
+              (v) => v.reference.includes(match) && v.exists,
+            ) ||
+            pageIndexResults.some(
+              (pi) => pi.verified && pi.reference.includes(match),
+            );
           if (!alreadyVerified) {
             suspiciousElements.push({
               element: match,
@@ -434,19 +749,30 @@ export class AntiHallucinationAgent {
       );
     }
 
-    // **NEW: Calculate score based on RAG verification results (weighted scoring)**
+    // **Calculate combined score**
     // If there are legal references, use weighted scoring based on verification
-    // Otherwise, fall back to legacy heuristic scoring
     let score: number;
 
-    if (legalReferences.length > 0) {
-      // Use new weighted scoring algorithm based on RAG verifications
-      score = this.calculateScore(verifications, legalReferences);
+    if (legalReferences.length > 0 || pageIndexResults.length > 0) {
+      // Calculate RAG-based score
+      const ragScore = this.calculateScore(verifications, legalReferences);
+
+      // Calculate PageIndex-based score
+      const pageIndexScore = this.calculatePageIndexScore(pageIndexResults);
+
+      // Combined score: weighted average if PageIndex is enabled
+      if (enablePageIndex && pageIndexResults.length > 0) {
+        // PageIndex has higher weight (60%) due to higher accuracy
+        score = ragScore * 0.4 + pageIndexScore * 0.6;
+      } else {
+        score = ragScore;
+      }
 
       // Apply penalties for non-reference issues (prohibited claims, unsourced data)
       const nonReferenceIssues = suspiciousElements.filter(
         (e) =>
           !verifications.some((v) => v.reference.includes(e.element)) &&
+          !pageIndexResults.some((pi) => pi.reference.includes(e.element)) &&
           e.element !== 'Dados numéricos',
       );
       const prohibitedClaimsCount = nonReferenceIssues.filter((e) =>
@@ -476,15 +802,20 @@ export class AntiHallucinationAgent {
     }
 
     // Confidence is based on verification results (if available) or inverse of suspicious elements
+    const totalVerified =
+      verifications.filter((v) => v.exists).length +
+      pageIndexResults.filter((pi) => pi.verified).length;
+    const totalReferences = legalReferences.length + pageIndexResults.length;
+
     const verifiedReferencesRatio =
-      legalReferences.length > 0
-        ? verifications.filter((v) => v.exists).length / legalReferences.length
-        : 1.0;
+      totalReferences > 0 ? totalVerified / totalReferences : 1.0;
+
     const confidence = Math.round(
       verifiedReferencesRatio * 100 -
         suspiciousElements.filter(
           (e) =>
             !verifications.some((v) => v.reference.includes(e.element)) &&
+            !pageIndexResults.some((pi) => pi.reference.includes(e.element)) &&
             e.element !== 'Dados numéricos',
         ).length *
           5,
@@ -499,8 +830,19 @@ export class AntiHallucinationAgent {
 
     const suggestions = this.generateSuggestions(verifications);
 
+    // Add PageIndex-specific suggestions
+    pageIndexResults
+      .filter((pi) => !pi.verified)
+      .forEach((pi) => {
+        if (!suggestions.some((s) => s.includes(pi.reference))) {
+          suggestions.push(
+            `Referência "${pi.reference}" não foi encontrada via PageIndex (${pi.source}). Verifique a fonte original.`,
+          );
+        }
+      });
+
     this.logger.log(
-      `Hallucination check completed. Score: ${score.toFixed(1)}%, Confidence: ${confidence}%, Verified: ${verified}, References verified: ${verifications.filter((v) => v.exists).length}/${verifications.length}, Threshold: ${threshold}`,
+      `Hallucination check completed. Score: ${score.toFixed(1)}%, Confidence: ${confidence}%, Verified: ${verified}, RAG verified: ${verifications.filter((v) => v.exists).length}/${verifications.length}, PageIndex verified: ${pageIndexResults.filter((pi) => pi.verified).length}/${pageIndexResults.length}, Threshold: ${threshold}`,
     );
 
     return {
@@ -511,6 +853,8 @@ export class AntiHallucinationAgent {
       verified,
       references: verifications.length > 0 ? verifications : undefined,
       suggestions: suggestions.length > 0 ? suggestions : undefined,
+      pageIndexResults:
+        pageIndexResults.length > 0 ? pageIndexResults : undefined,
     };
   }
 
@@ -522,12 +866,30 @@ export class AntiHallucinationAgent {
   async checkEnhanced(
     content: string,
     _context?: unknown,
+    options?: { enablePageIndex?: boolean },
   ): Promise<EnhancedHallucinationCheckResult> {
     this.logger.log('Running enhanced hallucination check with categorization');
+
+    const enablePageIndex = options?.enablePageIndex ?? true;
 
     // Extract and verify legal references
     const legalReferences = this.extractLegalReferences(content);
     const verifications = await this.verifyReferences(legalReferences);
+
+    // Verify with PageIndex
+    let pageIndexResults: PageIndexVerificationResult[] = [];
+    if (enablePageIndex) {
+      try {
+        pageIndexResults = await this.verifyWithPageIndex(
+          content,
+          legalReferences,
+        );
+      } catch (error) {
+        this.logger.warn('PageIndex verification unavailable', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
 
     // Calculate legal references score (weighted)
     const legalReferencesScore = this.calculateScore(
@@ -577,17 +939,34 @@ export class AntiHallucinationAgent {
     // Factual claims score (100 if no warnings, 70 if has warnings)
     const factualClaimsScore = factualWarnings.length > 0 ? 70 : 100;
 
+    // PageIndex verification score
+    const pageIndexScore = this.calculatePageIndexScore(pageIndexResults);
+    const pageIndexVerified = pageIndexResults.filter(
+      (pi) => pi.verified,
+    ).length;
+
     // Calculate overall score (weighted average)
     const categoryWeights = {
-      legalReferences: 0.5, // 50% weight (most important)
-      factualClaims: 0.3, // 30% weight
-      prohibitedPhrases: 0.2, // 20% weight
+      legalReferences: 0.4, // 40% weight
+      factualClaims: 0.2, // 20% weight
+      prohibitedPhrases: 0.1, // 10% weight
+      pageIndex: 0.3, // 30% weight (NEW)
     };
 
-    const overallScore =
-      legalReferencesScore * categoryWeights.legalReferences +
-      factualClaimsScore * categoryWeights.factualClaims +
-      prohibitedPhrasesScore * categoryWeights.prohibitedPhrases;
+    let overallScore: number;
+    if (enablePageIndex && pageIndexResults.length > 0) {
+      overallScore =
+        legalReferencesScore * categoryWeights.legalReferences +
+        factualClaimsScore * categoryWeights.factualClaims +
+        prohibitedPhrasesScore * categoryWeights.prohibitedPhrases +
+        pageIndexScore * categoryWeights.pageIndex;
+    } else {
+      // Without PageIndex, redistribute weights
+      overallScore =
+        legalReferencesScore * 0.5 +
+        factualClaimsScore * 0.3 +
+        prohibitedPhrasesScore * 0.2;
+    }
 
     // Get configurable threshold from environment
     const threshold = this.configService.get<number>(
@@ -615,6 +994,20 @@ export class AntiHallucinationAgent {
       }
     });
 
+    // PageIndex recommendations
+    if (pageIndexResults.length > 0 && pageIndexScore < 80) {
+      recommendations.push(
+        `PageIndex verificou ${pageIndexVerified}/${pageIndexResults.length} referências. Considere revisar as não verificadas.`,
+      );
+    }
+    pageIndexResults
+      .filter((pi) => !pi.verified)
+      .forEach((pi) => {
+        recommendations.push(
+          `Referência "${pi.reference}" não encontrada via ${pi.source === 'jurisprudencia' ? 'jurisprudência TCE-SP/TCU' : 'PageIndex'}`,
+        );
+      });
+
     // Factual claims recommendations
     if (factualWarnings.length > 0) {
       recommendations.push(
@@ -637,10 +1030,10 @@ export class AntiHallucinationAgent {
     }
 
     this.logger.log(
-      `Enhanced check completed. Overall: ${overallScore.toFixed(1)}%, Legal: ${legalReferencesScore.toFixed(1)}%, Factual: ${factualClaimsScore}%, Prohibited: ${prohibitedPhrasesScore}%, Verified: ${overallVerified}`,
+      `Enhanced check completed. Overall: ${overallScore.toFixed(1)}%, Legal: ${legalReferencesScore.toFixed(1)}%, PageIndex: ${pageIndexScore.toFixed(1)}%, Factual: ${factualClaimsScore}%, Prohibited: ${prohibitedPhrasesScore}%, Verified: ${overallVerified}`,
     );
 
-    return {
+    const result: EnhancedHallucinationCheckResult = {
       overallScore: Math.round(overallScore * 10) / 10, // Round to 1 decimal
       overallVerified,
       categories: {
@@ -661,6 +1054,18 @@ export class AntiHallucinationAgent {
       },
       recommendations: [...new Set(recommendations)], // Remove duplicates
     };
+
+    // Add PageIndex verification category if results exist
+    if (pageIndexResults.length > 0) {
+      result.categories.pageIndexVerification = {
+        score: Math.round(pageIndexScore * 10) / 10,
+        verified: pageIndexVerified,
+        total: pageIndexResults.length,
+        details: pageIndexResults,
+      };
+    }
+
+    return result;
   }
 
   async generateSafetyPrompt(): Promise<string> {
@@ -670,7 +1075,7 @@ export class AntiHallucinationAgent {
 2. NÃO cite artigos específicos sem ter certeza absoluta
 3. NÃO mencione valores monetários específicos sem base
 4. NÃO crie números de processos ou documentos
-5. NÃO cite jurisprudência específica
+5. NÃO cite jurisprudência específica (TCU, TCE-SP) sem verificação
 
 SEMPRE:
 - Use linguagem que indique estimativa quando apropriado
@@ -682,6 +1087,10 @@ SEMPRE:
 Quando mencionar legislação, use termos gerais:
 ✅ "conforme a Lei de Licitações"
 ❌ "conforme o Art. 23, §2º, inciso III da Lei..."
+
+Quando mencionar jurisprudência:
+✅ "conforme entendimento do TCU"
+❌ "conforme Súmula 247 do TCU" (a menos que verificado)
 
 Adicione este aviso ao final:
 "⚠ Informações específicas (números de normas, valores, datas) devem ser verificadas antes do uso oficial."`;
@@ -701,6 +1110,7 @@ REGRAS CRÍTICAS:
  - Datas ou prazos específicos
  - Números de processo
  - Nomes de pessoas ou órgãos
+ - Súmulas ou acórdãos do TCU/TCE-SP
 
 2. SEMPRE indique incerteza quando apropriado:
  - "aproximadamente" para valores estimados
@@ -712,6 +1122,7 @@ REGRAS CRÍTICAS:
  - Quando mencionar legislação específica
  - Quando citar dados numéricos
  - Quando fazer afirmações categóricas
+ - Quando mencionar jurisprudência TCU/TCE-SP
 
 4. SEJA CONSERVADOR:
  - É melhor ser vago e correto que específico e errado
