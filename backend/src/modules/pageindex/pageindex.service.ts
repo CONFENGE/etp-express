@@ -359,6 +359,7 @@ export class PageIndexService {
 
     const byType: Record<DocumentType, number> = {
       [DocumentType.LEGISLATION]: 0,
+      [DocumentType.JURISPRUDENCIA]: 0,
       [DocumentType.CONTRACT]: 0,
       [DocumentType.EDITAL]: 0,
       [DocumentType.TERMO_REFERENCIA]: 0,
