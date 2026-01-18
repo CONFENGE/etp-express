@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 791/843 issues (93.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 792/844 issues (93.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1586 | Fix      | [#1585] Fix production 502 - SinapiApiClient init race condition ✅ - **Score 100/100 - Auto-merged - CRITICAL P0** |
 | 2026-01-18 | #1584 | Feature  | [#1578] Add JurisprudenciaSeeder for TCE-SP and TCU indexing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | -     | Audit    | ROADMAP sync: fix issue count (843 not 1556 - was counting PRs), add #1578-#1582 orphan issues |
 | 2026-01-18 | #1583 | Docs     | [#1577] Document jurisprudence sources for TCE-SP and TCU integration ✅ - **Score 100/100 - Auto-merged** |
@@ -695,11 +696,11 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 843   |
-| Issues Abertas    | 53    |
-| Issues Fechadas   | 790   |
-| Progresso         | 93.7% |
-| Bugs P0 Abertos   | 4     |
+| Issues Totais     | 844   |
+| Issues Abertas    | 52    |
+| Issues Fechadas   | 792   |
+| Progresso         | 93.8% |
+| Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 14/25 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
