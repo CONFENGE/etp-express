@@ -183,6 +183,11 @@ export interface ComplianceScoreSummary {
     fixSuggestion: string;
     priority: CompliancePriority;
   }[];
+  /**
+   * Jurisprudence alerts from TCE-SP/TCU precedents.
+   * Issue #1582 - Integrar jurisprudencia com ComplianceService
+   */
+  jurisprudenciaAlerts?: JurisprudenciaAlert[];
 }
 
 /**
@@ -191,4 +196,33 @@ export interface ComplianceScoreSummary {
 export interface ComplianceResponse<T> {
   data: T;
   disclaimer: string;
+}
+
+/**
+ * Type of jurisprudence alert.
+ * Issue #1582 - Integrar jurisprudencia com ComplianceService
+ */
+export type JurisprudenciaAlertType = 'CONFLICT' | 'WARNING' | 'RECOMMENDATION';
+
+/**
+ * Alert from jurisprudence check against TCE-SP/TCU precedents.
+ * Issue #1582 - Integrar jurisprudencia com ComplianceService
+ */
+export interface JurisprudenciaAlert {
+  /** Type of the alert */
+  type: JurisprudenciaAlertType;
+  /** Source tribunal (TCE-SP or TCU) */
+  tribunal: 'TCE-SP' | 'TCU';
+  /** Precedent number (e.g., "Sumula 1/2000") */
+  precedentNumber: string;
+  /** Summary of the precedent */
+  summary: string;
+  /** ETP field in conflict */
+  conflictingField?: string;
+  /** Value found in ETP that conflicts */
+  conflictingValue?: string;
+  /** Suggested correction based on precedent */
+  suggestedCorrection: string;
+  /** Detection confidence (0-1) */
+  confidence: number;
 }

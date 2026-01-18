@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -17,7 +23,10 @@ import {
   ComplianceItemResult,
   ComplianceSuggestion,
   ComplianceScoreSummary,
+  JurisprudenciaAlert,
+  JurisprudenciaAlertType,
 } from './dto/compliance-validation-result.dto';
+import { JurisprudenciaService } from '../pageindex/services/jurisprudencia.service';
 
 /**
  * Service para validacao de conformidade de ETPs contra checklists TCU/TCE.
@@ -44,6 +53,8 @@ export class ComplianceValidationService {
     private readonly itemRepository: Repository<ComplianceChecklistItem>,
     @InjectRepository(Etp)
     private readonly etpRepository: Repository<Etp>,
+    @Inject(forwardRef(() => JurisprudenciaService))
+    private readonly jurisprudenciaService: JurisprudenciaService,
   ) {}
 
   /**
@@ -147,6 +158,17 @@ export class ComplianceValidationService {
     // Gerar sugestoes
     const suggestions = this.generateSuggestions(itemResults);
 
+    // Verificar jurisprudencia (#1582)
+    const jurisprudenciaAlerts = await this.checkAgainstJurisprudence(etp);
+
+    // Ajustar status se houver alertas de conflito com jurisprudencia
+    if (
+      jurisprudenciaAlerts.some((a) => a.type === 'CONFLICT') &&
+      status === 'APPROVED'
+    ) {
+      status = 'NEEDS_REVIEW';
+    }
+
     const processingTimeMs = Date.now() - startTime;
 
     const result: ComplianceValidationResult = {
@@ -163,13 +185,14 @@ export class ComplianceValidationService {
       skippedItems: checklist.items.length - items.length,
       itemResults,
       suggestions,
+      jurisprudenciaAlerts,
       categoryScores,
       validatedAt: new Date(),
       processingTimeMs,
     };
 
     this.logger.log(
-      `ETP ${etpId} validation complete: score=${score}%, status=${status}, time=${processingTimeMs}ms`,
+      `ETP ${etpId} validation complete: score=${score}%, status=${status}, jurisprudenciaAlerts=${jurisprudenciaAlerts.length}, time=${processingTimeMs}ms`,
     );
 
     return result;
@@ -239,7 +262,227 @@ export class ComplianceValidationService {
       passedItems: result.passedItems,
       failedItems: result.failedItems,
       topIssues,
+      jurisprudenciaAlerts: result.jurisprudenciaAlerts,
     };
+  }
+
+  /**
+   * Verifica um ETP contra jurisprudencia TCE-SP/TCU.
+   *
+   * Busca por precedentes relevantes e gera alertas de conflito
+   * quando o conteudo do ETP contradiz entendimentos consolidados.
+   *
+   * Issue #1582 - Integrar jurisprudencia com ComplianceService
+   *
+   * @param etp - ETP a ser verificado
+   * @returns Lista de alertas de jurisprudencia
+   */
+  async checkAgainstJurisprudence(etp: Etp): Promise<JurisprudenciaAlert[]> {
+    const alerts: JurisprudenciaAlert[] = [];
+
+    try {
+      // Extrair texto completo do ETP para analise
+      const etpText = this.getEtpFullText(etp);
+
+      // Verificar temas criticos de jurisprudencia
+      const themesToCheck = [
+        {
+          query: 'ETP fundamentacao justificativa',
+          field: 'justificativaContratacao',
+        },
+        {
+          query: 'pesquisa precos valor estimado',
+          field: 'fontePesquisaPrecos',
+        },
+        { query: 'divisao parcelamento licitacao', field: 'objeto' },
+        { query: 'dispensa inexigibilidade', field: 'objeto' },
+        { query: 'prazo execucao contratual', field: 'prazoExecucao' },
+        {
+          query: 'sustentabilidade ambiental licitacao',
+          field: 'criteriosSustentabilidade',
+        },
+      ];
+
+      for (const theme of themesToCheck) {
+        // Buscar jurisprudencia relevante
+        const searchResult = await this.jurisprudenciaService.searchByText(
+          theme.query,
+          { limit: 5, minConfidence: 0.5, includeContent: true },
+        );
+
+        // Analisar resultados e gerar alertas
+        for (const item of searchResult.items) {
+          const alert = this.analyzeJurisprudenceMatch(
+            etp,
+            item,
+            theme.field,
+            etpText,
+          );
+
+          if (alert) {
+            alerts.push(alert);
+          }
+        }
+      }
+
+      // Ordenar por confianca (maior primeiro)
+      alerts.sort((a, b) => b.confidence - a.confidence);
+
+      // Limitar a 5 alertas mais relevantes
+      return alerts.slice(0, 5);
+    } catch (error) {
+      // Log error but don't fail the validation
+      this.logger.warn(
+        `Failed to check jurisprudence for ETP ${etp.id}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return [];
+    }
+  }
+
+  /**
+   * Analisa se um item de jurisprudencia e relevante para o ETP e gera alerta.
+   *
+   * @param etp - ETP sendo validado
+   * @param item - Item de jurisprudencia encontrado
+   * @param field - Campo do ETP relacionado
+   * @param etpText - Texto completo do ETP
+   * @returns Alerta de jurisprudencia ou null se nao relevante
+   */
+  private analyzeJurisprudenceMatch(
+    etp: Etp,
+    item: {
+      id: string;
+      title: string;
+      tribunal: 'TCE-SP' | 'TCU';
+      content?: string;
+    },
+    field: string,
+    etpText: string,
+  ): JurisprudenciaAlert | null {
+    if (!item.content) {
+      return null;
+    }
+
+    const fieldValue = this.getEtpFieldValue(etp, field);
+    const content = item.content.toLowerCase();
+
+    // Padroes de conflito que indicam entendimentos relevantes
+    const conflictPatterns = [
+      {
+        pattern: /nao deve|nao pode|vedado|proibido|ilegal/i,
+        type: 'CONFLICT' as JurisprudenciaAlertType,
+      },
+      {
+        pattern: /recomenda-se|deve conter|obrigatorio|essencial/i,
+        type: 'RECOMMENDATION' as JurisprudenciaAlertType,
+      },
+      {
+        pattern: /atencao|cuidado|ressalva|observar/i,
+        type: 'WARNING' as JurisprudenciaAlertType,
+      },
+    ];
+
+    // Verificar se o conteudo da jurisprudencia contem padroes de orientacao
+    for (const { pattern, type } of conflictPatterns) {
+      if (pattern.test(content)) {
+        // Verificar se o ETP menciona temas relacionados
+        const etpMentionsTheme = this.hasRelatedTerms(etpText, content);
+
+        if (etpMentionsTheme) {
+          return {
+            type,
+            tribunal: item.tribunal,
+            precedentNumber: item.title,
+            summary: this.truncate(item.content, 200),
+            conflictingField: field,
+            conflictingValue: fieldValue
+              ? this.truncate(fieldValue, 100)
+              : undefined,
+            suggestedCorrection: this.generateSuggestionFromJurisprudence(
+              item.content,
+              type,
+            ),
+            confidence:
+              type === 'CONFLICT' ? 0.8 : type === 'RECOMMENDATION' ? 0.7 : 0.6,
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Verifica se o texto do ETP menciona termos relacionados ao conteudo da jurisprudencia.
+   */
+  private hasRelatedTerms(
+    etpText: string,
+    jurisprudenceContent: string,
+  ): boolean {
+    // Extrair palavras-chave relevantes da jurisprudencia
+    const keywords = [
+      'etp',
+      'estudo',
+      'preliminar',
+      'contratacao',
+      'licitacao',
+      'preco',
+      'pesquisa',
+      'estimado',
+      'valor',
+      'justificativa',
+      'dispensa',
+      'inexigibilidade',
+      'parcelamento',
+      'divisao',
+      'sustentabilidade',
+      'prazo',
+      'execucao',
+    ];
+
+    // Verificar se ha intersecao de termos
+    const etpLower = etpText.toLowerCase();
+    const jurisLower = jurisprudenceContent.toLowerCase();
+
+    let matchCount = 0;
+    for (const keyword of keywords) {
+      if (etpLower.includes(keyword) && jurisLower.includes(keyword)) {
+        matchCount++;
+      }
+    }
+
+    // Considerar relevante se houver pelo menos 2 termos em comum
+    return matchCount >= 2;
+  }
+
+  /**
+   * Gera sugestao de correcao baseada no conteudo da jurisprudencia.
+   */
+  private generateSuggestionFromJurisprudence(
+    content: string,
+    type: JurisprudenciaAlertType,
+  ): string {
+    const contentLower = content.toLowerCase();
+
+    // Gerar sugestao baseada no tipo de alerta
+    if (type === 'CONFLICT') {
+      if (contentLower.includes('justificativa')) {
+        return 'Revisar justificativa do ETP para conformidade com entendimento consolidado dos tribunais.';
+      }
+      if (contentLower.includes('preco') || contentLower.includes('pesquisa')) {
+        return 'Verificar metodologia de pesquisa de precos conforme orientacoes do tribunal.';
+      }
+      if (contentLower.includes('parcel') || contentLower.includes('divis')) {
+        return 'Analisar criterios de parcelamento/divisao conforme jurisprudencia aplicavel.';
+      }
+      return 'Revisar conteudo do ETP para adequacao ao entendimento jurisprudencial.';
+    }
+
+    if (type === 'RECOMMENDATION') {
+      return 'Considerar inclusao de elementos adicionais recomendados pela jurisprudencia.';
+    }
+
+    return 'Verificar conformidade com orientacoes do tribunal antes de prosseguir.';
   }
 
   /**

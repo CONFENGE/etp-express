@@ -3,6 +3,9 @@ import {
   ShieldAlert,
   ShieldQuestion,
   ShieldX,
+  Scale,
+  AlertTriangle,
+  Info,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -14,7 +17,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useComplianceValidation } from '@/hooks/useComplianceValidation';
 import { cn } from '@/lib/utils';
-import { ComplianceStatus, CompliancePriority } from '@/types/compliance';
+import {
+  ComplianceStatus,
+  CompliancePriority,
+  JurisprudenciaAlertType,
+} from '@/types/compliance';
 
 /**
  * Props for the ComplianceBadge component.
@@ -91,6 +98,23 @@ function getPriorityLabel(priority: CompliancePriority): string {
       return 'Baixa';
     default:
       return priority;
+  }
+}
+
+/**
+ * Gets icon for jurisprudence alert type.
+ * Issue #1582 - Integrar jurisprudencia com ComplianceService
+ */
+function getJurisprudenciaAlertIcon(type: JurisprudenciaAlertType) {
+  switch (type) {
+    case 'CONFLICT':
+      return <AlertTriangle className="h-3 w-3 text-red-500" />;
+    case 'WARNING':
+      return <Scale className="h-3 w-3 text-yellow-500" />;
+    case 'RECOMMENDATION':
+      return <Info className="h-3 w-3 text-blue-500" />;
+    default:
+      return <Scale className="h-3 w-3" />;
   }
 }
 
@@ -231,8 +255,33 @@ export function ComplianceBadge({
               </div>
             )}
 
+            {/* Jurisprudence alerts - Issue #1582 */}
+            {data.jurisprudenciaAlerts && data.jurisprudenciaAlerts.length > 0 && (
+              <div className="pt-2 border-t space-y-1">
+                <p className="text-xs font-medium flex items-center gap-1">
+                  <Scale className="h-3 w-3" />
+                  Alertas de Jurisprudencia:
+                </p>
+                <ul className="text-xs space-y-1">
+                  {data.jurisprudenciaAlerts.slice(0, 3).map((alert, index) => (
+                    <li key={index} className="flex items-start gap-1">
+                      {getJurisprudenciaAlertIcon(alert.type)}
+                      <div className="flex-1">
+                        <span className="font-medium text-muted-foreground">
+                          [{alert.tribunal}] {alert.precedentNumber}
+                        </span>
+                        <p className="text-muted-foreground line-clamp-2 mt-0.5">
+                          {alert.suggestedCorrection}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* All passed */}
-            {!hasIssues && data.passed && (
+            {!hasIssues && data.passed && (!data.jurisprudenciaAlerts || data.jurisprudenciaAlerts.length === 0) && (
               <p className="text-xs text-green-600">
                 Todos os requisitos atendidos!
               </p>
