@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 798/847 issues (94.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 799/847 issues (94.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1598 | Feature  | [#1593] Add RagRouterService for Hybrid RAG routing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1597 | Feature  | [#1592] Add QueryComplexityClassifierService for Hybrid RAG routing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1591 | Feature  | [#1541] Integrate PageIndex in Anti-Hallucination Agent ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1590 | Feature  | [#1582] Integrate jurisprudencia with ComplianceService ✅ - **Score 100/100 - Auto-merged** |
@@ -649,6 +650,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 |       | ↳ #1592 QueryComplexityClassifier (1/5 do Hybrid RAG)    | P1         | ✅     |
+|       | ↳ #1593 RagRouterService (2/5 do Hybrid RAG)             | P1         | ✅     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
