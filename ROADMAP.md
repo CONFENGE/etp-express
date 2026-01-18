@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 1510/1556 (97.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 790/843 issues (93.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | -     | Audit    | ROADMAP sync: fix issue count (843 not 1556 - was counting PRs), add #1578-#1582 orphan issues |
 | 2026-01-18 | #1583 | Docs     | [#1577] Document jurisprudence sources for TCE-SP and TCU integration ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1576 | Feature  | [#1569] Add SINAPI sync job and webhook for automatic updates ✅ - **Score 100/100 - Auto-merged - EPIC #1539 COMPLETE (5/5)** |
 | 2026-01-18 | #1575 | Test     | [#1568] Integrate SINAPI API with price-aggregation.service ✅ - **Score 100/100 - Auto-merged** |
@@ -410,9 +411,9 @@
 
 ---
 
-## Issues Abertas (59)
+## Issues Abertas (53)
 
-### P0 - M17 PageIndex + SINAPI API (12 issues) 🔵 IN PROGRESS
+### P0 - M17 PageIndex + SINAPI API (25 issues - 11 open) 🔵 IN PROGRESS
 
 > PageIndex para RAG reasoning-based + API Orcamentador para SINAPI. Ver seção "M17: PageIndex RAG + SINAPI API" abaixo.
 
@@ -428,6 +429,11 @@
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | ✅     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
+|       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | 🔴     |
+|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | 🔴     |
+|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
+|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
+|       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
@@ -508,7 +514,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 0/13   | Alta 🔵    | Diferencial técnico   |
+| M17: PageIndex RAG             | 14/25  | Alta 🔵    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -606,7 +612,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1554) - 8/12 (67%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1582) - 14/25 (56%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -627,6 +633,11 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | ✅     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
+|       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | 🔴     |
+|       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | 🔴     |
+|       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | 🔴     |
+|       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | 🔴     |
+|       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
@@ -683,12 +694,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 1556  |
-| Issues Abertas    | 56    |
-| Issues Fechadas   | 1501  |
-| Progresso         | 97.0% |
+| Issues Totais     | 843   |
+| Issues Abertas    | 53    |
+| Issues Fechadas   | 790   |
+| Progresso         | 93.7% |
 | Bugs P0 Abertos   | 4     |
-| M17 PageIndex+API | 9/13  |
+| M17 PageIndex+API | 14/25 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
