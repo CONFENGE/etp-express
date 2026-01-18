@@ -56,6 +56,20 @@ export interface RagSearchOptions {
 
   /** Include full content in results (default: false) */
   includeContent?: boolean;
+
+  /**
+   * Custom timeout for this request in milliseconds.
+   * Overrides the default RAG_TIMEOUT_MS configuration.
+   * @see Issue #1595 - RAG Fallback support
+   */
+  timeoutMs?: number;
+
+  /**
+   * Disable fallback for this specific request.
+   * When true, the search will not fall back to the alternate path on failure.
+   * @see Issue #1595 - RAG Fallback support
+   */
+  disableFallback?: boolean;
 }
 
 /**
@@ -93,6 +107,24 @@ export interface RagSearchResult {
 
     /** Number of results before filtering */
     totalResults?: number;
+
+    /**
+     * Whether this result came from a fallback path.
+     * @see Issue #1595 - RAG Fallback support
+     */
+    usedFallback?: boolean;
+
+    /**
+     * The original path that failed (if fallback was used).
+     * @see Issue #1595 - RAG Fallback support
+     */
+    originalPath?: 'embeddings' | 'pageindex';
+
+    /**
+     * Reason for fallback (if applicable): 'timeout', 'error', or 'empty_result'.
+     * @see Issue #1595 - RAG Fallback support
+     */
+    fallbackReason?: 'timeout' | 'error' | 'empty_result';
   };
 }
 
