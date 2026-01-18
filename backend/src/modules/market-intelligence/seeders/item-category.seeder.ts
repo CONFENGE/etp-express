@@ -1,7 +1,10 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ItemCategory, ItemCategoryType } from '../../../entities/item-category.entity';
+import {
+  ItemCategory,
+  ItemCategoryType,
+} from '../../../entities/item-category.entity';
 
 /**
  * Interface for category seed data.
@@ -141,7 +144,8 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         name: 'Materiais (CATMAT)',
         type: ItemCategoryType.CATMAT,
         parentCode: null,
-        description: 'Catálogo de Materiais - Bens tangíveis de consumo ou permanentes',
+        description:
+          'Catálogo de Materiais - Bens tangíveis de consumo ou permanentes',
         level: 0,
         keywords: ['material', 'bem', 'produto', 'consumo', 'permanente'],
         commonUnits: [],
@@ -173,7 +177,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-ROOT',
         description: 'Equipamentos de tecnologia da informação e comunicação',
         level: 1,
-        keywords: ['informática', 'ti', 'computador', 'tecnologia', 'equipamento'],
+        keywords: [
+          'informática',
+          'ti',
+          'computador',
+          'tecnologia',
+          'equipamento',
+        ],
         commonUnits: ['UN'],
       },
       {
@@ -235,7 +245,15 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-44000',
         description: 'Computadores portáteis tipo notebook, laptop, ultrabook',
         level: 2,
-        keywords: ['notebook', 'laptop', 'portátil', 'ultrabook', 'dell', 'hp', 'lenovo'],
+        keywords: [
+          'notebook',
+          'laptop',
+          'portátil',
+          'ultrabook',
+          'dell',
+          'hp',
+          'lenovo',
+        ],
         commonUnits: ['UN'],
       },
       {
@@ -265,7 +283,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-44000',
         description: 'Impressoras e multifuncionais',
         level: 2,
-        keywords: ['impressora', 'multifuncional', 'scanner', 'laser', 'jato de tinta'],
+        keywords: [
+          'impressora',
+          'multifuncional',
+          'scanner',
+          'laser',
+          'jato de tinta',
+        ],
         commonUnits: ['UN'],
       },
       {
@@ -329,7 +353,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-52000',
         description: 'Cadeiras executivas, giratórias e ergonômicas',
         level: 2,
-        keywords: ['cadeira', 'giratória', 'executiva', 'ergonômica', 'poltrona'],
+        keywords: [
+          'cadeira',
+          'giratória',
+          'executiva',
+          'ergonômica',
+          'poltrona',
+        ],
         commonUnits: ['UN'],
       },
       {
@@ -361,7 +391,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-85000',
         description: 'Detergentes, sabões e limpadores',
         level: 2,
-        keywords: ['detergente', 'sabão', 'limpador', 'multiuso', 'desengordurante'],
+        keywords: [
+          'detergente',
+          'sabão',
+          'limpador',
+          'multiuso',
+          'desengordurante',
+        ],
         commonUnits: ['UN', 'L', 'GL'],
       },
       {
@@ -413,7 +449,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-91000',
         description: 'Pisos cerâmicos, porcelanatos e revestimentos',
         level: 2,
-        keywords: ['piso', 'cerâmica', 'porcelanato', 'revestimento', 'azulejo'],
+        keywords: [
+          'piso',
+          'cerâmica',
+          'porcelanato',
+          'revestimento',
+          'azulejo',
+        ],
         commonUnits: ['M2', 'CX'],
       },
 
@@ -479,7 +521,14 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATMAT-44000',
         description: 'HDs, SSDs, pendrives e dispositivos de armazenamento',
         level: 2,
-        keywords: ['hd', 'ssd', 'pendrive', 'storage', 'memória', 'armazenamento'],
+        keywords: [
+          'hd',
+          'ssd',
+          'pendrive',
+          'storage',
+          'memória',
+          'armazenamento',
+        ],
         commonUnits: ['UN'],
       },
     ];
@@ -499,7 +548,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATSER-ROOT',
         description: 'Serviços de tecnologia da informação e comunicação',
         level: 1,
-        keywords: ['ti', 'software', 'desenvolvimento', 'suporte', 'infraestrutura'],
+        keywords: [
+          'ti',
+          'software',
+          'desenvolvimento',
+          'suporte',
+          'infraestrutura',
+        ],
         commonUnits: ['UN', 'MÊS', 'HORA'],
       },
       {
@@ -561,7 +616,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATSER-10000',
         description: 'Desenvolvimento, customização e evolução de sistemas',
         level: 2,
-        keywords: ['desenvolvimento', 'software', 'sistema', 'programação', 'aplicativo'],
+        keywords: [
+          'desenvolvimento',
+          'software',
+          'sistema',
+          'programação',
+          'aplicativo',
+        ],
         commonUnits: ['PF', 'UST', 'HORA'],
       },
       {
@@ -571,7 +632,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATSER-10000',
         description: 'Suporte técnico a usuários e infraestrutura',
         level: 2,
-        keywords: ['suporte', 'helpdesk', 'service desk', 'atendimento', 'chamado'],
+        keywords: [
+          'suporte',
+          'helpdesk',
+          'service desk',
+          'atendimento',
+          'chamado',
+        ],
         commonUnits: ['CHAMADO', 'MÊS', 'POSTO'],
       },
       {
@@ -581,7 +648,13 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         parentCode: 'CATSER-10000',
         description: 'Gerenciamento de infraestrutura, redes e data center',
         level: 2,
-        keywords: ['infraestrutura', 'rede', 'data center', 'servidor', 'nuvem'],
+        keywords: [
+          'infraestrutura',
+          'rede',
+          'data center',
+          'servidor',
+          'nuvem',
+        ],
         commonUnits: ['MÊS', 'UN', 'GB'],
       },
       {
@@ -687,7 +760,8 @@ export class ItemCategorySeeder implements OnApplicationBootstrap {
         name: 'Manutenção de Elevadores',
         type: ItemCategoryType.CATSER,
         parentCode: 'CATSER-27000',
-        description: 'Manutenção de elevadores e equipamentos de transporte vertical',
+        description:
+          'Manutenção de elevadores e equipamentos de transporte vertical',
         level: 2,
         keywords: ['elevador', 'escada rolante', 'transporte vertical'],
         commonUnits: ['UN', 'MÊS'],

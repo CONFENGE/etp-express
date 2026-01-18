@@ -22,9 +22,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - #1270: Price normalization and categorization (parent)
  * - #1269: Contract Price Collector
  */
-export class CreateItemCategoriesTable1768900000000
-  implements MigrationInterface
-{
+export class CreateItemCategoriesTable1768900000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Check if table already exists (idempotency)
     const tableExists = await queryRunner.hasTable('item_categories');
@@ -137,9 +135,7 @@ export class CreateItemCategoriesTable1768900000000
     `);
 
     // Rollback Step 3: Drop indexes
-    await queryRunner.query(
-      `DROP INDEX IF EXISTS "IDX_item_categories_level"`,
-    );
+    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_item_categories_level"`);
     await queryRunner.query(
       `DROP INDEX IF EXISTS "IDX_item_categories_active"`,
     );
