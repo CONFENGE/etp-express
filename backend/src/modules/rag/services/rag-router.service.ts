@@ -10,6 +10,34 @@ import { TreeSearchService } from '../../pageindex/services/tree-search.service'
 import { TreeSearchResult } from '../../pageindex/interfaces/tree-node.interface';
 
 /**
+ * Reason for fallback execution.
+ */
+export type FallbackReason = 'timeout' | 'error' | 'empty_result';
+
+/**
+ * Metrics entry for fallback events.
+ */
+export interface FallbackMetrics {
+  /** Timestamp of the fallback event */
+  timestamp: Date;
+
+  /** Which path failed */
+  failedPath: 'embeddings' | 'pageindex';
+
+  /** Why the fallback was triggered */
+  reason: FallbackReason;
+
+  /** Error message if applicable */
+  errorMessage?: string;
+
+  /** Time elapsed before fallback (ms) */
+  elapsedMs: number;
+
+  /** Whether fallback succeeded */
+  fallbackSucceeded: boolean;
+}
+
+/**
  * Unified RAG result that can represent results from either path.
  */
 export interface RagResult {
@@ -32,6 +60,15 @@ export interface RagResult {
 
   /** Time taken for routing and search in milliseconds */
   latencyMs: number;
+
+  /** Whether this result came from a fallback path */
+  usedFallback?: boolean;
+
+  /** The original path that failed (if fallback was used) */
+  originalPath?: 'embeddings' | 'pageindex';
+
+  /** Reason for fallback (if applicable) */
+  fallbackReason?: FallbackReason;
 }
 
 /**
@@ -93,6 +130,19 @@ export class RagRouterService {
    */
   private readonly forcePath: 'embeddings' | 'pageindex' | null;
 
+  /**
+   * Fallback configuration.
+   */
+  private readonly fallbackEnabled: boolean;
+  private readonly timeoutMs: number;
+  private readonly maxRetries: number;
+
+  /**
+   * Fallback metrics log for analytics.
+   */
+  private readonly fallbackMetrics: FallbackMetrics[] = [];
+  private readonly maxFallbackMetricsSize = 500;
+
   constructor(
     private readonly classifier: QueryComplexityClassifierService,
     private readonly embeddingsRag: RAGService,
@@ -108,9 +158,20 @@ export class RagRouterService {
         | 'embeddings'
         | 'pageindex') || null;
 
+    // Fallback configuration
+    this.fallbackEnabled = this.configService.get<boolean>(
+      'RAG_FALLBACK_ENABLED',
+      true,
+    );
+    this.timeoutMs = this.configService.get<number>('RAG_TIMEOUT_MS', 5000);
+    this.maxRetries = this.configService.get<number>('RAG_MAX_RETRIES', 1);
+
     this.logger.log('RagRouterService initialized', {
       maxLogSize: this.maxLogSize,
       forcePath: this.forcePath || 'auto',
+      fallbackEnabled: this.fallbackEnabled,
+      timeoutMs: this.timeoutMs,
+      maxRetries: this.maxRetries,
     });
   }
 
@@ -430,5 +491,418 @@ export class RagRouterService {
   clearDecisionLog(): void {
     this.decisionLog.length = 0;
     this.logger.log('Decision log cleared');
+  }
+
+  /**
+   * Route a query with automatic fallback if the primary path fails.
+   *
+   * This method adds resilience to the routing by:
+   * 1. Attempting the primary path with a timeout
+   * 2. If primary fails (timeout, error, or empty result), falling back to the alternate path
+   * 3. Logging fallback metrics for monitoring
+   *
+   * @param query - Natural language query
+   * @param options - Optional search configuration
+   * @returns Unified RAG result, potentially from the fallback path
+   *
+   * @example
+   * // Query with automatic fallback
+   * const result = await router.routeWithFallback('artigo 75 da lei 14133');
+   * if (result.usedFallback) {
+   *   console.log(`Fallback used due to: ${result.fallbackReason}`);
+   * }
+   *
+   * @see Issue #1595 - [RAG-1542d] Implementar fallback automático entre paths RAG
+   */
+  async routeWithFallback(
+    query: string,
+    options?: {
+      /** Force a specific path (overrides classification) */
+      forcePath?: 'embeddings' | 'pageindex';
+      /** Maximum results for embeddings search */
+      embeddingsLimit?: number;
+      /** Minimum similarity for embeddings search */
+      embeddingsThreshold?: number;
+      /** Maximum results for PageIndex search */
+      pageIndexLimit?: number;
+      /** Document type filter for PageIndex */
+      documentType?: string;
+      /** Custom timeout for this request (overrides default) */
+      timeoutMs?: number;
+      /** Disable fallback for this specific request */
+      disableFallback?: boolean;
+    },
+  ): Promise<RagResult> {
+    const startTime = Date.now();
+
+    // Classify the query
+    const classification = this.classifier.classifyWithDetails(query);
+
+    // Determine primary path
+    const primaryPath = this.determinePath(
+      classification.complexity,
+      options?.forcePath,
+    );
+
+    this.logger.log('RAG Router: starting with fallback support', {
+      queryPreview: query.substring(0, 80),
+      primaryPath,
+      fallbackEnabled: this.fallbackEnabled && !options?.disableFallback,
+      timeoutMs: options?.timeoutMs || this.timeoutMs,
+    });
+
+    // Try primary path with timeout
+    const timeout = options?.timeoutMs || this.timeoutMs;
+    let result: RagResult;
+    let usedFallback = false;
+    let fallbackReason: FallbackReason | undefined;
+
+    try {
+      result = await this.executeWithTimeout(
+        primaryPath,
+        query,
+        classification,
+        options,
+        timeout,
+      );
+
+      // Check for empty results (trigger fallback if enabled)
+      const resultCount =
+        result.embeddingsResults?.length ||
+        result.pageIndexResults?.length ||
+        0;
+
+      if (
+        resultCount === 0 &&
+        this.fallbackEnabled &&
+        !options?.disableFallback
+      ) {
+        this.logger.warn(
+          'Primary path returned empty results, triggering fallback',
+          {
+            primaryPath,
+            elapsedMs: Date.now() - startTime,
+          },
+        );
+
+        fallbackReason = 'empty_result';
+        result = await this.executeFallback(
+          primaryPath,
+          query,
+          classification,
+          options,
+          startTime,
+          fallbackReason,
+        );
+        usedFallback = true;
+      }
+    } catch (error) {
+      const elapsedMs = Date.now() - startTime;
+      const isTimeout =
+        error instanceof Error && error.message.includes('timeout');
+      fallbackReason = isTimeout ? 'timeout' : 'error';
+
+      this.logger.warn('Primary path failed', {
+        primaryPath,
+        reason: fallbackReason,
+        error: error instanceof Error ? error.message : String(error),
+        elapsedMs,
+      });
+
+      // Attempt fallback if enabled
+      if (this.fallbackEnabled && !options?.disableFallback) {
+        result = await this.executeFallback(
+          primaryPath,
+          query,
+          classification,
+          options,
+          startTime,
+          fallbackReason,
+          error instanceof Error ? error.message : String(error),
+        );
+        usedFallback = true;
+      } else {
+        // Return empty result if fallback is disabled
+        result = {
+          path: primaryPath,
+          classification,
+          confidence: 0,
+          latencyMs: elapsedMs,
+          embeddingsResults: primaryPath === 'embeddings' ? [] : undefined,
+          pageIndexResults: primaryPath === 'pageindex' ? [] : undefined,
+        };
+      }
+    }
+
+    const totalLatencyMs = Date.now() - startTime;
+    result.latencyMs = totalLatencyMs;
+
+    if (usedFallback) {
+      result.usedFallback = true;
+      result.originalPath = primaryPath;
+      result.fallbackReason = fallbackReason;
+    }
+
+    // Log the decision
+    this.logDecision(
+      query,
+      classification.complexity,
+      result.path,
+      totalLatencyMs,
+      result,
+    );
+
+    this.logger.log('RAG Router: search completed', {
+      path: result.path,
+      usedFallback,
+      fallbackReason,
+      resultCount:
+        result.embeddingsResults?.length ||
+        result.pageIndexResults?.length ||
+        0,
+      confidence: result.confidence,
+      latencyMs: totalLatencyMs,
+    });
+
+    return result;
+  }
+
+  /**
+   * Execute a RAG search with a timeout.
+   *
+   * @param path - Which path to execute
+   * @param query - The query to search
+   * @param classification - Query classification result
+   * @param options - Search options
+   * @param timeout - Timeout in milliseconds
+   * @returns RAG result
+   * @throws Error if the search times out
+   */
+  private async executeWithTimeout(
+    path: 'embeddings' | 'pageindex',
+    query: string,
+    classification: ClassificationResult,
+    options?: {
+      embeddingsLimit?: number;
+      embeddingsThreshold?: number;
+      pageIndexLimit?: number;
+      documentType?: string;
+    },
+    timeout = 5000,
+  ): Promise<RagResult> {
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`RAG search timeout after ${timeout}ms`));
+      }, timeout);
+    });
+
+    let searchPromise: Promise<RagResult>;
+
+    if (path === 'embeddings') {
+      searchPromise = this.executeEmbeddingsSearch(
+        query,
+        classification,
+        options?.embeddingsLimit,
+        options?.embeddingsThreshold,
+      );
+    } else {
+      searchPromise = this.executePageIndexSearch(
+        query,
+        classification,
+        options?.pageIndexLimit,
+        options?.documentType,
+      );
+    }
+
+    return Promise.race([searchPromise, timeoutPromise]);
+  }
+
+  /**
+   * Execute a fallback search using the alternate RAG path.
+   *
+   * @param failedPath - The path that failed
+   * @param query - The query to search
+   * @param classification - Query classification result
+   * @param options - Search options
+   * @param startTime - When the overall operation started
+   * @param reason - Why the fallback was triggered
+   * @param errorMessage - Error message from the failed path
+   * @returns RAG result from the fallback path
+   */
+  private async executeFallback(
+    failedPath: 'embeddings' | 'pageindex',
+    query: string,
+    classification: ClassificationResult,
+    options?: {
+      embeddingsLimit?: number;
+      embeddingsThreshold?: number;
+      pageIndexLimit?: number;
+      documentType?: string;
+    },
+    startTime = Date.now(),
+    reason: FallbackReason = 'error',
+    errorMessage?: string,
+  ): Promise<RagResult> {
+    const fallbackPath =
+      failedPath === 'embeddings' ? 'pageindex' : 'embeddings';
+    const elapsedMs = Date.now() - startTime;
+
+    this.logger.log('RAG Router: executing fallback', {
+      failedPath,
+      fallbackPath,
+      reason,
+      elapsedMs,
+    });
+
+    let result: RagResult;
+    let fallbackSucceeded = false;
+
+    try {
+      if (fallbackPath === 'embeddings') {
+        result = await this.executeEmbeddingsSearch(
+          query,
+          classification,
+          options?.embeddingsLimit,
+          options?.embeddingsThreshold,
+        );
+      } else {
+        result = await this.executePageIndexSearch(
+          query,
+          classification,
+          options?.pageIndexLimit,
+          options?.documentType,
+        );
+      }
+
+      const resultCount =
+        result.embeddingsResults?.length ||
+        result.pageIndexResults?.length ||
+        0;
+      fallbackSucceeded = resultCount > 0;
+    } catch (fallbackError) {
+      this.logger.error('Fallback path also failed', {
+        fallbackPath,
+        error:
+          fallbackError instanceof Error
+            ? fallbackError.message
+            : String(fallbackError),
+      });
+
+      // Return empty result
+      result = {
+        path: fallbackPath,
+        classification,
+        confidence: 0,
+        latencyMs: 0,
+        embeddingsResults: fallbackPath === 'embeddings' ? [] : undefined,
+        pageIndexResults: fallbackPath === 'pageindex' ? [] : undefined,
+      };
+    }
+
+    // Log fallback metrics
+    this.logFallbackMetrics({
+      timestamp: new Date(),
+      failedPath,
+      reason,
+      errorMessage,
+      elapsedMs,
+      fallbackSucceeded,
+    });
+
+    return result;
+  }
+
+  /**
+   * Log a fallback event for analytics.
+   *
+   * @param metrics - Fallback metrics to log
+   */
+  private logFallbackMetrics(metrics: FallbackMetrics): void {
+    this.fallbackMetrics.push(metrics);
+
+    // Trim log if it exceeds max size
+    if (this.fallbackMetrics.length > this.maxFallbackMetricsSize) {
+      this.fallbackMetrics.shift();
+    }
+
+    this.logger.debug('Fallback metrics logged', metrics);
+  }
+
+  /**
+   * Get fallback metrics for analytics.
+   *
+   * @param limit - Maximum number of entries to return
+   * @returns Array of recent fallback metrics
+   */
+  getFallbackMetrics(limit = 100): FallbackMetrics[] {
+    return this.fallbackMetrics.slice(-limit);
+  }
+
+  /**
+   * Get aggregated fallback statistics.
+   *
+   * @returns Aggregated statistics about fallback events
+   */
+  getFallbackStats(): {
+    totalFallbacks: number;
+    byReason: Record<FallbackReason, number>;
+    byFailedPath: Record<'embeddings' | 'pageindex', number>;
+    successRate: number;
+    averageElapsedMs: number;
+  } {
+    const byReason: Record<FallbackReason, number> = {
+      timeout: 0,
+      error: 0,
+      empty_result: 0,
+    };
+    const byFailedPath = { embeddings: 0, pageindex: 0 };
+    let successCount = 0;
+    let totalElapsedMs = 0;
+
+    for (const entry of this.fallbackMetrics) {
+      byReason[entry.reason]++;
+      byFailedPath[entry.failedPath]++;
+      if (entry.fallbackSucceeded) {
+        successCount++;
+      }
+      totalElapsedMs += entry.elapsedMs;
+    }
+
+    const count = this.fallbackMetrics.length || 1;
+
+    return {
+      totalFallbacks: this.fallbackMetrics.length,
+      byReason,
+      byFailedPath,
+      successRate: Number((successCount / count).toFixed(3)),
+      averageElapsedMs: Math.round(totalElapsedMs / count),
+    };
+  }
+
+  /**
+   * Clear fallback metrics log.
+   * Useful for testing or memory management.
+   */
+  clearFallbackMetrics(): void {
+    this.fallbackMetrics.length = 0;
+    this.logger.log('Fallback metrics cleared');
+  }
+
+  /**
+   * Check if fallback is currently enabled.
+   *
+   * @returns Whether fallback is enabled
+   */
+  isFallbackEnabled(): boolean {
+    return this.fallbackEnabled;
+  }
+
+  /**
+   * Get the configured timeout in milliseconds.
+   *
+   * @returns Timeout in milliseconds
+   */
+  getTimeoutMs(): number {
+    return this.timeoutMs;
   }
 }
