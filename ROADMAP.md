@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-17 | **Progresso:** 1506/1555 (96.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 1507/1555 (96.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1575 | Test     | [#1568] Integrate SINAPI API with price-aggregation.service ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1574 | Feature  | [#1567] Integrate SinapiService with API as primary data source ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1573 | Feature  | [#1565] Add SinapiApiClientService for Orcamentador API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-17 | #1572 | Docs     | [#1564] Document SINAPI API integration via Orcamentador ✅ - **Score 100/100 - Auto-merged** |
@@ -421,7 +422,7 @@
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
 |       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
 |       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | ✅     |
-|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
+|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | ✅     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
@@ -602,7 +603,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1554) - 7/12 (58%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1554) - 8/12 (67%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -619,7 +620,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1565 Criar SinapiApiClientService                     | P0         | ✅     |
 |       | ↳ #1566 ~~TreeBuilder~~ (CANCELADA - não necessária)     | -          | ❌     |
 |       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | ✅     |
-|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | 🔴     |
+|       | ↳ #1568 Integrar no price-aggregation.service            | P0         | ✅     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | 🔴     |
 | #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
@@ -679,11 +680,11 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 1555  |
-| Issues Abertas    | 58    |
-| Issues Fechadas   | 1499  |
-| Progresso         | 96.8% |
+| Issues Abertas    | 57    |
+| Issues Fechadas   | 1500  |
+| Progresso         | 96.9% |
 | Bugs P0 Abertos   | 4     |
-| M17 PageIndex+API | 7/12  |
+| M17 PageIndex+API | 8/12  |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
