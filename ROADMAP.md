@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 796/846 issues (94.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 797/846 issues (94.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1591 | Feature  | [#1541] Integrate PageIndex in Anti-Hallucination Agent ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1590 | Feature  | [#1582] Integrate jurisprudencia with ComplianceService ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1589 | Feature  | [#1581] Add jurisprudencia API for search and retrieval ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1588 | Feature  | [#1580] Add TCU acordaos indexation (55 items) ✅ - **Score 100/100 - Auto-merged** |
@@ -440,7 +441,7 @@
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | ✅     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
-| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
+| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
@@ -644,7 +645,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1580 Coletar e indexar acórdãos TCU Lei 14.133 (50)   | P0         | ✅     |
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | ✅     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
-| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | 🔴     |
+| #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
