@@ -6,6 +6,7 @@ import { EtpSection } from '../../entities/etp-section.entity';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
+import { RAGModule } from '../rag/rag.module';
 
 /**
  * Module for ETP chatbot functionality.
@@ -17,9 +18,11 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - Legal reference suggestions (Lei 14.133/2021)
  * - Anti-hallucination safeguards
  * - ETP section context injection
+ * - Hybrid RAG integration for legal context retrieval
  *
  * Issue #1392 - [CHAT-1167a] Create ChatMessage entity and backend module structure
  * Issue #1394 - [CHAT-1167c] Implement AI chat completion with ETP context injection
+ * Issue #1594 - [RAG-1542c] Integrate HybridRagService for legal context
  * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
  *
  * Related issues:
@@ -33,6 +36,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
   imports: [
     TypeOrmModule.forFeature([ChatMessage, Etp, EtpSection]),
     OrchestratorModule, // Provides OpenAIService for AI completion
+    RAGModule, // Provides HybridRagService for legal context retrieval
   ],
   controllers: [ChatController],
   providers: [ChatService],
