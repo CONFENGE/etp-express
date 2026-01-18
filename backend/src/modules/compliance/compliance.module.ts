@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ComplianceChecklist } from '../../entities/compliance-checklist.entity';
 import { ComplianceChecklistItem } from '../../entities/compliance-checklist-item.entity';
@@ -8,6 +8,7 @@ import { ComplianceValidationService } from './compliance-validation.service';
 import { ComplianceReportService } from './compliance-report.service';
 import { ComplianceChecklistSeeder } from './compliance-checklist.seeder';
 import { ComplianceController } from './compliance.controller';
+import { PageIndexModule } from '../pageindex/pageindex.module';
 
 /**
  * Modulo de Conformidade TCU/TCE.
@@ -38,6 +39,7 @@ import { ComplianceController } from './compliance.controller';
       ComplianceValidationHistory,
       Etp,
     ]),
+    forwardRef(() => PageIndexModule),
   ],
   controllers: [ComplianceController],
   providers: [
