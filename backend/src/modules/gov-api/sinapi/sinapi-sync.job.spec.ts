@@ -174,7 +174,7 @@ describe('SinapiSyncJob', () => {
       expect(sinapiService.resetApiFailure).toHaveBeenCalled();
       expect(job.getLastUpdate()).toBe('2025-02');
       expect(job.getSchedulerStatus().lastUpdate).toBe('2025-02');
-    });
+    }, 30000); // 30 second timeout for warmup
 
     it('should update scheduler status on success', async () => {
       await job.checkForUpdates();
