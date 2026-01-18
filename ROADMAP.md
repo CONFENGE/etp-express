@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 801/849 issues (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 802/850 issues (94.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1601 | Feature  | [#1596] Add benchmark suite for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1600 | Feature  | [#1595] Implement automatic fallback between RAG paths ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1599 | Feature  | [#1594] Add HybridRagService unified facade for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1598 | Feature  | [#1593] Add RagRouterService for Hybrid RAG routing ✅ - **Score 100/100 - Auto-merged** |
@@ -525,7 +526,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 19/27  | Alta 🔵    | Diferencial técnico   |
+| M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -623,7 +624,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1595) - 19/27 (70%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 20/28 (71%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -651,10 +652,11 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
-|       | ↳ #1592 QueryComplexityClassifier (1/5 do Hybrid RAG)    | P1         | ✅     |
-|       | ↳ #1593 RagRouterService (2/5 do Hybrid RAG)             | P1         | ✅     |
-|       | ↳ #1594 HybridRagService unified facade (3/5 do Hybrid RAG) | P1      | ✅     |
-|       | ↳ #1595 Automatic fallback between RAG paths (4/5)       | P1         | ✅     |
+|       | ↳ #1592 QueryComplexityClassifier (1/6 do Hybrid RAG)    | P1         | ✅     |
+|       | ↳ #1593 RagRouterService (2/6 do Hybrid RAG)             | P1         | ✅     |
+|       | ↳ #1594 HybridRagService unified facade (3/6 do Hybrid RAG) | P1      | ✅     |
+|       | ↳ #1595 Automatic fallback between RAG paths (4/6)       | P1         | ✅     |
+|       | ↳ #1596 Benchmark suite for Hybrid RAG (5/6)             | P1         | ✅     |
 | #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
@@ -714,7 +716,7 @@ Oportunidades de mercado identificadas.
 | Issues Fechadas   | 801   |
 | Progresso         | 94.4% |
 | Bugs P0 Abertos   | 3     |
-| M17 PageIndex+API | 19/27 |
+| M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
