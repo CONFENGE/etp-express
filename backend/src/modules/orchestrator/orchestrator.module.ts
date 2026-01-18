@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { OrchestratorService } from './orchestrator.service';
 import { OpenAIService } from './llm/openai.service';
 import { LegalAgent } from './agents/legal.agent';
@@ -12,6 +12,7 @@ import { RAGModule } from '../rag/rag.module';
 import { SearchModule } from '../search/search.module';
 import { GovApiModule } from '../gov-api/gov-api.module';
 import { GovSearchModule } from '../gov-api/gov-search/gov-search.module';
+import { PageIndexModule } from '../pageindex/pageindex.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { GovSearchModule } from '../gov-api/gov-search/gov-search.module';
     SearchModule,
     GovApiModule,
     GovSearchModule,
+    forwardRef(() => PageIndexModule),
   ],
   providers: [
     OrchestratorService,

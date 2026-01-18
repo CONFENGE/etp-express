@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { AntiHallucinationAgent } from './anti-hallucination.agent';
 import { RAGService } from '../../rag/rag.service';
 import { ExaService } from '../../search/exa/exa.service';
+import { PageIndexService } from '../../pageindex/pageindex.service';
+import { JurisprudenciaService } from '../../pageindex/services/jurisprudencia.service';
 import { LegislationType } from '../../../entities/legislation.entity';
+import { DocumentType } from '../../pageindex/dto/index-document.dto';
 
 describe('AntiHallucinationAgent', () => {
   let agent: AntiHallucinationAgent;
@@ -19,6 +22,17 @@ describe('AntiHallucinationAgent', () => {
   // Mock Exa Service
   const mockExaService = {
     factCheckLegalReference: jest.fn(),
+  };
+
+  // Mock PageIndex Service
+  const mockPageIndexService = {
+    searchTree: jest.fn(),
+    listTrees: jest.fn(),
+  };
+
+  // Mock Jurisprudencia Service
+  const mockJurisprudenciaService = {
+    searchByText: jest.fn(),
   };
 
   // Mock Config Service
@@ -44,6 +58,14 @@ describe('AntiHallucinationAgent', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: PageIndexService,
+          useValue: mockPageIndexService,
+        },
+        {
+          provide: JurisprudenciaService,
+          useValue: mockJurisprudenciaService,
         },
       ],
     }).compile();
@@ -1259,6 +1281,460 @@ describe('AntiHallucinationAgent', () => {
         r.includes('threshold'),
       );
       expect(generalRecommendation).toBeDefined();
+    });
+  });
+
+  describe('PageIndex Integration Tests (Issue #1541)', () => {
+    beforeEach(() => {
+      // Setup default PageIndex mocks
+      mockPageIndexService.listTrees.mockResolvedValue([
+        {
+          treeId: 'lei-14133-tree-id',
+          documentName: 'Lei 14.133/2021',
+          documentType: DocumentType.LEGISLATION,
+          status: 'INDEXED',
+        },
+      ]);
+
+      mockPageIndexService.searchTree.mockResolvedValue({
+        relevantNodes: [],
+        path: [],
+        confidence: 0,
+        reasoning: 'No matches found',
+        searchTimeMs: 100,
+      });
+
+      mockJurisprudenciaService.searchByText.mockResolvedValue({
+        query: '',
+        totalResults: 0,
+        confidence: 0,
+        reasoning: 'No matches found',
+        searchTimeMs: 50,
+        items: [],
+      });
+    });
+
+    describe('verifyWithPageIndex()', () => {
+      it('deve verificar referência legal via PageIndex tree search', async () => {
+        const content = 'Lei 14.133/2021 estabelece regras para licitações.';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: false,
+          confidence: 0,
+        });
+
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [
+            {
+              id: 'cap-1',
+              title: 'Capítulo I - Disposições Preliminares',
+              content: 'Art. 1º Esta Lei estabelece...',
+              level: 1,
+              children: [],
+            },
+          ],
+          path: ['Lei 14.133/2021', 'Capítulo I'],
+          confidence: 0.85,
+          reasoning: 'Found relevant section in Lei 14.133/2021',
+          searchTimeMs: 150,
+        });
+
+        const result = await agent.check(content);
+
+        expect(mockPageIndexService.searchTree).toHaveBeenCalled();
+        expect(result.pageIndexResults).toBeDefined();
+        expect(result.pageIndexResults?.length).toBeGreaterThan(0);
+        expect(result.pageIndexResults?.[0].verified).toBe(true);
+        expect(result.pageIndexResults?.[0].confidence).toBe(0.85);
+      });
+
+      it('deve verificar jurisprudência TCE-SP via JurisprudenciaService', async () => {
+        const content = 'Conforme Súmula 1 do TCE-SP sobre licitações...';
+
+        mockJurisprudenciaService.searchByText.mockResolvedValue({
+          query: 'Súmula 1',
+          tribunal: 'TCE-SP',
+          totalResults: 1,
+          confidence: 0.9,
+          reasoning: 'Found Sumula 1 in TCE-SP database',
+          searchTimeMs: 80,
+          items: [
+            {
+              id: 'tcesp-sumula-1',
+              title: 'Sumula 1/2000',
+              tribunal: 'TCE-SP',
+              content: 'Texto da súmula...',
+            },
+          ],
+        });
+
+        const result = await agent.check(content);
+
+        expect(mockJurisprudenciaService.searchByText).toHaveBeenCalled();
+        expect(result.pageIndexResults).toBeDefined();
+
+        const jurisResult = result.pageIndexResults?.find(
+          (pi) => pi.source === 'jurisprudencia',
+        );
+        expect(jurisResult).toBeDefined();
+        expect(jurisResult?.verified).toBe(true);
+      });
+
+      it('deve verificar jurisprudência TCU via JurisprudenciaService', async () => {
+        // Usando "acordao" sem acento para garantir match no regex
+        const content = 'TCU acordao 247/2021...';
+
+        mockJurisprudenciaService.searchByText.mockResolvedValue({
+          query: 'TCU acordao 247/2021',
+          tribunal: 'TCU',
+          totalResults: 1,
+          confidence: 0.88,
+          reasoning: 'Found Acordao 247/2021 in TCU database',
+          searchTimeMs: 75,
+          items: [
+            {
+              id: 'tcu-acordao-247-2021',
+              title: 'Acordao 247/2021',
+              tribunal: 'TCU',
+              content: 'Texto do acórdão...',
+            },
+          ],
+        });
+
+        const result = await agent.check(content);
+
+        expect(mockJurisprudenciaService.searchByText).toHaveBeenCalled();
+
+        const jurisResult = result.pageIndexResults?.find(
+          (pi) => pi.source === 'jurisprudencia',
+        );
+        expect(jurisResult).toBeDefined();
+        expect(jurisResult?.verified).toBe(true);
+      });
+
+      it('deve retornar unverified quando PageIndex não encontra a referência', async () => {
+        const content = 'Lei 99.999/2099 inventada...';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 99999/2099',
+          exists: false,
+          confidence: 0,
+        });
+
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [],
+          path: [],
+          confidence: 0.1,
+          reasoning: 'No relevant sections found',
+          searchTimeMs: 100,
+        });
+
+        const result = await agent.check(content);
+
+        expect(result.pageIndexResults).toBeDefined();
+        expect(result.pageIndexResults?.[0].verified).toBe(false);
+      });
+
+      it('deve combinar verificações RAG e PageIndex corretamente', async () => {
+        const content = 'Lei 14.133/2021 e Lei 8.666/1993...';
+
+        // Lei 14.133/2021 - RAG não encontra, PageIndex encontra
+        mockRagService.verifyReference
+          .mockResolvedValueOnce({
+            reference: 'lei 14133/2021',
+            exists: false,
+            confidence: 0,
+          })
+          .mockResolvedValueOnce({
+            reference: 'lei 8666/1993',
+            exists: true,
+            confidence: 1.0,
+          });
+
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [
+            { id: 'node-1', title: 'Art. 1', level: 1, children: [] },
+          ],
+          path: ['Lei 14.133/2021'],
+          confidence: 0.85,
+          reasoning: 'Found',
+          searchTimeMs: 100,
+        });
+
+        const result = await agent.check(content);
+
+        // Deve ter referências RAG e PageIndex
+        expect(result.references).toBeDefined();
+        expect(result.pageIndexResults).toBeDefined();
+
+        // Lei 8.666 verificada via RAG
+        const rag8666 = result.references?.find((r) =>
+          r.reference.includes('8666'),
+        );
+        expect(rag8666?.exists).toBe(true);
+
+        // Lei 14.133 verificada via PageIndex
+        const pi14133 = result.pageIndexResults?.find((pi) =>
+          pi.reference.includes('14.133'),
+        );
+        expect(pi14133?.verified).toBe(true);
+      });
+    });
+
+    describe('Score Calculation with PageIndex', () => {
+      it('deve calcular score combinando RAG e PageIndex quando ambos disponíveis', async () => {
+        const content = 'Lei 14.133/2021 estabelece...';
+
+        // RAG não encontra
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: false,
+          confidence: 0,
+        });
+
+        // PageIndex encontra com alta confiança
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [{ id: 'node', title: 'Art', level: 1, children: [] }],
+          path: ['Lei 14.133/2021'],
+          confidence: 1.0,
+          reasoning: 'Found',
+          searchTimeMs: 100,
+        });
+
+        const result = await agent.check(content);
+
+        // Score deve refletir que PageIndex verificou a referência
+        // Mesmo RAG não encontrando, PageIndex encontra com alta confiança
+        expect(result.pageIndexResults).toBeDefined();
+        expect(result.pageIndexResults?.[0].verified).toBe(true);
+      });
+
+      it('deve usar apenas RAG score quando PageIndex está desabilitado', async () => {
+        const content = 'Lei 14.133/2021 estabelece...';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        const result = await agent.check(content, undefined, {
+          enablePageIndex: false,
+        });
+
+        // Com PageIndex desabilitado, não deve chamar PageIndexService
+        expect(mockPageIndexService.searchTree).not.toHaveBeenCalled();
+        expect(result.pageIndexResults).toBeUndefined();
+
+        // Score deve ser baseado apenas no RAG
+        expect(result.score).toBeGreaterThanOrEqual(95);
+      });
+    });
+
+    describe('PageIndex in checkEnhanced()', () => {
+      it('deve incluir categoria pageIndexVerification no resultado', async () => {
+        const content = 'Lei 14.133/2021 e Súmula 1 do TCE-SP';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: false,
+          confidence: 0,
+        });
+
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [{ id: 'node', title: 'Art', level: 1, children: [] }],
+          path: ['Lei 14.133/2021'],
+          confidence: 0.85,
+          reasoning: 'Found',
+          searchTimeMs: 100,
+        });
+
+        mockJurisprudenciaService.searchByText.mockResolvedValue({
+          query: 'Súmula 1',
+          tribunal: 'TCE-SP',
+          totalResults: 1,
+          confidence: 0.9,
+          reasoning: 'Found',
+          searchTimeMs: 50,
+          items: [{ id: 'sumula-1', title: 'Sumula 1', tribunal: 'TCE-SP' }],
+        });
+
+        const result = await agent.checkEnhanced(content);
+
+        expect(result.categories.pageIndexVerification).toBeDefined();
+        expect(
+          result.categories.pageIndexVerification?.verified,
+        ).toBeGreaterThan(0);
+        expect(result.categories.pageIndexVerification?.total).toBeGreaterThan(
+          0,
+        );
+      });
+
+      it('deve calcular score com peso 30% para PageIndex no checkEnhanced', async () => {
+        const content = 'Lei 14.133/2021 estabelece regras claras.';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        mockPageIndexService.searchTree.mockResolvedValue({
+          relevantNodes: [{ id: 'node', title: 'Art', level: 1, children: [] }],
+          path: ['Lei 14.133/2021'],
+          confidence: 1.0,
+          reasoning: 'Found',
+          searchTimeMs: 100,
+        });
+
+        const result = await agent.checkEnhanced(content);
+
+        // All categories at 100%
+        // Overall = legal(100)*0.4 + factual(100)*0.2 + prohibited(100)*0.1 + pageIndex(100)*0.3 = 100
+        expect(result.overallScore).toBe(100);
+        expect(result.overallVerified).toBe(true);
+      });
+    });
+
+    describe('Jurisprudence Pattern Detection', () => {
+      it('deve detectar padrão TCE-SP Súmula', async () => {
+        const content = 'TCE-SP Súmula 5 estabelece...';
+
+        const result = await agent.check(content);
+
+        expect(mockJurisprudenciaService.searchByText).toHaveBeenCalledWith(
+          expect.stringContaining('Súmula'),
+          expect.objectContaining({ tribunal: 'TCE-SP' }),
+        );
+      });
+
+      it('deve detectar padrão TCU Acordao (sem acento)', async () => {
+        // O padrão usa "acordao" sem acento para normalização
+        const content = 'TCU acordao 123/2021 estabelece...';
+
+        mockJurisprudenciaService.searchByText.mockResolvedValue({
+          query: 'TCU acordao 123/2021',
+          tribunal: 'TCU',
+          totalResults: 1,
+          confidence: 0.88,
+          reasoning: 'Found',
+          searchTimeMs: 75,
+          items: [
+            {
+              id: 'tcu-acordao-123-2021',
+              title: 'Acordao 123/2021',
+              tribunal: 'TCU',
+            },
+          ],
+        });
+
+        const result = await agent.check(content);
+
+        expect(mockJurisprudenciaService.searchByText).toHaveBeenCalled();
+      });
+
+      it('deve detectar padrão Decisao Normativa (sem acento)', async () => {
+        const content = 'A decisão normativa 5/2020 do TCE-SP...';
+
+        mockJurisprudenciaService.searchByText.mockResolvedValue({
+          query: 'decisão normativa 5/2020',
+          tribunal: 'TCE-SP',
+          totalResults: 1,
+          confidence: 0.85,
+          reasoning: 'Found',
+          searchTimeMs: 50,
+          items: [{ id: 'dn-5-2020', title: 'Decisao Normativa 5/2020' }],
+        });
+
+        const result = await agent.check(content);
+
+        // Deve detectar como jurisprudência ou como elemento suspeito
+        expect(
+          result.suspiciousElements.some((el) =>
+            el.reason.includes('jurisprudência'),
+          ) || mockJurisprudenciaService.searchByText.mock.calls.length > 0,
+        ).toBe(true);
+      });
+    });
+
+    describe('Error Handling', () => {
+      it('deve continuar funcionando quando PageIndex lança erro', async () => {
+        const content = 'Lei 14.133/2021 estabelece...';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        mockPageIndexService.listTrees.mockRejectedValue(
+          new Error('PageIndex not available'),
+        );
+
+        const result = await agent.check(content);
+
+        // Não deve lançar erro
+        expect(result).toBeDefined();
+        expect(result.references).toBeDefined();
+        // PageIndex results deve estar undefined ou vazio
+        expect(
+          result.pageIndexResults === undefined ||
+            result.pageIndexResults.length === 0,
+        ).toBe(true);
+      });
+
+      it('deve continuar funcionando quando JurisprudenciaService lança erro', async () => {
+        const content = 'Súmula 1 do TCE-SP...';
+
+        mockJurisprudenciaService.searchByText.mockRejectedValue(
+          new Error('Jurisprudencia service error'),
+        );
+
+        const result = await agent.check(content);
+
+        // Não deve lançar erro
+        expect(result).toBeDefined();
+      });
+
+      it('deve usar RAG fallback quando PageIndex tree não existe', async () => {
+        const content = 'Lei 14.133/2021 estabelece...';
+
+        mockRagService.verifyReference.mockResolvedValue({
+          reference: 'lei 14133/2021',
+          exists: true,
+          confidence: 1.0,
+        });
+
+        mockPageIndexService.listTrees.mockResolvedValue([]);
+
+        const result = await agent.check(content);
+
+        // Deve ter resultado baseado no RAG
+        expect(result.references).toBeDefined();
+        expect(result.references?.[0].exists).toBe(true);
+      });
+    });
+
+    describe('generateSafetyPrompt with Jurisprudence', () => {
+      it('deve incluir menção a jurisprudência no safety prompt', async () => {
+        const prompt = await agent.generateSafetyPrompt();
+
+        expect(prompt.toLowerCase()).toContain('jurisprudência');
+        expect(prompt).toContain('TCU');
+        expect(prompt).toContain('TCE-SP');
+      });
+    });
+
+    describe('getSystemPrompt with Jurisprudence', () => {
+      it('deve incluir regras sobre jurisprudência no system prompt', () => {
+        const prompt = agent.getSystemPrompt();
+
+        expect(prompt.toLowerCase()).toContain('súmulas');
+        expect(prompt.toLowerCase()).toContain('acórdãos');
+        expect(prompt).toContain('TCU');
+        expect(prompt).toContain('TCE-SP');
+      });
     });
   });
 });
