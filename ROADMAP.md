@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 802/850 issues (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-18 | **Progresso:** 803/851 issues (94.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1608 | Feature  | [#1602] Create ItemCategory entity with CATMAT/CATSER taxonomy ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1601 | Feature  | [#1596] Add benchmark suite for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1600 | Feature  | [#1595] Implement automatic fallback between RAG paths ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1599 | Feature  | [#1594] Add HybridRagService unified facade for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
@@ -522,7 +523,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 1/8    | 13% 🟡     | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 2/8    | 25% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
@@ -603,7 +604,7 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275) - 1/8 (13%) 🟡 STARTED
+#### M13: Inteligência de Mercado (#1268-#1275) - 2/8 (25%) 🟡 STARTED
 
 Dados proprietários e analytics avançados.
 
@@ -611,7 +612,13 @@ Dados proprietários e analytics avançados.
 | ----- | --------------------------------------------- | ------ |
 | #1268 | [Market Intel] Modulo Market Intelligence - EPIC | 🔴   |
 |       | ↳ #1269 Contract Price Collector              | ✅     |
-|       | ↳ #1270 Price normalization and categorization | 🔴    |
+|       | ↳ #1270 Price normalization and categorization | 🟡    |
+|       |   ↳ #1602 ItemCategory entity CATMAT/CATSER   | ✅     |
+|       |   ↳ #1603 ItemNormalizationService            | 🔴     |
+|       |   ↳ #1604 Text similarity algorithms          | 🔴     |
+|       |   ↳ #1605 NormalizationPipeline               | 🔴     |
+|       |   ↳ #1606 Manual review API                   | 🔴     |
+|       |   ↳ #1607 Benchmark and accuracy validation   | 🔴     |
 |       | ↳ #1271 Regional benchmark engine              | 🔴    |
 |       | ↳ #1272 Overprice alerts system                | 🔴    |
 |       | ↳ #1273 Market analytics dashboard             | 🔴    |
