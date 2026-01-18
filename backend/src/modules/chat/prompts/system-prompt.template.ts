@@ -14,6 +14,12 @@ export interface SystemPromptOptions {
   contextField?: string;
   /** Whether to include anti-hallucination instructions */
   includeAntiHallucination?: boolean;
+  /**
+   * RAG context from Hybrid RAG search.
+   * Contains relevant legislation and jurisprudence.
+   * Issue #1594 - HybridRagService integration
+   */
+  ragContext?: string;
 }
 
 /**
@@ -130,6 +136,7 @@ export function buildSystemPrompt(options: SystemPromptOptions): string {
     sections,
     contextField,
     includeAntiHallucination = true,
+    ragContext,
   } = options;
 
   const templateType = getTemplateTypeDescription(etp.templateType);
@@ -137,6 +144,18 @@ export function buildSystemPrompt(options: SystemPromptOptions): string {
   const fieldGuidance = getFieldGuidance(contextField);
   const antiHallucination = includeAntiHallucination
     ? ANTI_HALLUCINATION_INSTRUCTIONS
+    : '';
+
+  // Build RAG context section if available
+  // Issue #1594 - HybridRagService integration
+  const ragContextSection = ragContext
+    ? `
+
+## Contexto Juridico Relevante (RAG)
+${ragContext.substring(0, 2000)}
+${ragContext.length > 2000 ? '\n[...conteudo truncado...]' : ''}
+
+**Nota:** O contexto acima foi recuperado automaticamente e pode ser usado para fundamentar a resposta.`
     : '';
 
   return `Voce e um assistente especializado em Estudos Tecnicos Preliminares (ETP) conforme a Lei 14.133/2021 (Nova Lei de Licitacoes e Contratos Administrativos).
@@ -166,6 +185,7 @@ ${fieldGuidance}
 - IN SEGES/ME n 65/2021 - Contratacoes de TI
 - Decreto 10.024/2019 - Licitacoes Eletronicas
 - IN SLTI/MP n 01/2010 - Sustentabilidade
+${ragContextSection}
 ${antiHallucination}
 
 ## Instrucoes de Comportamento
@@ -175,7 +195,8 @@ ${antiHallucination}
 4. Se nao souber algo, diga "nao sei" - NUNCA invente
 5. Seja conciso, maximo 500 palavras por resposta
 6. Use linguagem tecnica mas acessivel
-7. Quando sugerir texto para inserir, formate claramente`;
+7. Quando sugerir texto para inserir, formate claramente
+8. Se houver contexto juridico RAG disponivel, use-o para fundamentar a resposta`;
 }
 
 /**
