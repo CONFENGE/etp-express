@@ -3,8 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PageIndexService } from './pageindex.service';
 import { PageIndexController } from './pageindex.controller';
+import { JurisprudenciaController } from './jurisprudencia.controller';
 import { TreeBuilderService } from './services/tree-builder.service';
 import { TreeSearchService } from './services/tree-search.service';
+import { JurisprudenciaService } from './services/jurisprudencia.service';
 import { Lei14133Seeder } from './seeders/lei-14133.seeder';
 import { JurisprudenciaSeeder } from './seeders/jurisprudencia.seeder';
 import { TceSPSeeder } from './seeders/tcesp.seeder';
@@ -33,6 +35,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - #1552: TreeBuilderService with Python integration ✅
  * - #1553: TreeSearchService with LLM reasoning ✅
  * - #1554: PoC with Lei 14.133/2021 ✅
+ * - #1581: JurisprudenciaService and API endpoints ✅
  *
  * Seeders available:
  * - Lei14133Seeder: Seeds Lei 14.133/2021 (Nova Lei de Licitacoes)
@@ -50,11 +53,12 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TypeOrmModule.forFeature([DocumentTree]),
     forwardRef(() => OrchestratorModule),
   ],
-  controllers: [PageIndexController],
+  controllers: [PageIndexController, JurisprudenciaController],
   providers: [
     PageIndexService,
     TreeBuilderService,
     TreeSearchService,
+    JurisprudenciaService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
@@ -64,6 +68,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     PageIndexService,
     TreeBuilderService,
     TreeSearchService,
+    JurisprudenciaService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
