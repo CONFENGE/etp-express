@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 806/852 issues (94.6%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 807/852 issues (94.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1614 | Test     | [#1607] Add benchmark suite for normalization accuracy validation ✅ - **Score 100/100 - Auto-merged - EPIC #1270 COMPLETE (6/6)** |
 | 2026-01-19 | #1613 | Deps     | Bump OpenTelemetry packages in /backend (auto-instrumentations-node 0.68.0, exporter-trace-otlp-http 0.210.0, sdk-node 0.210.0) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1612 | Feature  | [#1606] Add ItemNormalizationController for manual review API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1611 | Feature  | [#1605] Add NormalizationPipelineService for batch processing ✅ - **Score 100/100 - Auto-merged** |
@@ -617,13 +618,13 @@ Dados proprietários e analytics avançados.
 | ----- | --------------------------------------------- | ------ |
 | #1268 | [Market Intel] Modulo Market Intelligence - EPIC | 🔴   |
 |       | ↳ #1269 Contract Price Collector              | ✅     |
-|       | ↳ #1270 Price normalization and categorization | 🟡    |
+|       | ↳ #1270 Price normalization and categorization | ✅    |
 |       |   ↳ #1602 ItemCategory entity CATMAT/CATSER   | ✅     |
 |       |   ↳ #1603 ItemNormalizationService            | ✅     |
 |       |   ↳ #1604 Text similarity algorithms          | ✅     |
 |       |   ↳ #1605 NormalizationPipeline               | ✅     |
 |       |   ↳ #1606 Manual review API                   | ✅     |
-|       |   ↳ #1607 Benchmark and accuracy validation   | 🔴     |
+|       |   ↳ #1607 Benchmark and accuracy validation   | ✅     |
 |       | ↳ #1271 Regional benchmark engine              | 🔴    |
 |       | ↳ #1272 Overprice alerts system                | 🔴    |
 |       | ↳ #1273 Market analytics dashboard             | 🔴    |
