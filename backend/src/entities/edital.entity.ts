@@ -14,45 +14,70 @@ import { User } from './user.entity';
 import { Organization } from './organization.entity';
 
 /**
- * Modalidade de licitacao conforme Lei 14.133/2021.
+ * Modalidade de licitacao conforme Lei 14.133/2021 Art. 28.
+ * Não inclui Dispensa e Inexigibilidade (são contratações diretas, não licitações).
  */
 export enum EditalModalidade {
-  PREGAO = 'pregao',
-  CONCORRENCIA = 'concorrencia',
-  DISPENSA = 'dispensa',
-  INEXIGIBILIDADE = 'inexigibilidade',
+  PREGAO = 'PREGAO',
+  CONCORRENCIA = 'CONCORRENCIA',
+  CONCURSO = 'CONCURSO',
+  LEILAO = 'LEILAO',
+  DIALOGO_COMPETITIVO = 'DIALOGO_COMPETITIVO',
 }
 
 /**
- * Criterio de julgamento/tipo de licitacao conforme Lei 14.133/2021.
+ * Tipo de contratacao direta conforme Lei 14.133/2021 Arts. 74-75.
+ * Separado de modalidade pois não são licitações.
+ */
+export enum EditalTipoContratacaoDireta {
+  INEXIGIBILIDADE = 'INEXIGIBILIDADE',
+  DISPENSA = 'DISPENSA',
+}
+
+/**
+ * Criterio de julgamento conforme Lei 14.133/2021 Art. 33.
  */
 export enum EditalCriterioJulgamento {
-  MENOR_PRECO = 'menor_preco',
-  MELHOR_TECNICA = 'melhor_tecnica',
-  TECNICA_E_PRECO = 'tecnica_e_preco',
-  MAIOR_LANCE = 'maior_lance', // Para alienacao de bens
-  MAIOR_RETORNO_ECONOMICO = 'maior_retorno_economico', // Para concessao
+  MENOR_PRECO = 'MENOR_PRECO',
+  MAIOR_DESCONTO = 'MAIOR_DESCONTO',
+  MELHOR_TECNICA = 'MELHOR_TECNICA',
+  TECNICA_PRECO = 'TECNICA_PRECO',
+  MAIOR_LANCE = 'MAIOR_LANCE',
+  MAIOR_RETORNO_ECONOMICO = 'MAIOR_RETORNO_ECONOMICO',
 }
 
 /**
- * Status do Edital.
- * Segue ciclo de vida: draft -> published -> cancelled -> archived
+ * Modo de disputa conforme Lei 14.133/2021 Art. 56.
+ */
+export enum EditalModoDisputa {
+  ABERTO = 'ABERTO',
+  FECHADO = 'FECHADO',
+  ABERTO_FECHADO = 'ABERTO_FECHADO',
+}
+
+/**
+ * Status do Edital com workflow de aprovação.
+ * Ciclo: draft → review → approved → published → suspended/revoked → closed → archived
  */
 export enum EditalStatus {
   DRAFT = 'draft',
+  REVIEW = 'review',
+  APPROVED = 'approved',
   PUBLISHED = 'published',
-  CANCELLED = 'cancelled',
+  SUSPENDED = 'suspended',
+  REVOKED = 'revoked',
+  CLOSED = 'closed',
   ARCHIVED = 'archived',
 }
 
 /**
- * Entity Edital - Instrumento convocatorio para licitacoes publicas.
+ * Entity Edital - Instrumento convocatório para licitações públicas.
  *
- * Representa o edital de licitacao conforme Lei 14.133/2021 (Nova Lei de Licitacoes).
- * Gerado a partir de ETP aprovado, Termo de Referencia e Pesquisa de Precos.
+ * Representa o edital de licitação conforme Lei 14.133/2021 (Nova Lei de Licitações).
+ * Gerado a partir de ETP aprovado, Termo de Referência e Pesquisa de Preços.
  *
- * @see Lei 14.133/2021 Art. 25 - Requisitos obrigatorios do edital
- * @see Lei 14.133/2021 Art. 6, inciso XIII - Definicao de edital
+ * @see Lei 14.133/2021 Art. 25 - Requisitos obrigatórios do edital
+ * @see Lei 14.133/2021 Art. 6, inciso XIII - Definição de edital
  */
 @Entity('editais')
 export class Edital {
@@ -64,37 +89,37 @@ export class Edital {
   // ============================================
 
   /**
-   * ID do ETP que originou este Edital.
-   * Relacionamento obrigatorio - um Edital deriva de um ETP.
-   */
-  @Column({ type: 'uuid' })
-  etpId: string;
-
-  @ManyToOne(() => Etp, { nullable: false, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'etpId' })
-  etp: Etp;
-
-  /**
-   * ID do Termo de Referencia.
-   * Documento intermediario que detalha especificacoes tecnicas.
+   * ID do ETP que originou este Edital (opcional).
+   * Um Edital pode ser criado independentemente ou derivar de um ETP.
    */
   @Column({ type: 'uuid', nullable: true })
-  termoReferenciaId: string;
+  etpId: string | null;
+
+  @ManyToOne(() => Etp, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'etpId' })
+  etp?: Etp;
+
+  /**
+   * ID do Termo de Referência (opcional).
+   * Documento intermediário que detalha especificações técnicas.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  termoReferenciaId: string | null;
 
   @ManyToOne(() => TermoReferencia, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'termoReferenciaId' })
-  termoReferencia: TermoReferencia;
+  termoReferencia?: TermoReferencia;
 
   /**
-   * ID da Pesquisa de Precos.
-   * Fundamentacao de precos conforme IN SEGES/ME n 65/2021.
+   * ID da Pesquisa de Preços (opcional).
+   * Fundamentação de preços conforme IN SEGES/ME nº 65/2021.
    */
   @Column({ type: 'uuid', nullable: true })
-  pesquisaPrecosId: string;
+  pesquisaPrecosId: string | null;
 
   @ManyToOne(() => PesquisaPrecos, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'pesquisaPrecosId' })
-  pesquisaPrecos: PesquisaPrecos;
+  pesquisaPrecos?: PesquisaPrecos;
 
   // ============================================
   // Multi-tenancy (B2G)
@@ -102,7 +127,6 @@ export class Edital {
 
   /**
    * Organization ID para isolamento multi-tenant.
-   * Herdado do ETP de origem.
    */
   @Column({ type: 'uuid' })
   organizationId: string;
@@ -112,187 +136,315 @@ export class Edital {
   organization: Organization;
 
   // ============================================
-  // Campos obrigatorios do Edital (Lei 14.133/2021 Art. 25)
+  // Identificação do Edital (Art. 25, caput)
   // ============================================
 
   /**
-   * Numero do edital.
-   * Identificacao unica do edital no orgao.
+   * Número do edital.
+   * Identificação única do edital no órgão.
    * Ex: "001/2024-PREGAO"
    */
   @Column({ type: 'varchar', length: 50 })
   numero: string;
 
   /**
-   * Modalidade de licitacao.
-   * Pregao, Concorrencia, Dispensa, Inexigibilidade.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
+   * Número do processo administrativo.
+   * Ex: "12345.678910/2024-11"
    */
-  @Column({
-    type: 'enum',
-    enum: EditalModalidade,
-  })
-  modalidade: EditalModalidade;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  numeroProcesso: string | null;
 
   /**
-   * Criterio de julgamento/tipo de licitacao.
-   * Menor preco, melhor tecnica, tecnica e preco, etc.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
+   * UASG - Unidade Administrativa de Serviços Gerais.
+   * Código de 6 dígitos do SISG (Sistema de Serviços Gerais).
    */
-  @Column({
-    type: 'enum',
-    enum: EditalCriterioJulgamento,
-  })
-  criterioJulgamento: EditalCriterioJulgamento;
+  @Column({ type: 'varchar', length: 6, nullable: true })
+  uasg: string | null;
+
+  // ============================================
+  // Objeto (Art. 25, I)
+  // ============================================
 
   /**
-   * Objeto da licitacao.
-   * Descricao clara e precisa do que sera contratado.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
+   * Objeto da licitação.
+   * Descrição clara e precisa do que será contratado.
+   * Obrigatório - Art. 25 da Lei 14.133/2021
    */
   @Column({ type: 'text' })
   objeto: string;
 
   /**
-   * Condicoes de participacao.
-   * Requisitos para participar da licitacao (ex: porte da empresa, regularidade fiscal).
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
+   * Descrição detalhada do objeto.
+   * Complemento opcional com mais detalhes técnicos.
    */
-  @Column({ type: 'text' })
-  condicoesParticipacao: string;
-
-  /**
-   * Requisitos de habilitacao.
-   * Documentacao exigida para comprovar capacidade tecnica, juridica e fiscal.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'text' })
-  requisitosHabilitacao: string;
-
-  /**
-   * Sancoes aplicaveis.
-   * Penalidades por inadimplemento (multas, suspensao, declaracao de inidoneidade).
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'text' })
-  sancoesAplicaveis: string;
-
-  /**
-   * Prazo de vigencia do contrato em dias.
-   * Duracao prevista para execucao do objeto.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'int' })
-  prazoVigencia: number;
-
-  /**
-   * Dotacao orcamentaria.
-   * Codigo da dotacao no orcamento publico.
-   * Ex: "02.031.0001.2001.339039"
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'varchar', length: 100 })
-  dotacaoOrcamentaria: string;
-
-  /**
-   * Data e hora de abertura das propostas.
-   * Momento em que as propostas serao abertas/analisadas.
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'timestamp' })
-  dataAbertura: Date;
-
-  /**
-   * Local de realizacao da licitacao.
-   * Onde sera realizada a sessao publica (ou URL para sessao eletronica).
-   * Obrigatorio - Art. 25 da Lei 14.133/2021
-   */
-  @Column({ type: 'text' })
-  local: string;
+  @Column({ type: 'text', nullable: true })
+  descricaoObjeto: string | null;
 
   // ============================================
-  // Campos adicionais relevantes
+  // Modalidade e Tipo (Art. 25, II e III)
   // ============================================
 
   /**
-   * Valor estimado da contratacao.
-   * Fundamentado na pesquisa de precos.
+   * Modalidade de licitação (Art. 28).
+   * Pregão, Concorrência, Concurso, Leilão, Diálogo Competitivo.
+   * Nullable porque pode ser uma contratação direta (Dispensa/Inexigibilidade).
    */
-  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valorEstimado: number;
+  @Column({
+    type: 'enum',
+    enum: EditalModalidade,
+    nullable: true,
+  })
+  modalidade: EditalModalidade | null;
 
   /**
-   * Criterios detalhados de julgamento.
-   * Descricao dos criterios de avaliacao e pontuacao (se aplicavel).
+   * Tipo de contratação direta (Arts. 74-75).
+   * Dispensa ou Inexigibilidade (quando não é licitação).
+   * Nullable porque pode ser uma modalidade de licitação.
+   */
+  @Column({
+    type: 'enum',
+    enum: EditalTipoContratacaoDireta,
+    nullable: true,
+  })
+  tipoContratacaoDireta: EditalTipoContratacaoDireta | null;
+
+  /**
+   * Critério de julgamento (Art. 33).
+   * Menor preço, melhor técnica, técnica e preço, etc.
+   * Obrigatório.
+   */
+  @Column({
+    type: 'enum',
+    enum: EditalCriterioJulgamento,
+    default: EditalCriterioJulgamento.MENOR_PRECO,
+  })
+  criterioJulgamento: EditalCriterioJulgamento;
+
+  /**
+   * Modo de disputa (Art. 56).
+   * Aberto, fechado ou aberto-fechado.
+   * Obrigatório.
+   */
+  @Column({
+    type: 'enum',
+    enum: EditalModoDisputa,
+    default: EditalModoDisputa.ABERTO,
+  })
+  modoDisputa: EditalModoDisputa;
+
+  // ============================================
+  // Condições de participação (Art. 25, IV)
+  // ============================================
+
+  /**
+   * Condições de participação.
+   * Requisitos para participar da licitação (ex: porte da empresa, regularidade fiscal).
    */
   @Column({ type: 'text', nullable: true })
-  criteriosJulgamentoDetalhado: string;
+  condicoesParticipacao: string | null;
 
   /**
-   * Regras de recursos.
-   * Prazos e procedimentos para interposicao de recursos administrativos.
-   */
-  @Column({ type: 'text', nullable: true })
-  regrasRecursos: string;
-
-  /**
-   * Regras de fiscalizacao e gestao do contrato.
-   * Como sera feita a fiscalizacao e gestao apos assinatura.
-   */
-  @Column({ type: 'text', nullable: true })
-  regrasFiscalizacaoGestao: string;
-
-  /**
-   * Regras de entrega do objeto.
-   * Condicoes, prazos e formas de entrega.
-   */
-  @Column({ type: 'text', nullable: true })
-  regrasEntregaObjeto: string;
-
-  /**
-   * Condicoes de pagamento.
-   * Forma, prazo e condicoes para pagamento.
-   */
-  @Column({ type: 'text', nullable: true })
-  condicoesPagamento: string;
-
-  /**
-   * Programa de Integridade exigido.
-   * Se aplicavel, exigencia de programa de integridade (§4º Art. 25).
-   * Boolean indicando se e obrigatorio.
+   * Exclusividade para ME/EPP.
+   * Se a licitação é exclusiva para Micro e Pequenas Empresas (LC 123/2006).
    */
   @Column({ type: 'boolean', default: false })
-  exigeProgramaIntegridade: boolean;
+  exclusividadeMeEpp: boolean;
 
   /**
-   * Indice de reajuste de precos.
-   * Indice a ser utilizado para reajuste (§7º Art. 25).
-   * Ex: "IPCA", "INPC", "IGP-M"
+   * Valor limite para ME/EPP.
+   * Limite de valor para aplicação dos benefícios da LC 123/2006.
+   */
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  valorLimiteMeEpp: string | null;
+
+  /**
+   * Cota reservada para ME/EPP (percentual).
+   * Percentual da contratação reservado para ME/EPP.
+   */
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  cotaReservadaMeEpp: string | null;
+
+  /**
+   * Exigência de consórcio.
+   * Se há exigência ou permissão para participação em consórcio.
    */
   @Column({ type: 'varchar', length: 50, nullable: true })
-  indiceReajuste: string;
+  exigenciaConsorcio: string | null;
+
+  // ============================================
+  // Requisitos de habilitação (Art. 25, V)
+  // ============================================
 
   /**
-   * Data base para reajuste.
-   * Data de referencia para aplicacao do reajuste.
-   */
-  @Column({ type: 'timestamp', nullable: true })
-  dataBaseReajuste: Date;
-
-  /**
-   * Anexos do edital.
-   * Estrutura JSON com referencias a arquivos anexos
-   * (termo de referencia, projetos, minuta de contrato, etc.)
+   * Requisitos de habilitação (estruturado).
+   * Documentação exigida para comprovar capacidade técnica, jurídica e fiscal.
+   * Estrutura JSON para permitir múltiplos requisitos categorizados.
    */
   @Column({ type: 'jsonb', nullable: true })
-  anexos: Record<string, unknown>;
+  requisitosHabilitacao: Record<string, unknown> | null;
+
+  // ============================================
+  // Sanções (Art. 25, VI)
+  // ============================================
 
   /**
-   * Observacoes gerais.
-   * Informacoes complementares nao categorizadas.
+   * Sanções administrativas aplicáveis.
+   * Penalidades por inadimplemento (multas, suspensão, declaração de inidoneidade).
    */
   @Column({ type: 'text', nullable: true })
-  observacoes: string;
+  sancoesAdministrativas: string | null;
+
+  // ============================================
+  // Prazo de vigência (Art. 25, VII)
+  // ============================================
+
+  /**
+   * Prazo de vigência do contrato em dias.
+   * Duração prevista para execução do objeto.
+   */
+  @Column({ type: 'int', nullable: true })
+  prazoVigencia: number | null;
+
+  /**
+   * Possibilidade de prorrogação.
+   * Condições para prorrogação do contrato.
+   */
+  @Column({ type: 'text', nullable: true })
+  possibilidadeProrrogacao: string | null;
+
+  // ============================================
+  // Dotação orçamentária (Art. 25, VIII)
+  // ============================================
+
+  /**
+   * Dotação orçamentária.
+   * Código da dotação no orçamento público.
+   * Ex: "02.031.0001.2001.339039"
+   */
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  dotacaoOrcamentaria: string | null;
+
+  /**
+   * Fonte de recursos.
+   * Origem dos recursos para pagamento (ex: "Tesouro", "Próprios").
+   */
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  fonteRecursos: string | null;
+
+  // ============================================
+  // Valores (Art. 25, IX)
+  // ============================================
+
+  /**
+   * Valor estimado da contratação.
+   * Fundamentado na pesquisa de preços.
+   */
+  @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
+  valorEstimado: string | null;
+
+  /**
+   * Sigilo do orçamento.
+   * Se o orçamento é sigiloso (Art. 34).
+   */
+  @Column({ type: 'boolean', default: false })
+  sigiloOrcamento: boolean;
+
+  // ============================================
+  // Prazos do processo
+  // ============================================
+
+  /**
+   * Prazos do processo licitatório (estruturado).
+   * Estrutura JSON com múltiplos prazos (proposta, impugnação, recursos, etc.).
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  prazos: Record<string, unknown> | null;
+
+  /**
+   * Data e hora da sessão pública.
+   * Momento em que as propostas serão abertas/analisadas.
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  dataSessaoPublica: Date | null;
+
+  /**
+   * Local da sessão pública.
+   * Onde será realizada a sessão pública (ou URL para sessão eletrônica).
+   */
+  @Column({ type: 'text', nullable: true })
+  localSessaoPublica: string | null;
+
+  // ============================================
+  // Cláusulas e anexos
+  // ============================================
+
+  /**
+   * Cláusulas contratuais (estruturado).
+   * Estrutura JSON com cláusulas do contrato.
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  clausulas: Record<string, unknown> | null;
+
+  /**
+   * Anexos do edital (estruturado).
+   * Estrutura JSON com referências a arquivos anexos
+   * (termo de referência, projetos, minuta de contrato, etc.)
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  anexos: Record<string, unknown> | null;
+
+  // ============================================
+  // Informações adicionais
+  // ============================================
+
+  /**
+   * Fundamentação legal.
+   * Artigos da Lei 14.133/2021 e outras normas aplicáveis.
+   */
+  @Column({ type: 'text', nullable: true })
+  fundamentacaoLegal: string | null;
+
+  /**
+   * Condições de pagamento.
+   * Forma, prazo e condições para pagamento.
+   */
+  @Column({ type: 'text', nullable: true })
+  condicoesPagamento: string | null;
+
+  /**
+   * Garantia contratual.
+   * Exigência e tipo de garantia (caução, seguro-garantia, etc.).
+   */
+  @Column({ type: 'text', nullable: true })
+  garantiaContratual: string | null;
+
+  /**
+   * Reajuste contratual.
+   * Índice e condições para reajuste de preços.
+   */
+  @Column({ type: 'text', nullable: true })
+  reajusteContratual: string | null;
+
+  /**
+   * Local de entrega.
+   * Onde o objeto será entregue/executado.
+   */
+  @Column({ type: 'text', nullable: true })
+  localEntrega: string | null;
+
+  /**
+   * Sistema eletrônico.
+   * Nome do sistema eletrônico utilizado (ex: "Comprasnet", "Licitações-e").
+   */
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  sistemaEletronico: string | null;
+
+  /**
+   * Link do sistema eletrônico.
+   * URL do sistema onde a licitação será realizada.
+   */
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  linkSistemaEletronico: string | null;
 
   // ============================================
   // Metadados e controle
@@ -309,21 +461,62 @@ export class Edital {
   status: EditalStatus;
 
   /**
-   * Data de publicacao oficial do edital.
-   * Quando o edital foi oficialmente publicado.
+   * Versão do edital.
+   * Incrementado a cada alteração significativa.
    */
-  @Column({ type: 'timestamp', nullable: true })
-  dataPublicacao: Date;
+  @Column({ type: 'int', default: 1 })
+  versao: number;
 
   /**
-   * Usuario que criou o Edital.
+   * Observações internas.
+   * Anotações internas não publicadas no edital.
    */
+  @Column({ type: 'text', nullable: true })
+  observacoesInternas: string | null;
+
+  /**
+   * Data de publicação oficial do edital.
+   * Quando o edital foi oficialmente publicado.
+   */
+  @Column({ type: 'date', nullable: true })
+  dataPublicacao: Date | null;
+
+  /**
+   * Referência da publicação.
+   * Onde foi publicado (Diário Oficial, jornal, portal).
+   */
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  referenciaPublicacao: string | null;
+
+  // ============================================
+  // Auditoria
+  // ============================================
+
+  /**
+   * Usuário que criou o Edital.
+   */
+  @Column({ type: 'uuid' })
+  createdById: string;
+
   @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 
-  @Column({ type: 'uuid' })
-  createdById: string;
+  /**
+   * Usuário que aprovou o Edital.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  approvedById: string | null;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'approvedById' })
+  approvedBy?: User;
+
+  /**
+   * Data de aprovação do Edital.
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  approvedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
