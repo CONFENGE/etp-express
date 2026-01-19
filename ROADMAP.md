@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 811/852 issues (95.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 812/852 issues (95.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1619 | Feature  | [#1277] Criar entity Edital com estrutura completa conforme Lei 14.133/2021 ✅ - **Score 95.5/100 - Manual merge** |
 | 2026-01-19 | #1618 | Feature  | [#1274] Integrar alertas de preço no fluxo de criação ETP ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1617 | Feature  | [#1273] Market analytics dashboard with 5 visualization components ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1616 | Feature  | [#1272] Overprice alert system for price monitoring ✅ - **Score 100/100 - Auto-merged** |
