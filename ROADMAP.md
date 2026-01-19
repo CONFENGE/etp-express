@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-18 | #1609 | Feature  | [#1603] Implement ItemNormalizationService with LLM classification ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1608 | Feature  | [#1602] Create ItemCategory entity with CATMAT/CATSER taxonomy ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1601 | Feature  | [#1596] Add benchmark suite for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1600 | Feature  | [#1595] Implement automatic fallback between RAG paths ✅ - **Score 100/100 - Auto-merged** |
@@ -614,7 +615,7 @@ Dados proprietários e analytics avançados.
 |       | ↳ #1269 Contract Price Collector              | ✅     |
 |       | ↳ #1270 Price normalization and categorization | 🟡    |
 |       |   ↳ #1602 ItemCategory entity CATMAT/CATSER   | ✅     |
-|       |   ↳ #1603 ItemNormalizationService            | 🔴     |
+|       |   ↳ #1603 ItemNormalizationService            | ✅     |
 |       |   ↳ #1604 Text similarity algorithms          | 🔴     |
 |       |   ↳ #1605 NormalizationPipeline               | 🔴     |
 |       |   ↳ #1606 Manual review API                   | 🔴     |
@@ -718,9 +719,9 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 849   |
+| Issues Totais     | 852   |
 | Issues Abertas    | 48    |
-| Issues Fechadas   | 801   |
+| Issues Fechadas   | 804   |
 | Progresso         | 94.4% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
