@@ -209,7 +209,10 @@ export function usePriceAlert(
   const alertLevel = state.alert?.alertLevel ?? null;
   const medianPrice = state.alert?.medianPrice ?? null;
   const suggestedRange = state.alert
-    ? { low: state.alert.suggestedPriceLow, high: state.alert.suggestedPriceHigh }
+    ? {
+        low: state.alert.suggestedPriceLow,
+        high: state.alert.suggestedPriceHigh,
+      }
     : null;
   const percentageAbove = state.alert?.percentageAbove ?? null;
 

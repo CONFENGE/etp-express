@@ -64,7 +64,12 @@ const ALERT_CONFIG: Record<
   {
     icon: React.ElementType;
     label: string;
-    badgeVariant: 'default' | 'success' | 'warning' | 'destructive' | 'secondary';
+    badgeVariant:
+      | 'default'
+      | 'success'
+      | 'warning'
+      | 'destructive'
+      | 'secondary';
     bgColor: string;
     textColor: string;
     borderColor: string;

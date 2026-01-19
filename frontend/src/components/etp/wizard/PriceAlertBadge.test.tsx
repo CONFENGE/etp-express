@@ -85,7 +85,8 @@ describe('PriceAlertBadge', () => {
       {
         level: AlertLevel.WARNING,
         label: 'Alerta',
-        description: 'Significativamente acima da mediana - TCE pode questionar',
+        description:
+          'Significativamente acima da mediana - TCE pode questionar',
       },
       {
         level: AlertLevel.CRITICAL,
@@ -217,9 +218,7 @@ describe('PriceAlertBadge', () => {
       expect(screen.getByText('Mediana regional:')).toBeInTheDocument();
       expect(screen.getByText('R$ 3.450,00')).toBeInTheDocument();
       expect(screen.getByText('Faixa sugerida:')).toBeInTheDocument();
-      expect(
-        screen.getByText('R$ 3.200,00 - R$ 3.700,00'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('R$ 3.200,00 - R$ 3.700,00')).toBeInTheDocument();
       expect(screen.getByText('Amostras:')).toBeInTheDocument();
       expect(screen.getByText('245 contratos')).toBeInTheDocument();
       expect(screen.getByText('Referência:')).toBeInTheDocument();

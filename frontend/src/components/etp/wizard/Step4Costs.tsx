@@ -91,7 +91,13 @@ export function Step4Costs({ form }: Step4CostsProps) {
         }}
         className="md:grid-cols-2"
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+          }}
+        >
           <FormField
             label="Valor Unitário (R$)"
             name="valorUnitario"
