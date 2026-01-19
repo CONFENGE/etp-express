@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1613 | Deps     | Bump OpenTelemetry packages in /backend (auto-instrumentations-node 0.68.0, exporter-trace-otlp-http 0.210.0, sdk-node 0.210.0) ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1612 | Feature  | [#1606] Add ItemNormalizationController for manual review API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1611 | Feature  | [#1605] Add NormalizationPipelineService for batch processing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1610 | Feature  | [#1604] Implement TextSimilarityService for item matching ✅ - **Score 100/100 - Auto-merged** |
