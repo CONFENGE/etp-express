@@ -9,6 +9,7 @@ import { ItemCategorySeeder } from './seeders/item-category.seeder';
 import { ItemNormalizationService } from './services/item-normalization.service';
 import { TextSimilarityService } from './services/text-similarity.service';
 import { NormalizationPipelineService } from './services/normalization-pipeline.service';
+import { ItemNormalizationController } from './controllers/item-normalization.controller';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -41,6 +42,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     ScheduleModule.forRoot(), // For CRON job (#1605)
     OrchestratorModule, // For OpenAIService dependency (#1603)
   ],
+  controllers: [ItemNormalizationController], // Manual review API (#1606)
   providers: [
     ItemCategorySeeder,
     ItemNormalizationService,
