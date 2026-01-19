@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ItemCategory } from '../../entities/item-category.entity';
 import { ItemCategorySeeder } from './seeders/item-category.seeder';
+import { ItemNormalizationService } from './services/item-normalization.service';
+import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
  * MarketIntelligenceModule - Module for market intelligence and price analytics.
@@ -19,10 +21,14 @@ import { ItemCategorySeeder } from './seeders/item-category.seeder';
  *
  * @see ItemCategory entity for taxonomy storage
  * @see ItemCategorySeeder for initial CATMAT/CATSER data
+ * @see ItemNormalizationService for LLM-based item classification
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([ItemCategory])],
-  providers: [ItemCategorySeeder],
-  exports: [TypeOrmModule],
+  imports: [
+    TypeOrmModule.forFeature([ItemCategory]),
+    OrchestratorModule, // For OpenAIService dependency (#1603)
+  ],
+  providers: [ItemCategorySeeder, ItemNormalizationService],
+  exports: [TypeOrmModule, ItemNormalizationService],
 })
 export class MarketIntelligenceModule {}
