@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
 import {
   BarChart3,
   RefreshCw,
@@ -59,7 +58,6 @@ const PERIOD_OPTIONS = [
  * - Contract Price Collector (#1269)
  */
 export function MarketDashboard() {
-  const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const {

@@ -301,7 +301,7 @@ export const useMarketAnalyticsStore = create<MarketAnalyticsState>(
     /**
      * Fetch price trend data for time series chart.
      */
-    fetchPriceTrend: async (categoryId: string, periodDays = 365) => {
+    fetchPriceTrend: async (categoryId: string, _periodDays = 365) => {
       set({ isLoadingTrend: true, error: null });
       try {
         // Note: This endpoint may need to be implemented in backend

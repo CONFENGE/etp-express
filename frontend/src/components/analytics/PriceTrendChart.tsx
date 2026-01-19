@@ -1,6 +1,5 @@
 import { TrendingUp, TrendingDown, Minus, Calendar } from 'lucide-react';
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
