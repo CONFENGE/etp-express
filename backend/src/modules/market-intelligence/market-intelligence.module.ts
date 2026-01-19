@@ -9,6 +9,7 @@ import { ItemCategorySeeder } from './seeders/item-category.seeder';
 import { ItemNormalizationService } from './services/item-normalization.service';
 import { TextSimilarityService } from './services/text-similarity.service';
 import { NormalizationPipelineService } from './services/normalization-pipeline.service';
+import { NormalizationBenchmarkService } from './services/normalization-benchmark.service';
 import { ItemNormalizationController } from './controllers/item-normalization.controller';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
@@ -22,6 +23,8 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - Price normalization pipeline (#1605)
  * - Manual review API (#1606)
  * - Benchmark and accuracy validation (#1607)
+ *
+ * @see NormalizationBenchmarkService for accuracy validation (#1607)
  *
  * Parent Epic: #1270 - Price normalization and categorization
  * Milestone: M13 - Market Intelligence
@@ -48,12 +51,14 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     ItemNormalizationService,
     TextSimilarityService,
     NormalizationPipelineService,
+    NormalizationBenchmarkService,
   ],
   exports: [
     TypeOrmModule,
     ItemNormalizationService,
     TextSimilarityService,
     NormalizationPipelineService,
+    NormalizationBenchmarkService,
   ],
 })
 export class MarketIntelligenceModule {}
