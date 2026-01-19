@@ -105,9 +105,7 @@ describe('Contrato Entity', () => {
       contrato.gestorResponsavel = gestor;
 
       expect(contrato.gestorResponsavelId).toBe('gestor-uuid');
-      expect(contrato.gestorResponsavel.email).toBe(
-        'gestor@prefeitura.gov.br',
-      );
+      expect(contrato.gestorResponsavel.email).toBe('gestor@prefeitura.gov.br');
     });
 
     it('should require Fiscal Responsavel relationship', () => {
@@ -121,9 +119,7 @@ describe('Contrato Entity', () => {
       contrato.fiscalResponsavel = fiscal;
 
       expect(contrato.fiscalResponsavelId).toBe('fiscal-uuid');
-      expect(contrato.fiscalResponsavel.email).toBe(
-        'fiscal@prefeitura.gov.br',
-      );
+      expect(contrato.fiscalResponsavel.email).toBe('fiscal@prefeitura.gov.br');
     });
 
     it('should require createdBy relationship for audit', () => {
