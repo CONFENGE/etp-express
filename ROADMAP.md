@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 810/852 issues (95.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 811/852 issues (95.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1618 | Feature  | [#1274] Integrar alertas de preço no fluxo de criação ETP ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1617 | Feature  | [#1273] Market analytics dashboard with 5 visualization components ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1616 | Feature  | [#1272] Overprice alert system for price monitoring ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1615 | Feature  | [#1271] Regional benchmark engine for price analytics ✅ - **Score 100/100 - Auto-merged** |
@@ -631,7 +632,7 @@ Dados proprietários e analytics avançados.
 |       | ↳ #1271 Regional benchmark engine              | ✅    |
 |       | ↳ #1272 Overprice alerts system                | ✅    |
 |       | ↳ #1273 Market analytics dashboard             | ✅    |
-|       | ↳ #1274 Price trend analysis                   | 🔴    |
+|       | ↳ #1274 Integrar alertas no fluxo ETP          | ✅    |
 |       | ↳ #1275 API for third-party access             | 🔴    |
 
 Features:
