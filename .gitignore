@@ -45,7 +45,11 @@ lerna-debug.log*
 
 # Testing
 coverage/
+coverage-*/
+lcov-report/
 *.lcov
+clover.xml
+coverage-final.json
 .nyc_output/
 test-results/
 playwright-report/
@@ -82,6 +86,7 @@ Desktop.ini
 tmp/
 temp/
 tmpclaude-*-cwd
+*temp-issues.json
 
 # Database
 *.sqlite
