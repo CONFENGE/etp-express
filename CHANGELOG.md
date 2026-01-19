@@ -13,6 +13,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 Trabalho em progresso para alcançar qualidade de produção:
 
+#### M15: Gestão de Contratos (2026-01-19)
+
+- ✅ #1284 - Create Contrato entity with Lei 14.133/2021 compliance (PR #1620)
+  - Criada Entity Contrato para gerenciar ciclo de vida de contratos públicos
+  - Enum ContratoStatus com 7 estados: MINUTA → ASSINADO → EM_EXECUCAO → ADITIVADO/SUSPENSO → RESCINDIDO/ENCERRADO
+  - Migration TypeORM com isolamento multi-tenant e foreign keys
+  - DTOs com validações class-validator (CNPJ, datas, valores)
+  - 29 testes unitários cobrindo estrutura, relacionamentos, transições de status
+  - Conformidade Lei 14.133/2021 Art. 90-129 (Contratos Administrativos)
+  - Closes #1284
+
 #### Apple HIG 2025 Design System (2026-01-13)
 
 - ✅ #1437 - Apply Liquid Glass to Tooltips (PR #1458)
