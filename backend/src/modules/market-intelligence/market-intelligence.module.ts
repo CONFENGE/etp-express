@@ -6,14 +6,17 @@ import { ItemCategory } from '../../entities/item-category.entity';
 import { NormalizedContractItem } from '../../entities/normalized-contract-item.entity';
 import { ContractPrice } from '../../entities/contract-price.entity';
 import { PriceBenchmark } from '../../entities/price-benchmark.entity';
+import { OverpriceAlert } from '../../entities/overprice-alert.entity';
 import { ItemCategorySeeder } from './seeders/item-category.seeder';
 import { ItemNormalizationService } from './services/item-normalization.service';
 import { TextSimilarityService } from './services/text-similarity.service';
 import { NormalizationPipelineService } from './services/normalization-pipeline.service';
 import { NormalizationBenchmarkService } from './services/normalization-benchmark.service';
 import { RegionalBenchmarkService } from './services/regional-benchmark.service';
+import { OverpriceAlertService } from './services/overprice-alert.service';
 import { ItemNormalizationController } from './controllers/item-normalization.controller';
 import { RegionalBenchmarkController } from './controllers/regional-benchmark.controller';
+import { AnalyticsController } from './controllers/analytics.controller';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -27,9 +30,11 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - Manual review API (#1606)
  * - Benchmark and accuracy validation (#1607)
  * - Regional price benchmarking (#1271)
+ * - Overprice alert system (#1272)
  *
  * @see NormalizationBenchmarkService for accuracy validation (#1607)
  * @see RegionalBenchmarkService for regional price benchmarks (#1271)
+ * @see OverpriceAlertService for overprice detection (#1272)
  *
  * Parent Epic: #1270 - Price normalization and categorization
  * Milestone: M13 - Market Intelligence
@@ -46,6 +51,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
       NormalizedContractItem,
       ContractPrice,
       PriceBenchmark, // Regional benchmarks (#1271)
+      OverpriceAlert, // Overprice alert system (#1272)
     ]),
     ConfigModule, // For TextSimilarityService threshold config (#1604)
     ScheduleModule.forRoot(), // For CRON job (#1605, #1271)
@@ -54,6 +60,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
   controllers: [
     ItemNormalizationController, // Manual review API (#1606)
     RegionalBenchmarkController, // Regional benchmark API (#1271)
+    AnalyticsController, // Overprice alert API (#1272)
   ],
   providers: [
     ItemCategorySeeder,
@@ -62,6 +69,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     NormalizationPipelineService,
     NormalizationBenchmarkService,
     RegionalBenchmarkService, // Regional benchmarks (#1271)
+    OverpriceAlertService, // Overprice alert system (#1272)
   ],
   exports: [
     TypeOrmModule,
@@ -70,6 +78,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     NormalizationPipelineService,
     NormalizationBenchmarkService,
     RegionalBenchmarkService, // Regional benchmarks (#1271)
+    OverpriceAlertService, // Overprice alert system (#1272)
   ],
 })
 export class MarketIntelligenceModule {}
