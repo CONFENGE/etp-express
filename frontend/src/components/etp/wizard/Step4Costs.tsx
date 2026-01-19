@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,11 +8,37 @@ import {
   FONTE_PRECOS_MAX_LENGTH,
   DOTACAO_MAX_LENGTH,
 } from '@/schemas/etpWizardSchema';
+import { usePriceAlert } from '@/hooks/usePriceAlert';
+import { PriceAlertBadge } from './PriceAlertBadge';
+
+/**
+ * Default UF for price benchmark when not available from org data.
+ * Uses DF (Distrito Federal) as federal government default.
+ */
+const DEFAULT_UF = 'DF';
 
 interface Step4CostsProps {
   form: UseFormReturn<ETPWizardFormData>;
 }
 
+/**
+ * Step 4 (Costs) of the ETP creation wizard.
+ *
+ * This step collects cost-related information including:
+ * - Unit price (valorUnitario)
+ * - Estimated total value (valorEstimado)
+ * - Price research sources (fontePesquisaPrecos)
+ * - Budget allocation (dotacaoOrcamentaria)
+ *
+ * Issue #1274: Integrates with the overprice alert system to provide
+ * real-time feedback when users enter prices. The alert checks the
+ * unit price against regional benchmarks and displays:
+ * - Alert level (OK, ATTENTION, WARNING, CRITICAL)
+ * - Median price from benchmark data
+ * - Suggested price range
+ *
+ * The alerts are purely informative and do NOT block form submission.
+ */
 export function Step4Costs({ form }: Step4CostsProps) {
   const {
     register,
@@ -21,6 +48,32 @@ export function Step4Costs({ form }: Step4CostsProps) {
 
   const fontePrecosValue = watch('fontePesquisaPrecos') || '';
   const dotacaoValue = watch('dotacaoOrcamentaria') || '';
+
+  // Watch fields needed for price alert
+  const valorUnitario = watch('valorUnitario');
+  const objeto = watch('objeto'); // Used as item description for benchmark lookup
+
+  // Initialize price alert hook
+  const priceAlert = usePriceAlert({
+    debounceMs: 500,
+    minPrice: 1,
+    persistAlert: false, // Don't persist during wizard - only on final save
+  });
+
+  // Check price against benchmark when valorUnitario changes
+  useEffect(() => {
+    if (
+      valorUnitario &&
+      valorUnitario > 0 &&
+      objeto &&
+      objeto.trim().length > 0
+    ) {
+      priceAlert.checkPrice(valorUnitario, objeto, DEFAULT_UF);
+    } else {
+      priceAlert.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valorUnitario, objeto]);
 
   return (
     <div
@@ -38,22 +91,41 @@ export function Step4Costs({ form }: Step4CostsProps) {
         }}
         className="md:grid-cols-2"
       >
-        <FormField
-          label="Valor Unitário (R$)"
-          name="valorUnitario"
-          error={errors.valorUnitario?.message}
-          isValid={!errors.valorUnitario && touchedFields.valorUnitario}
-          helpText="Valor unitário do item/serviço"
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+          }}
         >
-          <Input
-            id="valorUnitario"
-            type="number"
-            min={0}
-            step="0.01"
-            placeholder="Ex: 5000.00"
-            {...register('valorUnitario', { valueAsNumber: true })}
+          <FormField
+            label="Valor Unitário (R$)"
+            name="valorUnitario"
+            error={errors.valorUnitario?.message}
+            isValid={!errors.valorUnitario && touchedFields.valorUnitario}
+            helpText="Valor unitário do item/serviço"
+          >
+            <Input
+              id="valorUnitario"
+              type="number"
+              min={0}
+              step="0.01"
+              placeholder="Ex: 5000.00"
+              {...register('valorUnitario', { valueAsNumber: true })}
+            />
+          </FormField>
+
+          {/* Price Alert Badge - Issue #1274 */}
+          <PriceAlertBadge
+            alertLevel={priceAlert.alertLevel}
+            medianPrice={priceAlert.medianPrice}
+            suggestedRange={priceAlert.suggestedRange}
+            percentageAbove={priceAlert.percentageAbove}
+            sampleCount={priceAlert.alert?.benchmarkSampleCount}
+            benchmarkUf={priceAlert.alert?.benchmarkUf}
+            isLoading={priceAlert.isLoading}
           />
-        </FormField>
+        </div>
 
         <FormField
           label="Valor Estimado Total (R$)"

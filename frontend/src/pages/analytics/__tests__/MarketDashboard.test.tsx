@@ -11,7 +11,7 @@ vi.mock('@/store/marketAnalyticsStore', () => ({
 
 // Mock the components to simplify testing
 vi.mock('@/components/analytics', () => ({
-  BenchmarkStatsCards: ({ stats, isLoading }: { stats: unknown; isLoading: boolean }) => (
+  BenchmarkStatsCards: ({ stats: _stats, isLoading }: { stats: unknown; isLoading: boolean }) => (
     <div data-testid="benchmark-stats-cards">
       {isLoading ? 'Loading stats...' : 'Stats loaded'}
     </div>
