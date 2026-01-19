@@ -68,9 +68,7 @@ describe('usePriceAlert', () => {
       };
       mockApiPost.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(() =>
-        usePriceAlert({ debounceMs: 500 }),
-      );
+      const { result } = renderHook(() => usePriceAlert({ debounceMs: 500 }));
 
       act(() => {
         result.current.checkPrice(5000, 'Microcomputador Desktop', 'SP');
