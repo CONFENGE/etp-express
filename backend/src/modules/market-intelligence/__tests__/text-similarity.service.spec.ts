@@ -52,7 +52,9 @@ describe('TextSimilarityService', () => {
     });
 
     it('should remove special characters', () => {
-      expect(service.normalize('Notebook (Dell) - 15"')).toBe('notebook dell 15');
+      expect(service.normalize('Notebook (Dell) - 15"')).toBe(
+        'notebook dell 15',
+      );
     });
 
     it('should normalize whitespace', () => {
@@ -158,10 +160,7 @@ describe('TextSimilarityService', () => {
 
     it('should handle repeated terms correctly', () => {
       // Repeated words should increase the term frequency
-      const sim1 = service.cosineSimilarity(
-        'papel papel papel',
-        'papel resma',
-      );
+      const sim1 = service.cosineSimilarity('papel papel papel', 'papel resma');
       expect(sim1).toBeGreaterThan(0);
     });
 
@@ -199,11 +198,11 @@ describe('TextSimilarityService', () => {
         'notebook hp',
         { jaccard: 1.0, cosine: 0.0, levenshtein: 0.0 },
       );
-      const cosineOnly = service.combinedScore(
-        'notebook dell',
-        'notebook hp',
-        { jaccard: 0.0, cosine: 1.0, levenshtein: 0.0 },
-      );
+      const cosineOnly = service.combinedScore('notebook dell', 'notebook hp', {
+        jaccard: 0.0,
+        cosine: 1.0,
+        levenshtein: 0.0,
+      });
       // Both should be similar but may differ slightly
       expect(jaccardOnly).toBeGreaterThan(0);
       expect(cosineOnly).toBeGreaterThan(0);
@@ -216,10 +215,7 @@ describe('TextSimilarityService', () => {
   });
 
   describe('findSimilarItems', () => {
-    const createTestItem = (
-      id: string,
-      description: string,
-    ): ContractItem => ({
+    const createTestItem = (id: string, description: string): ContractItem => ({
       id,
       description,
       unit: 'UN',

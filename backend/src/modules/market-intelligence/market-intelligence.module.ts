@@ -31,7 +31,11 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     ConfigModule, // For TextSimilarityService threshold config (#1604)
     OrchestratorModule, // For OpenAIService dependency (#1603)
   ],
-  providers: [ItemCategorySeeder, ItemNormalizationService, TextSimilarityService],
+  providers: [
+    ItemCategorySeeder,
+    ItemNormalizationService,
+    TextSimilarityService,
+  ],
   exports: [TypeOrmModule, ItemNormalizationService, TextSimilarityService],
 })
 export class MarketIntelligenceModule {}
