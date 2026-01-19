@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 804/852 issues (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 805/852 issues (94.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1611 | Feature  | [#1605] Add NormalizationPipelineService for batch processing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1610 | Feature  | [#1604] Implement TextSimilarityService for item matching ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1609 | Feature  | [#1603] Implement ItemNormalizationService with LLM classification ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1608 | Feature  | [#1602] Create ItemCategory entity with CATMAT/CATSER taxonomy ✅ - **Score 100/100 - Auto-merged** |
@@ -525,7 +526,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 2/8    | 25% 🟡     | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
@@ -606,7 +607,7 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275) - 2/8 (25%) 🟡 STARTED
+#### M13: Inteligência de Mercado (#1268-#1275) - 3/8 (38%) 🟡 STARTED
 
 Dados proprietários e analytics avançados.
 
@@ -618,7 +619,7 @@ Dados proprietários e analytics avançados.
 |       |   ↳ #1602 ItemCategory entity CATMAT/CATSER   | ✅     |
 |       |   ↳ #1603 ItemNormalizationService            | ✅     |
 |       |   ↳ #1604 Text similarity algorithms          | ✅     |
-|       |   ↳ #1605 NormalizationPipeline               | 🔴     |
+|       |   ↳ #1605 NormalizationPipeline               | ✅     |
 |       |   ↳ #1606 Manual review API                   | 🔴     |
 |       |   ↳ #1607 Benchmark and accuracy validation   | 🔴     |
 |       | ↳ #1271 Regional benchmark engine              | 🔴    |
@@ -721,9 +722,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 852   |
-| Issues Abertas    | 48    |
-| Issues Fechadas   | 804   |
-| Progresso         | 94.4% |
+| Issues Abertas    | 47    |
+| Issues Fechadas   | 805   |
+| Progresso         | 94.5% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
