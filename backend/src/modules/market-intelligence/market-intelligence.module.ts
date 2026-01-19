@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { ItemCategory } from '../../entities/item-category.entity';
 import { ItemCategorySeeder } from './seeders/item-category.seeder';
 import { ItemNormalizationService } from './services/item-normalization.service';
+import { TextSimilarityService } from './services/text-similarity.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -26,9 +28,14 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ItemCategory]),
+    ConfigModule, // For TextSimilarityService threshold config (#1604)
     OrchestratorModule, // For OpenAIService dependency (#1603)
   ],
-  providers: [ItemCategorySeeder, ItemNormalizationService],
-  exports: [TypeOrmModule, ItemNormalizationService],
+  providers: [
+    ItemCategorySeeder,
+    ItemNormalizationService,
+    TextSimilarityService,
+  ],
+  exports: [TypeOrmModule, ItemNormalizationService, TextSimilarityService],
 })
 export class MarketIntelligenceModule {}
