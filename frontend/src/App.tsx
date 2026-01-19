@@ -68,6 +68,13 @@ const CreatePesquisaPrecosPage = lazy(() =>
   })),
 );
 
+// Market Intelligence Dashboard (#1273)
+const MarketDashboard = lazy(() =>
+  import('@/pages/analytics/MarketDashboard').then((m) => ({
+    default: m.MarketDashboard,
+  })),
+);
+
 // Admin pages - lazy-loaded (only accessed by system admins)
 const AdminDashboard = lazy(() =>
   import('@/pages/admin/AdminDashboard').then((m) => ({
@@ -326,6 +333,16 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <CreatePesquisaPrecosPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Market Intelligence Dashboard (#1273)
+      {
+        path: '/analytics/market',
+        element: (
+          <ProtectedRoute>
+            <MarketDashboard />
           </ProtectedRoute>
         ),
       },
