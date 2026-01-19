@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 805/852 issues (94.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 806/852 issues (94.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1612 | Feature  | [#1606] Add ItemNormalizationController for manual review API ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1611 | Feature  | [#1605] Add NormalizationPipelineService for batch processing ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1610 | Feature  | [#1604] Implement TextSimilarityService for item matching ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1609 | Feature  | [#1603] Implement ItemNormalizationService with LLM classification ✅ - **Score 100/100 - Auto-merged** |
@@ -620,7 +621,7 @@ Dados proprietários e analytics avançados.
 |       |   ↳ #1603 ItemNormalizationService            | ✅     |
 |       |   ↳ #1604 Text similarity algorithms          | ✅     |
 |       |   ↳ #1605 NormalizationPipeline               | ✅     |
-|       |   ↳ #1606 Manual review API                   | 🔴     |
+|       |   ↳ #1606 Manual review API                   | ✅     |
 |       |   ↳ #1607 Benchmark and accuracy validation   | 🔴     |
 |       | ↳ #1271 Regional benchmark engine              | 🔴    |
 |       | ↳ #1272 Overprice alerts system                | 🔴    |
