@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-18 | **Progresso:** 803/851 issues (94.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 804/852 issues (94.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1610 | Feature  | [#1604] Implement TextSimilarityService for item matching ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1609 | Feature  | [#1603] Implement ItemNormalizationService with LLM classification ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1608 | Feature  | [#1602] Create ItemCategory entity with CATMAT/CATSER taxonomy ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-18 | #1601 | Feature  | [#1596] Add benchmark suite for Hybrid RAG ✅ - **Score 100/100 - Auto-merged** |
@@ -616,7 +617,7 @@ Dados proprietários e analytics avançados.
 |       | ↳ #1270 Price normalization and categorization | 🟡    |
 |       |   ↳ #1602 ItemCategory entity CATMAT/CATSER   | ✅     |
 |       |   ↳ #1603 ItemNormalizationService            | ✅     |
-|       |   ↳ #1604 Text similarity algorithms          | 🔴     |
+|       |   ↳ #1604 Text similarity algorithms          | ✅     |
 |       |   ↳ #1605 NormalizationPipeline               | 🔴     |
 |       |   ↳ #1606 Manual review API                   | 🔴     |
 |       |   ↳ #1607 Benchmark and accuracy validation   | 🔴     |
