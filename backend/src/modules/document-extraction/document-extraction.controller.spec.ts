@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { DocumentExtractionController } from './document-extraction.controller';
 import { DocumentExtractionService } from './document-extraction.service';
+import { PageIndexService } from '../pageindex/pageindex.service';
 
 describe('DocumentExtractionController', () => {
   let controller: DocumentExtractionController;
@@ -12,6 +13,11 @@ describe('DocumentExtractionController', () => {
     getUploadStats: jest.fn(),
     fileExists: jest.fn(),
     getFilePath: jest.fn(),
+    processWithPageIndex: jest.fn(),
+  };
+
+  const mockPageIndexService = {
+    getTree: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -23,6 +29,10 @@ describe('DocumentExtractionController', () => {
         {
           provide: DocumentExtractionService,
           useValue: mockService,
+        },
+        {
+          provide: PageIndexService,
+          useValue: mockPageIndexService,
         },
       ],
     }).compile();
@@ -38,7 +48,7 @@ describe('DocumentExtractionController', () => {
   });
 
   describe('uploadDocument', () => {
-    it('should return upload response for valid file', () => {
+    it('should return upload response for valid file', async () => {
       const mockFile = {
         filename: 'uuid-123.pdf',
         originalname: 'my-document.pdf',
@@ -46,7 +56,12 @@ describe('DocumentExtractionController', () => {
         size: 1024,
       } as Express.Multer.File;
 
-      const result = controller.uploadDocument(mockFile);
+      mockService.processWithPageIndex.mockResolvedValue({
+        treeId: 'tree-123',
+        status: 'pending',
+      });
+
+      const result = await controller.uploadDocument(mockFile);
 
       expect(result).toEqual({
         filename: 'uuid-123.pdf',
@@ -54,19 +69,23 @@ describe('DocumentExtractionController', () => {
         mimeType: 'application/pdf',
         size: 1024,
         message: expect.stringContaining('sucesso'),
+        pageIndex: {
+          treeId: 'tree-123',
+          status: 'pending',
+        },
       });
     });
 
-    it('should throw BadRequestException if no file provided', () => {
-      expect(() => controller.uploadDocument(undefined as any)).toThrow(
+    it('should throw BadRequestException if no file provided', async () => {
+      await expect(controller.uploadDocument(undefined as any)).rejects.toThrow(
         BadRequestException,
       );
-      expect(() => controller.uploadDocument(null as any)).toThrow(
+      await expect(controller.uploadDocument(null as any)).rejects.toThrow(
         BadRequestException,
       );
     });
 
-    it('should include cleanup warning in response message', () => {
+    it('should include cleanup warning in response message', async () => {
       const mockFile = {
         filename: 'uuid-123.pdf',
         originalname: 'document.pdf',
@@ -74,7 +93,12 @@ describe('DocumentExtractionController', () => {
         size: 1024,
       } as Express.Multer.File;
 
-      const result = controller.uploadDocument(mockFile);
+      mockService.processWithPageIndex.mockResolvedValue({
+        treeId: 'tree-123',
+        status: 'pending',
+      });
+
+      const result = await controller.uploadDocument(mockFile);
 
       expect(result.message).toContain('1 hora');
     });

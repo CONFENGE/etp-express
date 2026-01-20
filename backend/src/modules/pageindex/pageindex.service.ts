@@ -379,6 +379,85 @@ export class PageIndexService {
   }
 
   /**
+   * Update document tree status (for async processing).
+   *
+   * @param treeId - Document tree ID
+   * @param status - New status
+   * @param error - Optional error message (if status is ERROR)
+   *
+   * @see Issue #1543 - feat(document-extraction): Gerar tree structure com PageIndex em uploads
+   */
+  async updateDocumentTreeStatus(
+    treeId: string,
+    status: DocumentTreeStatus,
+    error?: string,
+  ): Promise<void> {
+    const tree = await this.documentTreeRepository.findOne({
+      where: { id: treeId },
+    });
+
+    if (!tree) {
+      throw new NotFoundException(`Document tree not found: ${treeId}`);
+    }
+
+    tree.status = status;
+    if (error) {
+      tree.error = error;
+    }
+
+    await this.documentTreeRepository.save(tree);
+    this.logger.log(`Updated tree ${treeId} status to ${status}`);
+  }
+
+  /**
+   * Update document tree with processing results (for async processing).
+   *
+   * @param treeId - Document tree ID
+   * @param result - Processing result with tree structure, counts, metadata
+   *
+   * @see Issue #1543 - feat(document-extraction): Gerar tree structure com PageIndex em uploads
+   */
+  async updateDocumentTreeWithResult(
+    treeId: string,
+    result: {
+      treeStructure: TreeNode;
+      nodeCount: number;
+      maxDepth: number;
+      processingTimeMs: number;
+      status: DocumentTreeStatus;
+      indexedAt: Date;
+      metadata?: { pageCount?: number; wordCount?: number };
+    },
+  ): Promise<void> {
+    const tree = await this.documentTreeRepository.findOne({
+      where: { id: treeId },
+    });
+
+    if (!tree) {
+      throw new NotFoundException(`Document tree not found: ${treeId}`);
+    }
+
+    tree.treeStructure = result.treeStructure;
+    tree.nodeCount = result.nodeCount;
+    tree.maxDepth = result.maxDepth;
+    tree.processingTimeMs = result.processingTimeMs;
+    tree.status = result.status;
+    tree.indexedAt = result.indexedAt;
+    tree.error = null; // Clear any previous errors
+
+    // Update metadata if provided
+    if (result.metadata) {
+      tree.metadata = {
+        ...tree.metadata,
+        ...result.metadata,
+      };
+    }
+
+    await this.documentTreeRepository.save(tree);
+    this.logger.log(`Updated tree ${treeId} with processing results`);
+  }
+
+  /**
    * Convert a DocumentTree entity to an IndexingResult.
    */
   private toIndexingResult(tree: DocumentTree): IndexingResult {
