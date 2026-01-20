@@ -12,6 +12,7 @@ import { Etp } from './etp.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
 import { TermoReferenciaVersion } from './termo-referencia-version.entity';
+import { Edital } from './edital.entity';
 
 /**
  * Status do Termo de Referencia.
@@ -49,7 +50,14 @@ export class TermoReferencia {
   @Column({ type: 'uuid' })
   etpId: string;
 
-  @ManyToOne(() => Etp, { nullable: false, onDelete: 'CASCADE' })
+  /**
+   * Relacionamento com ETP (origem).
+   * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
+   */
+  @ManyToOne(() => Etp, (etp) => etp.termosReferencia, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'etpId' })
   etp: Etp;
 
@@ -254,6 +262,14 @@ export class TermoReferencia {
    */
   @OneToMany(() => TermoReferenciaVersion, (version) => version.termoReferencia)
   versions: TermoReferenciaVersion[];
+
+  /**
+   * Editais derivados deste Termo de Referência.
+   * Um TR pode originar múltiplos Editais (modalidades diferentes, revisões).
+   * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
+   */
+  @OneToMany(() => Edital, (edital) => edital.termoReferencia)
+  editais: Edital[];
 
   /**
    * Usuario que criou o TR.

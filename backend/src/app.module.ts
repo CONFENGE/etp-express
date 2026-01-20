@@ -41,6 +41,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { TermoReferenciaModule } from './modules/termo-referencia/termo-referencia.module';
 import { PesquisaPrecosModule } from './modules/pesquisa-precos/pesquisa-precos.module';
 import { EditalModule } from './modules/edital/edital.module';
+import { ContratosModule } from './modules/contratos/contratos.module';
 import { PageIndexModule } from './modules/pageindex/pageindex.module';
 import { MarketIntelligenceModule } from './modules/market-intelligence/market-intelligence.module';
 
@@ -268,6 +269,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     TermoReferenciaModule,
     PesquisaPrecosModule,
     EditalModule,
+    ContratosModule,
     PageIndexModule,
     MarketIntelligenceModule,
     HealthModule,

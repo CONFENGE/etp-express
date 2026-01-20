@@ -14,6 +14,7 @@ import { EtpSection } from './etp-section.entity';
 import { EtpVersion } from './etp-version.entity';
 import { AuditLog } from './audit-log.entity';
 import { EtpTemplate, EtpTemplateType } from './etp-template.entity';
+import { TermoReferencia } from './termo-referencia.entity';
 
 export enum EtpStatus {
   DRAFT = 'draft',
@@ -447,4 +448,16 @@ export class Etp {
 
   @OneToMany(() => AuditLog, (log) => log.etp)
   auditLogs: AuditLog[];
+
+  // ============================================
+  // Rastreabilidade do Ciclo de Contratação (Issue #1285)
+  // ============================================
+
+  /**
+   * Termos de Referência derivados deste ETP.
+   * Um ETP pode originar múltiplos TRs (revisões, variações).
+   * Issue #1285 - Vínculo ETP → TR → Edital → Contrato
+   */
+  @OneToMany(() => TermoReferencia, (tr) => tr.etp)
+  termosReferencia: TermoReferencia[];
 }
