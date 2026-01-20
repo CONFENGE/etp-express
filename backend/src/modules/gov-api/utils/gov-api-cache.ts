@@ -14,6 +14,7 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { createHash } from 'crypto';
+import { getRequestId } from '../../../common/context/request-context';
 import {
   GovApiSource,
   GovApiCacheConfig,
@@ -147,8 +148,9 @@ export class GovApiCache implements OnModuleDestroy {
         lazyConnect: true,
         retryStrategy: (times) => {
           if (times > 3) {
+            const requestId = getRequestId();
             this.logger.error(
-              'Failed to connect to Redis after 3 attempts, cache disabled',
+              `[${requestId || 'no-request-id'}] Failed to connect to Redis after 3 attempts, cache disabled`,
             );
             return null;
           }
@@ -163,7 +165,8 @@ export class GovApiCache implements OnModuleDestroy {
 
       this.redis!.on('error', (error) => {
         this.isConnected = false;
-        this.logger.error(`Redis error: ${error.message}`);
+        const requestId = getRequestId();
+        this.logger.error(`[${requestId || 'no-request-id'}] Redis error: ${error.message}`);
       });
 
       this.redis!.on('close', () => {
@@ -173,11 +176,13 @@ export class GovApiCache implements OnModuleDestroy {
 
       // Connect asynchronously
       this.redis!.connect().catch((error) => {
-        this.logger.error(`Failed to connect to Redis: ${error.message}`);
+        const requestId = getRequestId();
+        this.logger.error(`[${requestId || 'no-request-id'}] Failed to connect to Redis: ${error.message}`);
       });
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to initialize Redis: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Failed to initialize Redis: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -214,8 +219,9 @@ export class GovApiCache implements OnModuleDestroy {
       return null;
     } catch (error) {
       stats.errors++;
+      const requestId = getRequestId();
       this.logger.error(
-        `Cache get error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Cache get error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       return null;
     }
@@ -254,8 +260,9 @@ export class GovApiCache implements OnModuleDestroy {
       );
     } catch (error) {
       stats.errors++;
+      const requestId = getRequestId();
       this.logger.error(
-        `Cache set error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Cache set error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -281,8 +288,9 @@ export class GovApiCache implements OnModuleDestroy {
       this.logger.debug(`Cache DELETE: ${source}:${key.substring(0, 50)}...`);
     } catch (error) {
       stats.errors++;
+      const requestId = getRequestId();
       this.logger.error(
-        `Cache delete error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Cache delete error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -310,8 +318,9 @@ export class GovApiCache implements OnModuleDestroy {
         );
       }
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Cache invalidation error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Cache invalidation error for ${source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }

@@ -44,6 +44,7 @@ import {
 import { SicroParser, createSicroParser } from './sicro-parser';
 import { SicroItem } from '../../../entities/sicro-item.entity';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * In-memory storage for parsed SICRO data
  * Serves as fallback/cache in addition to database persistence (#1165)
@@ -190,8 +191,9 @@ export class SicroService implements IGovApiService, OnModuleInit {
       return response;
     } catch (error) {
       const duration = Date.now() - startTime;
+      const requestId = getRequestId();
       this.logger.error(
-        `Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
+        `[${requestId || 'no-request-id'}] Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
@@ -272,7 +274,7 @@ export class SicroService implements IGovApiService, OnModuleInit {
       const [anoRef, mesRef] = mesReferencia.split('-').map(Number);
       let persistedCount = 0;
 
-      const entitiesToSave = result.items.map((item) => ({
+      const entitiesToSave = result.items.map((item: any) => ({
         organizationId: organizationId || null,
         codigo: item.codigo,
         descricao: item.descricao,
@@ -338,8 +340,9 @@ export class SicroService implements IGovApiService, OnModuleInit {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to load SICRO data after ${duration}ms: ${
+        `[${requestId || 'no-request-id'}] Failed to load SICRO data after ${duration}ms: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
@@ -395,8 +398,9 @@ export class SicroService implements IGovApiService, OnModuleInit {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to load SICRO file ${filePath} after ${duration}ms: ${
+        `[${requestId || 'no-request-id'}] Failed to load SICRO file ${filePath} after ${duration}ms: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
@@ -714,8 +718,9 @@ export class SicroService implements IGovApiService, OnModuleInit {
         timestamp: new Date(),
       };
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       return this.createFallbackResponse();
     }
