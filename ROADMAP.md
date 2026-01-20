@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 818/852 issues (96.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 819/852 issues (96.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1626 | Feature  | [#1071] Add requestId to all error logs for observability ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1625 | Feature  | [#1285] Implementar rastreabilidade ETP→TR→Edital→Contrato ✅ - **Score 97.5/100 - Merged (justified size exception)** |
 | 2026-01-20 | #1624 | Fix      | [#1172] Fix E2E session tests for Railway environment ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1623 | Feature  | [#1279] Geração automática de Edital a partir de ETP+TR+Pesquisa ✅ - **Score 100/100 - Auto-merged** |
@@ -501,7 +502,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
 | #1072 | [Observabilidade] Adicionar retry automático para emails         |
-| #1071 | [Observabilidade] Garantir requestId em todos os logs            |
+| #1071 | [Observabilidade] Garantir requestId em todos os logs ✅          |
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
 | #1069 | [Gov-API] Implementar invalidação de cache baseada em eventos    |
 | #1068 | [Gov-API] Otimizar configuração de retry para janelas manutenção |
