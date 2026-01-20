@@ -59,7 +59,16 @@ export class Contrato {
   @Column({ type: 'uuid', nullable: true })
   editalId: string | null;
 
-  @ManyToOne(() => Edital, { nullable: true, onDelete: 'SET NULL' })
+  /**
+   * Relacionamento com Edital (origem).
+   * Eager loading ativado para facilitar busca da cadeia completa.
+   * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
+   */
+  @ManyToOne(() => Edital, (edital) => edital.contratos, {
+    nullable: true,
+    eager: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'editalId' })
   edital?: Edital;
 

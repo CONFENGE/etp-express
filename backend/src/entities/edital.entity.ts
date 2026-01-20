@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Etp } from './etp.entity';
@@ -12,6 +13,7 @@ import { TermoReferencia } from './termo-referencia.entity';
 import { PesquisaPrecos } from './pesquisa-precos.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
+import { Contrato } from './contrato.entity';
 
 /**
  * Modalidade de licitacao conforme Lei 14.133/2021 Art. 28.
@@ -106,7 +108,14 @@ export class Edital {
   @Column({ type: 'uuid', nullable: true })
   termoReferenciaId: string | null;
 
-  @ManyToOne(() => TermoReferencia, { nullable: true, onDelete: 'SET NULL' })
+  /**
+   * Relacionamento com Termo de Referência.
+   * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
+   */
+  @ManyToOne(() => TermoReferencia, (tr) => tr.editais, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'termoReferenciaId' })
   termoReferencia?: TermoReferencia;
 
@@ -523,4 +532,16 @@ export class Edital {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // ============================================
+  // Rastreabilidade do Ciclo de Contratação (Issue #1285)
+  // ============================================
+
+  /**
+   * Contratos derivados deste Edital.
+   * Um Edital pode originar múltiplos Contratos (lotes, vencedores diferentes).
+   * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
+   */
+  @OneToMany(() => Contrato, (contrato) => contrato.edital)
+  contratos: Contrato[];
 }
