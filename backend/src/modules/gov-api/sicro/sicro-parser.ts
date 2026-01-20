@@ -13,6 +13,7 @@
 
 import { Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
+import { getRequestId } from '../../../common/context/request-context';
 import {
   SicroInsumoRaw,
   SicroComposicaoRaw,
@@ -281,8 +282,9 @@ export class SicroParser {
       };
     } catch (error) {
       const durationMs = Date.now() - startTime;
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to parse SICRO Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Failed to parse SICRO Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
 
       return {

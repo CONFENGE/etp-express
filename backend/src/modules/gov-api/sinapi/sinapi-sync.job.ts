@@ -20,6 +20,7 @@ import { SinapiService } from './sinapi.service';
 import { GovApiCache } from '../utils/gov-api-cache';
 import { SinapiUF } from './sinapi.types';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * Popular search terms for cache warmup
  * These are commonly searched construction materials
@@ -205,7 +206,10 @@ export class SinapiSyncJob implements OnModuleInit {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`SINAPI update check failed: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] SINAPI update check failed: ${errorMessage}`,
+      );
       this.schedulerStatus.status = 'error';
       this.schedulerStatus.lastError = errorMessage;
     }

@@ -49,6 +49,7 @@ import {
 } from './sinapi-api-client.service';
 import { SinapiApiInsumo, SinapiApiComposicao } from './sinapi-api.types';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * In-memory storage for parsed SINAPI data
  * Serves as fallback/cache in addition to database persistence (#1165)
@@ -328,8 +329,9 @@ export class SinapiService implements IGovApiService, OnModuleInit {
       return response;
     } catch (error) {
       const duration = Date.now() - startTime;
+      const requestId = getRequestId();
       this.logger.error(
-        `All search sources failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
+        `[${requestId || 'no-request-id'}] All search sources failed for "${query.substring(0, 30)}..." after ${duration}ms: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
@@ -481,7 +483,10 @@ export class SinapiService implements IGovApiService, OnModuleInit {
     this.lastApiFailure = new Date();
 
     if (error instanceof SinapiApiAuthError) {
-      this.logger.error('SINAPI API authentication failed - check API key');
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] SINAPI API authentication failed - check API key`,
+      );
       this.currentDataSource = SinapiDataSource.DATABASE;
     } else if (error instanceof SinapiApiRateLimitError) {
       this.logger.warn(
@@ -571,7 +576,7 @@ export class SinapiService implements IGovApiService, OnModuleInit {
       const [anoRef, mesRef] = mesReferencia.split('-').map(Number);
       let persistedCount = 0;
 
-      const entitiesToSave = result.items.map((item) => ({
+      const entitiesToSave = result.items.map((item: any) => ({
         organizationId: organizationId || null,
         codigo: item.codigo,
         descricao: item.descricao,
@@ -628,8 +633,9 @@ export class SinapiService implements IGovApiService, OnModuleInit {
         persisted: persistedCount,
       };
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to load SINAPI data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Failed to load SINAPI data: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       throw error;
     }
@@ -941,8 +947,9 @@ export class SinapiService implements IGovApiService, OnModuleInit {
         timestamp: new Date(),
       };
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] Database search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       return this.createFallbackResponse();
     }
