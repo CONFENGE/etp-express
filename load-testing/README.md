@@ -43,6 +43,7 @@ k6 run --env BASE_URL=https://etp-express-production.up.railway.app \
 ```
 
 **Métricas:**
+
 - P95 latency < 2s para CRUD
 - Taxa de erro < 0.1%
 
@@ -60,6 +61,7 @@ k6 run --env BASE_URL=https://etp-express-production.up.railway.app \
 ```
 
 **Métricas:**
+
 - P95 latency < 2s
 - Taxa de conflitos (409) < 5%
 - Zero race conditions detectadas
@@ -78,6 +80,7 @@ k6 run --env BASE_URL=https://etp-express-production.up.railway.app \
 ```
 
 **Métricas:**
+
 - P95 latency < 10s (APIs externas)
 - Taxa de erro < 0.1%
 
@@ -104,13 +107,13 @@ Os resultados são salvos em `load-testing/results/`:
 
 ### Ambiente: Railway Production (2026-01-20)
 
-| Métrica                       | Valor      | Threshold | Status |
-|-------------------------------|------------|-----------|--------|
-| ETP Creation P95              | TBD        | < 2s      | ⏳     |
-| Section Update P95            | TBD        | < 2s      | ⏳     |
-| Gov API Search P95            | TBD        | < 10s     | ⏳     |
-| Concurrency Conflicts         | TBD        | < 5%      | ⏳     |
-| Overall Error Rate            | TBD        | < 0.1%    | ⏳     |
+| Métrica               | Valor | Threshold | Status |
+| --------------------- | ----- | --------- | ------ |
+| ETP Creation P95      | TBD   | < 2s      | ⏳     |
+| Section Update P95    | TBD   | < 2s      | ⏳     |
+| Gov API Search P95    | TBD   | < 10s     | ⏳     |
+| Concurrency Conflicts | TBD   | < 5%      | ⏳     |
+| Overall Error Rate    | TBD   | < 0.1%    | ⏳     |
 
 **Observações:** Baseline será estabelecido após primeira execução.
 

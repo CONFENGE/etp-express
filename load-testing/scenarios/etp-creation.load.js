@@ -27,12 +27,16 @@ let authToken = null;
 
 // Setup function - runs once before test
 export function setup() {
-  const loginRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    email: TEST_USER_EMAIL,
-    password: TEST_USER_PASSWORD,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const loginRes = http.post(
+    `${BASE_URL}/api/auth/login`,
+    JSON.stringify({
+      email: TEST_USER_EMAIL,
+      password: TEST_USER_PASSWORD,
+    }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 
   check(loginRes, {
     'login successful': (r) => r.status === 200,
@@ -64,7 +68,7 @@ export default function (data) {
   const createRes = http.post(
     `${BASE_URL}/api/etps`,
     JSON.stringify(etpPayload),
-    { headers }
+    { headers },
   );
 
   const createSuccess = check(createRes, {
