@@ -29,10 +29,39 @@ const TEST_CONFIG = {
     password: process.env.E2E_ADMIN_PASSWORD || 'Admin@123',
   },
   timeouts: {
-    navigation: 10000,
-    action: 3000,
+    navigation: 15000, // Increased for Railway latency (~200-500ms additional)
+    action: 5000, // Increased for Railway
   },
 };
+
+/**
+ * Helper function for Railway-compatible login
+ * Uses robust selectors with data-testid fallback
+ * @issue #1172
+ */
+async function loginWithRobustSelectors(page: any, email: string, password: string) {
+  await page.goto('/login');
+
+  // Email input with fallback selectors
+  const emailInput = page
+    .locator('[data-testid="email-input"]')
+    .or(page.locator('input[name="email"]'))
+    .or(page.locator('input#email'));
+  await emailInput.fill(email);
+
+  // Password input with fallback selectors
+  const passwordInput = page
+    .locator('[data-testid="password-input"]')
+    .or(page.locator('input[name="password"]'))
+    .or(page.locator('input#password'));
+  await passwordInput.fill(password);
+
+  // Submit and wait for dashboard with Railway timeout
+  await page.click('button[type="submit"]');
+  await page.waitForURL(/\/dashboard/, {
+    timeout: TEST_CONFIG.timeouts.navigation,
+  });
+}
 
 test.describe('Session Management', () => {
   test.skip(
@@ -57,20 +86,11 @@ test.describe('Session Management', () => {
    * Test: Session cookie is set after login
    */
   test('session cookie is set after login', async ({ page, context }) => {
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
 
     // Verify JWT cookie is set
     const cookies = await context.cookies();
@@ -86,29 +106,24 @@ test.describe('Session Management', () => {
    * Test: Session persists across page navigations
    */
   test('session persists across page navigations', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
+
+    // Navigate to ETPs with Railway timeout
+    await page.goto('/etps');
+    await page.waitForURL(/\/etps/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
-
-    // Navigate to ETPs
-    await page.goto('/etps');
-    await expect(page).toHaveURL(/\/etps/);
     await expect(page).not.toHaveURL(/\/login/);
 
     // Navigate back to dashboard
     await page.goto('/dashboard');
-    await expect(page).toHaveURL(/\/dashboard/);
+    await page.waitForURL(/\/dashboard/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
     console.log('Session navigation persistence: PASSED');
@@ -118,26 +133,18 @@ test.describe('Session Management', () => {
    * Test: Session persists after multiple page refreshes
    */
   test('session persists after multiple refreshes', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
 
-    // Refresh multiple times
+    // Refresh multiple times - use waitForURL instead of networkidle
     for (let i = 0; i < 3; i++) {
       await page.reload();
-      await page.waitForLoadState('networkidle');
-      await expect(page).toHaveURL(/\/dashboard/);
+      await page.waitForURL(/\/dashboard/, {
+        timeout: TEST_CONFIG.timeouts.navigation,
+      });
       await expect(page).not.toHaveURL(/\/login/);
     }
 
@@ -151,45 +158,44 @@ test.describe('Session Management', () => {
   test('session persists with browser back/forward navigation', async ({
     page,
   }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
 
     // Navigate to ETPs
     await page.goto('/etps');
-    await expect(page).toHaveURL(/\/etps/);
+    await page.waitForURL(/\/etps/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
-    // Go back to dashboard using browser back
+    // Go back to dashboard using browser back - use waitForURL instead of networkidle
     await page.goBack();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/dashboard/);
+    await page.waitForURL(/\/dashboard/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
     // Go forward to ETPs using browser forward
     await page.goForward();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/etps/);
+    await page.waitForURL(/\/etps/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
     // Multiple back/forward cycles
     await page.goBack();
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL(/\/dashboard/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
     await page.goForward();
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL(/\/etps/, {
+      timeout: TEST_CONFIG.timeouts.navigation,
+    });
     await expect(page).not.toHaveURL(/\/login/);
 
     console.log('Browser back/forward navigation persistence: PASSED');
@@ -199,46 +205,42 @@ test.describe('Session Management', () => {
    * Test: Session is cleared after logout
    */
   test('session is cleared after logout', async ({ page, context }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
+
+    // Robust logout with data-testid and Railway-compatible waits
+    // Step 1: Click user menu trigger
+    const userMenuTrigger = page
+      .locator('[data-testid="user-menu-trigger"]')
+      .or(page.locator('button:has-text("Perfil")'))
+      .or(page.locator('[aria-label*="menu"]'));
+
+    await userMenuTrigger.first().waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
     });
+    await userMenuTrigger.first().click();
 
-    // Find and click logout
-    const logoutButton = page.locator(
-      'button:has-text("Sair"), button:has-text("Logout"), [aria-label="Logout"]',
-    );
-    const userMenu = page.locator(
-      '[data-testid="user-menu"], button:has-text("Perfil"), [aria-label="Menu do usuário"]',
-    );
+    // Step 2: Wait for dropdown menu to be visible
+    await page.waitForTimeout(300); // Small delay for animation
 
-    if (await logoutButton.first().isVisible()) {
-      await logoutButton.first().click();
-    } else if (await userMenu.first().isVisible()) {
-      await userMenu.first().click();
-      await page.waitForTimeout(500);
-      // Use .or() for bilingual selector
-      const logoutMenuOption = page
-        .locator('text=Sair')
-        .or(page.locator('text=Logout'));
-      await logoutMenuOption.first().click();
-    } else {
-      console.log('Logout button not found - skipping');
-      return;
-    }
+    // Step 3: Click logout button with data-testid
+    const logoutButton = page
+      .locator('[data-testid="logout-button"]')
+      .or(page.locator('text=Sair'))
+      .or(page.locator('text=Logout'));
 
-    // Verify redirect to login
-    await expect(page).toHaveURL(/\/login/, {
+    await logoutButton.first().waitFor({
+      state: 'visible',
+      timeout: TEST_CONFIG.timeouts.action,
+    });
+    await logoutButton.first().click();
+
+    // Verify redirect to login with Railway timeout
+    await page.waitForURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
@@ -254,20 +256,11 @@ test.describe('Session Management', () => {
    * Test: Cannot access protected routes after logout
    */
   test('cannot access protected routes after logout', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
 
     // Clear cookies to simulate logout
     await page.context().clearCookies();
@@ -275,8 +268,8 @@ test.describe('Session Management', () => {
     // Try to access protected route
     await page.goto('/dashboard');
 
-    // Should be redirected to login
-    await expect(page).toHaveURL(/\/login/, {
+    // Should be redirected to login with Railway timeout
+    await page.waitForURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
@@ -307,26 +300,18 @@ test.describe('Multi-Tab Session', () => {
    */
   test('session is shared across browser tabs', async ({ page, context }) => {
     // Login in first tab
-    await page.goto('/login');
-    await page.fill(
-      'input[name="email"], input#email',
+    await loginWithRobustSelectors(
+      page,
       TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
       TEST_CONFIG.admin.password,
     );
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/dashboard/, {
-      timeout: TEST_CONFIG.timeouts.navigation,
-    });
 
     // Open second tab
     const page2 = await context.newPage();
     await page2.goto('/dashboard');
 
-    // Should be authenticated in second tab
-    await expect(page2).toHaveURL(/\/dashboard/, {
+    // Should be authenticated in second tab with Railway timeout
+    await page2.waitForURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
     await expect(page2).not.toHaveURL(/\/login/);
