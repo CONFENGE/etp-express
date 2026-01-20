@@ -104,6 +104,7 @@ describe('DemoService', () => {
     sections: [],
     versions: [],
     auditLogs: [],
+    termosReferencia: [],
   };
 
   const mockQueryRunner = {

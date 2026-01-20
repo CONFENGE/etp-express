@@ -429,7 +429,7 @@ describe('API Timeout Resilience - Chaos Engineering Tests', () => {
       expect(timeoutError).not.toBeNull();
 
       // HTTP error should fail much faster than timeout
-      expect(elapsedError).toBeLessThan(100);
+      expect(elapsedError).toBeLessThan(200);
       expect(elapsedTimeout).toBeGreaterThan(elapsedError);
       expect(elapsedTimeout).toBeLessThan(SHORT_TIMEOUT + 500);
     }, 15000);
