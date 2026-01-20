@@ -53,7 +53,9 @@ describe('EditalController', () => {
     }).compile();
 
     controller = module.get<EditalController>(EditalController);
-    generationService = module.get<EditalGenerationService>(EditalGenerationService);
+    generationService = module.get<EditalGenerationService>(
+      EditalGenerationService,
+    );
   });
 
   it('should be defined', () => {
@@ -96,7 +98,10 @@ describe('EditalController', () => {
         .mockResolvedValue(mockGeneratedEdital);
 
       // Act
-      const result = await controller.generateFromEtp(dtoMinimal, mockUser as User);
+      const result = await controller.generateFromEtp(
+        dtoMinimal,
+        mockUser as User,
+      );
 
       // Assert
       expect(result).toEqual(mockGeneratedEdital);

@@ -14,10 +14,20 @@ import {
   EditalCriterioJulgamento,
   EditalModoDisputa,
 } from '../../entities/edital.entity';
-import { EditalTemplate, EditalTemplateModalidade } from '../../entities/edital-template.entity';
+import {
+  EditalTemplate,
+  EditalTemplateModalidade,
+} from '../../entities/edital-template.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
-import { TermoReferencia, TermoReferenciaStatus } from '../../entities/termo-referencia.entity';
-import { PesquisaPrecos, PesquisaPrecosStatus, MetodologiaPesquisa } from '../../entities/pesquisa-precos.entity';
+import {
+  TermoReferencia,
+  TermoReferenciaStatus,
+} from '../../entities/termo-referencia.entity';
+import {
+  PesquisaPrecos,
+  PesquisaPrecosStatus,
+  MetodologiaPesquisa,
+} from '../../entities/pesquisa-precos.entity';
 import { OpenAIService } from '../orchestrator/llm/openai.service';
 import { GenerateEditalDto } from './dto';
 
@@ -158,7 +168,9 @@ describe('EditalGenerationService', () => {
     }).compile();
 
     service = module.get<EditalGenerationService>(EditalGenerationService);
-    editalRepository = module.get<Repository<Edital>>(getRepositoryToken(Edital));
+    editalRepository = module.get<Repository<Edital>>(
+      getRepositoryToken(Edital),
+    );
     etpRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
     termoReferenciaRepository = module.get<Repository<TermoReferencia>>(
       getRepositoryToken(TermoReferencia),
@@ -195,7 +207,9 @@ describe('EditalGenerationService', () => {
       jest
         .spyOn(editalTemplateRepository, 'findOne')
         .mockResolvedValue(mockEditalTemplate as EditalTemplate);
-      jest.spyOn(openAIService, 'generateCompletion').mockResolvedValue(mockLLMResponse);
+      jest
+        .spyOn(openAIService, 'generateCompletion')
+        .mockResolvedValue(mockLLMResponse);
 
       const mockGeneratedEdital: Partial<Edital> = {
         id: 'edital-001',
@@ -208,8 +222,12 @@ describe('EditalGenerationService', () => {
         createdAt: new Date(),
       };
 
-      jest.spyOn(editalRepository, 'create').mockReturnValue(mockGeneratedEdital as Edital);
-      jest.spyOn(editalRepository, 'save').mockResolvedValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'create')
+        .mockReturnValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'save')
+        .mockResolvedValue(mockGeneratedEdital as Edital);
 
       // Act
       const result = await service.generateFromEtp(
@@ -254,7 +272,9 @@ describe('EditalGenerationService', () => {
       jest
         .spyOn(editalTemplateRepository, 'findOne')
         .mockResolvedValue(mockEditalTemplate as EditalTemplate);
-      jest.spyOn(openAIService, 'generateCompletion').mockResolvedValue(mockLLMResponse);
+      jest
+        .spyOn(openAIService, 'generateCompletion')
+        .mockResolvedValue(mockLLMResponse);
 
       const mockGeneratedEdital: Partial<Edital> = {
         id: 'edital-002',
@@ -265,11 +285,19 @@ describe('EditalGenerationService', () => {
         createdAt: new Date(),
       };
 
-      jest.spyOn(editalRepository, 'create').mockReturnValue(mockGeneratedEdital as Edital);
-      jest.spyOn(editalRepository, 'save').mockResolvedValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'create')
+        .mockReturnValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'save')
+        .mockResolvedValue(mockGeneratedEdital as Edital);
 
       // Act
-      const result = await service.generateFromEtp(dtpOnlyEtp, mockUserId, mockOrganizationId);
+      const result = await service.generateFromEtp(
+        dtpOnlyEtp,
+        mockUserId,
+        mockOrganizationId,
+      );
 
       // Assert
       expect(result).toBeDefined();
@@ -298,7 +326,9 @@ describe('EditalGenerationService', () => {
         organizationId: 'other-org-999',
       };
 
-      jest.spyOn(etpRepository, 'findOne').mockResolvedValue(etpDifferentOrg as Etp);
+      jest
+        .spyOn(etpRepository, 'findOne')
+        .mockResolvedValue(etpDifferentOrg as Etp);
 
       // Act & Assert
       await expect(
@@ -306,7 +336,9 @@ describe('EditalGenerationService', () => {
       ).rejects.toThrow(ForbiddenException);
       await expect(
         service.generateFromEtp(generateDto, mockUserId, mockOrganizationId),
-      ).rejects.toThrow('Você não tem permissão para gerar Edital a partir deste ETP');
+      ).rejects.toThrow(
+        'Você não tem permissão para gerar Edital a partir deste ETP',
+      );
     });
 
     it('should throw BadRequestException if ETP is not in valid status', async () => {
@@ -401,8 +433,12 @@ describe('EditalGenerationService', () => {
         createdAt: new Date(),
       };
 
-      jest.spyOn(editalRepository, 'create').mockReturnValue(mockGeneratedEdital as Edital);
-      jest.spyOn(editalRepository, 'save').mockResolvedValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'create')
+        .mockReturnValue(mockGeneratedEdital as Edital);
+      jest
+        .spyOn(editalRepository, 'save')
+        .mockResolvedValue(mockGeneratedEdital as Edital);
 
       // Act
       const result = await service.generateFromEtp(
