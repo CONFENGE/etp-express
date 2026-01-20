@@ -22,6 +22,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { getRequestId } from '../../../common/context/request-context';
 import { ComprasGovService } from '../compras-gov/compras-gov.service';
 import { PncpService } from '../pncp/pncp.service';
 import { SinapiService } from '../sinapi/sinapi.service';
@@ -359,8 +360,9 @@ export class GovSearchService {
       );
       return response.data as GovApiContract[];
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Error searching Compras.gov.br: ${error.message}`,
+        `[${requestId || 'no-request-id'}] Error searching Compras.gov.br: ${error.message}`,
         error.stack,
       );
       return [];
@@ -391,7 +393,11 @@ export class GovSearchService {
       this.logger.log(`PNCP returned ${response.data.length} results`);
       return response.data as GovApiContract[];
     } catch (error) {
-      this.logger.error(`Error searching PNCP: ${error.message}`, error.stack);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching PNCP: ${error.message}`,
+        error.stack,
+      );
       return [];
     }
   }
@@ -418,8 +424,9 @@ export class GovSearchService {
       this.logger.log(`SINAPI returned ${response.data.length} results`);
       return response.data as GovApiPriceReference[];
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Error searching SINAPI: ${error.message}`,
+        `[${requestId || 'no-request-id'}] Error searching SINAPI: ${error.message}`,
         error.stack,
       );
       return [];
@@ -448,7 +455,11 @@ export class GovSearchService {
       this.logger.log(`SICRO returned ${response.data.length} results`);
       return response.data as GovApiPriceReference[];
     } catch (error) {
-      this.logger.error(`Error searching SICRO: ${error.message}`, error.stack);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching SICRO: ${error.message}`,
+        error.stack,
+      );
       return [];
     }
   }
@@ -493,7 +504,11 @@ export class GovSearchService {
       this.logger.log(`Exa fallback returned ${contracts.length} results`);
       return contracts;
     } catch (error) {
-      this.logger.error(`Error in Exa fallback: ${error.message}`, error.stack);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error in Exa fallback: ${error.message}`,
+        error.stack,
+      );
       return [];
     }
   }
@@ -542,7 +557,10 @@ export class GovSearchService {
       const latencyMs = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching Compras.gov.br: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching Compras.gov.br: ${errorMessage}`,
+      );
 
       return {
         data: [],
@@ -599,7 +617,10 @@ export class GovSearchService {
       const latencyMs = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching PNCP: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching PNCP: ${errorMessage}`,
+      );
 
       return {
         data: [],
@@ -650,7 +671,10 @@ export class GovSearchService {
       const latencyMs = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching SINAPI: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching SINAPI: ${errorMessage}`,
+      );
 
       return {
         data: [],
@@ -701,7 +725,10 @@ export class GovSearchService {
       const latencyMs = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching SICRO: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Error searching SICRO: ${errorMessage}`,
+      );
 
       return {
         data: [],

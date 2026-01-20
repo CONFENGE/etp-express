@@ -45,6 +45,7 @@ import {
 } from './pncp.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * PNCP API Base URL
  */
@@ -206,7 +207,8 @@ export class PncpService implements IGovApiService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Search failed: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(`[${requestId || 'no-request-id'}] Search failed: ${errorMessage}`);
 
       // Determine specific error type
       const isTimeout =
@@ -267,8 +269,9 @@ export class PncpService implements IGovApiService {
       if (error instanceof Error && error.message.includes('404')) {
         return null;
       }
+      const requestId = getRequestId();
       this.logger.error(
-        `GetById failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `[${requestId || 'no-request-id'}] GetById failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       throw error;
     }
@@ -512,8 +515,9 @@ export class PncpService implements IGovApiService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
+      const requestId = getRequestId();
       this.logger.error(
-        `Search Atas Registro de Preço failed: ${errorMessage}`,
+        `[${requestId || 'no-request-id'}] Search Atas Registro de Preço failed: ${errorMessage}`,
       );
 
       const isTimeout =
@@ -916,7 +920,8 @@ export class PncpService implements IGovApiService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Search Contratos Items failed: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(`[${requestId || 'no-request-id'}] Search Contratos Items failed: ${errorMessage}`);
 
       const isTimeout =
         errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
