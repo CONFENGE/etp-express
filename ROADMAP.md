@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 816/852 issues (95.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 817/852 issues (95.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1624 | Fix      | [#1172] Fix E2E session tests for Railway environment ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1623 | Feature  | [#1279] Geração automática de Edital a partir de ETP+TR+Pesquisa ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1622 | Feature  | [#1543] feat(document-extraction): Gerar tree structure com PageIndex em uploads ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1621 | Feature  | [#1278] Templates de edital por modalidade ✅ - **Score 98.125/100 - Manual merge (size exception for seed data)** |
@@ -484,7 +485,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
-| #1172 | [E2E] Fix Auth Session tests for Railway environment            |
+| #1172 | [E2E] Fix Auth Session tests for Railway environment ✅         |
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas   |
