@@ -75,6 +75,13 @@ const MarketDashboard = lazy(() =>
   })),
 );
 
+// Edital Editor (#1280)
+const EditalEditorPage = lazy(() =>
+  import('@/pages/EditalEditorPage').then((m) => ({
+    default: m.EditalEditorPage,
+  })),
+);
+
 // Admin pages - lazy-loaded (only accessed by system admins)
 const AdminDashboard = lazy(() =>
   import('@/pages/admin/AdminDashboard').then((m) => ({
@@ -343,6 +350,16 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <MarketDashboard />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Edital Editor (#1280)
+      {
+        path: '/editais/:id/edit',
+        element: (
+          <ProtectedRoute>
+            <EditalEditorPage />
           </ProtectedRoute>
         ),
       },
