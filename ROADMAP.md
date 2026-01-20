@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 814/852 issues (95.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 815/852 issues (95.7%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1622 | Feature  | [#1543] feat(document-extraction): Gerar tree structure com PageIndex em uploads ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1621 | Feature  | [#1278] Templates de edital por modalidade ✅ - **Score 98.125/100 - Manual merge (size exception for seed data)** |
 | 2026-01-19 | #1620 | Feature  | [#1284] Create Contrato entity with Lei 14.133/2021 compliance ✅ - **Score 97.5/100 - Merged (size exception for cohesive entity)** |
 | 2026-01-19 | #1619 | Feature  | [#1277] Criar entity Edital com estrutura completa conforme Lei 14.133/2021 ✅ - **Score 95.5/100 - Manual merge** |
@@ -462,7 +463,7 @@
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
-| #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
+| #1543 | Document Extraction com tree structure                   | P2         | ✅     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
 
@@ -677,7 +678,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1594 HybridRagService unified facade (3/6 do Hybrid RAG) | P1      | ✅     |
 |       | ↳ #1595 Automatic fallback between RAG paths (4/6)       | P1         | ✅     |
 |       | ↳ #1596 Benchmark suite for Hybrid RAG (5/6)             | P1         | ✅     |
-| #1543 | Document Extraction com tree structure                   | P2         | 🔴     |
+| #1543 | Document Extraction com tree structure                   | P2         | ✅     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | 🔴     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
 
