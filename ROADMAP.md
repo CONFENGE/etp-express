@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 812/852 issues (95.3%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-19 | **Progresso:** 813/852 issues (95.4%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-19 | #1620 | Feature  | [#1284] Create Contrato entity with Lei 14.133/2021 compliance ✅ - **Score 97.5/100 - Merged (size exception for cohesive entity)** |
 | 2026-01-19 | #1619 | Feature  | [#1277] Criar entity Edital com estrutura completa conforme Lei 14.133/2021 ✅ - **Score 95.5/100 - Manual merge** |
 | 2026-01-19 | #1618 | Feature  | [#1274] Integrar alertas de preço no fluxo de criação ETP ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1617 | Feature  | [#1273] Market analytics dashboard with 5 visualization components ✅ - **Score 100/100 - Auto-merged** |
@@ -536,7 +537,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 0/7    | Média      | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 0/8    | Média      | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 1/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
 
