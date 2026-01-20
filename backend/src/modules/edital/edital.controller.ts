@@ -14,7 +14,11 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { EditalGenerationService } from './edital-generation.service';
-import { GenerateEditalDto, UpdateEditalDto } from './dto';
+import {
+  GenerateEditalDto,
+  GenerateEditalResponseDto,
+  UpdateEditalDto,
+} from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Edital } from '../../entities/edital.entity';
@@ -119,7 +123,13 @@ export class EditalController {
 
     const edital = await this.editalRepository.findOne({
       where: { id, organizationId: user.organizationId },
-      relations: ['etp', 'termoReferencia', 'pesquisaPrecos', 'organization', 'createdBy'],
+      relations: [
+        'etp',
+        'termoReferencia',
+        'pesquisaPrecos',
+        'organization',
+        'createdBy',
+      ],
     });
 
     if (!edital) {
@@ -186,7 +196,9 @@ export class EditalController {
       this.logger.warn(
         `User ${user.id} from org ${user.organizationId} attempted to update edital ${id} from org ${edital.organizationId}`,
       );
-      throw new ForbiddenException('Você não tem permissão para editar este edital');
+      throw new ForbiddenException(
+        'Você não tem permissão para editar este edital',
+      );
     }
 
     // Converter dataSessaoPublica de string ISO para Date se fornecida
