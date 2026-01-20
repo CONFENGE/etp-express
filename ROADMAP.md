@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 817/852 issues (95.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 818/852 issues (96.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1625 | Feature  | [#1285] Implementar rastreabilidade ETP→TR→Edital→Contrato ✅ - **Score 97.5/100 - Merged (justified size exception)** |
 | 2026-01-20 | #1624 | Fix      | [#1172] Fix E2E session tests for Railway environment ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1623 | Feature  | [#1279] Geração automática de Edital a partir de ETP+TR+Pesquisa ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1622 | Feature  | [#1543] feat(document-extraction): Gerar tree structure com PageIndex em uploads ✅ - **Score 100/100 - Auto-merged** |
