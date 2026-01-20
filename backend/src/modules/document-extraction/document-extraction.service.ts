@@ -3,6 +3,8 @@ import {
   Logger,
   OnModuleInit,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import {
@@ -22,6 +24,10 @@ import {
   ExtractedSection,
   ExtractionOptions,
 } from './interfaces';
+import { PageIndexService } from '../pageindex/pageindex.service';
+import { TreeBuilderService } from '../pageindex/services/tree-builder.service';
+import { DocumentType } from '../pageindex/dto/index-document.dto';
+import { DocumentTreeStatus } from '../../entities/document-tree.entity';
 
 /**
  * Maximum age for uploaded files before cleanup (in milliseconds)
@@ -48,6 +54,13 @@ const WORDS_PER_PAGE = 500;
 @Injectable()
 export class DocumentExtractionService implements OnModuleInit {
   private readonly logger = new Logger(DocumentExtractionService.name);
+
+  constructor(
+    @Inject(forwardRef(() => PageIndexService))
+    private readonly pageIndexService: PageIndexService,
+    @Inject(forwardRef(() => TreeBuilderService))
+    private readonly treeBuilderService: TreeBuilderService,
+  ) {}
 
   /**
    * Initialize upload directory on module start
@@ -538,6 +551,126 @@ export class DocumentExtractionService implements OnModuleInit {
       );
     } catch (error) {
       this.logger.error('Error during cleanup:', error);
+    }
+  }
+
+  /**
+   * Process uploaded document with PageIndex asynchronously.
+   *
+   * This method creates a pending DocumentTree entry and processes the file
+   * in the background to generate hierarchical tree structure.
+   *
+   * @param filename - The uploaded filename
+   * @param originalName - Original filename from upload
+   * @returns Promise with tree ID and initial status
+   *
+   * @see Issue #1543 - feat(document-extraction): Gerar tree structure com PageIndex em uploads
+   */
+  async processWithPageIndex(
+    filename: string,
+    originalName: string,
+  ): Promise<{ treeId: string; status: string }> {
+    const filePath = this.getFilePath(filename);
+
+    if (!existsSync(filePath)) {
+      throw new BadRequestException(`File not found: ${filename}`);
+    }
+
+    // Determine document type (default to OTHER for generic PDFs/DOCX)
+    const documentType = DocumentType.OTHER;
+
+    try {
+      // Create pending DocumentTree entry
+      const result = await this.pageIndexService.createDocumentTree({
+        documentName: originalName,
+        documentPath: filePath,
+        documentType,
+      });
+
+      // Process asynchronously (non-blocking)
+      this.processDocumentAsync(result.treeId, filePath, documentType).catch(
+        (error) => {
+          this.logger.error(
+            `Async processing failed for tree ${result.treeId}:`,
+            error,
+          );
+        },
+      );
+
+      return {
+        treeId: result.treeId,
+        status: result.status,
+      };
+    } catch (error) {
+      this.logger.error('Failed to create DocumentTree entry:', error);
+      throw new BadRequestException(
+        `Failed to process document with PageIndex: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Process document tree asynchronously (background task).
+   *
+   * @param treeId - DocumentTree ID to update
+   * @param filePath - Path to the document file
+   * @param documentType - Type of document (PDF or DOCX)
+   */
+  private async processDocumentAsync(
+    treeId: string,
+    filePath: string,
+    _documentType: DocumentType,
+  ): Promise<void> {
+    const startTime = Date.now();
+
+    try {
+      this.logger.log(
+        `Starting async PageIndex processing for tree ${treeId}...`,
+      );
+
+      // Update status to PROCESSING
+      await this.pageIndexService.updateDocumentTreeStatus(
+        treeId,
+        DocumentTreeStatus.PROCESSING,
+      );
+
+      // Generate tree structure
+      const buildResult = await this.treeBuilderService.buildTree(filePath);
+
+      const processingTimeMs = Date.now() - startTime;
+
+      // Update DocumentTree with results
+      await this.pageIndexService.updateDocumentTreeWithResult(treeId, {
+        treeStructure: buildResult.tree,
+        nodeCount: buildResult.nodeCount,
+        maxDepth: buildResult.maxDepth,
+        processingTimeMs,
+        status: DocumentTreeStatus.INDEXED,
+        indexedAt: new Date(),
+        metadata: {
+          pageCount: 0,
+          wordCount: 0,
+        },
+      });
+
+      this.logger.log(
+        `PageIndex processing complete for tree ${treeId}: ${buildResult.nodeCount} nodes, ${buildResult.maxDepth} depth, ${processingTimeMs}ms`,
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `PageIndex processing failed for tree ${treeId}:`,
+        error,
+      );
+
+      // Update status to ERROR
+      await this.pageIndexService.updateDocumentTreeStatus(
+        treeId,
+        DocumentTreeStatus.ERROR,
+        errorMessage,
+      );
     }
   }
 
