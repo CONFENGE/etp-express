@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 821/852 issues (96.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 822/852 issues (96.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1629 | CI       | [#1189] Skip Playwright tests for documentation-only PRs ✅ - **Score 100/100 - Auto-merged (after regex fix)** |
 | 2026-01-20 | #1628 | Test     | [#1075] Configure load testing with 100+ concurrent requests ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-20 | #1627 | Feature  | [#1280] Editor de edital com auto-save no frontend ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1626 | Feature  | [#1071] Add requestId to all error logs for observability ✅ - **Score 100/100 - Auto-merged** |
@@ -501,7 +502,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #     | Issue                                                            |
 | ----- | ---------------------------------------------------------------- |
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
-| #1189 | [CI] Skip E2E tests for documentation-only PRs                   |
+| #1189 | [CI] Skip E2E tests for documentation-only PRs ✅                 |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
 | #1072 | [Observabilidade] Adicionar retry automático para emails         |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs ✅          |
