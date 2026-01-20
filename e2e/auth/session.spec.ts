@@ -39,7 +39,11 @@ const TEST_CONFIG = {
  * Uses robust selectors with data-testid fallback
  * @issue #1172
  */
-async function loginWithRobustSelectors(page: any, email: string, password: string) {
+async function loginWithRobustSelectors(
+  page: any,
+  email: string,
+  password: string,
+) {
   await page.goto('/login');
 
   // Email input with fallback selectors
