@@ -208,7 +208,9 @@ export class PncpService implements IGovApiService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] Search failed: ${errorMessage}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Search failed: ${errorMessage}`,
+      );
 
       // Determine specific error type
       const isTimeout =
@@ -921,7 +923,9 @@ export class PncpService implements IGovApiService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] Search Contratos Items failed: ${errorMessage}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Search Contratos Items failed: ${errorMessage}`,
+      );
 
       const isTimeout =
         errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');

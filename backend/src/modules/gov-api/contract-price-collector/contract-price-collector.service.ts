@@ -159,7 +159,9 @@ export class ContractPriceCollectorService implements OnModuleInit {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] Collection failed: ${errorMsg}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Collection failed: ${errorMsg}`,
+      );
       errors.push(`Collection failed: ${errorMsg}`);
     }
 
@@ -526,7 +528,9 @@ export class ContractPriceCollectorService implements OnModuleInit {
           '',
         );
         const requestId = getRequestId();
-        this.logger.error(`[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`);
+        this.logger.error(
+          `[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`,
+        );
       } else {
         this.schedulerStatus.status = 'idle';
         this.schedulerStatus.lastError = undefined;
@@ -539,7 +543,9 @@ export class ContractPriceCollectorService implements OnModuleInit {
       this.schedulerStatus.status = 'error';
       this.schedulerStatus.lastError = errorMsg;
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`,
+      );
     }
   }
 

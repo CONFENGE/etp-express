@@ -166,7 +166,9 @@ export class GovApiCache implements OnModuleDestroy {
       this.redis!.on('error', (error) => {
         this.isConnected = false;
         const requestId = getRequestId();
-        this.logger.error(`[${requestId || 'no-request-id'}] Redis error: ${error.message}`);
+        this.logger.error(
+          `[${requestId || 'no-request-id'}] Redis error: ${error.message}`,
+        );
       });
 
       this.redis!.on('close', () => {
@@ -177,7 +179,9 @@ export class GovApiCache implements OnModuleDestroy {
       // Connect asynchronously
       this.redis!.connect().catch((error) => {
         const requestId = getRequestId();
-        this.logger.error(`[${requestId || 'no-request-id'}] Failed to connect to Redis: ${error.message}`);
+        this.logger.error(
+          `[${requestId || 'no-request-id'}] Failed to connect to Redis: ${error.message}`,
+        );
       });
     } catch (error) {
       const requestId = getRequestId();

@@ -682,7 +682,9 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] Search Pregão Items failed: ${errorMessage}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Search Pregão Items failed: ${errorMessage}`,
+      );
 
       const isTimeout =
         errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');
