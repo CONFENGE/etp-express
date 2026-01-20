@@ -41,12 +41,16 @@ const SEARCH_QUERIES = [
 
 // Setup function
 export function setup() {
-  const loginRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    email: TEST_USER_EMAIL,
-    password: TEST_USER_PASSWORD,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const loginRes = http.post(
+    `${BASE_URL}/api/auth/login`,
+    JSON.stringify({
+      email: TEST_USER_EMAIL,
+      password: TEST_USER_PASSWORD,
+    }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 
   check(loginRes, {
     'login successful': (r) => r.status === 200,
@@ -64,13 +68,14 @@ export default function (data) {
   };
 
   // Pick random search query
-  const query = SEARCH_QUERIES[Math.floor(Math.random() * SEARCH_QUERIES.length)];
+  const query =
+    SEARCH_QUERIES[Math.floor(Math.random() * SEARCH_QUERIES.length)];
 
   // Search PNCP (most common gov API)
   const pncpStart = Date.now();
   const pncpRes = http.get(
     `${BASE_URL}/api/gov-api/pncp/search?query=${encodeURIComponent(query)}&limit=10`,
-    { headers, timeout: '30s' }
+    { headers, timeout: '30s' },
   );
   const pncpDuration = Date.now() - pncpStart;
 
@@ -91,7 +96,9 @@ export default function (data) {
     errorRate.add(0);
   } else {
     errorRate.add(1);
-    console.log(`PNCP search failed: ${pncpRes.status} - ${pncpRes.body.substring(0, 100)}`);
+    console.log(
+      `PNCP search failed: ${pncpRes.status} - ${pncpRes.body.substring(0, 100)}`,
+    );
   }
 
   sleep(1); // Think time
@@ -100,7 +107,7 @@ export default function (data) {
   const sinapiStart = Date.now();
   const sinapiRes = http.get(
     `${BASE_URL}/api/prices/sinapi/search?query=${encodeURIComponent(query)}&limit=5`,
-    { headers, timeout: '30s' }
+    { headers, timeout: '30s' },
   );
   const sinapiDuration = Date.now() - sinapiStart;
 

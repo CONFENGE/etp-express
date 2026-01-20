@@ -34,12 +34,16 @@ const SHARED_ETP_ID = __ENV.SHARED_ETP_ID || null; // ID of ETP to stress test
 
 // Setup function
 export function setup() {
-  const loginRes = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    email: TEST_USER_EMAIL,
-    password: TEST_USER_PASSWORD,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const loginRes = http.post(
+    `${BASE_URL}/api/auth/login`,
+    JSON.stringify({
+      email: TEST_USER_EMAIL,
+      password: TEST_USER_PASSWORD,
+    }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 
   check(loginRes, {
     'login successful': (r) => r.status === 200,
@@ -55,15 +59,19 @@ export function setup() {
       Authorization: `Bearer ${token}`,
     };
 
-    const etpRes = http.post(`${BASE_URL}/api/etps`, JSON.stringify({
-      objeto: 'Load Test - Concurrent Section Approval',
-      justificativa: 'Testing race conditions on section approval',
-      orgaoId: 1,
-      status: 'rascunho',
-      tipo: 'Servico',
-      prazoEstimado: 6,
-      valorEstimado: 50000,
-    }), { headers });
+    const etpRes = http.post(
+      `${BASE_URL}/api/etps`,
+      JSON.stringify({
+        objeto: 'Load Test - Concurrent Section Approval',
+        justificativa: 'Testing race conditions on section approval',
+        orgaoId: 1,
+        status: 'rascunho',
+        tipo: 'Servico',
+        prazoEstimado: 6,
+        valorEstimado: 50000,
+      }),
+      { headers },
+    );
 
     etpId = etpRes.json('id');
   }
@@ -79,10 +87,9 @@ export default function (data) {
   };
 
   // Fetch ETP sections
-  const sectionsRes = http.get(
-    `${BASE_URL}/api/etps/${data.etpId}/sections`,
-    { headers }
-  );
+  const sectionsRes = http.get(`${BASE_URL}/api/etps/${data.etpId}/sections`, {
+    headers,
+  });
 
   const sectionsSuccess = check(sectionsRes, {
     'sections fetch status is 200': (r) => r.status === 200,
@@ -114,7 +121,7 @@ export default function (data) {
   const updateRes = http.patch(
     `${BASE_URL}/api/sections/${section.id}`,
     JSON.stringify(updatePayload),
-    { headers }
+    { headers },
   );
 
   const updateSuccess = check(updateRes, {
