@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 819/852 issues (96.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 820/852 issues (96.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1627 | Feature  | [#1280] Editor de edital com auto-save no frontend ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1626 | Feature  | [#1071] Add requestId to all error logs for observability ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-20 | #1625 | Feature  | [#1285] Implementar rastreabilidade ETP→TR→Edital→Contrato ✅ - **Score 97.5/100 - Merged (justified size exception)** |
 | 2026-01-20 | #1624 | Fix      | [#1172] Fix E2E session tests for Railway environment ✅ - **Score 100/100 - Auto-merged** |
@@ -542,7 +543,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
-| M14: Geração de Edital         | 2/7    | 29% 🟡     | +R$ 500/mês           |
+| M14: Geração de Edital         | 3/7    | 43% 🟡     | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 1/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
