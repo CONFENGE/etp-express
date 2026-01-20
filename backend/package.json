@@ -32,6 +32,8 @@
     "seed:templates:prod": "node dist/scripts/seed-templates.js",
     "seed:tr-templates": "ts-node -r tsconfig-paths/register src/scripts/seed-tr-templates.ts",
     "seed:tr-templates:prod": "node dist/scripts/seed-tr-templates.js",
+    "seed:edital-templates": "ts-node -r tsconfig-paths/register src/scripts/seed-edital-templates.ts",
+    "seed:edital-templates:prod": "node dist/scripts/seed-edital-templates.js",
     "reset:demo": "ts-node -r tsconfig-paths/register scripts/reset-demo-data.ts",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "swagger:export": "ts-node -r tsconfig-paths/register src/scripts/export-swagger.ts",
