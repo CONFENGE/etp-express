@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { EditalController } from './edital.controller';
 import { EditalGenerationService } from './edital-generation.service';
 import { GenerateEditalDto, GenerateEditalResponseDto } from './dto';
 import { User } from '../../entities/user.entity';
-import { EditalStatus } from '../../entities/edital.entity';
+import { Edital, EditalStatus } from '../../entities/edital.entity';
 
 /**
  * Testes unitários para EditalController.
@@ -47,6 +48,13 @@ describe('EditalController', () => {
           provide: EditalGenerationService,
           useValue: {
             generateFromEtp: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(Edital),
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
           },
         },
       ],
