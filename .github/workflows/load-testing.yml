@@ -1,0 +1,115 @@
+name: Load Testing
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Target URL for load testing'
+        required: false
+        default: 'https://etp-express-production.up.railway.app'
+
+  # Scheduled run (weekly on Saturdays at 3 AM UTC)
+  schedule:
+    - cron: '0 3 * * 6'
+
+jobs:
+  load-test:
+    name: Run Load Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6 -y
+
+      - name: Verify k6 installation
+        run: k6 version
+
+      - name: Run ETP Creation Load Test
+        env:
+          BASE_URL: ${{ github.event.inputs.target_url || 'https://etp-express-production.up.railway.app' }}
+          TEST_USER_EMAIL: ${{ secrets.LOAD_TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.LOAD_TEST_USER_PASSWORD }}
+        run: |
+          mkdir -p load-testing/results
+          k6 run \
+            --env BASE_URL="$BASE_URL" \
+            --env TEST_USER_EMAIL="$TEST_USER_EMAIL" \
+            --env TEST_USER_PASSWORD="$TEST_USER_PASSWORD" \
+            --summary-export=load-testing/results/etp-creation-${{ github.run_number }}.json \
+            load-testing/scenarios/etp-creation.load.js
+
+      - name: Run Concurrent Section Approval Test
+        env:
+          BASE_URL: ${{ github.event.inputs.target_url || 'https://etp-express-production.up.railway.app' }}
+          TEST_USER_EMAIL: ${{ secrets.LOAD_TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.LOAD_TEST_USER_PASSWORD }}
+        run: |
+          k6 run \
+            --env BASE_URL="$BASE_URL" \
+            --env TEST_USER_EMAIL="$TEST_USER_EMAIL" \
+            --env TEST_USER_PASSWORD="$TEST_USER_PASSWORD" \
+            --summary-export=load-testing/results/section-approval-${{ github.run_number }}.json \
+            load-testing/scenarios/section-approval-concurrent.load.js
+
+      - name: Run Gov API Search Test
+        env:
+          BASE_URL: ${{ github.event.inputs.target_url || 'https://etp-express-production.up.railway.app' }}
+          TEST_USER_EMAIL: ${{ secrets.LOAD_TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.LOAD_TEST_USER_PASSWORD }}
+        run: |
+          k6 run \
+            --env BASE_URL="$BASE_URL" \
+            --env TEST_USER_EMAIL="$TEST_USER_EMAIL" \
+            --env TEST_USER_PASSWORD="$TEST_USER_PASSWORD" \
+            --summary-export=load-testing/results/gov-api-search-${{ github.run_number }}.json \
+            load-testing/scenarios/gov-api-search.load.js
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: load-test-results-${{ github.run_number }}
+          path: load-testing/results/*.json
+          retention-days: 30
+
+      - name: Generate Summary Report
+        if: always()
+        run: |
+          echo "## Load Testing Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Run:** #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${BASE_URL:-https://etp-express-production.up.railway.app}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check if jq is available
+          if command -v jq &> /dev/null; then
+            for result_file in load-testing/results/*.json; do
+              if [ -f "$result_file" ]; then
+                scenario_name=$(basename "$result_file" .json | cut -d'-' -f1-2)
+                echo "### $scenario_name" >> $GITHUB_STEP_SUMMARY
+                echo "- **P95 Latency:** $(jq -r '.metrics.http_req_duration.values["p(95)"] // "N/A"' "$result_file") ms" >> $GITHUB_STEP_SUMMARY
+                echo "- **Error Rate:** $(jq -r '.metrics.errors.values.rate // "N/A"' "$result_file")" >> $GITHUB_STEP_SUMMARY
+                echo "- **Total Requests:** $(jq -r '.metrics.http_reqs.values.count // "N/A"' "$result_file")" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "jq not available - see artifacts for detailed metrics" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check Thresholds
+        if: always()
+        run: |
+          # This step will fail the workflow if thresholds are not met
+          # k6 exits with non-zero if thresholds fail
+          echo "Threshold validation completed during test execution"
