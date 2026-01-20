@@ -285,7 +285,9 @@ describe('EditalTemplate Entity', () => {
 
       expect(template.legalReferences).toHaveLength(3);
       expect(template.legalReferences[0]).toContain('Lei nº 14.133/2021');
-      expect(template.legalReferences[1]).toContain('Lei Complementar nº 123/2006');
+      expect(template.legalReferences[1]).toContain(
+        'Lei Complementar nº 123/2006',
+      );
       expect(template.legalReferences[2]).toContain('IN SEGES/ME');
     });
   });
