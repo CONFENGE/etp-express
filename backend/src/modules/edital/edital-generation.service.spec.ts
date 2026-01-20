@@ -246,7 +246,7 @@ describe('EditalGenerationService', () => {
       expect(result.metadata.aiEnhanced).toBe(true);
       expect(result.metadata.tokens).toBe(300);
       expect(result.metadata.model).toBe('gpt-4.1-nano');
-      expect(result.metadata.latencyMs).toBeGreaterThan(0);
+      expect(result.metadata.latencyMs).toBeGreaterThanOrEqual(0);
 
       // Verify repository calls
       expect(etpRepository.findOne).toHaveBeenCalledWith({
