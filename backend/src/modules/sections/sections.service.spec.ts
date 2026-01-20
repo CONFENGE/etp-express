@@ -95,6 +95,7 @@ describe('SectionsService', () => {
     sections: [],
     versions: [],
     auditLogs: [],
+    termosReferencia: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   } as Etp;

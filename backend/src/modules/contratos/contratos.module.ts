@@ -21,9 +21,7 @@ import { ContratosController } from './controllers/contratos.controller';
  * @see Lei 14.133/2021 Art. 90-129 - Contratos Administrativos
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Contrato, Edital, TermoReferencia, Etp]),
-  ],
+  imports: [TypeOrmModule.forFeature([Contrato, Edital, TermoReferencia, Etp])],
   controllers: [ContratosController],
   providers: [ContractChainService],
   exports: [ContractChainService],

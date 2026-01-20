@@ -5,11 +5,20 @@ import {
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ContractChainService, ContractChain } from '../services/contract-chain.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RoleGuard } from '../../auth/guards/role.guard';
+import {
+  ContractChainService,
+  ContractChain,
+} from '../services/contract-chain.service';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { Roles } from '../../../common/decorators/roles.decorator';
 import { UserRole } from '../../../entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 
 /**
  * Controller para gerenciamento de Contratos.
@@ -74,10 +83,11 @@ export class ContratosController {
    * @throws {ForbiddenException} Se usuário sem permissão
    */
   @Get(':id/chain')
-  @UseGuards(RoleGuard([UserRole.CONSULTOR, UserRole.GESTOR, UserRole.SYSTEM_ADMIN]))
+  @Roles(UserRole.ADMIN, UserRole.USER, UserRole.SYSTEM_ADMIN)
   @ApiOperation({
     summary: 'Buscar cadeia de rastreabilidade de contrato',
-    description: 'Retorna estrutura hierárquica completa: ETP → TR → Edital → Contrato',
+    description:
+      'Retorna estrutura hierárquica completa: ETP → TR → Edital → Contrato',
   })
   @ApiParam({
     name: 'id',
@@ -142,7 +152,8 @@ export class ContratosController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Contrato não encontrado ou cadeia de rastreabilidade incompleta',
+    description:
+      'Contrato não encontrado ou cadeia de rastreabilidade incompleta',
     schema: {
       type: 'object',
       properties: {
