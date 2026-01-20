@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import CircuitBreaker from 'opossum';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
+import { getRequestId } from '../../../common/context/request-context';
 import {
   GovApiSource,
   GovApiRateLimitConfig,
@@ -331,8 +332,9 @@ export class GovApiClient {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
 
+      const requestId = getRequestId();
       this.logger.error(
-        `[${method}] ${url} - Failed after ${duration}ms: ${errorMessage}`,
+        `[${requestId || 'no-request-id'}] [${method}] ${url} - Failed after ${duration}ms: ${errorMessage}`,
       );
 
       throw error;

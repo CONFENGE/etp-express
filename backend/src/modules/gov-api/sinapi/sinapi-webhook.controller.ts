@@ -29,6 +29,7 @@ import { Throttle } from '@nestjs/throttler';
 import * as crypto from 'crypto';
 import { SinapiSyncJob } from './sinapi-sync.job';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * Webhook event types from Orcamentador API
  */
@@ -162,8 +163,9 @@ export class SinapiWebhookController {
           try {
             await this.syncJob.checkForUpdates();
           } catch (error) {
+            const requestId = getRequestId();
             this.logger.error(
-              `Webhook-triggered update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              `[${requestId || 'no-request-id'}] Webhook-triggered update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
             );
           }
         });
@@ -181,8 +183,9 @@ export class SinapiWebhookController {
           try {
             await this.syncJob.checkForUpdates();
           } catch (error) {
+            const requestId = getRequestId();
             this.logger.error(
-              `Webhook-triggered correction handling failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              `[${requestId || 'no-request-id'}] Webhook-triggered correction handling failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
             );
           }
         });

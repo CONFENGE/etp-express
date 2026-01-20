@@ -21,6 +21,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PncpService } from '../pncp/pncp.service';
 import { GovApiPriceReference } from '../interfaces/gov-api.interface';
+import { getRequestId } from '../../../common/context/request-context';
 import {
   ContractPrice,
   ContractPriceModalidade,
@@ -157,7 +158,10 @@ export class ContractPriceCollectorService implements OnModuleInit {
       );
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Collection failed: ${errorMsg}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Collection failed: ${errorMsg}`,
+      );
       errors.push(`Collection failed: ${errorMsg}`);
     }
 
@@ -523,7 +527,10 @@ export class ContractPriceCollectorService implements OnModuleInit {
           'Collection failed: ',
           '',
         );
-        this.logger.error(`Scheduled collection failed: ${errorMsg}`);
+        const requestId = getRequestId();
+        this.logger.error(
+          `[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`,
+        );
       } else {
         this.schedulerStatus.status = 'idle';
         this.schedulerStatus.lastError = undefined;
@@ -535,7 +542,10 @@ export class ContractPriceCollectorService implements OnModuleInit {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       this.schedulerStatus.status = 'error';
       this.schedulerStatus.lastError = errorMsg;
-      this.logger.error(`Scheduled collection failed: ${errorMsg}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`,
+      );
     }
   }
 

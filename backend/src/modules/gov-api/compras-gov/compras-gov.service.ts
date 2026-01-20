@@ -44,6 +44,7 @@ import {
 } from './compras-gov.types';
 import { SearchStatus, getStatusMessage } from '../types/search-result';
 
+import { getRequestId } from '../../../common/context/request-context';
 /**
  * Compras.gov.br API base URL
  */
@@ -217,8 +218,9 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
       const duration = Date.now() - startTime;
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
+      const requestId = getRequestId();
       this.logger.error(
-        `Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${errorMessage}`,
+        `[${requestId || 'no-request-id'}] Search failed for "${query.substring(0, 30)}..." after ${duration}ms: ${errorMessage}`,
       );
 
       // Determine specific error type
@@ -282,8 +284,9 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
 
       return contract;
     } catch (error) {
+      const requestId = getRequestId();
       this.logger.error(
-        `Failed to get licitacao by ID "${id}": ${
+        `[${requestId || 'no-request-id'}] Failed to get licitacao by ID "${id}": ${
           error instanceof Error ? error.message : 'Unknown error'
         }`,
       );
@@ -678,7 +681,10 @@ export class ComprasGovService implements IGovApiService, OnModuleInit {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Search Pregão Items failed: ${errorMessage}`);
+      const requestId = getRequestId();
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Search Pregão Items failed: ${errorMessage}`,
+      );
 
       const isTimeout =
         errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT');

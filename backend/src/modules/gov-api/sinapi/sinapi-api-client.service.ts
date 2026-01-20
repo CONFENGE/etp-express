@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 import { firstValueFrom } from 'rxjs';
+import { getRequestId } from '../../../common/context/request-context';
 import { GovApiCache } from '../utils/gov-api-cache';
 import {
   SinapiApiSearchParams,
@@ -747,8 +748,9 @@ export class SinapiApiClientService implements OnModuleInit {
 
     // All retries exhausted
     const duration = Date.now() - startTime;
+    const requestId = getRequestId();
     this.logger.error(
-      `SINAPI API ${method} ${endpoint} failed after ${maxAttempts} attempts in ${duration}ms`,
+      `[${requestId || 'no-request-id'}] SINAPI API ${method} ${endpoint} failed after ${maxAttempts} attempts in ${duration}ms`,
     );
 
     if ((lastError as AxiosError)?.isAxiosError) {
