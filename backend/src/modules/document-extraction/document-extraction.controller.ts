@@ -28,6 +28,7 @@ import {
 } from './multer.config';
 import { DocumentExtractionService } from './document-extraction.service';
 import { PageIndexService } from '../pageindex/pageindex.service';
+import { TreeNode } from '../pageindex/interfaces/tree-node.interface';
 
 /**
  * DTO for upload response
@@ -72,7 +73,7 @@ class DocumentTreeResponseDto {
   maxDepth: number;
   indexedAt: Date | null;
   error: string | null;
-  tree?: any;
+  tree?: TreeNode | null;
 }
 
 /**
@@ -151,10 +152,11 @@ export class DocumentExtractionController {
     // Process with PageIndex asynchronously
     let pageIndexResult: { treeId: string; status: string } | undefined;
     try {
-      pageIndexResult = await this.documentExtractionService.processWithPageIndex(
-        file.filename,
-        file.originalname,
-      );
+      pageIndexResult =
+        await this.documentExtractionService.processWithPageIndex(
+          file.filename,
+          file.originalname,
+        );
       this.logger.log(
         `PageIndex processing started: tree ${pageIndexResult.treeId}`,
       );
