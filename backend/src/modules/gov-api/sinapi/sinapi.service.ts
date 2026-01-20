@@ -484,7 +484,9 @@ export class SinapiService implements IGovApiService, OnModuleInit {
 
     if (error instanceof SinapiApiAuthError) {
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] SINAPI API authentication failed - check API key`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] SINAPI API authentication failed - check API key`,
+      );
       this.currentDataSource = SinapiDataSource.DATABASE;
     } else if (error instanceof SinapiApiRateLimitError) {
       this.logger.warn(

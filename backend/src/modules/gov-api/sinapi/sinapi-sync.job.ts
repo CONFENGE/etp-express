@@ -207,7 +207,9 @@ export class SinapiSyncJob implements OnModuleInit {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       const requestId = getRequestId();
-      this.logger.error(`[${requestId || 'no-request-id'}] SINAPI update check failed: ${errorMessage}`);
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] SINAPI update check failed: ${errorMessage}`,
+      );
       this.schedulerStatus.status = 'error';
       this.schedulerStatus.lastError = errorMessage;
     }
