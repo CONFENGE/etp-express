@@ -1,5 +1,17 @@
-import { IsString, IsOptional, IsEnum, IsBoolean, IsNumber, IsObject } from 'class-validator';
-import { EditalModalidade, EditalCriterioJulgamento, EditalModoDisputa, EditalTipoContratacaoDireta } from '../../../entities/edital.entity';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  IsNumber,
+  IsObject,
+} from 'class-validator';
+import {
+  EditalModalidade,
+  EditalCriterioJulgamento,
+  EditalModoDisputa,
+  EditalTipoContratacaoDireta,
+} from '../../../entities/edital.entity';
 
 /**
  * DTO para atualização parcial de Edital.
