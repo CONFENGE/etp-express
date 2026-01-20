@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-19 | **Progresso:** 815/852 issues (95.7%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-20 | **Progresso:** 816/852 issues (95.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-20 | #1623 | Feature  | [#1279] Geração automática de Edital a partir de ETP+TR+Pesquisa ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1622 | Feature  | [#1543] feat(document-extraction): Gerar tree structure com PageIndex em uploads ✅ - **Score 100/100 - Auto-merged** |
 | 2026-01-19 | #1621 | Feature  | [#1278] Templates de edital por modalidade ✅ - **Score 98.125/100 - Manual merge (size exception for seed data)** |
 | 2026-01-19 | #1620 | Feature  | [#1284] Create Contrato entity with Lei 14.133/2021 compliance ✅ - **Score 97.5/100 - Merged (size exception for cohesive entity)** |
