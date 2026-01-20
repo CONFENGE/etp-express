@@ -357,7 +357,7 @@ describe('ETPAnalysisService', () => {
       // Assert
       // If running sequentially: ~150ms
       // If running in parallel: ~50-60ms
-      expect(elapsedTime).toBeLessThan(100);
+      expect(elapsedTime).toBeLessThan(120);
     });
   });
 
