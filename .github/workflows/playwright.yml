@@ -100,12 +100,14 @@ jobs:
           HAS_CODE_CHANGES=false
           for file in $CODE_FILES; do
             # Get diff without JSDoc/comment lines
+            # Fixed regex: '\*\s' requires whitespace after asterisk to avoid matching
+            # multiplication operators (a * b) or glob imports (import * as fs)
             DIFF=$(git diff $BASE_REF $HEAD_REF -- "$file" | \
               grep -E '^\+|^-' | \
               grep -v '^\+\+\+' | \
               grep -v '^---' | \
               grep -v -E '^\+?\s*/\*\*' | \
-              grep -v -E '^\+?\s*\*' | \
+              grep -v -E '^\+?\s*\*\s' | \
               grep -v -E '^\+?\s*\*/' | \
               grep -v -E '^\+?\s*//' || true)
 
