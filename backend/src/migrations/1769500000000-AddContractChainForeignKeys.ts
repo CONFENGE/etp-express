@@ -16,9 +16,7 @@ import { MigrationInterface, QueryRunner, TableForeignKey } from 'typeorm';
  * - CASCADE: Ao deletar ETP, deleta TRs associados
  * - SET NULL: Ao deletar TR/Edital, mantém documentos posteriores mas remove vínculo
  */
-export class AddContractChainForeignKeys1769500000000
-  implements MigrationInterface
-{
+export class AddContractChainForeignKeys1769500000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // ===================================================
     // FK 1: termos_referencia.etpId → etps.id
