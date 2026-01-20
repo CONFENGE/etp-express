@@ -15,8 +15,11 @@ import {
   EditalModoDisputa,
 } from '../../entities/edital.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
-import { TermoReferencia, TermoReferenciaStatus } from '../../entities/termo-referencia.entity';
-import { PesquisaPrecos, PesquisaPrecosStatus } from '../../entities/pesquisa-precos.entity';
+import { TermoReferencia } from '../../entities/termo-referencia.entity';
+import {
+  PesquisaPrecos,
+  PesquisaPrecosStatus,
+} from '../../entities/pesquisa-precos.entity';
 import { EditalTemplate } from '../../entities/edital-template.entity';
 import { OpenAIService, LLMResponse } from '../orchestrator/llm/openai.service';
 import { GenerateEditalDto, GenerateEditalResponseDto } from './dto';
@@ -177,7 +180,10 @@ export class EditalGenerationService {
     if (dto.numero) {
       editalData.numero = dto.numero;
     } else {
-      editalData.numero = await this.generateEditalNumber(etp, editalData.modalidade || null);
+      editalData.numero = await this.generateEditalNumber(
+        etp,
+        editalData.modalidade || null,
+      );
     }
 
     // 9. Enriquecer cláusulas complementares com IA
@@ -247,7 +253,9 @@ export class EditalGenerationService {
    * @param etp ETP de origem
    * @returns Template encontrado ou null
    */
-  private async getTemplateByModalidade(etp: Etp): Promise<EditalTemplate | null> {
+  private async getTemplateByModalidade(
+    _etp: Etp,
+  ): Promise<EditalTemplate | null> {
     // Inferir modalidade a partir do template type do ETP
     // OBRAS, TI, SERVICOS → geralmente Pregão
     // Lógica simplificada: usar primeiro template ativo encontrado
@@ -330,7 +338,8 @@ export class EditalGenerationService {
         obrigacoesContratada: termoReferencia.obrigacoesContratada,
       };
 
-      baseData.sancoesAdministrativas = termoReferencia.sancoesPenalidades || null;
+      baseData.sancoesAdministrativas =
+        termoReferencia.sancoesPenalidades || null;
       baseData.condicoesPagamento = termoReferencia.condicoesPagamento || null;
       baseData.localEntrega = termoReferencia.localExecucao || null;
     }
@@ -339,7 +348,8 @@ export class EditalGenerationService {
     if (pesquisaPrecos) {
       this.logger.debug('Including Pesquisa de Preços data in Edital');
 
-      baseData.valorEstimado = pesquisaPrecos.valorTotalEstimado?.toString() || null;
+      baseData.valorEstimado =
+        pesquisaPrecos.valorTotalEstimado?.toString() || null;
 
       // Adicionar referência à pesquisa de preços nas cláusulas
       if (!baseData.clausulas) {
@@ -357,7 +367,8 @@ export class EditalGenerationService {
 
       // Mapear EditalTemplateModalidade para EditalModalidade
       if (template.modalidade) {
-        baseData.modalidade = template.modalidade as unknown as EditalModalidade;
+        baseData.modalidade =
+          template.modalidade as unknown as EditalModalidade;
       }
     }
 
@@ -416,7 +427,8 @@ Retorne **APENAS** um JSON válido no formato:
 }`;
 
     const response = await this.openAIService.generateCompletion({
-      systemPrompt: 'Você é um especialista em licitações públicas e Lei 14.133/2021.',
+      systemPrompt:
+        'Você é um especialista em licitações públicas e Lei 14.133/2021.',
       userPrompt: prompt,
     });
 
@@ -435,7 +447,10 @@ Retorne **APENAS** um JSON válido no formato:
         reajusteContratual: parsed.reajusteContratual || null,
       };
     } catch (error) {
-      this.logger.warn('Failed to parse AI response as JSON, using fallback values', error);
+      this.logger.warn(
+        'Failed to parse AI response as JSON, using fallback values',
+        error,
+      );
       enhancedData = {};
     }
 
@@ -452,7 +467,7 @@ Retorne **APENAS** um JSON válido no formato:
    * @param etp ETP de origem
    * @returns Modalidade inferida
    */
-  private inferModalidade(etp: Etp): EditalModalidade {
+  private inferModalidade(_etp: Etp): EditalModalidade {
     // Lógica simplificada: usar Pregão como padrão (modalidade mais comum)
     // Em produção, isso pode ser mais sofisticado baseado no tipo e valor da contratação
     return EditalModalidade.PREGAO;
