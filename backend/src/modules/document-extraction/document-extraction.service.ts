@@ -27,6 +27,7 @@ import {
 import { PageIndexService } from '../pageindex/pageindex.service';
 import { TreeBuilderService } from '../pageindex/services/tree-builder.service';
 import { DocumentType } from '../pageindex/dto/index-document.dto';
+import { DocumentTreeStatus } from '../../entities/document-tree.entity';
 
 /**
  * Maximum age for uploaded files before cleanup (in milliseconds)
@@ -618,7 +619,7 @@ export class DocumentExtractionService implements OnModuleInit {
   private async processDocumentAsync(
     treeId: string,
     filePath: string,
-    documentType: DocumentType,
+    _documentType: DocumentType,
   ): Promise<void> {
     const startTime = Date.now();
 
@@ -630,7 +631,7 @@ export class DocumentExtractionService implements OnModuleInit {
       // Update status to PROCESSING
       await this.pageIndexService.updateDocumentTreeStatus(
         treeId,
-        'processing' as any,
+        DocumentTreeStatus.PROCESSING,
       );
 
       // Generate tree structure
@@ -644,7 +645,7 @@ export class DocumentExtractionService implements OnModuleInit {
         nodeCount: buildResult.nodeCount,
         maxDepth: buildResult.maxDepth,
         processingTimeMs,
-        status: 'indexed' as any,
+        status: DocumentTreeStatus.INDEXED,
         indexedAt: new Date(),
         metadata: {
           pageCount: 0,
@@ -667,7 +668,7 @@ export class DocumentExtractionService implements OnModuleInit {
       // Update status to ERROR
       await this.pageIndexService.updateDocumentTreeStatus(
         treeId,
-        'error' as any,
+        DocumentTreeStatus.ERROR,
         errorMessage,
       );
     }

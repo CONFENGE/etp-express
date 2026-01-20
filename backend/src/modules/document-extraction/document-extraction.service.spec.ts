@@ -1,10 +1,27 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException } from '@nestjs/common';
-import { DocumentExtractionService } from './document-extraction.service';
-import { existsSync, mkdirSync, unlinkSync, statSync, readFileSync } from 'fs';
-import { join } from 'path';
-import { UPLOAD_DIR } from './multer.config';
-import * as mammoth from 'mammoth';
+// Mock DocumentTree entity to avoid TypeORM loading
+jest.mock('../../entities/document-tree.entity', () => ({
+  DocumentTreeStatus: {
+    PENDING: 'pending',
+    PROCESSING: 'processing',
+    INDEXED: 'indexed',
+    ERROR: 'error',
+  },
+  DocumentTree: jest.fn(),
+}));
+
+// Mock PageIndex modules to avoid TypeORM loading
+jest.mock('../pageindex/pageindex.service', () => ({
+  PageIndexService: jest.fn().mockImplementation(() => ({
+    updateDocumentTreeStatus: jest.fn(),
+    updateDocumentTreeWithResult: jest.fn(),
+  })),
+}));
+
+jest.mock('../pageindex/services/tree-builder.service', () => ({
+  TreeBuilderService: jest.fn().mockImplementation(() => ({
+    buildTree: jest.fn(),
+  })),
+}));
 
 // Mock fs functions
 jest.mock('fs', () => ({
@@ -36,14 +53,46 @@ jest.mock('pdf-parse', () => ({
   })),
 }));
 
+// Import after all mocks are defined
+import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
+import { existsSync, mkdirSync, unlinkSync, statSync, readFileSync } from 'fs';
+import { join } from 'path';
+import * as mammoth from 'mammoth';
+import { PageIndexService } from '../pageindex/pageindex.service';
+import { TreeBuilderService } from '../pageindex/services/tree-builder.service';
+import { DocumentExtractionService } from './document-extraction.service';
+import { UPLOAD_DIR } from './multer.config';
+
 describe('DocumentExtractionService', () => {
   let service: DocumentExtractionService;
+
+  // Mock PageIndexService
+  const mockPageIndexService = {
+    updateDocumentTreeStatus: jest.fn(),
+    updateDocumentTreeWithResult: jest.fn(),
+  };
+
+  // Mock TreeBuilderService
+  const mockTreeBuilderService = {
+    buildTree: jest.fn(),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DocumentExtractionService],
+      providers: [
+        DocumentExtractionService,
+        {
+          provide: PageIndexService,
+          useValue: mockPageIndexService,
+        },
+        {
+          provide: TreeBuilderService,
+          useValue: mockTreeBuilderService,
+        },
+      ],
     }).compile();
 
     service = module.get<DocumentExtractionService>(DocumentExtractionService);
