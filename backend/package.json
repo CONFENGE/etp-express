@@ -65,7 +65,7 @@
     "@sentry/profiling-node": "^10.25.0",
     "@types/multer": "^2.0.0",
     "axios": "^1.13.2",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bullmq": "^5.65.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
