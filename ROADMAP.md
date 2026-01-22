@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-22 | **Progresso:** 824/852 issues (96.7%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-22 | **Progresso:** 825/852 issues (96.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-22 | #1632 | Feature  | [#1287] Automated contract alerts - Lei 14.133/2021 Art. 117 (#1287) ✅ |
 | 2026-01-22 | #1631 | Feature  | [#1282] Export edital formatado PDF/DOCX - M14 COMPLETE (#1282) ✅ |
 | 2026-01-22 | #1630 | Feature  | [#1281] Validação de cláusulas obrigatórias - Lei 14.133/2021 ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-20 | #1629 | CI       | [#1189] Skip Playwright tests for documentation-only PRs ✅ - **Score 100/100 - Auto-merged (after regex fix)** |
@@ -548,7 +549,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 1/8    | Média      | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 2/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
 
@@ -742,9 +743,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 852   |
-| Issues Abertas    | 47    |
-| Issues Fechadas   | 805   |
-| Progresso         | 94.5% |
+| Issues Abertas    | 46    |
+| Issues Fechadas   | 806   |
+| Progresso         | 94.6% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
