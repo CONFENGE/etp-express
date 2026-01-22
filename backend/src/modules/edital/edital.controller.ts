@@ -9,7 +9,10 @@ import {
   Logger,
   NotFoundException,
   ForbiddenException,
+  Res,
+  BadRequestException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
@@ -26,6 +29,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Edital } from '../../entities/edital.entity';
+import {
+  EditalExportService,
+  EditalExportFormat,
+} from '../export/edital-export.service';
 
 /**
  * Controller para gerenciamento de Editais.
@@ -51,6 +58,7 @@ export class EditalController {
   constructor(
     private readonly editalGenerationService: EditalGenerationService,
     private readonly editalValidationService: EditalValidationService,
+    private readonly editalExportService: EditalExportService,
     @InjectRepository(Edital)
     private readonly editalRepository: Repository<Edital>,
   ) {}
@@ -316,5 +324,123 @@ export class EditalController {
     );
 
     return result;
+  }
+
+  /**
+   * GET /editais/:id/export/:format
+   *
+   * Exports an Edital to PDF or DOCX format.
+   *
+   * Generates official formatted document with:
+   * - Header with organization brasão (placeholder)
+   * - Automatic page numbering
+   * - Table of contents (implicit via sections)
+   * - Footer with metadata (date, version, responsible)
+   * - Annexes references (ETP, TR, Pesquisa de Preços)
+   *
+   * Formats:
+   * - PDF: High-fidelity via Puppeteer/Chromium with official formatting
+   * - DOCX: Editable document via docx library with professional styling
+   *
+   * Security:
+   * - Validates Edital belongs to user's organization (multi-tenancy)
+   * - Returns 404 if not found
+   * - Returns 403 if no permission
+   * - Returns 400 if invalid format
+   *
+   * @param id UUID of the Edital
+   * @param format Export format (pdf | docx)
+   * @param user Authenticated user (injected via @CurrentUser decorator)
+   * @param res Express Response object for streaming binary file
+   *
+   * @example
+   * GET /editais/uuid-do-edital/export/pdf
+   * Authorization: Bearer <token>
+   *
+   * Response: Binary PDF file with headers:
+   * Content-Type: application/pdf
+   * Content-Disposition: attachment; filename="Edital_001-2024.pdf"
+   *
+   * Issue #1282 - [Edital-f] Export edital formatado PDF/DOCX
+   */
+  @Get(':id/export/:format')
+  async exportEdital(
+    @Param('id') id: string,
+    @Param('format') format: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.log(
+      `GET /editais/${id}/export/${format} - User: ${user.id}, Org: ${user.organizationId}`,
+    );
+
+    // Validate format
+    const normalizedFormat = format.toLowerCase();
+    if (
+      normalizedFormat !== EditalExportFormat.PDF &&
+      normalizedFormat !== EditalExportFormat.DOCX
+    ) {
+      throw new BadRequestException(
+        `Formato inválido: ${format}. Formatos suportados: pdf, docx`,
+      );
+    }
+
+    // Validate Edital exists and belongs to user's organization
+    const edital = await this.editalRepository.findOne({
+      where: { id },
+    });
+
+    if (!edital) {
+      this.logger.warn(`Edital ${id} not found`);
+      throw new NotFoundException(`Edital com ID ${id} não encontrado`);
+    }
+
+    if (edital.organizationId !== user.organizationId) {
+      this.logger.warn(
+        `User ${user.id} from org ${user.organizationId} attempted to export edital ${id} from org ${edital.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para exportar este edital',
+      );
+    }
+
+    // Generate safe filename
+    const safeNumero = (edital.numero || 'SN')
+      .replace(/[^a-zA-Z0-9-]/g, '_')
+      .substring(0, 50);
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `Edital_${safeNumero}_${timestamp}.${normalizedFormat}`;
+
+    // Export based on format
+    let buffer: Buffer;
+    let contentType: string;
+
+    if (normalizedFormat === EditalExportFormat.PDF) {
+      buffer = await this.editalExportService.exportToPDF(
+        id,
+        user.organizationId,
+      );
+      contentType = 'application/pdf';
+    } else {
+      // DOCX
+      buffer = await this.editalExportService.exportToDocx(
+        id,
+        user.organizationId,
+      );
+      contentType =
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    }
+
+    // Set response headers
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', buffer.length);
+
+    // Send buffer
+    res.send(buffer);
+
+    this.logger.log(
+      `Edital ${id} exported successfully as ${normalizedFormat.toUpperCase()} (${buffer.length} bytes)`,
+    );
   }
 }
