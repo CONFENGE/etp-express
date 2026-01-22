@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-20 | **Progresso:** 822/852 issues (96.5%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-22 | **Progresso:** 823/852 issues (96.6%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-22 | #1630 | Feature  | [#1281] Validação de cláusulas obrigatórias - Lei 14.133/2021 ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-20 | #1629 | CI       | [#1189] Skip Playwright tests for documentation-only PRs ✅ - **Score 100/100 - Auto-merged (after regex fix)** |
 | 2026-01-20 | #1628 | Test     | [#1075] Configure load testing with 100+ concurrent requests ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-20 | #1627 | Feature  | [#1280] Editor de edital com auto-save no frontend ✅ - **Score 100/100 - Auto-merged** |
@@ -545,7 +546,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
-| M14: Geração de Edital         | 3/7    | 43% 🟡     | +R$ 500/mês           |
+| M14: Geração de Edital         | 4/7    | 57% 🟡     | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 1/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
