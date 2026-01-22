@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edital {{edital.numero}}</title>
+  <style>
+    @page {
+      margin: 3cm 2cm 2.5cm 2cm;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #000;
+      background: #fff;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #333;
+    }
+
+    .brasao {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #999;
+    }
+
+    .org-name {
+      font-size: 14pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .edital-numero {
+      font-size: 16pt;
+      font-weight: bold;
+      margin: 15px 0 10px;
+    }
+
+    .modalidade {
+      font-size: 13pt;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .objeto {
+      font-size: 11pt;
+      font-style: italic;
+      margin-top: 15px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 3px solid #333;
+    }
+
+    .metadata {
+      margin: 30px 0;
+      padding: 15px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+    }
+
+    .metadata table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .metadata td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .metadata td:first-child {
+      font-weight: bold;
+      width: 40%;
+    }
+
+    h1 {
+      font-size: 14pt;
+      font-weight: bold;
+      margin: 30px 0 15px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 13pt;
+      font-weight: bold;
+      margin: 25px 0 12px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 12pt;
+      font-weight: bold;
+      margin: 20px 0 10px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin: 10px 0;
+      text-align: justify;
+      text-indent: 2em;
+    }
+
+    ul, ol {
+      margin: 10px 0 10px 40px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      page-break-inside: avoid;
+    }
+
+    .subsection {
+      margin: 15px 0 15px 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+
+    table th {
+      background: #f0f0f0;
+      font-weight: bold;
+    }
+
+    .anexos {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+
+    .anexos h2 {
+      margin-top: 0;
+    }
+
+    .anexos ul {
+      list-style-type: none;
+      margin-left: 0;
+    }
+
+    .anexos li {
+      padding: 8px 0;
+      border-bottom: 1px dotted #ccc;
+    }
+
+    .anexos li:before {
+      content: "📎 ";
+      margin-right: 8px;
+    }
+
+    .footer-info {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+      font-size: 10pt;
+      color: #666;
+    }
+
+    .disclaimer {
+      margin-top: 30px;
+      padding: 15px;
+      background: #fff9e6;
+      border: 1px solid #ffe066;
+      font-size: 10pt;
+      font-style: italic;
+    }
+
+    .generated-at {
+      text-align: right;
+      font-size: 9pt;
+      color: #999;
+      margin-top: 20px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brasao">[BRASÃO]</div>
+    <div class="org-name">{{edital.organization.name}}</div>
+    <div class="edital-numero">EDITAL {{edital.numero}}</div>
+    <div class="modalidade">{{formatModalidade edital.modalidade}}</div>
+    <div class="objeto">{{edital.objeto}}</div>
+  </div>
+
+  <!-- METADATA -->
+  <div class="metadata">
+    <table>
+      <tr>
+        <td><strong>Número do Edital:</strong></td>
+        <td>{{edital.numero}}</td>
+      </tr>
+      <tr>
+        <td><strong>Processo Administrativo:</strong></td>
+        <td>{{edital.numeroProcesso}}</td>
+      </tr>
+      {{#if edital.uasg}}
+      <tr>
+        <td><strong>UASG:</strong></td>
+        <td>{{edital.uasg}}</td>
+      </tr>
+      {{/if}}
+      <tr>
+        <td><strong>Modalidade:</strong></td>
+        <td>{{formatModalidade edital.modalidade}}</td>
+      </tr>
+      <tr>
+        <td><strong>Critério de Julgamento:</strong></td>
+        <td>{{edital.criterioJulgamento}}</td>
+      </tr>
+      <tr>
+        <td><strong>Valor Estimado:</strong></td>
+        <td>
+          {{#if edital.sigiloOrcamento}}
+            SIGILOSO
+          {{else}}
+            {{formatCurrency edital.valorEstimado}}
+          {{/if}}
+        </td>
+      </tr>
+      {{#if edital.dataSessaoPublica}}
+      <tr>
+        <td><strong>Data da Sessão Pública:</strong></td>
+        <td>{{formatDate edital.dataSessaoPublica}}</td>
+      </tr>
+      {{/if}}
+      {{#if edital.localSessaoPublica}}
+      <tr>
+        <td><strong>Local da Sessão:</strong></td>
+        <td>{{edital.localSessaoPublica}}</td>
+      </tr>
+      {{/if}}
+    </table>
+  </div>
+
+  <!-- 1. DO OBJETO -->
+  <div class="section">
+    <h1>1. DO OBJETO</h1>
+    <p>{{edital.objeto}}</p>
+    {{#if edital.descricaoObjeto}}
+      {{{formatText edital.descricaoObjeto}}}
+    {{/if}}
+  </div>
+
+  <!-- 2. DAS CONDIÇÕES DE PARTICIPAÇÃO -->
+  {{#if edital.condicoesParticipacao}}
+  <div class="section">
+    <h1>2. DAS CONDIÇÕES DE PARTICIPAÇÃO</h1>
+    {{{formatText edital.condicoesParticipacao}}}
+
+    {{#if edital.exclusividadeMeEpp}}
+    <div class="subsection">
+      <h3>2.1. Da Exclusividade para ME/EPP</h3>
+      <p>Esta licitação é exclusiva para Microempresas (ME) e Empresas de Pequeno Porte (EPP), conforme Lei Complementar nº 123/2006.</p>
+    </div>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <!-- 3. DOS REQUISITOS DE HABILITAÇÃO -->
+  {{#if edital.requisitosHabilitacao}}
+  <div class="section">
+    <h1>3. DOS REQUISITOS DE HABILITAÇÃO</h1>
+    <p>Os licitantes deverão apresentar os seguintes documentos para habilitação:</p>
+    {{{formatText edital.requisitosHabilitacao}}}
+  </div>
+  {{/if}}
+
+  <!-- 4. DO PRAZO DE VIGÊNCIA -->
+  {{#if edital.prazoVigencia}}
+  <div class="section">
+    <h1>4. DO PRAZO DE VIGÊNCIA</h1>
+    <p>O prazo de vigência do contrato será de <strong>{{edital.prazoVigencia}} dias</strong>, contados da data de sua assinatura.</p>
+    {{#if edital.possibilidadeProrrogacao}}
+      <p>{{edital.possibilidadeProrrogacao}}</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <!-- 5. DA DOTAÇÃO ORÇAMENTÁRIA -->
+  {{#if edital.dotacaoOrcamentaria}}
+  <div class="section">
+    <h1>5. DA DOTAÇÃO ORÇAMENTÁRIA</h1>
+    <p>As despesas decorrentes da presente licitação correrão à conta da seguinte dotação orçamentária:</p>
+    <p><strong>{{edital.dotacaoOrcamentaria}}</strong></p>
+    {{#if edital.fonteRecursos}}
+      <p>Fonte de recursos: {{edital.fonteRecursos}}</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <!-- 6. DAS SANÇÕES ADMINISTRATIVAS -->
+  {{#if edital.sancoesAdministrativas}}
+  <div class="section">
+    <h1>6. DAS SANÇÕES ADMINISTRATIVAS</h1>
+    {{{formatText edital.sancoesAdministrativas}}}
+  </div>
+  {{/if}}
+
+  <!-- 7. DAS CONDIÇÕES DE PAGAMENTO -->
+  {{#if edital.condicoesPagamento}}
+  <div class="section">
+    <h1>7. DAS CONDIÇÕES DE PAGAMENTO</h1>
+    {{{formatText edital.condicoesPagamento}}}
+  </div>
+  {{/if}}
+
+  <!-- 8. DA GARANTIA CONTRATUAL -->
+  {{#if edital.garantiaContratual}}
+  <div class="section">
+    <h1>8. DA GARANTIA CONTRATUAL</h1>
+    {{{formatText edital.garantiaContratual}}}
+  </div>
+  {{/if}}
+
+  <!-- 9. DO REAJUSTE CONTRATUAL -->
+  {{#if edital.reajusteContratual}}
+  <div class="section">
+    <h1>9. DO REAJUSTE CONTRATUAL</h1>
+    {{{formatText edital.reajusteContratual}}}
+  </div>
+  {{/if}}
+
+  <!-- 10. DA FUNDAMENTAÇÃO LEGAL -->
+  {{#if edital.fundamentacaoLegal}}
+  <div class="section">
+    <h1>10. DA FUNDAMENTAÇÃO LEGAL</h1>
+    {{{formatText edital.fundamentacaoLegal}}}
+  </div>
+  {{/if}}
+
+  <!-- ANEXOS -->
+  <div class="section page-break">
+    <h1>ANEXOS</h1>
+    <div class="anexos">
+      <p>Fazem parte integrante deste Edital os seguintes documentos:</p>
+      <ul>
+        {{#if etp}}
+        <li><strong>Anexo I</strong> - Estudo Técnico Preliminar (ETP): {{etp.title}}</li>
+        {{/if}}
+        {{#if termoReferencia}}
+        <li><strong>Anexo II</strong> - Termo de Referência: {{termoReferencia.objeto}}</li>
+        {{/if}}
+        {{#if pesquisaPrecos}}
+        <li><strong>Anexo III</strong> - Pesquisa de Preços</li>
+        {{/if}}
+        {{#if edital.anexos}}
+        <li><strong>Anexo IV</strong> - Minuta de Contrato</li>
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+
+  <!-- ASSINATURA -->
+  <div class="footer-info">
+    <p style="text-align: center; margin-top: 60px;">
+      <strong>{{edital.createdBy.name}}</strong><br>
+      {{edital.createdBy.cargo}}<br>
+      {{edital.organization.name}}
+    </p>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <strong>Aviso:</strong> Este documento foi gerado automaticamente pelo sistema ETP Express.
+    Recomenda-se revisão jurídica antes da publicação oficial.
+  </div>
+
+  <!-- GENERATED AT -->
+  <div class="generated-at">
+    Gerado em: {{formatDate generatedAt}} às {{generatedAt.toLocaleTimeString}}
+  </div>
+</body>
+</html>
