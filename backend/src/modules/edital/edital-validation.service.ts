@@ -308,7 +308,10 @@ export class EditalValidationService {
     }
 
     // Condições de participação (LC 123/2006 - ME/EPP)
-    if (!edital.condicoesParticipacao || edital.condicoesParticipacao.trim() === '') {
+    if (
+      !edital.condicoesParticipacao ||
+      edital.condicoesParticipacao.trim() === ''
+    ) {
       errors.push({
         field: 'condicoesParticipacao',
         message:
@@ -329,13 +332,15 @@ export class EditalValidationService {
    * - Sanções administrativas
    * - Condições de pagamento
    */
-  private validateConcorrencia(edital: Edital, errors: ValidationError[]): void {
+  private validateConcorrencia(
+    edital: Edital,
+    errors: ValidationError[],
+  ): void {
     // Requisitos de habilitação (mais rigorosos)
     if (!edital.requisitosHabilitacao) {
       errors.push({
         field: 'requisitosHabilitacao',
-        message:
-          'Requisitos de habilitação são obrigatórios para Concorrência',
+        message: 'Requisitos de habilitação são obrigatórios para Concorrência',
         required: true,
         severity: 'critical',
       });
@@ -394,8 +399,7 @@ export class EditalValidationService {
     if (!edital.criterioJulgamento) {
       errors.push({
         field: 'criterioJulgamento',
-        message:
-          'Critério de julgamento técnico é obrigatório para Concurso',
+        message: 'Critério de julgamento técnico é obrigatório para Concurso',
         required: true,
         severity: 'critical',
       });
@@ -528,10 +532,7 @@ export class EditalValidationService {
     }
 
     // Justificativa da dispensa
-    if (
-      !edital.descricaoObjeto ||
-      edital.descricaoObjeto.length < 50
-    ) {
+    if (!edital.descricaoObjeto || edital.descricaoObjeto.length < 50) {
       errors.push({
         field: 'descricaoObjeto',
         message:
@@ -582,10 +583,7 @@ export class EditalValidationService {
     }
 
     // Justificativa da inexigibilidade (motivo da inviabilidade de competição)
-    if (
-      !edital.descricaoObjeto ||
-      edital.descricaoObjeto.length < 100
-    ) {
+    if (!edital.descricaoObjeto || edital.descricaoObjeto.length < 100) {
       errors.push({
         field: 'descricaoObjeto',
         message:
@@ -712,10 +710,7 @@ export class EditalValidationService {
    * - Minuta de Contrato
    * - Orçamento estimado (ou declaração de sigilo)
    */
-  private validateAnexos(
-    edital: Edital,
-    warnings: ValidationError[],
-  ): void {
+  private validateAnexos(edital: Edital, warnings: ValidationError[]): void {
     if (!edital.anexos || Object.keys(edital.anexos).length === 0) {
       warnings.push({
         field: 'anexos',
@@ -731,7 +726,7 @@ export class EditalValidationService {
    * Conta total de campos relevantes do Edital.
    * Usado para calcular percentual de completude.
    */
-  private countTotalFields(edital: Edital): number {
+  private countTotalFields(_edital: Edital): number {
     // Lista de campos relevantes (não incluir metadados/auditoria)
     const relevantFields = [
       'numero',

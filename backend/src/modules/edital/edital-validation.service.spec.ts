@@ -137,7 +137,9 @@ describe('EditalValidationService', () => {
 
       const result = service.validate(edital);
 
-      const valorErrors = result.errors.filter((e) => e.field === 'valorEstimado');
+      const valorErrors = result.errors.filter(
+        (e) => e.field === 'valorEstimado',
+      );
       expect(valorErrors).toHaveLength(0);
     });
 
@@ -280,7 +282,8 @@ describe('EditalValidationService', () => {
     it('should fail when justificativa is too short', () => {
       const edital = createMinimalEdital();
       edital.modalidade = null;
-      edital.tipoContratacaoDireta = EditalTipoContratacaoDireta.INEXIGIBILIDADE;
+      edital.tipoContratacaoDireta =
+        EditalTipoContratacaoDireta.INEXIGIBILIDADE;
       edital.descricaoObjeto = 'Justificativa curta demais'; // < 100 chars
 
       const result = service.validate(edital);
@@ -436,8 +439,7 @@ function createMinimalEdital(): Edital {
     tipoContratacaoDireta: null,
     criterioJulgamento: EditalCriterioJulgamento.MENOR_PRECO,
     modoDisputa: EditalModoDisputa.ABERTO,
-    fundamentacaoLegal:
-      'Lei Federal nº 14.133/2021 (Nova Lei de Licitações)',
+    fundamentacaoLegal: 'Lei Federal nº 14.133/2021 (Nova Lei de Licitações)',
     organizationId: 'org-123',
     createdById: 'user-123',
     status: EditalStatus.DRAFT,
