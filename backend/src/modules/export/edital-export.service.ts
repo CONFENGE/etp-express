@@ -274,17 +274,19 @@ export class EditalExportService {
    * @throws {NotFoundException} If Edital not found
    * @throws {InternalServerErrorException} If PDF generation fails
    */
-  async exportToPDF(
-    editalId: string,
-    organizationId: string,
-  ): Promise<Buffer> {
+  async exportToPDF(editalId: string, organizationId: string): Promise<Buffer> {
     this.logger.log(`Exporting Edital ${editalId} to PDF`);
 
     const edital = await this.getEditalWithRelations(editalId, organizationId);
     const { etp, termoReferencia, pesquisaPrecos } =
       await this.getRelatedDocuments(edital);
 
-    const html = this.generateHTML(edital, etp, termoReferencia, pesquisaPrecos);
+    const html = this.generateHTML(
+      edital,
+      etp,
+      termoReferencia,
+      pesquisaPrecos,
+    );
 
     let browser: puppeteer.Browser | null = null;
 
@@ -524,7 +526,12 @@ export class EditalExportService {
             ...this.createMetadataTable(edital),
 
             // Main content sections
-            ...this.createEditalSections(edital, etp, termoReferencia, pesquisaPrecos),
+            ...this.createEditalSections(
+              edital,
+              etp,
+              termoReferencia,
+              pesquisaPrecos,
+            ),
 
             // Disclaimer
             new Paragraph({
@@ -740,9 +747,7 @@ export class EditalExportService {
     );
 
     if (edital.descricaoObjeto) {
-      sections.push(
-        ...this.htmlParser.parse(edital.descricaoObjeto),
-      );
+      sections.push(...this.htmlParser.parse(edital.descricaoObjeto));
     }
 
     // 2. DAS CONDIÇÕES DE PARTICIPAÇÃO

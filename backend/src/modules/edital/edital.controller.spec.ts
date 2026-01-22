@@ -6,6 +6,7 @@ import { EditalValidationService } from './edital-validation.service';
 import { GenerateEditalDto, GenerateEditalResponseDto } from './dto';
 import { User } from '../../entities/user.entity';
 import { Edital, EditalStatus } from '../../entities/edital.entity';
+import { EditalExportService } from '../export/edital-export.service';
 
 /**
  * Testes unitários para EditalController.
@@ -55,6 +56,13 @@ describe('EditalController', () => {
           provide: EditalValidationService,
           useValue: {
             validate: jest.fn(),
+          },
+        },
+        {
+          provide: EditalExportService,
+          useValue: {
+            exportToPDF: jest.fn(),
+            exportToDocx: jest.fn(),
           },
         },
         {
