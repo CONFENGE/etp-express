@@ -15,6 +15,10 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../entities/user.entity';
 import { EditalGenerationService } from './edital-generation.service';
 import {
+  EditalValidationService,
+  EditalValidationResult,
+} from './edital-validation.service';
+import {
   GenerateEditalDto,
   GenerateEditalResponseDto,
   UpdateEditalDto,
@@ -46,6 +50,7 @@ export class EditalController {
 
   constructor(
     private readonly editalGenerationService: EditalGenerationService,
+    private readonly editalValidationService: EditalValidationService,
     @InjectRepository(Edital)
     private readonly editalRepository: Repository<Edital>,
   ) {}
@@ -215,5 +220,101 @@ export class EditalController {
     this.logger.log(`Edital ${id} updated successfully`);
 
     return updated;
+  }
+
+  /**
+   * POST /editais/:id/validate
+   *
+   * Valida um Edital conforme Lei 14.133/2021.
+   *
+   * Realiza validações completas:
+   * - Campos obrigatórios gerais (Art. 25)
+   * - Campos obrigatórios específicos por modalidade
+   * - Coerência entre modalidade e tipo de contratação direta
+   * - Prazos e datas
+   * - Referências a anexos
+   *
+   * Retorna:
+   * - isValid: Se o edital está válido
+   * - errors: Lista de erros críticos (bloqueiam finalização)
+   * - warnings: Lista de warnings (não bloqueiam, mas devem ser revisados)
+   * - completionPercentage: Percentual de completude (0-100)
+   * - missingMandatoryFields: Campos obrigatórios faltantes
+   *
+   * Segurança:
+   * - Valida que o Edital pertence à organização do usuário
+   * - Retorna 404 se não encontrado
+   * - Retorna 403 se não pertence à organização
+   *
+   * @param id UUID do Edital
+   * @param user Usuário autenticado (injetado via decorator @CurrentUser)
+   * @returns Resultado da validação estruturado
+   *
+   * @example
+   * POST /editais/uuid-do-edital/validate
+   * Authorization: Bearer <token>
+   *
+   * Response:
+   * {
+   *   "isValid": false,
+   *   "errors": [
+   *     {
+   *       "field": "prazoVigencia",
+   *       "message": "Prazo de vigência é obrigatório para Pregão",
+   *       "required": true,
+   *       "severity": "critical"
+   *     }
+   *   ],
+   *   "warnings": [
+   *     {
+   *       "field": "anexos",
+   *       "message": "É recomendado incluir anexos (Termo de Referência, Minuta de Contrato)",
+   *       "required": false,
+   *       "severity": "warning"
+   *     }
+   *   ],
+   *   "completionPercentage": 65,
+   *   "missingMandatoryFields": ["prazoVigencia", "dataSessaoPublica"]
+   * }
+   *
+   * Issue #1281 - [Edital-e] Validação de cláusulas obrigatórias
+   */
+  @Post(':id/validate')
+  async validate(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<EditalValidationResult> {
+    this.logger.log(
+      `POST /editais/${id}/validate - User: ${user.id}, Org: ${user.organizationId}`,
+    );
+
+    // Buscar edital com validação de tenancy
+    const edital = await this.editalRepository.findOne({
+      where: { id },
+    });
+
+    if (!edital) {
+      this.logger.warn(`Edital ${id} not found`);
+      throw new NotFoundException(`Edital com ID ${id} não encontrado`);
+    }
+
+    // Validar multi-tenancy
+    if (edital.organizationId !== user.organizationId) {
+      this.logger.warn(
+        `User ${user.id} from org ${user.organizationId} attempted to validate edital ${id} from org ${edital.organizationId}`,
+      );
+      throw new ForbiddenException(
+        'Você não tem permissão para validar este edital',
+      );
+    }
+
+    // Executar validação
+    const result = this.editalValidationService.validate(edital);
+
+    this.logger.log(
+      `Edital ${id} validated: valid=${result.isValid}, errors=${result.errors.length}, warnings=${result.warnings.length}, completion=${result.completionPercentage}%`,
+    );
+
+    return result;
   }
 }
