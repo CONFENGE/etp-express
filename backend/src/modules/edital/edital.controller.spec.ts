@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EditalController } from './edital.controller';
 import { EditalGenerationService } from './edital-generation.service';
+import { EditalValidationService } from './edital-validation.service';
 import { GenerateEditalDto, GenerateEditalResponseDto } from './dto';
 import { User } from '../../entities/user.entity';
 import { Edital, EditalStatus } from '../../entities/edital.entity';
@@ -48,6 +49,12 @@ describe('EditalController', () => {
           provide: EditalGenerationService,
           useValue: {
             generateFromEtp: jest.fn(),
+          },
+        },
+        {
+          provide: EditalValidationService,
+          useValue: {
+            validate: jest.fn(),
           },
         },
         {
