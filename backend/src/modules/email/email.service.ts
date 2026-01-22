@@ -234,4 +234,45 @@ export class EmailService {
       throw error;
     }
   }
+
+  /**
+   * Sends generic email with custom HTML content.
+   *
+   * @remarks
+   * Generic method for sending custom emails.
+   * Use specific methods (sendPasswordResetEmail, sendDeletionConfirmation) when available.
+   *
+   * This method is used by modules that need to send emails with custom content.
+   *
+   * @param options - Email options (to, subject, html)
+   * @returns Promise resolving when email is sent
+   */
+  async sendMail(options: {
+    to: string;
+    subject: string;
+    html: string;
+  }): Promise<void> {
+    const mailOptions = {
+      from: this.configService.get<string>(
+        'SMTP_FROM',
+        '"ETP Express" <noreply@confenge.com.br>',
+      ),
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Email sent to ${options.to}: ${info.messageId}`);
+
+      // Log email content in development if using test transporter
+      if (info.message) {
+        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send email to ${options.to}`, error.stack);
+      throw error;
+    }
+  }
 }
