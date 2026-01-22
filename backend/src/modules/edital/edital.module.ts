@@ -8,6 +8,7 @@ import { PesquisaPrecos } from '../../entities/pesquisa-precos.entity';
 import { EditalController } from './edital.controller';
 import { EditalGenerationService } from './edital-generation.service';
 import { EditalValidationService } from './edital-validation.service';
+import { EditalExportService } from '../export/edital-export.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -25,7 +26,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
  * - #1279: Geração automática a partir de ETP+TR+Pesquisa (DONE)
  * - #1280: Editor de edital no frontend (DONE)
  * - #1281: Validação de cláusulas obrigatórias (DONE)
- * - #1282: Export edital formatado PDF/DOCX (TODO)
+ * - #1282: Export edital formatado PDF/DOCX (DONE)
  *
  * Parent: #1276 - [Edital] Módulo de Geração de Edital - EPIC
  * Milestone: M14 - Geração de Edital
@@ -42,7 +43,15 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     OrchestratorModule, // Provides OpenAIService for AI-powered clause generation
   ],
   controllers: [EditalController],
-  providers: [EditalGenerationService, EditalValidationService],
-  exports: [EditalGenerationService, EditalValidationService],
+  providers: [
+    EditalGenerationService,
+    EditalValidationService,
+    EditalExportService,
+  ],
+  exports: [
+    EditalGenerationService,
+    EditalValidationService,
+    EditalExportService,
+  ],
 })
 export class EditalModule {}
