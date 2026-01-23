@@ -8,15 +8,18 @@ import { Etp } from '../../entities/etp.entity';
 import { Medicao } from '../../entities/medicao.entity';
 import { Ocorrencia } from '../../entities/ocorrencia.entity';
 import { Ateste } from '../../entities/ateste.entity';
+import { DocumentoFiscalizacao } from '../../entities/documento-fiscalizacao.entity';
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
 import { MedicaoService } from './services/medicao.service';
 import { OcorrenciaService } from './services/ocorrencia.service';
 import { AtesteService } from './services/ateste.service';
+import { DocumentoFiscalizacaoService } from './services/documento-fiscalizacao.service';
 import { ContratosController } from './controllers/contratos.controller';
 import { MedicaoController } from './controllers/medicao.controller';
 import { OcorrenciaController } from './controllers/ocorrencia.controller';
 import { AtesteController } from './controllers/ateste.controller';
+import { DocumentoFiscalizacaoController } from './controllers/documento-fiscalizacao.controller';
 import { ContractAlertJob } from './jobs/contract-alert.job';
 import { EmailModule } from '../email/email.module';
 
@@ -36,6 +39,7 @@ import { EmailModule } from '../email/email.module';
  * - #1641 - [FISC-1286a] Create Medicao entity and CRUD endpoints
  * - #1642 - [FISC-1286b] Create Ocorrencia entity and CRUD endpoints
  * - #1643 - [FISC-1286c] Create Ateste entity and approval workflow
+ * - #1644 - [FISC-1286d] Add document upload to fiscalização entities
  *
  * @see Lei 14.133/2021 Art. 90-129 - Contratos Administrativos
  * @see Lei 14.133/2021 Art. 117 - Gestão de contratos
@@ -50,6 +54,7 @@ import { EmailModule } from '../email/email.module';
       Medicao,
       Ocorrencia,
       Ateste,
+      DocumentoFiscalizacao,
     ]),
     ScheduleModule.forRoot(),
     EmailModule,
@@ -59,6 +64,7 @@ import { EmailModule } from '../email/email.module';
     MedicaoController,
     OcorrenciaController,
     AtesteController,
+    DocumentoFiscalizacaoController,
   ],
   providers: [
     ContractChainService,
@@ -66,6 +72,7 @@ import { EmailModule } from '../email/email.module';
     MedicaoService,
     OcorrenciaService,
     AtesteService,
+    DocumentoFiscalizacaoService,
     ContractAlertJob,
   ],
   exports: [
@@ -74,6 +81,7 @@ import { EmailModule } from '../email/email.module';
     MedicaoService,
     OcorrenciaService,
     AtesteService,
+    DocumentoFiscalizacaoService,
   ],
 })
 export class ContratosModule {}
