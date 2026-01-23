@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-22 | **Progresso:** 827/852 issues (97.1%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-22 | **Progresso:** 828/852 issues (97.2%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-22 | #1638 | Test | Add Redis failure resilience chaos testing documentation (#1635) ✅ |
 | 2026-01-22 | #1634 | Test     | [#1171] Fix login-flow E2E tests for Railway environment (#1171) ✅ |
 | 2026-01-23 | #1633 | Test     | [#1073] Add government API integration tests (#1073) ✅ |
 | 2026-01-22 | #1632 | Feature  | [#1287] Automated contract alerts - Lei 14.133/2021 Art. 117 (#1287) ✅ |
