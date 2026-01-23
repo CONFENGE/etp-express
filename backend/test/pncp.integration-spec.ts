@@ -206,9 +206,10 @@ describe('PNCP API Integration Tests (@integration)', () => {
       const response = await service.search(query, options);
       expect(response).toBeDefined();
       // May return error status or empty results
-      expect([SearchStatus.SUCCESS, SearchStatus.SERVICE_UNAVAILABLE]).toContain(
-        response.status,
-      );
+      expect([
+        SearchStatus.SUCCESS,
+        SearchStatus.SERVICE_UNAVAILABLE,
+      ]).toContain(response.status);
     }, 60000);
   });
 
