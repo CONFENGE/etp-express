@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsDate,
-  IsString,
-  IsOptional,
-  IsNumber,
-  Min,
-} from 'class-validator';
+import { IsNotEmpty, IsDate, IsString, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
@@ -43,7 +36,8 @@ export class CreateMedicaoDto {
   periodoFim: Date;
 
   @ApiProperty({
-    description: 'Valor dos serviços/entregas executados no período (em string DECIMAL)',
+    description:
+      'Valor dos serviços/entregas executados no período (em string DECIMAL)',
     example: '15000.50',
     type: String,
   })
