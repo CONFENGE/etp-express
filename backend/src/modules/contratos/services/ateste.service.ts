@@ -123,7 +123,11 @@ export class AtesteService {
     const savedAteste = await this.atesteRepo.save(ateste);
 
     // Atualizar status da medição conforme resultado do ateste
-    await this.updateMedicaoStatus(medicao, createDto.resultado, createDto.dataAteste);
+    await this.updateMedicaoStatus(
+      medicao,
+      createDto.resultado,
+      createDto.dataAteste,
+    );
 
     return savedAteste;
   }
@@ -256,9 +260,7 @@ export class AtesteService {
     }
 
     if (atestado <= 0) {
-      throw new BadRequestException(
-        'Valor atestado deve ser maior que zero',
-      );
+      throw new BadRequestException('Valor atestado deve ser maior que zero');
     }
   }
 
