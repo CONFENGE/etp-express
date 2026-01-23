@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-23 | **Progresso:** 832/852 issues (97.7%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-23 | **Progresso:** 833/852 issues (97.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-23 | #1650 | Feature  | [#1643] Create Ateste entity and approval workflow ✅ - **Score 98.4/100 - Manual merge (size exception: 1,198 lines justified by complete entity+tests)** |
 | 2026-01-23 | #1649 | Feature | [#1642] Create Ocorrencia entity and CRUD endpoints ✅ - **Score 97.5/100 - Manual merge (size exception: 1,429 lines justified by complete feature scope)** |
 | 2026-01-23 | #1648 | Feature | [#1641] Create Medicao entity and CRUD endpoints ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-23 | #1640 | Docs | [#1636] Validate API timeout chaos tests - Already Implemented (#1636) ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
@@ -750,9 +751,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 852   |
-| Issues Abertas    | 46    |
-| Issues Fechadas   | 806   |
-| Progresso         | 94.6% |
+| Issues Abertas    | 19    |
+| Issues Fechadas   | 833   |
+| Progresso         | 97.8% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
