@@ -178,7 +178,10 @@ export class MedicaoService {
     }
 
     // Se valor mudou, revalidar
-    if (updateDto.valorMedido && updateDto.valorMedido !== medicao.valorMedido) {
+    if (
+      updateDto.valorMedido &&
+      updateDto.valorMedido !== medicao.valorMedido
+    ) {
       await this.validateValorMedido(
         medicao.contratoId,
         updateDto.valorMedido,

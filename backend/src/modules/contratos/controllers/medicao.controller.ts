@@ -18,7 +18,7 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { MedicaoService } from '../services/medicao.service';
 import { CreateMedicaoDto } from '../dto/create-medicao.dto';
 import { UpdateMedicaoDto } from '../dto/update-medicao.dto';
@@ -82,7 +82,7 @@ export class MedicaoController {
   async create(
     @Param('id') contratoId: string,
     @Body() createDto: CreateMedicaoDto,
-    @Request() req,
+    @Request() req: { user: { sub: string } },
   ): Promise<Medicao> {
     return this.medicaoService.create(contratoId, createDto, req.user.sub);
   }
@@ -90,7 +90,8 @@ export class MedicaoController {
   @Get('contracts/:id/medicoes')
   @ApiOperation({
     summary: 'Listar medições do contrato',
-    description: 'Retorna todas as medições de um contrato, ordenadas por número sequencial.',
+    description:
+      'Retorna todas as medições de um contrato, ordenadas por número sequencial.',
   })
   @ApiParam({
     name: 'id',
@@ -102,9 +103,7 @@ export class MedicaoController {
     description: 'Lista de medições',
     type: [Medicao],
   })
-  async findAllByContrato(
-    @Param('id') contratoId: string,
-  ): Promise<Medicao[]> {
+  async findAllByContrato(@Param('id') contratoId: string): Promise<Medicao[]> {
     return this.medicaoService.findAllByContrato(contratoId);
   }
 
@@ -162,7 +161,7 @@ export class MedicaoController {
   async update(
     @Param('id') id: string,
     @Body() updateDto: UpdateMedicaoDto,
-    @Request() req,
+    @Request() req: { user: { sub: string } },
   ): Promise<Medicao> {
     return this.medicaoService.update(id, updateDto, req.user.sub);
   }
@@ -195,7 +194,10 @@ export class MedicaoController {
     status: 404,
     description: 'Medição não encontrada',
   })
-  async remove(@Param('id') id: string, @Request() req): Promise<void> {
+  async remove(
+    @Param('id') id: string,
+    @Request() req: { user: { sub: string } },
+  ): Promise<void> {
     return this.medicaoService.remove(id, req.user.sub);
   }
 }
