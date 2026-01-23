@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-23 | **Progresso:** 830/852 issues (97.4%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-23 | **Progresso:** 831/852 issues (97.5%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-23 | #1648 | Feature | [#1641] Create Medicao entity and CRUD endpoints ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-23 | #1640 | Docs | [#1636] Validate API timeout chaos tests - Already Implemented (#1636) ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-23 | #1639 | Test | Implementar teste chaos: Payload grande com memory safety (#1637) ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-22 | #1638 | Test | Add Redis failure resilience chaos testing documentation (#1635) ✅ |
