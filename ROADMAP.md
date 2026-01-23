@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-22 | **Progresso:** 828/852 issues (97.2%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-23 | **Progresso:** 829/852 issues (97.3%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-23 | #1639 | Test | Implementar teste chaos: Payload grande com memory safety (#1637) ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
 | 2026-01-22 | #1638 | Test | Add Redis failure resilience chaos testing documentation (#1635) ✅ |
 | 2026-01-22 | #1634 | Test     | [#1171] Fix login-flow E2E tests for Railway environment (#1171) ✅ |
 | 2026-01-23 | #1633 | Test     | [#1073] Add government API integration tests (#1073) ✅ |
@@ -500,7 +501,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment ✅         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas ✅ |
-| #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
+| #1074 | [QA] Implementar chaos engineering (Redis: ✅, Large Payload: ✅, API Timeout: pending) |
 | #1073 | [QA] Criar testes de integração com APIs governamentais reais ✅ |
 
 ### P2 - Medium Priority (9 issues)
