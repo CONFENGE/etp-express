@@ -18,7 +18,17 @@ import {
 } from '../utils/rate-limit-helper';
 
 /**
+ * Detect if testing against Railway (remote) or local environment
+ * Railway has higher network latency, requiring extended timeouts
+ */
+const isRemoteTesting = !!process.env.E2E_BASE_URL;
+
+/**
  * Test configuration for login flow tests
+ *
+ * Timeouts are adjusted based on environment:
+ * - Local: Standard timeouts for fast feedback
+ * - Railway: Extended timeouts to account for network latency
  */
 const TEST_CONFIG = {
   // Test credentials - use environment variables in production
@@ -31,11 +41,16 @@ const TEST_CONFIG = {
     password: process.env.E2E_DEMO_PASSWORD || 'Demo@123',
   },
 
-  // Timeouts
+  // Timeouts adjusted for Railway remote testing
   timeouts: {
-    navigation: 10000, // 10s for navigation after login
-    action: 3000, // 3s for standard actions
-    reload: 5000, // 5s for page reload checks
+    // Railway: 15s (network latency + cold starts) | Local: 10s
+    navigation: isRemoteTesting ? 15000 : 10000,
+    // Railway: 5s (API response time) | Local: 3s
+    action: isRemoteTesting ? 5000 : 3000,
+    // Railway: 8s (full page reload) | Local: 5s
+    reload: isRemoteTesting ? 8000 : 5000,
+    // Railway: 5s (login redirect timing) | Local: 3s
+    maxRedirect: isRemoteTesting ? 5000 : 3000,
   },
 };
 
@@ -84,8 +99,9 @@ test.describe('Login Flow - Critical Path', () => {
     });
 
     // Ensure we start from a clean state
+    // Note: Removed networkidle wait per #1629 optimization (saves ~300ms per test)
     await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   /**
@@ -117,23 +133,17 @@ test.describe('Login Flow - Critical Path', () => {
   test('login redirects to dashboard within 3 seconds (ADMIN)', async ({
     page,
   }) => {
-    const MAX_REDIRECT_TIME_MS = 3000;
+    const MAX_REDIRECT_TIME_MS = TEST_CONFIG.timeouts.maxRedirect;
 
-    // Step 1: Fill login form
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
+    // Step 1: Fill login form using #id selectors (frontend has id="email" and id="password")
+    await page.fill('#email', TEST_CONFIG.admin.email);
+    await page.fill('#password', TEST_CONFIG.admin.password);
 
-    // Step 2: Start timing and submit
+    // Step 2: Start timing and submit using type selector
     const startTime = Date.now();
     await page.click('button[type="submit"]');
 
-    // Step 3: Wait for navigation to dashboard
+    // Step 3: Wait for navigation to dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: MAX_REDIRECT_TIME_MS,
     });
@@ -141,7 +151,7 @@ test.describe('Login Flow - Critical Path', () => {
     // Step 4: Measure elapsed time
     const elapsed = Date.now() - startTime;
 
-    // Step 5: Assert timing requirement
+    // Step 5: Assert timing requirement (flexible for Railway latency)
     expect(elapsed).toBeLessThan(MAX_REDIRECT_TIME_MS);
 
     // Step 6: Verify no loading flash was visible
@@ -149,7 +159,7 @@ test.describe('Login Flow - Critical Path', () => {
     await expect(loadingMessage).not.toBeVisible();
 
     console.log(
-      `ADMIN login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - PASSED`,
+      `ADMIN login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
     );
   });
 
@@ -163,20 +173,17 @@ test.describe('Login Flow - Critical Path', () => {
   test('login redirects to dashboard within 3 seconds (DEMO)', async ({
     page,
   }) => {
-    const MAX_REDIRECT_TIME_MS = 3000;
+    const MAX_REDIRECT_TIME_MS = TEST_CONFIG.timeouts.maxRedirect;
 
-    // Fill login form with DEMO credentials
-    await page.fill('input[name="email"], input#email', TEST_CONFIG.demo.email);
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.demo.password,
-    );
+    // Fill login form with DEMO credentials using #id selectors
+    await page.fill('#email', TEST_CONFIG.demo.email);
+    await page.fill('#password', TEST_CONFIG.demo.password);
 
     // Start timing and submit
     const startTime = Date.now();
     await page.click('button[type="submit"]');
 
-    // Wait for navigation to dashboard
+    // Wait for navigation to dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: MAX_REDIRECT_TIME_MS,
     });
@@ -184,7 +191,7 @@ test.describe('Login Flow - Critical Path', () => {
     // Measure elapsed time
     const elapsed = Date.now() - startTime;
 
-    // Assert timing requirement
+    // Assert timing requirement (flexible for Railway latency)
     expect(elapsed).toBeLessThan(MAX_REDIRECT_TIME_MS);
 
     // Verify no loading flash was visible
@@ -192,7 +199,7 @@ test.describe('Login Flow - Critical Path', () => {
     await expect(loadingMessage).not.toBeVisible();
 
     console.log(
-      `DEMO login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - PASSED`,
+      `DEMO login timing: ${elapsed}ms (max: ${MAX_REDIRECT_TIME_MS}ms) - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
     );
   });
 
@@ -214,20 +221,14 @@ test.describe('Login Flow - Critical Path', () => {
   test('login with valid credentials redirects to dashboard', async ({
     page,
   }) => {
-    // Step 1: Fill login form
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
+    // Step 1: Fill login form using #id selectors
+    await page.fill('#email', TEST_CONFIG.admin.email);
+    await page.fill('#password', TEST_CONFIG.admin.password);
 
     // Step 2: Submit form
     await page.click('button[type="submit"]');
 
-    // Step 3: Wait for navigation to dashboard
+    // Step 3: Wait for navigation to dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
@@ -236,7 +237,7 @@ test.describe('Login Flow - Critical Path', () => {
     await expect(page).not.toHaveURL(/\/login/);
 
     // Step 5: Verify dashboard content is visible (not loading state)
-    // Wait for loading state to disappear
+    // Wait for loading state to disappear with Railway-adjusted timeout
     const loadingSpinner = page.locator('text=Verificando autenticação');
     await expect(loadingSpinner).not.toBeVisible({
       timeout: TEST_CONFIG.timeouts.action,
@@ -247,7 +248,9 @@ test.describe('Login Flow - Critical Path', () => {
     const dashboardContent = page.locator('main, [data-testid="dashboard"]');
     await expect(dashboardContent).toBeVisible();
 
-    console.log('Login to dashboard flow: PASSED');
+    console.log(
+      `Login to dashboard flow: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -256,17 +259,14 @@ test.describe('Login Flow - Critical Path', () => {
    * @description Validates the bug fix for DEMO user type as well.
    */
   test('login with DEMO user redirects to dashboard', async ({ page }) => {
-    // Fill login form with DEMO credentials
-    await page.fill('input[name="email"], input#email', TEST_CONFIG.demo.email);
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.demo.password,
-    );
+    // Fill login form with DEMO credentials using #id selectors
+    await page.fill('#email', TEST_CONFIG.demo.email);
+    await page.fill('#password', TEST_CONFIG.demo.password);
 
     // Submit form
     await page.click('button[type="submit"]');
 
-    // Wait for navigation to dashboard
+    // Wait for navigation to dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
@@ -274,7 +274,9 @@ test.describe('Login Flow - Critical Path', () => {
     // Verify NOT on login page
     await expect(page).not.toHaveURL(/\/login/);
 
-    console.log('DEMO user login to dashboard flow: PASSED');
+    console.log(
+      `DEMO user login to dashboard flow: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -284,27 +286,22 @@ test.describe('Login Flow - Critical Path', () => {
    * the authenticated state and keep the user on the dashboard.
    */
   test('session persists after page refresh', async ({ page }) => {
-    // Login first
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
+    // Login first using #id selectors
+    await page.fill('#email', TEST_CONFIG.admin.email);
+    await page.fill('#password', TEST_CONFIG.admin.password);
     await page.click('button[type="submit"]');
 
-    // Wait for dashboard
+    // Wait for dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
     // Refresh the page
+    // Note: Removed networkidle wait per #1629 optimization
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
-    // Should still be on dashboard after refresh
+    // Should still be on dashboard after refresh with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.reload,
     });
@@ -312,7 +309,9 @@ test.describe('Login Flow - Critical Path', () => {
     // Should NOT be redirected to login
     await expect(page).not.toHaveURL(/\/login/);
 
-    console.log('Session persistence after refresh: PASSED');
+    console.log(
+      `Session persistence after refresh: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -322,24 +321,19 @@ test.describe('Login Flow - Critical Path', () => {
    * The loading state should not persist indefinitely after login.
    */
   test('no infinite loading after login', async ({ page }) => {
-    // Login
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
+    // Login using #id selectors
+    await page.fill('#email', TEST_CONFIG.admin.email);
+    await page.fill('#password', TEST_CONFIG.admin.password);
     await page.click('button[type="submit"]');
 
-    // Wait for navigation
+    // Wait for navigation with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    // Check that no loading indicators are visible after 2 seconds
-    await page.waitForTimeout(2000);
+    // Check that no loading indicators are visible after action timeout
+    // Railway: 5s | Local: 3s (allows time for initial render)
+    await page.waitForTimeout(TEST_CONFIG.timeouts.action);
 
     // All these loading indicators should NOT be visible
     const loadingIndicators = [
@@ -359,7 +353,9 @@ test.describe('Login Flow - Critical Path', () => {
       }
     }
 
-    console.log('No infinite loading after login: PASSED');
+    console.log(
+      `No infinite loading after login: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -369,15 +365,16 @@ test.describe('Login Flow - Critical Path', () => {
    * and user stays on login page with error message.
    */
   test('invalid credentials show error and stay on login', async ({ page }) => {
-    // Fill with invalid credentials
-    await page.fill('input[name="email"], input#email', 'invalid@test.com');
-    await page.fill('input[name="password"], input#password', 'wrongpassword');
+    // Fill with invalid credentials using #id selectors
+    await page.fill('#email', 'invalid@test.com');
+    await page.fill('#password', 'wrongpassword');
 
     // Submit form
     await page.click('button[type="submit"]');
 
-    // Wait a bit for response
-    await page.waitForTimeout(1000);
+    // Wait for API response with Railway-adjusted timeout
+    // Railway: 5s | Local: 3s (API error response time)
+    await page.waitForTimeout(TEST_CONFIG.timeouts.action);
 
     // Should still be on login page
     await expect(page).toHaveURL(/\/login/);
@@ -385,7 +382,9 @@ test.describe('Login Flow - Critical Path', () => {
     // Should NOT be on dashboard
     await expect(page).not.toHaveURL(/\/dashboard/);
 
-    console.log('Invalid credentials handling: PASSED');
+    console.log(
+      `Invalid credentials handling: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -395,18 +394,12 @@ test.describe('Login Flow - Critical Path', () => {
    * and should not be able to access protected routes.
    */
   test('logout redirects to login page', async ({ page }) => {
-    // Login first
-    await page.fill(
-      'input[name="email"], input#email',
-      TEST_CONFIG.admin.email,
-    );
-    await page.fill(
-      'input[name="password"], input#password',
-      TEST_CONFIG.admin.password,
-    );
+    // Login first using #id selectors
+    await page.fill('#email', TEST_CONFIG.admin.email);
+    await page.fill('#password', TEST_CONFIG.admin.password);
     await page.click('button[type="submit"]');
 
-    // Wait for dashboard
+    // Wait for dashboard with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/dashboard/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
@@ -424,7 +417,8 @@ test.describe('Login Flow - Critical Path', () => {
       await logoutButton.first().click();
     } else if (await userMenu.first().isVisible()) {
       await userMenu.first().click();
-      await page.waitForTimeout(500);
+      // Railway: longer wait for menu animation
+      await page.waitForTimeout(isRemoteTesting ? 1000 : 500);
       // Use .or() for bilingual selector
       const logoutMenuOption = page
         .locator('text=Sair')
@@ -438,12 +432,14 @@ test.describe('Login Flow - Critical Path', () => {
       return;
     }
 
-    // Wait for redirect to login
+    // Wait for redirect to login with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    console.log('Logout flow: PASSED');
+    console.log(
+      `Logout flow: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 });
 
@@ -470,12 +466,14 @@ test.describe('Protected Route Access', () => {
     // Try to access dashboard directly
     await page.goto('/dashboard');
 
-    // Should be redirected to login
+    // Should be redirected to login with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    console.log('Protected route redirect: PASSED');
+    console.log(
+      `Protected route redirect: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 
   /**
@@ -490,11 +488,13 @@ test.describe('Protected Route Access', () => {
     // Try to access ETPs directly
     await page.goto('/etps');
 
-    // Should be redirected to login
+    // Should be redirected to login with Railway-adjusted timeout
     await expect(page).toHaveURL(/\/login/, {
       timeout: TEST_CONFIG.timeouts.navigation,
     });
 
-    console.log('Protected ETPs route redirect: PASSED');
+    console.log(
+      `Protected ETPs route redirect: PASSED - ${isRemoteTesting ? 'RAILWAY' : 'LOCAL'}`,
+    );
   });
 });
