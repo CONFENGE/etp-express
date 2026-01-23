@@ -53,7 +53,9 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-  logger.log('Body parser configured with 10MB limit for JSON/URL-encoded payloads');
+  logger.log(
+    'Body parser configured with 10MB limit for JSON/URL-encoded payloads',
+  );
 
   // Log rate limiting status (#1191 - Staging Environment)
   const rateLimitEnabled = process.env.RATE_LIMIT_ENABLED !== 'false';
