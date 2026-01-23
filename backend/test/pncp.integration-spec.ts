@@ -82,13 +82,12 @@ describe('PNCP API Integration Tests (@integration)', () => {
       expect(response).toBeDefined();
       expect(response.source).toBe('pncp');
       expect(response.status).toBe(SearchStatus.SUCCESS);
-      expect(Array.isArray(response.results)).toBe(true);
-      expect(response.metadata).toHaveProperty('query', query);
-      expect(response.metadata).toHaveProperty('totalResults');
+      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.total).toBeDefined();
 
       // Validate response structure
-      if (response.results.length > 0) {
-        const firstResult = response.results[0];
+      if (response.data.length > 0) {
+        const firstResult = response.data[0];
         expect(firstResult).toHaveProperty('id');
         expect(firstResult).toHaveProperty('title');
         expect(firstResult).toHaveProperty('description');
@@ -111,8 +110,8 @@ describe('PNCP API Integration Tests (@integration)', () => {
       // Assert
       expect(response).toBeDefined();
       expect(response.status).toBe(SearchStatus.SUCCESS);
-      expect(response.results).toEqual([]);
-      expect(response.metadata.totalResults).toBe(0);
+      expect(response.data).toEqual([]);
+      expect(response.total).toBe(0);
     }, 60000);
 
     it('should enforce pagination limits correctly', async () => {
@@ -129,7 +128,7 @@ describe('PNCP API Integration Tests (@integration)', () => {
 
       // Assert
       expect(response).toBeDefined();
-      expect(response.results.length).toBeLessThanOrEqual(5);
+      expect(response.data.length).toBeLessThanOrEqual(5);
     }, 60000);
 
     it('should handle API timeout gracefully', async () => {
@@ -166,8 +165,8 @@ describe('PNCP API Integration Tests (@integration)', () => {
       expect(response.status).toBe(SearchStatus.SUCCESS);
 
       // Validate contract structure if results exist
-      if (response.results.length > 0) {
-        const contract = response.results[0];
+      if (response.data.length > 0) {
+        const contract = response.data[0];
         expect(contract).toHaveProperty('numeroContrato');
         expect(contract).toHaveProperty('valorInicial');
         expect(contract).toHaveProperty('dataAssinatura');
@@ -178,17 +177,17 @@ describe('PNCP API Integration Tests (@integration)', () => {
   describe('PNCP Health Check', () => {
     it('should report healthy status when API is accessible', async () => {
       // Act
-      const health = await service.checkHealth();
+      const health = await service.healthCheck();
 
       // Assert
       expect(health).toBeDefined();
-      expect(['healthy', 'degraded']).toContain(health.status);
+      expect(typeof health.healthy).toBe('boolean');
       expect(health.source).toBe('pncp');
-      expect(health).toHaveProperty('lastChecked');
-      expect(health).toHaveProperty('responseTime');
+      expect(health).toHaveProperty('lastCheck');
+      expect(health).toHaveProperty('latencyMs');
 
       // Response time should be reasonable
-      expect(health.responseTime).toBeLessThan(10000); // 10 seconds max
+      expect(health.latencyMs).toBeLessThan(10000); // 10 seconds max
     }, 60000);
   });
 
@@ -207,7 +206,7 @@ describe('PNCP API Integration Tests (@integration)', () => {
       const response = await service.search(query, options);
       expect(response).toBeDefined();
       // May return error status or empty results
-      expect([SearchStatus.SUCCESS, SearchStatus.ERROR]).toContain(
+      expect([SearchStatus.SUCCESS, SearchStatus.SERVICE_UNAVAILABLE]).toContain(
         response.status,
       );
     }, 60000);
@@ -227,30 +226,25 @@ describe('PNCP API Integration Tests (@integration)', () => {
       const response = await service.search(query, options);
 
       // Assert
-      if (response.results.length > 0) {
-        const contract = response.results[0];
+      if (response.data.length > 0) {
+        const contract = response.data[0];
 
         // Validate required fields exist
         expect(contract.id).toBeTruthy();
         expect(contract.title).toBeTruthy();
-        expect(contract.organization).toBeTruthy();
+        expect(contract.description).toBeTruthy();
 
         // Validate data types
         expect(typeof contract.id).toBe('string');
         expect(typeof contract.title).toBe('string');
-        expect(typeof contract.organization).toBe('string');
+        expect(typeof contract.relevance).toBe('number');
 
-        // Validate date parsing
-        if (contract.publicationDate) {
-          expect(contract.publicationDate instanceof Date).toBe(true);
-          expect(isNaN(contract.publicationDate.getTime())).toBe(false);
-        }
+        // Validate metadata exists
+        expect(contract.metadata).toBeDefined();
 
-        // Validate price parsing
-        if (contract.estimatedValue) {
-          expect(typeof contract.estimatedValue).toBe('number');
-          expect(contract.estimatedValue).toBeGreaterThanOrEqual(0);
-        }
+        // Validate fetchedAt date
+        expect(contract.fetchedAt).toBeDefined();
+        expect(contract.fetchedAt instanceof Date).toBe(true);
       }
     }, 60000);
   });

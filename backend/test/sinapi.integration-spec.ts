@@ -85,9 +85,9 @@ const skipTests = !apiKey || !apiSecret;
       it('should search insumos by description', async () => {
         // Arrange
         const filters = {
-          q: 'cimento',
+          nome: 'cimento',
           estado: 'SP',
-          mesReferencia: '2024-06',
+          referencia: '2024-06',
           limit: 10,
         };
 
@@ -102,17 +102,17 @@ const skipTests = !apiKey || !apiSecret;
         if (response.data.length > 0) {
           const insumo = response.data[0];
           expect(insumo).toHaveProperty('codigo');
-          expect(insumo).toHaveProperty('descricao');
+          expect(insumo).toHaveProperty('nome');
           expect(insumo).toHaveProperty('unidade');
-          expect(insumo).toHaveProperty('preco');
-          expect(insumo.descricao.toLowerCase()).toContain('cimento');
+          expect(insumo).toHaveProperty('preco_desonerado');
+          expect(insumo.nome.toLowerCase()).toContain('cimento');
         }
       }, 60000);
 
       it('should search insumos with pagination', async () => {
         // Arrange
         const filters = {
-          q: 'areia',
+          nome: 'areia',
           estado: 'RJ',
           page: 1,
           limit: 5,
@@ -130,7 +130,7 @@ const skipTests = !apiKey || !apiSecret;
       it('should validate price data structure', async () => {
         // Arrange
         const filters = {
-          q: 'tijolo',
+          nome: 'tijolo',
           estado: 'MG',
           limit: 3,
         };
@@ -143,10 +143,10 @@ const skipTests = !apiKey || !apiSecret;
           const insumo = response.data[0];
 
           // Validate price structure
-          expect(insumo.preco).toBeDefined();
-          expect(typeof insumo.preco).toBe('number');
-          expect(insumo.preco).toBeGreaterThan(0);
-          expect(isNaN(insumo.preco)).toBe(false);
+          expect(insumo.preco_desonerado).toBeDefined();
+          expect(typeof insumo.preco_desonerado).toBe('number');
+          expect(insumo.preco_desonerado).toBeGreaterThan(0);
+          expect(isNaN(insumo.preco_desonerado)).toBe(false);
 
           // Validate unit
           expect(insumo.unidade).toBeDefined();
@@ -157,7 +157,7 @@ const skipTests = !apiKey || !apiSecret;
       it('should handle empty results gracefully', async () => {
         // Arrange
         const filters = {
-          q: 'xyznonexistent999',
+          nome: 'xyznonexistent999',
           estado: 'SP',
         };
 
@@ -175,7 +175,7 @@ const skipTests = !apiKey || !apiSecret;
       it('should search composicoes by description', async () => {
         // Arrange
         const filters = {
-          q: 'alvenaria',
+          nome: 'alvenaria',
           estado: 'SP',
           limit: 5,
         };
@@ -190,9 +190,9 @@ const skipTests = !apiKey || !apiSecret;
         if (response.data.length > 0) {
           const composicao = response.data[0];
           expect(composicao).toHaveProperty('codigo');
-          expect(composicao).toHaveProperty('descricao');
+          expect(composicao).toHaveProperty('nome');
           expect(composicao).toHaveProperty('unidade');
-          expect(composicao).toHaveProperty('preco');
+          expect(composicao).toHaveProperty('preco_desonerado');
         }
       }, 60000);
 
@@ -200,7 +200,7 @@ const skipTests = !apiKey || !apiSecret;
         // Arrange
         // First, search to get a valid code
         const searchResponse = await service.searchComposicoes({
-          q: 'concreto',
+          nome: 'concreto',
           estado: 'SP',
           limit: 1,
         });
@@ -210,16 +210,16 @@ const skipTests = !apiKey || !apiSecret;
           return;
         }
 
-        const codigo = parseInt(searchResponse.data[0].codigo);
+        const codigo = searchResponse.data[0].codigo;
 
         // Act
-        const detail = await service.getComposicao(codigo, 'SP');
+        const detail = await service.getComposicaoDetails(codigo, 'SP');
 
         // Assert
         expect(detail).toBeDefined();
         if (detail) {
           expect(detail.codigo.toString()).toBe(codigo.toString());
-          expect(detail).toHaveProperty('descricao');
+          expect(detail).toHaveProperty('nome');
           expect(detail).toHaveProperty('itens');
           expect(Array.isArray(detail.itens)).toBe(true);
         }
@@ -230,14 +230,11 @@ const skipTests = !apiKey || !apiSecret;
       it('should retrieve historical prices for insumo', async () => {
         // Arrange
         const codigo = 4387; // Example SINAPI code
-        const filters = {
-          estado: 'SP',
-          dataInicio: '2024-01-01',
-          dataFim: '2024-06-30',
-        };
+        const estado = 'SP';
+        const periodo = '6'; // Last 6 months
 
         // Act
-        const history = await service.getInsumoHistorico(codigo, filters);
+        const history = await service.getHistorico(codigo, estado, periodo);
 
         // Assert
         expect(history).toBeDefined();
@@ -289,7 +286,7 @@ const skipTests = !apiKey || !apiSecret;
         const invalidCodigo = 99999999;
 
         // Act & Assert
-        const result = await service.getComposicao(invalidCodigo, 'SP');
+        const result = await service.getComposicaoDetails(invalidCodigo, 'SP');
         expect(result).toBeNull(); // Service returns null for 404
       }, 60000);
 
@@ -297,7 +294,7 @@ const skipTests = !apiKey || !apiSecret;
         // This test validates rate limit handling
         // If rate limit is exceeded, should throw SinapiApiRateLimitError
 
-        const filters = { q: 'test', estado: 'SP', limit: 1 };
+        const filters = { nome: 'test', estado: 'SP', limit: 1 };
 
         // Make multiple rapid requests
         const requests = Array.from({ length: 20 }, () =>
@@ -317,7 +314,7 @@ const skipTests = !apiKey || !apiSecret;
     describe('SINAPI Cache Behavior', () => {
       it('should make requests successfully without cache', async () => {
         // Arrange
-        const filters = { q: 'cimento portland', estado: 'SP', limit: 5 };
+        const filters = { nome: 'cimento portland', estado: 'SP', limit: 5 };
 
         // Act
         const response = await service.searchInsumos(filters);
