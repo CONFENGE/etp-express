@@ -5,9 +5,12 @@ import { Contrato } from '../../entities/contrato.entity';
 import { Edital } from '../../entities/edital.entity';
 import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { Etp } from '../../entities/etp.entity';
+import { Medicao } from '../../entities/medicao.entity';
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
+import { MedicaoService } from './services/medicao.service';
 import { ContratosController } from './controllers/contratos.controller';
+import { MedicaoController } from './controllers/medicao.controller';
 import { ContractAlertJob } from './jobs/contract-alert.job';
 import { EmailModule } from '../email/email.module';
 
@@ -30,12 +33,17 @@ import { EmailModule } from '../email/email.module';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Contrato, Edital, TermoReferencia, Etp]),
+    TypeOrmModule.forFeature([Contrato, Edital, TermoReferencia, Etp, Medicao]),
     ScheduleModule.forRoot(),
     EmailModule,
   ],
-  controllers: [ContratosController],
-  providers: [ContractChainService, ContractAlertService, ContractAlertJob],
-  exports: [ContractChainService, ContractAlertService],
+  controllers: [ContratosController, MedicaoController],
+  providers: [
+    ContractChainService,
+    ContractAlertService,
+    MedicaoService,
+    ContractAlertJob,
+  ],
+  exports: [ContractChainService, ContractAlertService, MedicaoService],
 })
 export class ContratosModule {}
