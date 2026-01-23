@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-23 | **Progresso:** 826/852 issues (97.0%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-22 | **Progresso:** 827/852 issues (97.1%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-22 | #1634 | Test     | [#1171] Fix login-flow E2E tests for Railway environment (#1171) ✅ |
 | 2026-01-23 | #1633 | Test     | [#1073] Add government API integration tests (#1073) ✅ |
 | 2026-01-22 | #1632 | Feature  | [#1287] Automated contract alerts - Lei 14.133/2021 Art. 117 (#1287) ✅ |
 | 2026-01-22 | #1631 | Feature  | [#1282] Export edital formatado PDF/DOCX - M14 COMPLETE (#1282) ✅ |
@@ -495,7 +496,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #     | Issue                                                           |
 | ----- | --------------------------------------------------------------- |
 | #1172 | [E2E] Fix Auth Session tests for Railway environment ✅         |
-| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment         |
+| #1171 | [E2E] Fix Auth Login-Flow tests for Railway environment ✅         |
 | #1137 | [E2E] Epic: Fix all 73 failing E2E tests for Railway CI         |
 | #1075 | [QA] Configurar load testing com 100+ requisições simultâneas ✅ |
 | #1074 | [QA] Implementar chaos engineering (Redis: ✅, API Timeout: ✅) |
