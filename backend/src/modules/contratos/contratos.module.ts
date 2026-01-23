@@ -7,13 +7,16 @@ import { TermoReferencia } from '../../entities/termo-referencia.entity';
 import { Etp } from '../../entities/etp.entity';
 import { Medicao } from '../../entities/medicao.entity';
 import { Ocorrencia } from '../../entities/ocorrencia.entity';
+import { Ateste } from '../../entities/ateste.entity';
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
 import { MedicaoService } from './services/medicao.service';
 import { OcorrenciaService } from './services/ocorrencia.service';
+import { AtesteService } from './services/ateste.service';
 import { ContratosController } from './controllers/contratos.controller';
 import { MedicaoController } from './controllers/medicao.controller';
 import { OcorrenciaController } from './controllers/ocorrencia.controller';
+import { AtesteController } from './controllers/ateste.controller';
 import { ContractAlertJob } from './jobs/contract-alert.job';
 import { EmailModule } from '../email/email.module';
 
@@ -32,6 +35,7 @@ import { EmailModule } from '../email/email.module';
  * - #1287 - [Contratos-d] Alertas de vencimento e aditivos
  * - #1641 - [FISC-1286a] Create Medicao entity and CRUD endpoints
  * - #1642 - [FISC-1286b] Create Ocorrencia entity and CRUD endpoints
+ * - #1643 - [FISC-1286c] Create Ateste entity and approval workflow
  *
  * @see Lei 14.133/2021 Art. 90-129 - Contratos Administrativos
  * @see Lei 14.133/2021 Art. 117 - Gestão de contratos
@@ -45,16 +49,23 @@ import { EmailModule } from '../email/email.module';
       Etp,
       Medicao,
       Ocorrencia,
+      Ateste,
     ]),
     ScheduleModule.forRoot(),
     EmailModule,
   ],
-  controllers: [ContratosController, MedicaoController, OcorrenciaController],
+  controllers: [
+    ContratosController,
+    MedicaoController,
+    OcorrenciaController,
+    AtesteController,
+  ],
   providers: [
     ContractChainService,
     ContractAlertService,
     MedicaoService,
     OcorrenciaService,
+    AtesteService,
     ContractAlertJob,
   ],
   exports: [
@@ -62,6 +73,7 @@ import { EmailModule } from '../email/email.module';
     ContractAlertService,
     MedicaoService,
     OcorrenciaService,
+    AtesteService,
   ],
 })
 export class ContratosModule {}
