@@ -12,6 +12,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
@@ -36,6 +37,7 @@ async function bootstrap() {
   const winstonLogger = createWinstonLogger();
   app = await NestFactory.create(AppModule, {
     logger: winstonLogger,
+    bodyParser: false, // Disable default body parser to configure custom limits
   });
 
   const nodeEnv = process.env.NODE_ENV || 'development';
@@ -45,6 +47,13 @@ async function bootstrap() {
   logger.log(
     `Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${nodeEnv})`,
   );
+
+  // Body parser with explicit size limits (#1637 - Large Payload Chaos Test)
+  // Protects against memory exhaustion from large payloads
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+  logger.log('Body parser configured with 10MB limit for JSON/URL-encoded payloads');
 
   // Log rate limiting status (#1191 - Staging Environment)
   const rateLimitEnabled = process.env.RATE_LIMIT_ENABLED !== 'false';
