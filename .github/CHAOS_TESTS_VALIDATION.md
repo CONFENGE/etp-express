@@ -24,6 +24,7 @@ All chaos engineering tests for issue #1074 are **COMPLETE** and **PASSING** (67
 **PR:** #1638 (merged)
 
 **Coverage:**
+
 - Fallback to in-memory cache when Redis unavailable
 - Service degrades gracefully without crashing
 - Logs and metrics track Redis failures
@@ -39,6 +40,7 @@ All chaos engineering tests for issue #1074 are **COMPLETE** and **PASSING** (67
 **PR:** #1211 (merged - previous implementation)
 
 **Coverage:**
+
 - Circuit breaker opens after multiple timeouts (threshold-based)
 - Process does NOT hang on 30s+ API delays
 - Graceful error handling with proper client messages
@@ -47,6 +49,7 @@ All chaos engineering tests for issue #1074 are **COMPLETE** and **PASSING** (67
 - Edge cases: HTTP errors vs timeouts, partial responses
 
 **Validation Results (2026-01-23):**
+
 ```bash
 $ npm test -- chaos/api-timeout.chaos.spec.ts
 
@@ -56,6 +59,7 @@ Time:        24.053s
 ```
 
 **All Acceptance Criteria Met:**
+
 - ✅ Test file created and passing
 - ✅ Circuit breaker opens after threshold
 - ✅ Timeout does NOT block event loop (< 35s)
@@ -75,6 +79,7 @@ Time:        24.053s
 **PR:** #1639 (merged)
 
 **Coverage:**
+
 - Reject payloads exceeding memory limits (50MB+)
 - No memory leaks on large payload processing
 - Proper error messages for oversized responses
@@ -86,12 +91,12 @@ Time:        24.053s
 
 **Total Chaos Tests:** 67/67 passing (100%)
 
-| Test Suite           | Tests | Status |
-| -------------------- | ----- | ------ |
-| Redis Failure        | 19    | ✅     |
-| API Timeout          | 13    | ✅     |
-| Large Payload        | 35    | ✅     |
-| **TOTAL**            | **67**| ✅     |
+| Test Suite    | Tests  | Status |
+| ------------- | ------ | ------ |
+| Redis Failure | 19     | ✅     |
+| API Timeout   | 13     | ✅     |
+| Large Payload | 35     | ✅     |
+| **TOTAL**     | **67** | ✅     |
 
 ---
 
@@ -100,6 +105,7 @@ Time:        24.053s
 ### Parent Issue: #1074
 
 **Sub-issues:**
+
 - [x] #1635 - Redis down with fallback ✅ (PR #1638)
 - [x] #1636 - API timeout with circuit breaker ✅ (PR #1211, validated 2026-01-23)
 - [x] #1637 - Large payload with memory safety ✅ (PR #1639)
@@ -173,6 +179,7 @@ npm test -- chaos
 **Chaos Engineering Coverage:** ✅ COMPLETE
 
 All critical failure scenarios tested:
+
 - External service unavailability (Redis)
 - Slow/unresponsive APIs (timeout)
 - Malicious/oversized payloads (memory)
