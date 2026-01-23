@@ -26,8 +26,8 @@ import {
 import { DocumentoFiscalizacaoService } from '../services/documento-fiscalizacao.service';
 import { CreateDocumentoFiscalizacaoDto } from '../dto/create-documento-fiscalizacao.dto';
 import { DocumentoFiscalizacao } from '../../../entities/documento-fiscalizacao.entity';
-import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
-import { CurrentUser } from '../../../decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { User } from '../../../entities/user.entity';
 
 /**
