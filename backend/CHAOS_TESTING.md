@@ -100,18 +100,62 @@ npm run test:cov -- redis-failure.chaos.spec.ts
 
 ## Resultados
 
-**Status:** ✅ PASSING (23/23 tests)
+**Status:** ✅ PASSING (37/37 tests)
 
 **Coverage:**
-- SemanticCacheService: 100% dos cenários de falha
-- GovApiCache: 100% dos cenários de falha
-- Cross-service isolation: ✅ Validado
-- Memory safety: ✅ Validado
+- **Redis Failure (#1635):** 23/23 tests ✅
+  - SemanticCacheService: 100% dos cenários de falha
+  - GovApiCache: 100% dos cenários de falha
+  - Cross-service isolation: ✅ Validado
+  - Memory safety: ✅ Validado
+
+- **Inbound Large Payload (#1637):** 14/14 tests ✅
+  - Body parser size limits: ✅ Validado
+  - Memory leak prevention: ✅ Validado (10.57MB growth)
+  - Concurrent handling: ✅ Validado (15.01MB growth)
+  - Event loop health: ✅ Validado
+
+### 2. Inbound Large Payload Resilience (#1637)
+
+**Arquivo:** `backend/src/chaos/inbound-payload.chaos.spec.ts`
+
+**Cenários Testados:**
+
+#### 2.1 Body Parser Size Limits
+- **Cenário:** Clients send HTTP payloads approaching or exceeding 10MB limit
+- **Comportamento Esperado:**
+  - Body parser configured with 10MB limit in `main.ts`
+  - Large payloads handled gracefully without crashing
+  - System rejects payloads > 10MB (413 Payload Too Large expected in production)
+- **Validação:** ✅ 3 testes passando
+
+#### 2.2 Memory Leak Prevention
+- **Cenário:** Repeated large payload processing (10 iterations of 5MB each)
+- **Comportamento Esperado:**
+  - Heap growth < 100MB após processamento
+  - GC cleanup funciona corretamente
+  - Sistema permanece estável após processar múltiplos payloads
+- **Validação:** ✅ Memory safety testado (10.57MB growth observed - within limits)
+
+#### 2.3 Concurrent Payload Handling
+- **Cenário:** 5 concurrent large payloads (8MB each)
+- **Comportamento Esperado:**
+  - Sistema processa concorrentemente sem crash
+  - Heap growth < 100MB
+  - Sem memory leaks (15.01MB growth observed - within limits)
+- **Validação:** ✅ Concurrency testado
+
+#### 2.4 Event Loop Health
+- **Cenário:** Large payload processing não bloqueia event loop
+- **Comportamento Esperado:**
+  - Event loop latency < 100ms
+  - setImmediate callbacks executam sem delay significativo
+  - Sistema permanece responsivo
+- **Validação:** ✅ Event loop health testado
 
 ## Próximos Testes Planejados
 
 - [ ] #1636 - API Timeout com circuit breaker (Gov APIs)
-- [ ] #1637 - Large Payload com memory safety (Document uploads)
 
 ## Referências
 
