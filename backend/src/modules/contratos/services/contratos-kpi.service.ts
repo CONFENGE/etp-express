@@ -51,6 +51,41 @@ export interface ValueByStatusResponse {
 }
 
 /**
+ * Entry de contrato expirando para timeline.
+ *
+ * Issue #1662 - Add contracts expiration timeline
+ */
+export interface ExpiringContractEntry {
+  /** UUID do contrato */
+  contratoId: string;
+
+  /** Número do contrato (ex: "001/2024") */
+  numero: string;
+
+  /** Razão social do contratado */
+  contratado: string;
+
+  /** Data de fim da vigência (ISO 8601) */
+  vigenciaFim: string;
+
+  /** Dias restantes até vencimento */
+  daysUntilExpiration: number;
+
+  /** Valor global do contrato (DECIMAL as string) */
+  valor: string;
+}
+
+/**
+ * Resposta do endpoint analytics/expiration-timeline.
+ *
+ * Issue #1662 - Add contracts expiration timeline
+ */
+export interface ExpirationTimelineResponse {
+  /** Lista de contratos vencendo nos próximos N dias */
+  timeline: ExpiringContractEntry[];
+}
+
+/**
  * Service para cálculo de KPIs de Contratos.
  *
  * Fornece métricas agregadas para dashboards e relatórios gerenciais.
@@ -209,5 +244,93 @@ export class ContratosKpiService {
     }));
 
     return { chartData };
+  }
+
+  /**
+   * Busca contratos vencendo nos próximos N dias para timeline visual.
+   *
+   * Retorna lista detalhada de contratos próximos ao vencimento,
+   * ordenados por data crescente (vence primeiro = aparece primeiro).
+   *
+   * Usado para renderizar componente ExpirationTimeline no dashboard (#1662).
+   *
+   * **Regras de Negócio:**
+   * - Apenas contratos ativos (ASSINADO, EM_EXECUCAO, ADITIVADO, SUSPENSO)
+   * - vigenciaFim entre hoje e hoje + N dias
+   * - Calcula daysUntilExpiration com precisão de dias (não horas)
+   * - Ordena por vigenciaFim ASC (mais próximo primeiro)
+   *
+   * @param organizationId - UUID da organização (multi-tenancy)
+   * @param days - Quantidade de dias para lookahead (default: 90)
+   * @returns {Promise<ExpirationTimelineResponse>} Contratos expirando ordenados
+   *
+   * @example
+   * ```typescript
+   * const timeline = await kpiService.getExpirationTimeline('org-uuid', 90);
+   * console.log(timeline.timeline);
+   * // [
+   * //   { numero: '001/2024', contratado: 'Empresa A', daysUntilExpiration: 15, ... },
+   * //   { numero: '002/2024', contratado: 'Empresa B', daysUntilExpiration: 45, ... },
+   * //   ...
+   * // ]
+   * ```
+   */
+  async getExpirationTimeline(
+    organizationId: string,
+    days: number = 90,
+  ): Promise<ExpirationTimelineResponse> {
+    const today = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + days);
+
+    // Status considerados "vigentes"
+    const activeStatuses = [
+      ContratoStatus.ASSINADO,
+      ContratoStatus.EM_EXECUCAO,
+      ContratoStatus.ADITIVADO,
+      ContratoStatus.SUSPENSO,
+    ];
+
+    // Query: busca contratos vencendo no período
+    const results = await this.contratoRepository
+      .createQueryBuilder('contrato')
+      .select([
+        'contrato.id',
+        'contrato.numero',
+        'contrato.contratadoRazaoSocial',
+        'contrato.vigenciaFim',
+        'contrato.valorGlobal',
+      ])
+      .where('contrato.organizationId = :organizationId', { organizationId })
+      .andWhere('contrato.status IN (:...statuses)', {
+        statuses: activeStatuses,
+      })
+      .andWhere('contrato.vigenciaFim BETWEEN :today AND :futureDate', {
+        today: today.toISOString().split('T')[0], // YYYY-MM-DD
+        futureDate: futureDate.toISOString().split('T')[0],
+      })
+      .orderBy('contrato.vigenciaFim', 'ASC')
+      .getMany();
+
+    // Mapear para formato do timeline com cálculo de dias
+    const timeline: ExpiringContractEntry[] = results.map((contrato) => {
+      const vigenciaDate = new Date(contrato.vigenciaFim);
+      const todayNormalized = new Date(today.toISOString().split('T')[0]);
+      const daysUntilExpiration = Math.ceil(
+        (vigenciaDate.getTime() - todayNormalized.getTime()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      return {
+        contratoId: contrato.id,
+        numero: contrato.numero,
+        contratado: contrato.contratadoRazaoSocial,
+        vigenciaFim: contrato.vigenciaFim.toISOString().split('T')[0], // Convert Date to ISO string (YYYY-MM-DD)
+        daysUntilExpiration,
+        valor: contrato.valorGlobal,
+      };
+    });
+
+    return { timeline };
   }
 }
