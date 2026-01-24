@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 834/853 issues (97.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-24 | **Progresso:** 835/853 issues (97.9%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1652 | Feature  | [#1647] Add notification system for fiscalização events ✅ - **Score 100/100 - Auto-merged (size exception: 1,500 lines justified by final epic task with comprehensive tests - 7/7 M15)** |
 | 2026-01-24 | #1651 | Feature  | [#1644] Add document upload to fiscalização entities ✅ - **Score 95.5/100 - Manual merge (size override: 1,306 lines justified by boilerplate inflation)** |
 | 2026-01-23 | #1650 | Feature  | [#1643] Create Ateste entity and approval workflow ✅ - **Score 98.4/100 - Manual merge (size exception: 1,198 lines justified by complete entity+tests)** |
 | 2026-01-23 | #1649 | Feature | [#1642] Create Ocorrencia entity and CRUD endpoints ✅ - **Score 97.5/100 - Manual merge (size exception: 1,429 lines justified by complete feature scope)** |
@@ -558,7 +559,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 2/8    | Média      | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 3/8    | Média      | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
 
@@ -751,10 +752,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 852   |
-| Issues Abertas    | 19    |
-| Issues Fechadas   | 833   |
-| Progresso         | 97.8% |
+| Issues Totais     | 853   |
+| Issues Abertas    | 18    |
+| Issues Fechadas   | 835   |
+| Progresso         | 97.9% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
