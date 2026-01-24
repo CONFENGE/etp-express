@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 838/861 issues (97.3%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 839/861 issues (97.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
-| 2026-01-24 | #1664 | Feature  | [#1658] Create contracts dashboard page structure - **PR CRIADA** (1/6 sub-issues #1288) |
+| 2026-01-24 | #1664 | Feature  | [#1658] Create contracts dashboard page structure ✅ - **Score 100/100 - Auto-merged via /review-pr** (1/6 sub-issues #1288) |
 | 2026-01-24 | -     | Planning | Desmembrar #1288 em 6 sub-issues atômicas (#1658-#1663) - M15 Gestão de Contratos |
 | 2026-01-24 | #1657 | Feature  | [#1072] Add automatic retry with exponential backoff for email delivery ✅ - **Score 100/100 - Auto-merged (after TypeScript type safety fix)** |
 | 2026-01-24 | -     | Bug      | [#1655] Fix ESLint errors in FiscalizacaoPage ✅ - **CLOSED as duplicate of #1656** (already resolved in commit e9e2008) |
