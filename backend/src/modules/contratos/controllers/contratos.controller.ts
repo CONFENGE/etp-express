@@ -2,8 +2,11 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   UseGuards,
   ParseUUIDPipe,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ContractChainService,
@@ -13,16 +16,23 @@ import {
   ContratosKpiService,
   ContratoKpiResponse,
 } from '../services/contratos-kpi.service';
+import {
+  ContratoService,
+  PaginatedContratos,
+  ContratoFilters,
+} from '../services/contrato.service';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { UserRole, User } from '../../../entities/user.entity';
+import { ContratoStatus } from '../../../entities/contrato.entity';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 /**
@@ -43,6 +53,7 @@ export class ContratosController {
   constructor(
     private readonly contractChainService: ContractChainService,
     private readonly kpiService: ContratosKpiService,
+    private readonly contratoService: ContratoService,
   ) {}
 
   /**
@@ -260,5 +271,161 @@ export class ContratosController {
   })
   async getKpis(@CurrentUser() user: User): Promise<ContratoKpiResponse> {
     return this.kpiService.getKpis(user.organizationId);
+  }
+
+  /**
+   * Lista contratos com filtros e paginação (#1660).
+   *
+   * Endpoint de busca de contratos com suporte a:
+   * - Filtros por status, fornecedor, valor e vigência
+   * - Paginação server-side
+   * - Multi-tenancy (isolamento por organização)
+   *
+   * **Rota:** `GET /api/contratos`
+   *
+   * **Permissões:** CONSULTOR, GESTOR, SYSTEM_ADMIN
+   *
+   * **Query Parameters:**
+   * - `page` (number, default: 1): Número da página
+   * - `limit` (number, default: 10): Itens por página
+   * - `status` (string[]): Filtro por status (multi-select)
+   * - `fornecedor` (string): Busca por CNPJ ou razão social
+   * - `valorMin` (number): Valor mínimo do contrato
+   * - `valorMax` (number): Valor máximo do contrato
+   * - `vigenciaInicio` (ISO date): Data inicial da vigência
+   * - `vigenciaFim` (ISO date): Data final da vigência
+   *
+   * **Exemplo de resposta:**
+   * ```json
+   * {
+   *   "data": [
+   *     {
+   *       "id": "uuid",
+   *       "numero": "001/2024",
+   *       "objeto": "Serviços de TI",
+   *       "contratadoRazaoSocial": "Empresa XYZ Ltda",
+   *       "valorGlobal": "100000.00",
+   *       "vigenciaFim": "2025-12-31",
+   *       "status": "em_execucao"
+   *     }
+   *   ],
+   *   "total": 42,
+   *   "page": 1,
+   *   "limit": 10,
+   *   "totalPages": 5
+   * }
+   * ```
+   *
+   * @param user - Usuário autenticado
+   * @param page - Número da página
+   * @param limit - Itens por página
+   * @param status - Filtro de status (array)
+   * @param fornecedor - Filtro de fornecedor
+   * @param valorMin - Valor mínimo
+   * @param valorMax - Valor máximo
+   * @param vigenciaInicio - Data inicial vigência
+   * @param vigenciaFim - Data final vigência
+   * @returns {Promise<PaginatedContratos>} Contratos paginados
+   */
+  @Get()
+  @Roles(UserRole.ADMIN, UserRole.USER, UserRole.SYSTEM_ADMIN)
+  @ApiOperation({
+    summary: 'Listar contratos com filtros e paginação',
+    description:
+      'Busca contratos com filtros opcionais por status, fornecedor, valor e vigência',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Número da página (default: 1)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Itens por página (default: 10)',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    isArray: true,
+    enum: ContratoStatus,
+    description: 'Filtro por status (multi-select)',
+    example: ['em_execucao', 'aditivado'],
+  })
+  @ApiQuery({
+    name: 'fornecedor',
+    required: false,
+    type: String,
+    description: 'Busca por CNPJ ou razão social',
+    example: 'Empresa XYZ',
+  })
+  @ApiQuery({
+    name: 'valorMin',
+    required: false,
+    type: Number,
+    description: 'Valor mínimo do contrato',
+    example: 10000,
+  })
+  @ApiQuery({
+    name: 'valorMax',
+    required: false,
+    type: Number,
+    description: 'Valor máximo do contrato',
+    example: 50000,
+  })
+  @ApiQuery({
+    name: 'vigenciaInicio',
+    required: false,
+    type: String,
+    format: 'date',
+    description: 'Data inicial da vigência (ISO 8601)',
+    example: '2024-01-01',
+  })
+  @ApiQuery({
+    name: 'vigenciaFim',
+    required: false,
+    type: String,
+    format: 'date',
+    description: 'Data final da vigência (ISO 8601)',
+    example: '2024-12-31',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contratos retornados com sucesso',
+  })
+  async listContracts(
+    @CurrentUser() user: User,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('status') status?: ContratoStatus | ContratoStatus[],
+    @Query('fornecedor') fornecedor?: string,
+    @Query('valorMin') valorMin?: number,
+    @Query('valorMax') valorMax?: number,
+    @Query('vigenciaInicio') vigenciaInicio?: string,
+    @Query('vigenciaFim') vigenciaFim?: string,
+  ): Promise<PaginatedContratos> {
+    // Build filters object
+    const filters: ContratoFilters = {};
+
+    if (status) {
+      // Handle both single value and array from query params
+      filters.status = Array.isArray(status) ? status : [status];
+    }
+    if (fornecedor) filters.fornecedor = fornecedor;
+    if (valorMin !== undefined) filters.valorMin = Number(valorMin);
+    if (valorMax !== undefined) filters.valorMax = Number(valorMax);
+    if (vigenciaInicio) filters.vigenciaInicio = vigenciaInicio;
+    if (vigenciaFim) filters.vigenciaFim = vigenciaFim;
+
+    return this.contratoService.listContracts(
+      user.organizationId,
+      filters,
+      page,
+      limit,
+    );
   }
 }
