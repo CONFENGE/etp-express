@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -18,6 +18,7 @@ import {
   type Ocorrencia,
   type CreateMedicaoDto,
   type CreateOcorrenciaDto,
+  type CreateAtesteDto,
   MEDICAO_STATUS_COLOR,
   OCORRENCIA_GRAVIDADE_COLOR,
   OCORRENCIA_STATUS_COLOR,
@@ -44,12 +45,7 @@ export function FiscalizacaoPage() {
   const [atesteModalOpen, setAtesteModalOpen] = useState(false);
   const [selectedMedicao, setSelectedMedicao] = useState<Medicao | null>(null);
 
-  useEffect(() => {
-    if (!contratoId) return;
-    loadData();
-  }, [contratoId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [medicoesData, ocorrenciasData] = await Promise.all([
         fetchMedicoes(),
@@ -57,10 +53,15 @@ export function FiscalizacaoPage() {
       ]);
       setMedicoes(medicoesData);
       setOcorrencias(ocorrenciasData);
-    } catch (err) {
+    } catch {
       showError('Erro ao carregar dados de fiscalização');
     }
-  };
+  }, [fetchMedicoes, fetchOcorrencias, showError]);
+
+  useEffect(() => {
+    if (!contratoId) return;
+    loadData();
+  }, [contratoId, loadData]);
 
   const handleCreateMedicao = async (data: CreateMedicaoDto) => {
     try {
@@ -91,17 +92,21 @@ export function FiscalizacaoPage() {
     setAtesteModalOpen(true);
   };
 
-  const handleCreateAteste = async (data: any) => {
+  const handleCreateAteste = async (data: Omit<CreateAtesteDto, 'dataAteste'> & { dataAteste?: string }) => {
     if (!selectedMedicao) return;
     try {
-      await createAteste(selectedMedicao.id, data);
+      // Include dataAteste if not provided (default to current date)
+      const atesteData: CreateAtesteDto = {
+        ...data,
+        dataAteste: data.dataAteste || new Date().toISOString(),
+      };
+      await createAteste(selectedMedicao.id, atesteData);
       success('Ateste realizado com sucesso');
       setAtesteModalOpen(false);
       setSelectedMedicao(null);
       await loadData();
-    } catch (err) {
+    } catch {
       showError('Erro ao realizar ateste');
-      throw err;
     }
   };
 
