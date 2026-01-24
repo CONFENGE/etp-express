@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 839/861 issues (97.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 840/861 issues (97.6%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1665 | Feature  | [#1659] Add KPI summary cards for contracts dashboard ✅ - **Score 97.5/100 - Pragmatic merge via /review-pr** (2/6 sub-issues #1288) |
 | 2026-01-24 | #1664 | Feature  | [#1658] Create contracts dashboard page structure ✅ - **Score 100/100 - Auto-merged via /review-pr** (1/6 sub-issues #1288) |
 | 2026-01-24 | -     | Planning | Desmembrar #1288 em 6 sub-issues atômicas (#1658-#1663) - M15 Gestão de Contratos |
 | 2026-01-24 | #1657 | Feature  | [#1072] Add automatic retry with exponential backoff for email delivery ✅ - **Score 100/100 - Auto-merged (after TypeScript type safety fix)** |
@@ -770,17 +771,17 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 855   |
-| Issues Abertas    | 18    |
-| Issues Fechadas   | 837   |
-| Progresso         | 97.9% |
+| Issues Totais     | 861   |
+| Issues Abertas    | 21    |
+| Issues Fechadas   | 840   |
+| Progresso         | 97.6% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
-| Frontend Tests    | 2388  |
-| Total Tests       | 5711  |
+| Frontend Tests    | 2502  |
+| Total Tests       | 5825  |
 
 ---
 
