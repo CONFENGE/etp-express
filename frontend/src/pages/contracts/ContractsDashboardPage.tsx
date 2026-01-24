@@ -113,22 +113,3 @@ function ChartSkeleton() {
   );
 }
 
-/**
- * Skeleton for Contracts Table
- * Shows 10 placeholder rows
- */
-function TableSkeleton() {
-  return (
-    <div
-      className="rounded-lg border bg-card p-6 animate-pulse"
-      aria-label="Carregando tabela de contratos"
-    >
-      <div className="h-6 w-48 bg-muted rounded mb-4" />
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-          <div key={i} className="h-12 bg-muted rounded" />
-        ))}
-      </div>
-    </div>
-  );
-}

@@ -114,7 +114,7 @@ export function ContractsTable() {
                   </TableRow>
                 ))
               ) : data && data.data.length > 0 ? (
-                data.data.map((contrato) => (
+                data.data.map((contrato: Contrato) => (
                   <TableRow key={contrato.id}>
                     <TableCell className="font-medium">{contrato.numero}</TableCell>
                     <TableCell>
@@ -184,7 +184,7 @@ export function ContractsTable() {
               </div>
             ))
           ) : data && data.data.length > 0 ? (
-            data.data.map((contrato) => (
+            data.data.map((contrato: Contrato) => (
               <ContractCard key={contrato.id} contrato={contrato} formatCurrency={formatCurrency} />
             ))
           ) : (
