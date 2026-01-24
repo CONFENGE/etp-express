@@ -25,7 +25,10 @@ import {
 } from '@nestjs/swagger';
 import { DocumentoFiscalizacaoService } from '../services/documento-fiscalizacao.service';
 import { CreateDocumentoFiscalizacaoDto } from '../dto/create-documento-fiscalizacao.dto';
-import { DocumentoFiscalizacao } from '../../../entities/documento-fiscalizacao.entity';
+import {
+  DocumentoFiscalizacao,
+  DocumentoFiscalizacaoTipo,
+} from '../../../entities/documento-fiscalizacao.entity';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { User } from '../../../entities/user.entity';
@@ -335,7 +338,7 @@ export class DocumentoFiscalizacaoController {
 
     // Criar registro no banco
     const dto: CreateDocumentoFiscalizacaoDto = {
-      tipoEntidade: tipo as any,
+      tipoEntidade: tipo as DocumentoFiscalizacaoTipo,
       entidadeId,
       nomeArquivo: file.originalname,
       caminhoArquivo: storagePath,
