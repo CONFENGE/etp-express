@@ -67,7 +67,11 @@ export function ContractValueByStatusChart() {
             nameKey="status"
             cx="50%"
             cy="50%"
-            label={(entry) => renderLabel(entry, total)}
+            label={(entry) => {
+              const { value = 0 } = entry as unknown as { value?: number };
+              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+              return `${percent}%`;
+            }}
             labelLine={false}
           >
             {data.chartData.map((entry, index) => (
@@ -102,21 +106,6 @@ function ChartSkeleton() {
       <div className="h-64 bg-muted rounded" />
     </div>
   );
-}
-
-/**
- * Renderiza label do gráfico com percentual.
- *
- * @param entry - Entry do Recharts (PieLabelRenderProps)
- * @param total - Valor total de todos os status
- * @returns Label formatado com percentual
- */
-function renderLabel(
-  entry: { value: number; [key: string]: unknown },
-  total: number,
-): string {
-  const percent = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0.0';
-  return `${percent}%`;
 }
 
 /**

@@ -17,6 +17,9 @@ export interface ValueByStatusEntry {
 
   /** Quantidade de contratos neste status */
   count: number;
+
+  /** Index signature para compatibilidade com Recharts */
+  [key: string]: unknown;
 }
 
 /**
