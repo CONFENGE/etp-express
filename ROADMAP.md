@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 836/855 issues (97.8%) | **Deploy:** LIVE | **P0 Blocker:** 1
+**Atualizado:** 2026-01-24 | **Progresso:** 837/855 issues (97.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,8 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | -     | Bug      | [#1655] Fix ESLint errors in FiscalizacaoPage ✅ - **CLOSED as duplicate of #1656** (already resolved in commit e9e2008) |
 | 2026-01-24 | #1654 | Test     | [#1646] Add E2E tests for fiscalização workflow ✅ - **Score 100/100 - Auto-merged via /review-pr** |
-| 2026-01-24 | -     | Bug      | **Issue #1655 CREATED:** Fix ESLint errors in FiscalizacaoPage - P0 BLOCKER (Lint Frontend failing CI/CD) |
 | 2026-01-24 | #1653 | Feature  | [#1645] Create fiscalização interface in frontend ✅ - **Score 100/100 - Auto-merged (after auto-fixes for import syntax and test mocks)** |
 | 2026-01-24 | #1652 | Feature  | [#1647] Add notification system for fiscalização events ✅ - **Score 100/100 - Auto-merged (size exception: 1,500 lines justified by final epic task with comprehensive tests - 7/7 M15)** |
 | 2026-01-24 | #1651 | Feature  | [#1644] Add document upload to fiscalização entities ✅ - **Score 95.5/100 - Manual merge (size override: 1,306 lines justified by boilerplate inflation)** |
@@ -299,17 +299,21 @@
 
 ---
 
-## Bugs Criticos P0 - 1 ABERTO ⚠️
+## Bugs Criticos P0 - 0 ABERTO ✅
 
-> **STATUS:** 1 bug BLOCKER detectado em pipeline CI/CD (Lint Frontend)
+> **STATUS:** Todos os bugs P0 resolvidos - Pipeline CI/CD limpo
 
-### Bugs P0 Abertos (2026-01-24)
+### Bugs P0 Abertos
+
+Nenhum bug P0 aberto no momento. ✅
+
+### Bugs P0 Resolvidos (2026-01-24)
 
 | #     | Issue                                                    | Area             | Status |
 | ----- | -------------------------------------------------------- | ---------------- | ------ |
-| #1655 | [P0] Fix ESLint errors in FiscalizacaoPage              | Frontend/Lint    | 🔴     |
+| #1655 | [P0] Fix ESLint errors in FiscalizacaoPage              | Frontend/Lint    | ✅ DUPLICATA (resolvida em #1656) |
 
-**Bloqueio:** Pipeline de CI/CD - Lint Frontend falhando em todas as PRs
+**Resolução:** Issue duplicada - já corrigida no commit `e9e2008` (PR #1656). ESLint limpo: 0 errors, 0 warnings.
 
 ### Bugs P0 Resolvidos (2026-01-17) - Paridade Backend/Frontend
 
@@ -469,15 +473,7 @@
 
 ---
 
-## Issues Abertas (52)
-
-### P0 - CI/CD BLOCKER (1 issue) 🔴 CRITICAL
-
-| #     | Issue                                                    | Prioridade | Status |
-| ----- | -------------------------------------------------------- | ---------- | ------ |
-| #1655 | Fix ESLint errors in FiscalizacaoPage                    | P0         | 🔴     |
-
-**Bloqueio:** Pipeline de Lint Frontend falhando - impede merge de todas as PRs
+## Issues Abertas (51)
 
 ### P0 - M17 PageIndex + SINAPI API (25 issues - 10 open) 🔵 IN PROGRESS
 
@@ -772,10 +768,10 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 855   |
-| Issues Abertas    | 19    |
-| Issues Fechadas   | 836   |
-| Progresso         | 97.8% |
-| Bugs P0 Abertos   | 1     |
+| Issues Abertas    | 18    |
+| Issues Fechadas   | 837   |
+| Progresso         | 97.9% |
+| Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
