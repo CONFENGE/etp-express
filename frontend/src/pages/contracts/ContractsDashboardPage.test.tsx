@@ -55,6 +55,24 @@ vi.mock('@/hooks/contracts/useContracts', () => ({
   })),
 }));
 
+// Mock useExpirationTimeline hook
+vi.mock('@/hooks/contracts/useExpirationTimeline', () => ({
+  useExpirationTimeline: vi.fn(() => ({
+    data: undefined,
+    isLoading: true,
+    error: null,
+  })),
+}));
+
+// Mock ContractValueByStatusChart hook
+vi.mock('@/hooks/contracts/useContractValueByStatus', () => ({
+  useContractValueByStatus: vi.fn(() => ({
+    data: undefined,
+    isLoading: true,
+    error: null,
+  })),
+}));
+
 const createQueryClient = () =>
   new QueryClient({
     defaultOptions: {
@@ -125,10 +143,11 @@ describe('ContractsDashboardPage', () => {
   it('renders table and timeline section', () => {
     renderPage();
 
-    const tableSection = screen.getByLabelText('Lista de Contratos');
+    const tableSection = screen.getByLabelText('Lista de Contratos e Timeline de Vencimentos');
     expect(tableSection).toBeInTheDocument();
 
     // ContractsTable has internal skeleton loading (tested in ContractsTable.test.tsx)
+    // ExpirationTimeline has internal skeleton loading (tested in ExpirationTimeline.test.tsx)
     // Just verify the section is rendered
   });
 
@@ -177,7 +196,7 @@ describe('ContractsDashboardPage', () => {
 
     expect(screen.getByLabelText('Indicadores de Contratos')).toBeInTheDocument();
     expect(screen.getByLabelText('Gráficos e Análises')).toBeInTheDocument();
-    expect(screen.getByLabelText('Lista de Contratos')).toBeInTheDocument();
+    expect(screen.getByLabelText('Lista de Contratos e Timeline de Vencimentos')).toBeInTheDocument();
   });
 
   it('skeleton cards have pulse animation', () => {
@@ -193,7 +212,7 @@ describe('ContractsDashboardPage', () => {
   it('ContractsTable component is rendered', () => {
     renderPage();
 
-    const tableSection = screen.getByLabelText('Lista de Contratos');
+    const tableSection = screen.getByLabelText('Lista de Contratos e Timeline de Vencimentos');
 
     // Verify the section exists (ContractsTable is tested separately)
     expect(tableSection).toBeInTheDocument();
