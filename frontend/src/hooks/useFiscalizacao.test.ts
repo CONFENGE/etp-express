@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFiscalizacao } from './useFiscalizacao';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import type { Medicao, Ocorrencia, Ateste } from '@/types/contract';
 import { MedicaoStatus, OcorrenciaTipo, OcorrenciaGravidade, AtesteResultado } from '@/types/contract';
 
 // Mock API
 vi.mock('@/lib/api', () => ({
-  api: {
+  default: {
     get: vi.fn(),
     post: vi.fn(),
     patch: vi.fn(),
