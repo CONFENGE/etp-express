@@ -18,18 +18,22 @@ import {
   SectionType,
   SectionStatus,
 } from '../../../entities/etp-section.entity';
+import { DocumentTree } from '../../../entities/document-tree.entity';
 import { SendMessageDto } from '../dto';
 import {
   OpenAIService,
   LLMResponse,
 } from '../../orchestrator/llm/openai.service';
+import { TreeSearchService } from '../../pageindex/services/tree-search.service';
 
 describe('ChatService', () => {
   let service: ChatService;
   let chatMessageRepository: jest.Mocked<Repository<ChatMessage>>;
   let etpRepository: jest.Mocked<Repository<Etp>>;
   let sectionRepository: jest.Mocked<Repository<EtpSection>>;
+  let documentTreeRepository: jest.Mocked<Repository<DocumentTree>>;
   let openAIService: jest.Mocked<OpenAIService>;
+  let treeSearchService: jest.Mocked<TreeSearchService>;
 
   const mockUserId = 'user-123';
   const mockEtpId = 'etp-456';
@@ -135,9 +139,22 @@ describe('ChatService', () => {
           },
         },
         {
+          provide: getRepositoryToken(DocumentTree),
+          useValue: {
+            find: jest.fn(),
+            findOne: jest.fn(),
+          },
+        },
+        {
           provide: OpenAIService,
           useValue: {
             generateCompletion: jest.fn(),
+          },
+        },
+        {
+          provide: TreeSearchService,
+          useValue: {
+            search: jest.fn(),
           },
         },
       ],
@@ -147,7 +164,9 @@ describe('ChatService', () => {
     chatMessageRepository = module.get(getRepositoryToken(ChatMessage));
     etpRepository = module.get(getRepositoryToken(Etp));
     sectionRepository = module.get(getRepositoryToken(EtpSection));
+    documentTreeRepository = module.get(getRepositoryToken(DocumentTree));
     openAIService = module.get(OpenAIService);
+    treeSearchService = module.get(TreeSearchService);
 
     // Default mocks
     etpRepository.findOne.mockResolvedValue(mockEtp as Etp);
@@ -877,6 +896,105 @@ describe('ChatService', () => {
       );
 
       expect(result.totalIssues).toBe(result.suggestions.length);
+    });
+  });
+
+  /**
+   * Tests for PageIndex tree search integration
+   * Issue #1544 - [CHAT-M17a] Tree search contextualizado em documentos anexos
+   */
+  describe('detectDocumentReferences', () => {
+    it('should detect document keyword: documento', () => {
+      const message = 'Mostre o que está no documento anexo';
+      const result = (service as any).detectDocumentReferences(message);
+
+      expect(result).toContain('documento');
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should detect multiple document keywords', () => {
+      const message =
+        'Qual o artigo da lei 14.133 sobre ETP no documento PDF anexo?';
+      const result = (service as any).detectDocumentReferences(message);
+
+      expect(result).toContain('documento');
+      expect(result).toContain('pdf');
+      expect(result).toContain('lei 14.133');
+      expect(result.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('should return empty array when no document references', () => {
+      const message = 'Como preencher a justificativa?';
+      const result = (service as any).detectDocumentReferences(message);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should be case-insensitive', () => {
+      const message = 'DOCUMENTO ANEXO';
+      const result = (service as any).detectDocumentReferences(message);
+
+      expect(result).toContain('documento');
+      expect(result).toContain('anexo');
+    });
+  });
+
+  describe('buildContextFromTreeSearch', () => {
+    it('should format tree search result as markdown', () => {
+      const mockTreeSearchResult = {
+        treeId: 'tree-123',
+        relevantNodes: [
+          {
+            id: 'node-1',
+            title: 'Art. 18 - Estudo Técnico Preliminar',
+            level: 2,
+            content:
+              'O ETP é o documento constitutivo da primeira etapa do planejamento de uma contratação...',
+            children: [],
+          },
+        ],
+        path: ['Lei 14.133/2021', 'Capítulo I', 'Art. 18'],
+        confidence: 0.95,
+        reasoning: 'Artigo específico sobre ETP encontrado',
+        searchTimeMs: 450,
+      };
+
+      const result = (service as any).buildContextFromTreeSearch(
+        mockTreeSearchResult,
+      );
+
+      expect(result).toContain('## Documentos Anexos Relevantes');
+      expect(result).toContain('PageIndex tree search');
+      expect(result).toContain('95.0%'); // confidence formatted
+      expect(result).toContain('Lei 14.133/2021 → Capítulo I → Art. 18'); // path
+      expect(result).toContain('### Art. 18 - Estudo Técnico Preliminar'); // node title
+      expect(result).toContain('**Nível:** 2'); // node level
+      expect(result).toContain('O ETP é o documento constitutivo'); // content
+    });
+
+    it('should handle nodes without content', () => {
+      const mockTreeSearchResult = {
+        treeId: 'tree-123',
+        relevantNodes: [
+          {
+            id: 'node-1',
+            title: 'Capítulo I',
+            level: 1,
+            children: [],
+          },
+        ],
+        path: ['Lei 14.133/2021', 'Capítulo I'],
+        confidence: 0.8,
+        reasoning: 'Capítulo relevante',
+        searchTimeMs: 300,
+      };
+
+      const result = (service as any).buildContextFromTreeSearch(
+        mockTreeSearchResult,
+      );
+
+      expect(result).toContain('### Capítulo I');
+      expect(result).toContain('*(Seção sem conteúdo textual)*');
     });
   });
 });

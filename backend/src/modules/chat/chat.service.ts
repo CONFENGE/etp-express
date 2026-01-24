@@ -16,6 +16,10 @@ import {
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
 import {
+  DocumentTree,
+  DocumentTreeStatus,
+} from '../../entities/document-tree.entity';
+import {
   SendMessageDto,
   ChatResponseDto,
   ChatHistoryItemDto,
@@ -29,6 +33,8 @@ import {
 } from './prompts/system-prompt.template';
 import { HybridRagService } from '../rag/services/hybrid-rag.service';
 import { RagSearchResult } from '../rag/interfaces/rag.interface';
+import { TreeSearchService } from '../pageindex/services/tree-search.service';
+import { TreeSearchResult } from '../pageindex/interfaces/tree-node.interface';
 
 /**
  * Conversation message for building chat history context.
@@ -78,8 +84,11 @@ export class ChatService {
     private readonly etpRepository: Repository<Etp>,
     @InjectRepository(EtpSection)
     private readonly sectionRepository: Repository<EtpSection>,
+    @InjectRepository(DocumentTree)
+    private readonly documentTreeRepository: Repository<DocumentTree>,
     private readonly openAIService: OpenAIService,
     @Optional() private readonly hybridRagService?: HybridRagService,
+    @Optional() private readonly treeSearchService?: TreeSearchService,
   ) {}
 
   /**
@@ -132,6 +141,158 @@ export class ChatService {
   }
 
   /**
+   * Detect if user message references attached documents.
+   *
+   * Simple heuristic-based detection looking for keywords that indicate
+   * the user wants information from an attached document.
+   *
+   * @param message - User's message text
+   * @returns Array of detected keywords (document indicators)
+   *
+   * Issue #1544 - [CHAT-M17a] Tree search contextualizado em documentos anexos
+   */
+  private detectDocumentReferences(message: string): string[] {
+    const lowerMessage = message.toLowerCase();
+    const indicators: string[] = [];
+
+    // Keywords that suggest document reference
+    const documentKeywords = [
+      'documento',
+      'arquivo',
+      'anexo',
+      'pdf',
+      'upload',
+      'lei 14.133',
+      'legisla',
+      'jurisprud',
+      'súmula',
+      'acórdão',
+    ];
+
+    for (const keyword of documentKeywords) {
+      if (lowerMessage.includes(keyword)) {
+        indicators.push(keyword);
+      }
+    }
+
+    return indicators;
+  }
+
+  /**
+   * Retrieve document context using PageIndex tree search.
+   *
+   * Executes tree search on attached documents to extract only relevant
+   * sections, reducing token usage and improving precision.
+   *
+   * @param query - User's question
+   * @param etpId - ETP ID to find attached documents
+   * @returns TreeSearchResult with relevant sections, or null if unavailable
+   *
+   * Issue #1544 - [CHAT-M17a] Tree search contextualizado em documentos anexos
+   */
+  async retrieveDocumentContext(
+    query: string,
+    etpId: string,
+  ): Promise<TreeSearchResult | null> {
+    if (!this.treeSearchService) {
+      this.logger.debug(
+        'TreeSearchService not available, skipping document context retrieval',
+      );
+      return null;
+    }
+
+    // Check if message mentions documents
+    const indicators = this.detectDocumentReferences(query);
+    if (indicators.length === 0) {
+      this.logger.debug('No document references detected in query');
+      return null;
+    }
+
+    try {
+      // Find document trees attached to this ETP
+      // Note: Currently using "Fonte Primária: Lei 14.133/2021" as test document
+      // In future, will query by etpId relation when document upload is implemented
+      const documentTrees = await this.documentTreeRepository.find({
+        where: { status: DocumentTreeStatus.INDEXED },
+        take: 5, // Limit to 5 most recent documents
+        order: { createdAt: 'DESC' },
+      });
+
+      if (documentTrees.length === 0) {
+        this.logger.debug('No indexed documents found for ETP', { etpId });
+        return null;
+      }
+
+      // Search in the first relevant document
+      // TODO: In future, search across multiple documents and merge results
+      const firstTree = documentTrees[0];
+
+      const result = await this.treeSearchService.search(firstTree.id, query, {
+        maxDepth: 4,
+        maxResults: 3,
+        minConfidence: 0.6,
+      });
+
+      if (result.relevantNodes.length === 0) {
+        this.logger.debug('Tree search returned no relevant sections', {
+          treeId: firstTree.id,
+        });
+        return null;
+      }
+
+      this.logger.debug('Document context retrieved via tree search', {
+        treeId: firstTree.id,
+        nodesCount: result.relevantNodes.length,
+        path: result.path,
+        confidence: result.confidence,
+      });
+
+      return result;
+    } catch (error) {
+      this.logger.warn('Failed to retrieve document context', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Build context string from tree search results.
+   *
+   * Formats extracted sections in structured markdown for inclusion
+   * in the system prompt.
+   *
+   * @param searchResult - Tree search result with relevant nodes
+   * @returns Formatted markdown string
+   *
+   * Issue #1544 - [CHAT-M17a] Tree search contextualizado em documentos anexos
+   */
+  private buildContextFromTreeSearch(searchResult: TreeSearchResult): string {
+    const sections: string[] = [];
+
+    sections.push('## Documentos Anexos Relevantes\n');
+    sections.push(
+      `> Seções extraídas com PageIndex tree search (confiança: ${(searchResult.confidence * 100).toFixed(1)}%)\n`,
+    );
+    sections.push(`> Caminho de busca: ${searchResult.path.join(' → ')}\n`);
+
+    for (const node of searchResult.relevantNodes) {
+      sections.push(`### ${node.title}`);
+      sections.push(`**Nível:** ${node.level}\n`);
+
+      if (node.content) {
+        sections.push(node.content);
+      } else {
+        sections.push('*(Seção sem conteúdo textual)*');
+      }
+
+      sections.push('\n---\n');
+    }
+
+    return sections.join('\n');
+  }
+
+  /**
    * Send a message to the chatbot and get an AI-powered response.
    *
    * @param dto - Message content and optional context field
@@ -178,13 +339,31 @@ export class ChatService {
     // Issue #1594 - HybridRagService integration
     const legalContext = await this.retrieveLegalContext(dto.message);
 
+    // 4.6. Retrieve document context using PageIndex tree search (if available)
+    // Issue #1544 - Tree search contextualizado em documentos anexos
+    const documentContext = await this.retrieveDocumentContext(
+      dto.message,
+      etpId,
+    );
+
     // 5. Build system prompt with ETP context and optional RAG context
+    let extendedRagContext = legalContext?.context || '';
+
+    // Append document context if tree search found relevant sections
+    if (documentContext && documentContext.relevantNodes.length > 0) {
+      const treeSearchContext =
+        this.buildContextFromTreeSearch(documentContext);
+      extendedRagContext = extendedRagContext
+        ? `${extendedRagContext}\n\n${treeSearchContext}`
+        : treeSearchContext;
+    }
+
     const systemPrompt = buildSystemPrompt({
       etp,
       sections,
       contextField: dto.contextField,
       includeAntiHallucination: true,
-      ragContext: legalContext?.context,
+      ragContext: extendedRagContext || undefined,
     });
 
     // 6. Build user prompt with conversation history
@@ -267,8 +446,25 @@ export class ChatService {
     const savedAssistant =
       await this.chatMessageRepository.save(assistantMessage);
 
+    // 10. Extract sources from document context (if used)
+    const sources =
+      documentContext && documentContext.relevantNodes.length > 0
+        ? documentContext.relevantNodes.map((node) => {
+            // Build path array from node structure
+            // For TreeNode, we need to construct path from ancestors
+            // For now, use a simple array with node title
+            const sectionPath = [node.title];
+
+            return {
+              documentId: documentContext.treeId || 'unknown',
+              sectionPath,
+              title: node.title,
+            };
+          })
+        : undefined;
+
     this.logger.log(
-      `Chat message processed for ETP ${etpId} by user ${userId} in ${latencyMs}ms (${aiResponse.tokens} tokens)`,
+      `Chat message processed for ETP ${etpId} by user ${userId} in ${latencyMs}ms (${aiResponse.tokens} tokens)${sources ? ` with ${sources.length} document sources` : ''}`,
     );
 
     return {
@@ -276,6 +472,7 @@ export class ChatService {
       content: aiResponse.content,
       relatedLegislation:
         relatedLegislation.length > 0 ? relatedLegislation : undefined,
+      sources,
       metadata: {
         tokens: aiResponse.tokens,
         latencyMs,
