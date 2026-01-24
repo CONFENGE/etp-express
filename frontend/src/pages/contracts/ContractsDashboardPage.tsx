@@ -1,6 +1,7 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SummaryCards } from '@/components/contracts/SummaryCards';
 import { ContractsTable } from '@/components/contracts/ContractsTable';
+import { ContractValueByStatusChart } from '@/components/contracts/ContractValueByStatusChart';
 import { useContractKPIs } from '@/hooks/contracts/useContractKPIs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -50,12 +51,12 @@ export function ContractsDashboardPage() {
           ) : null}
         </section>
 
-        {/* Charts Section - Will be populated in #1661 */}
+        {/* Charts Section - #1661 ContractValueByStatusChart */}
         <section
           aria-label="Gráficos e Análises"
           className="grid gap-6 lg:grid-cols-2"
         >
-          <ChartSkeleton />
+          <ContractValueByStatusChart />
           <ChartSkeleton />
         </section>
 
