@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 842/861 issues (97.8%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 843/861 issues (97.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1668 | Feature  | [#1662] Add contracts expiration timeline ✅ - **Score 99/100 - Auto-merged via /review-pr** (5/6 sub-issues #1288) |
 | 2026-01-24 | #1667 | Feature  | [#1661] Add contract value by status chart ✅ - **Score 99/100 - Auto-merged via /review-pr** (4/6 sub-issues #1288) |
 | 2026-01-24 | #1666 | Feature  | [#1660] Add contracts list table with filters ✅ - **Score 100/100 - Auto-merged via /review-pr** (3/6 sub-issues #1288) |
 | 2026-01-24 | #1665 | Feature  | [#1659] Add KPI summary cards for contracts dashboard ✅ - **Score 97.5/100 - Pragmatic merge via /review-pr** (2/6 sub-issues #1288) |
