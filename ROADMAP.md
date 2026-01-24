@@ -8,8 +8,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1654 | Test     | [#1646] Add E2E tests for fiscalização workflow ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | -     | Bug      | **Issue #1655 CREATED:** Fix ESLint errors in FiscalizacaoPage - P0 BLOCKER (Lint Frontend failing CI/CD) |
-| 2026-01-24 | #1654 | Test     | [#1646] Add E2E tests for fiscalização workflow ⏳ - **In Review (CI/CD running)** |
 | 2026-01-24 | #1653 | Feature  | [#1645] Create fiscalização interface in frontend ✅ - **Score 100/100 - Auto-merged (after auto-fixes for import syntax and test mocks)** |
 | 2026-01-24 | #1652 | Feature  | [#1647] Add notification system for fiscalização events ✅ - **Score 100/100 - Auto-merged (size exception: 1,500 lines justified by final epic task with comprehensive tests - 7/7 M15)** |
 | 2026-01-24 | #1651 | Feature  | [#1644] Add document upload to fiscalização entities ✅ - **Score 95.5/100 - Manual merge (size override: 1,306 lines justified by boilerplate inflation)** |
