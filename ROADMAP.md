@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 843/861 issues (97.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 844/861 issues (98.0%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1670 | Feature | [#1070] Enrich context in document extraction error logs (#1070) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1669 | Test | [#1663] Add E2E tests for contracts dashboard ✅ - **Score 94/100 - Auto-merged via /review-pr** (6/6 sub-issues #1288) - **EPIC #1288 COMPLETE** |
 | 2026-01-24 | #1668 | Feature  | [#1662] Add contracts expiration timeline ✅ - **Score 99/100 - Auto-merged via /review-pr** (5/6 sub-issues #1288) |
 | 2026-01-24 | #1667 | Feature  | [#1661] Add contract value by status chart ✅ - **Score 99/100 - Auto-merged via /review-pr** (4/6 sub-issues #1288) |
@@ -542,7 +543,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
 | #1072 | [Observabilidade] Adicionar retry automático para emails ✅       |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs ✅          |
-| #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
+| #1070 | [Observabilidade] Enriquecer contexto em erros de extraction ✅  |
 | #1069 | [Gov-API] Implementar invalidação de cache baseada em eventos    |
 | #1068 | [Gov-API] Otimizar configuração de retry para janelas manutenção |
 | #1067 | [Gov-API] Implementar alerting automático para circuit breaker   |
