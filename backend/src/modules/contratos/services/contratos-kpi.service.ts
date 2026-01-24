@@ -25,6 +25,32 @@ export interface ContratoKpiResponse {
 }
 
 /**
+ * Entry de valor por status para gráfico de pizza.
+ *
+ * Issue #1661 - Add contract value by status chart
+ */
+export interface ValueByStatusEntry {
+  /** Status do contrato */
+  status: ContratoStatus;
+
+  /** Valor total de contratos neste status (R$) */
+  value: number;
+
+  /** Quantidade de contratos neste status */
+  count: number;
+}
+
+/**
+ * Resposta do endpoint analytics/value-by-status.
+ *
+ * Issue #1661 - Add contract value by status chart
+ */
+export interface ValueByStatusResponse {
+  /** Dados do gráfico de pizza agrupados por status */
+  chartData: ValueByStatusEntry[];
+}
+
+/**
  * Service para cálculo de KPIs de Contratos.
  *
  * Fornece métricas agregadas para dashboards e relatórios gerenciais.
@@ -132,5 +158,56 @@ export class ContratosKpiService {
       expiringIn30Days,
       pendingMeasurements,
     };
+  }
+
+  /**
+   * Calcula distribuição de valor por status de contrato.
+   *
+   * Agrupa todos os contratos da organização por status e soma:
+   * - Valor total em cada status
+   * - Quantidade de contratos em cada status
+   *
+   * Usado para renderizar gráfico de pizza no dashboard (#1661).
+   *
+   * **Regras de Negócio:**
+   * - Apenas contratos ativos (não CANCELADO nem ENCERRADO)
+   * - Agrupa por status: ASSINADO, EM_EXECUCAO, ADITIVADO, SUSPENSO
+   * - Valor em decimal de alta precisão (money type)
+   *
+   * @param organizationId - UUID da organização (multi-tenancy)
+   * @returns {Promise<ValueByStatusResponse>} Dados para gráfico de pizza
+   *
+   * @example
+   * ```typescript
+   * const analytics = await kpiService.getValueByStatus('org-uuid');
+   * console.log(analytics.chartData);
+   * // [
+   * //   { status: 'em_execucao', value: 500000.00, count: 25 },
+   * //   { status: 'assinado', value: 300000.00, count: 15 },
+   * //   ...
+   * // ]
+   * ```
+   */
+  async getValueByStatus(
+    organizationId: string,
+  ): Promise<ValueByStatusResponse> {
+    // Query agregada: agrupa por status e soma valor + conta registros
+    const results = await this.contratoRepository
+      .createQueryBuilder('contrato')
+      .select('contrato.status', 'status')
+      .addSelect('SUM(CAST(contrato.valorGlobal AS DECIMAL))', 'value')
+      .addSelect('COUNT(contrato.id)', 'count')
+      .where('contrato.organizationId = :organizationId', { organizationId })
+      .groupBy('contrato.status')
+      .getRawMany<{ status: ContratoStatus; value: string; count: string }>();
+
+    // Mapear resultados para formato esperado pelo frontend
+    const chartData: ValueByStatusEntry[] = results.map((row) => ({
+      status: row.status,
+      value: parseFloat(row.value || '0'),
+      count: parseInt(row.count || '0', 10),
+    }));
+
+    return { chartData };
   }
 }
