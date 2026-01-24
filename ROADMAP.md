@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 835/853 issues (97.9%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-24 | **Progresso:** 836/853 issues (98.0%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1653 | Feature  | [#1645] Create fiscalização interface in frontend ✅ - **Score 100/100 - Auto-merged (after auto-fixes for import syntax and test mocks)** |
 | 2026-01-24 | #1652 | Feature  | [#1647] Add notification system for fiscalização events ✅ - **Score 100/100 - Auto-merged (size exception: 1,500 lines justified by final epic task with comprehensive tests - 7/7 M15)** |
 | 2026-01-24 | #1651 | Feature  | [#1644] Add document upload to fiscalização entities ✅ - **Score 95.5/100 - Manual merge (size override: 1,306 lines justified by boilerplate inflation)** |
 | 2026-01-23 | #1650 | Feature  | [#1643] Create Ateste entity and approval workflow ✅ - **Score 98.4/100 - Manual merge (size exception: 1,198 lines justified by complete entity+tests)** |
@@ -753,9 +754,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 853   |
-| Issues Abertas    | 18    |
-| Issues Fechadas   | 835   |
-| Progresso         | 97.9% |
+| Issues Abertas    | 17    |
+| Issues Fechadas   | 836   |
+| Progresso         | 98.0% |
 | Bugs P0 Abertos   | 3     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
