@@ -63,6 +63,41 @@ export class DocumentExtractionService implements OnModuleInit {
   ) {}
 
   /**
+   * Log extraction error with enriched context for debugging in production.
+   * Includes metadata like filename, document type, file size, and user ID.
+   *
+   * @param error - The error object
+   * @param context - Contextual metadata about the document and operation
+   */
+  private logExtractionError(
+    error: Error | unknown,
+    context: {
+      filename?: string;
+      docType?: string;
+      fileSize?: number;
+      userId?: string;
+      contentPreview?: string;
+      operation?: string;
+    },
+  ): void {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    this.logger.error('Document extraction error', {
+      message: errorMessage,
+      stack: errorStack,
+      filename: context.filename || 'unknown',
+      docType: context.docType || 'unknown',
+      fileSize: context.fileSize,
+      userId: context.userId,
+      contentPreview: context.contentPreview,
+      operation: context.operation || 'unknown',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  /**
    * Initialize upload directory on module start
    */
   onModuleInit(): void {
@@ -112,12 +147,23 @@ export class DocumentExtractionService implements OnModuleInit {
       return false;
     }
 
+    let fileSize: number | undefined;
     try {
+      try {
+        const stats = statSync(filePath);
+        fileSize = stats.size;
+      } catch {
+        // Unable to get file size, continue anyway
+      }
       unlinkSync(filePath);
       this.logger.log(`Deleted file: ${filename}`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to delete file ${filename}:`, error);
+      this.logExtractionError(error, {
+        filename,
+        operation: 'deleteFile',
+        fileSize,
+      });
       return false;
     }
   }
@@ -127,12 +173,14 @@ export class DocumentExtractionService implements OnModuleInit {
    *
    * @param buffer - The DOCX file buffer
    * @param options - Extraction options
+   * @param metadata - Optional metadata for error logging (filename, userId)
    * @returns ExtractedDocument with fullText, sections, and metadata
    * @throws BadRequestException if extraction fails
    */
   async extractFromDocx(
     buffer: Buffer,
     options: ExtractionOptions = {},
+    metadata?: { filename?: string; userId?: string },
   ): Promise<ExtractedDocument> {
     const { detectSections = true } = options;
 
@@ -183,7 +231,18 @@ export class DocumentExtractionService implements OnModuleInit {
         },
       };
     } catch (error) {
-      this.logger.error('DOCX extraction failed:', error);
+      const contentPreview =
+        buffer.length > 0
+          ? `Buffer size: ${buffer.length} bytes`
+          : 'Empty buffer';
+      this.logExtractionError(error, {
+        filename: metadata?.filename,
+        docType: 'DOCX',
+        fileSize: buffer.length,
+        userId: metadata?.userId,
+        contentPreview,
+        operation: 'extractFromDocx',
+      });
       throw new BadRequestException(
         `Failed to extract text from DOCX file: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -195,12 +254,14 @@ export class DocumentExtractionService implements OnModuleInit {
    *
    * @param filename - The filename in the upload directory
    * @param options - Extraction options
+   * @param userId - Optional user ID for error logging
    * @returns ExtractedDocument with fullText, sections, and metadata
    * @throws BadRequestException if file not found or extraction fails
    */
   async extractFromDocxFile(
     filename: string,
     options: ExtractionOptions = {},
+    userId?: string,
   ): Promise<ExtractedDocument> {
     const filePath = this.getFilePath(filename);
 
@@ -209,7 +270,7 @@ export class DocumentExtractionService implements OnModuleInit {
     }
 
     const buffer = readFileSync(filePath);
-    return this.extractFromDocx(buffer, options);
+    return this.extractFromDocx(buffer, options, { filename, userId });
   }
 
   /**
@@ -217,6 +278,7 @@ export class DocumentExtractionService implements OnModuleInit {
    *
    * @param buffer - The PDF file buffer
    * @param options - Extraction options (detectSections not applicable for PDF)
+   * @param metadata - Optional metadata for error logging (filename, userId)
    * @returns ExtractedDocument with fullText, sections, and metadata
    * @throws BadRequestException if extraction fails (corrupted, password-protected, etc.)
    */
@@ -224,6 +286,7 @@ export class DocumentExtractionService implements OnModuleInit {
     buffer: Buffer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     options: ExtractionOptions = {},
+    metadata?: { filename?: string; userId?: string },
   ): Promise<ExtractedDocument> {
     let parser: PDFParse | null = null;
 
@@ -290,13 +353,25 @@ export class DocumentExtractionService implements OnModuleInit {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
 
+      const contentPreview =
+        buffer.length > 0
+          ? `Buffer size: ${buffer.length} bytes`
+          : 'Empty buffer';
+
       // Check for password-protected PDF
       if (
         errorMessage.includes('password') ||
         errorMessage.includes('encrypted') ||
         errorMessage.includes('PasswordException')
       ) {
-        this.logger.error('PDF is password-protected:', error);
+        this.logExtractionError(error, {
+          filename: metadata?.filename,
+          docType: 'PDF (password-protected)',
+          fileSize: buffer.length,
+          userId: metadata?.userId,
+          contentPreview,
+          operation: 'extractFromPdf',
+        });
         throw new BadRequestException(
           'PDF file is password-protected. Please provide an unprotected document.',
         );
@@ -308,13 +383,27 @@ export class DocumentExtractionService implements OnModuleInit {
         errorMessage.includes('PDF structure') ||
         errorMessage.includes('InvalidPDFException')
       ) {
-        this.logger.error('PDF is corrupted:', error);
+        this.logExtractionError(error, {
+          filename: metadata?.filename,
+          docType: 'PDF (corrupted)',
+          fileSize: buffer.length,
+          userId: metadata?.userId,
+          contentPreview,
+          operation: 'extractFromPdf',
+        });
         throw new BadRequestException(
           'PDF file is corrupted or invalid. Please provide a valid PDF document.',
         );
       }
 
-      this.logger.error('PDF extraction failed:', error);
+      this.logExtractionError(error, {
+        filename: metadata?.filename,
+        docType: 'PDF',
+        fileSize: buffer.length,
+        userId: metadata?.userId,
+        contentPreview,
+        operation: 'extractFromPdf',
+      });
       throw new BadRequestException(
         `Failed to extract text from PDF file: ${errorMessage}`,
       );
@@ -335,12 +424,14 @@ export class DocumentExtractionService implements OnModuleInit {
    *
    * @param filename - The filename in the upload directory
    * @param options - Extraction options
+   * @param userId - Optional user ID for error logging
    * @returns ExtractedDocument with fullText, sections, and metadata
    * @throws BadRequestException if file not found or extraction fails
    */
   async extractFromPdfFile(
     filename: string,
     options: ExtractionOptions = {},
+    userId?: string,
   ): Promise<ExtractedDocument> {
     const filePath = this.getFilePath(filename);
 
@@ -349,7 +440,7 @@ export class DocumentExtractionService implements OnModuleInit {
     }
 
     const buffer = readFileSync(filePath);
-    return this.extractFromPdf(buffer, options);
+    return this.extractFromPdf(buffer, options, { filename, userId });
   }
 
   /**
@@ -542,7 +633,19 @@ export class DocumentExtractionService implements OnModuleInit {
           }
         } catch (error) {
           errorCount++;
-          this.logger.error(`Error processing file ${file}:`, error);
+          let fileSize: number | undefined;
+          try {
+            if (existsSync(filePath)) {
+              fileSize = statSync(filePath).size;
+            }
+          } catch {
+            // Unable to get file size
+          }
+          this.logExtractionError(error, {
+            filename: file,
+            operation: 'cleanupOldFiles',
+            fileSize,
+          });
         }
       }
 
@@ -550,7 +653,9 @@ export class DocumentExtractionService implements OnModuleInit {
         `Cleanup completed: ${deletedCount} files deleted, ${errorCount} errors, ${files.length - deletedCount - errorCount} files remaining`,
       );
     } catch (error) {
-      this.logger.error('Error during cleanup:', error);
+      this.logExtractionError(error, {
+        operation: 'cleanupOldFiles (directory scan)',
+      });
     }
   }
 
@@ -588,21 +693,33 @@ export class DocumentExtractionService implements OnModuleInit {
       });
 
       // Process asynchronously (non-blocking)
-      this.processDocumentAsync(result.treeId, filePath, documentType).catch(
-        (error) => {
-          this.logger.error(
-            `Async processing failed for tree ${result.treeId}:`,
-            error,
-          );
-        },
-      );
+      this.processDocumentAsync(
+        result.treeId,
+        filePath,
+        documentType,
+        originalName,
+      ).catch((error) => {
+        const stats = existsSync(filePath) ? statSync(filePath) : null;
+        this.logExtractionError(error, {
+          filename: originalName,
+          docType: documentType,
+          fileSize: stats?.size,
+          operation: 'processDocumentAsync',
+        });
+      });
 
       return {
         treeId: result.treeId,
         status: result.status,
       };
     } catch (error) {
-      this.logger.error('Failed to create DocumentTree entry:', error);
+      const stats = existsSync(filePath) ? statSync(filePath) : null;
+      this.logExtractionError(error, {
+        filename: originalName,
+        docType: documentType,
+        fileSize: stats?.size,
+        operation: 'processWithPageIndex',
+      });
       throw new BadRequestException(
         `Failed to process document with PageIndex: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -615,11 +732,13 @@ export class DocumentExtractionService implements OnModuleInit {
    * @param treeId - DocumentTree ID to update
    * @param filePath - Path to the document file
    * @param documentType - Type of document (PDF or DOCX)
+   * @param originalName - Original filename for error logging
    */
   private async processDocumentAsync(
     treeId: string,
     filePath: string,
     _documentType: DocumentType,
+    originalName: string,
   ): Promise<void> {
     const startTime = Date.now();
 
@@ -660,10 +779,18 @@ export class DocumentExtractionService implements OnModuleInit {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
 
-      this.logger.error(
-        `PageIndex processing failed for tree ${treeId}:`,
-        error,
-      );
+      const stats = existsSync(filePath) ? statSync(filePath) : null;
+      const contentPreview = stats
+        ? `File size: ${stats.size} bytes`
+        : 'File not found';
+
+      this.logExtractionError(error, {
+        filename: originalName,
+        docType: _documentType,
+        fileSize: stats?.size,
+        contentPreview,
+        operation: 'processDocumentAsync (PageIndex)',
+      });
 
       // Update status to ERROR
       await this.pageIndexService.updateDocumentTreeStatus(
