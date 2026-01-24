@@ -184,3 +184,89 @@ export const ATESTE_RESULTADO_COLOR: Record<AtesteResultado, string> = {
   [AtesteResultado.APROVADO_COM_RESSALVAS]: 'bg-yellow-100 text-yellow-800',
   [AtesteResultado.REJEITADO]: 'bg-red-100 text-red-800',
 };
+
+// ==================== CONTRATO ====================
+
+/**
+ * Status do Contrato conforme ciclo de vida
+ * @see backend/src/entities/contrato.entity.ts
+ */
+export enum ContratoStatus {
+  MINUTA = 'minuta',
+  ASSINADO = 'assinado',
+  EM_EXECUCAO = 'em_execucao',
+  ADITIVADO = 'aditivado',
+  SUSPENSO = 'suspenso',
+  RESCINDIDO = 'rescindido',
+  ENCERRADO = 'encerrado',
+}
+
+/**
+ * Contrato - Instrumento formal de contratação pública
+ */
+export interface Contrato {
+  id: string;
+  numero: string;
+  numeroProcesso: string | null;
+  objeto: string;
+  contratadoCnpj: string;
+  contratadoRazaoSocial: string;
+  contratadoNomeFantasia: string | null;
+  valorGlobal: string;
+  vigenciaInicio: string; // ISO date string
+  vigenciaFim: string; // ISO date string
+  status: ContratoStatus;
+  gestorResponsavel: UserReference;
+  fiscalResponsavel: UserReference;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Filtros para busca de contratos
+ */
+export interface ContractFilters {
+  status?: ContratoStatus[];
+  fornecedor?: string;
+  valorMin?: number;
+  valorMax?: number;
+  vigenciaInicio?: string; // ISO date string
+  vigenciaFim?: string; // ISO date string
+}
+
+/**
+ * Resposta paginada da API de contratos
+ */
+export interface ContractsResponse {
+  data: Contrato[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/**
+ * Badge colors for Contrato status
+ */
+export const CONTRATO_STATUS_COLOR: Record<ContratoStatus, string> = {
+  [ContratoStatus.MINUTA]: 'bg-gray-100 text-gray-800',
+  [ContratoStatus.ASSINADO]: 'bg-blue-100 text-blue-800',
+  [ContratoStatus.EM_EXECUCAO]: 'bg-green-100 text-green-800',
+  [ContratoStatus.ADITIVADO]: 'bg-purple-100 text-purple-800',
+  [ContratoStatus.SUSPENSO]: 'bg-yellow-100 text-yellow-800',
+  [ContratoStatus.RESCINDIDO]: 'bg-red-100 text-red-800',
+  [ContratoStatus.ENCERRADO]: 'bg-slate-100 text-slate-800',
+};
+
+/**
+ * Human-readable labels for Contrato status
+ */
+export const CONTRATO_STATUS_LABEL: Record<ContratoStatus, string> = {
+  [ContratoStatus.MINUTA]: 'Minuta',
+  [ContratoStatus.ASSINADO]: 'Assinado',
+  [ContratoStatus.EM_EXECUCAO]: 'Em Execução',
+  [ContratoStatus.ADITIVADO]: 'Aditivado',
+  [ContratoStatus.SUSPENSO]: 'Suspenso',
+  [ContratoStatus.RESCINDIDO]: 'Rescindido',
+  [ContratoStatus.ENCERRADO]: 'Encerrado',
+};

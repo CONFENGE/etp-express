@@ -1,5 +1,6 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SummaryCards } from '@/components/contracts/SummaryCards';
+import { ContractsTable } from '@/components/contracts/ContractsTable';
 import { useContractKPIs } from '@/hooks/contracts/useContractKPIs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -58,13 +59,13 @@ export function ContractsDashboardPage() {
           <ChartSkeleton />
         </section>
 
-        {/* Table and Timeline Section - Will be populated in #1660 and #1662 */}
+        {/* Table and Timeline Section - #1660 and #1662 */}
         <section
           aria-label="Lista de Contratos"
           className="grid gap-6 lg:grid-cols-3"
         >
           <div className="lg:col-span-2">
-            <TableSkeleton />
+            <ContractsTable />
           </div>
           <div>
             <ChartSkeleton />
@@ -112,22 +113,3 @@ function ChartSkeleton() {
   );
 }
 
-/**
- * Skeleton for Contracts Table
- * Shows 10 placeholder rows
- */
-function TableSkeleton() {
-  return (
-    <div
-      className="rounded-lg border bg-card p-6 animate-pulse"
-      aria-label="Carregando tabela de contratos"
-    >
-      <div className="h-6 w-48 bg-muted rounded mb-4" />
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-          <div key={i} className="h-12 bg-muted rounded" />
-        ))}
-      </div>
-    </div>
-  );
-}
