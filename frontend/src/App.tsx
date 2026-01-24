@@ -82,6 +82,13 @@ const EditalEditorPage = lazy(() =>
   })),
 );
 
+// Fiscalizacao Page (#1645)
+const FiscalizacaoPage = lazy(() =>
+  import('@/pages/contracts/FiscalizacaoPage').then((m) => ({
+    default: m.FiscalizacaoPage,
+  })),
+);
+
 // Admin pages - lazy-loaded (only accessed by system admins)
 const AdminDashboard = lazy(() =>
   import('@/pages/admin/AdminDashboard').then((m) => ({
@@ -360,6 +367,16 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <EditalEditorPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      // Fiscalizacao Page (#1645)
+      {
+        path: '/contracts/:id/fiscalizacao',
+        element: (
+          <ProtectedRoute>
+            <FiscalizacaoPage />
           </ProtectedRoute>
         ),
       },
