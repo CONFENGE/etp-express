@@ -15,6 +15,7 @@ import {
 import {
   ContratosKpiService,
   ContratoKpiResponse,
+  ValueByStatusResponse,
 } from '../services/contratos-kpi.service';
 import {
   ContratoService,
@@ -271,6 +272,88 @@ export class ContratosController {
   })
   async getKpis(@CurrentUser() user: User): Promise<ContratoKpiResponse> {
     return this.kpiService.getKpis(user.organizationId);
+  }
+
+  /**
+   * Retorna distribuição de valor por status para gráfico de pizza.
+   *
+   * Endpoint de analytics para dashboard de contratos (#1661).
+   * Agrupa contratos por status e retorna valor total + quantidade.
+   *
+   * **Rota:** `GET /api/contratos/analytics/value-by-status`
+   *
+   * **Permissões:** CONSULTOR, GESTOR, SYSTEM_ADMIN
+   *
+   * **Exemplo de resposta:**
+   * ```json
+   * {
+   *   "chartData": [
+   *     { "status": "vigente", "value": 1500000.00, "count": 25 },
+   *     { "status": "em_execucao", "value": 800000.00, "count": 15 },
+   *     { "status": "aditivado", "value": 300000.00, "count": 5 },
+   *     { "status": "suspenso", "value": 100000.00, "count": 2 },
+   *     { "status": "encerrado", "value": 2000000.00, "count": 30 }
+   *   ]
+   * }
+   * ```
+   *
+   * @param user - Usuário autenticado (extraído do JWT)
+   * @returns {Promise<ValueByStatusResponse>} Distribuição valor/count por status
+   * @throws {UnauthorizedException} Se usuário não autenticado
+   * @throws {ForbiddenException} Se usuário sem permissão
+   */
+  @Get('analytics/value-by-status')
+  @Roles(UserRole.ADMIN, UserRole.USER, UserRole.SYSTEM_ADMIN)
+  @ApiOperation({
+    summary: 'Obter distribuição de valor por status (gráfico de pizza)',
+    description:
+      'Retorna dados agregados de valor total e quantidade de contratos por status',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Distribuição retornada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        chartData: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string',
+                description: 'Status do contrato',
+                example: 'em_execucao',
+              },
+              value: {
+                type: 'number',
+                format: 'double',
+                description: 'Valor total de contratos neste status (R$)',
+                example: 800000.0,
+              },
+              count: {
+                type: 'number',
+                description: 'Quantidade de contratos neste status',
+                example: 15,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Não autenticado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissão para acessar',
+  })
+  async getValueByStatus(
+    @CurrentUser() user: User,
+  ): Promise<ValueByStatusResponse> {
+    return this.kpiService.getValueByStatus(user.organizationId);
   }
 
   /**
