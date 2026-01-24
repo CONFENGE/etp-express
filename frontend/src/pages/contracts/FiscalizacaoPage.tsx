@@ -18,6 +18,7 @@ import {
   type Ocorrencia,
   type CreateMedicaoDto,
   type CreateOcorrenciaDto,
+  type CreateAtesteDto,
   MEDICAO_STATUS_COLOR,
   OCORRENCIA_GRAVIDADE_COLOR,
   OCORRENCIA_STATUS_COLOR,
@@ -91,17 +92,21 @@ export function FiscalizacaoPage() {
     setAtesteModalOpen(true);
   };
 
-  const handleCreateAteste = async (data: { resultado: string; observacoes?: string; justificativa?: string }) => {
+  const handleCreateAteste = async (data: Omit<CreateAtesteDto, 'dataAteste'> & { dataAteste?: string }) => {
     if (!selectedMedicao) return;
     try {
-      await createAteste(selectedMedicao.id, data);
+      // Include dataAteste if not provided (default to current date)
+      const atesteData: CreateAtesteDto = {
+        ...data,
+        dataAteste: data.dataAteste || new Date().toISOString(),
+      };
+      await createAteste(selectedMedicao.id, atesteData);
       success('Ateste realizado com sucesso');
       setAtesteModalOpen(false);
       setSelectedMedicao(null);
       await loadData();
-    } catch (err) {
+    } catch {
       showError('Erro ao realizar ateste');
-      throw err;
     }
   };
 
