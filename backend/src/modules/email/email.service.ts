@@ -124,16 +124,20 @@ export class EmailService {
    * Sends account deletion confirmation email directly (used by processor only).
    *
    * @internal
-   * @param user - User entity with deletedAt timestamp
+   * @param userId - User unique identifier (UUID)
+   * @param email - User email address
+   * @param userName - User display name
+   * @param deletedAt - Scheduled deletion timestamp
    * @returns Promise resolving to messageId when email is sent
    */
-  async sendDeletionConfirmationDirect(user: User): Promise<string> {
-    if (!user.deletedAt) {
-      throw new Error('User is not marked for deletion');
-    }
-
-    const deletionDate = addDays(user.deletedAt, 30);
-    const cancelToken = await this.generateCancelToken(user.id);
+  async sendDeletionConfirmationDirect(
+    userId: string,
+    email: string,
+    userName: string,
+    deletedAt: Date,
+  ): Promise<string> {
+    const deletionDate = addDays(deletedAt, 30);
+    const cancelToken = await this.generateCancelToken(userId);
 
     const frontendUrl = this.configService.get<string>(
       'FRONTEND_URL',
@@ -153,7 +157,7 @@ export class EmailService {
     const template = handlebars.compile(templateSource);
 
     const html = template({
-      userName: user.name,
+      userName,
       deletionScheduledFor: format(deletionDate, 'dd/MM/yyyy'),
       cancelUrl: `${frontendUrl}/account/cancel-deletion?token=${cancelToken}`,
       supportEmail,
@@ -164,14 +168,14 @@ export class EmailService {
         'SMTP_FROM',
         '"ETP Express" <noreply@confenge.com.br>',
       ),
-      to: user.email,
+      to: email,
       subject: 'Confirmação de exclusão de conta - ETP Express',
       html,
     };
 
     const info = await this.transporter.sendMail(mailOptions);
     this.logger.log(
-      `Deletion confirmation email sent to ${user.email}: ${info.messageId}`,
+      `Deletion confirmation email sent to ${email}: ${info.messageId}`,
     );
 
     // Log email content in development if using test transporter

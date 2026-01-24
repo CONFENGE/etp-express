@@ -151,15 +151,12 @@ export class EmailProcessor
       `Sending deletion confirmation email to: ${email} (User ID: ${userId})`,
     );
 
-    const user = {
-      id: userId,
+    const messageId = await this.emailService.sendDeletionConfirmationDirect(
+      userId,
       email,
-      name: userName,
-      deletedAt: new Date(deletedAt),
-    };
-
-    const messageId =
-      await this.emailService.sendDeletionConfirmationDirect(user);
+      userName,
+      new Date(deletedAt),
+    );
 
     return {
       success: true,
