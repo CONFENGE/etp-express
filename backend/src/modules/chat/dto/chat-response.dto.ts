@@ -57,6 +57,22 @@ export class ChatResponseDto {
   })
   relatedLegislation?: string[];
 
+  @ApiPropertyOptional({
+    description: 'Document sections used from tree search (PageIndex sources)',
+    example: [
+      {
+        documentId: '550e8400-e29b-41d4-a716-446655440000',
+        sectionPath: ['Lei 14.133/2021', 'Capítulo I', 'Art. 18'],
+        title: 'Art. 18 - Estudo Técnico Preliminar',
+      },
+    ],
+  })
+  sources?: Array<{
+    documentId: string;
+    sectionPath: string[];
+    title: string;
+  }>;
+
   @ApiProperty({
     description: 'Response metadata (tokens, latency)',
     type: ChatResponseMetadata,

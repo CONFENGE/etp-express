@@ -37,6 +37,9 @@ export interface TreeNode {
  * Contains the relevant nodes found and the reasoning path.
  */
 export interface TreeSearchResult {
+  /** UUID of the document tree that was searched */
+  treeId?: string;
+
   /** Nodes identified as relevant to the query */
   relevantNodes: TreeNode[];
 
