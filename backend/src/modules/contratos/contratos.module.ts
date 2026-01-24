@@ -11,6 +11,7 @@ import { Ateste } from '../../entities/ateste.entity';
 import { DocumentoFiscalizacao } from '../../entities/documento-fiscalizacao.entity';
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
+import { ContratosKpiService } from './services/contratos-kpi.service';
 import { MedicaoService } from './services/medicao.service';
 import { OcorrenciaService } from './services/ocorrencia.service';
 import { AtesteService } from './services/ateste.service';
@@ -72,6 +73,7 @@ import { EmailModule } from '../email/email.module';
   providers: [
     ContractChainService,
     ContractAlertService,
+    ContratosKpiService,
     MedicaoService,
     OcorrenciaService,
     AtesteService,
