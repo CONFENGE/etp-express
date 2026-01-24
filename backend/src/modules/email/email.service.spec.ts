@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { getQueueToken } from '@nestjs/bullmq';
 import { EmailService } from './email.service';
+import { EMAIL_QUEUE } from './email.types';
 import { User } from '../../entities/user.entity';
 
 describe('EmailService', () => {
@@ -27,12 +29,17 @@ describe('EmailService', () => {
     sign: jest.fn().mockReturnValue('mock-jwt-token-123'),
   };
 
+  const mockEmailQueue = {
+    add: jest.fn().mockResolvedValue({ id: 'mock-job-id' }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmailService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: getQueueToken(EMAIL_QUEUE), useValue: mockEmailQueue },
       ],
     }).compile();
 

@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 import * as handlebars from 'handlebars';
@@ -8,6 +10,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { addDays, format } from 'date-fns';
 import { User } from '../../entities/user.entity';
+import {
+  EMAIL_QUEUE,
+  DELETION_CONFIRMATION_JOB,
+  PASSWORD_RESET_JOB,
+  GENERIC_EMAIL_JOB,
+  DeletionConfirmationJobData,
+  PasswordResetJobData,
+  GenericEmailJobData,
+} from './email.types';
 
 /**
  * Service for sending transactional emails.
@@ -24,6 +35,7 @@ export class EmailService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
+    @InjectQueue(EMAIL_QUEUE) private emailQueue: Queue,
   ) {
     this.initializeTransporter();
   }
@@ -65,7 +77,7 @@ export class EmailService {
   }
 
   /**
-   * Sends account deletion confirmation email with cancellation link.
+   * Enqueues account deletion confirmation email with automatic retry.
    *
    * @remarks
    * Email includes:
@@ -76,10 +88,46 @@ export class EmailService {
    *
    * This method fulfills LGPD transparency requirements for data deletion.
    *
+   * **Retry Strategy:**
+   * - Attempt 1: Immediate
+   * - Attempt 2: After 1 minute
+   * - Attempt 3: After 5 minutes
+   * - Attempt 4: After 30 minutes
+   *
    * @param user - User entity with deletedAt timestamp
-   * @returns Promise resolving when email is sent
+   * @returns Promise resolving when job is enqueued (not when email is sent)
    */
   async sendDeletionConfirmation(user: User): Promise<void> {
+    if (!user.deletedAt) {
+      throw new Error('User is not marked for deletion');
+    }
+
+    const jobData: DeletionConfirmationJobData = {
+      userId: user.id,
+      email: user.email,
+      userName: user.name,
+      deletedAt: user.deletedAt,
+    };
+
+    await this.emailQueue.add(DELETION_CONFIRMATION_JOB, jobData, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 60000, // 1 minute
+      },
+    });
+
+    this.logger.log(`Deletion confirmation email enqueued for ${user.email}`);
+  }
+
+  /**
+   * Sends account deletion confirmation email directly (used by processor only).
+   *
+   * @internal
+   * @param user - User entity with deletedAt timestamp
+   * @returns Promise resolving to messageId when email is sent
+   */
+  async sendDeletionConfirmationDirect(user: User): Promise<string> {
     if (!user.deletedAt) {
       throw new Error('User is not marked for deletion');
     }
@@ -121,23 +169,17 @@ export class EmailService {
       html,
     };
 
-    try {
-      const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(
-        `Deletion confirmation email sent to ${user.email}: ${info.messageId}`,
-      );
+    const info = await this.transporter.sendMail(mailOptions);
+    this.logger.log(
+      `Deletion confirmation email sent to ${user.email}: ${info.messageId}`,
+    );
 
-      // Log email content in development if using test transporter
-      if (info.message) {
-        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
-      }
-    } catch (error) {
-      this.logger.error(
-        `Failed to send deletion confirmation email to ${user.email}`,
-        error.stack,
-      );
-      throw error;
+    // Log email content in development if using test transporter
+    if (info.message) {
+      this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
     }
+
+    return info.messageId;
   }
 
   /**
@@ -159,7 +201,7 @@ export class EmailService {
   }
 
   /**
-   * Sends password reset email with reset link.
+   * Enqueues password reset email with automatic retry.
    *
    * @remarks
    * Email includes:
@@ -171,16 +213,53 @@ export class EmailService {
    * This method is used by the "Forgot Password" feature.
    * For security, the same response is returned whether or not the email exists.
    *
+   * **Retry Strategy:**
+   * - Attempt 1: Immediate
+   * - Attempt 2: After 1 minute
+   * - Attempt 3: After 5 minutes
+   * - Attempt 4: After 30 minutes
+   *
    * @param email - User email address
    * @param userName - User display name
    * @param resetToken - Secure reset token
-   * @returns Promise resolving when email is sent
+   * @returns Promise resolving when job is enqueued (not when email is sent)
    */
   async sendPasswordResetEmail(
     email: string,
     userName: string,
     resetToken: string,
   ): Promise<void> {
+    const jobData: PasswordResetJobData = {
+      email,
+      userName,
+      resetToken,
+    };
+
+    await this.emailQueue.add(PASSWORD_RESET_JOB, jobData, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 60000, // 1 minute
+      },
+    });
+
+    this.logger.log(`Password reset email enqueued for ${email}`);
+  }
+
+  /**
+   * Sends password reset email directly (used by processor only).
+   *
+   * @internal
+   * @param email - User email address
+   * @param userName - User display name
+   * @param resetToken - Secure reset token
+   * @returns Promise resolving to messageId when email is sent
+   */
+  async sendPasswordResetEmailDirect(
+    email: string,
+    userName: string,
+    resetToken: string,
+  ): Promise<string> {
     const frontendUrl = this.configService.get<string>(
       'FRONTEND_URL',
       'http://localhost:5173',
@@ -216,42 +295,69 @@ export class EmailService {
       html,
     };
 
-    try {
-      const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(
-        `Password reset email sent to ${email}: ${info.messageId}`,
-      );
+    const info = await this.transporter.sendMail(mailOptions);
+    this.logger.log(`Password reset email sent to ${email}: ${info.messageId}`);
 
-      // Log email content in development if using test transporter
-      if (info.message) {
-        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
-      }
-    } catch (error) {
-      this.logger.error(
-        `Failed to send password reset email to ${email}`,
-        error.stack,
-      );
-      throw error;
+    // Log email content in development if using test transporter
+    if (info.message) {
+      this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
     }
+
+    return info.messageId;
   }
 
   /**
-   * Sends generic email with custom HTML content.
+   * Enqueues generic email with automatic retry.
    *
    * @remarks
-   * Generic method for sending custom emails.
+   * Generic method for sending custom emails with automatic retry.
    * Use specific methods (sendPasswordResetEmail, sendDeletionConfirmation) when available.
    *
    * This method is used by modules that need to send emails with custom content.
    *
+   * **Retry Strategy:**
+   * - Attempt 1: Immediate
+   * - Attempt 2: After 1 minute
+   * - Attempt 3: After 5 minutes
+   * - Attempt 4: After 30 minutes
+   *
    * @param options - Email options (to, subject, html)
-   * @returns Promise resolving when email is sent
+   * @returns Promise resolving when job is enqueued (not when email is sent)
    */
   async sendMail(options: {
     to: string;
     subject: string;
     html: string;
   }): Promise<void> {
+    const jobData: GenericEmailJobData = {
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    };
+
+    await this.emailQueue.add(GENERIC_EMAIL_JOB, jobData, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 60000, // 1 minute
+      },
+    });
+
+    this.logger.log(`Generic email enqueued for ${options.to}`);
+  }
+
+  /**
+   * Sends generic email directly (used by processor only).
+   *
+   * @internal
+   * @param options - Email options (to, subject, html)
+   * @returns Promise resolving to messageId when email is sent
+   */
+  async sendMailDirect(options: {
+    to: string;
+    subject: string;
+    html: string;
+  }): Promise<string> {
     const mailOptions = {
       from: this.configService.get<string>(
         'SMTP_FROM',
@@ -262,17 +368,14 @@ export class EmailService {
       html: options.html,
     };
 
-    try {
-      const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email sent to ${options.to}: ${info.messageId}`);
+    const info = await this.transporter.sendMail(mailOptions);
+    this.logger.log(`Email sent to ${options.to}: ${info.messageId}`);
 
-      // Log email content in development if using test transporter
-      if (info.message) {
-        this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
-      }
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${options.to}`, error.stack);
-      throw error;
+    // Log email content in development if using test transporter
+    if (info.message) {
+      this.logger.debug(`Email content:\n${info.message.toString('utf8')}`);
     }
+
+    return info.messageId;
   }
 }
