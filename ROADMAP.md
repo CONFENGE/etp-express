@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-23 | **Progresso:** 833/852 issues (97.8%) | **Deploy:** LIVE
+**Atualizado:** 2026-01-24 | **Progresso:** 834/853 issues (97.8%) | **Deploy:** LIVE
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1651 | Feature  | [#1644] Add document upload to fiscalização entities ✅ - **Score 95.5/100 - Manual merge (size override: 1,306 lines justified by boilerplate inflation)** |
 | 2026-01-23 | #1650 | Feature  | [#1643] Create Ateste entity and approval workflow ✅ - **Score 98.4/100 - Manual merge (size exception: 1,198 lines justified by complete entity+tests)** |
 | 2026-01-23 | #1649 | Feature | [#1642] Create Ocorrencia entity and CRUD endpoints ✅ - **Score 97.5/100 - Manual merge (size exception: 1,429 lines justified by complete feature scope)** |
 | 2026-01-23 | #1648 | Feature | [#1641] Create Medicao entity and CRUD endpoints ✅ - **Score 100/100 - Auto-merged (after auto-fixes)** |
