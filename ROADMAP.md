@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 844/861 issues (98.0%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 845/861 issues (98.1%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1671 | Docs | [#1523] Document 'Sophistication & Trust' design direction (#1523) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1670 | Feature | [#1070] Enrich context in document extraction error logs (#1070) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1669 | Test | [#1663] Add E2E tests for contracts dashboard ✅ - **Score 94/100 - Auto-merged via /review-pr** (6/6 sub-issues #1288) - **EPIC #1288 COMPLETE** |
 | 2026-01-24 | #1668 | Feature  | [#1662] Add contracts expiration timeline ✅ - **Score 99/100 - Auto-merged via /review-pr** (5/6 sub-issues #1288) |
@@ -421,7 +422,7 @@ Nenhum bug P0 aberto no momento. ✅
 | ----- | -------------------------------------------------------- | ----------- | ------ |
 | #1521 | Criar .design-engineer/system.md com tokens e direção    | Foundation  | ✅     |
 | #1522 | Implementar ESLint/Stylelint para enforcement de tokens  | Tooling     | ✅     |
-| #1523 | Documentar direção "Sophistication & Trust"              | Docs        | 🔴     |
+| #1523 | Documentar direção "Sophistication & Trust"              | Docs        | ✅     |
 | #1524 | Unificar hierarquia de Card/Surface components           | Components  | ✅     |
 | #1525 | Adicionar skeleton states faltantes em todas as páginas  | UX          | ✅     |
 | #1526 | Padronizar EmptyState em todas as listas e grids         | UX          | ✅     |
