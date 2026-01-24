@@ -16,6 +16,7 @@ import {
   ContratosKpiService,
   ContratoKpiResponse,
   ValueByStatusResponse,
+  ExpirationTimelineResponse,
 } from '../services/contratos-kpi.service';
 import {
   ContratoService,
@@ -354,6 +355,126 @@ export class ContratosController {
     @CurrentUser() user: User,
   ): Promise<ValueByStatusResponse> {
     return this.kpiService.getValueByStatus(user.organizationId);
+  }
+
+  /**
+   * Retorna timeline de contratos vencendo nos próximos N dias.
+   *
+   * Endpoint de analytics para dashboard de contratos (#1662).
+   * Retorna lista ordenada de contratos próximos ao vencimento.
+   *
+   * **Rota:** `GET /api/contratos/analytics/expiration-timeline?days=90`
+   *
+   * **Permissões:** CONSULTOR, GESTOR, SYSTEM_ADMIN
+   *
+   * **Query Parameters:**
+   * - `days` (number, default: 90): Quantidade de dias para lookahead
+   *
+   * **Exemplo de resposta:**
+   * ```json
+   * {
+   *   "timeline": [
+   *     {
+   *       "contratoId": "uuid",
+   *       "numero": "001/2024",
+   *       "contratado": "Empresa A LTDA",
+   *       "vigenciaFim": "2024-02-15",
+   *       "daysUntilExpiration": 15,
+   *       "valor": "50000.00"
+   *     },
+   *     {
+   *       "contratoId": "uuid",
+   *       "numero": "002/2024",
+   *       "contratado": "Empresa B LTDA",
+   *       "vigenciaFim": "2024-03-30",
+   *       "daysUntilExpiration": 45,
+   *       "valor": "120000.00"
+   *     }
+   *   ]
+   * }
+   * ```
+   *
+   * @param user - Usuário autenticado (extraído do JWT)
+   * @param days - Quantidade de dias para lookahead (default: 90)
+   * @returns {Promise<ExpirationTimelineResponse>} Lista de contratos expirando
+   * @throws {UnauthorizedException} Se usuário não autenticado
+   * @throws {ForbiddenException} Se usuário sem permissão
+   */
+  @Get('analytics/expiration-timeline')
+  @Roles(UserRole.ADMIN, UserRole.USER, UserRole.SYSTEM_ADMIN)
+  @ApiOperation({
+    summary: 'Obter timeline de vencimentos de contratos',
+    description:
+      'Retorna lista ordenada de contratos vencendo nos próximos N dias',
+  })
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    type: Number,
+    description: 'Quantidade de dias para lookahead (default: 90)',
+    example: 90,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Timeline retornada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        timeline: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              contratoId: {
+                type: 'string',
+                format: 'uuid',
+                description: 'UUID do contrato',
+              },
+              numero: {
+                type: 'string',
+                description: 'Número do contrato',
+                example: '001/2024',
+              },
+              contratado: {
+                type: 'string',
+                description: 'Razão social do contratado',
+                example: 'Empresa A LTDA',
+              },
+              vigenciaFim: {
+                type: 'string',
+                format: 'date',
+                description: 'Data de fim da vigência',
+                example: '2024-02-15',
+              },
+              daysUntilExpiration: {
+                type: 'number',
+                description: 'Dias restantes até vencimento',
+                example: 15,
+              },
+              valor: {
+                type: 'string',
+                description: 'Valor global do contrato (DECIMAL)',
+                example: '50000.00',
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Não autenticado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissão para acessar',
+  })
+  async getExpirationTimeline(
+    @CurrentUser() user: User,
+    @Query('days', new DefaultValuePipe(90), ParseIntPipe) days: number,
+  ): Promise<ExpirationTimelineResponse> {
+    return this.kpiService.getExpirationTimeline(user.organizationId, days);
   }
 
   /**
