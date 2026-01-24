@@ -81,9 +81,7 @@ export class FiscalizacaoNotificationJob {
     timeZone: 'America/Sao_Paulo',
   })
   async runOcorrenciasCriticasCheck(): Promise<void> {
-    this.logger.log(
-      'Iniciando job de verificação de ocorrências críticas...',
-    );
+    this.logger.log('Iniciando job de verificação de ocorrências críticas...');
 
     try {
       const alertasOcorrencia =
