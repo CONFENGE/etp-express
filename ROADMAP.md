@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 847/861 issues (98.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 857/879 issues (97.5%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -565,7 +565,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | MVP Comercial          | 44/45  | 98% (1 resta)  |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
-| M3: Quality & Security | 61/61  | ✅             |
+| M3: Quality & Security | 64/64  | ✅             |
 | M4: Refactoring & Perf | 45/45  | ✅             |
 | M5: E2E & Docs         | 30/30  | ✅             |
 | M6: Maintenance        | 85/85  | ✅             |
@@ -583,11 +583,11 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 3/8    | 38% 🟡     | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 12/14  | 86% 🟢     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 3/8    | Média      | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 20/28  | 71% 🟡     | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 20/28  | Alta 🔵    | Diferencial técnico   |
+| M17: PageIndex RAG             | 29/30  | 97% 🟢     | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -664,7 +664,7 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275) - 3/8 (38%) 🟡 STARTED
+#### M13: Inteligência de Mercado (#1268-#1275) - 12/14 (86%) 🟢 NEARLY COMPLETE
 
 Dados proprietários e analytics avançados.
 
@@ -691,7 +691,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 22/28 (78.6%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 29/30 (97%) 🟢 NEARLY COMPLETE
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -778,12 +778,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 861   |
-| Issues Abertas    | 18    |
-| Issues Fechadas   | 843   |
-| Progresso         | 97.9% |
+| Issues Totais     | 879   |
+| Issues Abertas    | 22    |
+| Issues Fechadas   | 857   |
+| Progresso         | 97.5% |
 | Bugs P0 Abertos   | 0     |
-| M17 PageIndex+API | 20/28 |
+| M17 PageIndex+API | 29/30 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
