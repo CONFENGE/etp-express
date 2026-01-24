@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 837/855 issues (97.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 838/855 issues (98.0%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1657 | Feature  | [#1072] Add automatic retry with exponential backoff for email delivery ✅ - **Score 100/100 - Auto-merged (after TypeScript type safety fix)** |
 | 2026-01-24 | -     | Bug      | [#1655] Fix ESLint errors in FiscalizacaoPage ✅ - **CLOSED as duplicate of #1656** (already resolved in commit e9e2008) |
 | 2026-01-24 | #1654 | Test     | [#1646] Add E2E tests for fiscalização workflow ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1653 | Feature  | [#1645] Create fiscalização interface in frontend ✅ - **Score 100/100 - Auto-merged (after auto-fixes for import syntax and test mocks)** |
@@ -532,7 +533,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #1190 | [CI] Reduce E2E pipeline timeout from 90min to 20min target      |
 | #1189 | [CI] Skip E2E tests for documentation-only PRs ✅                 |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3)                    |
-| #1072 | [Observabilidade] Adicionar retry automático para emails         |
+| #1072 | [Observabilidade] Adicionar retry automático para emails ✅       |
 | #1071 | [Observabilidade] Garantir requestId em todos os logs ✅          |
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction     |
 | #1069 | [Gov-API] Implementar invalidação de cache baseada em eventos    |
