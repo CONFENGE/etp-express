@@ -2,6 +2,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SummaryCards } from '@/components/contracts/SummaryCards';
 import { ContractsTable } from '@/components/contracts/ContractsTable';
 import { ContractValueByStatusChart } from '@/components/contracts/ContractValueByStatusChart';
+import { ExpirationTimeline } from '@/components/contracts/ExpirationTimeline';
 import { useContractKPIs } from '@/hooks/contracts/useContractKPIs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -62,14 +63,14 @@ export function ContractsDashboardPage() {
 
         {/* Table and Timeline Section - #1660 and #1662 */}
         <section
-          aria-label="Lista de Contratos"
+          aria-label="Lista de Contratos e Timeline de Vencimentos"
           className="grid gap-6 lg:grid-cols-3"
         >
           <div className="lg:col-span-2">
             <ContractsTable />
           </div>
           <div>
-            <ChartSkeleton />
+            <ExpirationTimeline />
           </div>
         </section>
       </div>
