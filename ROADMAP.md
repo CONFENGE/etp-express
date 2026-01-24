@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 840/861 issues (97.6%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 841/861 issues (97.7%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1666 | Feature  | [#1660] Add contracts list table with filters ✅ - **Score 100/100 - Auto-merged via /review-pr** (3/6 sub-issues #1288) |
 | 2026-01-24 | #1665 | Feature  | [#1659] Add KPI summary cards for contracts dashboard ✅ - **Score 97.5/100 - Pragmatic merge via /review-pr** (2/6 sub-issues #1288) |
 | 2026-01-24 | #1664 | Feature  | [#1658] Create contracts dashboard page structure ✅ - **Score 100/100 - Auto-merged via /review-pr** (1/6 sub-issues #1288) |
 | 2026-01-24 | -     | Planning | Desmembrar #1288 em 6 sub-issues atômicas (#1658-#1663) - M15 Gestão de Contratos |
