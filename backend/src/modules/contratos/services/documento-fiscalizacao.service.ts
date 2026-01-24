@@ -7,7 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DocumentoFiscalizacao } from '../../../entities/documento-fiscalizacao.entity';
+import {
+  DocumentoFiscalizacao,
+  DocumentoFiscalizacaoTipo,
+} from '../../../entities/documento-fiscalizacao.entity';
 import { CreateDocumentoFiscalizacaoDto } from '../dto/create-documento-fiscalizacao.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -127,7 +130,7 @@ export class DocumentoFiscalizacaoService {
   ): Promise<DocumentoFiscalizacao[]> {
     return this.documentoRepository.find({
       where: {
-        tipoEntidade: tipoEntidade as any,
+        tipoEntidade: tipoEntidade as DocumentoFiscalizacaoTipo,
         entidadeId,
       },
       order: {
