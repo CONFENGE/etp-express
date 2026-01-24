@@ -12,6 +12,7 @@ import { DocumentoFiscalizacao } from '../../entities/documento-fiscalizacao.ent
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
 import { ContratosKpiService } from './services/contratos-kpi.service';
+import { ContratoService } from './services/contrato.service';
 import { MedicaoService } from './services/medicao.service';
 import { OcorrenciaService } from './services/ocorrencia.service';
 import { AtesteService } from './services/ateste.service';
@@ -74,6 +75,7 @@ import { EmailModule } from '../email/email.module';
     ContractChainService,
     ContractAlertService,
     ContratosKpiService,
+    ContratoService,
     MedicaoService,
     OcorrenciaService,
     AtesteService,
