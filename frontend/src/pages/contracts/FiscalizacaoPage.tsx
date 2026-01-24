@@ -29,7 +29,6 @@ export function FiscalizacaoPage() {
 
   const {
     loading,
-    error,
     fetchMedicoes,
     createMedicao,
     fetchOcorrencias,
