@@ -804,4 +804,126 @@ Mais conteúdo.`;
       expect(result.sections.length).toBe(3);
     });
   });
+
+  describe('Error Logging with Enriched Context', () => {
+    it('should log error with full context when extracting from DOCX', async () => {
+      const logSpy = jest.spyOn(service['logger'], 'error');
+      (mammoth.extractRawText as jest.Mock).mockRejectedValue(
+        new Error('Mammoth parse error'),
+      );
+
+      const buffer = Buffer.from('corrupted docx data');
+
+      await expect(
+        service.extractFromDocx(
+          buffer,
+          {},
+          { filename: 'test.docx', userId: 'user-123' },
+        ),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(logSpy).toHaveBeenCalledWith(
+        'Document extraction error',
+        expect.objectContaining({
+          message: 'Mammoth parse error',
+          filename: 'test.docx',
+          docType: 'DOCX',
+          fileSize: buffer.length,
+          userId: 'user-123',
+          operation: 'extractFromDocx',
+        }),
+      );
+    });
+
+    it('should log error with full context when extracting from PDF', async () => {
+      const logSpy = jest.spyOn(service['logger'], 'error');
+      mockGetText.mockRejectedValue(new Error('PDF parse error'));
+
+      const buffer = Buffer.from('corrupted pdf data');
+
+      await expect(
+        service.extractFromPdf(
+          buffer,
+          {},
+          { filename: 'test.pdf', userId: 'user-456' },
+        ),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(logSpy).toHaveBeenCalledWith(
+        'Document extraction error',
+        expect.objectContaining({
+          message: 'PDF parse error',
+          filename: 'test.pdf',
+          docType: 'PDF',
+          fileSize: buffer.length,
+          userId: 'user-456',
+          operation: 'extractFromPdf',
+        }),
+      );
+    });
+
+    it('should log error with filename when deleting file fails', () => {
+      const logSpy = jest.spyOn(service['logger'], 'error');
+      const filename = 'test-file.pdf';
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (statSync as jest.Mock).mockReturnValue({ size: 1024 });
+      (unlinkSync as jest.Mock).mockImplementation(() => {
+        throw new Error('Permission denied');
+      });
+
+      const result = service.deleteFile(filename);
+
+      expect(result).toBe(false);
+      expect(logSpy).toHaveBeenCalledWith(
+        'Document extraction error',
+        expect.objectContaining({
+          message: 'Permission denied',
+          filename,
+          fileSize: 1024,
+          operation: 'deleteFile',
+        }),
+      );
+    });
+
+    it('should include stack trace in error logs', async () => {
+      const logSpy = jest.spyOn(service['logger'], 'error');
+      const error = new Error('Test error with stack');
+      (mammoth.extractRawText as jest.Mock).mockRejectedValue(error);
+
+      await expect(
+        service.extractFromDocx(
+          Buffer.from('test'),
+          {},
+          { filename: 'test.docx' },
+        ),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(logSpy).toHaveBeenCalledWith(
+        'Document extraction error',
+        expect.objectContaining({
+          stack: error.stack,
+        }),
+      );
+    });
+
+    it('should handle missing metadata gracefully', async () => {
+      const logSpy = jest.spyOn(service['logger'], 'error');
+      (mammoth.extractRawText as jest.Mock).mockRejectedValue(
+        new Error('Test error'),
+      );
+
+      await expect(
+        service.extractFromDocx(Buffer.from('test')),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(logSpy).toHaveBeenCalledWith(
+        'Document extraction error',
+        expect.objectContaining({
+          filename: 'unknown',
+          docType: 'DOCX',
+          userId: undefined,
+        }),
+      );
+    });
+  });
 });
