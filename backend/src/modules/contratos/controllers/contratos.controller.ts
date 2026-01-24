@@ -9,9 +9,14 @@ import {
   ContractChainService,
   ContractChain,
 } from '../services/contract-chain.service';
+import {
+  ContratosKpiService,
+  ContratoKpiResponse,
+} from '../services/contratos-kpi.service';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { Roles } from '../../../common/decorators/roles.decorator';
-import { UserRole } from '../../../entities/user.entity';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
+import { UserRole, User } from '../../../entities/user.entity';
 import {
   ApiTags,
   ApiOperation,
@@ -35,7 +40,10 @@ import {
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class ContratosController {
-  constructor(private readonly contractChainService: ContractChainService) {}
+  constructor(
+    private readonly contractChainService: ContractChainService,
+    private readonly kpiService: ContratosKpiService,
+  ) {}
 
   /**
    * Busca a cadeia completa de rastreabilidade de um contrato.
@@ -175,5 +183,82 @@ export class ContratosController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ContractChain> {
     return this.contractChainService.getChainByContratoId(id);
+  }
+
+  /**
+   * Retorna KPIs agregados de contratos para dashboard.
+   *
+   * Métricas executivas para gestão de contratos:
+   * - Total de contratos vigentes
+   * - Valor total comprometido
+   * - Contratos vencendo nos próximos 30 dias
+   * - Medições pendentes de ateste
+   *
+   * **Rota:** `GET /api/contratos/kpis`
+   *
+   * **Permissões:** CONSULTOR, GESTOR, SYSTEM_ADMIN
+   *
+   * **Exemplo de resposta:**
+   * ```json
+   * {
+   *   "totalContracts": 42,
+   *   "totalValue": 1234567.89,
+   *   "expiringIn30Days": 7,
+   *   "pendingMeasurements": 12
+   * }
+   * ```
+   *
+   * @param user - Usuário autenticado (extraído do JWT)
+   * @returns {Promise<ContratoKpiResponse>} KPIs agregados da organização
+   * @throws {UnauthorizedException} Se usuário não autenticado
+   * @throws {ForbiddenException} Se usuário sem permissão
+   */
+  @Get('kpis')
+  @Roles(UserRole.ADMIN, UserRole.USER, UserRole.SYSTEM_ADMIN)
+  @ApiOperation({
+    summary: 'Obter KPIs de contratos para dashboard',
+    description:
+      'Retorna métricas agregadas: total vigente, valor total, vencimentos, medições pendentes',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'KPIs retornados com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        totalContracts: {
+          type: 'number',
+          description: 'Total de contratos vigentes',
+          example: 42,
+        },
+        totalValue: {
+          type: 'number',
+          format: 'double',
+          description: 'Valor total comprometido (R$)',
+          example: 1234567.89,
+        },
+        expiringIn30Days: {
+          type: 'number',
+          description: 'Contratos vencendo nos próximos 30 dias',
+          example: 7,
+        },
+        pendingMeasurements: {
+          type: 'number',
+          description: 'Medições pendentes de ateste',
+          example: 12,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Não autenticado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Sem permissão para acessar',
+  })
+  async getKpis(@CurrentUser() user: User): Promise<ContratoKpiResponse> {
+    return this.kpiService.getKpis(user.organizationId);
   }
 }
