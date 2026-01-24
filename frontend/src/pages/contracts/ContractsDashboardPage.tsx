@@ -1,4 +1,8 @@
 import { MainLayout } from '@/components/layout/MainLayout';
+import { SummaryCards } from '@/components/contracts/SummaryCards';
+import { useContractKPIs } from '@/hooks/contracts/useContractKPIs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 /**
  * Contracts Dashboard Page (#1658)
@@ -12,6 +16,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
  * - Responsive grid layout (Apple HIG spacing tokens)
  */
 export function ContractsDashboardPage() {
+  const { data, isLoading, error } = useContractKPIs();
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -27,12 +32,21 @@ export function ContractsDashboardPage() {
           </div>
         </div>
 
-        {/* KPI Cards Section - Will be populated in #1659 */}
-        <section
-          aria-label="Indicadores de Contratos"
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
-        >
-          <SummaryCardsSkeleton />
+        {/* KPI Cards Section - #1659 */}
+        <section aria-label="Indicadores de Contratos">
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {isLoading ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <SummaryCardsSkeleton />
+            </div>
+          ) : data ? (
+            <SummaryCards data={data} />
+          ) : null}
         </section>
 
         {/* Charts Section - Will be populated in #1661 */}
