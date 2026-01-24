@@ -3,10 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatMessage } from '../../entities/chat-message.entity';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { DocumentTree } from '../../entities/document-tree.entity';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 import { RAGModule } from '../rag/rag.module';
+import { PageIndexModule } from '../pageindex/pageindex.module';
 
 /**
  * Module for ETP chatbot functionality.
@@ -23,6 +25,7 @@ import { RAGModule } from '../rag/rag.module';
  * Issue #1392 - [CHAT-1167a] Create ChatMessage entity and backend module structure
  * Issue #1394 - [CHAT-1167c] Implement AI chat completion with ETP context injection
  * Issue #1594 - [RAG-1542c] Integrate HybridRagService for legal context
+ * Issue #1544 - [CHAT-M17a] Tree search contextualizado em documentos anexos
  * Parent: #1167 - [Assistente] Implementar chatbot para duvidas
  *
  * Related issues:
@@ -34,9 +37,10 @@ import { RAGModule } from '../rag/rag.module';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatMessage, Etp, EtpSection]),
+    TypeOrmModule.forFeature([ChatMessage, Etp, EtpSection, DocumentTree]),
     OrchestratorModule, // Provides OpenAIService for AI completion
     RAGModule, // Provides HybridRagService for legal context retrieval
+    PageIndexModule, // Provides TreeSearchService for document tree search
   ],
   controllers: [ChatController],
   providers: [ChatService],

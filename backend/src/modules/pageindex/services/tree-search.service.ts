@@ -135,6 +135,7 @@ export class TreeSearchService {
 
     return {
       ...result,
+      treeId, // Include tree ID for source tracking
       searchTimeMs,
     };
   }
