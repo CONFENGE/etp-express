@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 846/861 issues (98.3%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 847/861 issues (98.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
-| 2026-01-24 | #1672 | Feature | [#1544] Integrate PageIndex tree search for contextual document retrieval ⏳ - **M17-PageIndex: 21/28 (75%)** |
+| 2026-01-24 | #1672 | Feature | [#1544] Integrate PageIndex tree search for contextual document retrieval ✅ - **Score 100/100 - Auto-merged via /review-pr** - **M17-PageIndex: 22/28 (78.6%)** |
 | 2026-01-24 | #1671 | Docs | [#1523] Document 'Sophistication & Trust' design direction (#1523) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1670 | Feature | [#1070] Enrich context in document extraction error logs (#1070) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1669 | Test | [#1663] Add E2E tests for contracts dashboard ✅ - **Score 94/100 - Auto-merged via /review-pr** (6/6 sub-issues #1288) - **EPIC #1288 COMPLETE** |
@@ -486,7 +486,7 @@ Nenhum bug P0 aberto no momento. ✅
 
 ## Issues Abertas (51)
 
-### P0 - M17 PageIndex + SINAPI API (25 issues - 9 open) 🔵 IN PROGRESS
+### P0 - M17 PageIndex + SINAPI API (25 issues - 8 open) 🔵 IN PROGRESS
 
 > PageIndex para RAG reasoning-based + API Orcamentador para SINAPI. Ver seção "M17: PageIndex RAG + SINAPI API" abaixo.
 
@@ -510,7 +510,7 @@ Nenhum bug P0 aberto no momento. ✅
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
 | #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
 | #1543 | Document Extraction com tree structure                   | P2         | ✅     |
-| #1544 | Chat contextualizado com PageIndex tree search           | P2         | ⏳ #1672 |
+| #1544 | Chat contextualizado com PageIndex tree search           | P2         | ✅     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
 
 **Nota:** Issue #1566 (TreeBuilder para SINAPI) foi **CANCELADA** - API oferece JSON estruturado.
@@ -691,7 +691,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 21/28 (75%) 🔵 IN PROGRESS
+#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 22/28 (78.6%) 🔵 IN PROGRESS
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -725,7 +725,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 |       | ↳ #1595 Automatic fallback between RAG paths (4/6)       | P1         | ✅     |
 |       | ↳ #1596 Benchmark suite for Hybrid RAG (5/6)             | P1         | ✅     |
 | #1543 | Document Extraction com tree structure                   | P2         | ✅     |
-| #1544 | Chat contextualizado com PageIndex tree search           | P2         | ⏳ #1672 |
+| #1544 | Chat contextualizado com PageIndex tree search           | P2         | ✅     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
 
 **Decisão Arquitetural SINAPI (2026-01-17):**
