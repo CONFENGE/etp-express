@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -44,12 +44,7 @@ export function FiscalizacaoPage() {
   const [atesteModalOpen, setAtesteModalOpen] = useState(false);
   const [selectedMedicao, setSelectedMedicao] = useState<Medicao | null>(null);
 
-  useEffect(() => {
-    if (!contratoId) return;
-    loadData();
-  }, [contratoId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [medicoesData, ocorrenciasData] = await Promise.all([
         fetchMedicoes(),
@@ -57,10 +52,15 @@ export function FiscalizacaoPage() {
       ]);
       setMedicoes(medicoesData);
       setOcorrencias(ocorrenciasData);
-    } catch (err) {
+    } catch {
       showError('Erro ao carregar dados de fiscalização');
     }
-  };
+  }, [fetchMedicoes, fetchOcorrencias, showError]);
+
+  useEffect(() => {
+    if (!contratoId) return;
+    loadData();
+  }, [contratoId, loadData]);
 
   const handleCreateMedicao = async (data: CreateMedicaoDto) => {
     try {
@@ -91,7 +91,7 @@ export function FiscalizacaoPage() {
     setAtesteModalOpen(true);
   };
 
-  const handleCreateAteste = async (data: any) => {
+  const handleCreateAteste = async (data: { resultado: string; observacoes?: string; justificativa?: string }) => {
     if (!selectedMedicao) return;
     try {
       await createAteste(selectedMedicao.id, data);

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFiscalizacao } from './useFiscalizacao';
 import api from '@/lib/api';
-import type { Medicao, Ocorrencia, Ateste } from '@/types/contract';
-import { MedicaoStatus, OcorrenciaTipo, OcorrenciaGravidade, AtesteResultado } from '@/types/contract';
+import type { Medicao, Ateste } from '@/types/contract';
+import { MedicaoStatus, AtesteResultado } from '@/types/contract';
 
 // Mock API
 vi.mock('@/lib/api', () => ({
