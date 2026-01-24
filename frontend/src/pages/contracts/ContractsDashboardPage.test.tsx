@@ -27,9 +27,33 @@ vi.mock('@/hooks/useAuth', () => ({
   }),
 }));
 
+// Mock useContractKPIs hook
+const mockKPIData = {
+  totalContracts: 42,
+  totalValue: 5234567.89,
+  expiringIn30Days: 3,
+  pendingMeasurements: 8,
+};
+
+let mockHookReturn = {
+  data: null,
+  isLoading: true,
+  error: null,
+};
+
+vi.mock('@/hooks/contracts/useContractKPIs', () => ({
+  useContractKPIs: () => mockHookReturn,
+}));
+
 describe('ContractsDashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset to loading state by default (shows skeletons)
+    mockHookReturn = {
+      data: null,
+      isLoading: true,
+      error: null,
+    };
   });
 
   const renderPage = () => {
@@ -97,14 +121,26 @@ describe('ContractsDashboardPage', () => {
   });
 
   it('applies responsive grid classes', () => {
+    // Set mock to return data (not loading)
+    mockHookReturn = {
+      data: mockKPIData,
+      isLoading: false,
+      error: null,
+    };
+
     renderPage();
 
-    const kpiSection = screen.getByLabelText('Indicadores de Contratos');
+    // The grid classes are on the SummaryCards wrapper (role="region")
+    // not on the <section> element
+    const gridContainer = screen.getAllByRole('region').find(el =>
+      el.getAttribute('aria-label') === 'Indicadores de Contratos' &&
+      el.className.includes('grid')
+    );
 
-    // Check for responsive grid classes (Tailwind)
-    expect(kpiSection.className).toContain('grid');
-    expect(kpiSection.className).toContain('md:grid-cols-2');
-    expect(kpiSection.className).toContain('lg:grid-cols-4');
+    expect(gridContainer).toBeDefined();
+    expect(gridContainer?.className).toContain('grid');
+    expect(gridContainer?.className).toContain('md:grid-cols-2');
+    expect(gridContainer?.className).toContain('lg:grid-cols-4');
   });
 
   it('applies spacing according to Apple HIG tokens', () => {
