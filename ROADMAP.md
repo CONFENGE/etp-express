@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-24 | **Progresso:** 857/879 issues (97.5%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-24 | **Progresso:** 858/879 issues (97.6%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1679 | Docs | [#1673] Document Contratos Gov.br API specification (#1673) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1672 | Feature | [#1544] Integrate PageIndex tree search for contextual document retrieval ✅ - **Score 100/100 - Auto-merged via /review-pr** - **M17-PageIndex: 22/28 (78.6%)** |
 | 2026-01-24 | #1671 | Docs | [#1523] Document 'Sophistication & Trust' design direction (#1523) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | #1670 | Feature | [#1070] Enrich context in document extraction error logs (#1070) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
@@ -585,7 +586,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 12/14  | 86% 🟢     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 20/28  | 71% 🟡     | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 21/28  | 75% 🟢     | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 29/30  | 97% 🟢     | Diferencial técnico   |
 
@@ -779,9 +780,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 879   |
-| Issues Abertas    | 22    |
-| Issues Fechadas   | 857   |
-| Progresso         | 97.5% |
+| Issues Abertas    | 21    |
+| Issues Fechadas   | 858   |
+| Progresso         | 97.6% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 29/30 |
 | Backend Coverage  | 71%   |
