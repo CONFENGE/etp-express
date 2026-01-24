@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-24 | #1669 | Test | [#1663] Add E2E tests for contracts dashboard ✅ - **Score 94/100 - Auto-merged via /review-pr** (6/6 sub-issues #1288) - **EPIC #1288 COMPLETE** |
 | 2026-01-24 | #1668 | Feature  | [#1662] Add contracts expiration timeline ✅ - **Score 99/100 - Auto-merged via /review-pr** (5/6 sub-issues #1288) |
 | 2026-01-24 | #1667 | Feature  | [#1661] Add contract value by status chart ✅ - **Score 99/100 - Auto-merged via /review-pr** (4/6 sub-issues #1288) |
 | 2026-01-24 | #1666 | Feature  | [#1660] Add contracts list table with filters ✅ - **Score 100/100 - Auto-merged via /review-pr** (3/6 sub-issues #1288) |
@@ -775,9 +776,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 861   |
-| Issues Abertas    | 19    |
-| Issues Fechadas   | 842   |
-| Progresso         | 97.8% |
+| Issues Abertas    | 18    |
+| Issues Fechadas   | 843   |
+| Progresso         | 97.9% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 20/28 |
 | Backend Coverage  | 71%   |
