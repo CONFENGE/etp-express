@@ -235,9 +235,7 @@ describe('PublicPricesController', () => {
 
   describe('GET /prices/categories', () => {
     it('should return list of categories with metadata', async () => {
-      itemNormalizationService.getCategories.mockResolvedValue(
-        mockCategories,
-      );
+      itemNormalizationService.getCategories.mockResolvedValue(mockCategories);
 
       const result = await controller.getCategories();
 
@@ -286,7 +284,9 @@ describe('PublicPricesController', () => {
 
       expect(result.total).toBe(4);
 
-      const inactiveCategory = result.data.find((c) => c.code === 'CATMAT-99999');
+      const inactiveCategory = result.data.find(
+        (c) => c.code === 'CATMAT-99999',
+      );
       expect(inactiveCategory?.active).toBe(false);
     });
 
