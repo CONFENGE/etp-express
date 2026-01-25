@@ -150,7 +150,14 @@ async function bootstrap() {
  - Export para PDF, JSON e XML
 
  ## Autenticação
+
+ ### API Interna (JWT)
  Utilize JWT Bearer token no header: \`Authorization: Bearer <token>\`
+
+ ### API Pública de Preços (API Key)
+ Utilize API Key no header: \`X-API-Key: <your-api-key>\`
+
+ Acesse [/api/v1/prices](/api/v1/prices) para consultar benchmarks de preços públicos.
  `,
     )
     .setVersion('1.0.0')
@@ -161,7 +168,20 @@ async function bootstrap() {
     .addTag('export', 'Exportação (PDF, JSON, XML)')
     .addTag('search', 'Busca de contratações similares')
     .addTag('analytics', 'Telemetria e analytics')
-    .addBearerAuth()
+    .addTag(
+      'Public API - Prices',
+      'API pública de preços para terceiros (requer API Key)',
+    )
+    .addBearerAuth() // JWT authentication for internal API
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'X-API-Key',
+        in: 'header',
+        description: 'API Key for public price endpoints (/api/v1/prices)',
+      },
+      'X-API-Key', // Security scheme name - must match @ApiBearerAuth('X-API-Key') in controllers
+    )
     .build();
 
   // Only expose Swagger in non-production environments for security
