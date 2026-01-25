@@ -50,6 +50,7 @@ lcov-report/
 *.lcov
 clover.xml
 coverage-final.json
+coverage-summary.json
 .nyc_output/
 test-results/
 playwright-report/
@@ -132,10 +133,22 @@ secrets/
 docs/.vitepress/dist
 docs/.vitepress/cache
 
-# Claude Code (allow commands/skills, ignore local settings)
-.claude/settings.local.json
-.claude/history/
-.claude/*.log
+# Development Assistant Tools (acessórios, não parte do sistema)
+.claude/
+.design-engineer/
+.bmad/
+CLAUDE.md
+.mcp.json
+
+# Quality Assurance Tools (acessórios de desenvolvimento)
+.pa11yci.json
+lighthouserc.json
+
+# Deployment Tools (acessórios - configuração local)
+railway.json
+
+# AIOS Framework (downloaded on-demand, not versioned)
+.aios-core/
 
 # Lock files (opcional - descomente se quiser versionar)
 # package-lock.json
@@ -163,6 +176,23 @@ ops/issue-audit/ISSUE_FIXUPS.md
 ops/issue-audit/issue_improvements.md
 ops/issue-audit/RECOMMENDATIONS.md
 .claude/plugins/
+
+# GitHub Audit & Operations - Temporary JSON outputs (root level)
+github-issues.json
+github-issues-complete.json
+github-milestones.json
+github-prs.json
+issues.json
+issues_audit.json
+open-issues.json
+audit-results.json
+phantom-analysis.json
+roadmap-audit-data.json
+roadmap-audit-results.json
+milestones-clean.json
+
+# Claude Desktop Config (local user config - use example instead)
+claude_desktop_config.json
 
 # Git Worktrees
 .worktrees/
