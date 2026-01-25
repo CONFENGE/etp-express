@@ -7,12 +7,12 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { Contrato, ContratoStatus } from '../../src/entities/contrato.entity';
-import { ContratoSyncLog } from '../../src/entities/contrato-sync-log.entity';
-import { Organization } from '../../src/entities/organization.entity';
-import { User } from '../../src/entities/user.entity';
-import { ContratosGovBrSyncService } from '../../src/modules/contratos/services/contratos-govbr-sync.service';
-import { ContratosGovBrAuthService } from '../../src/modules/gov-api/services/contratos-govbr-auth.service';
+import { Contrato, ContratoStatus } from '../../entities/contrato.entity';
+import { ContratoSyncLog } from '../../entities/contrato-sync-log.entity';
+import { Organization } from '../../entities/organization.entity';
+import { User } from '../../entities/user.entity';
+import { ContratosGovBrSyncService } from '../../modules/contratos/services/contratos-govbr-sync.service';
+import { ContratosGovBrAuthService } from '../../modules/gov-api/services/contratos-govbr-auth.service';
 
 /**
  * Testes de Integração: Sincronização de Contratos Gov.br
@@ -569,7 +569,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       };
 
       // Mock push para evitar chamada real
-      jest.spyOn(syncService, 'pushContrato').mockResolvedValue();
+      jest.spyOn(syncService, 'pushContrato').mockResolvedValue(undefined);
 
       // Act
       await syncService.handleConflictAndUpdate(local, remote);
