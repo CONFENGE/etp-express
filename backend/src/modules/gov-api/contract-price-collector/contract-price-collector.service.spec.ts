@@ -23,12 +23,16 @@ import {
   GovApiResponse,
 } from '../interfaces/gov-api.interface';
 import { SearchStatus } from '../types/search-result';
+import { PageIndexService } from '../../pageindex/pageindex.service';
+import { TreeBuilderService } from '../../pageindex/services/tree-builder.service';
 
 describe('ContractPriceCollectorService', () => {
   let service: ContractPriceCollectorService;
   let pncpService: jest.Mocked<PncpService>;
   let configService: jest.Mocked<ConfigService>;
   let contractPriceRepository: jest.Mocked<Repository<ContractPrice>>;
+  let pageIndexService: jest.Mocked<PageIndexService>;
+  let treeBuilderService: jest.Mocked<TreeBuilderService>;
 
   const mockPriceReference: GovApiPriceReference = {
     id: 'PNCP-12345-ITEM-1',
@@ -129,12 +133,35 @@ describe('ContractPriceCollectorService', () => {
           provide: getRepositoryToken(ContractPrice),
           useValue: contractPriceRepository,
         },
+        {
+          provide: PageIndexService,
+          useValue: {
+            createDocumentTree: jest
+              .fn()
+              .mockResolvedValue({ treeId: 'tree-uuid-123' }),
+            getTree: jest.fn(),
+            updateTreeStatus: jest.fn(),
+          },
+        },
+        {
+          provide: TreeBuilderService,
+          useValue: {
+            processDocument: jest.fn().mockResolvedValue({
+              id: 'tree-uuid-123',
+              status: 'indexed',
+              nodeCount: 10,
+              maxDepth: 3,
+            }),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<ContractPriceCollectorService>(
       ContractPriceCollectorService,
     );
+    pageIndexService = module.get(PageIndexService);
+    treeBuilderService = module.get(TreeBuilderService);
   });
 
   afterEach(() => {
@@ -514,6 +541,31 @@ describe('ContractPriceCollectorService', () => {
           valorTotal: 500.0,
         }),
       );
+    });
+  });
+
+  describe('PageIndex Integration', () => {
+    it('should NOT process edital if no editalPdfUrl in metadata', async () => {
+      await service.collectFromPncp({
+        dataInicial: '20240101',
+        dataFinal: '20240131',
+      });
+
+      // PageIndex should not be called when no editalPdfUrl
+      expect((pageIndexService as any).createDocumentTree).not.toHaveBeenCalled();
+      expect((treeBuilderService as any).processDocument).not.toHaveBeenCalled();
+    });
+
+    it('should collect price successfully even without edital PDF', async () => {
+      const result = await service.collectFromPncp({
+        dataInicial: '20240101',
+        dataFinal: '20240131',
+      });
+
+      // Price collection should work normally
+      expect(result.collected).toBe(1);
+      expect(result.failed).toBe(0);
+      expect(contractPriceRepository.save).toHaveBeenCalled();
     });
   });
 });
