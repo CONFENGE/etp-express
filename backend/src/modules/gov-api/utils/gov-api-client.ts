@@ -6,6 +6,17 @@
  * - Retry with exponential backoff
  * - Rate limiting
  * - Request timeout
+ * - Sentry alerting for circuit breaker events
+ *
+ * Circuit Breaker Alerting:
+ * - OPEN: Warning-level Sentry event with circuit stats (incidents detected < 2h)
+ * - HALF-OPEN: Info-level Sentry event for monitoring state transitions
+ * - CLOSED: Info-level Sentry event for service recovery
+ *
+ * Sentry Tags:
+ * - source: API source (pncp, comprasgov, sinapi, sicro)
+ * - circuit_breaker_state: current state (open, half-open, closed)
+ * - component: gov-api-client
  *
  * @module modules/gov-api/utils/gov-api-client
  */
@@ -14,6 +25,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import CircuitBreaker from 'opossum';
+import * as Sentry from '@sentry/node';
 import { withRetry, RetryOptions } from '../../../common/utils/retry';
 import { getRequestId } from '../../../common/context/request-context';
 import {
@@ -237,20 +249,59 @@ export class GovApiClient {
    */
   private setupCircuitBreakerEvents(): void {
     this.circuitBreaker.on('open', () => {
-      this.logger.warn(
-        `Circuit breaker OPENED for ${this.source} - too many failures, requests will be rejected`,
-      );
+      const message = `Circuit breaker OPENED for ${this.source} - too many failures, requests will be rejected`;
+      this.logger.warn(message);
+
+      // Send Sentry event for alerting
+      Sentry.captureMessage(message, {
+        level: 'warning',
+        tags: {
+          source: this.source,
+          circuit_breaker_state: 'open',
+          component: 'gov-api-client',
+        },
+        extra: {
+          baseUrl: this.config.baseUrl,
+          circuitBreakerStats: this.circuitBreaker.stats,
+        },
+      });
     });
 
     this.circuitBreaker.on('halfOpen', () => {
       this.logger.log(
         `Circuit breaker HALF-OPEN for ${this.source} - testing connection...`,
       );
+
+      // Send Sentry event for monitoring state transitions
+      Sentry.captureMessage(
+        `Circuit breaker HALF-OPEN for ${this.source} - testing connection`,
+        {
+          level: 'info',
+          tags: {
+            source: this.source,
+            circuit_breaker_state: 'half-open',
+            component: 'gov-api-client',
+          },
+        },
+      );
     });
 
     this.circuitBreaker.on('close', () => {
       this.logger.log(
         `Circuit breaker CLOSED for ${this.source} - service healthy`,
+      );
+
+      // Send Sentry event for recovery
+      Sentry.captureMessage(
+        `Circuit breaker CLOSED for ${this.source} - service recovered`,
+        {
+          level: 'info',
+          tags: {
+            source: this.source,
+            circuit_breaker_state: 'closed',
+            component: 'gov-api-client',
+          },
+        },
       );
     });
 
