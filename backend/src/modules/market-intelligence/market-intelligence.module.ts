@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { User } from '../../entities/user.entity';
 import { ItemCategory } from '../../entities/item-category.entity';
 import { NormalizedContractItem } from '../../entities/normalized-contract-item.entity';
 import { ContractPrice } from '../../entities/contract-price.entity';
@@ -19,6 +20,8 @@ import { RegionalBenchmarkController } from './controllers/regional-benchmark.co
 import { AnalyticsController } from './controllers/analytics.controller';
 import { PublicPricesController } from './controllers/public-prices.controller';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
+import { ApiKeyThrottlerGuard } from '../../common/guards/api-key-throttler.guard';
 
 /**
  * MarketIntelligenceModule - Module for market intelligence and price analytics.
@@ -48,6 +51,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      User, // For ApiKeyGuard authentication (#1686)
       ItemCategory,
       NormalizedContractItem,
       ContractPrice,
@@ -72,6 +76,8 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     NormalizationBenchmarkService,
     RegionalBenchmarkService, // Regional benchmarks (#1271)
     OverpriceAlertService, // Overprice alert system (#1272)
+    ApiKeyGuard, // API Key authentication (#1686)
+    ApiKeyThrottlerGuard, // API rate limiting (#1686)
   ],
   exports: [
     TypeOrmModule,

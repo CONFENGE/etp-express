@@ -6,6 +6,11 @@ import { BenchmarkQueryDto } from '../dto/regional-benchmark.dto';
 import { PublicPriceSearchDto } from '../dto/public-prices.dto';
 import { ItemCategoryType } from '../../../entities/item-category.entity';
 import { OrgaoPorte } from '../../../entities/price-benchmark.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from '../../../entities/user.entity';
+import { Reflector } from '@nestjs/core';
+import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
+import { ApiKeyThrottlerGuard } from '../../../common/guards/api-key-throttler.guard';
 
 describe('PublicPricesController', () => {
   let controller: PublicPricesController;
@@ -102,6 +107,14 @@ describe('PublicPricesController', () => {
       getCategories: jest.fn(),
     };
 
+    const mockUserRepository = {
+      findOne: jest.fn(),
+    };
+
+    const mockReflector = {
+      getAllAndOverride: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PublicPricesController],
       providers: [
@@ -113,8 +126,21 @@ describe('PublicPricesController', () => {
           provide: ItemNormalizationService,
           useValue: mockItemNormalizationService,
         },
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockUserRepository,
+        },
+        {
+          provide: Reflector,
+          useValue: mockReflector,
+        },
       ],
-    }).compile();
+    })
+      .overrideGuard(ApiKeyGuard)
+      .useValue({ canActivate: jest.fn().mockReturnValue(true) })
+      .overrideGuard(ApiKeyThrottlerGuard)
+      .useValue({ canActivate: jest.fn().mockReturnValue(true) })
+      .compile();
 
     controller = module.get<PublicPricesController>(PublicPricesController);
     regionalBenchmarkService = module.get(RegionalBenchmarkService);
