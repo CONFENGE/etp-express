@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GovApiModule } from '../gov-api.module';
 import { PncpModule } from '../pncp/pncp.module';
+import { PageIndexModule } from '../../pageindex/pageindex.module';
 import { ContractPrice } from '../../../entities/contract-price.entity';
 import { ContractPriceCollectorService } from './contract-price-collector.service';
 
@@ -60,6 +61,7 @@ import { ContractPriceCollectorService } from './contract-price-collector.servic
   imports: [
     GovApiModule,
     PncpModule,
+    PageIndexModule,
     ConfigModule,
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([ContractPrice]),
