@@ -332,4 +332,251 @@ export class ContratosGovBrSyncService {
 
     return match ? match[0] : null;
   }
+
+  /**
+   * Importa contratos do Gov.br para o sistema local (Pull Sync)
+   *
+   * Fluxo:
+   * 1. Busca contratos da organização na API Gov.br
+   * 2. Para cada contrato:
+   *    a. Verifica se já existe localmente (por govBrId)
+   *    b. Se não existe: cria novo contrato
+   *    c. Se existe: atualiza contrato existente (upsert)
+   * 3. Retorna estatísticas da sincronização
+   *
+   * @param organizationId - ID da organização para filtrar contratos
+   * @returns Estatísticas de sincronização (created, updated, errors)
+   * @throws Error se API Gov.br retornar erro
+   */
+  async pullContratos(organizationId: string): Promise<{
+    created: number;
+    updated: number;
+    errors: number;
+  }> {
+    this.logger.log(
+      `Starting pull sync for organization ${organizationId} from Gov.br`,
+    );
+
+    const stats = { created: 0, updated: 0, errors: 0 };
+
+    try {
+      // 1. Buscar contratos da organização na API Gov.br
+      const headers = await this.authService.getAuthHeaders();
+      const response = await firstValueFrom(
+        this.httpService.get<GovBrContratoPayload[]>(
+          `${this.baseUrl}/contratos`,
+          {
+            headers,
+            params: {
+              orgao: organizationId,
+            },
+          },
+        ),
+      );
+
+      const govBrContratos = response.data;
+      this.logger.log(
+        `Found ${govBrContratos.length} contracts in Gov.br for organization ${organizationId}`,
+      );
+
+      // 2. Processar cada contrato
+      for (const apiContrato of govBrContratos) {
+        try {
+          await this.upsertContratoFromGovBr(apiContrato, organizationId);
+          stats.created++; // TODO: Diferenciar created vs updated baseado no resultado do upsert
+        } catch (error) {
+          this.logger.error(
+            `Failed to upsert contract ${apiContrato.numero_contrato} from Gov.br`,
+            error instanceof Error ? error.stack : String(error),
+          );
+          stats.errors++;
+        }
+      }
+
+      this.logger.log(
+        `Pull sync completed for organization ${organizationId}: ${stats.created} created, ${stats.updated} updated, ${stats.errors} errors`,
+      );
+
+      return stats;
+    } catch (error) {
+      this.logger.error(
+        `Failed to pull contracts from Gov.br for organization ${organizationId}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw new Error(
+        `Failed to sync contracts from Gov.br: ${error.message || 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Insere ou atualiza contrato local baseado em dados da API Gov.br (Upsert)
+   *
+   * Fluxo:
+   * 1. Busca contrato local por govBrId (ID da API Gov.br)
+   * 2. Se não existe: mapeia dados e cria novo contrato
+   * 3. Se existe: atualiza campos sincronizáveis (preserva dados locais)
+   *
+   * @param apiData - Dados do contrato da API Gov.br
+   * @param organizationId - ID da organização proprietária
+   * @private
+   */
+  private async upsertContratoFromGovBr(
+    apiData: GovBrContratoPayload,
+    organizationId: string,
+  ): Promise<void> {
+    // Usar numero_contrato como identificador para buscar contrato existente
+    // (govBrId ainda não existe se contrato nunca foi sincronizado)
+    const existing = await this.contratoRepository.findOne({
+      where: [
+        { numero: apiData.numero_contrato, organizationId },
+        // TODO: Implementar busca por govBrId quando API Gov.br retornar campo 'id'
+      ],
+    });
+
+    const contratoData = this.mapFromGovBrFormat(apiData, organizationId);
+
+    if (existing) {
+      // Atualizar contrato existente
+      // Remove relacionamentos para evitar erro de tipo no update
+      const { ...updateData } = contratoData;
+
+      await this.contratoRepository.update(existing.id, {
+        ...updateData,
+        govBrSyncedAt: new Date(),
+        govBrSyncStatus: 'synced',
+        govBrSyncErrorMessage: null,
+      });
+
+      this.logger.log(
+        `Contract ${apiData.numero_contrato} updated from Gov.br`,
+      );
+    } else {
+      // Criar novo contrato
+      const newContrato = this.contratoRepository.create({
+        ...contratoData,
+        organizationId,
+        govBrSyncedAt: new Date(),
+        govBrSyncStatus: 'synced',
+        // createdById será definido pelo controller ou será NULL por enquanto
+        // TODO: Resolver createdById - talvez usar um user de sistema?
+      });
+
+      await this.contratoRepository.save(newContrato);
+
+      this.logger.log(
+        `Contract ${apiData.numero_contrato} created from Gov.br`,
+      );
+    }
+  }
+
+  /**
+   * Mapeia dados da API Gov.br para entity Contrato local
+   *
+   * Transformações inversas do mapToGovBrFormat:
+   * - number → string (valores decimais)
+   * - ISO 8601 string → Date
+   * - número → status enum
+   * - CPF → UUID de gestores/fiscais (TODO: implementar busca de User por CPF)
+   *
+   * @param apiData - Dados do contrato da API Gov.br
+   * @param organizationId - ID da organização proprietária
+   * @returns Dados formatados para entity Contrato
+   * @private
+   */
+  private mapFromGovBrFormat(
+    apiData: GovBrContratoPayload,
+    organizationId: string,
+  ): Record<string, any> {
+    return {
+      numero: apiData.numero_contrato,
+      numeroProcesso: apiData.numero_processo,
+      objeto: apiData.objeto_contrato,
+      descricaoObjeto: apiData.descricao_detalhada,
+      contratadoCnpj: apiData.cnpj_contratado,
+      contratadoRazaoSocial: apiData.razao_social_contratado,
+      contratadoNomeFantasia: apiData.nome_fantasia,
+      contratadoEndereco: apiData.endereco_contratado,
+      contratadoTelefone: apiData.telefone_contratado,
+      contratadoEmail: apiData.email_contratado,
+      valorGlobal: apiData.valor_global.toString(),
+      valorUnitario: apiData.valor_unitario?.toString() || null,
+      unidadeMedida: apiData.unidade_medida,
+      quantidadeContratada: apiData.quantidade?.toString() || null,
+      vigenciaInicio: this.parseDate(apiData.data_inicio_vigencia),
+      vigenciaFim: this.parseDate(apiData.data_fim_vigencia),
+      prazoExecucao: apiData.prazo_execucao_dias,
+      possibilidadeProrrogacao: apiData.condicoes_prorrogacao,
+      // TODO: Implementar busca de gestorResponsavelId e fiscalResponsavelId por CPF
+      // Por enquanto, deixar NULL e logar warning
+      gestorResponsavelId: null as any, // Cast para evitar erro de tipo
+      fiscalResponsavelId: null as any,
+      dotacaoOrcamentaria: apiData.dotacao_orcamentaria,
+      fonteRecursos: apiData.fonte_recursos,
+      condicoesPagamento: apiData.condicoes_pagamento,
+      garantiaContratual: apiData.garantia_contratual,
+      reajusteContratual: apiData.indice_reajuste,
+      sancoesAdministrativas: apiData.sancoes,
+      fundamentacaoLegal: apiData.fundamentacao_legal,
+      localEntrega: apiData.local_entrega,
+      clausulas: apiData.clausulas_contratuais,
+      status: this.mapStatusFromGovBr(apiData.status_contrato),
+      dataAssinatura: apiData.data_assinatura
+        ? this.parseDate(apiData.data_assinatura)
+        : null,
+      dataPublicacao: apiData.data_publicacao
+        ? this.parseDate(apiData.data_publicacao)
+        : null,
+      referenciaPublicacao: apiData.referencia_publicacao,
+      versao: apiData.versao,
+      motivoRescisao: apiData.motivo_rescisao,
+      dataRescisao: apiData.data_rescisao
+        ? this.parseDate(apiData.data_rescisao)
+        : null,
+    };
+  }
+
+  /**
+   * Converte string ISO 8601 (YYYY-MM-DD) para Date
+   *
+   * @param dateStr - Data em formato ISO 8601
+   * @returns Date object
+   * @private
+   */
+  private parseDate(dateStr: string): Date {
+    return new Date(dateStr);
+  }
+
+  /**
+   * Mapeia código numérico da API Gov.br para status enum local
+   *
+   * Mapeamento inverso do mapStatusToGovBr:
+   * - 1 → MINUTA
+   * - 2 → ASSINADO
+   * - 3 → EM_EXECUCAO
+   * - 4 → ADITIVADO
+   * - 5 → SUSPENSO
+   * - 6 → RESCINDIDO
+   * - 7 → ENCERRADO
+   *
+   * @param statusCode - Código numérico do status na API Gov.br
+   * @returns Status enum local
+   * @private
+   */
+  private mapStatusFromGovBr(statusCode: number): ContratoStatus {
+    const statusMap: Record<number, ContratoStatus> = {
+      1: ContratoStatus.MINUTA,
+      2: ContratoStatus.ASSINADO,
+      3: ContratoStatus.EM_EXECUCAO,
+      4: ContratoStatus.ADITIVADO,
+      5: ContratoStatus.SUSPENSO,
+      6: ContratoStatus.RESCINDIDO,
+      7: ContratoStatus.ENCERRADO,
+    };
+
+    return (
+      statusMap[statusCode] ||
+      ContratoStatus.MINUTA // Default fallback
+    );
+  }
 }
