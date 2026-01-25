@@ -21,8 +21,10 @@
 
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 import { GovApiCache } from './utils/gov-api-cache';
 import { GovApiMetricsService } from './gov-api-metrics.service';
+import { ContratosGovBrAuthService } from './services/contratos-govbr-auth.service';
 
 /**
  * GovApiModule - Base module for government API integrations
@@ -75,8 +77,8 @@ import { GovApiMetricsService } from './gov-api-metrics.service';
  */
 @Global()
 @Module({
-  imports: [ConfigModule],
-  providers: [GovApiCache, GovApiMetricsService],
-  exports: [GovApiCache, GovApiMetricsService],
+  imports: [ConfigModule, HttpModule],
+  providers: [GovApiCache, GovApiMetricsService, ContratosGovBrAuthService],
+  exports: [GovApiCache, GovApiMetricsService, ContratosGovBrAuthService],
 })
 export class GovApiModule {}
