@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 863/879 issues (98.2%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 864/879 issues (98.3%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1691 | Feature  | [#1685] Criar PublicPricesController com 3 endpoints RESTful (#1685) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 1,038 lines justified by 68% test-to-code ratio + comprehensive Swagger docs)** |
 | 2026-01-25 | #1684 | Test     | [#1678] Adicionar testes de integração e documentação Contratos Gov.br (#1678) ✅ - **Merged via squash (1,403 lines: 683 integration tests + 619 docs)** |
 | 2026-01-25 | #1683 | Feature | [#1677] Implementar tratamento de conflitos de sincronização (#1677) ✅ - **Score 96.875/100 - Merged via /review-pr (size exception: 1,981 lines justified by 98.47% test coverage + conflict resolution complexity)** |
 | 2026-01-25 | #1682 | Feature | [#1676] Implementar sincronização Pull de contratos Gov.br (#1676) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 578 lines justified by 60% test coverage)** |
@@ -590,7 +591,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 12/14  | 86% 🟢     | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 13/20  | 65% 🟡     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 23/28  | 82.1% 🟢   | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
@@ -671,7 +672,7 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275) - 12/14 (86%) 🟢 NEARLY COMPLETE
+#### M13: Inteligência de Mercado (#1268-#1275) - 13/20 (65%) 🟡 IN PROGRESS
 
 Dados proprietários e analytics avançados.
 
@@ -691,6 +692,12 @@ Dados proprietários e analytics avançados.
 |       | ↳ #1273 Market analytics dashboard             | ✅    |
 |       | ↳ #1274 Integrar alertas no fluxo ETP          | ✅    |
 |       | ↳ #1275 API for third-party access             | 🔴    |
+|       |   ↳ #1685 PublicPricesController (3 endpoints) | ✅   |
+|       |   ↳ #1686 API Key authentication + rate limit  | 🔴   |
+|       |   ↳ #1687 OpenAPI/Swagger docs finalization    | 🔴   |
+|       |   ↳ #1688 Metrics tracking                     | 🔴   |
+|       |   ↳ #1689 Frontend dashboard                   | 🔴   |
+|       |   ↳ #1690 Load tests                           | 🔴   |
 
 Features:
 - Preços reais de pregões (não tabelas)
