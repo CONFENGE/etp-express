@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 869/879 issues (98.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 870/879 issues (99.0%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1701 | Feature | [#1067] Implement circuit breaker alerting via Sentry ✅ - **Score 100/100 - Auto-merged via /review-pr (after refactor to meet function length guidelines)** |
 | 2026-01-25 | #1700 | Feature | [#1695] Implementar EditalExtractionService para dados estruturados ✅ - **Score 75/100 - Manual merge (size exception: 1,122 lines justified by atomic feature + 78.6% test-to-code ratio, function length justified by validation complexity)** - **M13-Market Intel: Sub-issue 2/5 of #1545** |
 | 2026-01-25 | #1699 | Feature | [#1694] Integrate PageIndex with Contract Price Collector (#1694) ✅ - **Score 100/100 - Auto-merged via /review-pr (after auto-fixes)** - **M17-PageIndex: 30/30 COMPLETE 🎉** |
 | 2026-01-25 | #1693 | Docs     | [#1687] Adicionar OpenAPI/Swagger documentation para Public API (#1687) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
@@ -561,7 +562,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | #1070 | [Observabilidade] Enriquecer contexto em erros de extraction ✅  |
 | #1069 | [Gov-API] Implementar invalidação de cache baseada em eventos    |
 | #1068 | [Gov-API] Otimizar configuração de retry para janelas manutenção |
-| #1067 | [Gov-API] Implementar alerting automático para circuit breaker   |
+| #1067 | [Gov-API] Implementar alerting automático para circuit breaker ✅ |
 
 ### P3 - Low Priority (1 issue)
 
