@@ -21,7 +21,7 @@
  * @see Issue #1695 - [INTEL-1545b] Implementar EditalExtractionService
  */
 
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TreeSearchService } from './tree-search.service';
 import {
@@ -172,10 +172,7 @@ export class EditalExtractionService {
       const searchResult = await this.searchRelevantSections(treeId, tipo);
 
       // Step 2: Extract structured data using LLM
-      const extractedData = await this.extractDataWithLLM(
-        searchResult,
-        tipo,
-      );
+      const extractedData = await this.extractDataWithLLM(searchResult, tipo);
 
       // Step 3: Validate extracted data
       const validation = this.validateExtractedData(extractedData);
@@ -337,7 +334,9 @@ export class EditalExtractionService {
       let jsonContent = content.trim();
 
       // Remove markdown code blocks if present
-      const codeBlockMatch = jsonContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      const codeBlockMatch = jsonContent.match(
+        /```(?:json)?\s*([\s\S]*?)\s*```/,
+      );
       if (codeBlockMatch) {
         jsonContent = codeBlockMatch[1];
       }
