@@ -34,6 +34,20 @@ export enum UserRole {
   DEMO = 'demo',
 }
 
+/**
+ * API subscription plans for public API access (M13: Market Intelligence).
+ *
+ * Plans:
+ * - FREE: 100 requests/month (default for all users)
+ * - PRO: 5,000 requests/month (paid tier)
+ * - ENTERPRISE: Unlimited requests (custom contract)
+ */
+export enum ApiPlan {
+  FREE = 'free',
+  PRO = 'pro',
+  ENTERPRISE = 'enterprise',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -152,4 +166,28 @@ export class User {
    */
   @Column({ type: 'int', default: 3, nullable: true })
   etpLimitCount: number | null;
+
+  /**
+   * API Key for public API authentication (M13: Market Intelligence).
+   * Generated on user creation or manually regenerated.
+   * Used in X-API-Key header for /api/v1/prices endpoints.
+   * Null for users without API access.
+   */
+  @Column({ type: 'varchar', unique: true, nullable: true })
+  @Exclude()
+  apiKey: string | null;
+
+  /**
+   * API subscription plan for rate limiting (M13: Market Intelligence).
+   * Determines monthly quota:
+   * - FREE: 100 requests/month (default)
+   * - PRO: 5,000 requests/month
+   * - ENTERPRISE: Unlimited
+   */
+  @Column({
+    type: 'enum',
+    enum: ApiPlan,
+    default: ApiPlan.FREE,
+  })
+  apiPlan: ApiPlan;
 }
