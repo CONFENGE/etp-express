@@ -55,6 +55,35 @@ O **ETP Express** é um **wrapper de LLM** (Large Language Model) projetado para
 6. ✅ Validação obrigatória de seções mínimas (I, IV, VI, VIII, XIII)
 7. ✅ Interface moderna, responsiva e acessível (WCAG 2.1 AA)
 8. ✅ **Assistente IA (Chatbot)**: Chat contextual para duvidas durante elaboração do ETP
+9. ✅ **Integração Contratos Gov.br**: Sincronização bidirecional (Push/Pull) com portal federal, resolução automática de conflitos (Last-Write-Wins)
+
+### Integração Contratos Gov.br
+
+O ETP Express integra-se nativamente com o sistema federal **[Contratos Gov.br](https://contratos.comprasnet.gov.br/)** lançado pelo Ministério da Gestão em 2025.
+
+**Funcionalidades:**
+
+- **Push Sync**: Envie contratos locais para o portal Gov.br com um clique
+- **Pull Sync**: Importe contratos do Gov.br para o sistema local automaticamente
+- **Conflict Resolution**: Resolução automática de conflitos usando estratégia Last-Write-Wins (LWW)
+- **Sync Logs**: Auditoria completa de todas as operações de sincronização
+- **OAuth 2.0**: Autenticação segura via Gov.br (acesso.gov.br)
+
+**Como usar:**
+
+1. Configure credenciais OAuth Gov.br no arquivo `.env`:
+   ```bash
+   CONTRATOS_GOVBR_CLIENT_ID=seu-client-id
+   CONTRATOS_GOVBR_CLIENT_SECRET=seu-client-secret
+   ```
+
+2. Sincronize contratos individualmente ou em lote:
+   - **Push**: `POST /api/contratos/:id/sync/push`
+   - **Pull**: `POST /api/contratos/sync/pull`
+
+3. Monitore sincronizações via logs estruturados e tabela `contrato_sync_logs`
+
+**Documentação Completa:** [docs/integrations/contratos-gov-br.md](docs/integrations/contratos-gov-br.md)
 
 ---
 
