@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 865/879 issues (98.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 866/879 issues (98.5%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
-| 2026-01-25 | #1692 | Feature  | [#1686] Implementar API Key authentication e rate limiting (#1686) ⏳ - **PR criada aguardando CI/CD** |
+| 2026-01-25 | #1692 | Feature  | [#1686] Implementar API Key authentication e rate limiting (#1686) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixture corrections)** |
 | 2026-01-25 | #1691 | Feature  | [#1685] Criar PublicPricesController com 3 endpoints RESTful (#1685) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 1,038 lines justified by 68% test-to-code ratio + comprehensive Swagger docs)** |
 | 2026-01-25 | #1684 | Test     | [#1678] Adicionar testes de integração e documentação Contratos Gov.br (#1678) ✅ - **Merged via squash (1,403 lines: 683 integration tests + 619 docs)** |
 | 2026-01-25 | #1683 | Feature | [#1677] Implementar tratamento de conflitos de sincronização (#1677) ✅ - **Score 96.875/100 - Merged via /review-pr (size exception: 1,981 lines justified by 98.47% test coverage + conflict resolution complexity)** |
