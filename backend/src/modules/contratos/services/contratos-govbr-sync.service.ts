@@ -486,7 +486,7 @@ export class ContratosGovBrSyncService {
    */
   private mapFromGovBrFormat(
     apiData: GovBrContratoPayload,
-    organizationId: string,
+    _organizationId: string,
   ): Record<string, any> {
     return {
       numero: apiData.numero_contrato,
@@ -574,9 +574,6 @@ export class ContratosGovBrSyncService {
       7: ContratoStatus.ENCERRADO,
     };
 
-    return (
-      statusMap[statusCode] ||
-      ContratoStatus.MINUTA // Default fallback
-    );
+    return statusMap[statusCode] || ContratoStatus.MINUTA; // Default fallback
   }
 }
