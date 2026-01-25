@@ -217,9 +217,8 @@ export class ContractPriceCollectorService implements OnModuleInit {
     });
 
     // Save to database
-    const savedContractPrice = await this.contractPriceRepository.save(
-      contractPrice,
-    );
+    const savedContractPrice =
+      await this.contractPriceRepository.save(contractPrice);
 
     // Process edital PDF if available (async, non-blocking)
     // Fire and forget - errors are logged but don't block price collection
@@ -678,9 +677,7 @@ export class ContractPriceCollectorService implements OnModuleInit {
         .get(url, (response) => {
           if (response.statusCode !== 200) {
             reject(
-              new Error(
-                `Failed to download file: HTTP ${response.statusCode}`,
-              ),
+              new Error(`Failed to download file: HTTP ${response.statusCode}`),
             );
             return;
           }
