@@ -10,7 +10,7 @@ import { AxiosResponse } from 'axios';
 import { Contrato, ContratoStatus } from '../../entities/contrato.entity';
 import { ContratoSyncLog } from '../../entities/contrato-sync-log.entity';
 import { Organization } from '../../entities/organization.entity';
-import { User } from '../../entities/user.entity';
+import { User, UserRole } from '../../entities/user.entity';
 import { ContratosGovBrSyncService } from '../../modules/contratos/services/contratos-govbr-sync.service';
 import { ContratosGovBrAuthService } from '../../modules/gov-api/services/contratos-govbr-auth.service';
 
@@ -116,7 +116,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       email: 'admin@test.gov.br',
       name: 'Admin Teste',
       organizationId: testOrganization.id,
-      role: 'admin',
+      role: UserRole.ADMIN,
       isActive: true,
     });
 
@@ -125,7 +125,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       name: 'Gestor Teste',
       cargo: 'Gestor de Contratos - CPF: 123.456.789-01',
       organizationId: testOrganization.id,
-      role: 'user',
+      role: UserRole.USER,
       isActive: true,
     });
 
@@ -134,7 +134,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       name: 'Fiscal Teste',
       cargo: 'Fiscal de Contratos - CPF: 987.654.321-09',
       organizationId: testOrganization.id,
-      role: 'user',
+      role: UserRole.USER,
       isActive: true,
     });
   }
@@ -262,7 +262,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
         name: 'Gestor Sem CPF',
         cargo: 'Gestor de Contratos', // Sem CPF
         organizationId: testOrganization.id,
-        role: 'user',
+        role: UserRole.USER,
         isActive: true,
       });
 
