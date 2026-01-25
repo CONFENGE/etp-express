@@ -17,6 +17,7 @@ import { OverpriceAlertService } from './services/overprice-alert.service';
 import { ItemNormalizationController } from './controllers/item-normalization.controller';
 import { RegionalBenchmarkController } from './controllers/regional-benchmark.controller';
 import { AnalyticsController } from './controllers/analytics.controller';
+import { PublicPricesController } from './controllers/public-prices.controller';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 
 /**
@@ -61,6 +62,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     ItemNormalizationController, // Manual review API (#1606)
     RegionalBenchmarkController, // Regional benchmark API (#1271)
     AnalyticsController, // Overprice alert API (#1272)
+    PublicPricesController, // Public API for third-party access (#1685)
   ],
   providers: [
     ItemCategorySeeder,
