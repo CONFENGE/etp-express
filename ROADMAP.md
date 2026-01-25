@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 866/879 issues (98.5%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 867/879 issues (98.6%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1693 | Docs     | [#1687] Adicionar OpenAPI/Swagger documentation para Public API (#1687) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-25 | #1692 | Feature  | [#1686] Implementar API Key authentication e rate limiting (#1686) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixture corrections)** |
 | 2026-01-25 | #1691 | Feature  | [#1685] Criar PublicPricesController com 3 endpoints RESTful (#1685) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 1,038 lines justified by 68% test-to-code ratio + comprehensive Swagger docs)** |
 | 2026-01-25 | #1684 | Test     | [#1678] Adicionar testes de integração e documentação Contratos Gov.br (#1678) ✅ - **Merged via squash (1,403 lines: 683 integration tests + 619 docs)** |
@@ -694,8 +695,8 @@ Dados proprietários e analytics avançados.
 |       | ↳ #1274 Integrar alertas no fluxo ETP          | ✅    |
 |       | ↳ #1275 API for third-party access             | 🔴    |
 |       |   ↳ #1685 PublicPricesController (3 endpoints) | ✅   |
-|       |   ↳ #1686 API Key authentication + rate limit  | 🔴   |
-|       |   ↳ #1687 OpenAPI/Swagger docs finalization    | 🔴   |
+|       |   ↳ #1686 API Key authentication + rate limit  | ✅   |
+|       |   ↳ #1687 OpenAPI/Swagger docs finalization    | ✅   |
 |       |   ↳ #1688 Metrics tracking                     | 🔴   |
 |       |   ↳ #1689 Frontend dashboard                   | 🔴   |
 |       |   ↳ #1690 Load tests                           | 🔴   |
