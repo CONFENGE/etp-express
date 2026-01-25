@@ -34,6 +34,14 @@ import {
   NormalizedPriceData,
   SchedulerStatus,
 } from './contract-price-collector.types';
+import { PageIndexService } from '../../pageindex/pageindex.service';
+import { TreeBuilderService } from '../../pageindex/services/tree-builder.service';
+import { DocumentType } from '../../pageindex/dto/index-document.dto';
+import * as https from 'https';
+import * as http from 'http';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 /**
  * Default collection period in days (30 days)
@@ -77,6 +85,8 @@ export class ContractPriceCollectorService implements OnModuleInit {
     private readonly configService: ConfigService,
     @InjectRepository(ContractPrice)
     private readonly contractPriceRepository: Repository<ContractPrice>,
+    private readonly pageIndexService: PageIndexService,
+    private readonly treeBuilderService: TreeBuilderService,
   ) {}
 
   /**
@@ -207,7 +217,20 @@ export class ContractPriceCollectorService implements OnModuleInit {
     });
 
     // Save to database
-    await this.contractPriceRepository.save(contractPrice);
+    const savedContractPrice =
+      await this.contractPriceRepository.save(contractPrice);
+
+    // Process edital PDF if available (async, non-blocking)
+    // Fire and forget - errors are logged but don't block price collection
+    this.processEditalIfAvailable(savedContractPrice).catch((error) => {
+      const requestId = getRequestId();
+      this.logger.warn(
+        `[${requestId || 'no-request-id'}] Edital processing failed for ContractPrice ${savedContractPrice.id}`,
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      );
+    });
 
     return 'collected';
   }
@@ -547,6 +570,135 @@ export class ContractPriceCollectorService implements OnModuleInit {
         `[${requestId || 'no-request-id'}] Scheduled collection failed: ${errorMsg}`,
       );
     }
+  }
+
+  /**
+   * Process edital PDF if URL is available in metadata.
+   *
+   * This method integrates with PageIndex to extract structured data from edital PDFs.
+   * Called after a ContractPrice is saved with editalPdfUrl in metadata.
+   *
+   * @param contractPrice - The saved ContractPrice entity
+   * @returns Promise<void>
+   * @see Issue #1694 - [INTEL-1545a] Integrar PageIndex com Contract Price Collector
+   */
+  private async processEditalIfAvailable(
+    contractPrice: ContractPrice,
+  ): Promise<void> {
+    const editalPdfUrl = contractPrice.metadata?.editalPdfUrl as
+      | string
+      | undefined;
+
+    if (!editalPdfUrl) {
+      // No edital PDF URL available, skip processing
+      return;
+    }
+
+    const requestId = getRequestId();
+    this.logger.log(
+      `[${requestId || 'no-request-id'}] Processing edital PDF for ContractPrice ${contractPrice.id}`,
+      { editalPdfUrl },
+    );
+
+    try {
+      // 1. Download PDF to temporary directory
+      const tempDir = path.join(os.tmpdir(), 'etp-express-editais');
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      const fileName = `edital_${contractPrice.externalId}_${Date.now()}.pdf`;
+      const filePath = path.join(tempDir, fileName);
+
+      await this.downloadFile(editalPdfUrl, filePath);
+
+      this.logger.log(
+        `[${requestId || 'no-request-id'}] Downloaded edital PDF to ${filePath}`,
+      );
+
+      // 2. Create DocumentTree entity
+      const documentName = `Edital - ${contractPrice.numeroProcesso || contractPrice.externalId}`;
+      const result = await this.pageIndexService.createDocumentTree({
+        documentName,
+        documentType: DocumentType.EDITAL,
+      });
+
+      // 3. Process document with TreeBuilderService
+      await this.treeBuilderService.processDocument(result.treeId, filePath);
+
+      this.logger.log(
+        `[${requestId || 'no-request-id'}] Successfully processed edital PDF for ContractPrice ${contractPrice.id}`,
+        { treeId: result.treeId },
+      );
+
+      // 4. Clean up temporary file
+      try {
+        fs.unlinkSync(filePath);
+      } catch (cleanupError) {
+        this.logger.warn(
+          `[${requestId || 'no-request-id'}] Failed to clean up temp file ${filePath}`,
+          {
+            error:
+              cleanupError instanceof Error
+                ? cleanupError.message
+                : 'Unknown error',
+          },
+        );
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `[${requestId || 'no-request-id'}] Failed to process edital PDF for ContractPrice ${contractPrice.id}`,
+        {
+          error: errorMsg,
+          editalPdfUrl,
+        },
+      );
+
+      // Don't throw - edital processing is optional and shouldn't break price collection
+      // The error is logged for monitoring and manual retry if needed
+    }
+  }
+
+  /**
+   * Download a file from URL to local path.
+   *
+   * @param url - URL to download from
+   * @param filePath - Local path to save file
+   * @returns Promise<void>
+   */
+  private async downloadFile(url: string, filePath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const protocol = url.startsWith('https') ? https : http;
+
+      const file = fs.createWriteStream(filePath);
+
+      protocol
+        .get(url, (response) => {
+          if (response.statusCode !== 200) {
+            reject(
+              new Error(`Failed to download file: HTTP ${response.statusCode}`),
+            );
+            return;
+          }
+
+          response.pipe(file);
+
+          file.on('finish', () => {
+            file.close();
+            resolve();
+          });
+
+          file.on('error', (err) => {
+            fs.unlinkSync(filePath);
+            reject(err);
+          });
+        })
+        .on('error', (err) => {
+          fs.unlinkSync(filePath);
+          reject(err);
+        });
+    });
   }
 
   /**
