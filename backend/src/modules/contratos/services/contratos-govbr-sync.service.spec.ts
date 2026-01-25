@@ -61,12 +61,8 @@ describe('ContratosGovBrSyncService', () => {
       ],
     }).compile();
 
-    service = module.get<ContratosGovBrSyncService>(
-      ContratosGovBrSyncService,
-    );
-    repository = module.get<Repository<Contrato>>(
-      getRepositoryToken(Contrato),
-    );
+    service = module.get<ContratosGovBrSyncService>(ContratosGovBrSyncService);
+    repository = module.get<Repository<Contrato>>(getRepositoryToken(Contrato));
     authService = module.get<ContratosGovBrAuthService>(
       ContratosGovBrAuthService,
     );

@@ -12,9 +12,7 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
  * - govBrSyncStatus: Current sync status (pending/synced/error)
  * - govBrSyncErrorMessage: Error details when sync fails
  */
-export class AddGovBrSyncFieldsToContrato1770000000000
-  implements MigrationInterface
-{
+export class AddGovBrSyncFieldsToContrato1770000000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
       'contratos',

@@ -116,9 +116,7 @@ export class ContratosGovBrSyncService {
     });
 
     if (!contrato) {
-      throw new NotFoundException(
-        `Contrato with ID ${contratoId} not found`,
-      );
+      throw new NotFoundException(`Contrato with ID ${contratoId} not found`);
     }
 
     // 2. Validar se contrato pode ser sincronizado
@@ -167,9 +165,7 @@ export class ContratosGovBrSyncService {
       });
 
       // Re-throw para o caller lidar
-      throw new Error(
-        `Failed to sync contrato to Gov.br: ${errorMessage}`,
-      );
+      throw new Error(`Failed to sync contrato to Gov.br: ${errorMessage}`);
     }
   }
 
@@ -197,17 +193,18 @@ export class ContratosGovBrSyncService {
     const fiscalCpf = this.extractCpfFromUser(contrato.fiscalResponsavel);
 
     if (!gestorCpf) {
-      errors.push('gestorResponsavel CPF could not be determined (add CPF to cargo field)');
+      errors.push(
+        'gestorResponsavel CPF could not be determined (add CPF to cargo field)',
+      );
     }
     if (!fiscalCpf) {
-      errors.push('fiscalResponsavel CPF could not be determined (add CPF to cargo field)');
+      errors.push(
+        'fiscalResponsavel CPF could not be determined (add CPF to cargo field)',
+      );
     }
 
     // Data de assinatura obrigatória para contratos assinados
-    if (
-      contrato.status !== ContratoStatus.MINUTA &&
-      !contrato.dataAssinatura
-    ) {
+    if (contrato.status !== ContratoStatus.MINUTA && !contrato.dataAssinatura) {
       errors.push('dataAssinatura is required for non-draft contracts');
     }
 
