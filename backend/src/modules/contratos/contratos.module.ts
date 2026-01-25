@@ -26,6 +26,8 @@ import { ContractAlertJob } from './jobs/contract-alert.job';
 import { FiscalizacaoNotificationJob } from './jobs/fiscalizacao-notification.job';
 import { FiscalizacaoNotificationService } from './services/fiscalizacao-notification.service';
 import { EmailModule } from '../email/email.module';
+import { ContratosGovBrSyncService } from './services/contratos-govbr-sync.service';
+import { GovApiModule } from '../gov-api/gov-api.module';
 
 /**
  * Módulo de Gestão de Contratos.
@@ -45,6 +47,7 @@ import { EmailModule } from '../email/email.module';
  * - #1643 - [FISC-1286c] Create Ateste entity and approval workflow
  * - #1644 - [FISC-1286d] Add document upload to fiscalização entities
  * - #1647 - [FISC-1286g] Add notification system for fiscalização events
+ * - #1675 - [CONT-GOV-1289c] Implementar sincronização Push de contratos
  *
  * @see Lei 14.133/2021 Art. 90-129 - Contratos Administrativos
  * @see Lei 14.133/2021 Art. 117 - Gestão de contratos
@@ -63,6 +66,7 @@ import { EmailModule } from '../email/email.module';
     ]),
     ScheduleModule.forRoot(),
     EmailModule,
+    GovApiModule,
   ],
   controllers: [
     ContratosController,
@@ -81,6 +85,7 @@ import { EmailModule } from '../email/email.module';
     AtesteService,
     DocumentoFiscalizacaoService,
     FiscalizacaoNotificationService,
+    ContratosGovBrSyncService,
     ContractAlertJob,
     FiscalizacaoNotificationJob,
   ],
@@ -92,6 +97,7 @@ import { EmailModule } from '../email/email.module';
     AtesteService,
     DocumentoFiscalizacaoService,
     FiscalizacaoNotificationService,
+    ContratosGovBrSyncService,
   ],
 })
 export class ContratosModule {}
