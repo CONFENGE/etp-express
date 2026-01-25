@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 860/879 issues (97.8%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 861/879 issues (97.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1682 | Feature | [#1676] Implementar sincronização Pull de contratos Gov.br (#1676) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 578 lines justified by 60% test coverage)** |
 | 2026-01-25 | #1681 | Feature | [#1675] Implementar sincronização Push de contratos Gov.br ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-25 | #1680 | Feature  | [#1674] Implementar autenticação Gov.br OAuth (#1674) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | -     | Infra    | **Integração AIOS Framework** - Framework de agentes IA para desenvolvimento assistido ✅ - Sistema de orquestração de agentes (analyst, pm, architect, sm, dev, qa), workflows automatizados (Planning → Development → QA), documentação estruturada (Product Brief → PRD → Tech Spec → Story) |
