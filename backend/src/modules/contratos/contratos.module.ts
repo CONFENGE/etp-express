@@ -9,6 +9,7 @@ import { Medicao } from '../../entities/medicao.entity';
 import { Ocorrencia } from '../../entities/ocorrencia.entity';
 import { Ateste } from '../../entities/ateste.entity';
 import { DocumentoFiscalizacao } from '../../entities/documento-fiscalizacao.entity';
+import { ContratoSyncLog } from '../../entities/contrato-sync-log.entity';
 import { ContractChainService } from './services/contract-chain.service';
 import { ContractAlertService } from './services/contract-alert.service';
 import { ContratosKpiService } from './services/contratos-kpi.service';
@@ -63,6 +64,7 @@ import { GovApiModule } from '../gov-api/gov-api.module';
       Ocorrencia,
       Ateste,
       DocumentoFiscalizacao,
+      ContratoSyncLog,
     ]),
     ScheduleModule.forRoot(),
     EmailModule,

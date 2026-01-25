@@ -10,6 +10,10 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { Contrato, ContratoStatus } from '../../../entities/contrato.entity';
+import {
+  ContratoSyncLog,
+  ConflictField,
+} from '../../../entities/contrato-sync-log.entity';
 import { ContratosGovBrAuthService } from '../../gov-api/services/contratos-govbr-auth.service';
 
 /**
@@ -82,6 +86,8 @@ export class ContratosGovBrSyncService {
   constructor(
     @InjectRepository(Contrato)
     private readonly contratoRepository: Repository<Contrato>,
+    @InjectRepository(ContratoSyncLog)
+    private readonly syncLogRepository: Repository<ContratoSyncLog>,
     private readonly authService: ContratosGovBrAuthService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
@@ -575,5 +581,234 @@ export class ContratosGovBrSyncService {
     };
 
     return statusMap[statusCode] || ContratoStatus.MINUTA; // Default fallback
+  }
+
+  /**
+   * Detecta e resolve conflitos entre dados locais e remotos (Gov.br)
+   *
+   * Estratégia Last-Write-Wins (LWW): Compara `govBrSyncedAt` vs `updatedAt`
+   * para determinar qual versão prevalece.
+   *
+   * Fluxo:
+   * 1. Detecta conflitos comparando campos críticos
+   * 2. Aplica estratégia LWW para resolver
+   * 3. Registra conflitos e resolução em ContratoSyncLog
+   * 4. Atualiza contrato com dados resolvidos
+   *
+   * Issue: #1677 - Tratamento de conflitos de sincronização
+   *
+   * @param local - Contrato local existente
+   * @param remote - Dados parciais do Gov.br
+   * @returns Promise<void>
+   */
+  async handleConflictAndUpdate(
+    local: Contrato,
+    remote: Partial<Contrato>,
+  ): Promise<void> {
+    // 1. Detectar conflitos
+    const conflicts = this.detectConflicts(local, remote);
+
+    if (conflicts.length === 0) {
+      // Sem conflitos - atualização direta
+      // Remove relacionamentos para evitar erro de tipo no update
+      const {
+        edital,
+        organization,
+        gestorResponsavel,
+        fiscalResponsavel,
+        createdBy,
+        ...updateData
+      } = remote as any;
+
+      await this.contratoRepository.update(local.id, {
+        ...updateData,
+        govBrSyncedAt: new Date(),
+        govBrSyncStatus: 'synced',
+        govBrSyncErrorMessage: null,
+      });
+
+      this.logger.log(
+        `Contract ${local.numero} updated from Gov.br (no conflicts)`,
+      );
+      return;
+    }
+
+    // 2. Aplicar estratégia de resolução
+    const resolved = this.resolveConflicts(local, remote, conflicts);
+
+    // 3. Registrar resolução de conflito
+    await this.syncLogRepository.save({
+      contratoId: local.id,
+      action: 'conflict_resolved',
+      conflicts,
+      resolution: resolved,
+    });
+
+    // 4. Atualizar contrato com dados resolvidos
+    // Remove relacionamentos para evitar erro de tipo no update
+    const {
+      edital,
+      organization,
+      gestorResponsavel,
+      fiscalResponsavel,
+      createdBy,
+      ...resolvedData
+    } = resolved as any;
+
+    await this.contratoRepository.update(local.id, {
+      ...resolvedData,
+      govBrSyncedAt: new Date(),
+      govBrSyncStatus: 'synced',
+      govBrSyncErrorMessage: null,
+    });
+
+    this.logger.log(
+      `Contract ${local.numero} updated from Gov.br with conflict resolution: ${conflicts.length} conflicts resolved`,
+    );
+  }
+
+  /**
+   * Detecta conflitos entre dados locais e remotos
+   *
+   * Compara campos críticos que, se divergentes, requerem resolução:
+   * - valorGlobal
+   * - vigenciaFim
+   * - status
+   * - objeto
+   * - contratadoCnpj
+   *
+   * @param local - Contrato local
+   * @param remote - Dados parciais do Gov.br
+   * @returns Array de conflitos detectados
+   * @private
+   */
+  private detectConflicts(
+    local: Contrato,
+    remote: Partial<Contrato>,
+  ): ConflictField[] {
+    const conflicts: ConflictField[] = [];
+
+    // Campos críticos para detectar conflitos
+    const criticalFields: (keyof Contrato)[] = [
+      'valorGlobal',
+      'vigenciaFim',
+      'status',
+      'objeto',
+      'contratadoCnpj',
+    ];
+
+    for (const field of criticalFields) {
+      if (remote[field] !== undefined && local[field] !== remote[field]) {
+        // Normalizar valores para comparação correta
+        const localValue = this.normalizeValue(local[field]);
+        const remoteValue = this.normalizeValue(remote[field]);
+
+        if (localValue !== remoteValue) {
+          conflicts.push({
+            field,
+            localValue: local[field],
+            remoteValue: remote[field],
+          });
+        }
+      }
+    }
+
+    return conflicts;
+  }
+
+  /**
+   * Normaliza valores para comparação correta
+   *
+   * Trata casos especiais:
+   * - Datas → ISO string
+   * - Decimais → string normalizada
+   * - Objetos → JSON string
+   *
+   * @param value - Valor a normalizar
+   * @returns Valor normalizado
+   * @private
+   */
+  private normalizeValue(value: any): any {
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+    return value;
+  }
+
+  /**
+   * Resolve conflitos usando estratégia Last-Write-Wins (LWW)
+   *
+   * Lógica:
+   * - Se `govBrSyncedAt > updatedAt` → Remote wins (Gov.br mais recente)
+   * - Caso contrário → Local wins (dados locais foram editados após sync)
+   *
+   * Quando local wins: Agenda push para sincronizar Gov.br
+   *
+   * @param local - Contrato local
+   * @param remote - Dados parciais do Gov.br
+   * @param conflicts - Array de conflitos detectados
+   * @returns Dados resolvidos para aplicar
+   * @private
+   */
+  private resolveConflicts(
+    local: Contrato,
+    remote: Partial<Contrato>,
+    conflicts: ConflictField[],
+  ): Partial<Contrato> {
+    const resolved: Partial<Contrato> = { ...remote };
+
+    // Determinar qual versão prevalece baseado em timestamps
+    const remoteWins =
+      local.govBrSyncedAt && local.govBrSyncedAt > local.updatedAt;
+
+    for (const conflict of conflicts) {
+      if (remoteWins) {
+        // Remote wins - usar valor do Gov.br
+        resolved[conflict.field as keyof Contrato] = conflict.remoteValue;
+        this.logger.debug(
+          `Conflict resolved (remote wins): ${conflict.field} = ${conflict.remoteValue}`,
+        );
+      } else {
+        // Local wins - preservar valor local e agendar push
+        resolved[conflict.field as keyof Contrato] = conflict.localValue;
+        this.schedulePush(local.id);
+        this.logger.debug(
+          `Conflict resolved (local wins): ${conflict.field} = ${conflict.localValue}, push scheduled`,
+        );
+      }
+    }
+
+    return resolved;
+  }
+
+  /**
+   * Agenda push assíncrono de contrato para Gov.br
+   *
+   * Chamado quando local wins em conflito para re-sincronizar
+   * dados locais com Gov.br.
+   *
+   * @param contratoId - ID do contrato a sincronizar
+   * @private
+   */
+  private schedulePush(contratoId: string): void {
+    // Implementação assíncrona (non-blocking)
+    // Usar background job ou event emitter para agendar push
+    this.logger.log(
+      `Push scheduled for contract ${contratoId} due to conflict resolution (local wins)`,
+    );
+
+    // Executar push em background
+    this.pushContrato(contratoId).catch((error) => {
+      this.logger.error(
+        `Failed to push contract ${contratoId} after conflict resolution`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    });
   }
 }
