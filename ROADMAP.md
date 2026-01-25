@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 859/879 issues (97.7%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 860/879 issues (97.8%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1681 | Feature | [#1675] Implementar sincronização Push de contratos Gov.br ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-25 | #1680 | Feature  | [#1674] Implementar autenticação Gov.br OAuth (#1674) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-24 | -     | Infra    | **Integração AIOS Framework** - Framework de agentes IA para desenvolvimento assistido ✅ - Sistema de orquestração de agentes (analyst, pm, architect, sm, dev, qa), workflows automatizados (Planning → Development → QA), documentação estruturada (Product Brief → PRD → Tech Spec → Story) |
 | 2026-01-24 | #1679 | Docs | [#1673] Document Contratos Gov.br API specification (#1673) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
@@ -588,7 +589,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
 | M13: Inteligência de Mercado   | 12/14  | 86% 🟢     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 22/28  | 78.6% 🟢   | +R$ 1.000/mês         |
+| M15: Gestão de Contratos       | 23/28  | 82.1% 🟢   | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 29/30  | 97% 🟢     | Diferencial técnico   |
 
@@ -782,9 +783,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 879   |
-| Issues Abertas    | 20    |
-| Issues Fechadas   | 859   |
-| Progresso         | 97.7% |
+| Issues Abertas    | 19    |
+| Issues Fechadas   | 860   |
+| Progresso         | 97.8% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 29/30 |
 | Backend Coverage  | 71%   |
