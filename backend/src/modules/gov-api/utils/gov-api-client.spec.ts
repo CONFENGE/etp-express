@@ -1,10 +1,16 @@
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import * as Sentry from '@sentry/node';
 import { GovApiClient, GovApiClientConfig } from './gov-api-client';
 
 // Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+// Mock Sentry
+jest.mock('@sentry/node', () => ({
+  captureMessage: jest.fn(),
+}));
 
 // Mock opossum (circuit breaker)
 jest.mock('opossum', () => {
@@ -333,6 +339,142 @@ describe('GovApiClient', () => {
         expect(sourceClient.getCircuitState()).toBeDefined();
       },
     );
+  });
+
+  describe('circuit breaker alerting', () => {
+    let mockCircuitBreakerEvents: Map<string, Function>;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockCircuitBreakerEvents = new Map();
+
+      // Override circuit breaker mock to capture event handlers
+      jest.mock('opossum', () => {
+        return jest.fn().mockImplementation(() => ({
+          fire: jest.fn(),
+          on: jest
+            .fn()
+            .mockImplementation((event: string, handler: Function) => {
+              mockCircuitBreakerEvents.set(event, handler);
+            }),
+          opened: false,
+          halfOpen: false,
+          closed: true,
+          stats: {
+            failures: 5,
+            successes: 0,
+            rejects: 0,
+            fires: 5,
+            timeouts: 0,
+            cacheHits: 0,
+            cacheMisses: 0,
+            fallbacks: 0,
+          },
+        }));
+      });
+    });
+
+    it('should send Sentry alert when circuit breaker opens', () => {
+      const testClient = new GovApiClient(configService, defaultConfig);
+
+      // Access the circuit breaker and trigger 'open' event
+      const circuitBreaker = (testClient as any).circuitBreaker;
+      const onOpenCallback = circuitBreaker.on.mock.calls.find(
+        (call: any[]) => call[0] === 'open',
+      )?.[1];
+
+      expect(onOpenCallback).toBeDefined();
+
+      // Trigger the open event
+      onOpenCallback();
+
+      // Verify Sentry was called
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.stringContaining('Circuit breaker OPENED'),
+        expect.objectContaining({
+          level: 'warning',
+          tags: expect.objectContaining({
+            source: 'pncp',
+            circuit_breaker_state: 'open',
+            component: 'gov-api-client',
+          }),
+        }),
+      );
+    });
+
+    it('should send Sentry info event when circuit breaker goes to half-open', () => {
+      const testClient = new GovApiClient(configService, defaultConfig);
+
+      const circuitBreaker = (testClient as any).circuitBreaker;
+      const onHalfOpenCallback = circuitBreaker.on.mock.calls.find(
+        (call: any[]) => call[0] === 'halfOpen',
+      )?.[1];
+
+      expect(onHalfOpenCallback).toBeDefined();
+
+      // Trigger the halfOpen event
+      onHalfOpenCallback();
+
+      // Verify Sentry was called
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.stringContaining('Circuit breaker HALF-OPEN'),
+        expect.objectContaining({
+          level: 'info',
+          tags: expect.objectContaining({
+            source: 'pncp',
+            circuit_breaker_state: 'half-open',
+          }),
+        }),
+      );
+    });
+
+    it('should send Sentry info event when circuit breaker closes', () => {
+      const testClient = new GovApiClient(configService, defaultConfig);
+
+      const circuitBreaker = (testClient as any).circuitBreaker;
+      const onCloseCallback = circuitBreaker.on.mock.calls.find(
+        (call: any[]) => call[0] === 'close',
+      )?.[1];
+
+      expect(onCloseCallback).toBeDefined();
+
+      // Trigger the close event
+      onCloseCallback();
+
+      // Verify Sentry was called
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.stringContaining('Circuit breaker CLOSED'),
+        expect.objectContaining({
+          level: 'info',
+          tags: expect.objectContaining({
+            source: 'pncp',
+            circuit_breaker_state: 'closed',
+          }),
+        }),
+      );
+    });
+
+    it('should include circuit breaker stats in Sentry context when opening', () => {
+      const testClient = new GovApiClient(configService, defaultConfig);
+
+      const circuitBreaker = (testClient as any).circuitBreaker;
+      const onOpenCallback = circuitBreaker.on.mock.calls.find(
+        (call: any[]) => call[0] === 'open',
+      )?.[1];
+
+      onOpenCallback();
+
+      // Verify extra context includes stats
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          extra: expect.objectContaining({
+            baseUrl: defaultConfig.baseUrl,
+            circuitBreakerStats: expect.any(Object),
+          }),
+        }),
+      );
+    });
   });
 });
 
