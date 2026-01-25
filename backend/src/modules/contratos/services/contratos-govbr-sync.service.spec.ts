@@ -727,10 +727,7 @@ describe('ContratosGovBrSyncService', () => {
 
       mockRepository.update.mockResolvedValue({ affected: 1 });
 
-      await service.handleConflictAndUpdate(
-        mockLocal as Contrato,
-        mockRemote,
-      );
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
 
       expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
         ...mockRemote,
@@ -755,10 +752,7 @@ describe('ContratosGovBrSyncService', () => {
       mockRepository.update.mockResolvedValue({ affected: 1 });
       mockSyncLogRepository.save.mockResolvedValue({});
 
-      await service.handleConflictAndUpdate(
-        mockLocal as Contrato,
-        mockRemote,
-      );
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
 
       // Deve ter criado log com conflitos detectados
       expect(mockSyncLogRepository.save).toHaveBeenCalledWith({
@@ -838,14 +832,15 @@ describe('ContratosGovBrSyncService', () => {
       });
       mockHttpService.post.mockReturnValue(
         of({
-          data: { id: 'gov-br-id', numero_contrato: '001/2024', created_at: '' },
+          data: {
+            id: 'gov-br-id',
+            numero_contrato: '001/2024',
+            created_at: '',
+          },
         }),
       );
 
-      await service.handleConflictAndUpdate(
-        mockLocal as Contrato,
-        mockRemote,
-      );
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
 
       // Local wins - deve preservar valores locais
       expect(mockRepository.update).toHaveBeenCalledWith(
@@ -913,10 +908,7 @@ describe('ContratosGovBrSyncService', () => {
       mockRepository.update.mockResolvedValue({ affected: 1 });
       mockSyncLogRepository.save.mockResolvedValue({});
 
-      await service.handleConflictAndUpdate(
-        mockLocal as Contrato,
-        mockRemote,
-      );
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
 
       // Deve detectar conflito no campo status
       expect(mockSyncLogRepository.save).toHaveBeenCalledWith(
@@ -944,10 +936,7 @@ describe('ContratosGovBrSyncService', () => {
       mockRepository.update.mockResolvedValue({ affected: 1 });
       mockSyncLogRepository.save.mockResolvedValue({});
 
-      await service.handleConflictAndUpdate(
-        mockLocal as Contrato,
-        mockRemote,
-      );
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
 
       // Deve ter registrado TODOS os 5 conflitos
       expect(mockSyncLogRepository.save).toHaveBeenCalledWith(
@@ -964,9 +953,9 @@ describe('ContratosGovBrSyncService', () => {
         }),
       );
 
-      expect(mockSyncLogRepository.save.mock.calls[0][0].conflicts).toHaveLength(
-        5,
-      );
+      expect(
+        mockSyncLogRepository.save.mock.calls[0][0].conflicts,
+      ).toHaveLength(5);
     });
   });
 });

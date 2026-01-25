@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 /**
  * Migration: Create contrato_sync_logs table
@@ -9,9 +14,7 @@ import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm
  * Creates table to log all sync operations and conflict resolutions
  * between local contracts and Contratos.gov.br API.
  */
-export class CreateContratoSyncLogsTable1770100000000
-  implements MigrationInterface
-{
+export class CreateContratoSyncLogsTable1770100000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
