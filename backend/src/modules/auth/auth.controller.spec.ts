@@ -10,7 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { DISCLAIMER } from '../../common/constants/messages';
-import { UserRole } from '../../entities/user.entity';
+import { UserRole, ApiPlan } from '../../entities/user.entity';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -78,6 +78,8 @@ describe('AuthController', () => {
     authorizedDomainId: null,
     authorizedDomain: null,
     etpLimitCount: null,
+    apiKey: null,
+    apiPlan: ApiPlan.FREE,
   };
 
   const mockAuthResponse = {

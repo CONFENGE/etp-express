@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { DemoUserService } from '../demo-user.service';
-import { User, UserRole } from '../../../entities/user.entity';
+import { User, UserRole, ApiPlan } from '../../../entities/user.entity';
 import { Organization } from '../../../entities/organization.entity';
 import { Etp, EtpStatus } from '../../../entities/etp.entity';
 import { CreateDemoUserDto } from '../dto/create-demo-user.dto';
@@ -56,6 +56,8 @@ describe('DemoUserService', () => {
     updatedAt: new Date('2024-01-01'),
     etps: [],
     auditLogs: [],
+    apiKey: null,
+    apiPlan: ApiPlan.FREE,
   };
 
   const mockUserRepository = {
