@@ -204,14 +204,19 @@ Retrieve statistical price benchmarks filtered by category, region, and organiza
     status: 429,
     description: 'Too Many Requests - API quota exceeded',
   })
-  async getBenchmark(
-    @Query() query: BenchmarkQueryDto,
-  ): Promise<{ data: BenchmarkResponseDto[]; total: number; page: number; limit: number; totalPages: number }> {
+  async getBenchmark(@Query() query: BenchmarkQueryDto): Promise<{
+    data: BenchmarkResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     this.logger.log(
       `Public API: GET /prices/benchmark - filters: ${JSON.stringify(query)}`,
     );
 
-    const { data, total } = await this.regionalBenchmarkService.getBenchmarks(query);
+    const { data, total } =
+      await this.regionalBenchmarkService.getBenchmarks(query);
 
     // Calculate pagination metadata
     const limit = query.limit || 20;
@@ -364,7 +369,9 @@ Search for specific items with historical prices from government contracts.
     // TODO: Implement search logic in next sub-issue
     // For now, return placeholder response
     // This will be implemented after ItemNormalizationService.search() is created
-    this.logger.warn('Search endpoint not fully implemented - returning empty results');
+    this.logger.warn(
+      'Search endpoint not fully implemented - returning empty results',
+    );
 
     return {
       data: [],
