@@ -7,6 +7,7 @@ import { JurisprudenciaController } from './jurisprudencia.controller';
 import { TreeBuilderService } from './services/tree-builder.service';
 import { TreeSearchService } from './services/tree-search.service';
 import { JurisprudenciaService } from './services/jurisprudencia.service';
+import { EditalExtractionService } from './services/edital-extraction.service';
 import { Lei14133Seeder } from './seeders/lei-14133.seeder';
 import { JurisprudenciaSeeder } from './seeders/jurisprudencia.seeder';
 import { TceSPSeeder } from './seeders/tcesp.seeder';
@@ -59,6 +60,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TreeBuilderService,
     TreeSearchService,
     JurisprudenciaService,
+    EditalExtractionService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
@@ -69,6 +71,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TreeBuilderService,
     TreeSearchService,
     JurisprudenciaService,
+    EditalExtractionService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
