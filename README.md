@@ -949,6 +949,7 @@ npm run lint
 | Documento                                                      | Descrição                                         |
 | -------------------------------------------------------------- | ------------------------------------------------- |
 | [ARCHITECTURE.md](./ARCHITECTURE.md)                           | Arquitetura completa do sistema                   |
+| [docs/API_PUBLIC.md](./docs/API_PUBLIC.md)                     | **API Pública de Preços - Guia completo**        |
 | [docs/INFRASTRUCTURE.md](./docs/INFRASTRUCTURE.md)             | **Infrastructure as Code - Docker, Railway, DR**  |
 | [DEPLOY.md](./DEPLOY.md)                                       | Guia de deploy em produção (Railway)              |
 | [docs/INCIDENT_RESPONSE.md](./docs/INCIDENT_RESPONSE.md)       | **Playbook de resposta a incidentes em produção** |
