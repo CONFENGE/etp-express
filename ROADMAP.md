@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 867/879 issues (98.6%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 868/879 issues (98.7%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1699 | Feature | [#1694] Integrate PageIndex with Contract Price Collector (#1694) ✅ - **Score 100/100 - Auto-merged via /review-pr (after auto-fixes)** - **M17-PageIndex: 30/30 COMPLETE 🎉** |
 | 2026-01-25 | #1693 | Docs     | [#1687] Adicionar OpenAPI/Swagger documentation para Public API (#1687) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-25 | #1692 | Feature  | [#1686] Implementar API Key authentication e rate limiting (#1686) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixture corrections)** |
 | 2026-01-25 | #1691 | Feature  | [#1685] Criar PublicPricesController com 3 endpoints RESTful (#1685) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 1,038 lines justified by 68% test-to-code ratio + comprehensive Swagger docs)** |
@@ -496,13 +497,13 @@ Nenhum bug P0 aberto no momento. ✅
 
 ## Issues Abertas (51)
 
-### P0 - M17 PageIndex + SINAPI API (25 issues - 8 open) 🔵 IN PROGRESS
+### P0 - M17 PageIndex + SINAPI API (30 issues - 0 open) ✅ COMPLETE
 
 > PageIndex para RAG reasoning-based + API Orcamentador para SINAPI. Ver seção "M17: PageIndex RAG + SINAPI API" abaixo.
 
 | #     | Issue                                                    | Prioridade | Status |
 | ----- | -------------------------------------------------------- | ---------- | ------ |
-| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | 🔴     |
+| #1538 | Criar módulo PageIndex para indexação hierárquica        | P0         | ✅     |
 |       | ↳ #1550-#1554 Sub-issues PageIndex                       | P0         | ✅     |
 | #1539 | Integrar SINAPI via API Orcamentador (**REESCRITA**)     | P0         | ✅     |
 |       | ↳ #1564 Documentar API + obter credenciais               | P0         | ✅     |
@@ -510,7 +511,7 @@ Nenhum bug P0 aberto no momento. ✅
 |       | ↳ #1567 Adaptar SinapiService para usar API              | P0         | ✅     |
 |       | ↳ #1568 Integrar no price-aggregation.service            | P0         | ✅     |
 |       | ↳ #1569 Configurar sync job + webhook                    | P0         | ✅     |
-| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | 🔴     |
+| #1540 | Indexar jurisprudências TCE-SP e TCU com PageIndex       | P0         | ✅     |
 |       | ↳ #1577 Pesquisar e documentar fontes jurisprudência     | P0         | ✅     |
 |       | ↳ #1578 Criar JurisprudenciaSeeder com estrutura base    | P0         | ✅     |
 |       | ↳ #1579 Coletar e indexar súmulas TCE-SP (mínimo 50)     | P0         | ✅     |
@@ -518,10 +519,11 @@ Nenhum bug P0 aberto no momento. ✅
 |       | ↳ #1581 Criar API de busca por jurisprudência            | P0         | ✅     |
 |       | ↳ #1582 Integrar jurisprudência com ComplianceService    | P0         | ✅     |
 | #1541 | Integrar PageIndex no Anti-Hallucination Agent           | P1         | ✅     |
-| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | 🔴     |
+| #1542 | Implementar Hybrid RAG - Embeddings + PageIndex          | P1         | ✅     |
 | #1543 | Document Extraction com tree structure                   | P2         | ✅     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | ✅     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
+|       | ↳ #1694 Integrar PageIndex com Contract Price Collector (1/5) | P3    | ✅     |
 
 **Nota:** Issue #1566 (TreeBuilder para SINAPI) foi **CANCELADA** - API oferece JSON estruturado.
 
@@ -597,7 +599,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 23/28  | 82.1% 🟢   | +R$ 1.000/mês         |
 | M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 29/30  | 97% 🟢     | Diferencial técnico   |
+| M17: PageIndex RAG             | 30/30  | 100% ✅    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -707,7 +709,7 @@ Features:
 - Alertas de sobrepreço vs mediana
 - API monetizável para terceiros
 
-#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 29/30 (97%) 🟢 NEARLY COMPLETE
+#### M17: PageIndex RAG + SINAPI API (#1538-#1596) - 30/30 (100%) ✅ COMPLETE
 
 Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) para RAG reasoning-based + API Orcamentador para SINAPI.
 
@@ -743,6 +745,7 @@ Integração do framework [PageIndex](https://github.com/VectifyAI/PageIndex) pa
 | #1543 | Document Extraction com tree structure                   | P2         | ✅     |
 | #1544 | Chat contextualizado com PageIndex tree search           | P2         | ✅     |
 | #1545 | Market Intelligence com extração estruturada de editais  | P3         | 🔴     |
+|       | ↳ #1694 Integrar PageIndex com Contract Price Collector (1/5) | P3    | ✅     |
 
 **Decisão Arquitetural SINAPI (2026-01-17):**
 - **Antes:** PageIndex para parsear PDFs/Excel do SINAPI (complexo, frágil)
@@ -795,11 +798,11 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 879   |
-| Issues Abertas    | 16    |
-| Issues Fechadas   | 863   |
-| Progresso         | 98.2% |
+| Issues Abertas    | 11    |
+| Issues Fechadas   | 868   |
+| Progresso         | 98.7% |
 | Bugs P0 Abertos   | 0     |
-| M17 PageIndex+API | 29/30 |
+| M17 PageIndex+API | 30/30 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
