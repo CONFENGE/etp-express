@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 862/879 issues (98.1%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 863/879 issues (98.2%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1684 | Test     | [#1678] Adicionar testes de integração e documentação Contratos Gov.br (#1678) ✅ - **Merged via squash (1,403 lines: 683 integration tests + 619 docs)** |
 | 2026-01-25 | #1683 | Feature | [#1677] Implementar tratamento de conflitos de sincronização (#1677) ✅ - **Score 96.875/100 - Merged via /review-pr (size exception: 1,981 lines justified by 98.47% test coverage + conflict resolution complexity)** |
 | 2026-01-25 | #1682 | Feature | [#1676] Implementar sincronização Pull de contratos Gov.br (#1676) ✅ - **Score 97.5/100 - Merged via /review-pr (size exception: 578 lines justified by 60% test coverage)** |
 | 2026-01-25 | #1681 | Feature | [#1675] Implementar sincronização Push de contratos Gov.br ✅ - **Score 100/100 - Auto-merged via /review-pr** |
@@ -785,9 +786,9 @@ Oportunidades de mercado identificadas.
 | Metrica           | Valor |
 | ----------------- | ----- |
 | Issues Totais     | 879   |
-| Issues Abertas    | 19    |
-| Issues Fechadas   | 860   |
-| Progresso         | 97.8% |
+| Issues Abertas    | 16    |
+| Issues Fechadas   | 863   |
+| Progresso         | 98.2% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 29/30 |
 | Backend Coverage  | 71%   |
