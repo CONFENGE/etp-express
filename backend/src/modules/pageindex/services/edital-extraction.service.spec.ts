@@ -121,7 +121,9 @@ describe('EditalExtractionService', () => {
 
       // Assertions
       expect(result.data.tipo).toBe(EditalTipo.PREGAO);
-      expect(result.data.objeto).toBe('Aquisição de equipamentos de informática');
+      expect(result.data.objeto).toBe(
+        'Aquisição de equipamentos de informática',
+      );
       expect(result.data.lotes).toHaveLength(1);
       expect(result.data.lotes[0].itens).toHaveLength(1);
       expect(result.data.lotes[0].itens[0].quantidade).toBe(50);
