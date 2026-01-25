@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 868/879 issues (98.7%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 869/879 issues (98.9%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1700 | Feature | [#1695] Implementar EditalExtractionService para dados estruturados ✅ - **Score 75/100 - Manual merge (size exception: 1,122 lines justified by atomic feature + 78.6% test-to-code ratio, function length justified by validation complexity)** - **M13-Market Intel: Sub-issue 2/5 of #1545** |
 | 2026-01-25 | #1699 | Feature | [#1694] Integrate PageIndex with Contract Price Collector (#1694) ✅ - **Score 100/100 - Auto-merged via /review-pr (after auto-fixes)** - **M17-PageIndex: 30/30 COMPLETE 🎉** |
 | 2026-01-25 | #1693 | Docs     | [#1687] Adicionar OpenAPI/Swagger documentation para Public API (#1687) ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-25 | #1692 | Feature  | [#1686] Implementar API Key authentication e rate limiting (#1686) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixture corrections)** |
