@@ -7,10 +7,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import {
-  Contrato,
-  ContratoStatus,
-} from '../../src/entities/contrato.entity';
+import { Contrato, ContratoStatus } from '../../src/entities/contrato.entity';
 import { ContratoSyncLog } from '../../src/entities/contrato-sync-log.entity';
 import { Organization } from '../../src/entities/organization.entity';
 import { User } from '../../src/entities/user.entity';
@@ -241,7 +238,9 @@ describe('ContratosGovBrSync Integration Tests', () => {
       });
 
       expect(updated!.govBrSyncStatus).toBe('error');
-      expect(updated!.govBrSyncErrorMessage).toContain('API Gov.br unavailable');
+      expect(updated!.govBrSyncErrorMessage).toContain(
+        'API Gov.br unavailable',
+      );
     });
 
     it('should reject push if required fields are missing', async () => {
@@ -387,9 +386,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
 
       expect(contratos.length).toBeGreaterThanOrEqual(2);
 
-      const contrato1 = contratos.find(
-        (c) => c.numero === '002/2024-GOVBR',
-      );
+      const contrato1 = contratos.find((c) => c.numero === '002/2024-GOVBR');
       expect(contrato1).toBeDefined();
       expect(contrato1!.objeto).toBe('Serviços de TI');
       expect(contrato1!.valorGlobal).toBe('200000');
@@ -420,7 +417,9 @@ describe('ContratosGovBrSync Integration Tests', () => {
           valor_unitario: null,
           unidade_medida: null,
           quantidade: null,
-          data_inicio_vigencia: existing.vigenciaInicio.toISOString().split('T')[0],
+          data_inicio_vigencia: existing.vigenciaInicio
+            .toISOString()
+            .split('T')[0],
           data_fim_vigencia: existing.vigenciaFim.toISOString().split('T')[0],
           prazo_execucao_dias: existing.prazoExecucao,
           condicoes_prorrogacao: existing.possibilidadeProrrogacao,
