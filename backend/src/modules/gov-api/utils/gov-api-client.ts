@@ -248,74 +248,81 @@ export class GovApiClient {
    * Setup circuit breaker event listeners for monitoring
    */
   private setupCircuitBreakerEvents(): void {
-    this.circuitBreaker.on('open', () => {
-      const message = `Circuit breaker OPENED for ${this.source} - too many failures, requests will be rejected`;
-      this.logger.warn(message);
+    this.circuitBreaker.on('open', () => this.handleCircuitOpen());
+    this.circuitBreaker.on('halfOpen', () => this.handleCircuitHalfOpen());
+    this.circuitBreaker.on('close', () => this.handleCircuitClose());
+    this.circuitBreaker.on('timeout', () =>
+      this.logger.warn(`Request timeout for ${this.source}`),
+    );
+    this.circuitBreaker.on('reject', () =>
+      this.logger.warn(`Request rejected for ${this.source} - circuit is open`),
+    );
+    this.circuitBreaker.on('fallback', () =>
+      this.logger.log(`Fallback triggered for ${this.source}`),
+    );
+  }
 
-      // Send Sentry event for alerting
-      Sentry.captureMessage(message, {
-        level: 'warning',
+  /**
+   * Handle circuit breaker open event
+   */
+  private handleCircuitOpen(): void {
+    const message = `Circuit breaker OPENED for ${this.source} - too many failures, requests will be rejected`;
+    this.logger.warn(message);
+
+    Sentry.captureMessage(message, {
+      level: 'warning',
+      tags: {
+        source: this.source,
+        circuit_breaker_state: 'open',
+        component: 'gov-api-client',
+      },
+      extra: {
+        baseUrl: this.config.baseUrl,
+        circuitBreakerStats: this.circuitBreaker.stats,
+      },
+    });
+  }
+
+  /**
+   * Handle circuit breaker half-open event
+   */
+  private handleCircuitHalfOpen(): void {
+    this.logger.log(
+      `Circuit breaker HALF-OPEN for ${this.source} - testing connection...`,
+    );
+
+    Sentry.captureMessage(
+      `Circuit breaker HALF-OPEN for ${this.source} - testing connection`,
+      {
+        level: 'info',
         tags: {
           source: this.source,
-          circuit_breaker_state: 'open',
+          circuit_breaker_state: 'half-open',
           component: 'gov-api-client',
         },
-        extra: {
-          baseUrl: this.config.baseUrl,
-          circuitBreakerStats: this.circuitBreaker.stats,
+      },
+    );
+  }
+
+  /**
+   * Handle circuit breaker close event
+   */
+  private handleCircuitClose(): void {
+    this.logger.log(
+      `Circuit breaker CLOSED for ${this.source} - service healthy`,
+    );
+
+    Sentry.captureMessage(
+      `Circuit breaker CLOSED for ${this.source} - service recovered`,
+      {
+        level: 'info',
+        tags: {
+          source: this.source,
+          circuit_breaker_state: 'closed',
+          component: 'gov-api-client',
         },
-      });
-    });
-
-    this.circuitBreaker.on('halfOpen', () => {
-      this.logger.log(
-        `Circuit breaker HALF-OPEN for ${this.source} - testing connection...`,
-      );
-
-      // Send Sentry event for monitoring state transitions
-      Sentry.captureMessage(
-        `Circuit breaker HALF-OPEN for ${this.source} - testing connection`,
-        {
-          level: 'info',
-          tags: {
-            source: this.source,
-            circuit_breaker_state: 'half-open',
-            component: 'gov-api-client',
-          },
-        },
-      );
-    });
-
-    this.circuitBreaker.on('close', () => {
-      this.logger.log(
-        `Circuit breaker CLOSED for ${this.source} - service healthy`,
-      );
-
-      // Send Sentry event for recovery
-      Sentry.captureMessage(
-        `Circuit breaker CLOSED for ${this.source} - service recovered`,
-        {
-          level: 'info',
-          tags: {
-            source: this.source,
-            circuit_breaker_state: 'closed',
-            component: 'gov-api-client',
-          },
-        },
-      );
-    });
-
-    this.circuitBreaker.on('timeout', () => {
-      this.logger.warn(`Request timeout for ${this.source}`);
-    });
-
-    this.circuitBreaker.on('reject', () => {
-      this.logger.warn(`Request rejected for ${this.source} - circuit is open`);
-    });
-
-    this.circuitBreaker.on('fallback', () => {
-      this.logger.log(`Fallback triggered for ${this.source}`);
-    });
+      },
+    );
   }
 
   /**
