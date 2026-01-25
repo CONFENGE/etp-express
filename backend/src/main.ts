@@ -168,7 +168,10 @@ async function bootstrap() {
     .addTag('export', 'Exportação (PDF, JSON, XML)')
     .addTag('search', 'Busca de contratações similares')
     .addTag('analytics', 'Telemetria e analytics')
-    .addTag('Public API - Prices', 'API pública de preços para terceiros (requer API Key)')
+    .addTag(
+      'Public API - Prices',
+      'API pública de preços para terceiros (requer API Key)',
+    )
     .addBearerAuth() // JWT authentication for internal API
     .addApiKey(
       {
