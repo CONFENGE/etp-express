@@ -384,6 +384,42 @@ export class Contrato {
   dataRescisao: Date | null;
 
   // ============================================
+  // Sincronização com Contratos.gov.br (Issue #1675)
+  // ============================================
+
+  /**
+   * ID do contrato no sistema Contratos.gov.br
+   * Retornado pela API após sincronização bem-sucedida
+   */
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  govBrId: string | null;
+
+  /**
+   * Timestamp da última sincronização com Gov.br
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  govBrSyncedAt: Date | null;
+
+  /**
+   * Status de sincronização com Gov.br
+   * - pending: Aguardando sincronização
+   * - synced: Sincronizado com sucesso
+   * - error: Erro na última tentativa de sincronização
+   */
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'synced', 'error'],
+    default: 'pending',
+  })
+  govBrSyncStatus: 'pending' | 'synced' | 'error';
+
+  /**
+   * Mensagem de erro da última tentativa de sincronização (quando status = error)
+   */
+  @Column({ type: 'text', nullable: true })
+  govBrSyncErrorMessage: string | null;
+
+  // ============================================
   // Auditoria
   // ============================================
 
