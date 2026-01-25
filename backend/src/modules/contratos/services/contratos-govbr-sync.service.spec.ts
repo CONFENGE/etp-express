@@ -7,12 +7,14 @@ import { of, throwError } from 'rxjs';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ContratosGovBrSyncService } from './contratos-govbr-sync.service';
 import { Contrato, ContratoStatus } from '../../../entities/contrato.entity';
+import { ContratoSyncLog } from '../../../entities/contrato-sync-log.entity';
 import { ContratosGovBrAuthService } from '../../gov-api/services/contratos-govbr-auth.service';
 import { User } from '../../../entities/user.entity';
 
 describe('ContratosGovBrSyncService', () => {
   let service: ContratosGovBrSyncService;
   let repository: Repository<Contrato>;
+  let syncLogRepository: Repository<ContratoSyncLog>;
   let authService: ContratosGovBrAuthService;
   let httpService: HttpService;
 
@@ -21,6 +23,11 @@ describe('ContratosGovBrSyncService', () => {
     update: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+  };
+
+  const mockSyncLogRepository = {
+    save: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockAuthService = {
@@ -50,6 +57,10 @@ describe('ContratosGovBrSyncService', () => {
           useValue: mockRepository,
         },
         {
+          provide: getRepositoryToken(ContratoSyncLog),
+          useValue: mockSyncLogRepository,
+        },
+        {
           provide: ContratosGovBrAuthService,
           useValue: mockAuthService,
         },
@@ -66,6 +77,9 @@ describe('ContratosGovBrSyncService', () => {
 
     service = module.get<ContratosGovBrSyncService>(ContratosGovBrSyncService);
     repository = module.get<Repository<Contrato>>(getRepositoryToken(Contrato));
+    syncLogRepository = module.get<Repository<ContratoSyncLog>>(
+      getRepositoryToken(ContratoSyncLog),
+    );
     authService = module.get<ContratosGovBrAuthService>(
       ContratosGovBrAuthService,
     );
@@ -686,6 +700,262 @@ describe('ContratosGovBrSyncService', () => {
 
       expect(mockRepository.findOne).not.toHaveBeenCalled();
       expect(mockRepository.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleConflictAndUpdate (Issue #1677)', () => {
+    const mockLocal: Partial<Contrato> = {
+      id: 'contrato-123',
+      numero: '001/2024-CONTRATO',
+      objeto: 'Contratação local',
+      valorGlobal: '100000.00',
+      vigenciaFim: new Date('2024-12-31'),
+      status: ContratoStatus.ASSINADO,
+      contratadoCnpj: '12.345.678/0001-90',
+      govBrSyncedAt: new Date('2024-01-01T00:00:00Z'),
+      updatedAt: new Date('2024-01-02T00:00:00Z'), // Local mais recente
+    };
+
+    it('should update contract when no conflicts detected', async () => {
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação local', // Mesmo valor - sem conflito
+        valorGlobal: '100000.00',
+        vigenciaFim: new Date('2024-12-31'),
+        status: ContratoStatus.ASSINADO,
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
+
+      expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
+        ...mockRemote,
+        govBrSyncedAt: expect.any(Date),
+        govBrSyncStatus: 'synced',
+        govBrSyncErrorMessage: null,
+      });
+
+      // Não deve criar log se não há conflitos
+      expect(mockSyncLogRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should detect conflicts between local and remote data', async () => {
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação remota DIFERENTE', // Conflito
+        valorGlobal: '105000.00', // Conflito
+        vigenciaFim: new Date('2024-12-31'),
+        status: ContratoStatus.ASSINADO,
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+      mockSyncLogRepository.save.mockResolvedValue({});
+
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
+
+      // Deve ter criado log com conflitos detectados
+      expect(mockSyncLogRepository.save).toHaveBeenCalledWith({
+        contratoId: 'contrato-123',
+        action: 'conflict_resolved',
+        conflicts: expect.arrayContaining([
+          expect.objectContaining({
+            field: 'objeto',
+            localValue: 'Contratação local',
+            remoteValue: 'Contratação remota DIFERENTE',
+          }),
+          expect.objectContaining({
+            field: 'valorGlobal',
+            localValue: '100000.00',
+            remoteValue: '105000.00',
+          }),
+        ]),
+        resolution: expect.any(Object),
+      });
+    });
+
+    it('should apply Last-Write-Wins strategy - remote wins', async () => {
+      // govBrSyncedAt (2024-01-01) < updatedAt (2024-01-02)
+      // Mas vamos simular cenário onde remote é mais recente
+      const localOlderUpdate: Partial<Contrato> = {
+        ...mockLocal,
+        govBrSyncedAt: new Date('2024-01-03T00:00:00Z'), // Remote mais recente
+        updatedAt: new Date('2024-01-02T00:00:00Z'),
+      };
+
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação Gov.br ATUALIZADA',
+        valorGlobal: '110000.00',
+        vigenciaFim: new Date('2024-12-31'),
+        status: ContratoStatus.EM_EXECUCAO, // Mudou status
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+      mockSyncLogRepository.save.mockResolvedValue({});
+
+      await service.handleConflictAndUpdate(
+        localOlderUpdate as Contrato,
+        mockRemote,
+      );
+
+      // Remote wins - deve aplicar valores do Gov.br
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'contrato-123',
+        expect.objectContaining({
+          objeto: 'Contratação Gov.br ATUALIZADA',
+          valorGlobal: '110000.00',
+          status: ContratoStatus.EM_EXECUCAO,
+          govBrSyncedAt: expect.any(Date),
+          govBrSyncStatus: 'synced',
+        }),
+      );
+    });
+
+    it('should apply Last-Write-Wins strategy - local wins and schedule push', async () => {
+      // Local mais recente (updatedAt > govBrSyncedAt)
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação Gov.br desatualizada',
+        valorGlobal: '95000.00',
+        vigenciaFim: new Date('2024-12-31'),
+        status: ContratoStatus.ASSINADO,
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+      mockSyncLogRepository.save.mockResolvedValue({});
+
+      // Mock pushContrato para não falhar (schedulePush chama pushContrato)
+      mockRepository.findOne.mockResolvedValue(mockLocal);
+      mockAuthService.getAuthHeaders.mockResolvedValue({
+        Authorization: 'Bearer token',
+      });
+      mockHttpService.post.mockReturnValue(
+        of({
+          data: {
+            id: 'gov-br-id',
+            numero_contrato: '001/2024',
+            created_at: '',
+          },
+        }),
+      );
+
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
+
+      // Local wins - deve preservar valores locais
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'contrato-123',
+        expect.objectContaining({
+          objeto: 'Contratação local', // Valor local preservado
+          valorGlobal: '100000.00',
+        }),
+      );
+
+      // Deve ter agendado push (chamou pushContrato em background)
+      // Aguardar execução assíncrona
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(mockRepository.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'contrato-123' },
+        }),
+      );
+    });
+
+    it('should normalize values correctly for comparison', async () => {
+      // Testar normalização de Datas e Strings
+      const localWithDate: Partial<Contrato> = {
+        ...mockLocal,
+        vigenciaFim: new Date('2024-12-31T00:00:00Z'),
+      };
+
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação local', // String identica
+        valorGlobal: '100000.00',
+        vigenciaFim: new Date('2024-12-31T00:00:00Z'), // Data identica
+        status: ContratoStatus.ASSINADO,
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+
+      await service.handleConflictAndUpdate(
+        localWithDate as Contrato,
+        mockRemote,
+      );
+
+      // Não deve detectar conflitos - valores normalizados são iguais
+      expect(mockSyncLogRepository.save).not.toHaveBeenCalled();
+
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'contrato-123',
+        expect.objectContaining({
+          govBrSyncedAt: expect.any(Date),
+          govBrSyncStatus: 'synced',
+        }),
+      );
+    });
+
+    it('should handle conflicting status enum correctly', async () => {
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Contratação local',
+        valorGlobal: '100000.00',
+        vigenciaFim: new Date('2024-12-31'),
+        status: ContratoStatus.RESCINDIDO, // Status diferente - conflito
+        contratadoCnpj: '12.345.678/0001-90',
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+      mockSyncLogRepository.save.mockResolvedValue({});
+
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
+
+      // Deve detectar conflito no campo status
+      expect(mockSyncLogRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          conflicts: expect.arrayContaining([
+            expect.objectContaining({
+              field: 'status',
+              localValue: ContratoStatus.ASSINADO,
+              remoteValue: ContratoStatus.RESCINDIDO,
+            }),
+          ]),
+        }),
+      );
+    });
+
+    it('should log all conflict resolutions for audit', async () => {
+      const mockRemote: Partial<Contrato> = {
+        objeto: 'Objeto alterado',
+        valorGlobal: '200000.00',
+        vigenciaFim: new Date('2025-12-31'),
+        status: ContratoStatus.ADITIVADO,
+        contratadoCnpj: '98.765.432/0001-10', // CNPJ diferente - crítico!
+      };
+
+      mockRepository.update.mockResolvedValue({ affected: 1 });
+      mockSyncLogRepository.save.mockResolvedValue({});
+
+      await service.handleConflictAndUpdate(mockLocal as Contrato, mockRemote);
+
+      // Deve ter registrado TODOS os 5 conflitos
+      expect(mockSyncLogRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'conflict_resolved',
+          conflicts: expect.arrayContaining([
+            expect.objectContaining({ field: 'objeto' }),
+            expect.objectContaining({ field: 'valorGlobal' }),
+            expect.objectContaining({ field: 'vigenciaFim' }),
+            expect.objectContaining({ field: 'status' }),
+            expect.objectContaining({ field: 'contratadoCnpj' }),
+          ]),
+          resolution: expect.any(Object),
+        }),
+      );
+
+      expect(
+        mockSyncLogRepository.save.mock.calls[0][0].conflicts,
+      ).toHaveLength(5);
     });
   });
 });
