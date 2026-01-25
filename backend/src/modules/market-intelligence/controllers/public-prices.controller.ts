@@ -5,6 +5,7 @@ import {
   Logger,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +14,8 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { ApiKeyGuard } from '../../../common/guards/api-key.guard';
+import { ApiKeyThrottlerGuard } from '../../../common/guards/api-key-throttler.guard';
 import { RegionalBenchmarkService } from '../services/regional-benchmark.service';
 import { ItemNormalizationService } from '../services/item-normalization.service';
 import { ItemCategory } from '../../../entities/item-category.entity';
@@ -45,6 +48,7 @@ import {
 @ApiTags('Public API - Prices')
 @Controller('api/v1/prices')
 @ApiBearerAuth('X-API-Key')
+@UseGuards(ApiKeyGuard, ApiKeyThrottlerGuard)
 export class PublicPricesController {
   private readonly logger = new Logger(PublicPricesController.name);
 

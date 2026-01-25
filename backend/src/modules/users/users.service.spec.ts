@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from './users.service';
-import { User, UserRole } from '../../entities/user.entity';
+import { User, UserRole, ApiPlan } from '../../entities/user.entity';
 import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 import { AuditLog } from '../../entities/audit-log.entity';
@@ -55,6 +55,8 @@ describe('UsersService', () => {
     authorizedDomainId: null,
     authorizedDomain: null,
     etpLimitCount: null,
+    apiKey: null,
+    apiPlan: ApiPlan.FREE,
   };
 
   const mockRepository = {

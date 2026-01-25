@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DataSource, QueryRunner } from 'typeorm';
 import { DemoService } from './demo.service';
 import { Organization } from '../../entities/organization.entity';
-import { User, UserRole } from '../../entities/user.entity';
+import { User, UserRole, ApiPlan } from '../../entities/user.entity';
 import { Etp, EtpStatus } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
 import { EtpVersion } from '../../entities/etp-version.entity';
@@ -52,6 +52,8 @@ describe('DemoService', () => {
     etps: [],
     auditLogs: [],
     etpLimitCount: 3,
+    apiKey: null,
+    apiPlan: ApiPlan.FREE,
   };
 
   const mockEtp: Etp = {
