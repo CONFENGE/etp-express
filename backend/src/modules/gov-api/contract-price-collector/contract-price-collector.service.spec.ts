@@ -552,8 +552,12 @@ describe('ContractPriceCollectorService', () => {
       });
 
       // PageIndex should not be called when no editalPdfUrl
-      expect((pageIndexService as any).createDocumentTree).not.toHaveBeenCalled();
-      expect((treeBuilderService as any).processDocument).not.toHaveBeenCalled();
+      expect(
+        (pageIndexService as any).createDocumentTree,
+      ).not.toHaveBeenCalled();
+      expect(
+        (treeBuilderService as any).processDocument,
+      ).not.toHaveBeenCalled();
     });
 
     it('should collect price successfully even without edital PDF', async () => {
