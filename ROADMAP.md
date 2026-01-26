@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 870/879 issues (99.0%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-26 | **Progresso:** 871/879 issues (99.1%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-26 | #1702 | Feature | [#1688] Criar ApiUsage entity e tracking de métricas ✅ - **Score 100/100 - Auto-merged via /review-pr (after TypeScript null safety fix)** |
 | 2026-01-25 | #1701 | Feature | [#1067] Implement circuit breaker alerting via Sentry ✅ - **Score 100/100 - Auto-merged via /review-pr (after refactor to meet function length guidelines)** |
 | 2026-01-25 | #1700 | Feature | [#1695] Implementar EditalExtractionService para dados estruturados ✅ - **Score 75/100 - Manual merge (size exception: 1,122 lines justified by atomic feature + 78.6% test-to-code ratio, function length justified by validation complexity)** - **M13-Market Intel: Sub-issue 2/5 of #1545** |
 | 2026-01-25 | #1699 | Feature | [#1694] Integrate PageIndex with Contract Price Collector (#1694) ✅ - **Score 100/100 - Auto-merged via /review-pr (after auto-fixes)** - **M17-PageIndex: 30/30 COMPLETE 🎉** |
@@ -701,7 +702,7 @@ Dados proprietários e analytics avançados.
 |       |   ↳ #1685 PublicPricesController (3 endpoints) | ✅   |
 |       |   ↳ #1686 API Key authentication + rate limit  | ✅   |
 |       |   ↳ #1687 OpenAPI/Swagger docs finalization    | ✅   |
-|       |   ↳ #1688 Metrics tracking                     | 🔴   |
+|       |   ↳ #1688 Metrics tracking                     | ✅   |
 |       |   ↳ #1689 Frontend dashboard                   | 🔴   |
 |       |   ↳ #1690 Load tests                           | 🔴   |
 
