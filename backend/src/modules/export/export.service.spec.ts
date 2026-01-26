@@ -9,6 +9,9 @@ import {
   SectionType,
   SectionStatus,
 } from '../../entities/etp-section.entity';
+import { ExportMetadata } from './entities/export-metadata.entity';
+import { ConfigService } from '@nestjs/config';
+import { S3Service } from '../storage/s3.service';
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import { execSync } from 'child_process';
@@ -81,6 +84,52 @@ describe('ExportService', () => {
     find: jest.fn(),
   };
 
+  const mockExportMetadataRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('exports'),
+    getOrThrow: jest.fn(),
+  };
+
+  const mockS3Service = {
+    isConfigured: jest.fn().mockReturnValue(false), // Default: S3 not configured
+    uploadFile: jest.fn(),
+  };
+
+  /**
+   * Helper function to create a testing module with all required providers
+   */
+  const createTestModule = async () => {
+    return Test.createTestingModule({
+      providers: [
+        ExportService,
+        {
+          provide: getRepositoryToken(Etp),
+          useValue: mockEtpsRepository,
+        },
+        {
+          provide: getRepositoryToken(EtpSection),
+          useValue: mockSectionsRepository,
+        },
+        {
+          provide: getRepositoryToken(ExportMetadata),
+          useValue: mockExportMetadataRepository,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
+        {
+          provide: S3Service,
+          useValue: mockS3Service,
+        },
+      ],
+    }).compile();
+  };
+
   beforeEach(async () => {
     // Setup default fs mocks for service initialization
     // By default, no Nix store exists and no executables are found
@@ -97,19 +146,7 @@ describe('ExportService', () => {
     (fs.readdirSync as jest.Mock).mockReturnValue([]);
     (execSync as jest.Mock).mockReturnValue('');
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ExportService,
-        {
-          provide: getRepositoryToken(Etp),
-          useValue: mockEtpsRepository,
-        },
-        {
-          provide: getRepositoryToken(EtpSection),
-          useValue: mockSectionsRepository,
-        },
-      ],
-    }).compile();
+    const module: TestingModule = await createTestModule();
 
     service = module.get<ExportService>(ExportService);
     etpsRepository = module.get<Repository<Etp>>(getRepositoryToken(Etp));
@@ -811,19 +848,7 @@ describe('ExportService', () => {
       });
 
       // Create new service instance to trigger detection
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ExportService,
-          {
-            provide: getRepositoryToken(Etp),
-            useValue: mockEtpsRepository,
-          },
-          {
-            provide: getRepositoryToken(EtpSection),
-            useValue: mockSectionsRepository,
-          },
-        ],
-      }).compile();
+      const module: TestingModule = await createTestModule();
 
       const newService = module.get<ExportService>(ExportService);
       expect(newService).toBeDefined();
@@ -856,19 +881,7 @@ describe('ExportService', () => {
         throw new Error('ENOENT');
       });
 
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ExportService,
-          {
-            provide: getRepositoryToken(Etp),
-            useValue: mockEtpsRepository,
-          },
-          {
-            provide: getRepositoryToken(EtpSection),
-            useValue: mockSectionsRepository,
-          },
-        ],
-      }).compile();
+      const module: TestingModule = await createTestModule();
 
       const newService = module.get<ExportService>(ExportService);
       expect(newService).toBeDefined();
@@ -890,19 +903,7 @@ describe('ExportService', () => {
       });
 
       // Service should still initialize successfully (falls back to no Chromium)
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ExportService,
-          {
-            provide: getRepositoryToken(Etp),
-            useValue: mockEtpsRepository,
-          },
-          {
-            provide: getRepositoryToken(EtpSection),
-            useValue: mockSectionsRepository,
-          },
-        ],
-      }).compile();
+      const module: TestingModule = await createTestModule();
 
       const newService = module.get<ExportService>(ExportService);
       expect(newService).toBeDefined();
@@ -927,19 +928,7 @@ describe('ExportService', () => {
         throw new Error('ENOENT');
       });
 
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ExportService,
-          {
-            provide: getRepositoryToken(Etp),
-            useValue: mockEtpsRepository,
-          },
-          {
-            provide: getRepositoryToken(EtpSection),
-            useValue: mockSectionsRepository,
-          },
-        ],
-      }).compile();
+      const module: TestingModule = await createTestModule();
 
       const newService = module.get<ExportService>(ExportService);
       expect(newService).toBeDefined();
@@ -962,19 +951,7 @@ describe('ExportService', () => {
         throw new Error('ENOENT');
       });
 
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ExportService,
-          {
-            provide: getRepositoryToken(Etp),
-            useValue: mockEtpsRepository,
-          },
-          {
-            provide: getRepositoryToken(EtpSection),
-            useValue: mockSectionsRepository,
-          },
-        ],
-      }).compile();
+      const module: TestingModule = await createTestModule();
 
       const newService = module.get<ExportService>(ExportService);
       expect(newService).toBeDefined();
