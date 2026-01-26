@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-26 | **Progresso:** 871/896 issues (97.2%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-25 | **Progresso:** 872/896 issues (97.3%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-25 | #1710 | Feature  | [#1703] Setup S3 bucket and AWS SDK configuration ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-26 | #1702 | Feature | [#1688] Criar ApiUsage entity e tracking de métricas ✅ - **Score 100/100 - Auto-merged via /review-pr (after TypeScript null safety fix)** |
 | 2026-01-25 | #1701 | Feature | [#1067] Implement circuit breaker alerting via Sentry ✅ - **Score 100/100 - Auto-merged via /review-pr (after refactor to meet function length guidelines)** |
 | 2026-01-25 | #1700 | Feature | [#1695] Implementar EditalExtractionService para dados estruturados ✅ - **Score 75/100 - Manual merge (size exception: 1,122 lines justified by atomic feature + 78.6% test-to-code ratio, function length justified by validation complexity)** - **M13-Market Intel: Sub-issue 2/5 of #1545** |
@@ -319,7 +320,7 @@
 | ----- | -------------------------------------------------- | ------ |
 | #1166 | [Preços] Ajustar schedule para atualização semanal | ✅     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3) - EPIC | 🔴   |
-|       | ↳ #1703 Setup S3 bucket and AWS SDK configuration     | 🔴     |
+|       | ↳ #1703 Setup S3 bucket and AWS SDK configuration     | ✅     |
 |       | ↳ #1704 Auto-upload to S3 after export generation     | 🔴     |
 |       | ↳ #1705 Signed URL generation for sharing exports     | 🔴     |
 |       | ↳ #1706 Retention policy and cleanup job              | 🔴     |
