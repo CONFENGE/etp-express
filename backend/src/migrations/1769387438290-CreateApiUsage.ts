@@ -135,11 +135,13 @@ export class CreateApiUsage1769387438290 implements MigrationInterface {
 
     // Drop foreign key
     const table = await queryRunner.getTable('api_usage');
-    const foreignKey = table.foreignKeys.find(
-      (fk) => fk.columnNames.indexOf('userId') !== -1,
-    );
-    if (foreignKey) {
-      await queryRunner.dropForeignKey('api_usage', foreignKey);
+    if (table) {
+      const foreignKey = table.foreignKeys.find(
+        (fk) => fk.columnNames.indexOf('userId') !== -1,
+      );
+      if (foreignKey) {
+        await queryRunner.dropForeignKey('api_usage', foreignKey);
+      }
     }
 
     // Drop table
