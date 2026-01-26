@@ -157,7 +157,69 @@ LOG_LEVEL=info
 
 # Analytics
 ANALYTICS_ENABLED=false
+
+# ============================================================================
+# AWS S3 STORAGE - Export Storage (Optional - Issue #1703)
+# ============================================================================
+# Required for export history and sharing features (M11 MVP Comercial)
+# If not configured, exports will be served directly without S3 storage
+
+# AWS Region for S3 bucket (e.g., us-east-1, sa-east-1)
+AWS_REGION=us-east-1
+
+# S3 Bucket name for exports (create bucket before deployment)
+# Bucket must be created manually in AWS Console or via AWS CLI
+AWS_S3_BUCKET=etp-express-exports
+
+# AWS Credentials (use IAM user with S3-only permissions)
+# IMPORTANT: Create IAM user with policy: s3:PutObject, s3:GetObject, s3:DeleteObject
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+# S3 path prefix for organizing exports (default: exports)
+S3_EXPORTS_PREFIX=exports
+
+# Retention policy for old exports (in days, default: 60)
+S3_RETENTION_DAYS=60
 ```
+
+**S3 Setup Instructions:**
+
+1. **Create S3 Bucket** (AWS Console or CLI):
+   ```bash
+   aws s3 mb s3://etp-express-exports --region us-east-1
+   ```
+
+2. **Create IAM User** with S3-only permissions:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": [
+           "s3:PutObject",
+           "s3:GetObject",
+           "s3:DeleteObject",
+           "s3:ListBucket"
+         ],
+         "Resource": [
+           "arn:aws:s3:::etp-express-exports",
+           "arn:aws:s3:::etp-express-exports/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+3. **Generate Access Keys** for the IAM user and add to Railway variables
+
+4. **Enable versioning** (optional but recommended):
+   ```bash
+   aws s3api put-bucket-versioning \
+     --bucket etp-express-exports \
+     --versioning-configuration Status=Enabled
+   ```
 
 ### 3.3 Deploy
 

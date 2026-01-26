@@ -42,6 +42,8 @@
     "test:mutation:dry": "stryker run --dryRunOnly"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.975.0",
+    "@aws-sdk/s3-request-presigner": "^3.975.0",
     "@json2csv/plainjs": "^7.0.6",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/bullmq": "^11.0.4",
