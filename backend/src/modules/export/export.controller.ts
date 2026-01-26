@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Res, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Res,
+  UseGuards,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -33,8 +41,13 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'PDF gerado com sucesso' })
   @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
-  async exportPDF(@Param('id') id: string, @Res() res: Response) {
-    const pdfBuffer = await this.exportService.exportToPDF(id);
+  async exportPDF(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    const userId = req.user?.id;
+    const pdfBuffer = await this.exportService.exportToPDF(id, userId);
 
     res.set({
       'Content-Type': 'application/pdf',
@@ -104,8 +117,13 @@ export class ExportController {
   @ApiResponse({ status: 200, description: 'DOCX gerado com sucesso' })
   @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
   @ApiResponse({ status: 404, description: 'ETP não encontrado' })
-  async exportDOCX(@Param('id') id: string, @Res() res: Response) {
-    const docxBuffer = await this.exportService.exportToDocx(id);
+  async exportDOCX(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    const userId = req.user?.id;
+    const docxBuffer = await this.exportService.exportToDocx(id, userId);
 
     res.set({
       'Content-Type':
@@ -166,6 +184,7 @@ export class ExportController {
   async exportETP(
     @Param('id') id: string,
     @Query('format') format: ExportFormat = ExportFormat.PDF,
+    @Req() req: any,
     @Res() res: Response,
   ) {
     switch (format) {
@@ -174,10 +193,10 @@ export class ExportController {
       case ExportFormat.XML:
         return this.exportXML(id, res);
       case ExportFormat.DOCX:
-        return this.exportDOCX(id, res);
+        return this.exportDOCX(id, req, res);
       case ExportFormat.PDF:
       default:
-        return this.exportPDF(id, res);
+        return this.exportPDF(id, req, res);
     }
   }
 }
