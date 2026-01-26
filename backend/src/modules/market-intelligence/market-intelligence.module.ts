@@ -8,6 +8,7 @@ import { NormalizedContractItem } from '../../entities/normalized-contract-item.
 import { ContractPrice } from '../../entities/contract-price.entity';
 import { PriceBenchmark } from '../../entities/price-benchmark.entity';
 import { OverpriceAlert } from '../../entities/overprice-alert.entity';
+import { ApiUsage } from './entities/api-usage.entity';
 import { ItemCategorySeeder } from './seeders/item-category.seeder';
 import { ItemNormalizationService } from './services/item-normalization.service';
 import { TextSimilarityService } from './services/text-similarity.service';
@@ -15,6 +16,7 @@ import { NormalizationPipelineService } from './services/normalization-pipeline.
 import { NormalizationBenchmarkService } from './services/normalization-benchmark.service';
 import { RegionalBenchmarkService } from './services/regional-benchmark.service';
 import { OverpriceAlertService } from './services/overprice-alert.service';
+import { ApiUsageService } from './services/api-usage.service';
 import { ItemNormalizationController } from './controllers/item-normalization.controller';
 import { RegionalBenchmarkController } from './controllers/regional-benchmark.controller';
 import { AnalyticsController } from './controllers/analytics.controller';
@@ -35,6 +37,7 @@ import { ApiKeyThrottlerGuard } from '../../common/guards/api-key-throttler.guar
  * - Benchmark and accuracy validation (#1607)
  * - Regional price benchmarking (#1271)
  * - Overprice alert system (#1272)
+ * - API usage tracking and metrics (#1688)
  *
  * @see NormalizationBenchmarkService for accuracy validation (#1607)
  * @see RegionalBenchmarkService for regional price benchmarks (#1271)
@@ -57,6 +60,7 @@ import { ApiKeyThrottlerGuard } from '../../common/guards/api-key-throttler.guar
       ContractPrice,
       PriceBenchmark, // Regional benchmarks (#1271)
       OverpriceAlert, // Overprice alert system (#1272)
+      ApiUsage, // API usage tracking (#1688)
     ]),
     ConfigModule, // For TextSimilarityService threshold config (#1604)
     ScheduleModule.forRoot(), // For CRON job (#1605, #1271)
@@ -76,6 +80,7 @@ import { ApiKeyThrottlerGuard } from '../../common/guards/api-key-throttler.guar
     NormalizationBenchmarkService,
     RegionalBenchmarkService, // Regional benchmarks (#1271)
     OverpriceAlertService, // Overprice alert system (#1272)
+    ApiUsageService, // API usage tracking (#1688)
     ApiKeyGuard, // API Key authentication (#1686)
     ApiKeyThrottlerGuard, // API rate limiting (#1686)
   ],
@@ -87,6 +92,7 @@ import { ApiKeyThrottlerGuard } from '../../common/guards/api-key-throttler.guar
     NormalizationBenchmarkService,
     RegionalBenchmarkService, // Regional benchmarks (#1271)
     OverpriceAlertService, // Overprice alert system (#1272)
+    ApiUsageService, // API usage tracking (#1688)
   ],
 })
 export class MarketIntelligenceModule {}
