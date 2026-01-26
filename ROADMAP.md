@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-25 | **Progresso:** 872/896 issues (97.3%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-26 | **Progresso:** 873/896 issues (97.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -8,6 +8,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-26 | #1713 | Feature  | [#1704] Implement automatic S3 upload after export generation (#1704) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixes + formatting)** |
 | 2026-01-25 | #1710 | Feature  | [#1703] Setup S3 bucket and AWS SDK configuration ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-26 | #1702 | Feature | [#1688] Criar ApiUsage entity e tracking de métricas ✅ - **Score 100/100 - Auto-merged via /review-pr (after TypeScript null safety fix)** |
 | 2026-01-25 | #1701 | Feature | [#1067] Implement circuit breaker alerting via Sentry ✅ - **Score 100/100 - Auto-merged via /review-pr (after refactor to meet function length guidelines)** |
@@ -321,13 +322,13 @@
 | #1166 | [Preços] Ajustar schedule para atualização semanal | ✅     |
 | #1168 | [Export] Integrar armazenamento em nuvem (S3) - EPIC | 🔴   |
 |       | ↳ #1703 Setup S3 bucket and AWS SDK configuration     | ✅     |
-|       | ↳ #1704 Auto-upload to S3 after export generation     | 🔴     |
+|       | ↳ #1704 Auto-upload to S3 after export generation     | ✅     |
 |       | ↳ #1705 Signed URL generation for sharing exports     | 🔴     |
 |       | ↳ #1706 Retention policy and cleanup job              | 🔴     |
 |       | ↳ #1707 API endpoint to list export history           | 🔴     |
 |       | ↳ #1708 Frontend UI for export history and sharing    | 🔴     |
 
-**Progresso MVP Comercial:** 44/51 (86.3%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168 (6 sub-issues)
+**Progresso MVP Comercial:** 45/51 (88.2%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168 (4 sub-issues pendentes, 2/6 concluídas)
 
 ---
 
