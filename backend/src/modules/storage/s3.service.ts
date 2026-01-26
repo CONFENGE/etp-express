@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 /**
  * S3Service - AWS S3 integration for export storage
@@ -35,23 +35,37 @@ export class S3Service {
   }
 
   /**
-   * Upload a file to S3 (stub - to be implemented in #1704)
+   * Upload a file to S3
    *
    * @param key - S3 object key (path)
    * @param buffer - File content as Buffer
    * @param contentType - MIME type (e.g., application/pdf)
    * @returns S3 URI (s3://bucket/key)
+   * @throws Error if upload fails
    */
   async uploadFile(
     key: string,
     buffer: Buffer,
     contentType: string,
   ): Promise<string> {
-    // TODO: Implement in #1704
-    this.logger.debug(
-      `uploadFile stub called for key: ${key}, contentType: ${contentType}, size: ${buffer.length} bytes`,
-    );
-    return '';
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: buffer,
+        ContentType: contentType,
+      });
+
+      await this.s3Client.send(command);
+
+      this.logger.log(`File uploaded to S3: ${key}`);
+      return `s3://${this.bucketName}/${key}`;
+    } catch (error) {
+      this.logger.error(`S3 upload failed for ${key}`, error);
+      throw new Error(
+        `Failed to upload file to S3: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   /**
