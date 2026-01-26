@@ -120,13 +120,14 @@ describe('ExportController', () => {
     it('should export ETP to PDF successfully', async () => {
       const etpId = 'test-etp-id';
       const mockPDFBuffer = Buffer.from('mock-pdf-data');
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToPDF.mockResolvedValue(mockPDFBuffer);
 
-      await controller.exportPDF(etpId, res);
+      await controller.exportPDF(etpId, req, res);
 
-      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId, 'user-123');
       expect(res.set).toHaveBeenCalledWith({
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="ETP-${etpId}.pdf"`,
@@ -137,16 +138,17 @@ describe('ExportController', () => {
 
     it('should throw NotFoundException when ETP not found', async () => {
       const etpId = 'non-existent-id';
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToPDF.mockRejectedValue(
         new NotFoundException(`ETP ${etpId} não encontrado`),
       );
 
-      await expect(controller.exportPDF(etpId, res)).rejects.toThrow(
+      await expect(controller.exportPDF(etpId, req, res)).rejects.toThrow(
         NotFoundException,
       );
-      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId, 'user-123');
     });
   });
 
@@ -228,13 +230,14 @@ describe('ExportController', () => {
     it('should export ETP to DOCX successfully', async () => {
       const etpId = 'test-etp-id';
       const mockDOCXBuffer = Buffer.from('mock-docx-data');
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToDocx.mockResolvedValue(mockDOCXBuffer);
 
-      await controller.exportDOCX(etpId, res);
+      await controller.exportDOCX(etpId, req, res);
 
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
       expect(res.set).toHaveBeenCalledWith({
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -246,16 +249,17 @@ describe('ExportController', () => {
 
     it('should throw NotFoundException when ETP not found', async () => {
       const etpId = 'non-existent-id';
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToDocx.mockRejectedValue(
         new NotFoundException(`ETP ${etpId} não encontrado`),
       );
 
-      await expect(controller.exportDOCX(etpId, res)).rejects.toThrow(
+      await expect(controller.exportDOCX(etpId, req, res)).rejects.toThrow(
         NotFoundException,
       );
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
     });
   });
 
@@ -298,24 +302,26 @@ describe('ExportController', () => {
     it('should export ETP to PDF by default', async () => {
       const etpId = 'test-etp-id';
       const mockPDFBuffer = Buffer.from('mock-pdf');
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToPDF.mockResolvedValue(mockPDFBuffer);
 
       // Test default case (PDF)
-      await controller.exportETP(etpId, 'pdf' as any, res);
+      await controller.exportETP(etpId, 'pdf' as any, req, res);
 
-      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToPDF).toHaveBeenCalledWith(etpId, 'user-123');
     });
 
     it('should export ETP to JSON when format=json', async () => {
       const etpId = 'test-etp-id';
       const mockJSONData = { etp: {}, sections: [] };
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToJSON.mockResolvedValue(mockJSONData);
 
-      await controller.exportETP(etpId, 'json' as any, res);
+      await controller.exportETP(etpId, 'json' as any, req, res);
 
       expect(exportService.exportToJSON).toHaveBeenCalledWith(etpId);
     });
@@ -323,11 +329,12 @@ describe('ExportController', () => {
     it('should export ETP to XML when format=xml', async () => {
       const etpId = 'test-etp-id';
       const mockXMLData = '<etp></etp>';
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToXML.mockResolvedValue(mockXMLData);
 
-      await controller.exportETP(etpId, 'xml' as any, res);
+      await controller.exportETP(etpId, 'xml' as any, req, res);
 
       expect(exportService.exportToXML).toHaveBeenCalledWith(etpId);
     });
@@ -335,13 +342,14 @@ describe('ExportController', () => {
     it('should export ETP to DOCX when format=docx', async () => {
       const etpId = 'test-etp-id';
       const mockDOCXBuffer = Buffer.from('mock-docx');
+      const req = { user: { id: 'user-123' } };
       const res = mockResponse();
 
       mockExportService.exportToDocx.mockResolvedValue(mockDOCXBuffer);
 
-      await controller.exportETP(etpId, 'docx' as any, res);
+      await controller.exportETP(etpId, 'docx' as any, req, res);
 
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId);
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
     });
   });
 });

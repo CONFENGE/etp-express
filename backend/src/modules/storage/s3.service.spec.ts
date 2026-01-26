@@ -2,6 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { S3Service } from './s3.service';
 
+// Mock S3Client at the module level
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: jest.fn(),
+  })),
+  PutObjectCommand: jest.fn(),
+}));
+
 describe('S3Service', () => {
   let service: S3Service;
   let configService: ConfigService;
@@ -139,26 +147,31 @@ describe('S3Service', () => {
     });
   });
 
-  describe('uploadFile (stub)', () => {
-    it('should return empty string (stub implementation)', async () => {
+  describe('uploadFile', () => {
+    it('should upload file to S3 successfully', async () => {
       const buffer = Buffer.from('test content');
-      const result = await service.uploadFile(
-        'test/key.pdf',
-        buffer,
-        'application/pdf',
-      );
-      expect(result).toBe('');
+      const key = 'test/key.pdf';
+      const contentType = 'application/pdf';
+
+      const mockSend = jest.fn().mockResolvedValue({});
+      (service as any).s3Client.send = mockSend;
+
+      const result = await service.uploadFile(key, buffer, contentType);
+
+      expect(result).toBe('s3://test-bucket/test/key.pdf');
+      expect(mockSend).toHaveBeenCalledTimes(1);
     });
 
-    it('should log debug message with file details', async () => {
+    it('should throw error if S3 upload fails', async () => {
       const buffer = Buffer.from('test content');
-      const loggerSpy = jest.spyOn(service['logger'], 'debug');
+      const key = 'test/key.pdf';
 
-      await service.uploadFile('test/key.pdf', buffer, 'application/pdf');
+      const mockSend = jest.fn().mockRejectedValue(new Error('S3 error'));
+      (service as any).s3Client.send = mockSend;
 
-      expect(loggerSpy).toHaveBeenCalledWith(
-        expect.stringContaining('uploadFile stub called'),
-      );
+      await expect(
+        service.uploadFile(key, buffer, 'application/pdf'),
+      ).rejects.toThrow('Failed to upload file to S3: S3 error');
     });
   });
 
