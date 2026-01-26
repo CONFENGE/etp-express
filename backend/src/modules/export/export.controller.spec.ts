@@ -237,7 +237,10 @@ describe('ExportController', () => {
 
       await controller.exportDOCX(etpId, req, res);
 
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(
+        etpId,
+        'user-123',
+      );
       expect(res.set).toHaveBeenCalledWith({
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -259,7 +262,10 @@ describe('ExportController', () => {
       await expect(controller.exportDOCX(etpId, req, res)).rejects.toThrow(
         NotFoundException,
       );
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(
+        etpId,
+        'user-123',
+      );
     });
   });
 
@@ -349,7 +355,10 @@ describe('ExportController', () => {
 
       await controller.exportETP(etpId, 'docx' as any, req, res);
 
-      expect(exportService.exportToDocx).toHaveBeenCalledWith(etpId, 'user-123');
+      expect(exportService.exportToDocx).toHaveBeenCalledWith(
+        etpId,
+        'user-123',
+      );
     });
   });
 });
