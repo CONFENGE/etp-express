@@ -44,6 +44,7 @@ import { EditalModule } from './modules/edital/edital.module';
 import { ContratosModule } from './modules/contratos/contratos.module';
 import { PageIndexModule } from './modules/pageindex/pageindex.module';
 import { MarketIntelligenceModule } from './modules/market-intelligence/market-intelligence.module';
+import { S3Module } from './modules/storage/s3.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -119,6 +120,15 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
         RATE_LIMIT_ENABLED: Joi.boolean().default(true),
         RATE_LIMIT_TTL: Joi.number().default(60),
         RATE_LIMIT_MAX: Joi.number().default(100),
+
+        // AWS S3 Configuration (#1703 - Export Storage)
+        // Optional - exports work without S3 (direct download only)
+        AWS_REGION: Joi.string().optional(),
+        AWS_S3_BUCKET: Joi.string().optional(),
+        AWS_ACCESS_KEY_ID: Joi.string().optional(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().optional(),
+        S3_EXPORTS_PREFIX: Joi.string().default('exports'),
+        S3_RETENTION_DAYS: Joi.number().default(60),
       }),
     }),
 
@@ -272,6 +282,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     ContratosModule,
     PageIndexModule,
     MarketIntelligenceModule,
+    S3Module,
     HealthModule,
   ],
   controllers: [AppController],
