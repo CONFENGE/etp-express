@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-26 | **Progresso:** 871/879 issues (99.1%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-26 | **Progresso:** 871/896 issues (97.2%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
 
 ---
 
@@ -318,9 +318,15 @@
 | #     | Issue                                              | Status |
 | ----- | -------------------------------------------------- | ------ |
 | #1166 | [Preços] Ajustar schedule para atualização semanal | ✅     |
-| #1168 | [Export] Integrar armazenamento em nuvem (S3)      | 🔴     |
+| #1168 | [Export] Integrar armazenamento em nuvem (S3) - EPIC | 🔴   |
+|       | ↳ #1703 Setup S3 bucket and AWS SDK configuration     | 🔴     |
+|       | ↳ #1704 Auto-upload to S3 after export generation     | 🔴     |
+|       | ↳ #1705 Signed URL generation for sharing exports     | 🔴     |
+|       | ↳ #1706 Retention policy and cleanup job              | 🔴     |
+|       | ↳ #1707 API endpoint to list export history           | 🔴     |
+|       | ↳ #1708 Frontend UI for export history and sharing    | 🔴     |
 
-**Progresso MVP Comercial:** 44/45 (98%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168
+**Progresso MVP Comercial:** 44/51 (86.3%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168 (6 sub-issues)
 
 ---
 
@@ -598,10 +604,10 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 13/20  | 65% 🟡     | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 16/23  | 69.6% 🟡   | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
 | M15: Gestão de Contratos       | 23/28  | 82.1% 🟢   | +R$ 1.000/mês         |
-| M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
+| M16: Features Complementares   | 0/10   | Baixa      | Diferenciação         |
 | M17: PageIndex RAG             | 30/30  | 100% ✅    | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
@@ -705,6 +711,12 @@ Dados proprietários e analytics avançados.
 |       |   ↳ #1688 Metrics tracking                     | ✅   |
 |       |   ↳ #1689 Frontend dashboard                   | 🔴   |
 |       |   ↳ #1690 Load tests                           | 🔴   |
+|       | ↳ #1545 Market Intelligence com extração estruturada | 🔴 |
+|       |   ↳ #1694 Integrar PageIndex com Price Collector | ✅ |
+|       |   ↳ #1695 Implementar EditalExtractionService    | ✅ |
+|       |   ↳ #1696 Normalização de itens para comparação  | 🔴 |
+|       |   ↳ #1697 EditalComparisonService                 | 🔴 |
+|       |   ↳ #1698 API REST para extração e comparação     | 🔴 |
 
 Features:
 - Preços reais de pregões (não tabelas)
@@ -800,10 +812,10 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 879   |
-| Issues Abertas    | 11    |
-| Issues Fechadas   | 868   |
-| Progresso         | 98.7% |
+| Issues Totais     | 896   |
+| Issues Abertas    | 25    |
+| Issues Fechadas   | 871   |
+| Progresso         | 97.2% |
 | Bugs P0 Abertos   | 0     |
 | M17 PageIndex+API | 30/30 |
 | Backend Coverage  | 71%   |
