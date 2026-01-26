@@ -4,6 +4,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as puppeteer from 'puppeteer';
@@ -29,7 +30,9 @@ import {
 } from 'docx';
 import { Etp } from '../../entities/etp.entity';
 import { EtpSection } from '../../entities/etp-section.entity';
+import { ExportMetadata } from './entities/export-metadata.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { S3Service } from '../storage/s3.service';
 import {
   DOCX_STYLES,
   DOCX_MARGINS,
@@ -87,6 +90,10 @@ export class ExportService {
     private etpsRepository: Repository<Etp>,
     @InjectRepository(EtpSection)
     private sectionsRepository: Repository<EtpSection>,
+    @InjectRepository(ExportMetadata)
+    private exportMetadataRepository: Repository<ExportMetadata>,
+    private configService: ConfigService,
+    private s3Service: S3Service,
   ) {
     this.loadTemplate();
     this.registerHandlebarsHelpers();
@@ -268,9 +275,78 @@ export class ExportService {
   }
 
   /**
+   * Uploads export file to S3 and stores metadata.
+   *
+   * @param buffer - Export file content as Buffer
+   * @param etp - ETP entity
+   * @param format - Export format (pdf, docx, json)
+   * @param userId - User ID performing the export (optional)
+   * @returns ExportMetadata entity with S3 location
+   *
+   * @remarks
+   * This method runs asynchronously and does not block the export response.
+   * If S3 is not configured, the upload is skipped silently.
+   * Errors are logged but do not affect the export operation.
+   *
+   * @see Issue #1704 - Automatic S3 upload after export generation
+   */
+  private async uploadToS3(
+    buffer: Buffer,
+    etp: Etp,
+    format: 'pdf' | 'docx' | 'json',
+    userId?: string,
+  ): Promise<ExportMetadata | null> {
+    // Skip if S3 is not configured
+    if (!this.s3Service.isConfigured()) {
+      this.logger.debug('S3 not configured, skipping upload');
+      return null;
+    }
+
+    // Skip if no userId (e.g., preview exports)
+    if (!userId) {
+      this.logger.debug('No userId provided, skipping S3 upload');
+      return null;
+    }
+
+    try {
+      const version = String(etp.currentVersion || '1.0');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const exportsPrefix =
+        this.configService.get('S3_EXPORTS_PREFIX') || 'exports';
+      const key = `${exportsPrefix}/${etp.organizationId || 'default'}/${etp.id}/${version}/${format}/${timestamp}.${format}`;
+
+      const contentType = {
+        pdf: 'application/pdf',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        json: 'application/json',
+      }[format];
+
+      const s3Uri = await this.s3Service.uploadFile(key, buffer, contentType);
+
+      const metadata = this.exportMetadataRepository.create({
+        etpId: etp.id,
+        userId,
+        format,
+        version,
+        s3Key: key,
+        s3Uri,
+      } as Partial<ExportMetadata>);
+
+      return this.exportMetadataRepository.save(metadata);
+    } catch (error) {
+      this.logger.error(
+        `Failed to upload export to S3 for ETP ${etp.id}`,
+        error,
+      );
+      return null;
+    }
+  }
+
+  /**
    * Exports an ETP to PDF format using Puppeteer (headless Chromium).
    *
    * @param etpId - The ETP UUID to export
+   * @param userId - User ID performing the export (optional, for S3 upload)
    * @returns Buffer containing the PDF file
    * @throws {NotFoundException} If ETP not found
    * @throws {InternalServerErrorException} If PDF generation fails
@@ -280,9 +356,13 @@ export class ExportService {
    * back to Puppeteer's bundled Chromium. Includes detailed error logging
    * for troubleshooting production issues.
    *
+   * Automatically uploads the PDF to S3 in the background if configured.
+   * The upload does not block the HTTP response.
+   *
    * @see Issue #1342 - PDF export 500 error fix
+   * @see Issue #1704 - Automatic S3 upload after export generation
    */
-  async exportToPDF(etpId: string): Promise<Buffer> {
+  async exportToPDF(etpId: string, userId?: string): Promise<Buffer> {
     this.logger.log(`Exporting ETP ${etpId} to PDF`);
 
     const etp = await this.getEtpWithSections(etpId);
@@ -333,7 +413,20 @@ export class ExportService {
       this.logger.log(
         `PDF generated successfully for ETP ${etpId} (${pdfBuffer.length} bytes)`,
       );
-      return Buffer.from(pdfBuffer);
+
+      const buffer = Buffer.from(pdfBuffer);
+
+      // Upload to S3 in background (don't block response)
+      if (userId) {
+        this.uploadToS3(buffer, etp, 'pdf', userId).catch((error) => {
+          this.logger.error(
+            `Background S3 upload failed for ETP ${etpId}`,
+            error,
+          );
+        });
+      }
+
+      return buffer;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -463,7 +556,7 @@ export class ExportService {
     return xml;
   }
 
-  async exportToDocx(etpId: string): Promise<Buffer> {
+  async exportToDocx(etpId: string, userId?: string): Promise<Buffer> {
     this.logger.log(`Exporting ETP ${etpId} to DOCX`);
 
     const etp = await this.getEtpWithSections(etpId);
@@ -613,6 +706,17 @@ export class ExportService {
 
     const buffer = await Packer.toBuffer(doc);
     this.logger.log('DOCX generated successfully');
+
+    // Upload to S3 in background (don't block response)
+    if (userId) {
+      this.uploadToS3(buffer, etp, 'docx', userId).catch((error) => {
+        this.logger.error(
+          `Background S3 upload failed for ETP ${etpId}`,
+          error,
+        );
+      });
+    }
+
     return buffer;
   }
 
