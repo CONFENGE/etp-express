@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 /**
  * S3Service - AWS S3 integration for export storage
@@ -69,18 +70,36 @@ export class S3Service {
   }
 
   /**
-   * Generate a signed URL for temporary access (stub - to be implemented in #1705)
+   * Generate a signed URL for temporary access to an S3 object.
    *
    * @param key - S3 object key (path)
    * @param expiresIn - Expiration time in seconds (default: 3600 = 1h)
    * @returns Signed URL for download
+   * @throws Error if signed URL generation fails
+   *
+   * @see Issue #1705 - Implement signed URL generation for sharing exports
    */
-  async getSignedUrl(key: string, expiresIn: number): Promise<string> {
-    // TODO: Implement in #1705
-    this.logger.debug(
-      `getSignedUrl stub called for key: ${key}, expiresIn: ${expiresIn}s`,
-    );
-    return '';
+  async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+
+      const signedUrl = await getSignedUrl(this.s3Client, command, {
+        expiresIn,
+      });
+
+      this.logger.log(
+        `Generated signed URL for ${key}, expires in ${expiresIn}s`,
+      );
+      return signedUrl;
+    } catch (error) {
+      this.logger.error(`Failed to generate signed URL for ${key}`, error);
+      throw new Error(
+        `Failed to generate signed URL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   /**
