@@ -10,6 +10,7 @@ import {
   OWNERSHIP_KEY,
   ResourceType,
 } from '../../common/decorators/require-ownership.decorator';
+import { S3Service } from '../storage/s3.service';
 
 describe('ExportController', () => {
   let controller: ExportController;
@@ -20,6 +21,12 @@ describe('ExportController', () => {
     exportToJSON: jest.fn(),
     exportToXML: jest.fn(),
     exportToDocx: jest.fn(),
+    getExportMetadata: jest.fn(),
+    trackExportAccess: jest.fn(),
+  };
+
+  const mockS3Service = {
+    getSignedUrl: jest.fn(),
   };
 
   const mockJwtAuthGuard = {
@@ -47,6 +54,10 @@ describe('ExportController', () => {
         {
           provide: ExportService,
           useValue: mockExportService,
+        },
+        {
+          provide: S3Service,
+          useValue: mockS3Service,
         },
       ],
     })
@@ -358,6 +369,91 @@ describe('ExportController', () => {
       expect(exportService.exportToDocx).toHaveBeenCalledWith(
         etpId,
         'user-123',
+      );
+    });
+  });
+
+  describe('getShareLink', () => {
+    it('should return signed URL for valid export', async () => {
+      const exportId = 'export-123';
+      const req = { user: { organizationId: 'org-1' } };
+      const mockMetadata = {
+        id: exportId,
+        s3Key: 'exports/org-1/etp-1/1.0/pdf/file.pdf',
+        format: 'pdf',
+        version: '1.0',
+      };
+
+      mockExportService.getExportMetadata.mockResolvedValue(mockMetadata);
+      mockS3Service.getSignedUrl.mockResolvedValue('https://signed-url');
+
+      const result = await controller.getShareLink(exportId, undefined, req);
+
+      expect(result.url).toBe('https://signed-url');
+      expect(result.format).toBe('pdf');
+      expect(result.version).toBe('1.0');
+      expect(result.expiresAt).toBeDefined();
+      expect(mockS3Service.getSignedUrl).toHaveBeenCalledWith(
+        mockMetadata.s3Key,
+        3600,
+      );
+    });
+
+    it('should respect custom expiresIn parameter', async () => {
+      const req = { user: { organizationId: 'org-1' } };
+      mockExportService.getExportMetadata.mockResolvedValue({
+        s3Key: 'key',
+        format: 'pdf',
+        version: '1.0',
+      });
+      mockS3Service.getSignedUrl.mockResolvedValue('https://signed-url');
+
+      await controller.getShareLink('export-123', '7200', req);
+
+      expect(mockS3Service.getSignedUrl).toHaveBeenCalledWith('key', 7200);
+    });
+
+    it('should cap expiresIn at 7 days (604800s)', async () => {
+      const req = { user: { organizationId: 'org-1' } };
+      mockExportService.getExportMetadata.mockResolvedValue({
+        s3Key: 'key',
+        format: 'pdf',
+        version: '1.0',
+      });
+      mockS3Service.getSignedUrl.mockResolvedValue('https://signed-url');
+
+      await controller.getShareLink('export-123', '999999', req);
+
+      expect(mockS3Service.getSignedUrl).toHaveBeenCalledWith('key', 604800);
+    });
+
+    it('should throw NotFoundException when export not found', async () => {
+      const req = { user: { organizationId: 'org-1' } };
+      mockExportService.getExportMetadata.mockResolvedValue(null);
+
+      await expect(
+        controller.getShareLink('non-existent', undefined, req),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException when no organizationId', async () => {
+      const req = { user: {} };
+
+      await expect(
+        controller.getShareLink('export-123', undefined, req),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('trackAccess', () => {
+    it('should track export access successfully', async () => {
+      mockExportService.trackExportAccess.mockResolvedValue(undefined);
+
+      const result = await controller.trackAccess('export-123');
+
+      expect(result).toEqual({ success: true });
+      expect(mockExportService.trackExportAccess).toHaveBeenCalledWith(
+        'export-123',
       );
     });
   });
