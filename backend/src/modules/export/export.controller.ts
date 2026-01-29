@@ -217,7 +217,8 @@ export class ExportController {
   @ApiQuery({
     name: 'expiresIn',
     required: false,
-    description: 'Tempo de expiração em segundos (padrão: 3600, máximo: 604800)',
+    description:
+      'Tempo de expiração em segundos (padrão: 3600, máximo: 604800)',
   })
   @ApiResponse({ status: 200, description: 'Signed URL gerada com sucesso' })
   @ApiResponse({ status: 404, description: 'Export não encontrado' })
@@ -230,7 +231,9 @@ export class ExportController {
     const DEFAULT_EXPIRATION = 3600; // 1 hour
 
     const expiresIn = Math.min(
-      expiresInParam ? parseInt(expiresInParam, 10) || DEFAULT_EXPIRATION : DEFAULT_EXPIRATION,
+      expiresInParam
+        ? parseInt(expiresInParam, 10) || DEFAULT_EXPIRATION
+        : DEFAULT_EXPIRATION,
       MAX_EXPIRATION,
     );
 
@@ -264,8 +267,7 @@ export class ExportController {
   @Post('track/:exportId')
   @ApiOperation({
     summary: 'Registrar acesso a um export',
-    description:
-      'Incrementa o contador de downloads e atualiza lastAccessedAt',
+    description: 'Incrementa o contador de downloads e atualiza lastAccessedAt',
   })
   @ApiParam({ name: 'exportId', description: 'ID do ExportMetadata' })
   @ApiResponse({ status: 201, description: 'Acesso registrado' })

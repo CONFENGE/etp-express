@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
-export class AddLastAccessedAtToExportMetadata1770300000000
-  implements MigrationInterface
-{
+export class AddLastAccessedAtToExportMetadata1770300000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
       'export_metadata',
