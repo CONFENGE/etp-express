@@ -4,10 +4,12 @@ import {
   ExecutionContext,
   UnauthorizedException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { User, ApiPlan } from '../../entities/user.entity';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
@@ -35,6 +37,8 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  */
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
+  private readonly logger = new Logger(ApiKeyGuard.name);
+
   constructor(
     private reflector: Reflector,
     @InjectRepository(User)
@@ -64,11 +68,8 @@ export class ApiKeyGuard implements CanActivate {
       });
     }
 
-    // Validate API Key against database
-    const user = await this.usersRepository.findOne({
-      where: { apiKey },
-      select: ['id', 'email', 'name', 'apiKey', 'apiPlan', 'isActive'],
-    });
+    // TD-001: Dual-read API key validation (hash-first, plaintext fallback)
+    const user = await this.validateApiKey(apiKey);
 
     if (!user) {
       throw new ForbiddenException({
@@ -95,6 +96,48 @@ export class ApiKeyGuard implements CanActivate {
     request.apiPlan = user.apiPlan;
 
     return true;
+  }
+
+  /**
+   * Validates API key using dual-read strategy (TD-001 Security Hardening).
+   * 1. First tries plaintext match (legacy, for transition period)
+   * 2. If no plaintext match, tries bcrypt comparison against all hashed keys
+   *
+   * During transition: both paths work. After migration completes,
+   * plaintext column will be removed and only hash comparison will remain.
+   */
+  private async validateApiKey(
+    apiKey: string,
+  ): Promise<Pick<
+    User,
+    'id' | 'email' | 'name' | 'apiPlan' | 'isActive'
+  > | null> {
+    // Path 1: Try plaintext match (legacy - fast O(1) DB lookup)
+    const userByPlaintext = await this.usersRepository.findOne({
+      where: { apiKey },
+      select: ['id', 'email', 'name', 'apiKey', 'apiPlan', 'isActive'],
+    });
+
+    if (userByPlaintext) {
+      return userByPlaintext;
+    }
+
+    // Path 2: Try hashed key comparison (secure path)
+    const usersWithHash = await this.usersRepository.find({
+      where: { apiKeyHash: Not(IsNull()) },
+      select: ['id', 'email', 'name', 'apiKeyHash', 'apiPlan', 'isActive'],
+    });
+
+    for (const user of usersWithHash) {
+      if (user.apiKeyHash) {
+        const isMatch = await bcrypt.compare(apiKey, user.apiKeyHash);
+        if (isMatch) {
+          return user;
+        }
+      }
+    }
+
+    return null;
   }
 
   /**

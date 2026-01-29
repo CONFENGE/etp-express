@@ -57,6 +57,7 @@ describe('DemoUserService', () => {
     etps: [],
     auditLogs: [],
     apiKey: null,
+    apiKeyHash: null,
     apiPlan: ApiPlan.FREE,
   };
 
