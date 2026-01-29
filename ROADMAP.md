@@ -1,6 +1,8 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-26 | **Progresso:** 873/896 issues (97.4%) | **Deploy:** LIVE | **P0 Blocker:** 0 ✅
+**Atualizado:** 2026-01-29 | **Progresso:** 875/906 issues (96.6%) | **Deploy:** LIVE | **P0 Blocker:** 2 🔴 (TD-002, LGPD IP)
+
+> **⚠️ GTM Readiness:** NOT READY - 9 technical debt issues created (#1715-#1723) from audit findings. 3 are P0 security blockers. See [GTM Gap Analysis](#gtm-gap-analysis) below.
 
 ---
 
@@ -8,6 +10,8 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-29 | #1724 | Security | [#1715] TD-001: Password hash exclusion + API key encryption ✅ - **Score 100/100 - Auto-merged via /review-pr (after lint auto-fixes)** |
+| 2026-01-29 | -     | Audit    | **GTM Readiness Audit** - Created 9 issues (#1715-#1723) from technical debt report. 3 P0 security blockers identified: password hash exposure, API keys in plain text, cross-tenant data leak |
 | 2026-01-26 | #1713 | Feature  | [#1704] Implement automatic S3 upload after export generation (#1704) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixes + formatting)** |
 | 2026-01-25 | #1710 | Feature  | [#1703] Setup S3 bucket and AWS SDK configuration ✅ - **Score 100/100 - Auto-merged via /review-pr** |
 | 2026-01-26 | #1702 | Feature | [#1688] Criar ApiUsage entity e tracking de métricas ✅ - **Score 100/100 - Auto-merged via /review-pr (after TypeScript null safety fix)** |
@@ -328,7 +332,7 @@
 |       | ↳ #1707 API endpoint to list export history           | 🔴     |
 |       | ↳ #1708 Frontend UI for export history and sharing    | 🔴     |
 
-**Progresso MVP Comercial:** 45/51 (88.2%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168 (4 sub-issues pendentes, 2/6 concluídas)
+**Progresso MVP Comercial:** 46/51 (90.2%) - Epics #1158, #1161, #1163, #1164, #1166 e #1167 COMPLETAS ✅ | Restam: #1168 (5 sub-issues open)
 
 ---
 
@@ -463,7 +467,7 @@ Nenhum bug P0 aberto no momento. ✅
 | #1533 | Adicionar currentVersion no TermoReferencia type         | ALTA       | ✅     |
 | #1534 | Implementar serialização Date em Compliance types        | MÉDIA      | ✅     |
 
-**Progresso Frontend Audit:** 10/14 (71%) 🟡
+**Progresso Frontend Audit:** 14/14 (100%) ✅ COMPLETE
 
 ### Principais Diretrizes Apple HIG 2025
 
@@ -506,7 +510,7 @@ Nenhum bug P0 aberto no momento. ✅
 
 ---
 
-## Issues Abertas (51)
+## Issues Abertas (23)
 
 ### P0 - M17 PageIndex + SINAPI API (30 issues - 0 open) ✅ COMPLETE
 
@@ -581,11 +585,34 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 
 ---
 
+## Technical Debt Resolution - Epic (51 debts, ~130h)
+
+**Assessment:** `docs/prd/technical-debt-assessment.md`
+**Epic:** `docs/stories/epic-technical-debt.md`
+**Status:** PLANNED - Stories created, awaiting baseline metrics collection
+
+| Story | Title | Priority | Effort | Status |
+|-------|-------|----------|--------|--------|
+| TD-001 | Password & API Key Hardening | P1 | 7h | ✅ Done (PR #1724) |
+| TD-002 | Multi-tenancy Isolation Gaps | P1 | 8h | Planned |
+| TD-003 | Eager Loading Removal | P1 | 6h | Planned |
+| TD-004 | Missing Database Indexes (22) | P1 | 2-3h | Planned |
+| TD-005 | Monetary Type Standardization | P1 | 8-12h | Planned |
+| TD-006 | Password Validation Alignment | P1 | 3h | Planned |
+| TD-007 | Accessibility & i18n Fixes | P2 | 4h | Planned |
+| TD-008 | Schema Improvements & LGPD | P2 | 16h | Planned |
+| TD-009 | Code Quality & System Hygiene | P3 | 21.5h | Planned |
+| TD-010 | Backlog Infrastructure | P4 | 55h+ | Planned |
+
+**Prerequisite:** Collect baseline metrics (test coverage, P95 latency, payload sizes) before starting Sprint 1.
+
+---
+
 ## Milestones
 
 | Milestone              | Issues | Prioridade GTM |
 | ---------------------- | ------ | -------------- |
-| MVP Comercial          | 44/45  | 98% (1 resta)  |
+| MVP Comercial          | 46/51  | 90.2% 🟢       |
 | M1: Foundation         | 36/36  | ✅             |
 | M2: CI/CD Pipeline     | 18/18  | ✅             |
 | M3: Quality & Security | 64/64  | ✅             |
@@ -606,11 +633,11 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | M10: Termo de Referência       | 7/7    | 100% ✅    | +R$ 500/mês           |
 | M11: Pesquisa de Preços Formal | 21/21  | 100% ✅    | +R$ 500/mês           |
 | M12: Compliance TCE            | 7/7    | 100% ✅    | +R$ 1.000/mês premium |
-| M13: Inteligência de Mercado   | 16/23  | 69.6% 🟡   | +R$ 1.500/mês premium |
+| M13: Inteligência de Mercado   | 16/20  | 80% 🟢     | +R$ 1.500/mês premium |
 | M14: Geração de Edital         | 6/6    | 100% ✅    | +R$ 500/mês           |
-| M15: Gestão de Contratos       | 23/28  | 82.1% 🟢   | +R$ 1.000/mês         |
-| M16: Features Complementares   | 0/10   | Baixa      | Diferenciação         |
-| M17: PageIndex RAG             | 30/30  | 100% ✅    | Diferencial técnico   |
+| M15: Gestão de Contratos       | 27/28  | 96.4% 🟢   | +R$ 1.000/mês         |
+| M16: Features Complementares   | 0/4    | Baixa      | Diferenciação         |
+| M17: PageIndex RAG             | 31/35  | 88.6% 🟢   | Diferencial técnico   |
 
 **Fluxo do Ciclo Completo:**
 
@@ -687,7 +714,7 @@ Features:
 - Selo de Conformidade visual ✅
 - Alertas em tempo real durante preenchimento ✅
 
-#### M13: Inteligência de Mercado (#1268-#1275) - 13/20 (65%) 🟡 IN PROGRESS
+#### M13: Inteligência de Mercado (#1268-#1275) - 16/20 (80%) 🟢 IN PROGRESS
 
 Dados proprietários e analytics avançados.
 
@@ -814,12 +841,12 @@ Oportunidades de mercado identificadas.
 
 | Metrica           | Valor |
 | ----------------- | ----- |
-| Issues Totais     | 896   |
-| Issues Abertas    | 25    |
-| Issues Fechadas   | 871   |
-| Progresso         | 97.2% |
+| Issues Totais     | 897   |
+| Issues Abertas    | 23    |
+| Issues Fechadas   | 874   |
+| Progresso         | 97.4% |
 | Bugs P0 Abertos   | 0     |
-| M17 PageIndex+API | 30/30 |
+| M17 PageIndex+API | 31/35 |
 | Backend Coverage  | 71%   |
 | Frontend Coverage | 82%   |
 | Backend Tests     | 3323  |
