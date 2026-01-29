@@ -126,7 +126,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<ValidatedUser | null> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.findByEmailWithPassword(email);
 
     if (!user) {
       return null;
@@ -491,10 +491,11 @@ export class AuthService {
     changePasswordDto: ChangePasswordDto,
     metadata?: { ip?: string; userAgent?: string },
   ) {
-    // Find user with password field
-    const user = await this.usersService.findOne(userId);
-
-    if (!user) {
+    // Find user with password field (select: false requires explicit query)
+    let user: Awaited<ReturnType<typeof this.usersService.findOneWithPassword>>;
+    try {
+      user = await this.usersService.findOneWithPassword(userId);
+    } catch {
       throw new UnauthorizedException('Usuário não encontrado');
     }
 

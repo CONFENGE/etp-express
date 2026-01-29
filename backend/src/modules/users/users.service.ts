@@ -117,6 +117,38 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
+  /**
+   * Finds a user by email WITH password field included.
+   * Required for authentication flows (login, password change).
+   * Password is excluded from default queries via `select: false` on the entity.
+   */
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+  }
+
+  /**
+   * Finds a user by ID WITH password field included.
+   * Required for password change flows.
+   * Password is excluded from default queries via `select: false` on the entity.
+   */
+  async findOneWithPassword(id: string): Promise<User> {
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
+    return user;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
