@@ -52,6 +52,9 @@ export class ExportMetadata {
   @Column({ type: 'int', default: 0 })
   downloadCount: number;
 
+  @Column({ type: 'timestamp', nullable: true })
+  lastAccessedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 }

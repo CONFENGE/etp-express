@@ -8,6 +8,12 @@ jest.mock('@aws-sdk/client-s3', () => ({
     send: jest.fn(),
   })),
   PutObjectCommand: jest.fn(),
+  GetObjectCommand: jest.fn(),
+}));
+
+const mockGetSignedUrl = jest.fn();
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: (...args: any[]) => mockGetSignedUrl(...args),
 }));
 
 describe('S3Service', () => {
@@ -175,19 +181,50 @@ describe('S3Service', () => {
     });
   });
 
-  describe('getSignedUrl (stub)', () => {
-    it('should return empty string (stub implementation)', async () => {
+  describe('getSignedUrl', () => {
+    it('should generate a signed URL successfully', async () => {
+      const expectedUrl =
+        'https://test-bucket.s3.amazonaws.com/test/key.pdf?X-Amz-Signature=abc';
+      mockGetSignedUrl.mockResolvedValue(expectedUrl);
+
       const result = await service.getSignedUrl('test/key.pdf', 3600);
-      expect(result).toBe('');
+
+      expect(result).toBe(expectedUrl);
+      expect(mockGetSignedUrl).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        { expiresIn: 3600 },
+      );
     });
 
-    it('should log debug message with key and expiration', async () => {
-      const loggerSpy = jest.spyOn(service['logger'], 'debug');
+    it('should use default expiration of 3600s', async () => {
+      mockGetSignedUrl.mockResolvedValue('https://signed-url');
 
-      await service.getSignedUrl('test/key.pdf', 3600);
+      await service.getSignedUrl('test/key.pdf');
+
+      expect(mockGetSignedUrl).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        { expiresIn: 3600 },
+      );
+    });
+
+    it('should throw error when signed URL generation fails', async () => {
+      mockGetSignedUrl.mockRejectedValue(new Error('AWS error'));
+
+      await expect(service.getSignedUrl('test/key.pdf', 3600)).rejects.toThrow(
+        'Failed to generate signed URL: AWS error',
+      );
+    });
+
+    it('should log success message', async () => {
+      mockGetSignedUrl.mockResolvedValue('https://signed-url');
+      const loggerSpy = jest.spyOn(service['logger'], 'log');
+
+      await service.getSignedUrl('test/key.pdf', 7200);
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        expect.stringContaining('getSignedUrl stub called'),
+        expect.stringContaining('Generated signed URL for test/key.pdf'),
       );
     });
   });

@@ -343,6 +343,46 @@ export class ExportService {
   }
 
   /**
+   * Retrieves export metadata by ID with organization access validation.
+   *
+   * @param exportId - ExportMetadata UUID
+   * @param organizationId - Organization ID for access control
+   * @returns ExportMetadata if found and accessible, null otherwise
+   *
+   * @see Issue #1705 - Signed URL generation for sharing exports
+   */
+  async getExportMetadata(
+    exportId: string,
+    organizationId: string,
+  ): Promise<ExportMetadata | null> {
+    return this.exportMetadataRepository.findOne({
+      where: {
+        id: exportId,
+        etp: { organizationId },
+      },
+      relations: ['etp'],
+    });
+  }
+
+  /**
+   * Tracks access to an export by incrementing download count and updating lastAccessedAt.
+   *
+   * @param exportId - ExportMetadata UUID
+   *
+   * @see Issue #1705 - Signed URL generation for sharing exports
+   */
+  async trackExportAccess(exportId: string): Promise<void> {
+    await this.exportMetadataRepository.increment(
+      { id: exportId },
+      'downloadCount',
+      1,
+    );
+    await this.exportMetadataRepository.update(exportId, {
+      lastAccessedAt: new Date(),
+    });
+  }
+
+  /**
    * Exports an ETP to PDF format using Puppeteer (headless Chromium).
    *
    * @param etpId - The ETP UUID to export
