@@ -234,7 +234,9 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException with NO_ORGANIZATION code when user has no organizationId', async () => {
       // Arrange
       const userWithoutOrg = { ...mockUser, organizationId: null };
-      mockUsersService.findByEmailWithPassword.mockResolvedValue(userWithoutOrg);
+      mockUsersService.findByEmailWithPassword.mockResolvedValue(
+        userWithoutOrg,
+      );
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       // Act & Assert
@@ -319,7 +321,9 @@ describe('AuthService', () => {
           isActive: false,
           etpLimitCount: 3,
         };
-        mockUsersService.findByEmailWithPassword.mockResolvedValue(blockedDemoUser);
+        mockUsersService.findByEmailWithPassword.mockResolvedValue(
+          blockedDemoUser,
+        );
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
         mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
         mockUsersService.updateLastLogin.mockResolvedValue(undefined);
@@ -346,7 +350,9 @@ describe('AuthService', () => {
           role: 'user',
           isActive: false,
         };
-        mockUsersService.findByEmailWithPassword.mockResolvedValue(inactiveNonDemoUser);
+        mockUsersService.findByEmailWithPassword.mockResolvedValue(
+          inactiveNonDemoUser,
+        );
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
         // Act & Assert
@@ -375,7 +381,9 @@ describe('AuthService', () => {
           isActive: true,
           etpLimitCount: 3,
         };
-        mockUsersService.findByEmailWithPassword.mockResolvedValue(activeDemoUser);
+        mockUsersService.findByEmailWithPassword.mockResolvedValue(
+          activeDemoUser,
+        );
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
         mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
         mockUsersService.updateLastLogin.mockResolvedValue(undefined);
@@ -468,7 +476,9 @@ describe('AuthService', () => {
           isActive: false,
           etpLimitCount: 3,
         };
-        mockUsersService.findByEmailWithPassword.mockResolvedValue(blockedDemoUser);
+        mockUsersService.findByEmailWithPassword.mockResolvedValue(
+          blockedDemoUser,
+        );
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
         mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
         mockUsersService.updateLastLogin.mockResolvedValue(undefined);
@@ -500,7 +510,9 @@ describe('AuthService', () => {
           isActive: true,
           etpLimitCount: 3,
         };
-        mockUsersService.findByEmailWithPassword.mockResolvedValue(activeDemoUser);
+        mockUsersService.findByEmailWithPassword.mockResolvedValue(
+          activeDemoUser,
+        );
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
         mockOrganizationsService.findOne.mockResolvedValue(mockOrganization);
         mockUsersService.updateLastLogin.mockResolvedValue(undefined);
@@ -1042,7 +1054,9 @@ describe('AuthService', () => {
       );
 
       // Assert
-      expect(mockUsersService.findOneWithPassword).toHaveBeenCalledWith(mockUser.id);
+      expect(mockUsersService.findOneWithPassword).toHaveBeenCalledWith(
+        mockUser.id,
+      );
       expect(bcrypt.compare).toHaveBeenCalledWith(
         changePasswordDto.oldPassword,
         mockUser.password,
@@ -1146,7 +1160,9 @@ describe('AuthService', () => {
     it('should log mandatory password change when mustChangePassword is true', async () => {
       // Arrange
       const userWithMandatoryChange = { ...mockUser, mustChangePassword: true };
-      mockUsersService.findOneWithPassword.mockResolvedValue(userWithMandatoryChange);
+      mockUsersService.findOneWithPassword.mockResolvedValue(
+        userWithMandatoryChange,
+      );
       (bcrypt.compare as jest.Mock)
         .mockResolvedValueOnce(true)
         .mockResolvedValueOnce(false);
