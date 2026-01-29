@@ -11,9 +11,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - Phase 2: Backfill hashes for existing API keys
  * - Phase 3: Remove plaintext apiKey column (future migration)
  */
-export class AddApiKeyHashToUsers1770300000000
-  implements MigrationInterface
-{
+export class AddApiKeyHashToUsers1770300000000 implements MigrationInterface {
   name = 'AddApiKeyHashToUsers1770300000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -33,9 +31,7 @@ export class AddApiKeyHashToUsers1770300000000
     const hasColumn = table?.columns.find((c) => c.name === 'apiKeyHash');
 
     if (hasColumn) {
-      await queryRunner.query(
-        `ALTER TABLE "users" DROP COLUMN "apiKeyHash"`,
-      );
+      await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "apiKeyHash"`);
     }
   }
 }
