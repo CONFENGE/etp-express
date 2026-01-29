@@ -183,7 +183,8 @@ describe('S3Service', () => {
 
   describe('getSignedUrl', () => {
     it('should generate a signed URL successfully', async () => {
-      const expectedUrl = 'https://test-bucket.s3.amazonaws.com/test/key.pdf?X-Amz-Signature=abc';
+      const expectedUrl =
+        'https://test-bucket.s3.amazonaws.com/test/key.pdf?X-Amz-Signature=abc';
       mockGetSignedUrl.mockResolvedValue(expectedUrl);
 
       const result = await service.getSignedUrl('test/key.pdf', 3600);
@@ -211,9 +212,9 @@ describe('S3Service', () => {
     it('should throw error when signed URL generation fails', async () => {
       mockGetSignedUrl.mockRejectedValue(new Error('AWS error'));
 
-      await expect(
-        service.getSignedUrl('test/key.pdf', 3600),
-      ).rejects.toThrow('Failed to generate signed URL: AWS error');
+      await expect(service.getSignedUrl('test/key.pdf', 3600)).rejects.toThrow(
+        'Failed to generate signed URL: AWS error',
+      );
     });
 
     it('should log success message', async () => {
