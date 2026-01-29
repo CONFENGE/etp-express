@@ -17,6 +17,7 @@ describe('ApiKeyGuard', () => {
 
   const mockUsersRepository = {
     findOne: jest.fn(),
+    find: jest.fn().mockResolvedValue([]), // For apiKeyHash lookup
   };
 
   const mockReflector = {

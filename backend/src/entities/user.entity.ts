@@ -56,7 +56,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   @Exclude()
   password: string;
 
@@ -176,6 +176,16 @@ export class User {
   @Column({ type: 'varchar', unique: true, nullable: true })
   @Exclude()
   apiKey: string | null;
+
+  /**
+   * Hashed API Key for secure storage (TD-001 Security Hardening).
+   * Stores bcrypt hash of the API key for comparison without exposing plaintext.
+   * During transition: dual-read checks apiKeyHash first, falls back to apiKey.
+   * After transition: apiKey plaintext column will be removed.
+   */
+  @Column({ type: 'varchar', nullable: true })
+  @Exclude()
+  apiKeyHash: string | null;
 
   /**
    * API subscription plan for rate limiting (M13: Market Intelligence).

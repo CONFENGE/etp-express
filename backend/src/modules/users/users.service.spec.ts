@@ -56,6 +56,7 @@ describe('UsersService', () => {
     authorizedDomain: null,
     etpLimitCount: null,
     apiKey: null,
+    apiKeyHash: null,
     apiPlan: ApiPlan.FREE,
   };
 
