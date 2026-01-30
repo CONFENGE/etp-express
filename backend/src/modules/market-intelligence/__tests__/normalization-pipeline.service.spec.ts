@@ -49,7 +49,7 @@ describe('NormalizationPipelineService', () => {
   const mockContractPrice: ContractPrice = {
     id: 'cp-uuid-1',
     organizationId: 'org-uuid-1',
-    organization: null,
+    organization: { id: 'org-uuid-1' } as any,
     codigoItem: 'ITEM-001',
     descricao: 'Papel A4 500 folhas',
     unidade: 'PACOTE',
