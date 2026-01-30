@@ -210,10 +210,25 @@ export class ContractPriceCollectorService implements OnModuleInit {
     // Normalize data
     const normalized = this.normalizePriceReference(priceRef);
 
+    // TODO(#1716): Refactor to accept organizationId parameter from calling context
+    // Current workaround: Use first available organization from database
+    // This is a temporary fix to satisfy NOT NULL constraint from migration
+    // Proper solution: Make this service organization-scoped or create a system org
+    const organization = await this.contractPriceRepository.manager
+      .getRepository('Organization')
+      .findOne({ order: { createdAt: 'ASC' } });
+
+    if (!organization) {
+      throw new Error(
+        'ContractPrice collection requires at least one organization to exist in the database. ' +
+          'This is a temporary limitation - see TODO(#1716) for architectural decision needed.',
+      );
+    }
+
     // Create entity
     const contractPrice = this.contractPriceRepository.create({
       ...normalized,
-      organizationId: null, // Global data, not tenant-specific
+      organizationId: organization.id, // Temporary fix: use first org
     });
 
     // Save to database

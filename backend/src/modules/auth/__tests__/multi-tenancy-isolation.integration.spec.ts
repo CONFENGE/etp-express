@@ -286,28 +286,28 @@ describe('Multi-Tenancy Isolation (Integration)', () => {
 
   describe('ContractPrice NOT NULL Constraint', () => {
     it('should NOT allow creating ContractPrice without organizationId', async () => {
-      await expect(
-        contractPriceRepo.save({
-          codigoItem: 'ITEM-001',
-          descricao: 'Item Test',
-          unidade: 'UN',
-          precoUnitario: 100.0,
-          quantidade: 10,
-          valorTotal: 1000.0,
-          dataHomologacao: new Date(),
-          modalidade: 'PREGAO_ELETRONICO',
-          fonte: 'PNCP',
-          externalId: 'EXT-001',
-          uasgNome: 'UASG Test',
-          uf: 'SP',
-          fetchedAt: new Date(),
-          // Missing organizationId - should fail NOT NULL constraint
-        }),
-      ).rejects.toThrow();
+      const invalidEntity = contractPriceRepo.create({
+        codigoItem: 'ITEM-001',
+        descricao: 'Item Test',
+        unidade: 'UN',
+        precoUnitario: 100.0,
+        quantidade: 10,
+        valorTotal: 1000.0,
+        dataHomologacao: new Date(),
+        modalidade: 'PREGAO_ELETRONICO',
+        fonte: 'PNCP',
+        externalId: 'EXT-001',
+        uasgNome: 'UASG Test',
+        uf: 'SP',
+        fetchedAt: new Date(),
+        // Missing organizationId - should fail NOT NULL constraint
+      } as any);
+
+      await expect(contractPriceRepo.save(invalidEntity)).rejects.toThrow();
     });
 
     it('should filter ContractPrice by organizationId', async () => {
-      await contractPriceRepo.save({
+      const priceAData = {
         organizationId: orgA.id,
         codigoItem: 'ITEM-A',
         descricao: 'Item A',
@@ -316,15 +316,17 @@ describe('Multi-Tenancy Isolation (Integration)', () => {
         quantidade: 10,
         valorTotal: 1000.0,
         dataHomologacao: new Date(),
-        modalidade: 'PREGAO_ELETRONICO',
-        fonte: 'PNCP',
+        modalidade: 'PREGAO_ELETRONICO' as any,
+        fonte: 'PNCP' as any,
         externalId: 'EXT-A',
         uasgNome: 'UASG A',
         uf: 'SP',
         fetchedAt: new Date(),
-      });
+      };
+      const priceA = contractPriceRepo.create(priceAData as any);
+      await contractPriceRepo.save(priceA);
 
-      await contractPriceRepo.save({
+      const priceBData = {
         organizationId: orgB.id,
         codigoItem: 'ITEM-B',
         descricao: 'Item B',
@@ -333,13 +335,15 @@ describe('Multi-Tenancy Isolation (Integration)', () => {
         quantidade: 5,
         valorTotal: 1000.0,
         dataHomologacao: new Date(),
-        modalidade: 'CONCORRENCIA',
-        fonte: 'COMPRASGOV',
+        modalidade: 'CONCORRENCIA' as any,
+        fonte: 'COMPRASGOV' as any,
         externalId: 'EXT-B',
         uasgNome: 'UASG B',
         uf: 'RJ',
         fetchedAt: new Date(),
-      });
+      };
+      const priceB = contractPriceRepo.create(priceBData as any);
+      await contractPriceRepo.save(priceB);
 
       // Query from Org A perspective
       const orgAPrices = await contractPriceRepo.find({
