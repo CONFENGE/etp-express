@@ -86,7 +86,7 @@ jobs:
 
       - name: Run tests with coverage (skip integration tests)
         working-directory: backend
-        run: npm run test:cov -- --forceExit --testTimeout=30000 --testPathIgnorePatterns="integration.spec.ts"
+        run: npm run test:cov -- --forceExit --testTimeout=30000 --testPathIgnorePatterns="/integration/" --testPathIgnorePatterns="/test/integration/"
 
       - name: Check coverage threshold (70%)
         working-directory: backend
