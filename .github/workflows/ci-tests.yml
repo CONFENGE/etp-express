@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 15
 
     # TEMPORARILY DISABLED: Integration tests skipped due to migration ordering issues
-    # TODO: Re-enable when migration dependencies are fixed (Issue #TBD)
+    # TODO: Re-enable when migration dependencies are fixed (Issue #1726)
     # services:
     #   postgres:
     #     image: pgvector/pgvector:pg15
@@ -79,7 +79,7 @@ jobs:
         run: npm install --include=optional --force
 
       # TEMPORARILY SKIPPED: Database migrations have ordering issues
-      # TODO: Fix migration dependencies in separate PR (Issue #TBD)
+      # TODO: Fix migration dependencies in separate PR (Issue #1726)
       # - name: Run database migrations
       #   working-directory: backend
       #   run: npm run migration:run
