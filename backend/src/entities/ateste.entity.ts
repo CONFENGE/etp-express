@@ -3,12 +3,15 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   OneToOne,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Medicao } from './medicao.entity';
 import { User } from './user.entity';
+import { Organization } from './organization.entity';
 
 /**
  * Resultado do Ateste conforme análise do fiscal.
@@ -43,6 +46,22 @@ export enum AtesteResultado {
 export class Ateste {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  // ============================================
+  // Multi-Tenancy
+  // ============================================
+
+  /**
+   * Organization ID for multi-tenancy isolation.
+   * Required for all atestes.
+   */
+  @Column({ type: 'uuid' })
+  @Index('IDX_ateste_organizationId')
+  organizationId: string;
+
+  @ManyToOne(() => Organization)
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   // ============================================
   // Relacionamento com Medição
@@ -146,4 +165,11 @@ export class Ateste {
    */
   @CreateDateColumn()
   createdAt: Date;
+
+  /**
+   * Data de última atualização do registro.
+   * Auto-gerada pelo TypeORM.
+   */
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

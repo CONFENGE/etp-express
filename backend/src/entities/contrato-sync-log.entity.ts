@@ -5,8 +5,10 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 import { Contrato } from './contrato.entity';
+import { Organization } from './organization.entity';
 
 /**
  * Interface para representar um conflito detectado
@@ -36,6 +38,18 @@ export interface ConflictField {
 export class ContratoSyncLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  /**
+   * Organization ID for multi-tenancy isolation.
+   * Required for all sync logs.
+   */
+  @Column({ type: 'uuid' })
+  @Index('IDX_contrato_sync_log_organizationId')
+  organizationId: string;
+
+  @ManyToOne(() => Organization)
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   /**
    * Relacionamento com Contrato
