@@ -15,9 +15,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  *
  * Rollback: Safe - all backfills infer from parent entities
  */
-export class AddOrganizationIdToMultipleTables1770400000000
-  implements MigrationInterface
-{
+export class AddOrganizationIdToMultipleTables1770400000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // ==================================================
     // 1. ExportMetadata: Add organizationId
