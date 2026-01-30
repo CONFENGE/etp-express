@@ -272,9 +272,10 @@ export class AntiHallucinationAgent {
   ): Promise<VerificationResult[]> {
     const verifications = await Promise.all(
       references.map(async (ref) => {
+        let localResult: VerificationResult | undefined;
         try {
           // 1. First, try local RAG verification (fast)
-          const localResult = await this.ragService.verifyReference(
+          localResult = await this.ragService.verifyReference(
             ref.type,
             ref.number,
             ref.year,
@@ -317,7 +318,7 @@ export class AntiHallucinationAgent {
             reference: externalResult.reference,
             exists: externalResult.exists,
             confidence: externalResult.confidence,
-            suggestion: localResult.suggestion, // Only use RAG suggestion, not external "not found"
+            suggestion: localResult?.suggestion, // Only use RAG suggestion if available
           };
         } catch (error: unknown) {
           this.logger.error('Failed to verify reference (local and external)', {
