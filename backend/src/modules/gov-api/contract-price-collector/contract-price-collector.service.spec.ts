@@ -108,6 +108,13 @@ describe('ContractPriceCollectorService', () => {
       create: jest.fn((entity) => entity as ContractPrice),
       save: jest.fn((entity) => Promise.resolve({ ...entity, id: 'uuid-123' })),
       count: jest.fn().mockResolvedValue(0),
+      manager: {
+        getRepository: jest.fn().mockReturnValue({
+          findOne: jest
+            .fn()
+            .mockResolvedValue({ id: 'org-uuid-test', name: 'Test Org' }),
+        }),
+      },
       createQueryBuilder: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
