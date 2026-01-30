@@ -44,6 +44,7 @@ jobs:
           - 5432:5432
 
     env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/etp_express_test
       DB_HOST: localhost
       DB_PORT: 5432
       DB_USER: postgres
