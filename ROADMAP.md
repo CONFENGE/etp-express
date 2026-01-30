@@ -1,6 +1,6 @@
 # ROADMAP - ETP Express
 
-**Atualizado:** 2026-01-29 | **Progresso:** 875/906 issues (96.6%) | **Deploy:** LIVE | **P0 Blocker:** 2 🔴 (TD-002, LGPD IP)
+**Atualizado:** 2026-01-29 | **Progresso:** 876/906 issues (96.7%) | **Deploy:** LIVE | **P0 Blocker:** 2 🔴 (TD-002, LGPD IP)
 
 > **⚠️ GTM Readiness:** NOT READY - 9 technical debt issues created (#1715-#1723) from audit findings. 3 are P0 security blockers. See [GTM Gap Analysis](#gtm-gap-analysis) below.
 
@@ -10,6 +10,7 @@
 
 | Data       | PR    | Tipo     | Descrição                                                         |
 | ---------- | ----- | -------- | ----------------------------------------------------------------- |
+| 2026-01-29 | #1714 | Feature  | [#1705] Implement signed URL generation for sharing exports ✅ - **Score 100/100 - Auto-merged via /review-pr (after prettier auto-fixes)** |
 | 2026-01-29 | #1724 | Security | [#1715] TD-001: Password hash exclusion + API key encryption ✅ - **Score 100/100 - Auto-merged via /review-pr (after lint auto-fixes)** |
 | 2026-01-29 | -     | Audit    | **GTM Readiness Audit** - Created 9 issues (#1715-#1723) from technical debt report. 3 P0 security blockers identified: password hash exposure, API keys in plain text, cross-tenant data leak |
 | 2026-01-26 | #1713 | Feature  | [#1704] Implement automatic S3 upload after export generation (#1704) ✅ - **Score 100/100 - Auto-merged via /review-pr (after test fixes + formatting)** |
@@ -327,7 +328,7 @@
 | #1168 | [Export] Integrar armazenamento em nuvem (S3) - EPIC | 🔴   |
 |       | ↳ #1703 Setup S3 bucket and AWS SDK configuration     | ✅     |
 |       | ↳ #1704 Auto-upload to S3 after export generation     | ✅     |
-|       | ↳ #1705 Signed URL generation for sharing exports     | 🔴     |
+|       | ↳ #1705 Signed URL generation for sharing exports     | ✅     |
 |       | ↳ #1706 Retention policy and cleanup job              | 🔴     |
 |       | ↳ #1707 API endpoint to list export history           | 🔴     |
 |       | ↳ #1708 Frontend UI for export history and sharing    | 🔴     |
