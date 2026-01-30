@@ -28,6 +28,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: etp_express_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: etp_express_test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -52,6 +74,10 @@ jobs:
       - name: Install dependencies (workspace root)
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install --include=optional --force
+
+      - name: Run database migrations
+        working-directory: backend
+        run: npm run migration:run
 
       - name: Run tests with coverage
         working-directory: backend
