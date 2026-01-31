@@ -832,10 +832,14 @@ Fiscalização e execução contratual completa.
 
 Oportunidades de mercado identificadas.
 
-- IA similar ao ALICE/TCU para detectar irregularidades
-- Suporte especial para MPEs (cotas, preferência)
-- Integração com sistemas estaduais TCE
-- White-label para grandes clientes
+- ✅ [#1291] IA similar ao ALICE/TCU para detectar irregularidades ⭐
+  - AiValidationService com 10 tipos de irregularidade
+  - Detecção de superfaturamento, direcionamento, fracionamento
+  - API REST completa com severity levels e confidence scores
+  - Integração com market intelligence e compliance
+- ⏳ [#1292] Suporte especial para MPEs (cotas, preferência)
+- ⏳ [#1293] Integração com sistemas estaduais TCE
+- ⏳ [#1294] White-label para grandes clientes
 
 ---
 
