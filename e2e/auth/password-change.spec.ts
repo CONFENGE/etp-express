@@ -14,6 +14,12 @@
 import { test, expect, Page } from '@playwright/test';
 
 /**
+ * Detect if testing against Railway (remote) or local environment
+ * Railway has higher network latency, requiring extended timeouts
+ */
+const isRemoteTesting = !!process.env.E2E_BASE_URL;
+
+/**
  * Test configuration for password change flow tests
  */
 const TEST_CONFIG = {
@@ -35,12 +41,16 @@ const TEST_CONFIG = {
   // Strong password that meets all requirements
   strongPassword: 'NewPassword@123!',
 
-  // Timeouts
+  // Timeouts adjusted for Railway remote testing (#1137)
   timeouts: {
-    navigation: 10000,
-    action: 5000,
-    dialogOpen: 3000,
-    dataLoad: 8000,
+    // Railway: 30s (network latency + cold starts) | Local: 10s
+    navigation: isRemoteTesting ? 30000 : 10000,
+    // Railway: 15s (form submission + DB write) | Local: 5s
+    action: isRemoteTesting ? 15000 : 5000,
+    // Railway: 10s (modal animation + render) | Local: 3s
+    dialogOpen: isRemoteTesting ? 10000 : 3000,
+    // Railway: 20s (API call + data fetch) | Local: 8s
+    dataLoad: isRemoteTesting ? 20000 : 8000,
   },
 };
 

@@ -42,15 +42,16 @@ const TEST_CONFIG = {
   },
 
   // Timeouts adjusted for Railway remote testing
+  // INCREASED: Railway staging has higher latency than originally estimated (#1137)
   timeouts: {
-    // Railway: 15s (network latency + cold starts) | Local: 10s
-    navigation: isRemoteTesting ? 15000 : 10000,
-    // Railway: 5s (API response time) | Local: 3s
-    action: isRemoteTesting ? 5000 : 3000,
-    // Railway: 8s (full page reload) | Local: 5s
-    reload: isRemoteTesting ? 8000 : 5000,
-    // Railway: 5s (login redirect timing) | Local: 3s
-    maxRedirect: isRemoteTesting ? 5000 : 3000,
+    // Railway: 30s (network latency + cold starts + DB queries) | Local: 10s
+    navigation: isRemoteTesting ? 30000 : 10000,
+    // Railway: 10s (API response time + auth validation) | Local: 3s
+    action: isRemoteTesting ? 10000 : 3000,
+    // Railway: 15s (full page reload + resource loading) | Local: 5s
+    reload: isRemoteTesting ? 15000 : 5000,
+    // Railway: 10s (login redirect + session creation) | Local: 3s
+    maxRedirect: isRemoteTesting ? 10000 : 3000,
   },
 };
 

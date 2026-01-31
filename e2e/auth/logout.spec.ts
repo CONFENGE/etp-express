@@ -18,6 +18,12 @@ import {
 } from '../utils/rate-limit-helper';
 
 /**
+ * Detect if testing against Railway (remote) or local environment
+ * Railway has higher network latency, requiring extended timeouts
+ */
+const isRemoteTesting = !!process.env.E2E_BASE_URL;
+
+/**
  * Test configuration for logout flow tests
  */
 const TEST_CONFIG = {
@@ -27,10 +33,12 @@ const TEST_CONFIG = {
     password: process.env.E2E_ADMIN_PASSWORD || 'Admin@123',
   },
 
-  // Timeouts
+  // Timeouts adjusted for Railway remote testing (#1137)
   timeouts: {
-    navigation: 10000, // 10s for navigation
-    action: 3000, // 3s for standard actions
+    // Railway: 30s (network latency + cold starts) | Local: 10s
+    navigation: isRemoteTesting ? 30000 : 10000,
+    // Railway: 10s (API response time) | Local: 3s
+    action: isRemoteTesting ? 10000 : 3000,
   },
 };
 
