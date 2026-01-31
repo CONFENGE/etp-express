@@ -58,9 +58,10 @@ export class Ateste {
   /**
    * Relacionamento com Medição.
    * OneToOne - uma medição possui no máximo um ateste.
-   * Eager loading ativado para facilitar acesso aos dados da medição.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @OneToOne(() => Medicao, { eager: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Medicao, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'medicaoId' })
   medicao: Medicao;
 
@@ -77,9 +78,8 @@ export class Ateste {
 
   /**
    * Relacionamento com Fiscal.
-   * Eager loading para facilitar identificação do responsável.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'fiscalId' })
   fiscal: User;
 

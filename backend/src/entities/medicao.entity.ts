@@ -49,9 +49,10 @@ export class Medicao {
 
   /**
    * Relacionamento com Contrato.
-   * Eager loading para facilitar acesso aos dados do contrato.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @ManyToOne(() => Contrato, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Contrato, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'contratoId' })
   contrato: Contrato;
 
@@ -140,7 +141,7 @@ export class Medicao {
   /**
    * Relacionamento com Fiscal responsável.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'fiscalResponsavelId' })
   fiscalResponsavel: User;
 
@@ -162,7 +163,7 @@ export class Medicao {
   @Column({ type: 'uuid' })
   createdById: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 

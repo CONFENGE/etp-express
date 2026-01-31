@@ -72,7 +72,7 @@ export class TermoReferencia {
   @Column({ type: 'uuid' })
   organizationId: string;
 
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
@@ -274,7 +274,7 @@ export class TermoReferencia {
   /**
    * Usuario que criou o TR.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 

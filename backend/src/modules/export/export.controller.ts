@@ -275,4 +275,58 @@ export class ExportController {
     await this.exportService.trackExportAccess(exportId);
     return { success: true };
   }
+
+  @Post('cleanup')
+  @ApiOperation({
+    summary: 'Trigger manual cleanup of old exports',
+    description:
+      'Manually triggers cleanup job to delete exports older than retention period',
+  })
+  @ApiQuery({
+    name: 'retentionDays',
+    required: false,
+    description: 'Number of days to retain exports (default: from env)',
+  })
+  @ApiQuery({
+    name: 'dryRun',
+    required: false,
+    description:
+      'If true, logs what would be deleted without actually deleting (default: false)',
+  })
+  @ApiQuery({
+    name: 'organizationId',
+    required: false,
+    description: 'Optional organization filter',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Cleanup job completed',
+  })
+  async triggerCleanup(
+    @Query('retentionDays') retentionDays?: string,
+    @Query('dryRun') dryRun?: string,
+    @Query('organizationId') organizationId?: string,
+    @Req() req?: any,
+  ) {
+    const retention = retentionDays ? parseInt(retentionDays, 10) : undefined;
+    const dry = dryRun === 'true';
+
+    // If organizationId not provided, use user's organization
+    const orgId = organizationId || req?.user?.organizationId;
+
+    const result = await this.exportService.triggerCleanup(
+      retention,
+      dry,
+      orgId,
+    );
+
+    return {
+      success: true,
+      deletedCount: result.deletedCount,
+      s3DeletedCount: result.s3DeletedCount,
+      deletedIds: result.deletedIds,
+      errors: result.errors,
+      dryRun: result.dryRun,
+    };
+  }
 }
