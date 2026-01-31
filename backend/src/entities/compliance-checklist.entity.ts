@@ -102,10 +102,11 @@ export class ComplianceChecklist {
 
   /**
    * Itens do checklist (requisitos individuais).
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
   @OneToMany(() => ComplianceChecklistItem, (item) => item.checklist, {
     cascade: true,
-    eager: true,
   })
   items: ComplianceChecklistItem[];
 

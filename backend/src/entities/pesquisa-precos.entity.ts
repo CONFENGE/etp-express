@@ -179,7 +179,7 @@ export class PesquisaPrecos {
   @Column({ type: 'uuid' })
   organizationId: string;
 
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
@@ -360,7 +360,7 @@ export class PesquisaPrecos {
   /**
    * Usuario que criou a pesquisa.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 

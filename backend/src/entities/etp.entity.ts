@@ -412,9 +412,10 @@ export class Etp {
 
   /**
    * Organization relation (Multi-Tenancy B2G - MT-05).
-   * Eager loaded for quick access to organization data.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
@@ -425,7 +426,6 @@ export class Etp {
   completionPercentage: number;
 
   @ManyToOne(() => User, (user) => user.etps, {
-    eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'created_by' })

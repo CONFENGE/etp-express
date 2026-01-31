@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Etp } from '../../../entities/etp.entity';
 import { User } from '../../../entities/user.entity';
+import { Organization } from '../../../entities/organization.entity';
 
 /**
  * ExportMetadata Entity
@@ -22,6 +24,14 @@ import { User } from '../../../entities/user.entity';
 export class ExportMetadata {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ type: 'uuid' })
+  @Index('IDX_export_metadata_organizationId')
+  organizationId: string;
+
+  @ManyToOne(() => Organization)
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization;
 
   @Column()
   etpId: string;

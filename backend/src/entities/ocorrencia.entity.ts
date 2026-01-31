@@ -80,9 +80,10 @@ export class Ocorrencia {
 
   /**
    * Relacionamento com Contrato.
-   * Eager loading para facilitar acesso aos dados do contrato.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @ManyToOne(() => Contrato, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Contrato, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'contratoId' })
   contrato: Contrato;
 
@@ -174,7 +175,7 @@ export class Ocorrencia {
   /**
    * Relacionamento com usuário que registrou.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'registradoPorId' })
   registradoPor: User;
 

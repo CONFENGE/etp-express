@@ -108,9 +108,8 @@ export class DocumentoFiscalizacao {
 
   /**
    * Relacionamento com usuário que fez upload.
-   * Eager loading para facilitar auditoria.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'uploadedById' })
   uploadedBy: User;
 

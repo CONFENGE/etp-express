@@ -68,7 +68,7 @@ export class AuditLog {
   @Column({ type: 'varchar', nullable: true })
   userAgent: string;
 
-  @ManyToOne(() => User, (user) => user.auditLogs, { eager: true })
+  @ManyToOne(() => User, (user) => user.auditLogs)
   @JoinColumn({ name: 'user_id' })
   user: User;
 

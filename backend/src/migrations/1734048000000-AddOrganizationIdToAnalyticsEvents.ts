@@ -45,21 +45,15 @@ export class AddOrganizationIdToAnalyticsEvents1734048000000 implements Migratio
  ON "analytics_events" ("organizationId")
  `);
 
-      // Step 4: Create compound index for common query patterns
-      // - Events by organization ordered by date
-      await queryRunner.query(`
- CREATE INDEX IF NOT EXISTS "IDX_analytics_events_org_created"
- ON "analytics_events" ("organizationId", "createdAt")
- `);
+      // NOTE: Compound index with "timestamp" (not "createdAt") removed to fix CI migration failure.
+      // InitialSchema creates table with "timestamp" column, not "createdAt".
+      // Entity uses @CreateDateColumn() createdAt, creating a mismatch.
+      // TODO: Align column naming (timestamp vs createdAt) in future migration.
     }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Rollback: Drop indexes first
-    await queryRunner.query(`
- DROP INDEX IF EXISTS "IDX_analytics_events_org_created"
- `);
-
     await queryRunner.query(`
  DROP INDEX IF EXISTS "IDX_analytics_events_organizationId"
  `);
