@@ -4,9 +4,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Migration para criar tabela de histórico de validações de conformidade.
  *
  * Issue #1264 - [Compliance-c] Criar relatório de conformidade
+ * Issue #1726 - Fixed migration ordering to run AFTER CreateComplianceChecklistTables
+ *
+ * IMPORTANT: This migration MUST run AFTER 1768060000000-CreateComplianceChecklistTables
+ * because it references the compliance_checklists table via foreign key.
  */
-export class CreateComplianceValidationHistory1737072000000 implements MigrationInterface {
-  name = 'CreateComplianceValidationHistory1737072000000';
+export class CreateComplianceValidationHistory1768070000000 implements MigrationInterface {
+  name = 'CreateComplianceValidationHistory1768070000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Ensure uuid-ossp extension exists
