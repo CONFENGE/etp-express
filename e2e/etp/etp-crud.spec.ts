@@ -207,6 +207,52 @@ test.describe('ETP CRUD Happy Paths', () => {
   });
 
   /**
+   * Final cleanup: Delete all test ETPs via API (#1137 - Phase 5)
+   * Only runs on Railway to prevent staging DB pollution
+   */
+  test.afterAll(async ({ request }) => {
+    // Only cleanup on Railway staging (not local)
+    const isRailway = !!process.env.E2E_BASE_URL;
+    if (!isRailway || createdEtpIds.length === 0) {
+      return;
+    }
+
+    console.log(
+      `[CLEANUP] Deleting ${createdEtpIds.length} test ETPs from Railway staging...`,
+    );
+
+    const apiUrl =
+      process.env.E2E_API_URL || process.env.E2E_BASE_URL?.replace(':5173', ':3001');
+    const deletedIds: string[] = [];
+    const failedIds: string[] = [];
+
+    for (const etpId of createdEtpIds) {
+      try {
+        const response = await request.delete(`${apiUrl}/api/v1/etps/${etpId}`, {
+          timeout: 10000,
+        });
+
+        if (response.ok()) {
+          deletedIds.push(etpId);
+        } else {
+          failedIds.push(etpId);
+          console.warn(`[CLEANUP] Failed to delete ETP ${etpId}: ${response.status()}`);
+        }
+      } catch (error) {
+        failedIds.push(etpId);
+        console.warn(`[CLEANUP] Error deleting ETP ${etpId}:`, error);
+      }
+    }
+
+    console.log(
+      `[CLEANUP] Deleted ${deletedIds.length}/${createdEtpIds.length} ETPs successfully`,
+    );
+    if (failedIds.length > 0) {
+      console.warn(`[CLEANUP] Failed to delete: ${failedIds.join(', ')}`);
+    }
+  });
+
+  /**
    * Test 1: Create ETP with minimal data
    *
    * @description Creates an ETP with only the required title field.
