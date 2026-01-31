@@ -22,10 +22,26 @@ async function globalSetup(config: FullConfig) {
   const password = process.env.E2E_ADMIN_PASSWORD;
 
   if (!email || !password) {
-    console.warn(
-      '[Global Setup] E2E_ADMIN_EMAIL or E2E_ADMIN_PASSWORD not set. ' +
-        'Tests will perform individual logins.',
-    );
+    console.warn('');
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('⚠️  E2E Environment Not Configured');
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('');
+    console.warn('E2E_ADMIN_EMAIL or E2E_ADMIN_PASSWORD not set.');
+    console.warn('');
+    console.warn('Tests will attempt individual logins with fallback credentials.');
+    console.warn('For better performance, configure environment variables.');
+    console.warn('');
+    console.warn('Quick fix:');
+    console.warn('  npm run test:e2e:setup');
+    console.warn('');
+    console.warn('Or create .env manually:');
+    console.warn('  E2E_ADMIN_EMAIL=admin@confenge.com.br');
+    console.warn('  E2E_ADMIN_PASSWORD=Admin@123');
+    console.warn('');
+    console.warn('See e2e/README.md for full setup instructions.');
+    console.warn('═══════════════════════════════════════════════════════════');
+    console.warn('');
     return;
   }
 
