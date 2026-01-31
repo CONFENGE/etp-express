@@ -35,10 +35,7 @@ import {
   ItemCategoryType,
 } from '../../../entities/item-category.entity';
 import { ItemNormalizationService } from '../../market-intelligence/services/item-normalization.service';
-import {
-  ContractItem,
-  UNIT_NORMALIZATION_MAP,
-} from '../../market-intelligence/dto/normalized-item.dto';
+import { ContractItem } from '../../market-intelligence/dto/normalized-item.dto';
 import { EditalItem } from '../dto/edital-extracted-data.dto';
 
 /**
@@ -203,9 +200,8 @@ export class EditalItemNormalizationService {
     };
 
     // Use ItemNormalizationService for classification and feature extraction
-    const normalized = await this.itemNormalizationService.normalizeItem(
-      contractItem,
-    );
+    const normalized =
+      await this.itemNormalizationService.normalizeItem(contractItem);
 
     // Generate matching key
     const matchingKey = this.generateMatchingKey(
@@ -411,7 +407,11 @@ export class EditalItemNormalizationService {
       categoryCode || 'UNCATEGORIZED',
     ].join('|');
 
-    return crypto.createHash('sha256').update(key).digest('hex').substring(0, 16);
+    return crypto
+      .createHash('sha256')
+      .update(key)
+      .digest('hex')
+      .substring(0, 16);
   }
 
   /**
@@ -440,12 +440,12 @@ export class EditalItemNormalizationService {
    * Create a fallback normalized item when normalization fails.
    *
    * @param item - Original item
-   * @param errorMessage - Error message
+   * @param _errorMessage - Error message (unused, kept for future logging)
    * @returns Normalized item with low confidence
    */
   private createFallbackItem(
     item: EditalItem,
-    errorMessage: string,
+    _errorMessage: string,
   ): NormalizedEditalItem {
     const normalizedUnit = this.itemNormalizationService.normalizeUnit(
       item.unidade,

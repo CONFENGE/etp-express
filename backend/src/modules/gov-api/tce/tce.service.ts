@@ -75,9 +75,7 @@ export class TceService {
   /**
    * Export contracts to TCE format
    */
-  async exportContracts(
-    request: TceExportRequest,
-  ): Promise<TceExportResult> {
+  async exportContracts(request: TceExportRequest): Promise<TceExportResult> {
     this.logger.log('Exporting contracts to TCE', {
       state: request.state,
       format: request.format,

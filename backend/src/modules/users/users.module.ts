@@ -10,11 +10,13 @@ import { Etp } from '../../entities/etp.entity';
 import { AnalyticsEvent } from '../../entities/analytics-event.entity';
 import { AuditLog } from '../../entities/audit-log.entity';
 import { EmailModule } from '../email/email.module';
+import { MarketIntelligenceModule } from '../market-intelligence/market-intelligence.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Etp, AnalyticsEvent, AuditLog]),
     EmailModule,
+    MarketIntelligenceModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

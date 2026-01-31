@@ -60,7 +60,11 @@ import { MarketIntelligenceModule } from '../market-intelligence/market-intellig
     forwardRef(() => OrchestratorModule),
     forwardRef(() => MarketIntelligenceModule),
   ],
-  controllers: [PageIndexController, JurisprudenciaController, EditalApiController],
+  controllers: [
+    PageIndexController,
+    JurisprudenciaController,
+    EditalApiController,
+  ],
   providers: [
     PageIndexService,
     TreeBuilderService,

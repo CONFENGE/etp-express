@@ -30,9 +30,7 @@ import {
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { EditalExtractionService } from './services/edital-extraction.service';
 import { EditalComparisonService } from './services/edital-comparison.service';
-import {
-  EditalExtractedData,
-} from './dto/edital-extracted-data.dto';
+import { EditalExtractedData } from './dto/edital-extracted-data.dto';
 
 /**
  * DTO for extraction request
@@ -141,7 +139,9 @@ export class EditalApiController {
     status: 400,
     description: 'Invalid request or extraction failed',
   })
-  async extractEdital(@Body() dto: ExtractEditalDto): Promise<EditalExtractedData> {
+  async extractEdital(
+    @Body() dto: ExtractEditalDto,
+  ): Promise<EditalExtractedData> {
     if (!dto.pdfUrl && !dto.localPath) {
       throw new BadRequestException(
         'Either pdfUrl or localPath must be provided',
@@ -280,7 +280,9 @@ export class EditalApiController {
   })
   async compareEditais(@Body() dto: CompareEditaisDto) {
     if (!dto.editalA || !dto.editalB) {
-      throw new BadRequestException('Both editalA and editalB must be provided');
+      throw new BadRequestException(
+        'Both editalA and editalB must be provided',
+      );
     }
 
     return this.comparisonService.compareEditais(dto.editalA, dto.editalB);

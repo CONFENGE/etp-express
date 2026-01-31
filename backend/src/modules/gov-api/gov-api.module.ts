@@ -6,6 +6,7 @@
  * - Compras.gov.br (SIASG)
  * - SINAPI (Sistema Nacional de Pesquisa de Custos)
  * - SICRO (Sistema de Custos Rodoviarios)
+ * - TCE (Tribunais de Contas Estaduais)
  *
  * Features:
  * - HTTP client with circuit breaker and retry
@@ -25,6 +26,7 @@ import { HttpModule } from '@nestjs/axios';
 import { GovApiCache } from './utils/gov-api-cache';
 import { GovApiMetricsService } from './gov-api-metrics.service';
 import { ContratosGovBrAuthService } from './services/contratos-govbr-auth.service';
+import { TceModule } from './tce/tce.module';
 
 /**
  * GovApiModule - Base module for government API integrations
@@ -77,8 +79,13 @@ import { ContratosGovBrAuthService } from './services/contratos-govbr-auth.servi
  */
 @Global()
 @Module({
-  imports: [ConfigModule, HttpModule],
+  imports: [ConfigModule, HttpModule, TceModule],
   providers: [GovApiCache, GovApiMetricsService, ContratosGovBrAuthService],
-  exports: [GovApiCache, GovApiMetricsService, ContratosGovBrAuthService],
+  exports: [
+    GovApiCache,
+    GovApiMetricsService,
+    ContratosGovBrAuthService,
+    TceModule,
+  ],
 })
 export class GovApiModule {}

@@ -82,9 +82,9 @@ describe('Multi-Tenancy Isolation Tests', () => {
 
       jest.spyOn(atesteRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(
-        atesteService.findOne(atesteOrgB.id, ORG_A),
-      ).rejects.toThrow(NotFoundException);
+      await expect(atesteService.findOne(atesteOrgB.id, ORG_A)).rejects.toThrow(
+        NotFoundException,
+      );
 
       expect(atesteRepository.findOne).toHaveBeenCalledWith({
         where: {
@@ -282,9 +282,7 @@ describe('Multi-Tenancy Isolation Tests', () => {
       };
 
       // This test serves as documentation for developers
-      expect(
-        'organizationId' in invalidQueryPattern.where,
-      ).toBeFalsy();
+      expect('organizationId' in invalidQueryPattern.where).toBeFalsy();
     });
 
     it('should document S3 signed URL generation includes organizationId validation', () => {

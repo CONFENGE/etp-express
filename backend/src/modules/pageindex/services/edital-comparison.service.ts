@@ -17,7 +17,11 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { EditalExtractedData, EditalLote, EditalItem } from '../dto/edital-extracted-data.dto';
+import {
+  EditalExtractedData,
+  EditalLote,
+  EditalItem,
+} from '../dto/edital-extracted-data.dto';
 import {
   ComparisonReport,
   ItemComparado,
@@ -107,6 +111,10 @@ export interface ItemComparison {
 @Injectable()
 export class EditalComparisonService {
   private readonly logger = new Logger(EditalComparisonService.name);
+
+  constructor(
+    private readonly normalizationService: EditalItemNormalizationService,
+  ) {}
 
   /**
    * Compare two extracted editais.
@@ -321,7 +329,9 @@ export class EditalComparisonService {
 
     // Insight 2: Price competitiveness
     const priceComparisons = itemComparisons.filter(
-      (c) => c.status === 'price_difference' && c.priceDifferencePercent !== undefined,
+      (c) =>
+        c.status === 'price_difference' &&
+        c.priceDifferencePercent !== undefined,
     );
 
     if (priceComparisons.length > 0) {
@@ -373,5 +383,276 @@ export class EditalComparisonService {
     }
 
     return insights;
+  }
+
+  /**
+   * Compare multiple editais for price analysis and anomaly detection.
+   *
+   * This method analyzes prices across multiple editais to detect anomalies
+   * using statistical methods (Z-score). It groups similar items and calculates
+   * statistical metrics to identify potential overpricing.
+   *
+   * Algorithm:
+   * 1. Normalize all items from all editais
+   * 2. Group items by matching key
+   * 3. For each group, calculate: mean, median, std dev, min, max
+   * 4. Detect outliers using Z-score (> 2 std devs = alert, > 3 = sobrepreço)
+   * 5. Generate comparison report with confidence score
+   *
+   * @param editaisData - Array of EditalExtractedData to compare
+   * @param editaisIds - Array of edital IDs (for reference in report)
+   * @returns ComparisonReport with statistical analysis
+   *
+   * @example
+   * ```typescript
+   * const report = await editalComparisonService.compareMultipleEditais(
+   *   [editalData1, editalData2, editalData3],
+   *   ['edital-001', 'edital-002', 'edital-003']
+   * );
+   *
+   * console.log(`Sobrepreço alerts: ${report.alertasSobrepreco}`);
+   * console.log(`Confidence: ${report.confiabilidade}%`);
+   * ```
+   */
+  async compareMultipleEditais(
+    editaisData: EditalExtractedData[],
+    editaisIds: string[],
+  ): Promise<ComparisonReport> {
+    this.logger.log(
+      `Starting multi-edital comparison for ${editaisData.length} editais`,
+    );
+
+    if (editaisData.length !== editaisIds.length) {
+      throw new Error(
+        'editaisData and editaisIds arrays must have the same length',
+      );
+    }
+
+    if (editaisData.length < 2) {
+      throw new Error('At least 2 editais are required for comparison');
+    }
+
+    // Step 1: Normalize all items from all editais
+    const normalizedItemsByEdital: Map<string, NormalizedEditalItem[]> =
+      new Map();
+
+    for (let i = 0; i < editaisData.length; i++) {
+      const editalId = editaisIds[i];
+      const editalData = editaisData[i];
+      const items = this.flattenItems(editalData.lotes);
+
+      const normalizationResult =
+        await this.normalizationService.normalizeItems(items);
+      normalizedItemsByEdital.set(editalId, normalizationResult.items);
+
+      this.logger.log(
+        `Normalized ${normalizationResult.items.length} items for edital ${editalId}`,
+      );
+    }
+
+    // Step 2: Group items by matching key across all editais
+    const itemGroups = this.groupItemsByMatchingKey(normalizedItemsByEdital);
+
+    this.logger.log(`Grouped items into ${itemGroups.size} unique item types`);
+
+    // Step 3: Calculate statistics and detect outliers for each group
+    const itensComparados: ItemComparado[] = [];
+    let totalAlertasSobrepreco = 0;
+
+    for (const [matchingKey, group] of itemGroups.entries()) {
+      // Only analyze groups with prices and multiple occurrences
+      if (group.items.length < 2) {
+        continue;
+      }
+
+      const pricesWithEditalId = group.items
+        .filter((item) => item.normalizedItem.precoUnitarioPadrao !== undefined)
+        .map((item) => ({
+          editalId: item.editalId,
+          preco: item.normalizedItem.precoUnitarioPadrao!,
+        }));
+
+      if (pricesWithEditalId.length < 2) {
+        continue; // Need at least 2 prices for statistical analysis
+      }
+
+      const prices = pricesWithEditalId.map((p) => p.preco);
+      const stats = this.calculateStatistics(prices);
+
+      // Detect outliers using Z-score
+      const outliers: OutlierDetection[] = [];
+      for (const { editalId, preco } of pricesWithEditalId) {
+        const zScore =
+          stats.desvio > 0 ? (preco - stats.mean) / stats.desvio : 0;
+        const desvioPercentual =
+          stats.mean > 0 ? ((preco - stats.mean) / stats.mean) * 100 : 0;
+
+        // Outlier threshold: > 2 std devs
+        if (Math.abs(zScore) > 2) {
+          let categoria: AnomaliaCategoria;
+          if (Math.abs(zScore) > 3) {
+            categoria = AnomaliaCategoria.SOBREPRECO;
+            totalAlertasSobrepreco++;
+          } else {
+            categoria = AnomaliaCategoria.ATENCAO;
+          }
+
+          outliers.push({
+            editalId,
+            preco,
+            desvioPercentual,
+            zScore,
+            categoria,
+          });
+        }
+      }
+
+      // Get first item for description and category
+      const firstItem = group.items[0].normalizedItem;
+
+      itensComparados.push({
+        descricao: firstItem.descricaoNormalizada,
+        categoria: firstItem.categoriaNome || undefined,
+        ocorrencias: pricesWithEditalId.length,
+        precoMedio: stats.mean,
+        precoMediana: stats.median,
+        desvio: stats.desvio,
+        precoMinimo: stats.min,
+        precoMaximo: stats.max,
+        outliers: outliers.sort(
+          (a, b) => Math.abs(b.zScore) - Math.abs(a.zScore),
+        ), // Sort by severity
+      });
+    }
+
+    // Sort items: first those with outliers, then by number of occurrences
+    itensComparados.sort((a, b) => {
+      if (a.outliers.length > 0 && b.outliers.length === 0) return -1;
+      if (a.outliers.length === 0 && b.outliers.length > 0) return 1;
+      return b.ocorrencias - a.ocorrencias;
+    });
+
+    // Step 4: Calculate confidence score based on sample size
+    const confiabilidade = this.calculateConfidence(itensComparados);
+
+    this.logger.log(
+      `Comparison completed: ${itensComparados.length} items analyzed, ${totalAlertasSobrepreco} sobrepreço alerts`,
+    );
+
+    return {
+      itensComparados,
+      alertasSobrepreco: totalAlertasSobrepreco,
+      confiabilidade,
+      geradoEm: new Date().toISOString(),
+      editaisAnalisados: editaisIds,
+      totalItens: itensComparados.length,
+    };
+  }
+
+  /**
+   * Group normalized items by matching key across all editais.
+   *
+   * @param normalizedItemsByEdital - Map of edital ID to normalized items
+   * @returns Map of matching key to grouped items
+   */
+  private groupItemsByMatchingKey(
+    normalizedItemsByEdital: Map<string, NormalizedEditalItem[]>,
+  ): Map<
+    string,
+    { items: { editalId: string; normalizedItem: NormalizedEditalItem }[] }
+  > {
+    const groups = new Map<
+      string,
+      { items: { editalId: string; normalizedItem: NormalizedEditalItem }[] }
+    >();
+
+    for (const [editalId, items] of normalizedItemsByEdital.entries()) {
+      for (const item of items) {
+        const matchingKey = item.matchingKey;
+
+        if (!groups.has(matchingKey)) {
+          groups.set(matchingKey, { items: [] });
+        }
+
+        groups.get(matchingKey)!.items.push({
+          editalId,
+          normalizedItem: item,
+        });
+      }
+    }
+
+    return groups;
+  }
+
+  /**
+   * Calculate statistical metrics for a set of prices.
+   *
+   * @param prices - Array of prices
+   * @returns Statistical metrics (mean, median, std dev, min, max)
+   */
+  private calculateStatistics(prices: number[]): {
+    mean: number;
+    median: number;
+    desvio: number;
+    min: number;
+    max: number;
+  } {
+    if (prices.length === 0) {
+      return { mean: 0, median: 0, desvio: 0, min: 0, max: 0 };
+    }
+
+    // Mean
+    const mean = prices.reduce((sum, p) => sum + p, 0) / prices.length;
+
+    // Median
+    const sorted = [...prices].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    const median =
+      sorted.length % 2 === 0
+        ? (sorted[mid - 1] + sorted[mid]) / 2
+        : sorted[mid];
+
+    // Standard deviation
+    const variance =
+      prices.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / prices.length;
+    const desvio = Math.sqrt(variance);
+
+    // Min/Max
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+
+    return { mean, median, desvio, min, max };
+  }
+
+  /**
+   * Calculate confidence score based on sample size and distribution.
+   *
+   * Confidence scoring:
+   * - Sample size: More editais = higher confidence
+   * - Distribution: More items analyzed = higher confidence
+   * - Base formula: min(100, 50 + (totalOccurrences / totalItems) * 30 + (editais.length * 5))
+   *
+   * @param itensComparados - Items analyzed
+   * @returns Confidence score (0-100)
+   */
+  private calculateConfidence(itensComparados: ItemComparado[]): number {
+    if (itensComparados.length === 0) {
+      return 0;
+    }
+
+    const totalOccurrences = itensComparados.reduce(
+      (sum, item) => sum + item.ocorrencias,
+      0,
+    );
+    const avgOccurrences = totalOccurrences / itensComparados.length;
+
+    // Base confidence: 50
+    // Boost: +30 for high avg occurrences (up to 10)
+    // Boost: +20 for many unique items analyzed
+    let confidence = 50;
+    confidence += Math.min(30, (avgOccurrences / 10) * 30);
+    confidence += Math.min(20, (itensComparados.length / 50) * 20);
+
+    return Math.round(Math.min(100, confidence));
   }
 }

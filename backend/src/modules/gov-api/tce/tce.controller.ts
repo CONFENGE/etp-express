@@ -123,8 +123,7 @@ export class TceController {
   @Get('connection/check-all')
   @ApiOperation({
     summary: 'Check all TCE connections',
-    description:
-      'Verifies connectivity with all supported state TCE systems',
+    description: 'Verifies connectivity with all supported state TCE systems',
   })
   @ApiResponse({
     status: 200,

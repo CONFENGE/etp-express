@@ -568,4 +568,33 @@ export class UsersService {
 
     return result;
   }
+
+  /**
+   * Regenerate API key for a user (#1689).
+   *
+   * @param userId - User ID
+   * @returns New API key (plaintext)
+   */
+  async regenerateApiKey(userId: string): Promise<string> {
+    const user = await this.findOne(userId);
+
+    // Generate new API key (32 random bytes = 64 hex chars)
+    const crypto = await import('crypto');
+    const apiKey = crypto.randomBytes(32).toString('hex');
+
+    // Hash the API key for storage (using bcrypt for consistency)
+    const bcrypt = await import('bcrypt');
+    const apiKeyHash = await bcrypt.hash(apiKey, 10);
+
+    // Update user with new API key and hash
+    await this.usersRepository.update(userId, {
+      apiKey, // Temporary: during migration period
+      apiKeyHash, // New: hashed version for security
+    });
+
+    this.logger.log(`API key regenerated for user ${user.email} (${userId})`);
+
+    // Return plaintext key (only shown once)
+    return apiKey;
+  }
 }

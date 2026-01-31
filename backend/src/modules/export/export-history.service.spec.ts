@@ -144,7 +144,12 @@ describe('ExportService - getExportHistory', () => {
         () => queryBuilder as any,
       );
 
-      const result = await service.getExportHistory('etp-123', 'org-123', 1, 10);
+      const result = await service.getExportHistory(
+        'etp-123',
+        'org-123',
+        1,
+        10,
+      );
 
       expect(result.exports).toHaveLength(2);
       expect(result.total).toBe(2);
@@ -154,12 +159,9 @@ describe('ExportService - getExportHistory', () => {
       expect(result.exports[0].downloadUrl).toBe(
         'https://s3.example.com/signed-url',
       );
-      expect(queryBuilder.where).toHaveBeenCalledWith(
-        'export.etpId = :etpId',
-        {
-          etpId: 'etp-123',
-        },
-      );
+      expect(queryBuilder.where).toHaveBeenCalledWith('export.etpId = :etpId', {
+        etpId: 'etp-123',
+      });
       expect(queryBuilder.andWhere).toHaveBeenCalledWith(
         'etp.organizationId = :organizationId',
         { organizationId: 'org-123' },
@@ -206,7 +208,12 @@ describe('ExportService - getExportHistory', () => {
         () => queryBuilder as any,
       );
 
-      const result = await service.getExportHistory('etp-123', 'org-123', 2, 10);
+      const result = await service.getExportHistory(
+        'etp-123',
+        'org-123',
+        2,
+        10,
+      );
 
       expect(result.totalPages).toBe(3);
       expect(queryBuilder.skip).toHaveBeenCalledWith(10);
@@ -268,7 +275,12 @@ describe('ExportService - getExportHistory', () => {
         () => queryBuilder as any,
       );
 
-      const result = await service.getExportHistory('etp-123', 'org-123', 1, 10);
+      const result = await service.getExportHistory(
+        'etp-123',
+        'org-123',
+        1,
+        10,
+      );
 
       expect(result.exports[0].downloadUrl).toBeUndefined();
       expect(s3Service.getSignedUrl).not.toHaveBeenCalled();
@@ -302,7 +314,12 @@ describe('ExportService - getExportHistory', () => {
         () => queryBuilder as any,
       );
 
-      const result = await service.getExportHistory('etp-123', 'org-123', 1, 10);
+      const result = await service.getExportHistory(
+        'etp-123',
+        'org-123',
+        1,
+        10,
+      );
 
       // Should still return the export without download URL
       expect(result.exports).toHaveLength(1);

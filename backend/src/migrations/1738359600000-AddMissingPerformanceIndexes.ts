@@ -18,9 +18,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  *
  * Rollback: All indexes can be safely dropped
  */
-export class AddMissingPerformanceIndexes1738359600000
-  implements MigrationInterface
-{
+export class AddMissingPerformanceIndexes1738359600000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // ============================================
     // ETPs Table Indexes
@@ -218,7 +216,9 @@ export class AddMissingPerformanceIndexes1738359600000
       `DROP INDEX IF EXISTS "IDX_pesquisas_precos_organizationId"`,
     );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_ocorrencias_status"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_ocorrencias_contratoId"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_ocorrencias_contratoId"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_editais_status"`);
     await queryRunner.query(
       `DROP INDEX IF EXISTS "IDX_editais_organizationId"`,

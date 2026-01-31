@@ -69,9 +69,15 @@ describe('ExportCleanupProcessor', () => {
         createdAt: new Date('2023-01-01'),
       };
 
-      exportMetadataRepository.getMany.mockResolvedValue([
-        oldExport as ExportMetadata,
-      ]);
+      // Mock the query builder chain
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([oldExport as ExportMetadata]),
+      };
+      exportMetadataRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
 
       const jobData: ExportCleanupJobData = {
         retentionDays: 90,
@@ -101,9 +107,15 @@ describe('ExportCleanupProcessor', () => {
         createdAt: new Date('2023-01-01'),
       };
 
-      exportMetadataRepository.getMany.mockResolvedValue([
-        oldExport as ExportMetadata,
-      ]);
+      // Mock the query builder chain
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([oldExport as ExportMetadata]),
+      };
+      exportMetadataRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
 
       const jobData: ExportCleanupJobData = {
         retentionDays: 90,
@@ -154,9 +166,15 @@ describe('ExportCleanupProcessor', () => {
         createdAt: new Date('2023-01-01'),
       };
 
-      exportMetadataRepository.getMany.mockResolvedValue([
-        oldExport as ExportMetadata,
-      ]);
+      // Mock the query builder chain
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([oldExport as ExportMetadata]),
+      };
+      exportMetadataRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
 
       s3Service.deleteFile.mockRejectedValue(new Error('S3 access denied'));
 
@@ -181,7 +199,15 @@ describe('ExportCleanupProcessor', () => {
     });
 
     it('should return early when no old exports found', async () => {
-      exportMetadataRepository.getMany.mockResolvedValue([]);
+      // Mock empty result
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+      };
+      exportMetadataRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
 
       const jobData: ExportCleanupJobData = {
         retentionDays: 90,
@@ -212,9 +238,15 @@ describe('ExportCleanupProcessor', () => {
         createdAt: new Date('2023-01-01'),
       };
 
-      exportMetadataRepository.getMany.mockResolvedValue([
-        oldExport as ExportMetadata,
-      ]);
+      // Mock the query builder chain
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([oldExport as ExportMetadata]),
+      };
+      exportMetadataRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
 
       const jobData: ExportCleanupJobData = {
         retentionDays: 90,

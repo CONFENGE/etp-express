@@ -116,7 +116,9 @@ export class AddIpAnonymizationFields1770500000000 implements MigrationInterface
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop function
-    await queryRunner.query(`DROP FUNCTION IF EXISTS anonymize_ip_address(TEXT)`);
+    await queryRunner.query(
+      `DROP FUNCTION IF EXISTS anonymize_ip_address(TEXT)`,
+    );
 
     // Drop indexes
     await queryRunner.query(`

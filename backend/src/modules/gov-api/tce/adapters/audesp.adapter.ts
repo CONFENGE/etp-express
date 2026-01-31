@@ -216,9 +216,7 @@ export class AudespAdapter implements ITceApiAdapter {
    * Generates Audesp-compatible export file (XML format).
    * Currently generates file content only - submission requires API credentials.
    */
-  async exportContracts(
-    request: TceExportRequest,
-  ): Promise<TceExportResult> {
+  async exportContracts(request: TceExportRequest): Promise<TceExportResult> {
     this.logger.log('Exporting contracts to Audesp format', {
       contractCount: request.contracts.length,
       format: request.format,
@@ -404,7 +402,11 @@ export class AudespAdapter implements ITceApiAdapter {
    * Format date for filename (YYYYMMDD_HHMMSS)
    */
   private formatDateForFilename(date: Date): string {
-    return date.toISOString().replace(/[-:]/g, '').replace('T', '_').split('.')[0];
+    return date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace('T', '_')
+      .split('.')[0];
   }
 
   /**

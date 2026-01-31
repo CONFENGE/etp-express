@@ -140,6 +140,13 @@ const UserManagement = lazy(() =>
   })),
 );
 
+// API Usage Dashboard (#1689)
+const ApiUsageDashboard = lazy(() =>
+  import('@/pages/ApiUsageDashboard').then((m) => ({
+    default: m.ApiUsageDashboard,
+  })),
+);
+
 /**
  * Route loading fallback component.
  * Displays centered loading state while lazy-loaded pages are fetched.
@@ -425,6 +432,16 @@ const router = createBrowserRouter([
           { index: true, element: <ManagerDashboard /> },
           { path: 'users', element: <UserManagement /> },
         ],
+      },
+
+      // API Usage Dashboard (#1689)
+      {
+        path: '/api-usage',
+        element: (
+          <ProtectedRoute>
+            <ApiUsageDashboard />
+          </ProtectedRoute>
+        ),
       },
 
       // 404 - Loaded eagerly for fast error display
