@@ -6,6 +6,7 @@ import { IpAnonymizationService } from './ip-anonymization.service';
 import { AnalyticsEvent } from '@/entities/analytics-event.entity';
 import { AuditLog } from '@/entities/audit-log.entity';
 import { SecretAccessLog } from '@/entities/secret-access-log.entity';
+import { ApiUsage } from '@/modules/market-intelligence/entities/api-usage.entity';
 
 /**
  * Privacy Module
@@ -17,11 +18,22 @@ import { SecretAccessLog } from '@/entities/secret-access-log.entity';
  * - PIIRedactionService: Sanitização de informações pessoais identificáveis
  * - IpAnonymizationService: Anonimização de endereços IP conforme LGPD Art. 12
  *
+ * Entities with IP anonymization (TD-008):
+ * - AnalyticsEvent: 30-day retention
+ * - AuditLog: 90-day retention
+ * - SecretAccessLog: 90-day retention
+ * - ApiUsage: 30-day retention
+ *
  * @module PrivacyModule
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AnalyticsEvent, AuditLog, SecretAccessLog]),
+    TypeOrmModule.forFeature([
+      AnalyticsEvent,
+      AuditLog,
+      SecretAccessLog,
+      ApiUsage,
+    ]),
     ScheduleModule.forRoot(),
   ],
   providers: [PIIRedactionService, IpAnonymizationService],

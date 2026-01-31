@@ -188,15 +188,15 @@ describe('Accessibility Tests - WCAG 2.1 AA', () => {
   describe('SkipLink Component Accessibility', () => {
     it('skip link is rendered and accessible', () => {
       render(<SkipLink />);
-      const link = screen.getByText('Skip to main content');
+      const link = screen.getByText('Pular para o conteúdo principal');
       expect(link).toBeInTheDocument();
       expect(link.tagName.toLowerCase()).toBe('a');
       expect(link).toHaveAttribute('href', '#main-content');
     });
 
     it('skip link with custom props is accessible', () => {
-      render(<SkipLink targetId="custom" label="Skip navigation" />);
-      const link = screen.getByText('Skip navigation');
+      render(<SkipLink targetId="custom" label="Pular navegação" />);
+      const link = screen.getByText('Pular navegação');
       expect(link).toHaveAttribute('href', '#custom');
     });
   });

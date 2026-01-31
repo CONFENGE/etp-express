@@ -52,7 +52,7 @@ export function SkeletonCard() {
     <div
       className="rounded-lg border bg-card p-6 space-y-3"
       role="status"
-      aria-label="Loading card"
+      aria-label="Carregando cartão"
     >
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
@@ -73,7 +73,7 @@ interface SkeletonListProps {
  */
 export function SkeletonList({ count = 3 }: SkeletonListProps) {
   return (
-    <div className="space-y-4" role="status" aria-label="Loading list">
+    <div className="space-y-4" role="status" aria-label="Carregando lista">
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
@@ -95,7 +95,7 @@ export function SkeletonTable({ rows = 5, cols = 4 }: SkeletonTableProps) {
     <div
       className="rounded-lg border bg-card overflow-hidden"
       role="status"
-      aria-label="Loading table"
+      aria-label="Carregando tabela"
     >
       {/* Table Header */}
       <div className="bg-muted/50 px-6 py-3 flex gap-6">
@@ -136,7 +136,7 @@ export function SkeletonStats({ count = 3 }: { count?: number }) {
     <div
       className="grid gap-4 md:grid-cols-3"
       role="status"
-      aria-label="Loading statistics"
+      aria-label="Carregando estatísticas"
     >
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="rounded-lg border bg-card p-4">
@@ -158,7 +158,7 @@ export function SkeletonStats({ count = 3 }: { count?: number }) {
  */
 export function SkeletonRecentItems({ count = 5 }: { count?: number }) {
   return (
-    <div className="space-y-4" role="status" aria-label="Loading recent items">
+    <div className="space-y-4" role="status" aria-label="Carregando itens recentes">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
@@ -185,7 +185,7 @@ export function SkeletonRecentItems({ count = 5 }: { count?: number }) {
  */
 export function SkeletonDashboard() {
   return (
-    <div className="space-y-8" role="status" aria-label="Loading dashboard">
+    <div className="space-y-8" role="status" aria-label="Carregando painel">
       <SkeletonStats count={3} />
       <div className="rounded-lg border bg-card">
         <div className="p-6 border-b">
@@ -214,7 +214,7 @@ export function SkeletonETPGrid({ count = 6 }: { count?: number }) {
     <div
       className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
       role="status"
-      aria-label="Loading ETPs"
+      aria-label="Carregando ETPs"
     >
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="rounded-lg border bg-card p-6 space-y-4">
@@ -254,7 +254,7 @@ export function SkeletonEditor() {
     <div
       className="space-y-6"
       role="status"
-      aria-label="Loading editor"
+      aria-label="Carregando editor"
     >
       {/* Breadcrumb */}
       <div className="flex items-center gap-2">

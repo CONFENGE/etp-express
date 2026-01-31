@@ -65,7 +65,7 @@ export function AssignManagerDialog({
           }
         } catch (err) {
           setError(
-            err instanceof Error ? err.message : 'Failed to fetch users',
+            err instanceof Error ? err.message : 'Falha ao buscar usuários',
           );
         } finally {
           setLoadingUsers(false);
@@ -102,23 +102,23 @@ export function AssignManagerDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Assign Domain Manager</DialogTitle>
+          <DialogTitle>Atribuir Gestor do Domínio</DialogTitle>
           <DialogDescription>
-            Select a user to manage this domain. The manager will have
-            permissions to manage users within this domain.
+            Selecione um usuário para gerenciar este domínio. O gestor terá
+            permissões para gerenciar usuários dentro deste domínio.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="manager-select">Manager</Label>
+            <Label htmlFor="manager-select">Gestor</Label>
             {loadingUsers ? (
               <Skeleton className="h-10 w-full" />
             ) : error ? (
               <p className="text-sm text-destructive">{error}</p>
             ) : users.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No users available in this domain
+                Nenhum usuário disponível neste domínio
               </p>
             ) : (
               <Select
@@ -127,7 +127,7 @@ export function AssignManagerDialog({
                 disabled={loading}
               >
                 <SelectTrigger id="manager-select">
-                  <SelectValue placeholder="Select a user" />
+                  <SelectValue placeholder="Selecione um usuário" />
                 </SelectTrigger>
                 <SelectContent>
                   {users.map((user) => (
@@ -148,13 +148,13 @@ export function AssignManagerDialog({
             onClick={() => handleOpenChange(false)}
             disabled={loading}
           >
-            Cancel
+            Cancelar
           </Button>
           <Button
             onClick={handleAssign}
             disabled={!selectedUserId || loading || loadingUsers}
           >
-            {loading ? 'Assigning...' : 'Assign Manager'}
+            {loading ? 'Atribuindo...' : 'Atribuir Gestor'}
           </Button>
         </DialogFooter>
       </DialogContent>

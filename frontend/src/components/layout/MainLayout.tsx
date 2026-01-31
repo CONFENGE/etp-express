@@ -28,7 +28,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <main
           id="main-content"
           role="main"
-          aria-label="Main content"
+          aria-label="Conteúdo principal"
           className={cn(
             'flex-1 transition-all duration-300 flex flex-col',
             // Responsive margin for sidebar

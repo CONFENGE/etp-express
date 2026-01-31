@@ -6,16 +6,28 @@
  *
  * Features:
  * - Compare two editais side-by-side
+ * - Multi-edital price analysis with statistical anomaly detection (Z-score)
  * - Identify price differences and competitive opportunities
  * - Analyze requirement changes between versions
  * - Generate comparative reports
  *
  * @module modules/pageindex/services/edital-comparison
+ * @see Issue #1697 - [INTEL-1545d] Implementar EditalComparisonService para análise de preços
  * @see Issue #1698 - Create REST API for edital extraction and comparison
  */
 
 import { Injectable, Logger } from '@nestjs/common';
 import { EditalExtractedData, EditalLote, EditalItem } from '../dto/edital-extracted-data.dto';
+import {
+  ComparisonReport,
+  ItemComparado,
+  OutlierDetection,
+  AnomaliaCategoria,
+} from '../dto/comparison-report.dto';
+import {
+  EditalItemNormalizationService,
+  NormalizedEditalItem,
+} from './edital-item-normalization.service';
 
 /**
  * Result of comparing two editais

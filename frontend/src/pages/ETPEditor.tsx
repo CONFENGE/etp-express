@@ -22,6 +22,7 @@ import { ComplianceScorecard } from '@/components/etp/ComplianceScorecard';
 import { ChatWidget } from '@/components/chat';
 import { VersionHistory } from '@/components/etp/VersionHistory';
 import { ExportPreviewModal } from '@/components/etp/ExportPreviewModal';
+import { ExportHistoryModal } from '@/components/etp/ExportHistoryModal';
 import { useETPStore } from '@/store/etpStore';
 import { logger } from '@/lib/logger';
 import { DemoConversionBanner } from '@/components/demo/DemoConversionBanner';
@@ -48,6 +49,8 @@ export function ETPEditor() {
   // Export state with progress tracking (#612)
   const [exportState, setExportState] =
     useState<ExportState>(initialExportState);
+  // Export history modal state (#1708)
+  const [showExportHistory, setShowExportHistory] = useState(false);
 
   // Unsaved changes tracking (#610)
   const [lastSavedContent, setLastSavedContent] = useState<string>('');
@@ -524,6 +527,7 @@ export function ETPEditor() {
           onExportDocx={handleExportDocx}
           onCancelExport={handleCancelExport}
           onPreview={preview.openPreview}
+          onShowHistory={() => setShowExportHistory(true)}
           isSaving={isSaving}
           exportState={exportState}
           isDirty={isDirty}
@@ -635,6 +639,15 @@ export function ETPEditor() {
         onRetry={preview.retry}
         onDownload={handleExportPDF}
       />
+
+      {/* Export history modal (#1708) */}
+      {id && (
+        <ExportHistoryModal
+          etpId={id}
+          isOpen={showExportHistory}
+          onClose={() => setShowExportHistory(false)}
+        />
+      )}
 
       {/* Chat Widget for AI assistant (#1396) */}
       {id && (

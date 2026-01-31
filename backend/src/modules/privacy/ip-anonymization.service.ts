@@ -5,11 +5,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { AnalyticsEvent } from '@/entities/analytics-event.entity';
 import { AuditLog } from '@/entities/audit-log.entity';
 import { SecretAccessLog } from '@/entities/secret-access-log.entity';
+import { ApiUsage } from '@/modules/market-intelligence/entities/api-usage.entity';
 
 /**
  * Service for LGPD-compliant IP address anonymization.
  *
- * Issue #1721 - LGPD: IP address storage non-compliant with Art. 12
+ * Issues:
+ * - #1721 - LGPD: IP address storage non-compliant with Art. 12
+ * - #1723 - TD-008: Database schema improvements & LGPD compliance
  *
  * LGPD Requirements:
  * - Art. 12: Data minimization and retention limitation
@@ -20,6 +23,12 @@ import { SecretAccessLog } from '@/entities/secret-access-log.entity';
  * - After retention period, anonymize IPs using SHA-256 hash via PostgreSQL function
  * - Preserve geographic analytics while protecting privacy
  * - Run daily cleanup job to anonymize expired IPs
+ *
+ * Tables covered:
+ * - analytics_events (30-day retention)
+ * - audit_logs (90-day retention for compliance)
+ * - secret_access_logs (90-day retention for security)
+ * - api_usage (30-day retention for API analytics) - Added in TD-008
  */
 @Injectable()
 export class IpAnonymizationService {
@@ -32,6 +41,8 @@ export class IpAnonymizationService {
     private auditLogRepo: Repository<AuditLog>,
     @InjectRepository(SecretAccessLog)
     private secretAccessLogRepo: Repository<SecretAccessLog>,
+    @InjectRepository(ApiUsage)
+    private apiUsageRepo: Repository<ApiUsage>,
   ) {}
 
   /**
@@ -59,6 +70,10 @@ export class IpAnonymizationService {
       // Anonymize secret access logs (90-day retention)
       const secretCount = await this.anonymizeSecretAccessLogIps();
       totalAnonymized += secretCount;
+
+      // Anonymize API usage logs (30-day retention) - TD-008
+      const apiUsageCount = await this.anonymizeApiUsageIps();
+      totalAnonymized += apiUsageCount;
 
       const duration = Date.now() - startTime;
       this.logger.log(
@@ -144,6 +159,31 @@ export class IpAnonymizationService {
   }
 
   /**
+   * Anonymize IPs in api_usage table.
+   * Retention period: 30 days (configurable per record)
+   * Added in TD-008 for LGPD compliance.
+   */
+  private async anonymizeApiUsageIps(): Promise<number> {
+    this.logger.debug('Anonymizing api_usage IPs');
+
+    const result = await this.apiUsageRepo.query(`
+      UPDATE api_usage
+      SET
+        "ipAddress" = anonymize_ip_address("ipAddress"),
+        "ipAnonymizedAt" = NOW()
+      WHERE
+        "ipAddress" IS NOT NULL
+        AND "ipAnonymizedAt" IS NULL
+        AND "createdAt" < NOW() - ("ipRetentionDays" || ' days')::INTERVAL
+      RETURNING id
+    `);
+
+    const count = result?.length || 0;
+    this.logger.debug(`Anonymized ${count} api_usage IPs`);
+    return count;
+  }
+
+  /**
    * Get anonymization statistics for monitoring/reporting.
    * Useful for LGPD compliance reports.
    */
@@ -151,6 +191,7 @@ export class IpAnonymizationService {
     analytics: { total: number; anonymized: number; pending: number };
     auditLogs: { total: number; anonymized: number; pending: number };
     secretAccessLogs: { total: number; anonymized: number; pending: number };
+    apiUsage: { total: number; anonymized: number; pending: number };
   }> {
     const analyticsStats = await this.analyticsRepo
       .createQueryBuilder('ae')
@@ -194,6 +235,20 @@ export class IpAnonymizationService {
       .where('sal.ipAddress IS NOT NULL')
       .getRawOne();
 
+    const apiUsageStats = await this.apiUsageRepo
+      .createQueryBuilder('au')
+      .select('COUNT(*)', 'total')
+      .addSelect(
+        'COUNT(CASE WHEN au.ipAnonymizedAt IS NOT NULL THEN 1 END)',
+        'anonymized',
+      )
+      .addSelect(
+        'COUNT(CASE WHEN au.ipAnonymizedAt IS NULL AND au.ipAddress IS NOT NULL THEN 1 END)',
+        'pending',
+      )
+      .where('au.ipAddress IS NOT NULL')
+      .getRawOne();
+
     return {
       analytics: {
         total: parseInt(analyticsStats.total),
@@ -209,6 +264,11 @@ export class IpAnonymizationService {
         total: parseInt(secretAccessLogStats.total),
         anonymized: parseInt(secretAccessLogStats.anonymized),
         pending: parseInt(secretAccessLogStats.pending),
+      },
+      apiUsage: {
+        total: parseInt(apiUsageStats.total),
+        anonymized: parseInt(apiUsageStats.anonymized),
+        pending: parseInt(apiUsageStats.pending),
       },
     };
   }

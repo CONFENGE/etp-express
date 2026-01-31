@@ -15,6 +15,7 @@ import {
   FileIcon,
   X,
   Loader2,
+  History,
 } from 'lucide-react';
 import type { ExportState } from './export-types';
 import {
@@ -37,6 +38,10 @@ interface ETPEditorHeaderProps {
    * Preview PDF before export (#1214)
    */
   onPreview?: () => void;
+  /**
+   * Show export history modal (#1708)
+   */
+  onShowHistory?: () => void;
   isSaving?: boolean;
   /**
    * @deprecated Use exportState instead
@@ -76,6 +81,7 @@ export function ETPEditorHeader({
   onExportDocx,
   onCancelExport,
   onPreview,
+  onShowHistory,
   isSaving = false,
   isExporting = false,
   exportState,
@@ -204,6 +210,20 @@ export function ETPEditorHeader({
                 <FileIcon className="mr-2 h-4 w-4" />
                 Word (.docx)
               </DropdownMenuItem>
+              {/* Export History (#1708) */}
+              {onShowHistory && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={onShowHistory}
+                    disabled={effectiveExporting}
+                    data-testid="export-history-button"
+                  >
+                    <History className="mr-2 h-4 w-4" />
+                    Histórico de Exports
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

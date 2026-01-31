@@ -19,14 +19,14 @@ interface SkipLinkProps {
   targetId?: string;
   /**
    * The accessible label for the skip link
-   * @default "Skip to main content"
+   * @default "Pular para o conteúdo principal"
    */
   label?: string;
 }
 
 export function SkipLink({
   targetId = 'main-content',
-  label = 'Skip to main content',
+  label = 'Pular para o conteúdo principal',
 }: SkipLinkProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();

@@ -57,7 +57,7 @@ export function Sidebar() {
   return (
     <aside
       role="navigation"
-      aria-label="Main navigation"
+      aria-label="Navegação principal"
       data-tour="sidebar-nav"
       className={cn(
         // Liquid Glass effect - mais intenso para sidebar

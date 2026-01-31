@@ -9,13 +9,16 @@ import { TreeSearchService } from './services/tree-search.service';
 import { JurisprudenciaService } from './services/jurisprudencia.service';
 import { EditalExtractionService } from './services/edital-extraction.service';
 import { EditalComparisonService } from './services/edital-comparison.service';
+import { EditalItemNormalizationService } from './services/edital-item-normalization.service';
 import { EditalApiController } from './edital-api.controller';
 import { Lei14133Seeder } from './seeders/lei-14133.seeder';
 import { JurisprudenciaSeeder } from './seeders/jurisprudencia.seeder';
 import { TceSPSeeder } from './seeders/tcesp.seeder';
 import { TcuSeeder } from './seeders/tcu.seeder';
 import { DocumentTree } from '../../entities/document-tree.entity';
+import { ItemCategory } from '../../entities/item-category.entity';
 import { OrchestratorModule } from '../orchestrator/orchestrator.module';
+import { MarketIntelligenceModule } from '../market-intelligence/market-intelligence.module';
 
 /**
  * PageIndex Module - Hierarchical document indexing with reasoning-based retrieval.
@@ -53,8 +56,9 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([DocumentTree]),
+    TypeOrmModule.forFeature([DocumentTree, ItemCategory]),
     forwardRef(() => OrchestratorModule),
+    forwardRef(() => MarketIntelligenceModule),
   ],
   controllers: [PageIndexController, JurisprudenciaController, EditalApiController],
   providers: [
@@ -64,6 +68,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     JurisprudenciaService,
     EditalExtractionService,
     EditalComparisonService,
+    EditalItemNormalizationService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
@@ -76,6 +81,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     JurisprudenciaService,
     EditalExtractionService,
     EditalComparisonService,
+    EditalItemNormalizationService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,

@@ -8,6 +8,47 @@ export interface ETPAuthor {
   name: string;
 }
 
+/**
+ * Export history item for an ETP export
+ * @see Issue #1708 - Create frontend UI for export history and sharing
+ */
+export interface ExportHistoryItem {
+  id: string;
+  format: 'pdf' | 'docx' | 'json';
+  version: string;
+  downloadCount: number;
+  createdAt: string;
+  lastAccessedAt?: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+/**
+ * Export history response with pagination
+ * @see Issue #1708 - Create frontend UI for export history and sharing
+ */
+export interface ExportHistoryResponse {
+  exports: ExportHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+/**
+ * Share link response
+ * @see Issue #1708 - Create frontend UI for export history and sharing
+ */
+export interface ShareLinkResponse {
+  url: string;
+  expiresAt: string;
+  format: string;
+  version: string;
+}
+
 export interface ETP {
   id: string;
   title: string;

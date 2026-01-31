@@ -45,6 +45,7 @@ import { ContratosModule } from './modules/contratos/contratos.module';
 import { PageIndexModule } from './modules/pageindex/pageindex.module';
 import { MarketIntelligenceModule } from './modules/market-intelligence/market-intelligence.module';
 import { S3Module } from './modules/storage/s3.module';
+import { TenantBrandingModule } from './modules/tenant-branding/tenant-branding.module';
 
 // Health Check
 import { HealthModule } from './health/health.module';
@@ -283,6 +284,7 @@ import { SlowQuerySubscriber } from './common/subscribers/slow-query.subscriber'
     PageIndexModule,
     MarketIntelligenceModule,
     S3Module,
+    TenantBrandingModule,
     HealthModule,
   ],
   controllers: [AppController],

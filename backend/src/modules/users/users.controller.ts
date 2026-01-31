@@ -33,6 +33,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../entities/user.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
+import { ApiUsageService } from '../market-intelligence/services/api-usage.service';
 
 /**
  * Controller handling user management HTTP endpoints.
@@ -64,6 +65,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly apiUsageService: ApiUsageService,
   ) {}
 
   /**
@@ -608,6 +610,99 @@ export class UsersController {
         'ATENÇÃO: Esta operação remove permanentemente todos os dados de usuários soft-deleted há mais de 30 dias. ' +
         'A remoção é irreversível. ' +
         DISCLAIMER,
+    };
+  }
+
+  /**
+   * Get API usage metrics for the current user (#1689).
+   *
+   * @remarks
+   * Returns aggregated usage metrics for the current billing period (monthly).
+   * Includes total requests, success/failed counts, response times, and quota consumption.
+   *
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns API usage metrics with quota information
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
+  @Get('me/api-usage')
+  @ApiOperation({ summary: 'Obter métricas de uso da API pública' })
+  @ApiResponse({
+    status: 200,
+    description: 'Métricas de uso retornadas',
+    schema: {
+      type: 'object',
+      properties: {
+        usage: { type: 'object' },
+        quota: { type: 'object' },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async getApiUsage(@CurrentUser('id') userId: string) {
+    const now = new Date();
+    const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const periodEnd = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+    );
+
+    const user = await this.usersService.findOne(userId);
+    const quotaMap = {
+      free: 100,
+      pro: 5000,
+      enterprise: 999999,
+    };
+    const totalQuota = quotaMap[user.apiPlan] || 100;
+
+    const [usage, quota] = await Promise.all([
+      this.apiUsageService.getUserUsage(userId, periodStart, periodEnd),
+      this.apiUsageService.checkQuota(userId, totalQuota),
+    ]);
+
+    return {
+      usage,
+      quota,
+      disclaimer: DISCLAIMER,
+    };
+  }
+
+  /**
+   * Regenerate API key for the current user (#1689).
+   *
+   * @remarks
+   * Generates a new API key and invalidates the old one.
+   * Returns the new API key (only shown once).
+   *
+   * @param userId - Current user ID (extracted from JWT token)
+   * @returns New API key
+   * @throws {UnauthorizedException} 401 - If JWT token is invalid or missing
+   */
+  @Post('me/api-key/regenerate')
+  @ApiOperation({ summary: 'Regenerar API Key' })
+  @ApiResponse({
+    status: 200,
+    description: 'API Key regenerada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        apiKey: { type: 'string' },
+        message: { type: 'string' },
+        disclaimer: { type: 'string' },
+      },
+    },
+  })
+  async regenerateApiKey(@CurrentUser('id') userId: string) {
+    this.logger.log(`User ${userId} regenerating API key`);
+    const apiKey = await this.usersService.regenerateApiKey(userId);
+    return {
+      apiKey,
+      message:
+        'API Key regenerada com sucesso. Guarde-a em local seguro, não será exibida novamente.',
+      disclaimer: DISCLAIMER,
     };
   }
 }

@@ -59,7 +59,7 @@ export function QuotaIndicator({
       <div
         className={cn('flex flex-col items-center', config.gap, className)}
         role="status"
-        aria-label="Loading quota information"
+        aria-label="Carregando informações de cota"
       >
         <div
           className="animate-pulse rounded-full bg-muted"
@@ -80,7 +80,7 @@ export function QuotaIndicator({
       <div
         className={cn('flex flex-col items-center', config.gap, className)}
         role="status"
-        aria-label="Quota information unavailable"
+        aria-label="Informações de cota indisponíveis"
       >
         <div
           className="flex items-center justify-center rounded-full border-4 border-muted"
@@ -100,7 +100,7 @@ export function QuotaIndicator({
       aria-valuenow={quota.currentUsers}
       aria-valuemin={0}
       aria-valuemax={quota.maxUsers}
-      aria-label={`User quota: ${quota.currentUsers} of ${quota.maxUsers} users`}
+      aria-label={`Cota de usuários: ${quota.currentUsers} de ${quota.maxUsers} usuários`}
     >
       {/* Ring Progress SVG */}
       <div
@@ -153,11 +153,11 @@ export function QuotaIndicator({
       {showText && (
         <div className="text-center">
           <p className={cn('font-medium', getColor(percentUsed))}>
-            {percentUsed.toFixed(0)}% used
+            {percentUsed.toFixed(0)}% em uso
           </p>
           <p className="text-sm text-muted-foreground">
-            {quota.available} {quota.available === 1 ? 'slot' : 'slots'}{' '}
-            available
+            {quota.available} {quota.available === 1 ? 'vaga' : 'vagas'}{' '}
+            disponível{quota.available === 1 ? '' : 'is'}
           </p>
         </div>
       )}

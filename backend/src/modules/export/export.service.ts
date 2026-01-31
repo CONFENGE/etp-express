@@ -376,6 +376,58 @@ export class ExportService {
   }
 
   /**
+   * Get paginated export history for an ETP.
+   *
+   * @param etpId - ETP UUID
+   * @param organizationId - Organization ID for access control
+   * @param page - Page number (1-indexed)
+   * @param limit - Items per page
+   * @param format - Optional format filter
+   * @returns Paginated export history
+   *
+   * @see Issue #1707 - API endpoint to list export history for an ETP
+   * @see Issue #1708 - Create frontend UI for export history and sharing
+   */
+  async getExportHistory(
+    etpId: string,
+    organizationId: string,
+    page = 1,
+    limit = 10,
+    format?: string,
+  ): Promise<{
+    exports: ExportMetadata[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const where: any = {
+      etpId,
+      organizationId,
+    };
+
+    if (format) {
+      where.format = format;
+    }
+
+    const [exports, total] = await this.exportMetadataRepository.findAndCount({
+      where,
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      exports,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
    * Tracks access to an export by incrementing download count and updating lastAccessedAt.
    *
    * @param exportId - ExportMetadata UUID

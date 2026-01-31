@@ -276,6 +276,90 @@ export class ExportController {
     return { success: true };
   }
 
+  @Get('history/:etpId')
+  @RequireOwnership({
+    resourceType: ResourceType.ETP,
+    validateOwnership: false,
+  })
+  @ApiOperation({
+    summary: 'Get export history for an ETP',
+    description: 'Returns paginated list of all exports for an ETP',
+  })
+  @ApiParam({ name: 'etpId', description: 'ETP ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiQuery({
+    name: 'format',
+    required: false,
+    description: 'Filter by format (pdf, docx, json)',
+  })
+  @ApiResponse({ status: 200, description: 'Export history retrieved' })
+  @ApiResponse({ status: 403, description: 'Acesso negado ao ETP' })
+  async getExportHistory(
+    @Param('etpId') etpId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('format') format?: string,
+    @Req() req?: any,
+  ) {
+    const organizationId = req?.user?.organizationId;
+    const pageNum = page ? parseInt(page, 10) : 1;
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+
+    return this.exportService.getExportHistory(
+      etpId,
+      organizationId,
+      pageNum,
+      limitNum,
+      format,
+    );
+  }
+
+  @Get('download/:exportId')
+  @ApiOperation({
+    summary: 'Download a previous export by ID',
+    description: 'Generates signed URL and redirects to S3 download',
+  })
+  @ApiParam({ name: 'exportId', description: 'ExportMetadata ID' })
+  @ApiResponse({ status: 302, description: 'Redirects to S3 signed URL' })
+  @ApiResponse({ status: 404, description: 'Export not found' })
+  async downloadPrevious(
+    @Param('exportId') exportId: string,
+    @Res() res: Response,
+    @Req() req?: any,
+  ) {
+    const organizationId = req?.user?.organizationId;
+    if (!organizationId) {
+      throw new NotFoundException('Export not found');
+    }
+
+    const metadata = await this.exportService.getExportMetadata(
+      exportId,
+      organizationId,
+    );
+
+    if (!metadata) {
+      throw new NotFoundException('Export not found');
+    }
+
+    // Track access
+    await this.exportService.trackExportAccess(exportId);
+
+    // Generate signed URL (1 hour expiration)
+    const signedUrl = await this.s3Service.getSignedUrl(metadata.s3Key, 3600);
+
+    // Redirect to S3
+    res.redirect(signedUrl);
+  }
+
   @Post('cleanup')
   @ApiOperation({
     summary: 'Trigger manual cleanup of old exports',
