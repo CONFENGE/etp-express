@@ -61,12 +61,12 @@ export class Contrato {
 
   /**
    * Relacionamento com Edital (origem).
-   * Eager loading ativado para facilitar busca da cadeia completa.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    * Issue #1285 - Rastreabilidade ETP → TR → Edital → Contrato
    */
   @ManyToOne(() => Edital, (edital) => edital.contratos, {
     nullable: true,
-    eager: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'editalId' })
@@ -82,7 +82,7 @@ export class Contrato {
   @Column({ type: 'uuid' })
   organizationId: string;
 
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
@@ -241,7 +241,7 @@ export class Contrato {
   @Column({ type: 'uuid' })
   gestorResponsavelId: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'gestorResponsavelId' })
   gestorResponsavel: User;
 
@@ -252,7 +252,7 @@ export class Contrato {
   @Column({ type: 'uuid' })
   fiscalResponsavelId: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'fiscalResponsavelId' })
   fiscalResponsavel: User;
 
@@ -429,7 +429,7 @@ export class Contrato {
   @Column({ type: 'uuid' })
   createdById: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 

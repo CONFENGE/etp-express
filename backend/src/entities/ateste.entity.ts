@@ -3,15 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
   OneToOne,
   ManyToOne,
   JoinColumn,
-  Index,
 } from 'typeorm';
 import { Medicao } from './medicao.entity';
 import { User } from './user.entity';
-import { Organization } from './organization.entity';
 
 /**
  * Resultado do Ateste conforme análise do fiscal.
@@ -48,22 +45,6 @@ export class Ateste {
   id: string;
 
   // ============================================
-  // Multi-Tenancy
-  // ============================================
-
-  /**
-   * Organization ID for multi-tenancy isolation.
-   * Required for all atestes.
-   */
-  @Column({ type: 'uuid' })
-  @Index('IDX_ateste_organizationId')
-  organizationId: string;
-
-  @ManyToOne(() => Organization)
-  @JoinColumn({ name: 'organizationId' })
-  organization: Organization;
-
-  // ============================================
   // Relacionamento com Medição
   // ============================================
 
@@ -77,9 +58,10 @@ export class Ateste {
   /**
    * Relacionamento com Medição.
    * OneToOne - uma medição possui no máximo um ateste.
-   * Eager loading ativado para facilitar acesso aos dados da medição.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @OneToOne(() => Medicao, { eager: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Medicao, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'medicaoId' })
   medicao: Medicao;
 
@@ -96,9 +78,8 @@ export class Ateste {
 
   /**
    * Relacionamento com Fiscal.
-   * Eager loading para facilitar identificação do responsável.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'fiscalId' })
   fiscal: User;
 
@@ -165,11 +146,4 @@ export class Ateste {
    */
   @CreateDateColumn()
   createdAt: Date;
-
-  /**
-   * Data de última atualização do registro.
-   * Auto-gerada pelo TypeORM.
-   */
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

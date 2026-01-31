@@ -5,10 +5,8 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  Index,
 } from 'typeorm';
 import { Contrato } from './contrato.entity';
-import { Organization } from './organization.entity';
 
 /**
  * Interface para representar um conflito detectado
@@ -40,21 +38,11 @@ export class ContratoSyncLog {
   id: string;
 
   /**
-   * Organization ID for multi-tenancy isolation.
-   * Required for all sync logs.
+   * Relacionamento com Contrato.
+   * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
+   * Issue #1717 - Remove cascading eager loading
    */
-  @Column({ type: 'uuid' })
-  @Index('IDX_contrato_sync_log_organizationId')
-  organizationId: string;
-
-  @ManyToOne(() => Organization)
-  @JoinColumn({ name: 'organizationId' })
-  organization: Organization;
-
-  /**
-   * Relacionamento com Contrato
-   */
-  @ManyToOne(() => Contrato, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Contrato, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'contratoId' })
   contrato: Contrato;
 

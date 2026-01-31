@@ -5,10 +5,8 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
-  Index,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Organization } from './organization.entity';
 
 /**
  * Tipo de entidade à qual o documento está vinculado.
@@ -42,22 +40,6 @@ export enum DocumentoFiscalizacaoTipo {
 export class DocumentoFiscalizacao {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  // ============================================
-  // Multi-Tenancy
-  // ============================================
-
-  /**
-   * Organization ID for multi-tenancy isolation.
-   * Required for all documentos de fiscalização.
-   */
-  @Column({ type: 'uuid' })
-  @Index('IDX_documento_fiscalizacao_organizationId')
-  organizationId: string;
-
-  @ManyToOne(() => Organization)
-  @JoinColumn({ name: 'organizationId' })
-  organization: Organization;
 
   // ============================================
   // Vínculo com Entidade
@@ -126,9 +108,8 @@ export class DocumentoFiscalizacao {
 
   /**
    * Relacionamento com usuário que fez upload.
-   * Eager loading para facilitar auditoria.
    */
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'uploadedById' })
   uploadedBy: User;
 

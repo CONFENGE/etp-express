@@ -71,18 +71,18 @@ export class ContractPrice {
 
   /**
    * Organization ID for multi-tenancy isolation.
-   * Required for all contract prices.
+   * Nullable for backward compatibility.
    */
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   @Index('IDX_contract_prices_organizationId')
-  organizationId: string;
+  organizationId: string | null;
 
   /**
    * Organization relation (Multi-Tenancy).
    */
-  @ManyToOne(() => Organization)
+  @ManyToOne(() => Organization, { nullable: true })
   @JoinColumn({ name: 'organizationId' })
-  organization: Organization;
+  organization: Organization | null;
 
   // ============ Item Information ============
 

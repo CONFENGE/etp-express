@@ -140,7 +140,7 @@ export class Edital {
   @Column({ type: 'uuid' })
   organizationId: string;
 
-  @ManyToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization)
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 
@@ -507,7 +507,7 @@ export class Edital {
   @Column({ type: 'uuid' })
   createdById: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   createdBy: User;
 
