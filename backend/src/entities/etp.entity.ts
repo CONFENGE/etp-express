@@ -118,8 +118,11 @@ export class Etp {
   @Column({ type: 'varchar', nullable: true })
   numeroProcesso: string;
 
+  /**
+   * TypeORM returns DECIMAL as string. Issue #1720 - Monetary type consistency.
+   */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valorEstimado: number;
+  valorEstimado: string | null;
 
   // ============================================
   // Campos de Identificação (Issue #1223)
@@ -181,9 +184,10 @@ export class Etp {
   /**
    * Quantidade estimada a ser contratada.
    * Ex: 100 (unidades), 12 (meses), etc.
+   * TypeORM returns DECIMAL as string. Issue #1720 - Monetary type consistency.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  quantidadeEstimada: number;
+  quantidadeEstimada: string | null;
 
   /**
    * Unidade de medida para a quantidade.
@@ -293,9 +297,10 @@ export class Etp {
    * Valor unitário do item/serviço.
    * Usado para cálculo do valor estimado total.
    * Precision: 15 dígitos, 2 casas decimais.
+   * TypeORM returns DECIMAL as string. Issue #1720 - Monetary type consistency.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valorUnitario: number;
+  valorUnitario: string | null;
 
   /**
    * Fonte de pesquisa de preços utilizada.

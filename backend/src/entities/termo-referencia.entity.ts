@@ -136,9 +136,10 @@ export class TermoReferencia {
   /**
    * Valor estimado da contratacao.
    * Baseado na pesquisa de precos do ETP.
+   * TypeORM returns DECIMAL as string. Issue #1720 - Monetary type consistency.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valorEstimado: number;
+  valorEstimado: string | null;
 
   /**
    * Dotacao orcamentaria.

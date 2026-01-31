@@ -1,5 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PIIRedactionService } from './pii-redaction.service';
+import { IpAnonymizationService } from './ip-anonymization.service';
+import { AnalyticsEvent } from '@/entities/analytics-event.entity';
+import { AuditLog } from '@/entities/audit-log.entity';
+import { SecretAccessLog } from '@/entities/secret-access-log.entity';
 
 /**
  * Privacy Module
@@ -9,11 +15,16 @@ import { PIIRedactionService } from './pii-redaction.service';
  *
  * Providers:
  * - PIIRedactionService: Sanitização de informações pessoais identificáveis
+ * - IpAnonymizationService: Anonimização de endereços IP conforme LGPD Art. 12
  *
  * @module PrivacyModule
  */
 @Module({
-  providers: [PIIRedactionService],
-  exports: [PIIRedactionService],
+  imports: [
+    TypeOrmModule.forFeature([AnalyticsEvent, AuditLog, SecretAccessLog]),
+    ScheduleModule.forRoot(),
+  ],
+  providers: [PIIRedactionService, IpAnonymizationService],
+  exports: [PIIRedactionService, IpAnonymizationService],
 })
 export class PrivacyModule {}

@@ -268,28 +268,28 @@ export class PesquisaPrecos {
    * Soma dos valores adotados de todos os itens.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  valorTotalEstimado: number;
+  valorTotalEstimado: string | null;
 
   /**
    * Media geral dos precos pesquisados.
    * Calculado automaticamente a partir dos itens.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  mediaGeral: number;
+  mediaGeral: string | null;
 
   /**
    * Mediana geral dos precos pesquisados.
    * Calculado automaticamente a partir dos itens.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  medianaGeral: number;
+  medianaGeral: string | null;
 
   /**
    * Menor preco total encontrado.
    * Calculado automaticamente a partir dos itens.
    */
   @Column({ type: 'decimal', precision: 15, scale: 2, nullable: true })
-  menorPrecoTotal: number;
+  menorPrecoTotal: string | null;
 
   /**
    * Coeficiente de variacao dos precos (%).

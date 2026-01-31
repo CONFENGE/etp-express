@@ -62,8 +62,27 @@ export class AuditLog {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  /**
+   * IP address of the client.
+   * LGPD Art. 12: Anonymized after retention period (default: 90 days)
+   * Longer retention for audit logs due to compliance requirements.
+   */
   @Column({ type: 'varchar', nullable: true })
   ipAddress: string;
+
+  /**
+   * Timestamp when IP was anonymized (null if still original).
+   * Used for LGPD compliance tracking.
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  ipAnonymizedAt: Date | null;
+
+  /**
+   * Number of days to retain original IP before anonymization.
+   * Default: 90 days for audit logs (compliance requirement).
+   */
+  @Column({ type: 'int', default: 90 })
+  ipRetentionDays: number;
 
   @Column({ type: 'varchar', nullable: true })
   userAgent: string;
