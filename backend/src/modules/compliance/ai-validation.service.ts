@@ -150,9 +150,7 @@ export class AiValidationService {
     const irregularities: IrregularityDetectionDto[] = [];
 
     // 1. Detectar superfaturamento (integração com market intelligence)
-    const valorNumerico = etp.valorEstimado
-      ? parseFloat(etp.valorEstimado)
-      : 0;
+    const valorNumerico = etp.valorEstimado ? parseFloat(etp.valorEstimado) : 0;
     if (valorNumerico > 0) {
       const superfaturamento = await this.detectSuperfaturamento(etp);
       if (superfaturamento) {
@@ -291,11 +289,7 @@ export class AiValidationService {
   private detectDirecionamento(
     edital: Edital,
   ): IrregularityDetectionDto | null {
-    const texto = (
-      edital.objeto +
-      ' ' +
-      (edital.conteudo || '')
-    ).toLowerCase();
+    const texto = (edital.objeto + ' ' + (edital.conteudo || '')).toLowerCase();
 
     // Padrões que indicam direcionamento
     const suspectPatterns = [
@@ -314,7 +308,8 @@ export class AiValidationService {
         const match = texto.match(pattern);
         return {
           irregularityType: IrregularityType.DIRECIONAMENTO,
-          severityLevel: confidence >= 80 ? SeverityLevel.HIGH : SeverityLevel.MEDIUM,
+          severityLevel:
+            confidence >= 80 ? SeverityLevel.HIGH : SeverityLevel.MEDIUM,
           description:
             'Possível direcionamento detectado: especificações podem favorecer fornecedor específico',
           evidence: match ? match[0] : 'Padrão detectado no texto',
@@ -529,12 +524,10 @@ export class AiValidationService {
   /**
    * 7. VALOR INCOMPATÍVEL - Detecta valores incompatíveis com complexidade
    */
-  private detectValorIncompativel(
-    etp: Etp,
-  ): IrregularityDetectionDto | null {
+  private detectValorIncompativel(etp: Etp): IrregularityDetectionDto | null {
     if (!etp.valorEstimado || !etp.objeto) return null;
 
-    const valor = etp.valorEstimado;
+    const valor = parseFloat(etp.valorEstimado);
     const objeto = etp.objeto.toLowerCase();
 
     // Heurísticas simples para detectar incompatibilidade
@@ -569,23 +562,23 @@ export class AiValidationService {
   /**
    * 8. DISPENSA IRREGULAR - Detecta uso inadequado de dispensa
    */
-  private detectDispensaIrregular(
-    etp: Etp,
-  ): IrregularityDetectionDto | null {
+  private detectDispensaIrregular(etp: Etp): IrregularityDetectionDto | null {
     const objeto = (etp.objeto || '').toLowerCase();
     const justificativa = (etp.justificativaContratacao || '').toLowerCase();
 
     // Palavras que indicam possível dispensa
-    const dispensaKeywords = ['dispensa', 'emergência', 'calamidade', 'urgente'];
+    const dispensaKeywords = [
+      'dispensa',
+      'emergência',
+      'calamidade',
+      'urgente',
+    ];
     const hasDispensaIndicator = dispensaKeywords.some(
       (word) => objeto.includes(word) || justificativa.includes(word),
     );
 
-    if (
-      hasDispensaIndicator &&
-      etp.valorEstimado &&
-      etp.valorEstimado > 50000
-    ) {
+    const valorNumerico = etp.valorEstimado ? parseFloat(etp.valorEstimado) : 0;
+    if (hasDispensaIndicator && valorNumerico > 50000) {
       const hasProperJustification = justificativa.length > 200;
 
       if (!hasProperJustification) {
@@ -594,14 +587,15 @@ export class AiValidationService {
           severityLevel: SeverityLevel.HIGH,
           description:
             'Possível uso de dispensa/inexigibilidade sem fundamentação adequada',
-          evidence: 'Indicadores de dispensa detectados com justificativa insuficiente',
+          evidence:
+            'Indicadores de dispensa detectados com justificativa insuficiente',
           recommendation:
             'Verificar enquadramento legal e fundamentar adequadamente a dispensa conforme Art. 75 da Lei 14.133/2021',
           confidenceScore: 70,
           affectedField: 'justificativaContratacao',
           legalReference: 'Lei 14.133/2021, Arts. 74 e 75',
           metadata: {
-            valor: etp.valorEstimado,
+            valor: valorNumerico,
             justificativaLength: justificativa.length,
           },
         };
@@ -738,14 +732,14 @@ export class AiValidationService {
       number
     >;
     for (const type of Object.values(IrregularityType)) {
-      byType[type] = validations.filter((v) => v.irregularityType === type)
-        .length;
+      byType[type] = validations.filter(
+        (v) => v.irregularityType === type,
+      ).length;
     }
 
     const byStatus = {
-      pending: validations.filter(
-        (v) => v.status === ValidationStatus.PENDING,
-      ).length,
+      pending: validations.filter((v) => v.status === ValidationStatus.PENDING)
+        .length,
       acknowledged: validations.filter(
         (v) => v.status === ValidationStatus.ACKNOWLEDGED,
       ).length,

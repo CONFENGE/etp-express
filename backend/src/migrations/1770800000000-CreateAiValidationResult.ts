@@ -4,9 +4,7 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
  * Migration to create ai_validation_results table
  * Issue #1291 - [IA] Validação automática similar ao ALICE/TCU
  */
-export class CreateAiValidationResult1770800000000
-  implements MigrationInterface
-{
+export class CreateAiValidationResult1770800000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({

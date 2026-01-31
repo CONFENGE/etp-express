@@ -68,8 +68,7 @@ describe('AiValidationService', () => {
     );
     etpRepo = module.get<Repository<Etp>>(getRepositoryToken(Etp));
     editalRepo = module.get<Repository<Edital>>(getRepositoryToken(Edital));
-    overpriceService =
-      module.get<OverpriceAlertService>(OverpriceAlertService);
+    overpriceService = module.get<OverpriceAlertService>(OverpriceAlertService);
   });
 
   afterEach(() => {
@@ -103,8 +102,7 @@ describe('AiValidationService', () => {
       expect(result.length).toBeGreaterThan(0);
       expect(
         result.some(
-          (r) =>
-            r.irregularityType === IrregularityType.AUSENCIA_JUSTIFICATIVA,
+          (r) => r.irregularityType === IrregularityType.AUSENCIA_JUSTIFICATIVA,
         ),
       ).toBe(true);
 
@@ -140,8 +138,7 @@ describe('AiValidationService', () => {
       const result = await service.validateDocument({ etpId: 'etp-456' });
 
       const restrictiveSpec = result.find(
-        (r) =>
-          r.irregularityType === IrregularityType.ESPECIFICACAO_RESTRITIVA,
+        (r) => r.irregularityType === IrregularityType.ESPECIFICACAO_RESTRITIVA,
       );
       expect(restrictiveSpec).toBeDefined();
       expect([SeverityLevel.MEDIUM, SeverityLevel.HIGH]).toContain(

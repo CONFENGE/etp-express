@@ -1,4 +1,11 @@
-import { IsUUID, IsOptional, IsEnum, IsNumber, Min, Max } from 'class-validator';
+import {
+  IsUUID,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   IrregularityType,
