@@ -55,9 +55,9 @@ describe('RefactorDocumentoFiscalizacaoPolymorphic1770600000000', () => {
         `);
 
         expect(result.length).toBe(3);
-        expect(result.map((r) => r.column_name)).toContain('medicaoId');
-        expect(result.map((r) => r.column_name)).toContain('ocorrenciaId');
-        expect(result.map((r) => r.column_name)).toContain('atesteId');
+        expect(result.map((r: any) => r.column_name)).toContain('medicaoId');
+        expect(result.map((r: any) => r.column_name)).toContain('ocorrenciaId');
+        expect(result.map((r: any) => r.column_name)).toContain('atesteId');
       } finally {
         await queryRunner.release();
       }
@@ -144,7 +144,7 @@ describe('RefactorDocumentoFiscalizacaoPolymorphic1770600000000', () => {
         `);
 
         const cascadeConstraints = result.filter(
-          (r) => r.delete_rule === 'CASCADE',
+          (r: any) => r.delete_rule === 'CASCADE',
         );
         expect(cascadeConstraints.length).toBeGreaterThanOrEqual(3);
       } finally {
@@ -169,8 +169,8 @@ describe('RefactorDocumentoFiscalizacaoPolymorphic1770600000000', () => {
 
         // After rollback, polymorphic columns should be restored
         if (result.length > 0) {
-          expect(result.map((r) => r.column_name)).toContain('tipoEntidade');
-          expect(result.map((r) => r.column_name)).toContain('entidadeId');
+          expect(result.map((r: any) => r.column_name)).toContain('tipoEntidade');
+          expect(result.map((r: any) => r.column_name)).toContain('entidadeId');
         }
       } finally {
         await queryRunner.release();
