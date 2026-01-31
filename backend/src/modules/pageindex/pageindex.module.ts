@@ -8,6 +8,8 @@ import { TreeBuilderService } from './services/tree-builder.service';
 import { TreeSearchService } from './services/tree-search.service';
 import { JurisprudenciaService } from './services/jurisprudencia.service';
 import { EditalExtractionService } from './services/edital-extraction.service';
+import { EditalComparisonService } from './services/edital-comparison.service';
+import { EditalApiController } from './edital-api.controller';
 import { Lei14133Seeder } from './seeders/lei-14133.seeder';
 import { JurisprudenciaSeeder } from './seeders/jurisprudencia.seeder';
 import { TceSPSeeder } from './seeders/tcesp.seeder';
@@ -54,13 +56,14 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TypeOrmModule.forFeature([DocumentTree]),
     forwardRef(() => OrchestratorModule),
   ],
-  controllers: [PageIndexController, JurisprudenciaController],
+  controllers: [PageIndexController, JurisprudenciaController, EditalApiController],
   providers: [
     PageIndexService,
     TreeBuilderService,
     TreeSearchService,
     JurisprudenciaService,
     EditalExtractionService,
+    EditalComparisonService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
@@ -72,6 +75,7 @@ import { OrchestratorModule } from '../orchestrator/orchestrator.module';
     TreeSearchService,
     JurisprudenciaService,
     EditalExtractionService,
+    EditalComparisonService,
     Lei14133Seeder,
     JurisprudenciaSeeder,
     TceSPSeeder,
