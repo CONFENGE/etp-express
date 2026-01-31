@@ -11,7 +11,7 @@ describe('SkipLink', () => {
   it('renders with default props', () => {
     render(<SkipLink />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', '#main-content');
     expect(link).toHaveClass('skip-link');
@@ -36,7 +36,7 @@ describe('SkipLink', () => {
 
     render(<SkipLink />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
     fireEvent.click(link);
 
     // Verify tabindex was set
@@ -60,7 +60,7 @@ describe('SkipLink', () => {
 
     render(<SkipLink />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
     fireEvent.click(link);
 
     // Verify tabindex was NOT changed
@@ -70,7 +70,7 @@ describe('SkipLink', () => {
   it('handles missing target element gracefully', () => {
     render(<SkipLink targetId="non-existent" />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
 
     // Should not throw when clicking with missing target
     expect(() => fireEvent.click(link)).not.toThrow();
@@ -79,7 +79,7 @@ describe('SkipLink', () => {
   it('is accessible via keyboard navigation', () => {
     render(<SkipLink />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
 
     // Skip link should be focusable
     link.focus();
@@ -89,7 +89,7 @@ describe('SkipLink', () => {
   it('has correct ARIA attributes', () => {
     render(<SkipLink />);
 
-    const link = screen.getByText('Skip to main content');
+    const link = screen.getByText('Pular para o conteúdo principal');
 
     // Link should be an anchor element
     expect(link.tagName.toLowerCase()).toBe('a');

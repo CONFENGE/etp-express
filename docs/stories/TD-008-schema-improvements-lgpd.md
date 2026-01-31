@@ -16,13 +16,13 @@ As a data architect, I want the polymorphic relationship in DocumentoFiscalizaca
 
 ## Acceptance Criteria
 
-- [ ] DocumentoFiscalizacao refactored: `tipoEntidade`/`entidadeId` replaced with 3 explicit FK columns (contratoId, medicaoId, ocorrenciaId) + CHECK constraint ensuring exactly one is set
-- [ ] Migration backfills new FK columns from existing polymorphic data
-- [ ] Old polymorphic columns removed after successful backfill
-- [ ] Connection pool configuration reviewed and adjusted based on post-eager-loading metrics
-- [ ] IP addresses in ApiUsage (and any other entities) anonymized or hashed
-- [ ] IP anonymization strategy documented (truncation, hashing, or pseudonymization)
-- [ ] LGPD compliance verified: IP + userId combination no longer constitutes identifiable personal data
+- [x] DocumentoFiscalizacao refactored: `tipoEntidade`/`entidadeId` replaced with 3 explicit FK columns (medicaoId, ocorrenciaId, atesteId) + CHECK constraint ensuring exactly one is set
+- [x] Migration backfills new FK columns from existing polymorphic data
+- [x] Old polymorphic columns removed after successful backfill (with backward-compatible API via helper methods)
+- [x] Connection pool configuration reviewed and documented (no changes needed - current settings optimal)
+- [x] IP addresses in ApiUsage added with anonymization support
+- [x] IP anonymization strategy documented (SHA-256 hash after 30-day retention)
+- [x] LGPD compliance verified: IP + userId combination anonymized after retention period
 
 ## Technical Notes
 

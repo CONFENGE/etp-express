@@ -73,7 +73,7 @@ describe('LoadingState', () => {
       render(<SkeletonCard />);
 
       expect(screen.getByRole('status')).toBeInTheDocument();
-      expect(screen.getByLabelText('Loading card')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando cartão')).toBeInTheDocument();
     });
 
     it('should have correct structure with skeleton elements', () => {
@@ -99,21 +99,21 @@ describe('LoadingState', () => {
     it('should render with default count of 3', () => {
       render(<SkeletonList />);
 
-      const cards = screen.getAllByLabelText('Loading card');
+      const cards = screen.getAllByLabelText('Carregando cartão');
       expect(cards).toHaveLength(3);
     });
 
     it('should render with custom count', () => {
       render(<SkeletonList count={5} />);
 
-      const cards = screen.getAllByLabelText('Loading card');
+      const cards = screen.getAllByLabelText('Carregando cartão');
       expect(cards).toHaveLength(5);
     });
 
     it('should have accessibility label', () => {
       render(<SkeletonList />);
 
-      expect(screen.getByLabelText('Loading list')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando lista')).toBeInTheDocument();
     });
   });
 
@@ -121,7 +121,7 @@ describe('LoadingState', () => {
     it('should render with default rows and cols', () => {
       render(<SkeletonTable />);
 
-      expect(screen.getByLabelText('Loading table')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando tabela')).toBeInTheDocument();
     });
 
     it('should render correct number of rows', () => {
@@ -155,7 +155,7 @@ describe('LoadingState', () => {
     it('should render with default count of 3', () => {
       render(<SkeletonStats />);
 
-      expect(screen.getByLabelText('Loading statistics')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando estatísticas')).toBeInTheDocument();
     });
 
     it('should render correct number of stat cards', () => {
@@ -180,7 +180,7 @@ describe('LoadingState', () => {
     it('should render with default count of 5', () => {
       const { container } = render(<SkeletonRecentItems />);
 
-      expect(screen.getByLabelText('Loading recent items')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando itens recentes')).toBeInTheDocument();
       const items = container.querySelectorAll('.p-4.rounded-lg.border');
       expect(items).toHaveLength(5);
     });
@@ -204,14 +204,14 @@ describe('LoadingState', () => {
     it('should render dashboard skeleton', () => {
       render(<SkeletonDashboard />);
 
-      expect(screen.getByLabelText('Loading dashboard')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando painel')).toBeInTheDocument();
     });
 
     it('should contain stats and recent items skeletons', () => {
       render(<SkeletonDashboard />);
 
-      expect(screen.getByLabelText('Loading statistics')).toBeInTheDocument();
-      expect(screen.getByLabelText('Loading recent items')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando estatísticas')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando itens recentes')).toBeInTheDocument();
     });
 
     it('should have proper spacing', () => {
@@ -225,7 +225,7 @@ describe('LoadingState', () => {
     it('should render with default count of 6', () => {
       const { container } = render(<SkeletonETPGrid />);
 
-      expect(screen.getByLabelText('Loading ETPs')).toBeInTheDocument();
+      expect(screen.getByLabelText('Carregando ETPs')).toBeInTheDocument();
       const cards = container.querySelectorAll(
         '.rounded-lg.border.bg-card.p-6.space-y-4',
       );
@@ -278,7 +278,7 @@ describe('LoadingState', () => {
       render(<SkeletonList />);
 
       // Multiple roles from nested components, check main container
-      expect(screen.getByLabelText('Loading list')).toHaveAttribute(
+      expect(screen.getByLabelText('Carregando lista')).toHaveAttribute(
         'role',
         'status',
       );
@@ -287,7 +287,7 @@ describe('LoadingState', () => {
     it('SkeletonTable should have role status', () => {
       render(<SkeletonTable />);
 
-      expect(screen.getByLabelText('Loading table')).toHaveAttribute(
+      expect(screen.getByLabelText('Carregando tabela')).toHaveAttribute(
         'role',
         'status',
       );
@@ -296,7 +296,7 @@ describe('LoadingState', () => {
     it('SkeletonStats should have role status', () => {
       render(<SkeletonStats />);
 
-      expect(screen.getByLabelText('Loading statistics')).toHaveAttribute(
+      expect(screen.getByLabelText('Carregando estatísticas')).toHaveAttribute(
         'role',
         'status',
       );
@@ -305,7 +305,7 @@ describe('LoadingState', () => {
     it('SkeletonDashboard should have role status', () => {
       render(<SkeletonDashboard />);
 
-      expect(screen.getByLabelText('Loading dashboard')).toHaveAttribute(
+      expect(screen.getByLabelText('Carregando painel')).toHaveAttribute(
         'role',
         'status',
       );
@@ -314,7 +314,7 @@ describe('LoadingState', () => {
     it('SkeletonETPGrid should have role status', () => {
       render(<SkeletonETPGrid />);
 
-      expect(screen.getByLabelText('Loading ETPs')).toHaveAttribute(
+      expect(screen.getByLabelText('Carregando ETPs')).toHaveAttribute(
         'role',
         'status',
       );

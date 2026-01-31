@@ -156,8 +156,7 @@ export function QuotaIndicator({
             {percentUsed.toFixed(0)}% em uso
           </p>
           <p className="text-sm text-muted-foreground">
-            {quota.available} {quota.available === 1 ? 'vaga' : 'vagas'}{' '}
-            disponível{quota.available === 1 ? '' : 'is'}
+            {quota.available} {quota.available === 1 ? 'vaga disponível' : 'vagas disponíveis'}
           </p>
         </div>
       )}

@@ -36,19 +36,19 @@ describe('QuotaIndicator', () => {
     it('should display percentage used', () => {
       render(<QuotaIndicator quota={mockQuotaSafe} />);
 
-      expect(screen.getByText('30% used')).toBeInTheDocument();
+      expect(screen.getByText('30% em uso')).toBeInTheDocument();
     });
 
     it('should display slots available', () => {
       render(<QuotaIndicator quota={mockQuotaSafe} />);
 
-      expect(screen.getByText('7 slots available')).toBeInTheDocument();
+      expect(screen.getByText('7 vagas disponíveis')).toBeInTheDocument();
     });
 
     it('should display singular slot when 1 available', () => {
       render(<QuotaIndicator quota={mockQuotaCritical} />);
 
-      expect(screen.getByText('1 slot available')).toBeInTheDocument();
+      expect(screen.getByText('1 vaga disponível')).toBeInTheDocument();
     });
 
     it('should have correct aria attributes', () => {
@@ -121,7 +121,7 @@ describe('QuotaIndicator', () => {
       render(<QuotaIndicator quota={null} loading={true} />);
 
       const loadingElement = screen.getByRole('status', {
-        name: /loading quota/i,
+        name: /carregando informações de cota/i,
       });
       expect(loadingElement).toBeInTheDocument();
     });
@@ -148,7 +148,7 @@ describe('QuotaIndicator', () => {
       render(<QuotaIndicator quota={null} />);
 
       const element = screen.getByRole('status', {
-        name: /quota information unavailable/i,
+        name: /informações de cota indisponíveis/i,
       });
       expect(element).toBeInTheDocument();
     });
@@ -158,15 +158,15 @@ describe('QuotaIndicator', () => {
     it('should hide text when showText is false', () => {
       render(<QuotaIndicator quota={mockQuotaSafe} showText={false} />);
 
-      expect(screen.queryByText('30% used')).not.toBeInTheDocument();
-      expect(screen.queryByText('7 slots available')).not.toBeInTheDocument();
+      expect(screen.queryByText('30% em uso')).not.toBeInTheDocument();
+      expect(screen.queryByText('7 vagas disponíveis')).not.toBeInTheDocument();
     });
 
     it('should show text by default', () => {
       render(<QuotaIndicator quota={mockQuotaSafe} />);
 
-      expect(screen.getByText('30% used')).toBeInTheDocument();
-      expect(screen.getByText('7 slots available')).toBeInTheDocument();
+      expect(screen.getByText('30% em uso')).toBeInTheDocument();
+      expect(screen.getByText('7 vagas disponíveis')).toBeInTheDocument();
     });
   });
 

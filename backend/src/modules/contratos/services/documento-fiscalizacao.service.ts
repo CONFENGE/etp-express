@@ -93,11 +93,10 @@ export class DocumentoFiscalizacaoService {
     }
 
     // Verificar limite de arquivos por entidade
+    // Build where clause based on entity type
+    const whereClause = this.buildWhereClause(dto.tipoEntidade, dto.entidadeId);
     const existingCount = await this.documentoRepository.count({
-      where: {
-        tipoEntidade: dto.tipoEntidade,
-        entidadeId: dto.entidadeId,
-      },
+      where: whereClause,
     });
 
     if (existingCount >= this.MAX_FILES_PER_ENTITY) {
@@ -106,8 +105,9 @@ export class DocumentoFiscalizacaoService {
       );
     }
 
-    // Criar documento
+    // Criar documento usando helper method para mapear tipo+ID para FKs explícitas
     const documento = this.documentoRepository.create(dto);
+    documento.setEntidade(dto.tipoEntidade, dto.entidadeId);
     const saved = await this.documentoRepository.save(documento);
 
     this.logger.log(
@@ -128,11 +128,12 @@ export class DocumentoFiscalizacaoService {
     tipoEntidade: string,
     entidadeId: string,
   ): Promise<DocumentoFiscalizacao[]> {
+    const whereClause = this.buildWhereClause(
+      tipoEntidade as DocumentoFiscalizacaoTipo,
+      entidadeId,
+    );
     return this.documentoRepository.find({
-      where: {
-        tipoEntidade: tipoEntidade as DocumentoFiscalizacaoTipo,
-        entidadeId,
-      },
+      where: whereClause,
       order: {
         createdAt: 'DESC',
       },
@@ -270,5 +271,31 @@ export class DocumentoFiscalizacaoService {
   private async deleteFile(storagePath: string): Promise<void> {
     const fullPath = path.join(this.STORAGE_BASE_PATH, storagePath);
     await fs.unlink(fullPath);
+  }
+
+  /**
+   * Build TypeORM where clause for querying by entity type and ID.
+   * Maps polymorphic API (tipoEntidade + entidadeId) to explicit FK columns.
+   *
+   * @param tipoEntidade - Entity type (medicao, ocorrencia, ateste)
+   * @param entidadeId - Entity UUID
+   * @returns TypeORM where clause
+   */
+  private buildWhereClause(
+    tipoEntidade: DocumentoFiscalizacaoTipo,
+    entidadeId: string,
+  ): Record<string, string> {
+    switch (tipoEntidade) {
+      case DocumentoFiscalizacaoTipo.MEDICAO:
+        return { medicaoId: entidadeId };
+      case DocumentoFiscalizacaoTipo.OCORRENCIA:
+        return { ocorrenciaId: entidadeId };
+      case DocumentoFiscalizacaoTipo.ATESTE:
+        return { atesteId: entidadeId };
+      default:
+        throw new BadRequestException(
+          `Tipo de entidade inválido: ${tipoEntidade}`,
+        );
+    }
   }
 }

@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, TableColumn, TableIndex } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  TableColumn,
+  TableIndex,
+} from 'typeorm';
 
 /**
  * Migration: Add IP anonymization to ApiUsage entity
@@ -30,7 +35,8 @@ export class AddIpAnonymizationToApiUsage1770700000000 implements MigrationInter
         type: 'varchar',
         length: '64', // Supports both IPv4 (15 chars) and hashed (64 chars)
         isNullable: true,
-        comment: 'Client IP address. Anonymized after retention period (LGPD Art. 12)',
+        comment:
+          'Client IP address. Anonymized after retention period (LGPD Art. 12)',
       }),
     );
 
@@ -41,7 +47,8 @@ export class AddIpAnonymizationToApiUsage1770700000000 implements MigrationInter
         name: 'ipAnonymizedAt',
         type: 'timestamp',
         isNullable: true,
-        comment: 'Timestamp when IP was anonymized via SHA-256 hash (LGPD Art. 12)',
+        comment:
+          'Timestamp when IP was anonymized via SHA-256 hash (LGPD Art. 12)',
       }),
     );
 
@@ -53,7 +60,8 @@ export class AddIpAnonymizationToApiUsage1770700000000 implements MigrationInter
         type: 'int',
         default: 30,
         isNullable: false,
-        comment: 'Number of days to retain original IP before anonymization (default: 30)',
+        comment:
+          'Number of days to retain original IP before anonymization (default: 30)',
       }),
     );
 

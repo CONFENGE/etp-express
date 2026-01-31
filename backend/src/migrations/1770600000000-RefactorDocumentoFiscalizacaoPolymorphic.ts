@@ -28,9 +28,7 @@ import {
  *
  * Rollback: Safe - polymorphic pattern can be restored from explicit FKs
  */
-export class RefactorDocumentoFiscalizacaoPolymorphic1770600000000
-  implements MigrationInterface
-{
+export class RefactorDocumentoFiscalizacaoPolymorphic1770600000000 implements MigrationInterface {
   name = 'RefactorDocumentoFiscalizacaoPolymorphic1770600000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
