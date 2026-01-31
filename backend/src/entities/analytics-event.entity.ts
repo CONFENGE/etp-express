@@ -56,8 +56,27 @@ export class AnalyticsEvent {
   @Column({ type: 'varchar', nullable: true })
   sessionId: string;
 
+  /**
+   * IP address of the client.
+   * LGPD Art. 12: Anonymized after retention period (default: 30 days)
+   * via SHA-256 hash to protect privacy while preserving geographic analytics.
+   */
   @Column({ type: 'varchar', nullable: true })
   ipAddress: string;
+
+  /**
+   * Timestamp when IP was anonymized (null if still original).
+   * Used for LGPD compliance tracking.
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  ipAnonymizedAt: Date | null;
+
+  /**
+   * Number of days to retain original IP before anonymization.
+   * Default: 30 days for analytics events.
+   */
+  @Column({ type: 'int', default: 30 })
+  ipRetentionDays: number;
 
   @Column({ type: 'varchar', nullable: true })
   userAgent: string;
