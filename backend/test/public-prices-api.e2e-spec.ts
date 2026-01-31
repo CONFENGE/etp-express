@@ -1,12 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { User, ApiPlan } from '../src/entities/user.entity';
-import { PriceBenchmark } from '../src/entities/price-benchmark.entity';
-import { ItemCategory, ItemCategoryType } from '../src/entities/item-category.entity';
+import {
+  PriceBenchmark,
+  OrgaoPorte,
+} from '../src/entities/price-benchmark.entity';
+import {
+  ItemCategory,
+  ItemCategoryType,
+} from '../src/entities/item-category.entity';
 import * as bcrypt from 'bcrypt';
 
 /**
@@ -149,7 +155,7 @@ describe('Public Prices API (E2E)', () => {
     testBenchmark = await benchmarkRepository.save({
       categoryId: testCategory.id,
       uf: 'SP',
-      orgaoPorte: 'TODOS',
+      orgaoPorte: OrgaoPorte.TODOS,
       avgPrice: 1500.0,
       medianPrice: 1400.0,
       minPrice: 1000.0,
@@ -466,9 +472,7 @@ describe('Public Prices API (E2E)', () => {
   describe('Swagger Documentation', () => {
     it('should expose Swagger UI in non-production environments', () => {
       // Swagger is disabled in production, but we're in test environment
-      return request(app.getHttpServer())
-        .get('/api/docs')
-        .expect(200); // Should return Swagger UI HTML
+      return request(app.getHttpServer()).get('/api/docs').expect(200); // Should return Swagger UI HTML
     });
 
     it('should include Public API - Prices tag in Swagger docs', async () => {
