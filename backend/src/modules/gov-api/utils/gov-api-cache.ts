@@ -26,12 +26,12 @@ import {
 const DEFAULT_CACHE_CONFIGS: Record<GovApiSource, GovApiCacheConfig> = {
   pncp: {
     prefix: 'gov:pncp',
-    ttlSeconds: 3600, // 1 hour - contracts update frequently
+    ttlSeconds: 1800, // 30 min - balance freshness vs load (#1069)
     enabled: true,
   },
   comprasgov: {
     prefix: 'gov:comprasgov',
-    ttlSeconds: 3600, // 1 hour
+    ttlSeconds: 1800, // 30 min - reduce stale data window (#1069)
     enabled: true,
   },
   sinapi: {

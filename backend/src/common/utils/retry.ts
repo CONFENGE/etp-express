@@ -74,8 +74,9 @@ export function calculateBackoff(
   options: Pick<RetryOptions, 'baseDelay' | 'maxDelay'>,
 ): number {
   const exponential = options.baseDelay * Math.pow(2, attempt);
-  // Add 10% random jitter to prevent thundering herd
-  const jitter = Math.random() * 0.1 * exponential;
+  // Add 25% random jitter to prevent thundering herd (#1068)
+  // Increased from 10% to better distribute load during maintenance windows
+  const jitter = Math.random() * 0.25 * exponential;
   return Math.min(exponential + jitter, options.maxDelay);
 }
 
