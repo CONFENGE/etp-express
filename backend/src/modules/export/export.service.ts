@@ -43,6 +43,14 @@ import {
   ETP_SECTION_LABELS,
 } from './docx.config';
 import { HtmlToDocxParser } from './html-to-docx.parser';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import {
+  EXPORT_CLEANUP_QUEUE,
+  EXPORT_CLEANUP_JOB,
+  ExportCleanupJobData,
+  ExportCleanupJobResult,
+} from './export-cleanup.types';
 
 export enum ExportFormat {
   PDF = 'pdf',
@@ -94,6 +102,8 @@ export class ExportService {
     private exportMetadataRepository: Repository<ExportMetadata>,
     private configService: ConfigService,
     private s3Service: S3Service,
+    @InjectQueue(EXPORT_CLEANUP_QUEUE)
+    private readonly cleanupQueue: Queue,
   ) {
     this.loadTemplate();
     this.registerHandlebarsHelpers();
@@ -325,6 +335,7 @@ export class ExportService {
 
       const metadata = this.exportMetadataRepository.create({
         etpId: etp.id,
+        organizationId: etp.organizationId,
         userId,
         format,
         version,
@@ -380,6 +391,100 @@ export class ExportService {
     await this.exportMetadataRepository.update(exportId, {
       lastAccessedAt: new Date(),
     });
+  }
+
+  /**
+   * Triggers a manual cleanup of old exports.
+   *
+   * @param retentionDays - Number of days to retain exports (default from env)
+   * @param dryRun - If true, logs what would be deleted without actually deleting
+   * @param organizationId - Optional organization filter
+   * @returns Job instance for tracking
+   *
+   * @see Issue #1706 - Retention policy and cleanup job for old exports
+   */
+  async triggerCleanup(
+    retentionDays?: number,
+    dryRun = false,
+    organizationId?: string,
+  ): Promise<ExportCleanupJobResult> {
+    const retention =
+      retentionDays ||
+      parseInt(this.configService.get('EXPORT_RETENTION_DAYS', '90'), 10);
+
+    this.logger.log(
+      `Triggering export cleanup: retentionDays=${retention}, dryRun=${dryRun}, org=${organizationId || 'all'}`,
+    );
+
+    const jobData: ExportCleanupJobData = {
+      retentionDays: retention,
+      dryRun,
+      organizationId,
+    };
+
+    const job = await this.cleanupQueue.add(EXPORT_CLEANUP_JOB, jobData, {
+      removeOnComplete: {
+        age: 86400, // 24 hours
+        count: 100,
+      },
+      removeOnFail: {
+        age: 604800, // 7 days
+      },
+    });
+
+    // Wait for job completion (synchronous execution for manual triggers)
+    const result = await job.waitUntilFinished(
+      this.cleanupQueue.events,
+      30000, // 30 second timeout
+    );
+
+    return result as ExportCleanupJobResult;
+  }
+
+  /**
+   * Schedules automatic cleanup job to run daily.
+   * Called on module initialization.
+   *
+   * @see Issue #1706 - Retention policy and cleanup job for old exports
+   */
+  async scheduleAutomaticCleanup(): Promise<void> {
+    const enabled =
+      this.configService.get('EXPORT_CLEANUP_ENABLED', 'true') === 'true';
+
+    if (!enabled) {
+      this.logger.log('Export cleanup scheduler is disabled');
+      return;
+    }
+
+    const retentionDays = parseInt(
+      this.configService.get('EXPORT_RETENTION_DAYS', '90'),
+      10,
+    );
+
+    this.logger.log(
+      `Scheduling automatic export cleanup: retentionDays=${retentionDays}, cron=0 2 * * *`,
+    );
+
+    const jobData: ExportCleanupJobData = {
+      retentionDays,
+      dryRun: false,
+    };
+
+    // Schedule repeatable job (daily at 2 AM)
+    await this.cleanupQueue.add(EXPORT_CLEANUP_JOB, jobData, {
+      repeat: {
+        pattern: '0 2 * * *', // Cron: daily at 2 AM
+      },
+      removeOnComplete: {
+        age: 86400, // 24 hours
+        count: 100,
+      },
+      removeOnFail: {
+        age: 604800, // 7 days
+      },
+    });
+
+    this.logger.log('Export cleanup job scheduled successfully');
   }
 
   /**

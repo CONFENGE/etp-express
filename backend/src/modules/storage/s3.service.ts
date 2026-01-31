@@ -4,6 +4,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -113,6 +114,32 @@ export class S3Service {
    */
   getBucketName(): string {
     return this.bucketName;
+  }
+
+  /**
+   * Delete a file from S3
+   *
+   * @param key - S3 object key (path)
+   * @throws Error if delete fails
+   *
+   * @see Issue #1706 - Retention policy and cleanup job for old exports
+   */
+  async deleteFile(key: string): Promise<void> {
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+
+      await this.s3Client.send(command);
+
+      this.logger.log(`File deleted from S3: ${key}`);
+    } catch (error) {
+      this.logger.error(`S3 delete failed for ${key}`, error);
+      throw new Error(
+        `Failed to delete file from S3: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   /**
