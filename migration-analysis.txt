@@ -1,0 +1,24 @@
+# Migration Dependency Analysis
+
+## Problem
+CreateComplianceValidationHistory (1737072000000) references compliance_checklists table
+But CreateComplianceChecklistTables (1768060000000) creates that table
+
+Timestamp comparison:
+- 1737072000000 (Jan 16, 2025) - CreateComplianceValidationHistory - RUNS FIRST ❌
+- 1768060000000 (Jan 10, 2026) - CreateComplianceChecklistTables - RUNS LATER ✅
+
+**Root Cause**: CreateComplianceValidationHistory has earlier timestamp but depends on tables created in later migration.
+
+## Solution
+Rename CreateComplianceValidationHistory migration with timestamp AFTER 1768060000000
+
+New timestamp should be: 1768070000000 (after compliance checklist tables)
+
+## Migration Order Required
+
+1. Initial schema and base tables
+2. Organizations and users
+3. ETPs and related entities
+4. Compliance checklists (1768060000000)
+5. Compliance validation history (1768070000000) <- NEW TIMESTAMP

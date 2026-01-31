@@ -27,18 +27,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { apiHelpers } from '@/lib/api';
-import { cn, isStrongPassword } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { PASSWORD_REGEX, isPasswordValid, PASSWORD_REQUIREMENTS } from '@/lib/password-validation';
+import { VALIDATION_MESSAGES } from '@/lib/constants';
 
 const resetPasswordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, 'Senha deve ter no mínimo 8 caracteres')
-      .max(128, 'Senha deve ter no máximo 128 caracteres')
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-        'Senha deve conter: letra maiúscula, letra minúscula, número e caractere especial',
-      ),
+      .min(PASSWORD_REQUIREMENTS.minLength, VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH)
+      .max(PASSWORD_REQUIREMENTS.maxLength, `Senha deve ter no máximo ${PASSWORD_REQUIREMENTS.maxLength} caracteres`)
+      .regex(PASSWORD_REGEX, VALIDATION_MESSAGES.PASSWORD_COMPLEXITY),
     confirmPassword: z.string().min(1, 'Confirme sua senha'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -60,7 +59,7 @@ export function ResetPassword() {
 
   // Real-time validation
   const passwordValidator = useCallback(
-    (value: string) => isStrongPassword(value),
+    (value: string) => isPasswordValid(value),
     [],
   );
   const passwordValidation = useRealtimeValidation(passwordValidator, {
