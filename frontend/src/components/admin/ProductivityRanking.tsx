@@ -246,19 +246,19 @@ function PaginationControls({
           size="sm"
           onClick={onPrevious}
           disabled={page <= 1}
-          aria-label="Pagina anterior"
+          aria-label="Página anterior"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <span className="text-sm">
-          Pagina {page} de {totalPages}
+          Página {page} de {totalPages}
         </span>
         <Button
           variant="outline"
           size="sm"
           onClick={onNext}
           disabled={page >= totalPages}
-          aria-label="Proxima pagina"
+          aria-label="Próxima página"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

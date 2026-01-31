@@ -89,7 +89,7 @@ export function Sidebar() {
           className="w-full min-h-touch"
           data-tour="new-etp-button"
         >
-          <NavLink to="/etps/new" aria-label="Create new ETP">
+          <NavLink to="/etps/new" aria-label="Criar novo ETP">
             <PlusCircle
               className="h-4 w-4"
               aria-hidden="true"

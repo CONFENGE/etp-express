@@ -50,11 +50,11 @@ describe('Accessibility Tests - WCAG 2.1 AA', () => {
 
     it('icon-only buttons should have aria-label', () => {
       const { getByRole } = render(
-        <Button aria-label="Close dialog" size="icon">
+        <Button aria-label="Fechar diálogo" size="icon">
           <span aria-hidden="true">X</span>
         </Button>,
       );
-      const button = getByRole('button', { name: 'Close dialog' });
+      const button = getByRole('button', { name: 'Fechar diálogo' });
       expect(button).toBeInTheDocument();
     });
 
@@ -163,8 +163,8 @@ describe('Accessibility Tests - WCAG 2.1 AA', () => {
     });
 
     it('disabled input has disabled attribute', () => {
-      render(<Input aria-label="Disabled" disabled />);
-      expect(screen.getByLabelText('Disabled')).toBeDisabled();
+      render(<Input aria-label="Desativado" disabled />);
+      expect(screen.getByLabelText('Desativado')).toBeDisabled();
     });
   });
 
@@ -204,7 +204,7 @@ describe('Accessibility Tests - WCAG 2.1 AA', () => {
   describe('Form Accessibility Patterns', () => {
     it('form with accessible fields renders correctly', () => {
       render(
-        <form aria-label="Contact form">
+        <form aria-label="Formulário de contato">
           <div>
             <label htmlFor="name">Name</label>
             <Input id="name" required aria-required="true" />

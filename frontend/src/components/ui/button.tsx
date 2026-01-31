@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
  *
  * Accessibility (WCAG 2.1 AA + Apple HIG):
  * - REQUIRED: When using size="icon", you MUST provide aria-label
- *   Example: <Button size="icon" aria-label="Delete item"><Trash /></Button>
+ *   Example: <Button size="icon" aria-label="Deletar item"><Trash /></Button>
  * - All sizes ensure minimum 44px touch target (WCAG 2.5.5)
  * - Focus-visible ring with 2px outline and 2px offset
  * - Screen reader support via semantic HTML button element

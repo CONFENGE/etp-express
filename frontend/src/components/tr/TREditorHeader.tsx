@@ -84,8 +84,8 @@ export const TREditorHeader = memo(function TREditorHeader({
               {isDirty && (
                 <span
                   className="ml-2 text-amber-500"
-                  title="Alteracoes nao salvas"
-                  aria-label="Alteracoes nao salvas"
+                  title="Alterações não salvas"
+                  aria-label="Alterações não salvas"
                   data-testid="unsaved-indicator"
                 >
                   *

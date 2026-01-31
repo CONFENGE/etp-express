@@ -83,7 +83,7 @@ describe('WCAG 2.5.5 Touch Target Size', () => {
 
   describe('Checkbox component', () => {
     it('should have extended touch area via ::before pseudo-element', () => {
-      render(<Checkbox aria-label="Accept terms" />);
+      render(<Checkbox aria-label="Aceitar termos" />);
       const checkbox = screen.getByRole('checkbox');
       // Checkbox uses before:absolute before:-inset-[14px] for touch area
       expect(checkbox).toHaveClass('before:absolute');

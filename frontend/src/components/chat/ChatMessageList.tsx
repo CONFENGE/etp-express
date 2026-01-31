@@ -62,7 +62,7 @@ export const ChatMessageList = memo(function ChatMessageList({
         className,
       )}
       role="list"
-      aria-label="Historico de mensagens"
+      aria-label="Histórico de mensagens"
       aria-live="polite"
       aria-relevant="additions"
     >

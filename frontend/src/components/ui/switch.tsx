@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
  * <Switch
  *   checked={isEnabled}
  *   onCheckedChange={setIsEnabled}
- *   aria-label="Enable notifications"
+ *   aria-label="Ativar notificações"
  * />
  * ```
  */

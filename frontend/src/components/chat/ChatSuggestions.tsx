@@ -67,7 +67,7 @@ export const ChatSuggestions = memo(function ChatSuggestions({
         className,
       )}
       role="group"
-      aria-label="Sugestoes de perguntas"
+      aria-label="Sugestões de perguntas"
     >
       {suggestions.map((suggestion) => (
         <SuggestionButton

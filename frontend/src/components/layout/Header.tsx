@@ -56,7 +56,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
+            aria-label="Alternar barra lateral"
             aria-expanded={false}
             className="min-w-touch min-h-touch"
           >
