@@ -16,12 +16,14 @@ import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { APP_NAME } from '@/lib/constants';
 import { getInitials } from '@/lib/utils';
 import { useTour } from '@/hooks/useTour';
+import { useBranding } from '@/hooks/useBranding';
 
 export function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { toggleSidebar } = useUIStore();
   const { handleRestart: restartTour } = useTour();
+  const { branding } = useBranding();
 
   const handleLogout = async () => {
     await logout();
@@ -72,8 +74,19 @@ export function Header() {
             }}
             aria-label={`${APP_NAME} - Go to home`}
           >
-            <FileText className="h-6 w-6 text-primary" aria-hidden="true" />
-            <span className="hidden xs:inline">{APP_NAME}</span>
+            {branding?.logoUrl ? (
+              <img
+                src={branding.logoUrl}
+                alt={`${user?.organization?.name || APP_NAME} logo`}
+                className="h-8 object-contain"
+                style={{ maxWidth: '200px' }}
+              />
+            ) : (
+              <>
+                <FileText className="h-6 w-6 text-primary" aria-hidden="true" />
+                <span className="hidden xs:inline">{APP_NAME}</span>
+              </>
+            )}
           </button>
         </div>
 

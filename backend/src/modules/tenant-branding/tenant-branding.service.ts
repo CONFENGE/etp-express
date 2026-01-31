@@ -30,9 +30,7 @@ export class TenantBrandingService {
    * @returns Created branding configuration
    * @throws ConflictException if organization already has branding or customDomain exists
    */
-  async create(
-    createDto: CreateTenantBrandingDto,
-  ): Promise<TenantBranding> {
+  async create(createDto: CreateTenantBrandingDto): Promise<TenantBranding> {
     // Check if organization already has branding
     const existingBranding = await this.tenantBrandingRepository.findOne({
       where: { organizationId: createDto.organizationId },
@@ -144,7 +142,10 @@ export class TenantBrandingService {
     const branding = await this.findOne(id);
 
     // Check if custom domain is already in use (by another branding)
-    if (updateDto.customDomain && updateDto.customDomain !== branding.customDomain) {
+    if (
+      updateDto.customDomain &&
+      updateDto.customDomain !== branding.customDomain
+    ) {
       const domainExists = await this.tenantBrandingRepository.findOne({
         where: { customDomain: updateDto.customDomain },
       });

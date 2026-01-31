@@ -122,6 +122,11 @@ const DemoUsers = lazy(() =>
     default: m.DemoUsers,
   })),
 );
+const BrandingSettingsPage = lazy(() =>
+  import('@/pages/BrandingSettingsPage').then((m) => ({
+    default: m.BrandingSettingsPage,
+  })),
+);
 
 // Manager pages - lazy-loaded (only accessed by domain managers)
 const ManagerDashboard = lazy(() =>
@@ -408,6 +413,7 @@ const router = createBrowserRouter([
           { path: 'domains/:id', element: <DomainDetail /> },
           { path: 'audit-export', element: <AuditLogsExport /> },
           { path: 'demo-users', element: <DemoUsers /> },
+          { path: 'branding', element: <BrandingSettingsPage /> },
         ],
       },
 

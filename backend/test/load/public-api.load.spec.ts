@@ -308,7 +308,8 @@ describe('Public API Load Tests', () => {
       });
 
       // Complex queries should not be more than 2x slower
-      const degradationRatio = complexResult.latency.p50 / simpleResult.latency.p50;
+      const degradationRatio =
+        complexResult.latency.p50 / simpleResult.latency.p50;
       console.log(`Performance degradation ratio: ${degradationRatio}x`);
       expect(degradationRatio).toBeLessThan(2);
     }, 90000);

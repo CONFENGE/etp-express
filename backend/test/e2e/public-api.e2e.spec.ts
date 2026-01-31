@@ -317,7 +317,9 @@ describe('Public API E2E Tests', () => {
     describe('GET /api/v1/prices/benchmark', () => {
       it('should return benchmarks with correct structure', async () => {
         const response = await request(app.getHttpServer())
-          .get('/api/v1/prices/benchmark?categoryCode=CATMAT-44122&uf=SP&limit=10')
+          .get(
+            '/api/v1/prices/benchmark?categoryCode=CATMAT-44122&uf=SP&limit=10',
+          )
           .set('X-API-Key', ENTERPRISE_API_KEY)
           .expect(200);
 
