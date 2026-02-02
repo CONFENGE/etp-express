@@ -140,6 +140,32 @@ docs/.vitepress/cache
 CLAUDE.md
 .mcp.json
 
+# AI Framework Artifacts (STEALTH MODE - never commit)
+*AIOS*.md
+*aios*.md
+*claude*.md
+*CLAUDE*.md
+.aios*/
+*co-authored*
+*Co-Authored*
+*anthropic*
+*squad-creator*
+*.backup
+
+# AI-Generated Analysis Files (root level)
+*COMPLETION*.md
+*SUMMARY*.md
+*ANALYSIS*.md
+*RECOMMENDATION*.md
+*CHECKLIST*.md
+*ARCHITECTURE*.md
+*STATUS*.md
+EPIC_*.md
+TD-*-COMPLETION*.md
+S3_*.md
+INFRASTRUCTURE_*.md
+DEVOPS_*.md
+
 # Quality Assurance Tools (acessórios de desenvolvimento)
 .pa11yci.json
 lighthouserc.json

@@ -1,0 +1,8 @@
+# Git blame ignore file
+# This file tells git-blame to skip certain commits (e.g., formatting, mass refactors)
+# Configure with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# NOTE: This file can be used to hide AI-assisted commits from blame view
+# Add commit SHAs here if needed (one per line)
+# Example:
+# abc123def456  # chore: mass formatting by tooling
