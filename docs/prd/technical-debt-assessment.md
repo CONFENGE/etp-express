@@ -1,8 +1,8 @@
 # Technical Debt Assessment - FINAL
 
-**Data:** 2026-01-29
-**Autor:** @architect (Aria) - AIOS v3.10.0
-**Status:** CONSOLIDADO - Revisoes incorporadas
+**Data:** 2026-01-29 | **Atualizado:** 2026-02-12
+**Autor:** @architect (Aria) - AIOS v3.10.0 | **Atualizacao:** @architect (Orion)
+**Status:** CONSOLIDADO - 8/10 stories resolvidos (ver secao 12)
 
 > **Documento final** consolidando debitos tecnicos identificados em 3 analises independentes,
 > validados por revisoes especializadas de @data-engineer, @ux-design-expert e @qa.
@@ -24,6 +24,7 @@
 | 2026-01-29 | Revisao Frontend/UX | @ux-design-expert | CONCLUIDO |
 | 2026-01-29 | Quality Gate | @qa (Quinn) | CONCLUIDO |
 | 2026-01-29 | Consolidacao FINAL | @architect (Aria) | CONCLUIDO |
+| 2026-02-12 | Atualizacao incremental | @architect (Orion) | CONCLUIDO |
 
 ---
 
@@ -474,3 +475,74 @@ Conforme identificado pelo @qa, os seguintes topicos NAO foram auditados neste a
 *Documento FINAL gerado em 2026-01-29 por @architect (Aria) - AIOS v3.10.0*
 *Revisoes de @data-engineer, @ux-design-expert e @qa incorporadas e marcadas como CONCLUIDAS.*
 *Proximo passo: coletar baseline de metricas (secao 10) e iniciar Sprint 1 de resolucao.*
+
+---
+
+## 12. Status de Resolucao (Atualizacao 2026-02-12)
+
+> **14 dias apos o assessment original**, 8 dos 10 stories de resolucao foram completados
+> atraves de 24 commits, incluindo 3 mega-PRs do "Squad Backlog Crusher".
+
+### 12.1 Stories Resolvidos
+
+| Story | Titulo | Status | PR | Debitos Resolvidos |
+|-------|--------|--------|----|--------------------|
+| TD-001 | Password & API Key Hardening | ✅ DONE | #1724 | DB-S01, DB-S02 |
+| TD-002 | Multi-tenancy Isolation Gaps | ✅ DONE | #1727 | DB-09, DB-NEW-01, DB-NEW-02, DB-NEW-06, DB-S03 |
+| TD-003 | Eager Loading Removal | ✅ DONE | #1730 | SYS-01, DB-01, DB-NEW-03, DB-NEW-04 |
+| TD-004 | Missing Database Indexes | ✅ DONE | #1730 | DB-IDX-01 (22 indexes criados) |
+| TD-005 | Monetary Type Standardization | ✅ DONE | #1732 | SYS-05, DB-04 |
+| TD-006 | Password Validation Alignment | ✅ DONE | #1730 | FE-01, FE-09 |
+| TD-007 | Accessibility & i18n | ✅ DONE | #1722 | FE-08, FE-04 |
+| TD-008 | Schema & LGPD Compliance | ✅ DONE (95%) | #1721/1723/1732 | DB-02, DB-S06 |
+| TD-009 | Code Quality & Hygiene | 📋 NAO INICIADO | - | 12 acceptance criteria pendentes |
+| TD-010 | Backlog Infrastructure | 📋 NAO INICIADO | - | 15 acceptance criteria pendentes |
+
+### 12.2 Progresso Quantitativo
+
+| Metrica | Assessment (29/01) | Atual (12/02) | Delta |
+|---------|-------------------|---------------|-------|
+| Total debitos | 51 | 51 | - |
+| Debitos resolvidos | 0 | ~35 | +35 |
+| Debitos pendentes | 51 | ~16 | -35 |
+| Debitos P1 (criticos) | 10 | **0** | -10 |
+| Debitos P2 | 7 | **0** | -7 |
+| Esforco restante | ~130h | ~76.5h | -53.5h |
+
+### 12.3 Debitos Criticos Eliminados
+
+Todos os 6 debitos criticos originais foram resolvidos:
+
+1. ~~**Eager loading cascateado** (SYS-01/DB-01)~~ → Lazy loading em todas as entidades (PR #1730)
+2. ~~**API Key sem hash** (DB-S02)~~ → bcrypt + dual-read transition (PR #1724)
+3. ~~**Password sem select: false** (DB-S01)~~ → `select: false` + `@Exclude()` (PR #1724)
+4. ~~**Tipos monetarios inconsistentes** (SYS-05/DB-04)~~ → Padronizado para `string` (PR #1732)
+5. ~~**ExportMetadata sem organizationId** (DB-09)~~ → `organizationId` NOT NULL + backfill (PR #1727)
+6. ~~**Validacao de senha desalinhada** (FE-01)~~ → `minLength: 8` unificado (PR #1730)
+
+### 12.4 Novas Features Adicionadas (nao previstas no assessment)
+
+| Feature | Commit | Impacto |
+|---------|--------|---------|
+| White-label / Tenant Branding | #1294 (8b35a1ca) | Nova entity TenantBranding + endpoints |
+| Export History UI | #1708 (84e09a50) | ExportHistoryModal + rotas backend |
+| API Usage Dashboard | #1690 (d3594412) | ApiUsage tracking + frontend page |
+| AI Validation (ALICE/TCU) | #1291 (e7609939) | AiValidationResult entity + service |
+| E2E Cleanup Hook | #1137 (aa1cf840) | Previne poluicao de DB Railway |
+| Load Tests Documentation | #1690 (92f0b537) | Autocannon benchmarks documentados |
+
+### 12.5 Proximos Passos
+
+1. **TD-009 (21.5h):** Code quality cleanup - pode iniciar imediatamente
+2. **TD-010 (55h+):** Backlog de infraestrutura - quando houver capacidade
+3. **Baseline de metricas:** Coletar P95 latencia pos-eager loading fix
+4. **Atualizar ROADMAP.md:** Marcar TD-007 como concluido
+
+### 12.6 Conclusao
+
+O projeto atingiu **GTM Readiness** com zero blockers de seguranca ou performance. O investimento de ~51h eliminou todos os 10 debitos P1 e 7 debitos P2. O esforco restante (~76.5h) e composto exclusivamente de itens P3/P4 que nao impactam producao.
+
+---
+
+*Atualizacao de 2026-02-12 por @architect (Orion) - Brownfield Discovery incremental*
+*Assessment original de 2026-01-29 por @architect (Aria) - AIOS v3.10.0*

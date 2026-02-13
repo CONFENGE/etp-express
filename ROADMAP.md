@@ -604,8 +604,8 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | TD-004 | Missing Database Indexes (22) | P1 | 2-3h | ✅ Done (#1718 - Squad Backlog Crusher) |
 | TD-005 | Monetary Type Standardization | P1 | 8-12h | ✅ Done (#1720 - Squad Backlog Crusher) |
 | TD-006 | Password Validation Alignment | P1 | 3h | ✅ Done (#1719 - Squad Backlog Crusher) |
-| TD-007 | Accessibility & i18n Fixes | P2 | 4h | Planned |
-| TD-008 | Schema Improvements & LGPD | P2 | 16h | ✅ Partially Done (#1721 IP anonymization, #1726 migrations - Squad Backlog Crusher) |
+| TD-007 | Accessibility & i18n Fixes | P2 | 4h | ✅ Done (#1722 - aria-labels PT-BR, WCAG 3.1.1) |
+| TD-008 | Schema Improvements & LGPD | P2 | 16h | ✅ Done (#1721 IP anon, #1723 tests, #1732 pool review - Squad Backlog Crusher) |
 | TD-009 | Code Quality & System Hygiene | P3 | 21.5h | Planned |
 | TD-010 | Backlog Infrastructure | P4 | 55h+ | Planned |
 

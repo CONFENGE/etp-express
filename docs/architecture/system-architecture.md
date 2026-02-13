@@ -1,5 +1,7 @@
 # System Architecture - ETP Express
 
+**Ultima revisao:** 2026-02-12 (atualizacao incremental)
+
 ## Sumario Executivo
 
 O **ETP Express** e um sistema assistivo de elaboracao de **Estudos Tecnicos Preliminares (ETPs)** para contratacoes publicas brasileiras, conforme a Lei 14.133/2021 (Nova Lei de Licitacoes). Trata-se de um wrapper de LLM que utiliza inteligencia artificial para auxiliar servidores publicos na elaboracao de documentos do ciclo completo de contratacao: **ETP -> Termo de Referencia -> Edital -> Contrato**.
@@ -99,7 +101,7 @@ etp-express/                    # Monorepo root
 │   │   │   ├── constants/     # Mensagens, disclaimers
 │   │   │   ├── context/       # Request context
 │   │   │   └── utils/         # Utilitarios
-│   │   ├── entities/           # 45+ entidades TypeORM
+│   │   ├── entities/           # 50+ entidades TypeORM
 │   │   ├── modules/            # 35+ modulos de feature
 │   │   │   ├── auth/           # Autenticacao (JWT, Local, Password Reset)
 │   │   │   ├── users/          # Gestao de usuarios
@@ -137,7 +139,7 @@ etp-express/                    # Monorepo root
 │   │   │   ├── analysis/       # Analise de dados
 │   │   │   └── chaos/          # Chaos engineering (testes de resiliencia)
 │   │   ├── health/             # Health check + Prometheus metrics
-│   │   ├── migrations/         # 57 migrations TypeORM
+│   │   ├── migrations/         # 60+ migrations TypeORM
 │   │   ├── scripts/            # Seeds (admin, templates, legislation)
 │   │   └── types/              # Type definitions
 │   ├── test/                   # Testes E2E
@@ -252,6 +254,8 @@ URI-based versioning (`/api/v1/...`) como padrao.
 | **PrivacyModule** | - | LGPD compliance |
 | **DocumentExtractionModule** | `document-extraction.controller` | Extracao de PDF/DOCX |
 | **RiskAnalysisModule** | - | Analise de riscos |
+| **TenantBrandingModule** | `tenant-branding.controller` | White-label: cores, logos, temas por organizacao |
+| **AiValidationModule** | `ai-validation.controller` | Validacao com IA similar ao ALICE/TCU |
 
 ---
 
@@ -300,6 +304,17 @@ URI-based versioning (`/api/v1/...`) como padrao.
 - `GET /` - Health check
 - `GET /metrics` - Prometheus metrics
 
+### White-Label / Branding (`/api/v1/branding`)
+- `GET /` - Obter configuracao de branding da organizacao
+- `PUT /` - Atualizar branding (cores, logo, tema)
+
+### API Usage (`/api/v1/api-usage`)
+- `GET /stats` - Dashboard de uso da API
+- `GET /history` - Historico de chamadas
+
+### Export History (`/api/v1/export`)
+- `GET /history` - Historico de exports do ETP
+
 ---
 
 ## Schema do Banco de Dados
@@ -347,7 +362,7 @@ flowchart LR
     CT --> DOC[Documentos Fiscalizacao]
 ```
 
-### Entidades Completas (45+)
+### Entidades Completas (50+)
 
 **Core:** `Etp`, `EtpSection`, `EtpVersion`, `EtpTemplate`, `SectionTemplate`
 
@@ -362,6 +377,8 @@ flowchart LR
 **Auditoria:** `AuditLog`, `AnalyticsEvent`, `SecretAccessLog`, `ContratoSyncLog`
 
 **Outros:** `ChatMessage`, `DocumentTree`
+
+**Branding:** `TenantBranding`, `ApiUsage`, `AiValidationResult`, `ExportMetadata`
 
 ---
 
@@ -488,32 +505,38 @@ graph TB
 
 ## Inventario de Debito Tecnico
 
-### Severidade Alta
+> **Atualizacao 2026-02-12:** 8 dos 10 stories de debito tecnico foram resolvidos entre 29/01 e 12/02/2026.
+> Referencia completa: `docs/prd/technical-debt-assessment.md`
 
-| # | Debito | Descricao | Impacto |
-|---|---|---|---|
-| 1 | **Eager loading excessivo** | Entidades como Etp, Contrato, Edital usam `eager: true` em multiplas relacoes ManyToOne, incluindo User e Organization. Causa queries N+1 e carregamento desnecessario. | Performance degradada em listagens |
-| 2 | **45+ entities no scan global** | `entities: [__dirname + '/**/*.entity{.ts,.js}']` carrega todas as entidades globalmente. Com 45+ entities, o startup fica lento. | Tempo de startup |
-| 3 | **57 migrations** | Grande numero de migrations indica schema em evolucao rapida. Pode causar lentidao no startup com `migrationsRun: true`. | Startup em producao |
-| 4 | **Monorepo sem Turborepo/Nx** | Usa npm workspaces basico sem orquestracao de build/test. | CI/CD subotimo |
+### Status Atualizado
 
-### Severidade Media
+| Story | Debitos | Status | PR |
+|-------|---------|--------|----|
+| TD-001 | Password & API Key Hardening (DB-S01, DB-S02) | ✅ Resolvido | #1724 |
+| TD-002 | Multi-tenancy Isolation (DB-09, DB-NEW-01/02/06) | ✅ Resolvido | #1727 |
+| TD-003 | Eager Loading Removal (SYS-01, DB-01, DB-NEW-03/04) | ✅ Resolvido | #1730 |
+| TD-004 | Missing Indexes - 22 criados (DB-IDX-01) | ✅ Resolvido | #1730 |
+| TD-005 | Monetary Type Standardization (SYS-05, DB-04) | ✅ Resolvido | #1732 |
+| TD-006 | Password Validation Alignment (FE-01, FE-09) | ✅ Resolvido | #1730 |
+| TD-007 | Accessibility & i18n (FE-08, FE-04) | ✅ Resolvido | #1722 |
+| TD-008 | Schema & LGPD Compliance (DB-02, DB-S06) | ✅ Resolvido (95%) | #1721/1723/1732 |
+| TD-009 | Code Quality & Hygiene | 📋 Planejado | - |
+| TD-010 | Backlog Infrastructure | 📋 Backlog | - |
 
-| # | Debito | Descricao | Impacto |
-|---|---|---|---|
-| 5 | **Tipo `string` para campos decimal** | Entidades como Contrato usam `string` para campos de valor (`valorGlobal: string`), inconsistente com Etp que usa `number`. | Conversoes imprevistas |
-| 6 | **Body parser duplicado** | `bodyParser: false` no NestFactory + configuracao manual. Funcional mas fragil. | Manutencao |
-| 7 | **Guards globais via APP_GUARD** | TenantGuard e RolesGuard sao globais, requerendo `@Public()` decorator em rotas publicas. Erro facil de omitir. | Seguranca |
-| 8 | **Feature flags sem persistencia clara** | FeatureFlagsModule existe mas sem indicacao de storage (banco vs env vs config). | Operacional |
-| 9 | **Chaos module em src/** | Codigo de chaos engineering dentro do diretorio de producao. | Deploy acidental |
+### Debitos Remanescentes (P3/P4)
 
-### Severidade Baixa
+| # | Debito | Severidade | Horas | Prioridade |
+|---|--------|------------|-------|------------|
+| 1 | SYS-02: 50+ entities no scan global | ALTA | 2-4h | P4 |
+| 2 | SYS-03: 60+ migrations com auto-run | ALTA | 4-8h | P4 |
+| 3 | SYS-04: Monorepo sem Turborepo/Nx | ALTA | 16h+ | Backlog |
+| 4 | SYS-06/07/08/09: Body parser, guards, feature flags, chaos module | MEDIA | 9h | P3 |
+| 5 | SYS-10/11/12: tmpfiles, strict TS | BAIXA | 2.5h | P4 |
+| 6 | DB-03/05/06/07/08: Schema cleanup | MEDIA-BAIXA | 10.5h | P3-P4 |
+| 7 | DB-P02/03/05/06/07: Performance backlog | BAIXA | 33h | P4 |
+| 8 | FE-05/10: Redoc + axe-core coverage | BAIXA | 8h | P4 |
 
-| # | Debito | Descricao | Impacto |
-|---|---|---|---|
-| 10 | **tmpfiles no frontend** | 150+ diretorios `tmpclaude-*-cwd` no frontend. | Espaco em disco |
-| 11 | **strictBindCallApply: false** | TypeScript config nao usa strict completo. | Type safety |
-| 12 | **forceConsistentCasingInFileNames: false** | Pode causar problemas cross-platform. | Portabilidade |
+**Esforco remanescente estimado:** ~76.5h (reduzido de ~130h original)
 
 ---
 
@@ -521,24 +544,24 @@ graph TB
 
 ### Curto Prazo (Sprint Atual)
 
-1. **Limpar tmpfiles do frontend** - Remover 150+ diretorios `tmpclaude-*-cwd`
-2. **Revisar eager loading** - Substituir `eager: true` por `relations` explicitas nos queries que necessitam
-3. **Padronizar tipos de valores monetarios** - Decidir entre `number` e `string` para campos `decimal`
+1. **TD-009: Code Quality cleanup** - Versao/currentVersion, created_by UUID, tipar ContratoSyncLog.resolution
+2. **GIN indexes** em Etp.metadata, Etp.dynamicFields, ContractPrice.metadata
+3. **Coletar baseline de metricas pos-TD** - P95 latencia, payload sizes, query counts
 
 ### Medio Prazo (1-3 Sprints)
 
 4. **Implementar Turborepo ou Nx** - Orquestrar builds e testes do monorepo
-5. **Mover chaos module** - Extrair para diretorio de testes ou habilitar apenas via feature flag
-6. **Habilitar strict mode completo no TypeScript** - `strictBindCallApply: true`, `forceConsistentCasingInFileNames: true`
-7. **Consolidar migrations** - Squash migrations antigas em uma baseline migration
+5. **Mover chaos module** - Extrair para diretorio de testes
+6. **Habilitar strict mode completo no TypeScript**
+7. **Consolidar migrations** - Squash para baseline (POR ULTIMO)
 
 ### Longo Prazo (Roadmap)
 
-8. **Considerar CQRS** - Separar leitura de escrita para queries pesadas (listagens com filtros complexos)
-9. **Event Sourcing para Audit Trail** - Substituir tabela de audit por event log imutavel
-10. **Cache distribuido** - Avaliar Redis Cluster para alta disponibilidade
-11. **API Gateway** - Considerar API Gateway (Kong/Express Gateway) para rate limiting centralizado e API key management
+8. **Considerar CQRS** - Separar leitura de escrita para queries pesadas
+9. **Cache distribuido** - Avaliar Redis Cluster para alta disponibilidade
+10. **Particao de tabelas** - contract_prices apos 5M+ registros
 
 ---
 
 *Documento gerado em 29/01/2026 por @architect (Aria) - AIOS v3.10.0*
+*Atualizado em 12/02/2026 por @architect (Orion) - Brownfield Discovery incremental*
