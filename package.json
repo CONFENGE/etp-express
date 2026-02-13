@@ -19,7 +19,9 @@
     "audit:a11y": "pa11y-ci",
     "aios:validate:structure": "node .aios-core/infrastructure/scripts/source-tree-guardian/index.js",
     "aios:sync:ide": "node .aios-core/infrastructure/scripts/ide-sync/index.js sync",
-    "aios:sync:ide:validate": "node .aios-core/infrastructure/scripts/ide-sync/index.js validate"
+    "aios:sync:ide:validate": "node .aios-core/infrastructure/scripts/ide-sync/index.js validate",
+    "generate:api-docs": "npm run generate:api-docs --workspace=backend",
+    "build:api-docs": "npx @redocly/cli build-docs docs/api/openapi.json -o docs/api/index.html"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",

@@ -3,6 +3,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   Index,
@@ -10,6 +11,7 @@ import {
 import { Etp } from '../../../entities/etp.entity';
 import { User } from '../../../entities/user.entity';
 import { Organization } from '../../../entities/organization.entity';
+import { ExportFormat } from '../../../enums/export-format.enum';
 
 /**
  * ExportMetadata Entity
@@ -47,8 +49,8 @@ export class ExportMetadata {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ type: 'enum', enum: ['pdf', 'docx', 'json'] })
-  format: string;
+  @Column({ type: 'enum', enum: ExportFormat })
+  format: ExportFormat;
 
   @Column()
   version: string; // ETP version at export time
@@ -67,4 +69,7 @@ export class ExportMetadata {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

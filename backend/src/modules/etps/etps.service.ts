@@ -100,6 +100,9 @@ export class EtpsService {
   ): Promise<Etp> {
     const etp = this.etpsRepository.create({
       ...createEtpDto,
+      valorEstimado: createEtpDto.valorEstimado?.toString() ?? null,
+      quantidadeEstimada: createEtpDto.quantidadeEstimada?.toString() ?? null,
+      valorUnitario: createEtpDto.valorUnitario?.toString() ?? null,
       createdById: userId,
       organizationId,
       status: EtpStatus.DRAFT,

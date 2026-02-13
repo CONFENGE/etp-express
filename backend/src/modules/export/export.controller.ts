@@ -18,7 +18,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { ExportService, ExportFormat } from './export.service';
+import { ExportService } from './export.service';
+import { ExportFormat } from '../../enums/export-format.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import {
   RequireOwnership,

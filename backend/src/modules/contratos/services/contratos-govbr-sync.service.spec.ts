@@ -10,6 +10,7 @@ import { Contrato, ContratoStatus } from '../../../entities/contrato.entity';
 import { ContratoSyncLog } from '../../../entities/contrato-sync-log.entity';
 import { ContratosGovBrAuthService } from '../../gov-api/services/contratos-govbr-auth.service';
 import { User } from '../../../entities/user.entity';
+import { GovBrSyncStatus } from '../../../enums/gov-br-sync-status.enum';
 
 describe('ContratosGovBrSyncService', () => {
   let service: ContratosGovBrSyncService;
@@ -145,7 +146,7 @@ describe('ContratosGovBrSyncService', () => {
       dataRescisao: null,
       govBrId: null,
       govBrSyncedAt: null,
-      govBrSyncStatus: 'pending',
+      govBrSyncStatus: GovBrSyncStatus.PENDING,
       govBrSyncErrorMessage: null,
     };
 
@@ -190,7 +191,7 @@ describe('ContratosGovBrSyncService', () => {
       expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
         govBrId,
         govBrSyncedAt: expect.any(Date),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         govBrSyncErrorMessage: null,
       });
     });
@@ -253,7 +254,7 @@ describe('ContratosGovBrSyncService', () => {
       );
 
       expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
-        govBrSyncStatus: 'error',
+        govBrSyncStatus: GovBrSyncStatus.ERROR,
         govBrSyncErrorMessage: 'API Error',
       });
     });
@@ -279,7 +280,7 @@ describe('ContratosGovBrSyncService', () => {
       );
 
       expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
-        govBrSyncStatus: 'error',
+        govBrSyncStatus: GovBrSyncStatus.ERROR,
         govBrSyncErrorMessage: 'Invalid CNPJ format',
       });
     });
@@ -462,7 +463,7 @@ describe('ContratosGovBrSyncService', () => {
           status: ContratoStatus.EM_EXECUCAO,
           organizationId,
           govBrSyncedAt: expect.any(Date),
-          govBrSyncStatus: 'synced',
+          govBrSyncStatus: GovBrSyncStatus.SYNCED,
         }),
       );
 
@@ -510,7 +511,7 @@ describe('ContratosGovBrSyncService', () => {
           valorGlobal: '50000',
           status: ContratoStatus.EM_EXECUCAO,
           govBrSyncedAt: expect.any(Date),
-          govBrSyncStatus: 'synced',
+          govBrSyncStatus: GovBrSyncStatus.SYNCED,
           govBrSyncErrorMessage: null,
         }),
       );
@@ -732,7 +733,7 @@ describe('ContratosGovBrSyncService', () => {
       expect(mockRepository.update).toHaveBeenCalledWith('contrato-123', {
         ...mockRemote,
         govBrSyncedAt: expect.any(Date),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         govBrSyncErrorMessage: null,
       });
 
@@ -807,7 +808,7 @@ describe('ContratosGovBrSyncService', () => {
           valorGlobal: '110000.00',
           status: ContratoStatus.EM_EXECUCAO,
           govBrSyncedAt: expect.any(Date),
-          govBrSyncStatus: 'synced',
+          govBrSyncStatus: GovBrSyncStatus.SYNCED,
         }),
       );
     });
@@ -891,7 +892,7 @@ describe('ContratosGovBrSyncService', () => {
         'contrato-123',
         expect.objectContaining({
           govBrSyncedAt: expect.any(Date),
-          govBrSyncStatus: 'synced',
+          govBrSyncStatus: GovBrSyncStatus.SYNCED,
         }),
       );
     });

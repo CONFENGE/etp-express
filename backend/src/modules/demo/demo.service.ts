@@ -348,6 +348,7 @@ export class DemoService {
       for (const sampleEtp of SAMPLE_ETPS) {
         const newEtp = queryRunner.manager.create(Etp, {
           ...sampleEtp,
+          valorEstimado: sampleEtp.valorEstimado?.toString() ?? null,
           organizationId: demoOrg.id,
           createdById: demoUser.id,
           currentVersion: 1,

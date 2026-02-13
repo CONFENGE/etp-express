@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Contrato } from './contrato.entity';
 
@@ -106,4 +107,7 @@ export class ContratoSyncLog {
    */
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -8,6 +8,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
+import * as express from 'express';
+import { join } from 'path';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -198,6 +200,15 @@ async function bootstrap() {
     );
   } else {
     logger.log('Swagger documentation disabled in production for security');
+
+    // Serve static Redoc documentation in production (FE-05)
+    // Swagger UI is disabled but static API docs are available at /api-docs
+    // Uses express.static middleware to serve docs/api directory
+    const docsPath = join(__dirname, '..', '..', 'docs', 'api');
+    app.use('/api-docs', express.static(docsPath));
+    logger.log(
+      `Static API documentation (Redoc) available at /api-docs (serving from ${docsPath})`,
+    );
   }
 
   const port = configService.get('PORT') || 3001;

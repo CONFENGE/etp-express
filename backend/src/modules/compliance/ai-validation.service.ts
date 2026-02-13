@@ -250,7 +250,7 @@ export class AiValidationService {
             'Revisar pesquisa de preços e ajustar valor estimado para faixa de mercado',
           confidenceScore: 85,
           affectedField: 'valorEstimado',
-          affectedValue: etp.valorEstimado || null,
+          affectedValue: etp.valorEstimado || undefined,
           legalReference: 'Lei 14.133/2021, Art. 23',
           metadata: {
             percentageAbove,
@@ -269,7 +269,7 @@ export class AiValidationService {
             'Recomenda-se negociação para ajustar valor ao praticado no mercado',
           confidenceScore: 75,
           affectedField: 'valorEstimado',
-          affectedValue: etp.valorEstimado || null,
+          affectedValue: etp.valorEstimado || undefined,
           legalReference: 'Lei 14.133/2021, Art. 23',
           metadata: { percentageAbove },
         };
@@ -289,7 +289,7 @@ export class AiValidationService {
   private detectDirecionamento(
     edital: Edital,
   ): IrregularityDetectionDto | null {
-    const texto = (edital.objeto + ' ' + (edital.conteudo || '')).toLowerCase();
+    const texto = (edital.objeto + ' ' + (edital.descricaoObjeto || '')).toLowerCase();
 
     // Padrões que indicam direcionamento
     const suspectPatterns = [
@@ -441,10 +441,10 @@ export class AiValidationService {
   private detectPrazoInadequado(
     edital: Edital,
   ): IrregularityDetectionDto | null {
-    if (!edital.dataAbertura) return null;
+    if (!edital.dataSessaoPublica) return null;
 
     const hoje = new Date();
-    const dataAbertura = new Date(edital.dataAbertura);
+    const dataAbertura = new Date(edital.dataSessaoPublica);
     const diasRestantes = Math.floor(
       (dataAbertura.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -469,11 +469,11 @@ export class AiValidationService {
             ? SeverityLevel.CRITICAL
             : SeverityLevel.HIGH,
         description: `Prazo de ${diasRestantes} dias é inferior ao mínimo legal de ${prazoMinimo} dias para ${modalidade}`,
-        evidence: `Data abertura: ${edital.dataAbertura.toISOString().split('T')[0]}`,
+        evidence: `Data abertura: ${edital.dataSessaoPublica.toISOString().split('T')[0]}`,
         recommendation: `Prorrogar abertura para garantir prazo mínimo de ${prazoMinimo} dias`,
         confidenceScore: 95,
-        affectedField: 'dataAbertura',
-        affectedValue: edital.dataAbertura.toISOString(),
+        affectedField: 'dataSessaoPublica',
+        affectedValue: edital.dataSessaoPublica.toISOString(),
         legalReference: 'Lei 14.133/2021, Art. 54',
         metadata: { diasRestantes, prazoMinimo, modalidade },
       };

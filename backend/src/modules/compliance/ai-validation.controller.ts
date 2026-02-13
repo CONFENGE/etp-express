@@ -9,7 +9,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AiValidationService } from './ai-validation.service';
 import {
   ValidateDocumentDto,

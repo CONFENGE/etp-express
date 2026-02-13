@@ -13,6 +13,7 @@ import { Organization } from '../../entities/organization.entity';
 import { User, UserRole } from '../../entities/user.entity';
 import { ContratosGovBrSyncService } from '../../modules/contratos/services/contratos-govbr-sync.service';
 import { ContratosGovBrAuthService } from '../../modules/gov-api/services/contratos-govbr-auth.service';
+import { GovBrSyncStatus } from '../../enums/gov-br-sync-status.enum';
 
 /**
  * Testes de Integração: Sincronização de Contratos Gov.br
@@ -206,7 +207,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
 
       expect(updated).toBeDefined();
       expect(updated!.govBrId).toBe('govbr-123456');
-      expect(updated!.govBrSyncStatus).toBe('synced');
+      expect(updated!.govBrSyncStatus).toBe(GovBrSyncStatus.SYNCED);
       expect(updated!.govBrSyncedAt).toBeDefined();
       expect(updated!.govBrSyncErrorMessage).toBeNull();
     });
@@ -237,7 +238,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
         where: { id: contrato.id },
       });
 
-      expect(updated!.govBrSyncStatus).toBe('error');
+      expect(updated!.govBrSyncStatus).toBe(GovBrSyncStatus.ERROR);
       expect(updated!.govBrSyncErrorMessage).toContain(
         'API Gov.br unavailable',
       );
@@ -390,7 +391,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       expect(contrato1).toBeDefined();
       expect(contrato1!.objeto).toBe('Serviços de TI');
       expect(contrato1!.valorGlobal).toBe('200000');
-      expect(contrato1!.govBrSyncStatus).toBe('synced');
+      expect(contrato1!.govBrSyncStatus).toBe(GovBrSyncStatus.SYNCED);
     });
 
     it('should update existing contratos on pull (upsert)', async () => {
@@ -464,7 +465,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
 
       expect(updated).toBeDefined();
       expect(updated!.valorGlobal).toBe('150000'); // Valor foi atualizado
-      expect(updated!.govBrSyncStatus).toBe('synced');
+      expect(updated!.govBrSyncStatus).toBe(GovBrSyncStatus.SYNCED);
     });
 
     it('should handle pull API errors gracefully', async () => {
@@ -539,7 +540,7 @@ describe('ContratosGovBrSync Integration Tests', () => {
       });
 
       expect(updated!.valorGlobal).toBe('150000.00'); // Remote wins
-      expect(updated!.govBrSyncStatus).toBe('synced');
+      expect(updated!.govBrSyncStatus).toBe(GovBrSyncStatus.SYNCED);
 
       // Verificar log de conflito
       const logs = await syncLogRepository.find({

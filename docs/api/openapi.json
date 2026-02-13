@@ -1,0 +1,113 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ETP Express Public API",
+    "description": "API pública para consulta de benchmarks de preços de contratações públicas.\n\n## Autenticação\n\nUtilize API Key no header: `X-API-Key: <your-api-key>`\n\n## Base URL\n\n- **Produção:** https://etp-express-api.up.railway.app/api/v1\n- **Desenvolvimento:** http://localhost:3001/api/v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://etp-express-api.up.railway.app/api/v1",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:3001/api/v1",
+      "description": "Development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public API - Prices",
+      "description": "API pública de preços para terceiros (requer API Key)"
+    }
+  ],
+  "paths": {
+    "/prices": {
+      "get": {
+        "tags": ["Public API - Prices"],
+        "summary": "Busca benchmarks de preços públicos",
+        "description": "Retorna lista de preços praticados em contratações públicas similares",
+        "operationId": "searchPrices",
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Termo de busca (objeto da contratação)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "computadores"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Número máximo de resultados",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de preços encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "objeto": {
+                            "type": "string"
+                          },
+                          "valor": {
+                            "type": "number"
+                          },
+                          "data": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "orgao": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API Key inválida ou ausente"
+          },
+          "429": {
+            "description": "Limite de requisições excedido"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "X-API-Key": {
+        "type": "apiKey",
+        "name": "X-API-Key",
+        "in": "header",
+        "description": "API Key for public price endpoints (/api/v1/prices)"
+      }
+    }
+  }
+}

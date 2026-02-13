@@ -11,13 +11,14 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { TenantBrandingService } from './tenant-branding.service';
 import { CreateTenantBrandingDto } from './dto/create-tenant-branding.dto';
 import { UpdateTenantBrandingDto } from './dto/update-tenant-branding.dto';
 import { TenantBranding } from '../../entities/tenant-branding.entity';
+import { UserRole } from '../../entities/user.entity';
 
 /**
  * Controller for managing tenant branding configurations.
@@ -33,7 +34,7 @@ export class TenantBrandingController {
    */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreateTenantBrandingDto,
@@ -47,7 +48,7 @@ export class TenantBrandingController {
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN)
   async findAll(): Promise<TenantBranding[]> {
     return this.tenantBrandingService.findAll();
   }
@@ -84,7 +85,7 @@ export class TenantBrandingController {
    */
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN)
   async findOne(@Param('id') id: string): Promise<TenantBranding> {
     return this.tenantBrandingService.findOne(id);
   }
@@ -95,7 +96,7 @@ export class TenantBrandingController {
    */
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN)
   async update(
     @Param('id') id: string,
     @Body() updateDto: UpdateTenantBrandingDto,
@@ -109,7 +110,7 @@ export class TenantBrandingController {
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     return this.tenantBrandingService.remove(id);

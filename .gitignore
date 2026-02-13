@@ -87,6 +87,8 @@ Desktop.ini
 tmp/
 temp/
 tmpclaude-*-cwd
+tmpclaude-*
+nul
 *temp-issues.json
 
 # Database
@@ -132,6 +134,7 @@ secrets/
 # Documentation Build
 docs/.vitepress/dist
 docs/.vitepress/cache
+docs/api/index.html
 
 # Development Assistant Tools (acessórios, não parte do sistema)
 .claude/

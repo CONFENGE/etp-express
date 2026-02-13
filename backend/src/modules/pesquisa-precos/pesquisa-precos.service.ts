@@ -1557,9 +1557,11 @@ export class PesquisaPrecosService {
 
     if (dto.valorEstimado || pesquisa.valorTotalEstimado) {
       const valor = dto.valorEstimado || pesquisa.valorTotalEstimado;
-      partes.push(
-        `com valor estimado de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      );
+      if (valor !== null && valor !== undefined) {
+        partes.push(
+          `com valor estimado de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        );
+      }
     }
 
     return partes.join(' ') + '.';

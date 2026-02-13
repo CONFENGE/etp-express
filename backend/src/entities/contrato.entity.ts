@@ -13,6 +13,7 @@ import { Medicao } from './medicao.entity';
 import { Ocorrencia } from './ocorrencia.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
+import { GovBrSyncStatus } from '../enums/gov-br-sync-status.enum';
 
 /**
  * Status do Contrato conforme ciclo de vida.
@@ -411,10 +412,10 @@ export class Contrato {
    */
   @Column({
     type: 'enum',
-    enum: ['pending', 'synced', 'error'],
-    default: 'pending',
+    enum: GovBrSyncStatus,
+    default: GovBrSyncStatus.PENDING,
   })
-  govBrSyncStatus: 'pending' | 'synced' | 'error';
+  govBrSyncStatus: GovBrSyncStatus;
 
   /**
    * Mensagem de erro da última tentativa de sincronização (quando status = error)

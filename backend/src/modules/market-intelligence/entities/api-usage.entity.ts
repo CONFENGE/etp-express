@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  UpdateDateColumn,
   Index,
 } from 'typeorm';
 import { User } from '../../../entities/user.entity';
@@ -24,13 +25,13 @@ import { User } from '../../../entities/user.entity';
  * - Current Issue: #1688 - Criar ApiUsage entity e tracking de métricas
  * - Issue: #1723 - TD-008: Database schema improvements & LGPD compliance
  */
-@Entity()
+@Entity('api_usage')
 @Index(['user', 'createdAt'])
 @Index(['endpoint'])
 @Index(['createdAt', 'ipAnonymizedAt'], { where: '"ipAddress" IS NOT NULL' })
 export class ApiUsage {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, { eager: false })
   @Index()
@@ -75,4 +76,7 @@ export class ApiUsage {
    */
   @Column({ type: 'int', default: 30 })
   ipRetentionDays: number;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

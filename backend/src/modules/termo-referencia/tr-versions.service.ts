@@ -82,7 +82,7 @@ export class TrVersionsService {
       modeloExecucao: tr.modeloExecucao,
       modeloGestao: tr.modeloGestao,
       criteriosSelecao: tr.criteriosSelecao,
-      valorEstimado: tr.valorEstimado,
+      valorEstimado: tr.valorEstimado ? parseFloat(tr.valorEstimado) : null,
       dotacaoOrcamentaria: tr.dotacaoOrcamentaria,
       prazoVigencia: tr.prazoVigencia,
       obrigacoesContratante: tr.obrigacoesContratante,

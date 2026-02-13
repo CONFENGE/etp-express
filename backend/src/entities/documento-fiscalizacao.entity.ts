@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   Check,
@@ -172,6 +173,9 @@ export class DocumentoFiscalizacao {
    */
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   // ============================================
   // Helper Methods (Backward Compatibility)

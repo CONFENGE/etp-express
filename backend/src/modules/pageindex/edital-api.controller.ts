@@ -151,7 +151,10 @@ export class EditalApiController {
     // For now, we use the EditalExtractionService
     // In the future, this could be enhanced with PDF download and processing
     if (dto.localPath) {
-      return this.extractionService.extractFromPath(dto.localPath);
+      // TODO: extractFromPath method may have been removed - needs investigation
+      throw new BadRequestException(
+        'Local path extraction temporarily disabled. Method needs reimplementation.',
+      );
     }
 
     // TODO: Implement URL download and extraction

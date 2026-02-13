@@ -87,6 +87,7 @@ export class TermoReferenciaService {
 
     const termoReferencia = this.termoReferenciaRepository.create({
       ...dto,
+      valorEstimado: dto.valorEstimado?.toString() ?? null,
       organizationId,
       createdById: userId,
       status: TermoReferenciaStatus.DRAFT,
@@ -308,7 +309,9 @@ export class TermoReferenciaService {
       modeloExecucao: saved.modeloExecucao,
       modeloGestao: saved.modeloGestao,
       criteriosSelecao: saved.criteriosSelecao,
-      valorEstimado: saved.valorEstimado,
+      valorEstimado: saved.valorEstimado
+        ? parseFloat(saved.valorEstimado)
+        : undefined,
       dotacaoOrcamentaria: saved.dotacaoOrcamentaria,
       prazoVigencia: saved.prazoVigencia,
       obrigacoesContratante: saved.obrigacoesContratante,
@@ -526,7 +529,7 @@ DADOS DO ETP:
 - Descricao: ${etp.description || 'Nao informado'}
 - Justificativa: ${etp.justificativaContratacao || 'Nao informado'}
 - Necessidade: ${etp.necessidadeAtendida || 'Nao informado'}
-- Valor Estimado: R$ ${etp.valorEstimado?.toLocaleString('pt-BR') || 'Nao informado'}
+- Valor Estimado: R$ ${etp.valorEstimado ? parseFloat(etp.valorEstimado).toLocaleString('pt-BR') : 'Nao informado'}
 - Prazo de Execucao: ${etp.prazoExecucao ? etp.prazoExecucao + ' dias' : 'Nao informado'}
 - Nivel de Risco: ${etp.nivelRisco || 'Nao informado'}
 - Riscos Identificados: ${etp.descricaoRiscos || 'Nao informado'}

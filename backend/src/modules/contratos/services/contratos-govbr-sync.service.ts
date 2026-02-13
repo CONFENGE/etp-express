@@ -17,6 +17,7 @@ import {
   ContratoResolutionData,
 } from '../../../entities/contrato-sync-log.entity';
 import { ContratosGovBrAuthService } from '../../gov-api/services/contratos-govbr-auth.service';
+import { GovBrSyncStatus } from '../../../enums/gov-br-sync-status.enum';
 
 /**
  * DTO para payload de criação de contrato na API Gov.br
@@ -150,7 +151,7 @@ export class ContratosGovBrSyncService {
       await this.contratoRepository.update(contratoId, {
         govBrId,
         govBrSyncedAt: new Date(),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         govBrSyncErrorMessage: null,
       });
 
@@ -168,7 +169,7 @@ export class ContratosGovBrSyncService {
         error.response?.data?.message || error.message || 'Unknown error';
 
       await this.contratoRepository.update(contratoId, {
-        govBrSyncStatus: 'error',
+        govBrSyncStatus: GovBrSyncStatus.ERROR,
         govBrSyncErrorMessage: errorMessage,
       });
 
@@ -452,7 +453,7 @@ export class ContratosGovBrSyncService {
       await this.contratoRepository.update(existing.id, {
         ...updateData,
         govBrSyncedAt: new Date(),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         govBrSyncErrorMessage: null,
       });
 
@@ -465,7 +466,7 @@ export class ContratosGovBrSyncService {
         ...contratoData,
         organizationId,
         govBrSyncedAt: new Date(),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         // createdById será definido pelo controller ou será NULL por enquanto
         // TODO: Resolver createdById - talvez usar um user de sistema?
       });
@@ -625,7 +626,7 @@ export class ContratosGovBrSyncService {
       await this.contratoRepository.update(local.id, {
         ...updateData,
         govBrSyncedAt: new Date(),
-        govBrSyncStatus: 'synced',
+        govBrSyncStatus: GovBrSyncStatus.SYNCED,
         govBrSyncErrorMessage: null,
       });
 
@@ -660,7 +661,7 @@ export class ContratosGovBrSyncService {
     await this.contratoRepository.update(local.id, {
       ...resolvedData,
       govBrSyncedAt: new Date(),
-      govBrSyncStatus: 'synced',
+      govBrSyncStatus: GovBrSyncStatus.SYNCED,
       govBrSyncErrorMessage: null,
     });
 

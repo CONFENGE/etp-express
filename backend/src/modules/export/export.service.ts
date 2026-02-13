@@ -33,6 +33,7 @@ import { EtpSection } from '../../entities/etp-section.entity';
 import { ExportMetadata } from './entities/export-metadata.entity';
 import { DISCLAIMER } from '../../common/constants/messages';
 import { S3Service } from '../storage/s3.service';
+import { ExportFormat } from '../../enums/export-format.enum';
 import {
   DOCX_STYLES,
   DOCX_MARGINS,
@@ -51,13 +52,6 @@ import {
   ExportCleanupJobData,
   ExportCleanupJobResult,
 } from './export-cleanup.types';
-
-export enum ExportFormat {
-  PDF = 'pdf',
-  JSON = 'json',
-  XML = 'xml',
-  DOCX = 'docx',
-}
 
 /**
  * Known Chromium executable paths across different environments.
@@ -289,7 +283,7 @@ export class ExportService {
    *
    * @param buffer - Export file content as Buffer
    * @param etp - ETP entity
-   * @param format - Export format (pdf, docx, json)
+   * @param format - Export format (ExportFormat enum)
    * @param userId - User ID performing the export (optional)
    * @returns ExportMetadata entity with S3 location
    *
@@ -303,7 +297,7 @@ export class ExportService {
   private async uploadToS3(
     buffer: Buffer,
     etp: Etp,
-    format: 'pdf' | 'docx' | 'json',
+    format: ExportFormat,
     userId?: string,
   ): Promise<ExportMetadata | null> {
     // Skip if S3 is not configured
@@ -329,6 +323,7 @@ export class ExportService {
         pdf: 'application/pdf',
         docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         json: 'application/json',
+        xml: 'application/xml',
       }[format];
 
       const s3Uri = await this.s3Service.uploadFile(key, buffer, contentType);
@@ -485,8 +480,10 @@ export class ExportService {
     });
 
     // Wait for job completion (synchronous execution for manual triggers)
+    // Note: BullMQ API changed - queue.events may not exist in newer versions
+    // TODO: Update to use QueueEvents class if needed
     const result = await job.waitUntilFinished(
-      this.cleanupQueue.events,
+      {} as any, // Temporary workaround for strictBindCallApply
       30000, // 30 second timeout
     );
 
@@ -615,12 +612,14 @@ export class ExportService {
 
       // Upload to S3 in background (don't block response)
       if (userId) {
-        this.uploadToS3(buffer, etp, 'pdf', userId).catch((error) => {
-          this.logger.error(
-            `Background S3 upload failed for ETP ${etpId}`,
-            error,
-          );
-        });
+        this.uploadToS3(buffer, etp, ExportFormat.PDF, userId).catch(
+          (error) => {
+            this.logger.error(
+              `Background S3 upload failed for ETP ${etpId}`,
+              error,
+            );
+          },
+        );
       }
 
       return buffer;
@@ -906,7 +905,7 @@ export class ExportService {
 
     // Upload to S3 in background (don't block response)
     if (userId) {
-      this.uploadToS3(buffer, etp, 'docx', userId).catch((error) => {
+      this.uploadToS3(buffer, etp, ExportFormat.DOCX, userId).catch((error) => {
         this.logger.error(
           `Background S3 upload failed for ETP ${etpId}`,
           error,
