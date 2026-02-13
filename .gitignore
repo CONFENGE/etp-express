@@ -228,3 +228,14 @@ load-tests/results/
 load-tests/*.json
 load-tests/*.html
 k6-results/
+
+# Environment & Secrets (AIOS)
+.env.*.local
+
+# Dependencies (AIOS)
+node_modules
+
+# AIOS Local (AIOS)
+.aios-core/local/
+.claude/settings.local.json
+.aios/install-log.txt

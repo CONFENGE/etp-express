@@ -9,6 +9,20 @@ import {
 import { Contrato } from './contrato.entity';
 
 /**
+ * Serializable value type for conflict fields.
+ * Represents any contract field value that can be stored in JSONB.
+ * Uses `unknown` instead of `any` to enforce type checks at usage sites.
+ */
+export type ConflictFieldValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | Record<string, unknown>
+  | null
+  | undefined;
+
+/**
  * Interface para representar um conflito detectado
  * entre dados locais e remotos (Gov.br)
  */
@@ -16,9 +30,20 @@ export interface ConflictField {
   /** Nome do campo com conflito */
   field: string;
   /** Valor armazenado localmente */
-  localValue: any;
+  localValue: ConflictFieldValue;
   /** Valor retornado pela API Gov.br */
-  remoteValue: any;
+  remoteValue: ConflictFieldValue;
+}
+
+/**
+ * Dados de resolucao de conflito entre contrato local e Gov.br.
+ * Armazena o subset de campos do Contrato resultante da estrategia
+ * de resolucao (Last-Write-Wins). Serializado como JSONB.
+ *
+ * @see ContratosGovBrSyncService.resolveConflicts
+ */
+export interface ContratoResolutionData {
+  [key: string]: ConflictFieldValue | Record<string, unknown>;
 }
 
 /**
@@ -69,11 +94,12 @@ export class ContratoSyncLog {
   conflicts?: ConflictField[];
 
   /**
-   * Dados finais aplicados após resolução de conflito
+   * Dados finais aplicados após resolução de conflito.
    * Armazena o objeto Partial<Contrato> resultante da estratégia de resolução
+   * (Last-Write-Wins), serializado como JSONB.
    */
   @Column({ type: 'jsonb', nullable: true })
-  resolution?: any;
+  resolution?: ContratoResolutionData;
 
   /**
    * Timestamp de criação do log

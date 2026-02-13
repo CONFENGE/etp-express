@@ -8,6 +8,7 @@
 export * from './feature-flags.module';
 export * from './feature-flags.service';
 export * from './feature-flags.types';
+export * from './feature-flag-defaults';
 export * from './decorators/feature-flag.decorator';
 export * from './guards/feature-flag.guard';
 export * from './rollout-strategy.config';

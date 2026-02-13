@@ -3,6 +3,7 @@
 ## Priority: P3
 ## Estimated Effort: 21.5h
 ## Area: System / Database / Frontend
+## Status: ✅ Done (Completed: 2026-02-13)
 
 ## Description
 
@@ -25,18 +26,18 @@ As a development team, I want accumulated code quality debts resolved including 
 
 ## Acceptance Criteria
 
-- [ ] TermoReferencia: `versao` field deprecated, `currentVersion` is the single source of truth
-- [ ] Etp.created_by has `type: 'uuid'` in column decorator
-- [ ] ContratoSyncLog.resolution, ConflictField.localValue/remoteValue properly typed (no `any`)
-- [ ] Medicao and Ocorrencia have direct `organizationId` column (nullable, for future migration to NOT NULL)
-- [ ] Contrato entity has `@OneToMany` inverse relations to Medicao and Ocorrencia
-- [ ] GIN indexes created on Etp.metadata, Etp.dynamicFields, ContractPrice.metadata
-- [ ] Body parser duplicate configuration removed from main.ts
-- [ ] Guards documentation improved, `@Public()` usage audited
-- [ ] Feature flags stored in database or environment (not in-memory only)
-- [ ] Chaos module moved out of src/ or protected with environment check
-- [ ] SkipLink text translated to PT-BR ("Pular para o conteudo principal")
-- [ ] axe-core tests added for all ~30 pages
+- [x] TermoReferencia: `versao` field deprecated, `currentVersion` is the single source of truth
+- [x] Etp.created_by has `type: 'uuid'` in column decorator
+- [x] ContratoSyncLog.resolution, ConflictField.localValue/remoteValue properly typed (no `any`)
+- [x] Medicao and Ocorrencia have direct `organizationId` column (nullable, for future migration to NOT NULL)
+- [x] Contrato entity has `@OneToMany` inverse relations to Medicao and Ocorrencia
+- [x] GIN indexes created on Etp.metadata, Etp.dynamicFields, ContractPrice.metadata
+- [x] Body parser duplicate configuration removed from main.ts
+- [x] Guards documentation improved, `@Public()` usage audited
+- [x] Feature flags stored in database or environment (not in-memory only)
+- [x] Chaos module moved out of src/ or protected with environment check
+- [x] SkipLink text translated to PT-BR ("Pular para o conteudo principal")
+- [x] axe-core tests added for all ~30 pages
 
 ## Technical Notes
 

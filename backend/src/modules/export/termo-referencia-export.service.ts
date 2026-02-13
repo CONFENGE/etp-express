@@ -645,7 +645,7 @@ export class TermoReferenciaExportService {
         cronograma: tr.cronograma,
         especificacoesTecnicas: tr.especificacoesTecnicas,
         status: tr.status,
-        versao: tr.versao,
+        currentVersion: tr.currentVersion,
         createdAt: tr.createdAt,
         updatedAt: tr.updatedAt,
       },
@@ -679,7 +679,7 @@ export class TermoReferenciaExportService {
           : 'Nao informado',
       },
       { label: 'Status', value: this.formatStatus(tr.status) },
-      { label: 'Versao', value: `v${tr.versao}` },
+      { label: 'Versao', value: `v${tr.currentVersion}` },
       {
         label: 'Prazo de Vigencia',
         value: tr.prazoVigencia ? `${tr.prazoVigencia} dias` : 'Nao informado',

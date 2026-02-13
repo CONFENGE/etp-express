@@ -219,8 +219,12 @@ export class ContractPrice {
   urlOrigem: string | null;
 
   /**
-   * Additional metadata (JSONB for flexibility)
+   * Additional metadata (JSONB for flexibility).
+   * GIN index for efficient JSONB queries on metadata.
+   * Actual GIN index created via migration (TypeORM @Index does not support USING GIN).
+   * DB-P02 - Performance optimization for JSONB lookups.
    */
+  @Index('IDX_contract_prices_metadata_gin', { synchronize: false })
   @Column({ type: 'jsonb', nullable: true })
   metadata: {
     marca?: string;

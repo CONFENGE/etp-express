@@ -90,7 +90,7 @@ export class TermoReferenciaService {
       organizationId,
       createdById: userId,
       status: TermoReferenciaStatus.DRAFT,
-      versao: 1,
+      currentVersion: 1,
     });
 
     const saved = await this.termoReferenciaRepository.save(termoReferencia);
@@ -129,7 +129,7 @@ export class TermoReferenciaService {
     return this.termoReferenciaRepository.find({
       where: { etpId, organizationId },
       relations: ['createdBy'],
-      order: { versao: 'DESC' },
+      order: { currentVersion: 'DESC' },
     });
   }
 
@@ -287,7 +287,7 @@ export class TermoReferenciaService {
       organizationId,
       createdById: userId,
       status: TermoReferenciaStatus.DRAFT,
-      versao: 1,
+      currentVersion: 1,
     });
 
     const saved = await this.termoReferenciaRepository.save(termoReferencia);
@@ -315,7 +315,7 @@ export class TermoReferenciaService {
       obrigacoesContratada: saved.obrigacoesContratada,
       sancoesPenalidades: saved.sancoesPenalidades,
       status: saved.status,
-      versao: saved.versao,
+      currentVersion: saved.currentVersion,
       createdAt: saved.createdAt,
       metadata: {
         tokens: aiResponse?.tokens,

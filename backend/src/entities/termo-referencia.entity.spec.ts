@@ -36,7 +36,7 @@ describe('TermoReferencia Entity', () => {
       termoReferencia.organizationId = 'org-uuid-789';
       termoReferencia.objeto = 'Contratacao de servicos de desenvolvimento';
       termoReferencia.status = TermoReferenciaStatus.DRAFT;
-      termoReferencia.versao = 1;
+      termoReferencia.currentVersion = 1;
       termoReferencia.createdById = 'user-uuid-001';
 
       expect(termoReferencia.id).toBe('tr-uuid-123');
@@ -46,7 +46,7 @@ describe('TermoReferencia Entity', () => {
         'Contratacao de servicos de desenvolvimento',
       );
       expect(termoReferencia.status).toBe(TermoReferenciaStatus.DRAFT);
-      expect(termoReferencia.versao).toBe(1);
+      expect(termoReferencia.currentVersion).toBe(1);
       expect(termoReferencia.createdById).toBe('user-uuid-001');
     });
 

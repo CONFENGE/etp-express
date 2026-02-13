@@ -238,15 +238,12 @@ export class TermoReferencia {
   status: TermoReferenciaStatus;
 
   /**
-   * Numero da versao do documento.
-   * Incrementado a cada revisao significativa.
-   */
-  @Column({ default: 1 })
-  versao: number;
-
-  /**
    * Versao atual do documento (para controle de versionamento).
+   * Incrementado a cada revisao significativa.
    * Atualizado automaticamente quando uma nova versao e criada.
+   *
+   * Note: Previously duplicated as 'versao' field. Consolidated into
+   * 'currentVersion' to match Etp entity pattern (DB-05).
    */
   @Column({ default: 1 })
   currentVersion: number;

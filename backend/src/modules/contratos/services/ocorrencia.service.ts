@@ -91,9 +91,10 @@ export class OcorrenciaService {
       );
     }
 
-    // Criar ocorrência
+    // Criar ocorrência (populate organizationId from parent Contrato - DB-NEW-07)
     const ocorrencia = this.ocorrenciaRepo.create({
       contratoId,
+      organizationId: contrato.organizationId,
       tipo: createDto.tipo,
       gravidade: createDto.gravidade,
       dataOcorrencia: createDto.dataOcorrencia,

@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Edital } from './edital.entity';
+import { Medicao } from './medicao.entity';
+import { Ocorrencia } from './ocorrencia.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
 
@@ -418,6 +421,26 @@ export class Contrato {
    */
   @Column({ type: 'text', nullable: true })
   govBrSyncErrorMessage: string | null;
+
+  // ============================================
+  // Relacionamentos Inversos (Fiscalização)
+  // ============================================
+
+  /**
+   * Medições associadas a este contrato.
+   * Lazy loaded - use explicit joins in services when needed.
+   * Issue #TD-009.2 - DB-NEW-08: Add inverse relations
+   */
+  @OneToMany(() => Medicao, (m) => m.contrato)
+  medicoes: Medicao[];
+
+  /**
+   * Ocorrências associadas a este contrato.
+   * Lazy loaded - use explicit joins in services when needed.
+   * Issue #TD-009.2 - DB-NEW-08: Add inverse relations
+   */
+  @OneToMany(() => Ocorrencia, (o) => o.contrato)
+  ocorrencias: Ocorrencia[];
 
   // ============================================
   // Auditoria

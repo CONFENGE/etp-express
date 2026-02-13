@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Contrato } from './contrato.entity';
+import { Organization } from './organization.entity';
 import { User } from './user.entity';
 
 /**
@@ -52,9 +54,32 @@ export class Medicao {
    * Lazy loaded to prevent N+1 queries. Use explicit joins in services when needed.
    * Issue #1717 - Remove cascading eager loading
    */
-  @ManyToOne(() => Contrato, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Contrato, (contrato) => contrato.medicoes, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'contratoId' })
   contrato: Contrato;
+
+  // ============================================
+  // Multi-tenancy (B2G)
+  // ============================================
+
+  /**
+   * Organization ID para isolamento multi-tenant.
+   * Nullable for backward compatibility with existing records.
+   * Populated from parent Contrato.organizationId on creation.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  @Index('idx_medicao_organization_id')
+  organizationId: string | null;
+
+  /**
+   * Organization relation (Multi-Tenancy).
+   * Lazy loaded to prevent N+1 queries.
+   */
+  @ManyToOne(() => Organization, { nullable: true })
+  @JoinColumn({ name: 'organizationId' })
+  organization: Organization | null;
 
   // ============================================
   // Identificação da Medição

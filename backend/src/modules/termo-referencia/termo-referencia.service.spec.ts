@@ -59,7 +59,7 @@ describe('TermoReferenciaService', () => {
     organizationId: mockOrganizationId,
     objeto: 'Contratacao de servicos de TI',
     status: TermoReferenciaStatus.DRAFT,
-    versao: 1,
+    currentVersion: 1,
     createdById: mockUserId,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -192,7 +192,7 @@ describe('TermoReferenciaService', () => {
         organizationId: mockOrganizationId,
         createdById: mockUserId,
         status: TermoReferenciaStatus.DRAFT,
-        versao: 1,
+        currentVersion: 1,
       });
     });
 
@@ -254,7 +254,7 @@ describe('TermoReferenciaService', () => {
       expect(mockTermoReferenciaRepository.find).toHaveBeenCalledWith({
         where: { etpId: mockEtpId, organizationId: mockOrganizationId },
         relations: ['createdBy'],
-        order: { versao: 'DESC' },
+        order: { currentVersion: 'DESC' },
       });
     });
   });
@@ -376,7 +376,7 @@ describe('TermoReferenciaService', () => {
       modeloGestao: 'Modelo de gestao gerado por IA',
       sancoesPenalidades: 'Sancoes geradas por IA',
       status: TermoReferenciaStatus.DRAFT,
-      versao: 1,
+      currentVersion: 1,
       createdById: mockUserId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -399,7 +399,7 @@ describe('TermoReferenciaService', () => {
       expect(result.id).toBe(mockGeneratedTr.id);
       expect(result.etpId).toBe(mockEtpId);
       expect(result.status).toBe(TermoReferenciaStatus.DRAFT);
-      expect(result.versao).toBe(1);
+      expect(result.currentVersion).toBe(1);
       expect(result.metadata).toBeDefined();
       expect(result.metadata?.aiEnhanced).toBe(true);
       expect(result.metadata?.tokens).toBe(500);

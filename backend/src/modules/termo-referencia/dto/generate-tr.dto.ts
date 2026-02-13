@@ -100,7 +100,7 @@ export class GenerateTrResponseDto {
     description: 'Versao do documento',
     example: 1,
   })
-  versao: number;
+  currentVersion: number;
 
   @ApiProperty({
     description: 'Data de criacao',

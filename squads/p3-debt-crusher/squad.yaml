@@ -1,0 +1,82 @@
+name: p3-debt-crusher
+version: 1.0.0
+description: >
+  Squad de implementação simultânea das 4 sub-stories TD-009 (P3 Code Quality).
+  Opera em 4 frentes paralelas com QA cruzado para máxima celeridade sem sacrificar qualidade.
+  Estimativa: ~10h elapsed (vs ~25.5h sequencial = 2.5x speedup).
+author: squad-creator (Craft)
+license: MIT
+slashPrefix: p3crush
+
+aios:
+  minVersion: "2.1.0"
+  type: squad
+
+components:
+  agents:
+    - squad-lead.md
+    - schema-dev.md
+    - tenancy-dev.md
+    - hygiene-dev.md
+    - a11y-dev.md
+    - cross-qa.md
+    - migration-ops.md
+  tasks:
+    # F1 - Database Schema Cleanup (TD-009.1)
+    - f1-cleanup-termo-referencia.md
+    - f1-fix-etp-created-by.md
+    - f1-type-contrato-sync-log.md
+    - f1-generate-migration.md
+    # F2 - Multi-tenancy & Relations (TD-009.2)
+    - f2-add-org-id-medicao-ocorrencia.md
+    - f2-add-contrato-inverse-relations.md
+    - f2-create-gin-indexes.md
+    - f2-generate-migration.md
+    # F3 - Backend System Hygiene (TD-009.3)
+    - f3-refactor-body-parser.md
+    - f3-document-guards-auth.md
+    - f3-centralize-feature-flags.md
+    - f3-evaluate-chaos-module.md
+    # F4 - Accessibility Test Coverage (TD-009.4)
+    - f4-setup-axe-core.md
+    - f4-implement-a11y-tests.md
+    - f4-integrate-a11y-ci.md
+    # Cross-cutting
+    - qa-cross-validate.md
+    - ops-migration-sequence.md
+  workflows:
+    - parallel-execution.md
+  checklists:
+    - quality-gate.md
+  templates: []
+  tools: []
+  scripts: []
+
+config:
+  extends: extend
+  coding-standards: ../../docs/framework/CODING-STANDARDS.md
+  tech-stack: ../../docs/framework/TECH-STACK.md
+  source-tree: ../../docs/framework/SOURCE-TREE.md
+
+dependencies:
+  node: []
+  python: []
+  squads: []
+
+execution:
+  strategy: parallel
+  fronts: 4
+  migration_constraint: sequential
+  pr_strategy: one-per-front
+  estimated_elapsed: "10h"
+  estimated_sequential: "25.5h"
+  speedup: "2.5x"
+
+tags:
+  - technical-debt
+  - p3
+  - code-quality
+  - parallel-execution
+  - database
+  - accessibility
+  - backend-hygiene

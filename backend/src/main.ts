@@ -3,16 +3,12 @@
 import './telemetry';
 
 import { NestFactory } from '@nestjs/core';
-import {
-  ValidationPipe,
-  VersioningType,
-  INestApplication,
-} from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
@@ -27,7 +23,7 @@ const logger = new WinstonLoggerService();
 logger.setContext('Bootstrap');
 
 // Track application instance for graceful shutdown
-let app: INestApplication;
+let app: NestExpressApplication;
 
 async function bootstrap() {
   // Initialize Sentry FIRST (before creating NestJS app)
@@ -35,9 +31,9 @@ async function bootstrap() {
 
   // Use Winston logger for structured JSON logging (#652)
   const winstonLogger = createWinstonLogger();
-  app = await NestFactory.create(AppModule, {
+  app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: winstonLogger,
-    bodyParser: false, // Disable default body parser to configure custom limits
+    rawBody: true, // Enable raw body access for webhook verification if needed
   });
 
   const nodeEnv = process.env.NODE_ENV || 'development';
@@ -48,13 +44,14 @@ async function bootstrap() {
     `Logger configured: ${isProduction ? 'JSON (production)' : 'Pretty (development)'} (NODE_ENV: ${nodeEnv})`,
   );
 
-  // Body parser with explicit size limits (#1637 - Large Payload Chaos Test)
+  // Body parser with explicit size limits via NestJS native API (#1637, SYS-06)
   // Protects against memory exhaustion from large payloads
-  app.use(bodyParser.json({ limit: '10mb' }));
-  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+  // Replaces raw body-parser middleware with NestJS built-in useBodyParser()
+  app.useBodyParser('json', { limit: '10mb' });
+  app.useBodyParser('urlencoded', { limit: '10mb', extended: true });
 
   logger.log(
-    'Body parser configured with 10MB limit for JSON/URL-encoded payloads',
+    'Body parser configured with 10MB limit for JSON/URL-encoded payloads (NestJS native API)',
   );
 
   // Log rate limiting status (#1191 - Staging Environment)

@@ -91,9 +91,10 @@ export class MedicaoService {
       createDto.periodoFim,
     );
 
-    // Criar medição
+    // Criar medição (populate organizationId from parent Contrato - DB-NEW-07)
     const medicao = this.medicaoRepo.create({
       contratoId,
+      organizationId: contrato.organizationId,
       numero: proximoNumero,
       periodoInicio: createDto.periodoInicio,
       periodoFim: createDto.periodoFim,

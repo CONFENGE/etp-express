@@ -80,7 +80,7 @@ describe('TermoReferenciaExportService', () => {
     condicoesPagamento: 'Pagamento em ate 30 dias apos a entrega',
     localExecucao: 'Sede da Prefeitura Municipal',
     status: TermoReferenciaStatus.DRAFT,
-    versao: 1,
+    currentVersion: 1,
     organization: mockOrganization as any,
     createdBy: mockUser as any,
     createdAt: new Date('2025-01-01'),

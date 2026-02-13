@@ -594,7 +594,7 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 
 **Assessment:** `docs/prd/technical-debt-assessment.md`
 **Epic:** `docs/stories/epic-technical-debt.md`
-**Status:** 8/10 stories DONE — 35/51 debts resolved, 0 P1/P2 blockers, ~76.5h remaining
+**Status:** 9/10 stories DONE — 47/51 debts resolved, 0 P1/P2 blockers, ~55h remaining
 
 | Story | Title | Priority | Effort | Status |
 |-------|-------|----------|--------|--------|
@@ -606,17 +606,17 @@ Ver seção "Frontend Design Audit" acima para detalhes.
 | TD-006 | Password Validation Alignment | P1 | 3h | ✅ Done (#1719 - Squad Backlog Crusher) |
 | TD-007 | Accessibility & i18n Fixes | P2 | 4h | ✅ Done (#1722 - aria-labels PT-BR, WCAG 3.1.1) |
 | TD-008 | Schema Improvements & LGPD | P2 | 16h | ✅ Done (#1721 IP anon, #1723 tests, #1732 pool review - Squad Backlog Crusher) |
-| **TD-009** | **Code Quality & System Hygiene** | **P3** | **21h** | **Sub-stories criadas (4)** |
+| TD-009 | Code Quality & System Hygiene | P3 | 25h | ✅ Done (2026-02-13 - 12 debts resolved via 4 sub-stories) |
 | **TD-010** | **Backlog Infrastructure** | **P4** | **55h+** | **Sub-stories criadas (7)** |
 
-### TD-009 Sub-stories (P3 — pode iniciar imediatamente)
+### TD-009 Sub-stories (P3 — ✅ COMPLETED 2026-02-13)
 
 | Sub-story | Title | Effort | Debts | Status |
 |-----------|-------|--------|-------|--------|
-| TD-009.1 | Database Schema Cleanup | 6h | DB-05, DB-06, DB-07 | Planned |
-| TD-009.2 | Multi-tenancy & Relations Completion | 6h | DB-NEW-07, DB-NEW-08, DB-P02 | Planned |
-| TD-009.3 | Backend System Hygiene | 9h | SYS-06, SYS-07, SYS-08, SYS-09 | Planned |
-| TD-009.4 | Accessibility Test Coverage (axe-core) | 4h | FE-10 | Planned |
+| TD-009.1 | Database Schema Cleanup | 6h | DB-05, DB-06, DB-07 | ✅ Done |
+| TD-009.2 | Multi-tenancy & Relations Completion | 6h | DB-NEW-07, DB-NEW-08, DB-P02 | ✅ Done |
+| TD-009.3 | Backend System Hygiene | 9h | SYS-06, SYS-07, SYS-08, SYS-09 | ✅ Done |
+| TD-009.4 | Accessibility Test Coverage (axe-core) | 4h | FE-10 | ✅ Done |
 
 ### TD-010 Sub-stories (P4 — backlog, iniciar conforme capacidade)
 

@@ -13,6 +13,8 @@ import { Contrato, ContratoStatus } from '../../../entities/contrato.entity';
 import {
   ContratoSyncLog,
   ConflictField,
+  ConflictFieldValue,
+  ContratoResolutionData,
 } from '../../../entities/contrato-sync-log.entity';
 import { ContratosGovBrAuthService } from '../../gov-api/services/contratos-govbr-auth.service';
 
@@ -641,7 +643,7 @@ export class ContratosGovBrSyncService {
       contratoId: local.id,
       action: 'conflict_resolved',
       conflicts,
-      resolution: resolved,
+      resolution: resolved as ContratoResolutionData,
     });
 
     // 4. Atualizar contrato com dados resolvidos
@@ -706,8 +708,8 @@ export class ContratosGovBrSyncService {
         if (localValue !== remoteValue) {
           conflicts.push({
             field,
-            localValue: local[field],
-            remoteValue: remote[field],
+            localValue: local[field] as ConflictFieldValue,
+            remoteValue: remote[field] as ConflictFieldValue,
           });
         }
       }
@@ -770,13 +772,15 @@ export class ContratosGovBrSyncService {
     for (const conflict of conflicts) {
       if (remoteWins) {
         // Remote wins - usar valor do Gov.br
-        resolved[conflict.field as keyof Contrato] = conflict.remoteValue;
+        (resolved as Record<string, ConflictFieldValue>)[conflict.field] =
+          conflict.remoteValue;
         this.logger.debug(
           `Conflict resolved (remote wins): ${conflict.field} = ${conflict.remoteValue}`,
         );
       } else {
         // Local wins - preservar valor local e agendar push
-        resolved[conflict.field as keyof Contrato] = conflict.localValue;
+        (resolved as Record<string, ConflictFieldValue>)[conflict.field] =
+          conflict.localValue;
         this.schedulePush(local.id);
         this.logger.debug(
           `Conflict resolved (local wins): ${conflict.field} = ${conflict.localValue}, push scheduled`,

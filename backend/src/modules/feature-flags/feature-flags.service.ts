@@ -7,6 +7,7 @@ import {
   FeatureFlagContext,
   FeatureFlagEvaluation,
 } from './feature-flags.types';
+import { FEATURE_FLAG_DEFAULTS } from './feature-flag-defaults';
 
 /**
  * Feature Flags Service
@@ -27,51 +28,13 @@ export class FeatureFlagsService implements OnModuleInit {
   /** In-memory cache for performance */
   private cache = new Map<string, { value: boolean; expiresAt: number }>();
 
-  /** Default flag configurations */
-  private readonly defaults: Record<string, FeatureFlagConfig> = {
-    [FeatureFlag.STAGED_ROLLOUT_ALPHA]: {
-      key: FeatureFlag.STAGED_ROLLOUT_ALPHA,
-      name: 'Staged Rollout - Alpha',
-      description: 'Enable features for alpha testers',
-      defaultValue: false,
-    },
-    [FeatureFlag.STAGED_ROLLOUT_BETA]: {
-      key: FeatureFlag.STAGED_ROLLOUT_BETA,
-      name: 'Staged Rollout - Beta',
-      description: 'Enable features for beta users',
-      defaultValue: false,
-    },
-    [FeatureFlag.STAGED_ROLLOUT_GA]: {
-      key: FeatureFlag.STAGED_ROLLOUT_GA,
-      name: 'Staged Rollout - GA',
-      description: 'Enable features for general availability',
-      defaultValue: true,
-    },
-    [FeatureFlag.NEW_DASHBOARD]: {
-      key: FeatureFlag.NEW_DASHBOARD,
-      name: 'New Dashboard',
-      description: 'Enable the new dashboard design',
-      defaultValue: false,
-    },
-    [FeatureFlag.AI_SUGGESTIONS]: {
-      key: FeatureFlag.AI_SUGGESTIONS,
-      name: 'AI Suggestions',
-      description: 'Enable AI-powered suggestions',
-      defaultValue: true,
-    },
-    [FeatureFlag.EXPORT_V2]: {
-      key: FeatureFlag.EXPORT_V2,
-      name: 'Export V2',
-      description: 'Enable new export functionality',
-      defaultValue: false,
-    },
-    [FeatureFlag.ADVANCED_ANALYTICS]: {
-      key: FeatureFlag.ADVANCED_ANALYTICS,
-      name: 'Advanced Analytics',
-      description: 'Enable advanced analytics features',
-      defaultValue: false,
-    },
-  };
+  /**
+   * Default flag configurations (SYS-08: centralized in feature-flag-defaults.ts)
+   *
+   * @see FEATURE_FLAG_DEFAULTS for the single source of truth
+   */
+  private readonly defaults: Record<string, FeatureFlagConfig> =
+    FEATURE_FLAG_DEFAULTS;
 
   constructor(private readonly configService: ConfigService) {}
 

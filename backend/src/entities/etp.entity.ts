@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
@@ -381,6 +382,12 @@ export class Etp {
    * - assistenciaTecnica: string
    * - catalogo: string (CATMAT/CATSER)
    */
+  /**
+   * GIN index for efficient JSONB queries on dynamicFields.
+   * Actual GIN index created via migration (TypeORM @Index does not support USING GIN).
+   * DB-P02 - Performance optimization for JSONB lookups.
+   */
+  @Index('IDX_etps_dynamic_fields_gin', { synchronize: false })
   @Column({ type: 'jsonb', nullable: true })
   dynamicFields: DynamicFieldsType;
 
@@ -395,6 +402,12 @@ export class Etp {
   })
   status: EtpStatus;
 
+  /**
+   * GIN index for efficient JSONB queries on metadata.
+   * Actual GIN index created via migration (TypeORM @Index does not support USING GIN).
+   * DB-P02 - Performance optimization for JSONB lookups.
+   */
+  @Index('IDX_etps_metadata_gin', { synchronize: false })
   @Column({ type: 'jsonb', nullable: true })
   metadata: {
     unidadeRequisitante?: string;
@@ -436,7 +449,7 @@ export class Etp {
   @JoinColumn({ name: 'created_by' })
   createdBy: User;
 
-  @Column({ name: 'created_by' })
+  @Column({ name: 'created_by', type: 'uuid' })
   createdById: string;
 
   @CreateDateColumn()

@@ -33,7 +33,7 @@ describe('TermoReferenciaController', () => {
     organizationId: mockOrganizationId,
     objeto: 'Contratacao de servicos de TI',
     status: TermoReferenciaStatus.DRAFT,
-    versao: 1,
+    currentVersion: 1,
     createdById: mockUserId,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -207,7 +207,7 @@ describe('TermoReferenciaController', () => {
       objeto: 'Objeto do ETP',
       fundamentacaoLegal: 'Lei 14.133/2021',
       status: TermoReferenciaStatus.DRAFT,
-      versao: 1,
+      currentVersion: 1,
       createdAt: new Date(),
       metadata: {
         tokens: 500,

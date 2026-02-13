@@ -22,7 +22,7 @@ export interface ContractChain {
     numero: string | null;
     objeto: string;
     status: string;
-    versao: number;
+    currentVersion: number;
   };
   edital: {
     id: string;
@@ -126,7 +126,7 @@ export class ContractChainService {
         numero: null, // TR não possui campo numero ainda
         objeto: contrato.edital.termoReferencia.objeto,
         status: contrato.edital.termoReferencia.status,
-        versao: contrato.edital.termoReferencia.versao,
+        currentVersion: contrato.edital.termoReferencia.currentVersion,
       },
       edital: {
         id: contrato.edital.id,
